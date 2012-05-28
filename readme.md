@@ -106,13 +106,12 @@ Maple is just in its very beginnings. There are several ideas for further featur
 
 * Allow to generate mappers for several existing mapping frameworks (currently only Dozer is supported).
 * Generate "native" mappers, that is without any reflection, but by direcly invoking getters and setters within the generated mapper. This should deliver very efficient mapper implementations
-* Provide a way to access the underlying mapper in order to make use of advanced features not provided by the Maple API (similar to the `unwrap()` method of JPA etc.)
 * Provide a way to add custom mapping code in a very simple way:
 
 
 	@Mapper(extension=CarMapperCustomization.class)
 	public interface CarMapper {
-	
+
 		CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 	
 		//automatically generated mapping methods
@@ -123,7 +122,7 @@ Maple is just in its very beginnings. There are several ideas for further featur
 		//very complex mapping which requires some hand-coding
 		Vehicle carToVehicle(Car car);
 	}
-	
+
 	public abstract class CarMapperCustomization implements CarMapper {
 	
 		@Override
@@ -131,3 +130,5 @@ Maple is just in its very beginnings. There are several ideas for further featur
 			//implement custom mapping logic
 		}
 	}
+
+* Provide a way to access the underlying mapper in order to make use of advanced features not provided by the Maple API (similar to the `unwrap()` method of JPA etc.)
