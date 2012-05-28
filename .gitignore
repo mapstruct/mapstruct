@@ -1,0 +1,14 @@
+# Eclipse
+.metadata
+.classpath
+.project
+.settings
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+
+# Build
+target
+test-output
