@@ -109,6 +109,7 @@ Maple is just in its very beginnings. There are several ideas for further featur
 * Provide a way to access the underlying mapper in order to make use of advanced features not provided by the Maple API (similar to the `unwrap()` method of JPA etc.)
 * Provide a way to add custom mapping code in a very simple way:
 
+
 	@Mapper(extension=CarMapperCustomization.class)
 	public interface CarMapper {
 	
