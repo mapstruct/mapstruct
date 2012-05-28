@@ -22,29 +22,33 @@ import org.dozer.loader.api.BeanMappingBuilder;
 
 public class ${implementationType} implements ${interfaceType} {
 
-private final DozerBeanMapper mapper;
+    private final DozerBeanMapper mapper;
 
-public ${implementationType}() {
-mapper = new DozerBeanMapper();
+    public ${implementationType}() {
+        mapper = new DozerBeanMapper();
 
-<#list mapperMethods as oneMethod>
-BeanMappingBuilder builder = new BeanMappingBuilder() {
-protected void configure() {
-mapping( ${oneMethod.parameter.type.name}.class, ${oneMethod.returnType.name}.class )
-    <#list oneMethod.bindings as oneBinding>
-    .fields("${oneBinding.sourceProperty}", "${oneBinding.targetProperty}")
+        BeanMappingBuilder builder = null;
+
+        <#list mapperMethods as oneMethod>
+        <#if oneMethod.bindings?has_content>
+        builder = new BeanMappingBuilder() {
+            protected void configure() {
+                mapping( ${oneMethod.parameter.type.name}.class, ${oneMethod.returnType.name}.class )
+                    <#list oneMethod.bindings as oneBinding>
+                    .fields("${oneBinding.sourceProperty}", "${oneBinding.targetProperty}")
+                    </#list>
+                ;
+            }
+        };
+        mapper.addMapping( builder );
+        </#if>
+
+        </#list>
+    }
+
+    <#list mapperMethods as oneMethod>
+    public ${oneMethod.returnType.name} ${oneMethod.name}(${oneMethod.parameter.type.name} ${oneMethod.parameter.name}) {
+        return mapper.map(${oneMethod.parameter.name}, ${oneMethod.returnType.name}.class);
+    }
     </#list>
-;
-}
-};
-
-mapper.addMapping( builder );
-</#list>
-}
-
-<#list mapperMethods as oneMethod>
-public ${oneMethod.returnType.name} ${oneMethod.name}(${oneMethod.parameter.type.name} ${oneMethod.parameter.name}) {
-return mapper.map(${oneMethod.parameter.name}, ${oneMethod.returnType.name}.class);
-}
-</#list>
 }

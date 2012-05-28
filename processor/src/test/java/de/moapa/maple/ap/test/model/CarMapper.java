@@ -26,4 +26,6 @@ public interface CarMapper {
 
 	@Mapping(source = "numberOfSeats", target = "seatCount")
 	CarDto carToCarDto(Car car);
+
+	Car carDtoToCar(CarDto carDto);
 }

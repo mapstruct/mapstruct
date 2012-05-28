@@ -125,6 +125,20 @@ public class CarMapperTest {
 		assertThat( carDto.getSeatCount() ).isEqualTo( car.getNumberOfSeats() );
 	}
 
+	@Test
+	public void shouldConsiderCustomMappingForReverseMapping() {
+
+		//given
+		CarDto carDto = new CarDto( "Morris", 2 );
+
+		//when
+		Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
+
+		//then
+		assertThat( car ).isNotNull();
+		assertThat( car.getNumberOfSeats() ).isEqualTo( carDto.getSeatCount() );
+	}
+
 	private File[] getSourceFiles(Class<?>... clazz) {
 
 		File[] sourceFiles = new File[clazz.length];

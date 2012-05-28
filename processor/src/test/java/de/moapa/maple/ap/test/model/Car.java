@@ -21,6 +21,9 @@ public class Car {
 
 	private int numberOfSeats;
 
+	public Car() {
+	}
+
 	public Car(String make, int numberOfSeats) {
 		this.make = make;
 		this.numberOfSeats = numberOfSeats;
