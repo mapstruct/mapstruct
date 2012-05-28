@@ -21,12 +21,15 @@ public class Car {
 
 	private int numberOfSeats;
 
+	private int yearOfManufacture;
+
 	public Car() {
 	}
 
-	public Car(String make, int numberOfSeats) {
+	public Car(String make, int numberOfSeats, int yearOfManufacture) {
 		this.make = make;
 		this.numberOfSeats = numberOfSeats;
+		this.yearOfManufacture = yearOfManufacture;
 	}
 
 	public String getMake() {
@@ -43,5 +46,13 @@ public class Car {
 
 	public void setNumberOfSeats(int numberOfSeats) {
 		this.numberOfSeats = numberOfSeats;
+	}
+
+	public int getYearOfManufacture() {
+		return yearOfManufacture;
+	}
+
+	public void setYearOfManufacture(int yearOfManufacture) {
+		this.yearOfManufacture = yearOfManufacture;
 	}
 }

@@ -17,8 +17,13 @@
 -->
 package ${packageName};
 
+import org.dozer.DozerConverter;
 import org.dozer.DozerBeanMapper;
 import org.dozer.loader.api.BeanMappingBuilder;
+
+import de.moapa.maple.converter.Converter;
+
+import static org.dozer.loader.api.FieldsMappingOptions.*;
 
 public class ${implementationType} implements ${interfaceType} {
 
@@ -35,7 +40,7 @@ public class ${implementationType} implements ${interfaceType} {
             protected void configure() {
                 mapping( ${oneMethod.parameter.type.name}.class, ${oneMethod.returnType.name}.class )
                     <#list oneMethod.bindings as oneBinding>
-                    .fields("${oneBinding.sourceProperty}", "${oneBinding.targetProperty}")
+                    .fields( "${oneBinding.sourceProperty}", "${oneBinding.targetProperty}"<#if oneBinding.converterType??>, customConverter( ${oneBinding.converterType.name}DozerAdapter.class )</#if> )
                     </#list>
                 ;
             }
@@ -49,6 +54,27 @@ public class ${implementationType} implements ${interfaceType} {
     <#list mapperMethods as oneMethod>
     public ${oneMethod.returnType.name} ${oneMethod.name}(${oneMethod.parameter.type.name} ${oneMethod.parameter.name}) {
         return mapper.map(${oneMethod.parameter.name}, ${oneMethod.returnType.name}.class);
+    }
+    </#list>
+
+    <#list converters as oneConverter>
+    public static class ${oneConverter.converterType.name}DozerAdapter extends DozerConverter<${oneConverter.sourceType.name}, ${oneConverter.targetType.name}> {
+
+        private final Converter<${oneConverter.sourceType.name}, ${oneConverter.targetType.name}> converter = new ${oneConverter.converterType.name}();
+
+        public ${oneConverter.converterType.name}DozerAdapter() {
+            super(${oneConverter.sourceType.name}.class, ${oneConverter.targetType.name}.class);
+        }
+
+        @Override
+        public String convertTo(${oneConverter.sourceType.name} source, ${oneConverter.targetType.name} destination) {
+            return converter.from(source);
+        }
+
+        @Override
+        public ${oneConverter.sourceType.name} convertFrom(${oneConverter.targetType.name} source, ${oneConverter.sourceType.name} destination) {
+            return converter.to(source);
+        }
     }
     </#list>
 }

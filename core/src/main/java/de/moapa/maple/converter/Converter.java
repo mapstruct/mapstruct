@@ -13,23 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package de.moapa.maple.ap.test.model;
+package de.moapa.maple.converter;
 
-import de.moapa.maple.Mapper;
-import de.moapa.maple.Mappers;
-import de.moapa.maple.Mapping;
-import de.moapa.maple.Mappings;
+public interface Converter<S, T> {
 
-@Mapper
-public interface CarMapper {
+	T from(S source);
 
-	CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
-
-	@Mappings({
-			@Mapping(source = "numberOfSeats", target = "seatCount"),
-			@Mapping(source = "yearOfManufacture", target = "manufacturingYear", converter = IntToStringConverter.class)
-	})
-	CarDto carToCarDto(Car car);
-
-	Car carDtoToCar(CarDto carDto);
+	S to(T target);
 }

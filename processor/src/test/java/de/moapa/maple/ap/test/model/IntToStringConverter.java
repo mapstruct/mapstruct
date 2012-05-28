@@ -15,21 +15,17 @@
  */
 package de.moapa.maple.ap.test.model;
 
-import de.moapa.maple.Mapper;
-import de.moapa.maple.Mappers;
-import de.moapa.maple.Mapping;
-import de.moapa.maple.Mappings;
+import de.moapa.maple.converter.Converter;
 
-@Mapper
-public interface CarMapper {
+public class IntToStringConverter implements Converter<Integer, String> {
 
-	CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+	@Override
+	public String from(Integer source) {
+		return source != null ? source.toString() : null;
+	}
 
-	@Mappings({
-			@Mapping(source = "numberOfSeats", target = "seatCount"),
-			@Mapping(source = "yearOfManufacture", target = "manufacturingYear", converter = IntToStringConverter.class)
-	})
-	CarDto carToCarDto(Car car);
-
-	Car carDtoToCar(CarDto carDto);
+	@Override
+	public Integer to(String target) {
+		return target != null ? Integer.valueOf( target ) : null;
+	}
 }

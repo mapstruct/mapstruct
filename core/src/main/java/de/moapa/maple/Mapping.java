@@ -15,10 +15,15 @@
  */
 package de.moapa.maple;
 
+import de.moapa.maple.converter.Converter;
+import de.moapa.maple.converter.NoOpConverter;
+
 public @interface Mapping {
 
 	String source();
 
 	String target();
+
+	Class<? extends Converter<?, ?>> converter() default NoOpConverter.class;
 
 }

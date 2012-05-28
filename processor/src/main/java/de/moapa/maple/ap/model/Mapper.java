@@ -15,6 +15,7 @@
  */
 package de.moapa.maple.ap.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Mapper {
@@ -27,11 +28,35 @@ public class Mapper {
 
 	private final List<MapperMethod> mapperMethods;
 
+	private final List<Converter> converters;
+
 	public Mapper(String packageName, String implementationType, String interfaceType, List<MapperMethod> mapperMethods) {
 		this.packageName = packageName;
 		this.implementationType = implementationType;
 		this.interfaceType = interfaceType;
 		this.mapperMethods = mapperMethods;
+		this.converters = collectConverters( mapperMethods );
+	}
+
+	private List<Converter> collectConverters(List<MapperMethod> mapperMethods) {
+
+		List<Converter> converters = new ArrayList<Converter>();
+
+		for ( MapperMethod oneMapperMethod : mapperMethods ) {
+			for ( Binding oneBinding : oneMapperMethod.getBindings() ) {
+				if ( oneBinding.getConverterType() != null ) {
+					converters.add(
+							new Converter(
+									oneBinding.getConverterType(),
+									oneBinding.getSourceType(),
+									oneBinding.getTargetType()
+							)
+					);
+				}
+			}
+		}
+
+		return converters;
 	}
 
 	public String getPackageName() {
@@ -48,5 +73,9 @@ public class Mapper {
 
 	public List<MapperMethod> getMapperMethods() {
 		return mapperMethods;
+	}
+
+	public List<Converter> getConverters() {
+		return converters;
 	}
 }

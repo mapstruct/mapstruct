@@ -15,44 +15,28 @@
  */
 package de.moapa.maple.ap.model;
 
-public class Binding {
-
-	private final Type sourceType;
-
-	private final String sourceProperty;
-
-	private final Type targetType;
-
-	private final String targetProperty;
+public class Converter {
 
 	private final Type converterType;
+	private final Type sourceType;
+	private final Type targetType;
 
-	public Binding(Type sourceType, String sourceProperty, Type targetType, String targetProperty, Type converterType) {
+	public Converter(Type converterType, Type sourceType, Type targetType) {
 
-		this.sourceType = sourceType;
-		this.sourceProperty = sourceProperty;
-		this.targetType = targetType;
-		this.targetProperty = targetProperty;
 		this.converterType = converterType;
+		this.sourceType = sourceType;
+		this.targetType = targetType;
+	}
+
+	public Type getConverterType() {
+		return converterType;
 	}
 
 	public Type getSourceType() {
 		return sourceType;
 	}
 
-	public String getSourceProperty() {
-		return sourceProperty;
-	}
-
 	public Type getTargetType() {
 		return targetType;
-	}
-
-	public String getTargetProperty() {
-		return targetProperty;
-	}
-
-	public Type getConverterType() {
-		return converterType;
 	}
 }

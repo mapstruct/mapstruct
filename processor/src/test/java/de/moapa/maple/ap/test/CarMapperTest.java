@@ -34,6 +34,7 @@ import de.moapa.maple.ap.MappingProcessor;
 import de.moapa.maple.ap.test.model.Car;
 import de.moapa.maple.ap.test.model.CarDto;
 import de.moapa.maple.ap.test.model.CarMapper;
+import de.moapa.maple.ap.test.model.IntToStringConverter;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -83,7 +84,7 @@ public class CarMapperTest {
 	public void generateMapperImplementation() {
 
 		diagnostics = new DiagnosticCollector<JavaFileObject>();
-		File[] sourceFiles = getSourceFiles( Car.class, CarDto.class, CarMapper.class );
+		File[] sourceFiles = getSourceFiles( Car.class, CarDto.class, CarMapper.class, IntToStringConverter.class );
 
 		boolean compilationSuccessful = compile( diagnostics, sourceFiles );
 
@@ -101,7 +102,7 @@ public class CarMapperTest {
 	public void shouldMapAttributeByName() {
 
 		//given
-		Car car = new Car( "Morris", 2 );
+		Car car = new Car( "Morris", 2, 1980 );
 
 		//when
 		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
@@ -115,7 +116,7 @@ public class CarMapperTest {
 	public void shouldMapAttributeWithCustomMapping() {
 
 		//given
-		Car car = new Car( "Morris", 2 );
+		Car car = new Car( "Morris", 2, 1980 );
 
 		//when
 		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
@@ -129,7 +130,7 @@ public class CarMapperTest {
 	public void shouldConsiderCustomMappingForReverseMapping() {
 
 		//given
-		CarDto carDto = new CarDto( "Morris", 2 );
+		CarDto carDto = new CarDto( "Morris", 2, "1980" );
 
 		//when
 		Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
@@ -137,6 +138,34 @@ public class CarMapperTest {
 		//then
 		assertThat( car ).isNotNull();
 		assertThat( car.getNumberOfSeats() ).isEqualTo( carDto.getSeatCount() );
+	}
+
+	@Test
+	public void shouldApplyConverter() {
+
+		//given
+		Car car = new Car( "Morris", 2, 1980 );
+
+		//when
+		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
+
+		//then
+		assertThat( carDto ).isNotNull();
+		assertThat( carDto.getManufacturingYear() ).isEqualTo( "1980" );
+	}
+
+	@Test
+	public void shouldApplyConverterForReverseMapping() {
+
+		//given
+		CarDto carDto = new CarDto( "Morris", 2, "1980" );
+
+		//when
+		Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
+
+		//then
+		assertThat( car ).isNotNull();
+		assertThat( car.getYearOfManufacture() ).isEqualTo( 1980 );
 	}
 
 	private File[] getSourceFiles(Class<?>... clazz) {

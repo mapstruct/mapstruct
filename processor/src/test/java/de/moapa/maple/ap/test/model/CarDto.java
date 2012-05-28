@@ -21,12 +21,15 @@ public class CarDto {
 
 	private int seatCount;
 
+	private String manufacturingYear;
+
 	public CarDto() {
 	}
 
-	public CarDto(String make, int seatCount) {
+	public CarDto(String make, int seatCount, String manufacturingYear) {
 		this.make = make;
 		this.seatCount = seatCount;
+		this.manufacturingYear = manufacturingYear;
 	}
 
 	public String getMake() {
@@ -43,5 +46,13 @@ public class CarDto {
 
 	public void setSeatCount(int seatCount) {
 		this.seatCount = seatCount;
+	}
+
+	public String getManufacturingYear() {
+		return manufacturingYear;
+	}
+
+	public void setManufacturingYear(String manufacturingYear) {
+		this.manufacturingYear = manufacturingYear;
 	}
 }
