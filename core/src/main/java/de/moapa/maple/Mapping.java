@@ -17,4 +17,8 @@ package de.moapa.maple;
 
 public @interface Mapping {
 
+	String source();
+
+	String target();
+
 }

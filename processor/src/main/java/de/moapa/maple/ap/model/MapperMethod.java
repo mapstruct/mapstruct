@@ -15,16 +15,20 @@
  */
 package de.moapa.maple.ap.model;
 
+import java.util.List;
+
 public class MapperMethod {
 
 	private final String name;
 	private final Type returnType;
 	private final Parameter parameter;
+	private final List<Binding> bindings;
 
-	public MapperMethod(String name, Type returnType, Parameter parameter) {
+	public MapperMethod(String name, Type returnType, Parameter parameter, List<Binding> bindings) {
 		this.name = name;
 		this.returnType = returnType;
 		this.parameter = parameter;
+		this.bindings = bindings;
 	}
 
 	public String getName() {
@@ -37,5 +41,9 @@ public class MapperMethod {
 
 	public Parameter getParameter() {
 		return parameter;
+	}
+
+	public List<Binding> getBindings() {
+		return bindings;
 	}
 }

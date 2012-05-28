@@ -13,32 +13,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package de.moapa.maple.ap.test.model;
+package de.moapa.maple.ap.model;
 
-public class Car {
+public class Binding {
 
-	private String make;
+	private final String sourceProperty;
 
-	private int numberOfSeats;
+	private final String targetProperty;
 
-	public Car(String make, int numberOfSeats) {
-		this.make = make;
-		this.numberOfSeats = numberOfSeats;
+	public Binding(String sourceProperty, String targetProperty) {
+
+		this.sourceProperty = sourceProperty;
+		this.targetProperty = targetProperty;
 	}
 
-	public String getMake() {
-		return make;
+	public String getSourceProperty() {
+		return sourceProperty;
 	}
 
-	public void setMake(String make) {
-		this.make = make;
-	}
-
-	public int getNumberOfSeats() {
-		return numberOfSeats;
-	}
-
-	public void setNumberOfSeats(int numberOfSeats) {
-		this.numberOfSeats = numberOfSeats;
+	public String getTargetProperty() {
+		return targetProperty;
 	}
 }

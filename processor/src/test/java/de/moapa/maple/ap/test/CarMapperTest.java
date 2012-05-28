@@ -80,41 +80,49 @@ public class CarMapperTest {
 	}
 
 	@BeforeMethod
-	public void setUpDiagnostics() {
+	public void generateMapperImplementation() {
+
 		diagnostics = new DiagnosticCollector<JavaFileObject>();
+		File[] sourceFiles = getSourceFiles( Car.class, CarDto.class, CarMapper.class );
+
+		boolean compilationSuccessful = compile( diagnostics, sourceFiles );
+
+		assertThat( compilationSuccessful ).describedAs( "Compilation failed: " + diagnostics.getDiagnostics() )
+				.isTrue();
 	}
 
 	@Test
 	public void shouldProvideMapperInstance() throws Exception {
 
-		//given
-		File[] sourceFiles = getSourceFiles( Car.class, CarDto.class, CarMapper.class );
-
-		//when
-		boolean compilationSuccessful = compile( diagnostics, sourceFiles );
-
-		//then
-		assertThat( compilationSuccessful ).describedAs( "Compilation failed: " + diagnostics.getDiagnostics() )
-				.isTrue();
 		assertThat( CarMapper.INSTANCE ).isNotNull();
 	}
 
 	@Test
-	public void shouldMapCar() {
+	public void shouldMapAttributeByName() {
 
 		//given
-		File[] sourceFiles = getSourceFiles( Car.class, CarDto.class, CarMapper.class );
-		Car car = new Car( "Morris" );
+		Car car = new Car( "Morris", 2 );
 
 		//when
-		boolean compilationSuccessful = compile( diagnostics, sourceFiles );
 		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
 
 		//then
-		assertThat( compilationSuccessful ).describedAs( "Compilation failed: " + diagnostics.getDiagnostics() )
-				.isTrue();
 		assertThat( carDto ).isNotNull();
 		assertThat( carDto.getMake() ).isEqualTo( car.getMake() );
+	}
+
+	@Test
+	public void shouldMapAttributeWithCustomMapping() {
+
+		//given
+		Car car = new Car( "Morris", 2 );
+
+		//when
+		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
+
+		//then
+		assertThat( carDto ).isNotNull();
+		assertThat( carDto.getSeatCount() ).isEqualTo( car.getNumberOfSeats() );
 	}
 
 	private File[] getSourceFiles(Class<?>... clazz) {

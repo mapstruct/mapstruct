@@ -18,14 +18,19 @@ package de.moapa.maple.ap;
 import java.io.BufferedWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementKindVisitor6;
+import javax.lang.model.util.SimpleAnnotationValueVisitor6;
 import javax.tools.JavaFileObject;
 
+import de.moapa.maple.ap.model.Binding;
 import de.moapa.maple.ap.model.Mapper;
 import de.moapa.maple.ap.model.MapperMethod;
 import de.moapa.maple.ap.model.Parameter;
@@ -35,11 +40,13 @@ import freemarker.template.Template;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
-class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
+public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 	private final static String IMPLEMENTATION_SUFFIX = "Impl";
 
 	private final static String TEMPLATE_NAME = "dozer-mapper-implementation.ftl";
+
+	private final static String MAPPING_ANNOTATION = "de.moapa.maple.Mapping";
 
 	private final ProcessingEnvironment processingEnvironment;
 
@@ -92,16 +99,57 @@ class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 		for ( ExecutableElement oneMethod : methodsIn( element.getEnclosedElements() ) ) {
 
+			Type returnType = retrieveReturnType( oneMethod );
+			Parameter parameter = retrieveParameter( oneMethod );
+			List<Binding> bindings = retrieveBindings( oneMethod );
 			methods.add(
 					new MapperMethod(
 							oneMethod.getSimpleName().toString(),
-							retrieveReturnType( oneMethod ),
-							retrieveParameter( oneMethod )
+							returnType,
+							parameter,
+							bindings
 					)
 			);
 		}
 
 		return methods;
+	}
+
+	private List<Binding> retrieveBindings(ExecutableElement method) {
+
+		List<Binding> bindings = new ArrayList<Binding>();
+
+		for ( AnnotationMirror annotationMirror : method.getAnnotationMirrors() ) {
+
+			String annotationName = annotationMirror.getAnnotationType()
+					.asElement()
+					.accept( new NameDeterminationVisitor(), null );
+
+			if ( MAPPING_ANNOTATION.equals( annotationName ) ) {
+				bindings.add( retrieveBinding( annotationMirror ) );
+			}
+		}
+
+		return bindings;
+	}
+
+	private Binding retrieveBinding(AnnotationMirror annotationMirror) {
+
+		String sourcePropertyName = null;
+		String targetPropertyName = null;
+
+		for ( Entry<? extends ExecutableElement, ? extends AnnotationValue> oneAttribute : annotationMirror.getElementValues()
+				.entrySet() ) {
+
+			if ( oneAttribute.getKey().getSimpleName().contentEquals( "source" ) ) {
+				sourcePropertyName = oneAttribute.getValue().accept( new ValueRetrievingVisitor(), null );
+			}
+			else if ( oneAttribute.getKey().getSimpleName().contentEquals( "target" ) ) {
+				targetPropertyName = oneAttribute.getValue().accept( new ValueRetrievingVisitor(), null );
+			}
+		}
+
+		return new Binding( sourcePropertyName, targetPropertyName );
 	}
 
 	private Parameter retrieveParameter(ExecutableElement method) {
@@ -136,5 +184,22 @@ class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 				processingEnvironment.getElementUtils().getPackageOf( returnTypeElement ).getQualifiedName().toString(),
 				returnTypeElement.getSimpleName().toString()
 		);
+	}
+
+	private static class NameDeterminationVisitor extends ElementKindVisitor6<String, Void> {
+
+		@Override
+		public String visitType(TypeElement element, Void p) {
+			return element.getQualifiedName().toString();
+		}
+	}
+
+	private static class ValueRetrievingVisitor extends SimpleAnnotationValueVisitor6<String, Void> {
+
+		@Override
+		public String visitString(String value, Void p) {
+			return value;
+		}
+
 	}
 }

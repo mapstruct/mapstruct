@@ -19,11 +19,9 @@ public class CarDto {
 
 	private String make;
 
-	public CarDto() {
-	}
+	private int seatCount;
 
-	public CarDto(String make) {
-		this.make = make;
+	public CarDto() {
 	}
 
 	public String getMake() {
@@ -32,5 +30,13 @@ public class CarDto {
 
 	public void setMake(String make) {
 		this.make = make;
+	}
+
+	public int getSeatCount() {
+		return seatCount;
+	}
+
+	public void setSeatCount(int seatCount) {
+		this.seatCount = seatCount;
 	}
 }

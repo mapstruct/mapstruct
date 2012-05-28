@@ -17,11 +17,13 @@ package de.moapa.maple.ap.test.model;
 
 import de.moapa.maple.Mapper;
 import de.moapa.maple.Mappers;
+import de.moapa.maple.Mapping;
 
 @Mapper
 public interface CarMapper {
 
 	CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
+	@Mapping(source = "numberOfSeats", target = "seatCount")
 	CarDto carToCarDto(Car car);
 }

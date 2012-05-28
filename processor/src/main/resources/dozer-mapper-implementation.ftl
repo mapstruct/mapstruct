@@ -18,14 +18,28 @@
 package ${packageName};
 
 import org.dozer.DozerBeanMapper;
-import org.dozer.Mapper;
+import org.dozer.loader.api.BeanMappingBuilder;
 
 public class ${implementationType} implements ${interfaceType} {
 
-private final Mapper mapper;
+private final DozerBeanMapper mapper;
 
 public ${implementationType}() {
 mapper = new DozerBeanMapper();
+
+<#list mapperMethods as oneMethod>
+BeanMappingBuilder builder = new BeanMappingBuilder() {
+protected void configure() {
+mapping( ${oneMethod.parameter.type.name}.class, ${oneMethod.returnType.name}.class )
+    <#list oneMethod.bindings as oneBinding>
+    .fields("${oneBinding.sourceProperty}", "${oneBinding.targetProperty}")
+    </#list>
+;
+}
+};
+
+mapper.addMapping( builder );
+</#list>
 }
 
 <#list mapperMethods as oneMethod>
