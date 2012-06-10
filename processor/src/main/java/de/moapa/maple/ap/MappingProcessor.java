@@ -15,7 +15,6 @@
  */
 package de.moapa.maple.ap;
 
-
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -26,9 +25,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-
 @SupportedAnnotationTypes("de.moapa.maple.Mapper")
 public class MappingProcessor extends AbstractProcessor {
 
@@ -37,16 +33,9 @@ public class MappingProcessor extends AbstractProcessor {
 	 */
 	private static final boolean ANNOTATIONS_CLAIMED_EXCLUSIVELY = false;
 
-	private Configuration configuration;
-
 	@Override
 	public synchronized void init(ProcessingEnvironment processingEnv) {
-
 		super.init( processingEnv );
-
-		configuration = new Configuration();
-		configuration.setClassForTemplateLoading( MappingProcessor.class, "/" );
-		configuration.setObjectWrapper( new DefaultObjectWrapper() );
 	}
 
 	@Override
@@ -68,7 +57,7 @@ public class MappingProcessor extends AbstractProcessor {
 			}
 
 			for ( Element oneAnnotatedElement : roundEnvironment.getElementsAnnotatedWith( oneAnnotation ) ) {
-				oneAnnotatedElement.accept( new MapperGenerationVisitor( processingEnv, configuration ), null );
+				oneAnnotatedElement.accept( new MapperGenerationVisitor( processingEnv ), null );
 			}
 		}
 

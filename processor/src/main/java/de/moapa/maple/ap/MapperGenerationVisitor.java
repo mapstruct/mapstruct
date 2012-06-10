@@ -15,7 +15,7 @@
  */
 package de.moapa.maple.ap;
 
-import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,16 +41,14 @@ import de.moapa.maple.ap.model.Mapper;
 import de.moapa.maple.ap.model.MapperMethod;
 import de.moapa.maple.ap.model.Parameter;
 import de.moapa.maple.ap.model.Type;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
+import de.moapa.maple.ap.writer.DozerModelWriter;
+import de.moapa.maple.ap.writer.ModelWriter;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
 public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 	private final static String IMPLEMENTATION_SUFFIX = "Impl";
-
-	private final static String TEMPLATE_NAME = "dozer-mapper-implementation.ftl";
 
 	private final static String MAPPING_ANNOTATION = "de.moapa.maple.Mapping";
 
@@ -60,19 +58,15 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 	private final ProcessingEnvironment processingEnvironment;
 
-	private final Configuration configuration;
-
 	private final Types typeUtils;
 
 	private final Elements elementUtils;
 
-	public MapperGenerationVisitor(ProcessingEnvironment processingEnvironment, Configuration configuration) {
+	public MapperGenerationVisitor(ProcessingEnvironment processingEnvironment) {
 
 		this.processingEnvironment = processingEnvironment;
 		this.typeUtils = processingEnvironment.getTypeUtils();
 		this.elementUtils = processingEnvironment.getElementUtils();
-
-		this.configuration = configuration;
 	}
 
 	@Override
@@ -87,18 +81,17 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 	}
 
 	private void writeModelToSourceFile(String fileName, Mapper model) {
-		try {
-			JavaFileObject sourceFile = processingEnvironment.getFiler().createSourceFile( fileName );
-			BufferedWriter writer = new BufferedWriter( sourceFile.openWriter() );
 
-			Template template = configuration.getTemplate( TEMPLATE_NAME );
-			template.process( model, writer );
-			writer.flush();
-			writer.close();
+		JavaFileObject sourceFile;
+		try {
+			sourceFile = processingEnvironment.getFiler().createSourceFile( fileName );
 		}
-		catch ( Exception e ) {
+		catch ( IOException e ) {
 			throw new RuntimeException( e );
 		}
+
+		ModelWriter modelWriter = new DozerModelWriter();
+		modelWriter.writeModel( sourceFile, model );
 	}
 
 	private Mapper retrieveModel(TypeElement element) {
