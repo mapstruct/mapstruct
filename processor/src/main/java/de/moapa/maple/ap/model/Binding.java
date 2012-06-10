@@ -18,14 +18,14 @@ package de.moapa.maple.ap.model;
 public class Binding {
 
 	private final Type sourceType;
-
 	private final String sourceProperty;
-
 	private final Type targetType;
-
 	private final String targetProperty;
-
 	private final Type converterType;
+
+	public Binding(String sourceProperty, String targetProperty) {
+		this( null, sourceProperty, null, targetProperty, null );
+	}
 
 	public Binding(Type sourceType, String sourceProperty, Type targetType, String targetProperty, Type converterType) {
 
@@ -54,5 +54,9 @@ public class Binding {
 
 	public Type getConverterType() {
 		return converterType;
+	}
+
+	public boolean isDefault() {
+		return !sourceProperty.equals( targetProperty ) || ( sourceType != null && !sourceType.equals( targetType ) ) ? false : true;
 	}
 }

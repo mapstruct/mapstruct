@@ -18,8 +18,12 @@ package de.moapa.maple.ap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -28,6 +32,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.lang.model.util.Elements;
@@ -43,6 +48,7 @@ import de.moapa.maple.ap.model.Parameter;
 import de.moapa.maple.ap.model.Type;
 import de.moapa.maple.ap.writer.DozerModelWriter;
 import de.moapa.maple.ap.writer.ModelWriter;
+import de.moapa.maple.ap.writer.NativeModelWriter;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
@@ -50,11 +56,12 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 	private final static String IMPLEMENTATION_SUFFIX = "Impl";
 
+	private final static String MAPPER_ANNOTATION = "de.moapa.maple.Mapper";
 	private final static String MAPPING_ANNOTATION = "de.moapa.maple.Mapping";
-
 	private final static String MAPPINGS_ANNOTATION = "de.moapa.maple.Mappings";
-
 	private final static String CONVERTER_TYPE = "de.moapa.maple.converter.Converter";
+
+	private final static String DEFAULT_MAPPER_TYPE = "dozer";
 
 	private final ProcessingEnvironment processingEnvironment;
 
@@ -90,18 +97,27 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 			throw new RuntimeException( e );
 		}
 
-		ModelWriter modelWriter = new DozerModelWriter();
+		ModelWriter modelWriter = model.getMapperType()
+				.equals( "native" ) ? new NativeModelWriter() : new DozerModelWriter();
 		modelWriter.writeModel( sourceFile, model );
 	}
 
 	private Mapper retrieveModel(TypeElement element) {
-
 		return new Mapper(
+				retrieveMapperType( element ),
 				elementUtils.getPackageOf( element ).getQualifiedName().toString(),
 				element.getSimpleName() + IMPLEMENTATION_SUFFIX,
 				element.getSimpleName().toString(),
 				retrieveMethods( element )
 		);
+	}
+
+	private String retrieveMapperType(TypeElement element) {
+
+		AnnotationMirror mapperAnnotation = getAnnotation( element, MAPPER_ANNOTATION );
+		String mapperType = getStringValue( mapperAnnotation, "value" );
+
+		return mapperType != null && !mapperType.isEmpty() ? mapperType : DEFAULT_MAPPER_TYPE;
 	}
 
 	private List<MapperMethod> retrieveMethods(TypeElement element) {
@@ -112,7 +128,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 			Type returnType = retrieveReturnType( oneMethod );
 			Parameter parameter = retrieveParameter( oneMethod );
-			List<Binding> bindings = retrieveBindings( oneMethod );
+			Map<String, Binding> bindings = retrieveBindings( oneMethod );
 			methods.add(
 					new MapperMethod(
 							oneMethod.getSimpleName().toString(),
@@ -126,9 +142,11 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 		return methods;
 	}
 
-	private List<Binding> retrieveBindings(ExecutableElement method) {
+	private Map<String, Binding> retrieveBindings(ExecutableElement method) {
 
-		List<Binding> bindings = new ArrayList<Binding>();
+		Map<String, Binding> bindings = new LinkedHashMap<String, Binding>();
+
+		retrieveDefaultBindings( method, bindings );
 
 		for ( AnnotationMirror annotationMirror : method.getAnnotationMirrors() ) {
 
@@ -137,76 +155,92 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 					.accept( new NameDeterminationVisitor(), null );
 
 			if ( MAPPING_ANNOTATION.equals( annotationName ) ) {
-				bindings.add( retrieveBinding( annotationMirror ) );
+				retrieveBinding( annotationMirror, bindings );
 			}
 			else if ( MAPPINGS_ANNOTATION.equals( annotationName ) ) {
-				bindings.addAll( retrieveBindings( annotationMirror ) );
+				retrieveBindings( annotationMirror, bindings );
 			}
 		}
 
 		return bindings;
 	}
 
-	private List<Binding> retrieveBindings(AnnotationMirror annotationMirror) {
+	private void retrieveDefaultBindings(ExecutableElement method, Map<String, Binding> bindings) {
 
-		List<Binding> bindings = new ArrayList<Binding>();
+		Element returnTypeElement = typeUtils.asElement( method.getReturnType() );
 
-		for ( Entry<? extends ExecutableElement, ? extends AnnotationValue> oneAttribute : annotationMirror.getElementValues()
-				.entrySet() ) {
+		Set<String> writableTargetProperties = new LinkedHashSet<String>();
 
-			if ( oneAttribute.getKey().getSimpleName().contentEquals( "value" ) ) {
-				List<? extends AnnotationValue> values = oneAttribute.getValue()
-						.accept( new AnnotationValueListRetrievingVisitor(), null );
+		//collect writable properties of the target type
+		for ( ExecutableElement oneMethod : methodsIn( returnTypeElement.getEnclosedElements() ) ) {
+			if ( oneMethod.getSimpleName().toString().startsWith( "set" ) &&
+					oneMethod.getParameters().size() == 1 ) {
 
-				for ( AnnotationValue oneAnnotationValue : values ) {
-					AnnotationMirror oneAnnotation = oneAnnotationValue.accept(
-							new AnnotationRetrievingVisitor(),
-							null
-					);
-					bindings.add( retrieveBinding( oneAnnotation ) );
-				}
+				writableTargetProperties.add( oneMethod.getSimpleName().toString().substring( 3 ) );
 			}
 		}
 
-		return bindings;
+		//collect readable properties of the source type
+		Element parameterElement = typeUtils.asElement( method.getParameters().get( 0 ).asType() );
+
+		Set<String> readableSourceProperties = new LinkedHashSet<String>();
+
+		for ( ExecutableElement oneMethod : methodsIn( parameterElement.getEnclosedElements() ) ) {
+			if ( oneMethod.getSimpleName().toString().startsWith( "get" ) &&
+					oneMethod.getParameters().isEmpty() &&
+					oneMethod.getReturnType().getKind() != TypeKind.VOID ) {
+
+				readableSourceProperties.add( oneMethod.getSimpleName().toString().substring( 3 ) );
+			}
+		}
+
+		writableTargetProperties.retainAll( readableSourceProperties );
+
+		for ( String oneWritableProperty : writableTargetProperties ) {
+			bindings.put( oneWritableProperty, new Binding( oneWritableProperty, oneWritableProperty ) );
+		}
+
 	}
 
-	private Binding retrieveBinding(AnnotationMirror annotationMirror) {
+	private void retrieveBindings(AnnotationMirror annotationMirror, Map<String, Binding> bindings) {
 
-		String sourcePropertyName = null;
-		String targetPropertyName = null;
+		List<? extends AnnotationValue> values = getAnnotationValueListValue( annotationMirror, "value" );
+
+		for ( AnnotationValue oneAnnotationValue : values ) {
+			AnnotationMirror oneAnnotation = oneAnnotationValue.accept(
+					new AnnotationRetrievingVisitor(),
+					null
+			);
+			retrieveBinding( oneAnnotation, bindings );
+		}
+	}
+
+	private void retrieveBinding(AnnotationMirror annotationMirror, Map<String, Binding> bindings) {
+
+		String sourcePropertyName = getStringValue( annotationMirror, "source" );
+		String targetPropertyName = getStringValue( annotationMirror, "target" );
+		TypeMirror converterTypeMirror = getTypeMirrorValue( annotationMirror, "converter" );
+
 		Type converterType = null;
 		Type sourceType = null;
 		Type targetType = null;
 
-		for ( Entry<? extends ExecutableElement, ? extends AnnotationValue> oneAttribute : annotationMirror.getElementValues()
-				.entrySet() ) {
+		if ( converterTypeMirror != null ) {
+			converterType = getType( typeUtils.asElement( converterTypeMirror ) );
 
-			if ( oneAttribute.getKey().getSimpleName().contentEquals( "source" ) ) {
-				sourcePropertyName = oneAttribute.getValue().accept( new StringValueRetrievingVisitor(), null );
-			}
-			else if ( oneAttribute.getKey().getSimpleName().contentEquals( "target" ) ) {
-				targetPropertyName = oneAttribute.getValue().accept( new StringValueRetrievingVisitor(), null );
-			}
-			else if ( oneAttribute.getKey().getSimpleName().contentEquals( "converter" ) ) {
-				TypeMirror converterTypeMirror = oneAttribute.getValue()
-						.accept(
-								new TypeRetrievingVisitor(), null
-						);
+			List<? extends TypeMirror> converterTypeParameters = getTypeParameters(
+					converterTypeMirror,
+					CONVERTER_TYPE
+			);
 
-				converterType = getType( typeUtils.asElement( converterTypeMirror ) );
-
-				List<? extends TypeMirror> converterTypeParameters = getTypeParameters(
-						converterTypeMirror,
-						CONVERTER_TYPE
-				);
-
-				sourceType = getType( typeUtils.asElement( converterTypeParameters.get( 0 ) ) );
-				targetType = getType( typeUtils.asElement( converterTypeParameters.get( 1 ) ) );
-			}
+			sourceType = getType( typeUtils.asElement( converterTypeParameters.get( 0 ) ) );
+			targetType = getType( typeUtils.asElement( converterTypeParameters.get( 1 ) ) );
 		}
 
-		return new Binding( sourceType, sourcePropertyName, targetType, targetPropertyName, converterType );
+		bindings.put(
+				sourcePropertyName,
+				new Binding( sourceType, sourcePropertyName, targetType, targetPropertyName, converterType )
+		);
 	}
 
 	private Type getType(Element sourceTypeElement) {
@@ -259,6 +293,60 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 				elementUtils.getPackageOf( returnTypeElement ).getQualifiedName().toString(),
 				returnTypeElement.getSimpleName().toString()
 		);
+	}
+
+	private AnnotationMirror getAnnotation(TypeElement element, String annotationName) {
+
+		for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
+
+			if ( annotationName.equals(
+					annotationMirror.getAnnotationType().asElement().accept( new NameDeterminationVisitor(), null )
+			) ) {
+
+				return annotationMirror;
+			}
+		}
+
+		return null;
+	}
+
+	private String getStringValue(AnnotationMirror annotationMirror, String attributeName) {
+
+		for ( Entry<? extends ExecutableElement, ? extends AnnotationValue> oneAttribute : annotationMirror.getElementValues()
+				.entrySet() ) {
+
+			if ( oneAttribute.getKey().getSimpleName().contentEquals( attributeName ) ) {
+				return oneAttribute.getValue().accept( new StringValueRetrievingVisitor(), null );
+			}
+		}
+
+		return null;
+	}
+
+	private TypeMirror getTypeMirrorValue(AnnotationMirror annotationMirror, String attributeName) {
+
+		for ( Entry<? extends ExecutableElement, ? extends AnnotationValue> oneAttribute : annotationMirror.getElementValues()
+				.entrySet() ) {
+
+			if ( oneAttribute.getKey().getSimpleName().contentEquals( attributeName ) ) {
+				return oneAttribute.getValue().accept( new TypeRetrievingVisitor(), null );
+			}
+		}
+
+		return null;
+	}
+
+	private List<? extends AnnotationValue> getAnnotationValueListValue(AnnotationMirror annotationMirror, String attributeName) {
+
+		for ( Entry<? extends ExecutableElement, ? extends AnnotationValue> oneAttribute : annotationMirror.getElementValues()
+				.entrySet() ) {
+
+			if ( oneAttribute.getKey().getSimpleName().contentEquals( "value" ) ) {
+				return oneAttribute.getValue().accept( new AnnotationValueListRetrievingVisitor(), null );
+			}
+		}
+
+		return null;
 	}
 
 	private static class TypeParameterDeterminationVisitor extends TypeKindVisitor6<List<? extends TypeMirror>, Void> {

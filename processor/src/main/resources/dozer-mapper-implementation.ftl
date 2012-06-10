@@ -35,11 +35,11 @@ public class ${implementationType} implements ${interfaceType} {
         BeanMappingBuilder builder = null;
 
         <#list mapperMethods as oneMethod>
-        <#if oneMethod.bindings?has_content>
+        <#if oneMethod.nonDefaultBindingExisting>
         builder = new BeanMappingBuilder() {
             protected void configure() {
                 mapping( ${oneMethod.parameter.type.name}.class, ${oneMethod.returnType.name}.class )
-                    <#list oneMethod.bindings as oneBinding>
+                    <#list oneMethod.bindings?values as oneBinding>
                     .fields( "${oneBinding.sourceProperty}", "${oneBinding.targetProperty}"<#if oneBinding.converterType??>, customConverter( ${oneBinding.converterType.name}DozerAdapter.class )</#if> )
                     </#list>
                 ;

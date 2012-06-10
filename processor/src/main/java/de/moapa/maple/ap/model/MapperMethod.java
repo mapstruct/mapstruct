@@ -15,16 +15,21 @@
  */
 package de.moapa.maple.ap.model;
 
-import java.util.List;
+import java.util.Map;
 
 public class MapperMethod {
 
 	private final String name;
 	private final Type returnType;
 	private final Parameter parameter;
-	private final List<Binding> bindings;
 
-	public MapperMethod(String name, Type returnType, Parameter parameter, List<Binding> bindings) {
+	/**
+	 * Bindings for the properties of this method's converted object. Keyed by
+	 * property name of the source type.
+	 */
+	private final Map<String, Binding> bindings;
+
+	public MapperMethod(String name, Type returnType, Parameter parameter, Map<String, Binding> bindings) {
 		this.name = name;
 		this.returnType = returnType;
 		this.parameter = parameter;
@@ -43,7 +48,17 @@ public class MapperMethod {
 		return parameter;
 	}
 
-	public List<Binding> getBindings() {
+	public Map<String, Binding> getBindings() {
 		return bindings;
+	}
+
+	public boolean getNonDefaultBindingExisting() {
+		for ( Binding oneBinding : bindings.values() ) {
+			if ( !oneBinding.isDefault() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

@@ -15,6 +15,26 @@
  */
 package de.moapa.maple;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Marks an interface as mapper interface and activates the generation of a
+ * mapper implementation for that interface.
+ *
+ * @author Gunnar Morling
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.SOURCE)
 public @interface Mapper {
 
+	/**
+	 * Specifies the type of the mapper implementation to be generated.
+	 * Currently supported values are {@code native} and {@code dozer}.
+	 *
+	 * @return The type of the mapper implementation to be generated.
+	 */
+	String value() default "";
 }

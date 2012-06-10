@@ -21,26 +21,31 @@ import javax.tools.JavaFileObject;
 
 import de.moapa.maple.ap.test.model.Car;
 import de.moapa.maple.ap.test.model.CarDto;
-import de.moapa.maple.ap.test.model.CarMapper;
 import de.moapa.maple.ap.test.model.IntToStringConverter;
+import de.moapa.maple.ap.test.model.NativeCarMapper;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class CarMapperTest extends MapperTestBase {
+public class NativeCarMapperTest extends MapperTestBase {
 
 	private DiagnosticCollector<JavaFileObject> diagnostics;
 
-	public CarMapperTest() {
-		super( "maple.jar", "dozer.jar", "slf4j-api.jar", "slf4j-jdk14.jar" );
+	public NativeCarMapperTest() {
+		super( "maple.jar" );
 	}
 
 	@BeforeMethod
 	public void generateMapperImplementation() {
 
 		diagnostics = new DiagnosticCollector<JavaFileObject>();
-		File[] sourceFiles = getSourceFiles( Car.class, CarDto.class, CarMapper.class, IntToStringConverter.class );
+		File[] sourceFiles = getSourceFiles(
+				Car.class,
+				CarDto.class,
+				NativeCarMapper.class,
+				IntToStringConverter.class
+		);
 
 		boolean compilationSuccessful = compile( diagnostics, sourceFiles );
 
@@ -51,7 +56,7 @@ public class CarMapperTest extends MapperTestBase {
 	@Test
 	public void shouldProvideMapperInstance() throws Exception {
 
-		assertThat( CarMapper.INSTANCE ).isNotNull();
+		assertThat( NativeCarMapper.INSTANCE ).isNotNull();
 	}
 
 	@Test
@@ -61,7 +66,7 @@ public class CarMapperTest extends MapperTestBase {
 		Car car = new Car( "Morris", 2, 1980 );
 
 		//when
-		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
+		CarDto carDto = NativeCarMapper.INSTANCE.carToCarDto( car );
 
 		//then
 		assertThat( carDto ).isNotNull();
@@ -75,21 +80,21 @@ public class CarMapperTest extends MapperTestBase {
 		Car car = new Car( "Morris", 2, 1980 );
 
 		//when
-		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
+		CarDto carDto = NativeCarMapper.INSTANCE.carToCarDto( car );
 
 		//then
 		assertThat( carDto ).isNotNull();
 		assertThat( carDto.getSeatCount() ).isEqualTo( car.getNumberOfSeats() );
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void shouldConsiderCustomMappingForReverseMapping() {
 
 		//given
 		CarDto carDto = new CarDto( "Morris", 2, "1980" );
 
 		//when
-		Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
+		Car car = NativeCarMapper.INSTANCE.carDtoToCar( carDto );
 
 		//then
 		assertThat( car ).isNotNull();
@@ -103,21 +108,21 @@ public class CarMapperTest extends MapperTestBase {
 		Car car = new Car( "Morris", 2, 1980 );
 
 		//when
-		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
+		CarDto carDto = NativeCarMapper.INSTANCE.carToCarDto( car );
 
 		//then
 		assertThat( carDto ).isNotNull();
 		assertThat( carDto.getManufacturingYear() ).isEqualTo( "1980" );
 	}
 
-	@Test
+	@Test(enabled = false)
 	public void shouldApplyConverterForReverseMapping() {
 
 		//given
 		CarDto carDto = new CarDto( "Morris", 2, "1980" );
 
 		//when
-		Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
+		Car car = NativeCarMapper.INSTANCE.carDtoToCar( carDto );
 
 		//then
 		assertThat( car ).isNotNull();

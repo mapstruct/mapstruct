@@ -23,16 +23,16 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 
-public class DozerModelWriter implements ModelWriter {
+public class NativeModelWriter implements ModelWriter {
 
-	private final static String TEMPLATE_NAME = "dozer-mapper-implementation.ftl";
+	private final static String TEMPLATE_NAME = "native-mapper-implementation.ftl";
 
 	private static final Configuration configuration;
 
 	static {
 
 		configuration = new Configuration();
-		configuration.setClassForTemplateLoading( DozerModelWriter.class, "/" );
+		configuration.setClassForTemplateLoading( NativeModelWriter.class, "/" );
 		configuration.setObjectWrapper( new DefaultObjectWrapper() );
 
 	}

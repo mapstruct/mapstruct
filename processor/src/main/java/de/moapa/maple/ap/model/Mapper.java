@@ -20,17 +20,15 @@ import java.util.List;
 
 public class Mapper {
 
+	private final String mapperType;
 	private final String packageName;
-
 	private final String implementationType;
-
 	private final String interfaceType;
-
 	private final List<MapperMethod> mapperMethods;
-
 	private final List<Converter> converters;
 
-	public Mapper(String packageName, String implementationType, String interfaceType, List<MapperMethod> mapperMethods) {
+	public Mapper(String mapperType, String packageName, String implementationType, String interfaceType, List<MapperMethod> mapperMethods) {
+		this.mapperType = mapperType;
 		this.packageName = packageName;
 		this.implementationType = implementationType;
 		this.interfaceType = interfaceType;
@@ -43,7 +41,7 @@ public class Mapper {
 		List<Converter> converters = new ArrayList<Converter>();
 
 		for ( MapperMethod oneMapperMethod : mapperMethods ) {
-			for ( Binding oneBinding : oneMapperMethod.getBindings() ) {
+			for ( Binding oneBinding : oneMapperMethod.getBindings().values() ) {
 				if ( oneBinding.getConverterType() != null ) {
 					converters.add(
 							new Converter(
@@ -57,6 +55,10 @@ public class Mapper {
 		}
 
 		return converters;
+	}
+
+	public String getMapperType() {
+		return mapperType;
 	}
 
 	public String getPackageName() {
