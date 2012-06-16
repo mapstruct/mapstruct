@@ -18,18 +18,18 @@ package de.moapa.maple.ap.test.model;
 public class Car {
 
 	private String make;
-
 	private int numberOfSeats;
-
 	private int yearOfManufacture;
+	private Person driver;
 
 	public Car() {
 	}
 
-	public Car(String make, int numberOfSeats, int yearOfManufacture) {
+	public Car(String make, int numberOfSeats, int yearOfManufacture, Person driver) {
 		this.make = make;
 		this.numberOfSeats = numberOfSeats;
 		this.yearOfManufacture = yearOfManufacture;
+		this.driver = driver;
 	}
 
 	public String getMake() {
@@ -54,5 +54,13 @@ public class Car {
 
 	public void setYearOfManufacture(int yearOfManufacture) {
 		this.yearOfManufacture = yearOfManufacture;
+	}
+
+	public Person getDriver() {
+		return driver;
+	}
+
+	public void setDriver(Person driver) {
+		this.driver = driver;
 	}
 }

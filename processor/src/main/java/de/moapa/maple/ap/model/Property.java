@@ -16,23 +16,22 @@
 package de.moapa.maple.ap.model;
 
 /**
- * Represents the type of a bean property, parameter etc.
+ * Represents a property of a Java bean.
  *
  * @author Gunnar Morling
  */
-public class Type {
+public class Property {
 
-	private final String packageName;
-
+	private final Type type;
 	private final String name;
 
-	public Type(String packageName, String name) {
-		this.packageName = packageName;
+	public Property(Type type, String name) {
+		this.type = type;
 		this.name = name;
 	}
 
-	public String getPackageName() {
-		return packageName;
+	public Type getType() {
+		return type;
 	}
 
 	public String getName() {
@@ -41,7 +40,7 @@ public class Type {
 
 	@Override
 	public String toString() {
-		return "Type [packageName=" + packageName + ", name=" + name + "]";
+		return "Property [type=" + type + ", name=" + name + "]";
 	}
 
 	@Override
@@ -49,8 +48,7 @@ public class Type {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
-		result = prime * result
-				+ ( ( packageName == null ) ? 0 : packageName.hashCode() );
+		result = prime * result + ( ( type == null ) ? 0 : type.hashCode() );
 		return result;
 	}
 
@@ -65,7 +63,7 @@ public class Type {
 		if ( getClass() != obj.getClass() ) {
 			return false;
 		}
-		Type other = (Type) obj;
+		Property other = (Property) obj;
 		if ( name == null ) {
 			if ( other.name != null ) {
 				return false;
@@ -74,12 +72,12 @@ public class Type {
 		else if ( !name.equals( other.name ) ) {
 			return false;
 		}
-		if ( packageName == null ) {
-			if ( other.packageName != null ) {
+		if ( type == null ) {
+			if ( other.type != null ) {
 				return false;
 			}
 		}
-		else if ( !packageName.equals( other.packageName ) ) {
+		else if ( !type.equals( other.type ) ) {
 			return false;
 		}
 		return true;

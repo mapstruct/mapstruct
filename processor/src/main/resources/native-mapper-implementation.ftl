@@ -18,8 +18,8 @@
 package ${packageName};
 
 public class ${implementationType} implements ${interfaceType} {
-
     <#list mapperMethods as oneMethod>
+
     public ${oneMethod.returnType.name} ${oneMethod.name}(${oneMethod.parameter.type.name} ${oneMethod.parameter.name}) {
 
         ${oneMethod.returnType.name} convertedObject = new ${oneMethod.returnType.name}();

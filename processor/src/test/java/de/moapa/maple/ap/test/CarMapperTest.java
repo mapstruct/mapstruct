@@ -23,6 +23,8 @@ import de.moapa.maple.ap.test.model.Car;
 import de.moapa.maple.ap.test.model.CarDto;
 import de.moapa.maple.ap.test.model.CarMapper;
 import de.moapa.maple.ap.test.model.IntToStringConverter;
+import de.moapa.maple.ap.test.model.Person;
+import de.moapa.maple.ap.test.model.PersonDto;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -40,7 +42,14 @@ public class CarMapperTest extends MapperTestBase {
 	public void generateMapperImplementation() {
 
 		diagnostics = new DiagnosticCollector<JavaFileObject>();
-		File[] sourceFiles = getSourceFiles( Car.class, CarDto.class, CarMapper.class, IntToStringConverter.class );
+		File[] sourceFiles = getSourceFiles(
+				Car.class,
+				CarDto.class,
+				Person.class,
+				PersonDto.class,
+				CarMapper.class,
+				IntToStringConverter.class
+		);
 
 		boolean compilationSuccessful = compile( diagnostics, sourceFiles );
 
@@ -58,7 +67,7 @@ public class CarMapperTest extends MapperTestBase {
 	public void shouldMapAttributeByName() {
 
 		//given
-		Car car = new Car( "Morris", 2, 1980 );
+		Car car = new Car( "Morris", 2, 1980, new Person( "Bob" ) );
 
 		//when
 		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
@@ -69,10 +78,40 @@ public class CarMapperTest extends MapperTestBase {
 	}
 
 	@Test
+	public void shouldMapReferenceAttribute() {
+
+		//given
+		Car car = new Car( "Morris", 2, 1980, new Person( "Bob" ) );
+
+		//when
+		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
+
+		//then
+		assertThat( carDto ).isNotNull();
+		assertThat( carDto.getDriver() ).isNotNull();
+		assertThat( carDto.getDriver().getName() ).isEqualTo( "Bob" );
+	}
+
+	@Test
+	public void shouldReverseMapReferenceAttribute() {
+
+		//given
+		CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ) );
+
+		//when
+		Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
+
+		//then
+		assertThat( car ).isNotNull();
+		assertThat( car.getDriver() ).isNotNull();
+		assertThat( car.getDriver().getName() ).isEqualTo( "Bob" );
+	}
+
+	@Test
 	public void shouldMapAttributeWithCustomMapping() {
 
 		//given
-		Car car = new Car( "Morris", 2, 1980 );
+		Car car = new Car( "Morris", 2, 1980, new Person( "Bob" ) );
 
 		//when
 		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
@@ -86,7 +125,7 @@ public class CarMapperTest extends MapperTestBase {
 	public void shouldConsiderCustomMappingForReverseMapping() {
 
 		//given
-		CarDto carDto = new CarDto( "Morris", 2, "1980" );
+		CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ) );
 
 		//when
 		Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
@@ -100,7 +139,7 @@ public class CarMapperTest extends MapperTestBase {
 	public void shouldApplyConverter() {
 
 		//given
-		Car car = new Car( "Morris", 2, 1980 );
+		Car car = new Car( "Morris", 2, 1980, new Person( "Bob" ) );
 
 		//when
 		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
@@ -114,7 +153,7 @@ public class CarMapperTest extends MapperTestBase {
 	public void shouldApplyConverterForReverseMapping() {
 
 		//given
-		CarDto carDto = new CarDto( "Morris", 2, "1980" );
+		CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ) );
 
 		//when
 		Car car = CarMapper.INSTANCE.carDtoToCar( carDto );

@@ -45,6 +45,7 @@ import de.moapa.maple.ap.model.Binding;
 import de.moapa.maple.ap.model.Mapper;
 import de.moapa.maple.ap.model.MapperMethod;
 import de.moapa.maple.ap.model.Parameter;
+import de.moapa.maple.ap.model.Property;
 import de.moapa.maple.ap.model.Type;
 import de.moapa.maple.ap.writer.DozerModelWriter;
 import de.moapa.maple.ap.writer.ModelWriter;
@@ -169,37 +170,50 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 		Element returnTypeElement = typeUtils.asElement( method.getReturnType() );
 
-		Set<String> writableTargetProperties = new LinkedHashSet<String>();
+		Set<Property> writableTargetProperties = new LinkedHashSet<Property>();
 
 		//collect writable properties of the target type
 		for ( ExecutableElement oneMethod : methodsIn( returnTypeElement.getEnclosedElements() ) ) {
 			if ( oneMethod.getSimpleName().toString().startsWith( "set" ) &&
 					oneMethod.getParameters().size() == 1 ) {
 
-				writableTargetProperties.add( oneMethod.getSimpleName().toString().substring( 3 ) );
+				writableTargetProperties.add(
+						new Property(
+								retrieveParameter( oneMethod ).getType(),
+								oneMethod.getSimpleName().toString().substring( 3 )
+						)
+				);
 			}
 		}
 
 		//collect readable properties of the source type
 		Element parameterElement = typeUtils.asElement( method.getParameters().get( 0 ).asType() );
 
-		Set<String> readableSourceProperties = new LinkedHashSet<String>();
+		Set<Property> readableSourceProperties = new LinkedHashSet<Property>();
 
 		for ( ExecutableElement oneMethod : methodsIn( parameterElement.getEnclosedElements() ) ) {
+			//TODO: consider is/has
 			if ( oneMethod.getSimpleName().toString().startsWith( "get" ) &&
 					oneMethod.getParameters().isEmpty() &&
 					oneMethod.getReturnType().getKind() != TypeKind.VOID ) {
 
-				readableSourceProperties.add( oneMethod.getSimpleName().toString().substring( 3 ) );
+				readableSourceProperties.add(
+						new Property(
+								retrieveReturnType( oneMethod ),
+								oneMethod.getSimpleName().toString().substring( 3 )
+						)
+				);
 			}
 		}
 
 		writableTargetProperties.retainAll( readableSourceProperties );
 
-		for ( String oneWritableProperty : writableTargetProperties ) {
-			bindings.put( oneWritableProperty, new Binding( oneWritableProperty, oneWritableProperty ) );
+		for ( Property oneWritableProperty : writableTargetProperties ) {
+			bindings.put(
+					oneWritableProperty.getName(),
+					new Binding( oneWritableProperty.getName(), oneWritableProperty.getName() )
+			);
 		}
-
 	}
 
 	private void retrieveBindings(AnnotationMirror annotationMirror, Map<String, Binding> bindings) {
@@ -278,21 +292,23 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 		return new Parameter(
 				parameter.getSimpleName().toString(),
-				new Type(
-						elementUtils.getPackageOf( parameter ).getQualifiedName().toString(),
-						typeUtils.asElement( parameter.asType() ).getSimpleName().toString()
-				)
+				retrieveType( parameter.asType() )
 		);
 	}
 
 	private Type retrieveReturnType(ExecutableElement method) {
 
-		Element returnTypeElement = typeUtils.asElement( method.getReturnType() );
+		return retrieveType( method.getReturnType() );
+	}
 
-		return new Type(
-				elementUtils.getPackageOf( returnTypeElement ).getQualifiedName().toString(),
-				returnTypeElement.getSimpleName().toString()
-		);
+	private Type retrieveType(TypeMirror mirror) {
+
+		if ( mirror.getKind() == TypeKind.DECLARED ) {
+			return getType( ( (DeclaredType) mirror ).asElement() );
+		}
+		else {
+			return new Type( null, mirror.toString() );
+		}
 	}
 
 	private AnnotationMirror getAnnotation(TypeElement element, String annotationName) {
