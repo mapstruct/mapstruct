@@ -1,8 +1,8 @@
-# What's Maple?
+# What's MapStruct?
 
-Maple is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe bean mapping classes.
+MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe bean mapping classes.
 
-All you have to do is to define one more more mapper interfaces, annotate them with the `@Mapper` annotation and add the required mapping methods. During compilation, Maple will generate an implementation for each mapper interface, based on your preferred mapping framework (currently [Dozer](http://dozer.sourceforge.net/) is supported, more to come).
+All you have to do is to define one more more mapper interfaces, annotate them with the `@Mapper` annotation and add the required mapping methods. During compilation, MapStruct will generate an implementation for each mapper interface, based on your preferred mapping framework (currently [Dozer](http://dozer.sourceforge.net/) is supported, more to come).
 
 The following shows an example. First, an object (e.g. a JPA entity) and an accompanying data transfer object (DTO):
 
@@ -39,7 +39,7 @@ Both types are rather similar, only the seat count attributes have different nam
 	
 The interface is straight-forward: 
 
-* Annotating it with `@Mapper` let's the Maple processor kick in during compilation
+* Annotating it with `@Mapper` let's the MapStruct processor kick in during compilation
 * The `INSTANCE` member provides access to the mapper implementation for clients (a service loader based alternative coming soon)
 * For each mapping direction (entity to DTO and vice versa) there is a conversion method. For those attributes which have differing names and thus can't be mapped automatically, a mapping is configured using the `@Mapping` annotation on one of the methods.
 
@@ -92,21 +92,21 @@ To make use of a converter, specify its type within the `@Mapping` annotation:
 		Car carDtoToCar(CarDto carDto);
 	}
 	
-# Using Maple
+# Using MapStruct
 
-Maple is a Java annotation processor based on [JSR 269](jcp.org/en/jsr/detail?id=269) and as such can be used within command line builds (javac, Ant, Maven etc.) as well as from within your IDE.
+MapStruct is a Java annotation processor based on [JSR 269](jcp.org/en/jsr/detail?id=269) and as such can be used within command line builds (javac, Ant, Maven etc.) as well as from within your IDE.
 
 Detailed instructions on the usage will be added soon, in between the [set up](http://docs.jboss.org/hibernate/stable/jpamodelgen/reference/en-US/html/chapter-usage.html) of the Hibernate JPA meta model generator can be used as general guideline for setting up an annotation processor.
 
-In order to use Maple, you have to check out its sources as it is currently not available in any public Maven repository.
+In order to use MapStruct, you have to check out its sources as it is currently not available in any public Maven repository.
 
 # What's next
 
-Maple is just in its very beginnings. There are several ideas for further features, including but not limited to:
+MapStruct is just in its very beginnings. There are several ideas for further features, including but not limited to:
 
 * Allow to generate mappers for several existing mapping frameworks (currently only Dozer is supported).
 * Generate "native" mappers, that is without any reflection, but by direcly invoking getters and setters within the generated mapper. This should deliver very efficient mapper implementations
-* Provide a way to access the underlying mapper in order to make use of advanced features not provided by the Maple API (similar to the `unwrap()` method of JPA etc.)
+* Provide a way to access the underlying mapper in order to make use of advanced features not provided by the MapStruct API (similar to the `unwrap()` method of JPA etc.)
 * Provide a way to add custom mapping code in a very simple way
 
 Example:
@@ -133,4 +133,4 @@ Example:
 		}
 	}
 
-* Remove runtime dependencies to Maple by using the JDK service loader to retrieve mapper implementations.
+* Remove runtime dependencies to MapStruct by using the JDK service loader to retrieve mapper implementations.

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
- Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.moapa.maple</groupId>
-    <artifactId>maple-parent</artifactId>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Maple Parent</name>
-    <url>https://github.com/gunnarmorling/maple</url>
+    <name>MapStruct Parent</name>
+    <url>https://github.com/gunnarmorling/mapstruct</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -52,7 +52,7 @@
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>maple</artifactId>
+                <artifactId>mapstruct</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
