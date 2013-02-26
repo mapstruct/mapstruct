@@ -13,17 +13,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package de.moapa.maple.converter;
+package de.moapa.maple.ap.model.source;
 
-public class NoOpConverter implements Converter<Object, Object> {
+import de.moapa.maple.ap.model.Type;
 
-	@Override
-	public Object from(Object source) {
-		return source;
+public class Mapping {
+
+	private final String sourceName;
+	private final String targetName;
+	private final Type converterType;
+
+	public Mapping(String sourceName, String targetName, Type converterType) {
+		this.sourceName = sourceName;
+		this.targetName = targetName;
+		this.converterType = converterType;
 	}
 
-	@Override
-	public Object to(Object target) {
-		return target;
+	public String getSourceName() {
+		return sourceName;
+	}
+
+	public String getTargetName() {
+		return targetName;
+	}
+
+	public Type getConverterType() {
+		return converterType;
 	}
 }

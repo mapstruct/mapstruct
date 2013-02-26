@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,11 +15,44 @@
  */
 package de.moapa.maple.ap.writer;
 
+import java.io.BufferedWriter;
 import javax.tools.JavaFileObject;
 
-import de.moapa.maple.ap.model.Mapper;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
 
-public interface ModelWriter {
+public class ModelWriter {
 
-	void writeModel(JavaFileObject sourceFile, Mapper model);
+	private static final Configuration configuration;
+
+	private final String templateName;
+
+	static {
+		configuration = new Configuration();
+		configuration.setClassForTemplateLoading( ModelWriter.class, "/" );
+		configuration.setObjectWrapper( new DefaultObjectWrapper() );
+	}
+
+	public ModelWriter(String templateName) {
+		this.templateName = templateName;
+	}
+
+	public void writeModel(JavaFileObject sourceFile, Object model) {
+
+		try {
+			BufferedWriter writer = new BufferedWriter( sourceFile.openWriter() );
+
+			Template template = configuration.getTemplate( templateName );
+			template.process( model, writer );
+			writer.flush();
+			writer.close();
+		}
+		catch ( RuntimeException e ) {
+			throw e;
+		}
+		catch ( Exception e ) {
+			throw new RuntimeException( e );
+		}
+	}
 }

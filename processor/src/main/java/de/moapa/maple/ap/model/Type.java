@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,12 +23,25 @@ package de.moapa.maple.ap.model;
 public class Type {
 
 	private final String packageName;
-
 	private final String name;
+	private final Type elementType;
+
+	public Type(String name) {
+		this.packageName = null;
+		this.name = name;
+		this.elementType = null;
+	}
 
 	public Type(String packageName, String name) {
 		this.packageName = packageName;
 		this.name = name;
+		this.elementType = null;
+	}
+
+	public Type(String packageName, String name, Type elementType) {
+		this.packageName = packageName;
+		this.name = name;
+		this.elementType = elementType;
 	}
 
 	public String getPackageName() {
@@ -39,15 +52,29 @@ public class Type {
 		return name;
 	}
 
+	public Type getElementType() {
+		return elementType;
+	}
+
 	@Override
 	public String toString() {
-		return "Type [packageName=" + packageName + ", name=" + name + "]";
+		if ( packageName == null ) {
+			return name;
+		}
+		else if ( elementType == null ) {
+			return packageName + "." + name;
+		}
+		else {
+			return packageName + "." + name + "<" + elementType + ">";
+		}
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result
+				+ ( ( elementType == null ) ? 0 : elementType.hashCode() );
 		result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
 		result = prime * result
 				+ ( ( packageName == null ) ? 0 : packageName.hashCode() );
@@ -66,6 +93,14 @@ public class Type {
 			return false;
 		}
 		Type other = (Type) obj;
+		if ( elementType == null ) {
+			if ( other.elementType != null ) {
+				return false;
+			}
+		}
+		else if ( !elementType.equals( other.elementType ) ) {
+			return false;
+		}
 		if ( name == null ) {
 			if ( other.name != null ) {
 				return false;

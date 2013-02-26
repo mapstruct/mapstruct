@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,50 +13,49 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package de.moapa.maple.ap.model;
+package de.moapa.maple.ap.model.source;
 
-public class Binding {
+import de.moapa.maple.ap.model.Type;
 
+public class MappedProperty {
+
+	private final String sourceName;
 	private final Type sourceType;
-	private final String sourceProperty;
+	private final String targetName;
 	private final Type targetType;
-	private final String targetProperty;
 	private final Type converterType;
 
-	public Binding(String sourceProperty, String targetProperty) {
-		this( null, sourceProperty, null, targetProperty, null );
+	public MappedProperty(String sourceName, Type sourceType, String targetName,
+						  Type targetType, Type converterType) {
+		this.sourceName = sourceName;
+		this.sourceType = sourceType;
+		this.targetName = targetName;
+		this.targetType = targetType;
+		this.converterType = converterType;
 	}
 
-	public Binding(Type sourceType, String sourceProperty, Type targetType, String targetProperty, Type converterType) {
-
-		this.sourceType = sourceType;
-		this.sourceProperty = sourceProperty;
-		this.targetType = targetType;
-		this.targetProperty = targetProperty;
-		this.converterType = converterType;
+	public String getSourceName() {
+		return sourceName;
 	}
 
 	public Type getSourceType() {
 		return sourceType;
 	}
 
-	public String getSourceProperty() {
-		return sourceProperty;
+	public String getTargetName() {
+		return targetName;
 	}
 
 	public Type getTargetType() {
 		return targetType;
 	}
 
-	public String getTargetProperty() {
-		return targetProperty;
-	}
-
 	public Type getConverterType() {
 		return converterType;
 	}
 
-	public boolean isDefault() {
-		return !sourceProperty.equals( targetProperty ) || ( sourceType != null && !sourceType.equals( targetType ) ) ? false : true;
+	@Override
+	public String toString() {
+		return sourceType + " " + sourceName + " <=> " + targetType + " " + targetName + " (" + ( converterType != null ? converterType : "no converter" ) + ")";
 	}
 }

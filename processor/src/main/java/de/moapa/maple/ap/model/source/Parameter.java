@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,30 +13,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package de.moapa.maple.ap.model;
+package de.moapa.maple.ap.model.source;
 
-public class Converter {
+import de.moapa.maple.ap.model.Type;
 
-	private final Type converterType;
-	private final Type sourceType;
-	private final Type targetType;
+public class Parameter {
 
-	public Converter(Type converterType, Type sourceType, Type targetType) {
+	private final String name;
+	private final Type type;
 
-		this.converterType = converterType;
-		this.sourceType = sourceType;
-		this.targetType = targetType;
+	public Parameter(String name, Type type) {
+		this.name = name;
+		this.type = type;
 	}
 
-	public Type getConverterType() {
-		return converterType;
+	public String getName() {
+		return name;
 	}
 
-	public Type getSourceType() {
-		return sourceType;
-	}
-
-	public Type getTargetType() {
-		return targetType;
+	public Type getType() {
+		return type;
 	}
 }

@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,69 +15,39 @@
  */
 package de.moapa.maple.ap.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Mapper {
 
-	private final String mapperType;
 	private final String packageName;
-	private final String implementationType;
-	private final String interfaceType;
-	private final List<MapperMethod> mapperMethods;
-	private final List<Converter> converters;
 
-	public Mapper(String mapperType, String packageName, String implementationType, String interfaceType, List<MapperMethod> mapperMethods) {
-		this.mapperType = mapperType;
+	private final String interfaceName;
+
+	private final String implementationName;
+
+	private final List<BeanMapping> beanMappings;
+
+	public Mapper(String packageName, String interfaceName,
+				  String implementationName, List<BeanMapping> beanMappings) {
 		this.packageName = packageName;
-		this.implementationType = implementationType;
-		this.interfaceType = interfaceType;
-		this.mapperMethods = mapperMethods;
-		this.converters = collectConverters( mapperMethods );
-	}
-
-	private List<Converter> collectConverters(List<MapperMethod> mapperMethods) {
-
-		List<Converter> converters = new ArrayList<Converter>();
-
-		for ( MapperMethod oneMapperMethod : mapperMethods ) {
-			for ( Binding oneBinding : oneMapperMethod.getBindings().values() ) {
-				if ( oneBinding.getConverterType() != null ) {
-					converters.add(
-							new Converter(
-									oneBinding.getConverterType(),
-									oneBinding.getSourceType(),
-									oneBinding.getTargetType()
-							)
-					);
-				}
-			}
-		}
-
-		return converters;
-	}
-
-	public String getMapperType() {
-		return mapperType;
+		this.interfaceName = interfaceName;
+		this.implementationName = implementationName;
+		this.beanMappings = beanMappings;
 	}
 
 	public String getPackageName() {
 		return packageName;
 	}
 
-	public String getImplementationType() {
-		return implementationType;
+	public String getInterfaceName() {
+		return interfaceName;
 	}
 
-	public String getInterfaceType() {
-		return interfaceType;
+	public String getImplementationName() {
+		return implementationName;
 	}
 
-	public List<MapperMethod> getMapperMethods() {
-		return mapperMethods;
-	}
-
-	public List<Converter> getConverters() {
-		return converters;
+	public List<BeanMapping> getBeanMappings() {
+		return beanMappings;
 	}
 }

@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,21 +15,25 @@
  */
 package de.moapa.maple.ap.test.model;
 
+import java.util.ArrayList;
+
 public class CarDto {
 
 	private String make;
 	private int seatCount;
 	private String manufacturingYear;
 	private PersonDto driver;
+	private ArrayList<PersonDto> passengers;
 
 	public CarDto() {
 	}
 
-	public CarDto(String make, int seatCount, String manufacturingYear, PersonDto driver) {
+	public CarDto(String make, int seatCount, String manufacturingYear, PersonDto driver, ArrayList<PersonDto> passengers) {
 		this.make = make;
 		this.seatCount = seatCount;
 		this.manufacturingYear = manufacturingYear;
 		this.driver = driver;
+		this.passengers = passengers;
 	}
 
 	public String getMake() {
@@ -62,5 +66,13 @@ public class CarDto {
 
 	public void setDriver(PersonDto driver) {
 		this.driver = driver;
+	}
+
+	public ArrayList<PersonDto> getPassengers() {
+		return passengers;
+	}
+
+	public void setPassengers(ArrayList<PersonDto> passengers) {
+		this.passengers = passengers;
 	}
 }

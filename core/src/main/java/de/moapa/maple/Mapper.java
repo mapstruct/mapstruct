@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,12 +29,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
 public @interface Mapper {
-
-	/**
-	 * Specifies the type of the mapper implementation to be generated.
-	 * Currently supported values are {@code native} and {@code dozer}.
-	 *
-	 * @return The type of the mapper implementation to be generated.
-	 */
-	String value() default "";
 }

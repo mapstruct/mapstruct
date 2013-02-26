@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  */
 package de.moapa.maple.ap;
 
+import java.beans.Introspector;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,19 +38,19 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleAnnotationValueVisitor6;
-import javax.lang.model.util.TypeKindVisitor6;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
 
-import de.moapa.maple.ap.model.Binding;
+import de.moapa.maple.ap.model.BeanMapping;
 import de.moapa.maple.ap.model.Mapper;
-import de.moapa.maple.ap.model.MapperMethod;
-import de.moapa.maple.ap.model.Parameter;
-import de.moapa.maple.ap.model.Property;
+import de.moapa.maple.ap.model.MappingMethod;
+import de.moapa.maple.ap.model.PropertyMapping;
 import de.moapa.maple.ap.model.Type;
-import de.moapa.maple.ap.writer.DozerModelWriter;
+import de.moapa.maple.ap.model.source.MappedProperty;
+import de.moapa.maple.ap.model.source.Mapping;
+import de.moapa.maple.ap.model.source.Method;
+import de.moapa.maple.ap.model.source.Parameter;
 import de.moapa.maple.ap.writer.ModelWriter;
-import de.moapa.maple.ap.writer.NativeModelWriter;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
@@ -57,21 +58,14 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 	private final static String IMPLEMENTATION_SUFFIX = "Impl";
 
-	private final static String MAPPER_ANNOTATION = "de.moapa.maple.Mapper";
 	private final static String MAPPING_ANNOTATION = "de.moapa.maple.Mapping";
 	private final static String MAPPINGS_ANNOTATION = "de.moapa.maple.Mappings";
-	private final static String CONVERTER_TYPE = "de.moapa.maple.converter.Converter";
-
-	private final static String DEFAULT_MAPPER_TYPE = "dozer";
 
 	private final ProcessingEnvironment processingEnvironment;
-
 	private final Types typeUtils;
-
 	private final Elements elementUtils;
 
 	public MapperGenerationVisitor(ProcessingEnvironment processingEnvironment) {
-
 		this.processingEnvironment = processingEnvironment;
 		this.typeUtils = processingEnvironment.getTypeUtils();
 		this.elementUtils = processingEnvironment.getElementUtils();
@@ -79,7 +73,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 	@Override
 	public Void visitTypeAsInterface(TypeElement element, Void p) {
-
 		Mapper model = retrieveModel( element );
 		String sourceFileName = element.getQualifiedName() + IMPLEMENTATION_SUFFIX;
 
@@ -89,7 +82,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 	}
 
 	private void writeModelToSourceFile(String fileName, Mapper model) {
-
 		JavaFileObject sourceFile;
 		try {
 			sourceFile = processingEnvironment.getFiler().createSourceFile( fileName );
@@ -98,44 +90,142 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 			throw new RuntimeException( e );
 		}
 
-		ModelWriter modelWriter = model.getMapperType()
-				.equals( "native" ) ? new NativeModelWriter() : new DozerModelWriter();
+		ModelWriter modelWriter = new ModelWriter( "mapper-implementation.ftl" );
 		modelWriter.writeModel( sourceFile, model );
 	}
 
 	private Mapper retrieveModel(TypeElement element) {
-		return new Mapper(
-				retrieveMapperType( element ),
+		List<Method> methods = retrieveMethods( element );
+		Set<Method> processedMethods = new HashSet<Method>();
+		List<BeanMapping> mappings = new ArrayList<BeanMapping>();
+
+		for ( Method method : methods ) {
+			if ( processedMethods.contains( method ) ) {
+				continue;
+			}
+
+			MappingMethod mappingMethod = new MappingMethod(
+					method.getName(),
+					method.getParameterName(),
+					getElementMappingMethod( methods, method )
+			);
+
+			MappingMethod reverseMappingMethod = null;
+			Method rawReverseMappingMethod = getReverseMappingMethod( methods, method );
+			if ( rawReverseMappingMethod != null ) {
+				processedMethods.add( rawReverseMappingMethod );
+//	            MappingMethod reverseElementMappingMethod = rawReverseElementMappingMethod == null ? null : new MappingMethod(rawReverseElementMappingMethod.getName(), rawReverseElementMappingMethod.getParameterName() );
+
+				reverseMappingMethod = new MappingMethod(
+						rawReverseMappingMethod.getName(),
+						rawReverseMappingMethod.getParameterName(),
+						getElementMappingMethod( methods, rawReverseMappingMethod )
+				);
+			}
+
+
+			List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
+
+			for ( MappedProperty property : method.getMappedProperties() ) {
+				Method propertyMappingMethod = getPropertyMappingMethod( methods, property );
+				Method reversePropertyMappingMethod = getReversePropertyMappingMethod( methods, property );
+
+				propertyMappings.add(
+						new PropertyMapping(
+								property.getSourceName(),
+								property.getTargetName(),
+								property.getConverterType(),
+								propertyMappingMethod != null ? new MappingMethod(
+										propertyMappingMethod.getName(),
+										propertyMappingMethod.getParameterName()
+								) : null,
+								reversePropertyMappingMethod != null ? new MappingMethod(
+										reversePropertyMappingMethod.getName(),
+										reversePropertyMappingMethod.getParameterName()
+								) : null
+						)
+				);
+			}
+			BeanMapping mapping = new BeanMapping(
+					method.getSourceType(),
+					method.getTargetType(),
+					propertyMappings,
+					mappingMethod,
+					reverseMappingMethod
+			);
+
+			mappings.add( mapping );
+		}
+
+		Mapper mapper = new Mapper(
 				elementUtils.getPackageOf( element ).getQualifiedName().toString(),
-				element.getSimpleName() + IMPLEMENTATION_SUFFIX,
 				element.getSimpleName().toString(),
-				retrieveMethods( element )
+				element.getSimpleName() + IMPLEMENTATION_SUFFIX,
+				mappings
+		);
+
+		return mapper;
+	}
+
+	private MappingMethod getElementMappingMethod(Iterable<Method> methods, Method method) {
+		Method elementMappingMethod = null;
+		for ( Method oneMethod : methods ) {
+			if ( oneMethod.getSourceType().equals( method.getSourceType().getElementType() ) ) {
+				elementMappingMethod = oneMethod;
+				break;
+			}
+		}
+		return elementMappingMethod == null ? null : new MappingMethod(
+				elementMappingMethod.getName(),
+				elementMappingMethod.getParameterName()
 		);
 	}
 
-	private String retrieveMapperType(TypeElement element) {
-
-		AnnotationMirror mapperAnnotation = getAnnotation( element, MAPPER_ANNOTATION );
-		String mapperType = getStringValue( mapperAnnotation, "value" );
-
-		return mapperType != null && !mapperType.isEmpty() ? mapperType : DEFAULT_MAPPER_TYPE;
+	private Method getPropertyMappingMethod(Iterable<Method> rawMethods, MappedProperty property) {
+		for ( Method oneMethod : rawMethods ) {
+			if ( oneMethod.getSourceType().equals( property.getSourceType() ) && oneMethod.getTargetType()
+					.equals( property.getTargetType() ) ) {
+				return oneMethod;
+			}
+		}
+		return null;
 	}
 
-	private List<MapperMethod> retrieveMethods(TypeElement element) {
+	private Method getReversePropertyMappingMethod(Iterable<Method> methods, MappedProperty property) {
+		for ( Method method : methods ) {
+			if ( method.getSourceType().equals( property.getTargetType() ) && method.getTargetType()
+					.equals( property.getSourceType() ) ) {
+				return method;
+			}
+		}
+		return null;
+	}
 
-		List<MapperMethod> methods = new ArrayList<MapperMethod>();
+	private Method getReverseMappingMethod(List<Method> rawMethods,
+										   Method method) {
+		for ( Method oneMethod : rawMethods ) {
+			if ( oneMethod.reverses( method ) ) {
+				return oneMethod;
+			}
+		}
+		return null;
+	}
 
-		for ( ExecutableElement oneMethod : methodsIn( element.getEnclosedElements() ) ) {
+	private List<Method> retrieveMethods(TypeElement element) {
+		List<Method> methods = new ArrayList<Method>();
 
-			Type returnType = retrieveReturnType( oneMethod );
-			Parameter parameter = retrieveParameter( oneMethod );
-			Map<String, Binding> bindings = retrieveBindings( oneMethod );
+		for ( ExecutableElement method : methodsIn( element.getEnclosedElements() ) ) {
+			Parameter parameter = retrieveParameter( method );
+			Type returnType = retrieveReturnType( method );
+			List<MappedProperty> properties = retrieveMappedProperties( method );
+
 			methods.add(
-					new MapperMethod(
-							oneMethod.getSimpleName().toString(),
+					new Method(
+							method.getSimpleName().toString(),
+							parameter.getName(),
+							parameter.getType(),
 							returnType,
-							parameter,
-							bindings
+							properties
 					)
 			);
 		}
@@ -143,11 +233,9 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 		return methods;
 	}
 
-	private Map<String, Binding> retrieveBindings(ExecutableElement method) {
+	private List<MappedProperty> retrieveMappedProperties(ExecutableElement method) {
 
-		Map<String, Binding> bindings = new LinkedHashMap<String, Binding>();
-
-		retrieveDefaultBindings( method, bindings );
+		Map<String, Mapping> mappings = new HashMap<String, Mapping>();
 
 		for ( AnnotationMirror annotationMirror : method.getAnnotationMirrors() ) {
 
@@ -156,67 +244,59 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 					.accept( new NameDeterminationVisitor(), null );
 
 			if ( MAPPING_ANNOTATION.equals( annotationName ) ) {
-				retrieveBinding( annotationMirror, bindings );
+				Mapping mapping = getMapping( annotationMirror );
+				mappings.put( mapping.getSourceName(), mapping );
 			}
 			else if ( MAPPINGS_ANNOTATION.equals( annotationName ) ) {
-				retrieveBindings( annotationMirror, bindings );
+				mappings.putAll( getMappings( annotationMirror ) );
 			}
 		}
 
-		return bindings;
+		return getMappedProperties( method, mappings );
 	}
 
-	private void retrieveDefaultBindings(ExecutableElement method, Map<String, Binding> bindings) {
-
+	private List<MappedProperty> getMappedProperties(ExecutableElement method, Map<String, Mapping> mappings) {
 		Element returnTypeElement = typeUtils.asElement( method.getReturnType() );
-
-		Set<Property> writableTargetProperties = new LinkedHashSet<Property>();
-
-		//collect writable properties of the target type
-		for ( ExecutableElement oneMethod : methodsIn( returnTypeElement.getEnclosedElements() ) ) {
-			if ( oneMethod.getSimpleName().toString().startsWith( "set" ) &&
-					oneMethod.getParameters().size() == 1 ) {
-
-				writableTargetProperties.add(
-						new Property(
-								retrieveParameter( oneMethod ).getType(),
-								oneMethod.getSimpleName().toString().substring( 3 )
-						)
-				);
-			}
-		}
-
-		//collect readable properties of the source type
 		Element parameterElement = typeUtils.asElement( method.getParameters().get( 0 ).asType() );
 
-		Set<Property> readableSourceProperties = new LinkedHashSet<Property>();
+		List<MappedProperty> properties = new ArrayList<MappedProperty>();
 
-		for ( ExecutableElement oneMethod : methodsIn( parameterElement.getEnclosedElements() ) ) {
-			//TODO: consider is/has
-			if ( oneMethod.getSimpleName().toString().startsWith( "get" ) &&
-					oneMethod.getParameters().isEmpty() &&
-					oneMethod.getReturnType().getKind() != TypeKind.VOID ) {
+		for ( ExecutableElement getterMethod : getterMethodsIn( parameterElement.getEnclosedElements() ) ) {
 
-				readableSourceProperties.add(
-						new Property(
-								retrieveReturnType( oneMethod ),
-								oneMethod.getSimpleName().toString().substring( 3 )
-						)
+			String sourcePropertyName = Introspector.decapitalize(
+					getterMethod.getSimpleName()
+							.toString()
+							.substring( 3 )
+			);
+			Mapping mapping = mappings.get( sourcePropertyName );
+
+			for ( ExecutableElement setterMethod : setterMethodsIn( returnTypeElement.getEnclosedElements() ) ) {
+
+				String targetPropertyName = Introspector.decapitalize(
+						setterMethod.getSimpleName()
+								.toString()
+								.substring( 3 )
 				);
+
+				if ( targetPropertyName.equals( mapping != null ? mapping.getTargetName() : sourcePropertyName ) ) {
+					properties.add(
+							new MappedProperty(
+									sourcePropertyName,
+									retrieveReturnType( getterMethod ),
+									mapping != null ? mapping.getTargetName() : targetPropertyName,
+									retrieveParameter( setterMethod ).getType(),
+									mapping != null ? mapping.getConverterType() : null
+							)
+					);
+				}
 			}
 		}
 
-		writableTargetProperties.retainAll( readableSourceProperties );
-
-		for ( Property oneWritableProperty : writableTargetProperties ) {
-			bindings.put(
-					oneWritableProperty.getName(),
-					new Binding( oneWritableProperty.getName(), oneWritableProperty.getName() )
-			);
-		}
+		return properties;
 	}
 
-	private void retrieveBindings(AnnotationMirror annotationMirror, Map<String, Binding> bindings) {
+	private Map<String, Mapping> getMappings(AnnotationMirror annotationMirror) {
+		Map<String, Mapping> mappings = new HashMap<String, Mapping>();
 
 		List<? extends AnnotationValue> values = getAnnotationValueListValue( annotationMirror, "value" );
 
@@ -225,62 +305,41 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 					new AnnotationRetrievingVisitor(),
 					null
 			);
-			retrieveBinding( oneAnnotation, bindings );
+			Mapping mapping = getMapping( oneAnnotation );
+			mappings.put( mapping.getSourceName(), mapping );
 		}
+
+		return mappings;
 	}
 
-	private void retrieveBinding(AnnotationMirror annotationMirror, Map<String, Binding> bindings) {
-
+	private Mapping getMapping(AnnotationMirror annotationMirror) {
 		String sourcePropertyName = getStringValue( annotationMirror, "source" );
 		String targetPropertyName = getStringValue( annotationMirror, "target" );
 		TypeMirror converterTypeMirror = getTypeMirrorValue( annotationMirror, "converter" );
 
 		Type converterType = null;
-		Type sourceType = null;
-		Type targetType = null;
 
 		if ( converterTypeMirror != null ) {
-			converterType = getType( typeUtils.asElement( converterTypeMirror ) );
-
-			List<? extends TypeMirror> converterTypeParameters = getTypeParameters(
-					converterTypeMirror,
-					CONVERTER_TYPE
-			);
-
-			sourceType = getType( typeUtils.asElement( converterTypeParameters.get( 0 ) ) );
-			targetType = getType( typeUtils.asElement( converterTypeParameters.get( 1 ) ) );
+			converterType = getType( (DeclaredType) converterTypeMirror );
 		}
 
-		bindings.put(
-				sourcePropertyName,
-				new Binding( sourceType, sourcePropertyName, targetType, targetPropertyName, converterType )
-		);
+		return new Mapping( sourcePropertyName, targetPropertyName, converterType );
 	}
 
-	private Type getType(Element sourceTypeElement) {
+	private Type getType(DeclaredType type) {
+		Type elementType = null;
+		if ( !type.getTypeArguments().isEmpty() ) {
+			elementType = retrieveType( type.getTypeArguments().iterator().next() );
+		}
+
 		return new Type(
-				elementUtils.getPackageOf( sourceTypeElement ).toString(),
-				sourceTypeElement.getSimpleName().toString()
+				elementUtils.getPackageOf( type.asElement() ).toString(),
+				type.asElement().getSimpleName().toString(),
+				elementType
 		);
-	}
-
-	//TODO: consider complete type hierarchy
-	private List<? extends TypeMirror> getTypeParameters(TypeMirror type, String superTypeName) {
-
-		for ( TypeMirror oneSuperType : typeUtils.directSupertypes( type ) ) {
-			String oneSuperTypeName = typeUtils.asElement( oneSuperType )
-					.accept( new NameDeterminationVisitor(), null );
-
-			if ( oneSuperTypeName.equals( superTypeName ) ) {
-				return oneSuperType.accept( new TypeParameterDeterminationVisitor(), null );
-			}
-		}
-
-		return Collections.emptyList();
 	}
 
 	private Parameter retrieveParameter(ExecutableElement method) {
-
 		List<? extends VariableElement> parameters = method.getParameters();
 
 		if ( parameters.size() != 1 ) {
@@ -302,28 +361,12 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 	}
 
 	private Type retrieveType(TypeMirror mirror) {
-
 		if ( mirror.getKind() == TypeKind.DECLARED ) {
-			return getType( ( (DeclaredType) mirror ).asElement() );
+			return getType( ( (DeclaredType) mirror ) );
 		}
 		else {
 			return new Type( null, mirror.toString() );
 		}
-	}
-
-	private AnnotationMirror getAnnotation(TypeElement element, String annotationName) {
-
-		for ( AnnotationMirror annotationMirror : element.getAnnotationMirrors() ) {
-
-			if ( annotationName.equals(
-					annotationMirror.getAnnotationType().asElement().accept( new NameDeterminationVisitor(), null )
-			) ) {
-
-				return annotationMirror;
-			}
-		}
-
-		return null;
 	}
 
 	private String getStringValue(AnnotationMirror annotationMirror, String attributeName) {
@@ -365,13 +408,38 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 		return null;
 	}
 
-	private static class TypeParameterDeterminationVisitor extends TypeKindVisitor6<List<? extends TypeMirror>, Void> {
+	private List<ExecutableElement> getterMethodsIn(Iterable<? extends Element> elements) {
+		List<ExecutableElement> getterMethods = new LinkedList<ExecutableElement>();
 
-		@Override
-		public List<? extends TypeMirror> visitDeclared(DeclaredType type, Void p) {
-			return type.getTypeArguments();
+		for ( ExecutableElement method : methodsIn( elements ) ) {
+			//TODO: consider is/has
+			String name = method.getSimpleName().toString();
+
+			if ( name.startsWith( "get" ) && name.length() > 3 && method.getParameters()
+					.isEmpty() && method.getReturnType().getKind() != TypeKind.VOID ) {
+				getterMethods.add( method );
+			}
 		}
+
+		return getterMethods;
 	}
+
+	private List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
+		List<ExecutableElement> setterMethods = new LinkedList<ExecutableElement>();
+
+		for ( ExecutableElement method : methodsIn( elements ) ) {
+			//TODO: consider is/has
+			String name = method.getSimpleName().toString();
+
+			if ( name.startsWith( "set" ) && name.length() > 3 && method.getParameters()
+					.size() == 1 && method.getReturnType().getKind() == TypeKind.VOID ) {
+				setterMethods.add( method );
+			}
+		}
+
+		return setterMethods;
+	}
+
 
 	private static class NameDeterminationVisitor extends ElementKindVisitor6<String, Void> {
 

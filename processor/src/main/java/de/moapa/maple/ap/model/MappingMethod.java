@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,21 +15,33 @@
  */
 package de.moapa.maple.ap.model;
 
-public class Parameter {
+public class MappingMethod {
 
 	private final String name;
-	private final Type type;
+	private final String parameterName;
+	private final MappingMethod elementMappingMethod;
 
-	public Parameter(String name, Type type) {
+	public MappingMethod(String name, String parameterName) {
 		this.name = name;
-		this.type = type;
+		this.parameterName = parameterName;
+		this.elementMappingMethod = null;
+	}
+
+	public MappingMethod(String name, String parameterName, MappingMethod elementMappingMethod) {
+		this.name = name;
+		this.parameterName = parameterName;
+		this.elementMappingMethod = elementMappingMethod;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public Type getType() {
-		return type;
+	public String getParameterName() {
+		return parameterName;
+	}
+
+	public MappingMethod getElementMappingMethod() {
+		return elementMappingMethod;
 	}
 }

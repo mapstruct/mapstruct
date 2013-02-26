@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  *  limitations under the License.
  */
 package de.moapa.maple.ap.test.model;
+
+import java.util.ArrayList;
 
 import de.moapa.maple.Mapper;
 import de.moapa.maple.Mappers;
@@ -32,4 +34,16 @@ public interface CarMapper {
 	CarDto carToCarDto(Car car);
 
 	Car carDtoToCar(CarDto carDto);
+
+	ArrayList<CarDto> carsToCarDtos(ArrayList<Car> cars);
+
+	ArrayList<Car> carDtosToCars(ArrayList<CarDto> carDtos);
+
+	PersonDto personToPersonDto(Person person);
+
+	Person personDtoToPerson(PersonDto personDto);
+
+	ArrayList<PersonDto> personsToPersonDtos(ArrayList<Person> persons);
+
+	ArrayList<Person> personDtosToPersons(ArrayList<PersonDto> personDtos);
 }
