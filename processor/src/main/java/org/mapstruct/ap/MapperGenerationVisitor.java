@@ -41,6 +41,8 @@ import javax.lang.model.util.SimpleAnnotationValueVisitor6;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
 
+import org.mapstruct.ap.conversion.Conversion;
+import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.BeanMapping;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MappingMethod;
@@ -51,7 +53,6 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.Parameter;
 import org.mapstruct.ap.writer.ModelWriter;
-
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
@@ -131,10 +132,14 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 				Method propertyMappingMethod = getPropertyMappingMethod( methods, property );
 				Method reversePropertyMappingMethod = getReversePropertyMappingMethod( methods, property );
 
+				Conversion conversion = Conversions.getConversion( property.getSourceType(), property.getTargetType() );
+
 				propertyMappings.add(
 						new PropertyMapping(
 								property.getSourceName(),
+								property.getSourceType(),
 								property.getTargetName(),
+								property.getTargetType(),
 								property.getConverterType(),
 								propertyMappingMethod != null ? new MappingMethod(
 										propertyMappingMethod.getName(),
@@ -143,6 +148,16 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 								reversePropertyMappingMethod != null ? new MappingMethod(
 										reversePropertyMappingMethod.getName(),
 										reversePropertyMappingMethod.getParameterName()
+								) : null,
+								conversion != null ? conversion.to(
+										mappingMethod.getParameterName() + "." + getAccessor(
+												property.getSourceName()
+										)
+								) : null,
+								conversion != null ? conversion.from(
+										reverseMappingMethod.getParameterName() + "." + getAccessor(
+												property.getTargetName()
+										)
 								) : null
 						)
 				);
@@ -166,6 +181,14 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 		);
 
 		return mapper;
+	}
+
+	private String getAccessor(String name) {
+		return "get" + capitalize( name ) + "()";
+	}
+
+	private String capitalize(String name) {
+		return name.substring( 0, 1 ).toUpperCase() + name.substring( 1 );
 	}
 
 	private MappingMethod getElementMappingMethod(Iterable<Method> methods, Method method) {

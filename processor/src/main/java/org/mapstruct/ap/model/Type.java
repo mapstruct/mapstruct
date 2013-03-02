@@ -15,6 +15,10 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Represents the type of a bean property, parameter etc.
  *
@@ -22,9 +26,25 @@ package org.mapstruct.ap.model;
  */
 public class Type {
 
+	private final static Set<String> primitiveTypeNames = new HashSet<String>(
+			Arrays.asList( "boolean", "char", "byte", "short", "int", "long", "float", "double" )
+	);
+
 	private final String packageName;
 	private final String name;
 	private final Type elementType;
+
+
+	public static Type forClass(Class<?> clazz) {
+		Package pakkage = clazz.getPackage();
+
+		if ( pakkage != null ) {
+			return new Type( pakkage.getName(), clazz.getSimpleName() );
+		}
+		else {
+			return new Type( clazz.getSimpleName() );
+		}
+	}
 
 	public Type(String name) {
 		this.packageName = null;
@@ -54,6 +74,10 @@ public class Type {
 
 	public Type getElementType() {
 		return elementType;
+	}
+
+	public boolean isPrimitive() {
+		return packageName == null && primitiveTypeNames.contains( name );
 	}
 
 	@Override

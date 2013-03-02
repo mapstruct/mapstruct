@@ -24,6 +24,7 @@ public class Car {
 	private int yearOfManufacture;
 	private Person driver;
 	private ArrayList<Person> passengers;
+	private int price;
 
 	public Car() {
 	}
@@ -74,5 +75,13 @@ public class Car {
 
 	public void setPassengers(ArrayList<Person> passengers) {
 		this.passengers = passengers;
+	}
+
+	public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
 	}
 }

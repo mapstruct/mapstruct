@@ -26,7 +26,6 @@ public class ${implementationName} implements ${interfaceName} {
     <#if beanMapping.iterableMapping == true>
     @Override
     public ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.mappingMethod.name}(${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.mappingMethod.parameterName}) {
-        
         ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.targetType.name?uncap_first} = new ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}>();
         
         for ( ${beanMapping.sourceType.elementType.name} ${beanMapping.sourceType.elementType.name?uncap_first} : ${beanMapping.mappingMethod.parameterName} ) {
@@ -38,11 +37,18 @@ public class ${implementationName} implements ${interfaceName} {
     <#else>
     @Override
     public ${beanMapping.targetType.name} ${beanMapping.mappingMethod.name}(${beanMapping.sourceType.name} ${beanMapping.mappingMethod.parameterName}) {
-        
         ${beanMapping.targetType.name} ${beanMapping.targetType.name?uncap_first} = new ${beanMapping.targetType.name}();
 
         <#list beanMapping.propertyMappings as propertyMapping>
-        <#if propertyMapping.converterType??>
+        <#if propertyMapping.toConversion??>
+        <#if propertyMapping.targetType.primitive == true>
+        if( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() != null ) {
+            ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( ${propertyMapping.toConversion} );
+        }
+        <#else>
+        ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( ${propertyMapping.toConversion} );
+        </#if>
+        <#elseif propertyMapping.converterType??>
         ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( new ${propertyMapping.converterType.name}().from( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() ) );
         <#elseif propertyMapping.mappingMethod??>
         ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( ${propertyMapping.mappingMethod.name}( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() ) );
@@ -56,11 +62,9 @@ public class ${implementationName} implements ${interfaceName} {
     </#if>
 
     <#if beanMapping.reverseMappingMethod??>
-    
     <#if beanMapping.iterableMapping == true>
     @Override
     public ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.reverseMappingMethod.name}(${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.reverseMappingMethod.parameterName}) {
-        
         ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.sourceType.name?uncap_first} = new ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}>();
         
         for ( ${beanMapping.targetType.elementType.name} ${beanMapping.targetType.elementType.name?uncap_first} : ${beanMapping.reverseMappingMethod.parameterName} ) {
@@ -75,7 +79,15 @@ public class ${implementationName} implements ${interfaceName} {
         ${beanMapping.sourceType.name} ${beanMapping.sourceType.name?uncap_first} = new ${beanMapping.sourceType.name}();
 
         <#list beanMapping.propertyMappings as propertyMapping>
-        <#if propertyMapping.converterType??>
+        <#if propertyMapping.fromConversion??>
+        <#if propertyMapping.sourceType.primitive == true>
+        if( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() != null ) {
+            ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( ${propertyMapping.fromConversion} );
+        }
+        <#else>
+        ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( ${propertyMapping.fromConversion} );
+        </#if>
+        <#elseif propertyMapping.converterType??>
         ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( new ${propertyMapping.converterType.name}().to( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() ) );
         <#elseif propertyMapping.reverseMappingMethod??>
         ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( ${propertyMapping.reverseMappingMethod.name}( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() ) );

@@ -13,9 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.model;
-
-import java.util.ArrayList;
+package org.mapstruct.ap.test.conversion;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mappers;
@@ -23,27 +21,15 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper
-public interface CarMapper {
+public interface SourceTargetMapper {
 
-	CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+	public static SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
 	@Mappings({
-			@Mapping(source = "numberOfSeats", target = "seatCount"),
-			@Mapping(source = "yearOfManufacture", target = "manufacturingYear", converter = IntToStringConverter.class)
+			@Mapping(source = "qax", target = "baz"),
+			@Mapping(source = "baz", target = "qax")
 	})
-	CarDto carToCarDto(Car car);
+	Target sourceToTarget(Source source);
 
-	Car carDtoToCar(CarDto carDto);
-
-	ArrayList<CarDto> carsToCarDtos(ArrayList<Car> cars);
-
-	ArrayList<Car> carDtosToCars(ArrayList<CarDto> carDtos);
-
-	PersonDto personToPersonDto(Person person);
-
-	Person personDtoToPerson(PersonDto personDto);
-
-	ArrayList<PersonDto> personsToPersonDtos(ArrayList<Person> persons);
-
-	ArrayList<Person> personDtosToPersons(ArrayList<PersonDto> personDtos);
+	Source targetToSource(Target target);
 }
