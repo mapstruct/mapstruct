@@ -52,6 +52,7 @@ import org.mapstruct.ap.model.source.MappedProperty;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.Parameter;
+import org.mapstruct.ap.util.TypeUtil;
 import org.mapstruct.ap.writer.ModelWriter;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
@@ -66,11 +67,13 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 	private final ProcessingEnvironment processingEnvironment;
 	private final Types typeUtils;
 	private final Elements elementUtils;
+	private final TypeUtil typeUtil;
 
 	public MapperGenerationVisitor(ProcessingEnvironment processingEnvironment) {
 		this.processingEnvironment = processingEnvironment;
 		this.typeUtils = processingEnvironment.getTypeUtils();
 		this.elementUtils = processingEnvironment.getElementUtils();
+		this.typeUtil = new TypeUtil( elementUtils, typeUtils );
 	}
 
 	@Override
@@ -101,6 +104,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 		Set<Method> processedMethods = new HashSet<Method>();
 		List<BeanMapping> mappings = new ArrayList<BeanMapping>();
 
+		Conversions conversions = new Conversions( elementUtils, typeUtils, typeUtil );
+
 		for ( Method method : methods ) {
 			if ( processedMethods.contains( method ) ) {
 				continue;
@@ -116,7 +121,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 			Method rawReverseMappingMethod = getReverseMappingMethod( methods, method );
 			if ( rawReverseMappingMethod != null ) {
 				processedMethods.add( rawReverseMappingMethod );
-//	            MappingMethod reverseElementMappingMethod = rawReverseElementMappingMethod == null ? null : new MappingMethod(rawReverseElementMappingMethod.getName(), rawReverseElementMappingMethod.getParameterName() );
 
 				reverseMappingMethod = new MappingMethod(
 						rawReverseMappingMethod.getName(),
@@ -125,14 +129,13 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 				);
 			}
 
-
 			List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
 
 			for ( MappedProperty property : method.getMappedProperties() ) {
 				Method propertyMappingMethod = getPropertyMappingMethod( methods, property );
 				Method reversePropertyMappingMethod = getReversePropertyMappingMethod( methods, property );
 
-				Conversion conversion = Conversions.getConversion( property.getSourceType(), property.getTargetType() );
+				Conversion conversion = conversions.getConversion( property.getSourceType(), property.getTargetType() );
 
 				propertyMappings.add(
 						new PropertyMapping(
@@ -152,12 +155,14 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 								conversion != null ? conversion.to(
 										mappingMethod.getParameterName() + "." + getAccessor(
 												property.getSourceName()
-										)
+										),
+										property.getTargetType()
 								) : null,
 								conversion != null ? conversion.from(
 										reverseMappingMethod.getParameterName() + "." + getAccessor(
 												property.getTargetName()
-										)
+										),
+										property.getSourceType()
 								) : null
 						)
 				);
@@ -287,20 +292,12 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 		for ( ExecutableElement getterMethod : getterMethodsIn( parameterElement.getEnclosedElements() ) ) {
 
-			String sourcePropertyName = Introspector.decapitalize(
-					getterMethod.getSimpleName()
-							.toString()
-							.substring( 3 )
-			);
+			String sourcePropertyName = getPropertyName( getterMethod );
 			Mapping mapping = mappings.get( sourcePropertyName );
 
 			for ( ExecutableElement setterMethod : setterMethodsIn( returnTypeElement.getEnclosedElements() ) ) {
 
-				String targetPropertyName = Introspector.decapitalize(
-						setterMethod.getSimpleName()
-								.toString()
-								.substring( 3 )
-				);
+				String targetPropertyName = getPropertyName( setterMethod );
 
 				if ( targetPropertyName.equals( mapping != null ? mapping.getTargetName() : sourcePropertyName ) ) {
 					properties.add(
@@ -317,6 +314,13 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 		}
 
 		return properties;
+	}
+
+	private String getPropertyName(ExecutableElement getterOrSetterMethod) {
+		//TODO consider is/has
+		return Introspector.decapitalize(
+				getterOrSetterMethod.getSimpleName().toString().substring( 3 )
+		);
 	}
 
 	private Map<String, Mapping> getMappings(AnnotationMirror annotationMirror) {
@@ -344,23 +348,10 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 		Type converterType = null;
 
 		if ( converterTypeMirror != null ) {
-			converterType = getType( (DeclaredType) converterTypeMirror );
+			converterType = typeUtil.getType( (DeclaredType) converterTypeMirror );
 		}
 
 		return new Mapping( sourcePropertyName, targetPropertyName, converterType );
-	}
-
-	private Type getType(DeclaredType type) {
-		Type elementType = null;
-		if ( !type.getTypeArguments().isEmpty() ) {
-			elementType = retrieveType( type.getTypeArguments().iterator().next() );
-		}
-
-		return new Type(
-				elementUtils.getPackageOf( type.asElement() ).toString(),
-				type.asElement().getSimpleName().toString(),
-				elementType
-		);
 	}
 
 	private Parameter retrieveParameter(ExecutableElement method) {
@@ -375,26 +366,15 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 		return new Parameter(
 				parameter.getSimpleName().toString(),
-				retrieveType( parameter.asType() )
+				typeUtil.retrieveType( parameter.asType() )
 		);
 	}
 
 	private Type retrieveReturnType(ExecutableElement method) {
-
-		return retrieveType( method.getReturnType() );
-	}
-
-	private Type retrieveType(TypeMirror mirror) {
-		if ( mirror.getKind() == TypeKind.DECLARED ) {
-			return getType( ( (DeclaredType) mirror ) );
-		}
-		else {
-			return new Type( null, mirror.toString() );
-		}
+		return typeUtil.retrieveType( method.getReturnType() );
 	}
 
 	private String getStringValue(AnnotationMirror annotationMirror, String attributeName) {
-
 		for ( Entry<? extends ExecutableElement, ? extends AnnotationValue> oneAttribute : annotationMirror.getElementValues()
 				.entrySet() ) {
 
@@ -407,7 +387,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 	}
 
 	private TypeMirror getTypeMirrorValue(AnnotationMirror annotationMirror, String attributeName) {
-
 		for ( Entry<? extends ExecutableElement, ? extends AnnotationValue> oneAttribute : annotationMirror.getElementValues()
 				.entrySet() ) {
 
@@ -420,7 +399,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 	}
 
 	private List<? extends AnnotationValue> getAnnotationValueListValue(AnnotationMirror annotationMirror, String attributeName) {
-
 		for ( Entry<? extends ExecutableElement, ? extends AnnotationValue> oneAttribute : annotationMirror.getElementValues()
 				.entrySet() ) {
 
@@ -463,7 +441,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 		return setterMethods;
 	}
-
 
 	private static class NameDeterminationVisitor extends ElementKindVisitor6<String, Void> {
 

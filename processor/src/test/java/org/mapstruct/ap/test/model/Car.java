@@ -25,6 +25,7 @@ public class Car {
 	private Person driver;
 	private ArrayList<Person> passengers;
 	private int price;
+	private Category category;
 
 	public Car() {
 	}
@@ -83,5 +84,13 @@ public class Car {
 
 	public void setPrice(int price) {
 		this.price = price;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 }

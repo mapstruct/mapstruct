@@ -25,6 +25,7 @@ public class CarDto {
 	private PersonDto driver;
 	private ArrayList<PersonDto> passengers;
 	private Long price;
+	private String category;
 
 	public CarDto() {
 	}
@@ -83,5 +84,13 @@ public class CarDto {
 
 	public void setPrice(Long price) {
 		this.price = price;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
 	}
 }

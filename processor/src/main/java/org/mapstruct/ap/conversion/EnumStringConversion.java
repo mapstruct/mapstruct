@@ -17,25 +17,15 @@ package org.mapstruct.ap.conversion;
 
 import org.mapstruct.ap.model.Type;
 
-public class ReverseConversion implements Conversion {
-
-	private Conversion conversion;
-
-	public static ReverseConversion reverse(Conversion conversion) {
-		return new ReverseConversion( conversion );
-	}
-
-	private ReverseConversion(Conversion conversion) {
-		this.conversion = conversion;
-	}
+public class EnumStringConversion implements Conversion {
 
 	@Override
 	public String to(String sourcePropertyAccessor, Type type) {
-		return conversion.from( sourcePropertyAccessor, type );
+		return sourcePropertyAccessor + " != null ? " + sourcePropertyAccessor + ".toString() : null";
 	}
 
 	@Override
 	public String from(String targetPropertyAccessor, Type type) {
-		return conversion.to( targetPropertyAccessor, type );
+		return targetPropertyAccessor + " != null ? Enum.valueOf( " + type.getName() + ".class, " + targetPropertyAccessor + " ) : null";
 	}
 }

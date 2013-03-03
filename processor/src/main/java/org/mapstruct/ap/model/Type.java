@@ -33,13 +33,13 @@ public class Type {
 	private final String packageName;
 	private final String name;
 	private final Type elementType;
-
+	private final boolean isEnumType;
 
 	public static Type forClass(Class<?> clazz) {
 		Package pakkage = clazz.getPackage();
 
 		if ( pakkage != null ) {
-			return new Type( pakkage.getName(), clazz.getSimpleName() );
+			return new Type( pakkage.getName(), clazz.getSimpleName(), null, clazz.isEnum() );
 		}
 		else {
 			return new Type( clazz.getSimpleName() );
@@ -47,21 +47,18 @@ public class Type {
 	}
 
 	public Type(String name) {
-		this.packageName = null;
-		this.name = name;
-		this.elementType = null;
+		this( null, name, null, false );
 	}
 
 	public Type(String packageName, String name) {
-		this.packageName = packageName;
-		this.name = name;
-		this.elementType = null;
+		this( packageName, name, null, false );
 	}
 
-	public Type(String packageName, String name, Type elementType) {
+	public Type(String packageName, String name, Type elementType, boolean isEnumType) {
 		this.packageName = packageName;
 		this.name = name;
 		this.elementType = elementType;
+		this.isEnumType = isEnumType;
 	}
 
 	public String getPackageName() {
@@ -78,6 +75,10 @@ public class Type {
 
 	public boolean isPrimitive() {
 		return packageName == null && primitiveTypeNames.contains( name );
+	}
+
+	public boolean isEnumType() {
+		return isEnumType;
 	}
 
 	@Override

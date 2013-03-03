@@ -15,28 +15,45 @@
  */
 package org.mapstruct.ap.conversion;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.HashMap;
+import java.util.Map;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.util.TypeUtil;
 
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 
 public class Conversions {
 
-	private static ConcurrentMap<Key, Conversion> conversions = new ConcurrentHashMap<Conversions.Key, Conversion>();
+	private TypeUtil typeUtil;
+	private final Map<Key, Conversion> conversions = new HashMap<Conversions.Key, Conversion>();
+	private final DeclaredType enumType;
+	private final DeclaredType stringType;
 
-	static {
+	public Conversions(Elements elementUtils, Types typeUtils, TypeUtil typeUtil) {
+		this.typeUtil = typeUtil;
+
+		this.enumType = typeUtils.getDeclaredType( elementUtils.getTypeElement( Enum.class.getCanonicalName() ) );
+		this.stringType = typeUtils.getDeclaredType( elementUtils.getTypeElement( String.class.getCanonicalName() ) );
+
 		register( int.class, Long.class, new IntLongConversion() );
 		register( int.class, String.class, new IntStringConversion() );
+		register( Enum.class, String.class, new EnumStringConversion() );
 	}
 
-	private static void register(Class<?> sourceType, Class<?> targetType, Conversion conversion) {
+	private void register(Class<?> sourceType, Class<?> targetType, Conversion conversion) {
 		conversions.put( Key.forClasses( sourceType, targetType ), conversion );
 		conversions.put( Key.forClasses( targetType, sourceType ), reverse( conversion ) );
 	}
 
-	public static Conversion getConversion(Type sourceType, Type targetType) {
+	public Conversion getConversion(Type sourceType, Type targetType) {
+		if ( sourceType.isEnumType() && targetType.equals( typeUtil.getType( stringType ) ) ) {
+			sourceType = typeUtil.getType( enumType );
+		}
+
 		return conversions.get( new Key( sourceType, targetType ) );
 	}
 
@@ -51,6 +68,12 @@ public class Conversions {
 		private Key(Type sourceType, Type targetType) {
 			this.sourceType = sourceType;
 			this.targetType = targetType;
+		}
+
+		@Override
+		public String toString() {
+			return "Key [sourceType=" + sourceType + ", targetType="
+					+ targetType + "]";
 		}
 
 		@Override

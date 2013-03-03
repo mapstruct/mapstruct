@@ -25,6 +25,7 @@ import javax.tools.JavaFileObject;
 import org.mapstruct.ap.test.model.Car;
 import org.mapstruct.ap.test.model.CarDto;
 import org.mapstruct.ap.test.model.CarMapper;
+import org.mapstruct.ap.test.model.Category;
 import org.mapstruct.ap.test.model.IntToStringConverter;
 import org.mapstruct.ap.test.model.Person;
 import org.mapstruct.ap.test.model.PersonDto;
@@ -50,7 +51,8 @@ public class CarMapperTest extends MapperTestBase {
 				Person.class,
 				PersonDto.class,
 				CarMapper.class,
-				IntToStringConverter.class
+				IntToStringConverter.class,
+				Category.class
 		);
 
 		boolean compilationSuccessful = compile( diagnostics, sourceFiles );
@@ -247,5 +249,31 @@ public class CarMapperTest extends MapperTestBase {
 		assertThat( car.getPassengers() ).hasSize( 2 );
 		assertThat( car.getPassengers().get( 0 ).getName() ).isEqualTo( "Alice" );
 		assertThat( car.getPassengers().get( 1 ).getName() ).isEqualTo( "Bill" );
+	}
+
+	@Test
+	public void shouldMapEnumToString() {
+		//given
+		Car car = new Car();
+		car.setCategory( Category.CONVERTIBLE );
+		//when
+		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
+
+		//then
+		assertThat( carDto ).isNotNull();
+		assertThat( carDto.getCategory() ).isEqualTo( "CONVERTIBLE" );
+	}
+
+	@Test
+	public void shouldMapStringToEnum() {
+		//given
+		CarDto carDto = new CarDto();
+		carDto.setCategory( "CONVERTIBLE" );
+		//when
+		Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
+
+		//then
+		assertThat( car ).isNotNull();
+		assertThat( car.getCategory() ).isEqualTo( Category.CONVERTIBLE );
 	}
 }

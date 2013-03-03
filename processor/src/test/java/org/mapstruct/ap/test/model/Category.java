@@ -13,29 +13,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.test.model;
 
-import org.mapstruct.ap.model.Type;
-
-public class ReverseConversion implements Conversion {
-
-	private Conversion conversion;
-
-	public static ReverseConversion reverse(Conversion conversion) {
-		return new ReverseConversion( conversion );
-	}
-
-	private ReverseConversion(Conversion conversion) {
-		this.conversion = conversion;
-	}
-
-	@Override
-	public String to(String sourcePropertyAccessor, Type type) {
-		return conversion.from( sourcePropertyAccessor, type );
-	}
-
-	@Override
-	public String from(String targetPropertyAccessor, Type type) {
-		return conversion.to( targetPropertyAccessor, type );
-	}
+public enum Category {
+	SEDAN, CONVERTIBLE, TRUCK;
 }
