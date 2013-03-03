@@ -46,6 +46,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>mapstruct</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<scope>test</scope>
@@ -55,11 +60,6 @@
 			<artifactId>fest-assert</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>mapstruct</artifactId>
-		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -80,13 +80,6 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<compilerArgument>-proc:none</compilerArgument>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.bsc.maven</groupId>

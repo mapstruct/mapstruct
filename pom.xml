@@ -36,5 +36,6 @@
         <module>parent</module>
         <module>core</module>
         <module>processor</module>
-    </modules>
+        <module>integrationtest</module>
+  </modules>
 </project>

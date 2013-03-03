@@ -60,6 +60,11 @@
                 <artifactId>mapstruct</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -73,6 +78,7 @@
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
+                        <compilerArgument>-proc:none</compilerArgument>
                     </configuration>
                 </plugin>
                 <plugin>
