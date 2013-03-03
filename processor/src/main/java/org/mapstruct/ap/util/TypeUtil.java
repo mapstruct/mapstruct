@@ -51,7 +51,10 @@ public class TypeUtil {
 	}
 
 	public Type retrieveType(TypeMirror mirror) {
-		if ( mirror.getKind() == TypeKind.DECLARED ) {
+		if ( mirror == null ) {
+			return null;
+		}
+		else if ( mirror.getKind() == TypeKind.DECLARED ) {
 			return getType( ( (DeclaredType) mirror ) );
 		}
 		else {

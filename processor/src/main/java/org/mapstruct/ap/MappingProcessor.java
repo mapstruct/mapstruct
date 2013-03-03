@@ -25,7 +25,18 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
+import net.java.dev.hickory.prism.GeneratePrism;
+import net.java.dev.hickory.prism.GeneratePrisms;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
+@GeneratePrisms({
+		@GeneratePrism(value = Mapper.class),
+		@GeneratePrism(value = Mapping.class),
+		@GeneratePrism(value = Mappings.class)
+})
 public class MappingProcessor extends AbstractProcessor {
 
 	/**
