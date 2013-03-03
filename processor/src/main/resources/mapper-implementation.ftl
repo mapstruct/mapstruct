@@ -19,7 +19,12 @@ package ${packageName};
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Generated;
 
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"
+)
 public class ${implementationName} implements ${interfaceName} {
 
     <#list beanMappings as beanMapping>
