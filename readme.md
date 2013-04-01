@@ -2,7 +2,7 @@
 
 MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe bean mapping classes.
 
-All you have to do is to define one more more mapper interfaces, annotate them with the `@Mapper` annotation and add the required mapping methods. During compilation, MapStruct will generate an implementation for each mapper interface, based on your preferred mapping framework (currently [Dozer](http://dozer.sourceforge.net/) is supported, more to come).
+All you have to do is to define one more more mapper interfaces, annotate them with the `@Mapper` annotation and add the required mapping methods. During compilation, MapStruct will generate an implementation for each mapper interface. This implementation uses plain Java method invocations, i.e. no reflection or similar.
 
 The following shows an example. First, an object (e.g. a JPA entity) and an accompanying data transfer object (DTO):
 
