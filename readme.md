@@ -2,11 +2,19 @@
 
 MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe bean mapping classes.
 
-All you have to do is to define a mapper interfaces, annotate it with the `@Mapper` annotation and add the required mapping methods. During compilation, MapStruct will generate an implementation for the mapper interface. This implementation uses plain Java method invocations, i.e. no reflection or similar.
+All you have to do is to define a mapper interface which declares any required mapping methods. During compilation, MapStruct will generate an implementation of this interface. This implementation uses plain Java method invocations for mapping between source and target objects, i.e. no reflection or similar.
+
+Compared to writing mapping code from hand, MapStruct saves time by generating code which is tedious and error-prone to write. Following a convention over configuration approach, MapStruct uses sensible defaults but steps out of your way when it comes to configuring or implementing special behavior.
+
+Compared to dynamic mapping frameworks, MapStruct offers the following advantages:
+
+* Fast execution by using plain method invocations instead of reflection
+* Compile-time type safety: Only objects and attributes mapping to each other can be mapped, no accidental mapping of an order entity into a customer DTO etc.
+* Clear error-reports at build time, if entities or attributes can't be mapped
 
 # Hello World
 
-The following shows a simple example for using MapStruct. First, let's define an object (e.g. a JPA entity) and an accompanying data transfer object (DTO):
+The following shows a simple example for using MapStruct. Let's assume there is class representing cars (e.g. a JPA entity) and an accompanying data transfer object (DTO):
 
 ```java
 public class Car {
@@ -26,7 +34,7 @@ public class CarDto {
 }
 ```
 
-Both types are rather similar, only the seat count attributes have different names. A mapper interface could thus look like this:
+Both types are rather similar, only the seat count attributes have different names. To generate a mapper for creating a `CarDto` object out of a `Car` object, a mapper interface needs to be defined:
 
 ```java
 @Mapper (1)
@@ -39,10 +47,8 @@ public interface CarMapper {
 }
 ```
 
-The interface is straight-forward: 
-
-1. Annotating it with `@Mapper` let's the MapStruct processor kick in during compilation
-1. The actual mapping method expects the source object as parameter and returns the target object. Its name can be freely chosen. Of course there can be multiple mapping methods in one interface. For attributes with different names in source and target object, the `@Mapping` annotation can be used to configure the names.
+1. The `@Mapper` annotation marks the interface as mapping interface and let's the MapStruct processor kick in during compilation
+1. The actual mapping method expects the source object as parameter and returns the target object. Its name can be freely chosen. For attributes with different names in source and target object, the `@Mapping` annotation can be used to configure the names. Of course there can be multiple mapping methods in one interface.
 1. An instance of the interface implementation can be retrieved from the `Mappers` class. By convention, the interface declares a member `INSTANCE`, providing access to the mapper implementation for clients
 
 Based on the mapper interface, clients can perform object mappings in a very easy and type-safe manner:
