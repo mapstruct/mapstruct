@@ -1,4 +1,4 @@
-# What's MapStruct?
+# What is MapStruct?
 
 MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe bean mapping classes.
 
@@ -50,7 +50,6 @@ Based on the mapper interface, clients can perform object mappings in a very eas
 ```java
 @Test
 public void shouldMapCarToDto() {
-
 	//given
 	Car car = new Car( "Morris", 2 );
 
@@ -87,7 +86,54 @@ public interface CarMapper {
 
 ## Mapping referenced objects and collections
 
-Typically an object has not only primitive attributes but also references other objects. E.g. the `Car` class could contain a reference to a `Driver` object, while the `CarDto` class references a `DriverDto` object.
+Typically an object has not only primitive attributes but also references other objects. E.g. the `Car` class could contain a reference to a `Person` object (representing the car's driver) which should be mapped to a `PersonDto` object referenced by the `CarDto` class.
+
+In this case just define a mapping method for the referenced object types as well:
+
+```java
+@Mapper
+public interface CarMapper {
+
+    CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+
+	CarDto carToCarDto(Car car);
+    
+    PersonDto personToPersonDto(Person person);
+    
+    //reverse mapping methods
+}
+```
+
+The generated code for the `carToCarDto()` method will invoke the `personToPersonDto()` method for mapping the `driver` attribute.
+
+The same works for collections. E.g. the `Car` class could reference the list of all passengers:
+
+```java
+public class Car {
+
+    private List<Person> passengers;
+	
+	//...
+}
+```
+
+To map this attribute, define a method accepting a list of persons and returning a list of person DTOs:
+
+```java
+@Mapper
+public interface CarMapper {
+
+    //other members
+    
+    List<PersonDto> personsToPersonDtos(List<Person> prsons);
+}
+```
+
+This method will be invoked by the generated implementation when mapping the `passengers` attribute.
+
+NOTE: Collection mapping methods may be generated without declaration in the future (see https://github.com/gunnarmorling/mapstruct/issues/3 and https://github.com/gunnarmorling/mapstruct/issues/4).
+
+## Type mappings
 
 TODO
 
