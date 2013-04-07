@@ -21,18 +21,16 @@ public class PropertyMapping {
 	private final Type sourceType;
 	private final String targetName;
 	private final Type targetType;
-	private final Type converterType;
 	private final MappingMethod mappingMethod;
 	private final MappingMethod reverseMappingMethod;
 	private final String toConversion;
 	private final String fromConversion;
 
-	public PropertyMapping(String sourceName, Type sourceType, String targetName, Type targetType, Type converterType, MappingMethod mappingMethod, MappingMethod reverseMappingMethod, String toConversion, String fromConversion) {
+	public PropertyMapping(String sourceName, Type sourceType, String targetName, Type targetType, MappingMethod mappingMethod, MappingMethod reverseMappingMethod, String toConversion, String fromConversion) {
 		this.sourceName = sourceName;
 		this.sourceType = sourceType;
 		this.targetName = targetName;
 		this.targetType = targetType;
-		this.converterType = converterType;
 		this.mappingMethod = mappingMethod;
 		this.reverseMappingMethod = reverseMappingMethod;
 		this.toConversion = toConversion;
@@ -53,10 +51,6 @@ public class PropertyMapping {
 
 	public Type getTargetType() {
 		return targetType;
-	}
-
-	public Type getConverterType() {
-		return converterType;
 	}
 
 	public MappingMethod getMappingMethod() {

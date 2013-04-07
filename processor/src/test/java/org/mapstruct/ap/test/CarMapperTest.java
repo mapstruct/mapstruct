@@ -18,6 +18,7 @@ package org.mapstruct.ap.test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.List;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
@@ -26,7 +27,7 @@ import org.mapstruct.ap.test.model.Car;
 import org.mapstruct.ap.test.model.CarDto;
 import org.mapstruct.ap.test.model.CarMapper;
 import org.mapstruct.ap.test.model.Category;
-import org.mapstruct.ap.test.model.IntToStringConverter;
+import org.mapstruct.ap.test.model.DateMapper;
 import org.mapstruct.ap.test.model.Person;
 import org.mapstruct.ap.test.model.PersonDto;
 import org.testng.annotations.BeforeMethod;
@@ -51,8 +52,8 @@ public class CarMapperTest extends MapperTestBase {
 				Person.class,
 				PersonDto.class,
 				CarMapper.class,
-				IntToStringConverter.class,
-				Category.class
+				Category.class,
+				DateMapper.class
 		);
 
 		boolean compilationSuccessful = compile( diagnostics, sourceFiles );
@@ -69,7 +70,13 @@ public class CarMapperTest extends MapperTestBase {
 	@Test
 	public void shouldMapAttributeByName() {
 		//given
-		Car car = new Car( "Morris", 2, 1980, new Person( "Bob" ), new ArrayList<Person>() );
+		Car car = new Car(
+				"Morris",
+				2,
+				new GregorianCalendar( 1980, 0, 1 ).getTime(),
+				new Person( "Bob" ),
+				new ArrayList<Person>()
+		);
 
 		//when
 		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
@@ -82,7 +89,13 @@ public class CarMapperTest extends MapperTestBase {
 	@Test
 	public void shouldMapReferenceAttribute() {
 		//given
-		Car car = new Car( "Morris", 2, 1980, new Person( "Bob" ), new ArrayList<Person>() );
+		Car car = new Car(
+				"Morris",
+				2,
+				new GregorianCalendar( 1980, 0, 1 ).getTime(),
+				new Person( "Bob" ),
+				new ArrayList<Person>()
+		);
 
 		//when
 		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
@@ -110,7 +123,13 @@ public class CarMapperTest extends MapperTestBase {
 	@Test
 	public void shouldMapAttributeWithCustomMapping() {
 		//given
-		Car car = new Car( "Morris", 2, 1980, new Person( "Bob" ), new ArrayList<Person>() );
+		Car car = new Car(
+				"Morris",
+				2,
+				new GregorianCalendar( 1980, 0, 1 ).getTime(),
+				new Person( "Bob" ),
+				new ArrayList<Person>()
+		);
 
 		//when
 		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
@@ -136,7 +155,13 @@ public class CarMapperTest extends MapperTestBase {
 	@Test
 	public void shouldApplyConverter() {
 		//given
-		Car car = new Car( "Morris", 2, 1980, new Person( "Bob" ), new ArrayList<Person>() );
+		Car car = new Car(
+				"Morris",
+				2,
+				new GregorianCalendar( 1980, 0, 1 ).getTime(),
+				new Person( "Bob" ),
+				new ArrayList<Person>()
+		);
 
 		//when
 		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
@@ -156,14 +181,26 @@ public class CarMapperTest extends MapperTestBase {
 
 		//then
 		assertThat( car ).isNotNull();
-		assertThat( car.getYearOfManufacture() ).isEqualTo( 1980 );
+		assertThat( car.getManufacturingDate() ).isEqualTo( new GregorianCalendar( 1980, 0, 1 ).getTime() );
 	}
 
 	@Test
 	public void shouldMapIterable() {
 		//given
-		Car car1 = new Car( "Morris", 2, 1980, new Person( "Bob" ), new ArrayList<Person>() );
-		Car car2 = new Car( "Railton", 4, 1934, new Person( "Bill" ), new ArrayList<Person>() );
+		Car car1 = new Car(
+				"Morris",
+				2,
+				new GregorianCalendar( 1980, 0, 1 ).getTime(),
+				new Person( "Bob" ),
+				new ArrayList<Person>()
+		);
+		Car car2 = new Car(
+				"Railton",
+				4,
+				new GregorianCalendar( 1934, 0, 1 ).getTime(),
+				new Person( "Bill" ),
+				new ArrayList<Person>()
+		);
 
 		//when
 		List<CarDto> dtos = CarMapper.INSTANCE.carsToCarDtos( new ArrayList<Car>( Arrays.asList( car1, car2 ) ) );
@@ -198,12 +235,12 @@ public class CarMapperTest extends MapperTestBase {
 
 		assertThat( cars.get( 0 ).getMake() ).isEqualTo( "Morris" );
 		assertThat( cars.get( 0 ).getNumberOfSeats() ).isEqualTo( 2 );
-		assertThat( cars.get( 0 ).getYearOfManufacture() ).isEqualTo( 1980 );
+		assertThat( cars.get( 0 ).getManufacturingDate() ).isEqualTo( new GregorianCalendar( 1980, 0, 1 ).getTime() );
 		assertThat( cars.get( 0 ).getDriver().getName() ).isEqualTo( "Bob" );
 
 		assertThat( cars.get( 1 ).getMake() ).isEqualTo( "Railton" );
 		assertThat( cars.get( 1 ).getNumberOfSeats() ).isEqualTo( 4 );
-		assertThat( cars.get( 1 ).getYearOfManufacture() ).isEqualTo( 1934 );
+		assertThat( cars.get( 1 ).getManufacturingDate() ).isEqualTo( new GregorianCalendar( 1934, 0, 1 ).getTime() );
 		assertThat( cars.get( 1 ).getDriver().getName() ).isEqualTo( "Bill" );
 	}
 
@@ -213,7 +250,7 @@ public class CarMapperTest extends MapperTestBase {
 		Car car = new Car(
 				"Morris",
 				2,
-				1980,
+				new GregorianCalendar( 1980, 0, 1 ).getTime(),
 				new Person( "Bob" ),
 				new ArrayList<Person>( Arrays.asList( new Person( "Alice" ), new Person( "Bill" ) ) )
 		);

@@ -23,15 +23,12 @@ public class MappedProperty {
 	private final Type sourceType;
 	private final String targetName;
 	private final Type targetType;
-	private final Type converterType;
 
-	public MappedProperty(String sourceName, Type sourceType, String targetName,
-						  Type targetType, Type converterType) {
+	public MappedProperty(String sourceName, Type sourceType, String targetName, Type targetType) {
 		this.sourceName = sourceName;
 		this.sourceType = sourceType;
 		this.targetName = targetName;
 		this.targetType = targetType;
-		this.converterType = converterType;
 	}
 
 	public String getSourceName() {
@@ -50,12 +47,8 @@ public class MappedProperty {
 		return targetType;
 	}
 
-	public Type getConverterType() {
-		return converterType;
-	}
-
 	@Override
 	public String toString() {
-		return sourceType + " " + sourceName + " <=> " + targetType + " " + targetName + " (" + ( converterType != null ? converterType : "no converter" ) + ")";
+		return sourceType + " " + sourceName + " <=> " + targetType + " " + targetName;
 	}
 }

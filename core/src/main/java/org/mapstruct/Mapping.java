@@ -15,15 +15,9 @@
  */
 package org.mapstruct;
 
-import org.mapstruct.converter.Converter;
-import org.mapstruct.converter.NoOpConverter;
-
 public @interface Mapping {
 
 	String source();
 
 	String target();
-
-	Class<? extends Converter<?, ?>> converter() default NoOpConverter.class;
-
 }

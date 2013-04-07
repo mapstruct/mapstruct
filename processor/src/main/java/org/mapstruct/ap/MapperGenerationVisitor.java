@@ -29,7 +29,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -91,11 +93,26 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 	}
 
 	private Mapper retrieveModel(TypeElement element) {
-		List<Method> methods = retrieveMethods( element );
-		Set<Method> processedMethods = new HashSet<Method>();
-		List<BeanMapping> mappings = new ArrayList<BeanMapping>();
+		List<Method> methods = retrieveMethods( null, element );
+		List<BeanMapping> mappings = getMappings( methods );
+		List<Type> usedMapperTypes = getUsedMapperTypes( element );
 
+		Mapper mapper = new Mapper(
+				elementUtils.getPackageOf( element ).getQualifiedName().toString(),
+				element.getSimpleName().toString(),
+				element.getSimpleName() + IMPLEMENTATION_SUFFIX,
+				mappings,
+				usedMapperTypes
+		);
+
+		return mapper;
+	}
+
+	private List<BeanMapping> getMappings(List<Method> methods) {
 		Conversions conversions = new Conversions( elementUtils, typeUtils, typeUtil );
+
+		List<BeanMapping> mappings = new ArrayList<BeanMapping>();
+		Set<Method> processedMethods = new HashSet<Method>();
 
 		for ( Method method : methods ) {
 			if ( processedMethods.contains( method ) ) {
@@ -103,6 +120,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 			}
 
 			MappingMethod mappingMethod = new MappingMethod(
+					method.getDeclaringMapper(),
 					method.getName(),
 					method.getParameterName(),
 					getElementMappingMethod( methods, method )
@@ -114,6 +132,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 				processedMethods.add( rawReverseMappingMethod );
 
 				reverseMappingMethod = new MappingMethod(
+						rawReverseMappingMethod.getDeclaringMapper(),
 						rawReverseMappingMethod.getName(),
 						rawReverseMappingMethod.getParameterName(),
 						getElementMappingMethod( methods, rawReverseMappingMethod )
@@ -134,12 +153,13 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 								property.getSourceType(),
 								property.getTargetName(),
 								property.getTargetType(),
-								property.getConverterType(),
 								propertyMappingMethod != null ? new MappingMethod(
+										propertyMappingMethod.getDeclaringMapper(),
 										propertyMappingMethod.getName(),
 										propertyMappingMethod.getParameterName()
 								) : null,
 								reversePropertyMappingMethod != null ? new MappingMethod(
+										reversePropertyMappingMethod.getDeclaringMapper(),
 										reversePropertyMappingMethod.getName(),
 										reversePropertyMappingMethod.getParameterName()
 								) : null,
@@ -168,15 +188,16 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 			mappings.add( mapping );
 		}
+		return mappings;
+	}
 
-		Mapper mapper = new Mapper(
-				elementUtils.getPackageOf( element ).getQualifiedName().toString(),
-				element.getSimpleName().toString(),
-				element.getSimpleName() + IMPLEMENTATION_SUFFIX,
-				mappings
-		);
-
-		return mapper;
+	private List<Type> getUsedMapperTypes(TypeElement element) {
+		List<Type> usedMapperTypes = new LinkedList<Type>();
+		MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
+		for ( TypeMirror usedMapper : mapperPrism.uses() ) {
+			usedMapperTypes.add( typeUtil.retrieveType( usedMapper ) );
+		}
+		return usedMapperTypes;
 	}
 
 	private String getAccessor(String name) {
@@ -196,6 +217,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 			}
 		}
 		return elementMappingMethod == null ? null : new MappingMethod(
+				elementMappingMethod.getDeclaringMapper(),
 				elementMappingMethod.getName(),
 				elementMappingMethod.getParameterName()
 		);
@@ -231,7 +253,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 		return null;
 	}
 
-	private List<Method> retrieveMethods(TypeElement element) {
+	private List<Method> retrieveMethods(Type declaringMapper, Element element) {
 		List<Method> methods = new ArrayList<Method>();
 
 		for ( ExecutableElement method : methodsIn( element.getEnclosedElements() ) ) {
@@ -241,6 +263,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
 			methods.add(
 					new Method(
+							declaringMapper,
 							method.getSimpleName().toString(),
 							parameter.getName(),
 							parameter.getType(),
@@ -249,6 +272,21 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 					)
 			);
 		}
+
+		List<Type> usedMapperTypes = new LinkedList<Type>();
+		MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
+
+		if ( mapperPrism != null ) {
+			for ( TypeMirror usedMapper : mapperPrism.uses() ) {
+				methods.addAll(
+						retrieveMethods(
+								typeUtil.retrieveType( usedMapper ),
+								( (DeclaredType) usedMapper ).asElement()
+						)
+				);
+			}
+		}
+
 
 		return methods;
 	}
@@ -291,8 +329,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 									sourcePropertyName,
 									retrieveReturnType( getterMethod ),
 									mapping != null ? mapping.getTargetName() : targetPropertyName,
-									retrieveParameter( setterMethod ).getType(),
-									mapping != null ? mapping.getConverterType() : null
+									retrieveParameter( setterMethod ).getType()
 							)
 					);
 				}
@@ -320,12 +357,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 	}
 
 	private Mapping getMapping(MappingPrism mapping) {
-		Type converterType = typeUtil.retrieveType( mapping.converter() );
-		return new Mapping(
-				mapping.source(),
-				mapping.target(),
-				converterType.getName().equals( "NoOpConverter" ) ? null : converterType
-		);
+		return new Mapping( mapping.source(), mapping.target() );
 	}
 
 	private Parameter retrieveParameter(ExecutableElement method) {

@@ -16,12 +16,13 @@
 package org.mapstruct.ap.test.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Car {
 
 	private String make;
 	private int numberOfSeats;
-	private int yearOfManufacture;
+	private Date manufacturingDate;
 	private Person driver;
 	private ArrayList<Person> passengers;
 	private int price;
@@ -30,10 +31,10 @@ public class Car {
 	public Car() {
 	}
 
-	public Car(String make, int numberOfSeats, int yearOfManufacture, Person driver, ArrayList<Person> passengers) {
+	public Car(String make, int numberOfSeats, Date manufacturingDate, Person driver, ArrayList<Person> passengers) {
 		this.make = make;
 		this.numberOfSeats = numberOfSeats;
-		this.yearOfManufacture = yearOfManufacture;
+		this.manufacturingDate = manufacturingDate;
 		this.driver = driver;
 		this.passengers = passengers;
 	}
@@ -54,12 +55,12 @@ public class Car {
 		this.numberOfSeats = numberOfSeats;
 	}
 
-	public int getYearOfManufacture() {
-		return yearOfManufacture;
+	public Date getManufacturingDate() {
+		return manufacturingDate;
 	}
 
-	public void setYearOfManufacture(int yearOfManufacture) {
-		this.yearOfManufacture = yearOfManufacture;
+	public void setManufacturingDate(Date manufacturingDate) {
+		this.manufacturingDate = manufacturingDate;
 	}
 
 	public Person getDriver() {

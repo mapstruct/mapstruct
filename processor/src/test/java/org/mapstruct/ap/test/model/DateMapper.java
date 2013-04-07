@@ -13,11 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.converter;
+package org.mapstruct.ap.test.model;
 
-public interface Converter<S, T> {
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-	T from(S source);
+public class DateMapper {
 
-	S to(T target);
+	public String asString(Date date) {
+		return date != null ? new SimpleDateFormat( "yyyy" ).format( date ) : null;
+	}
+
+	public Date asDate(String date) {
+		try {
+			return date != null ? new SimpleDateFormat( "yyyy" ).parse( date ) : null;
+		}
+		catch ( ParseException e ) {
+			throw new RuntimeException( e );
+		}
+	}
 }

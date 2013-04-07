@@ -22,14 +22,14 @@ import org.mapstruct.Mappers;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper
+@Mapper(uses = DateMapper.class)
 public interface CarMapper {
 
 	CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
 	@Mappings({
 			@Mapping(source = "numberOfSeats", target = "seatCount"),
-			@Mapping(source = "yearOfManufacture", target = "manufacturingYear", converter = IntToStringConverter.class)
+			@Mapping(source = "manufacturingDate", target = "manufacturingYear")
 	})
 	CarDto carToCarDto(Car car);
 

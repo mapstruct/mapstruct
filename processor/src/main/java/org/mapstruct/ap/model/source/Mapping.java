@@ -15,18 +15,14 @@
  */
 package org.mapstruct.ap.model.source;
 
-import org.mapstruct.ap.model.Type;
-
 public class Mapping {
 
 	private final String sourceName;
 	private final String targetName;
-	private final Type converterType;
 
-	public Mapping(String sourceName, String targetName, Type converterType) {
+	public Mapping(String sourceName, String targetName) {
 		this.sourceName = sourceName;
 		this.targetName = targetName;
-		this.converterType = converterType;
 	}
 
 	public String getSourceName() {
@@ -35,9 +31,5 @@ public class Mapping {
 
 	public String getTargetName() {
 		return targetName;
-	}
-
-	public Type getConverterType() {
-		return converterType;
 	}
 }

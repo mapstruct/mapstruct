@@ -16,7 +16,6 @@
 package org.mapstruct;
 
 
-import org.mapstruct.Mappers;
 import org.mapstruct.test.model.Foo;
 import org.testng.annotations.Test;
 

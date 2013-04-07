@@ -20,19 +20,18 @@ import java.util.List;
 public class Mapper {
 
 	private final String packageName;
-
 	private final String interfaceName;
-
 	private final String implementationName;
-
 	private final List<BeanMapping> beanMappings;
+	private final List<Type> usedMapperTypes;
 
 	public Mapper(String packageName, String interfaceName,
-				  String implementationName, List<BeanMapping> beanMappings) {
+				  String implementationName, List<BeanMapping> beanMappings, List<Type> usedMapperTypes) {
 		this.packageName = packageName;
 		this.interfaceName = interfaceName;
 		this.implementationName = implementationName;
 		this.beanMappings = beanMappings;
+		this.usedMapperTypes = usedMapperTypes;
 	}
 
 	public String getPackageName() {
@@ -49,5 +48,9 @@ public class Mapper {
 
 	public List<BeanMapping> getBeanMappings() {
 		return beanMappings;
+	}
+
+	public List<Type> getUsedMapperTypes() {
+		return usedMapperTypes;
 	}
 }
