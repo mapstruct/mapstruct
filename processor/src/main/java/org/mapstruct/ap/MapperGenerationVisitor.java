@@ -30,7 +30,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.lang.model.util.Elements;
@@ -48,6 +47,7 @@ import org.mapstruct.ap.model.source.MappedProperty;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.Parameter;
+import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.TypeUtil;
 import org.mapstruct.ap.writer.ModelWriter;
 
@@ -273,7 +273,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             );
         }
 
-        List<Type> usedMapperTypes = new LinkedList<Type>();
         MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
 
         if ( mapperPrism != null ) {
@@ -286,7 +285,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 );
             }
         }
-
 
         return methods;
     }
@@ -314,12 +312,12 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
         List<MappedProperty> properties = new ArrayList<MappedProperty>();
 
-        for ( ExecutableElement getterMethod : getterMethodsIn( parameterElement.getEnclosedElements() ) ) {
+        for ( ExecutableElement getterMethod : Filters.getterMethodsIn( parameterElement.getEnclosedElements() ) ) {
 
             String sourcePropertyName = getPropertyName( getterMethod );
             Mapping mapping = mappings.get( sourcePropertyName );
 
-            for ( ExecutableElement setterMethod : setterMethodsIn( returnTypeElement.getEnclosedElements() ) ) {
+            for ( ExecutableElement setterMethod : Filters.setterMethodsIn( returnTypeElement.getEnclosedElements() ) ) {
 
                 String targetPropertyName = getPropertyName( setterMethod );
 
@@ -378,37 +376,5 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
     private Type retrieveReturnType(ExecutableElement method) {
         return typeUtil.retrieveType( method.getReturnType() );
-    }
-
-    private List<ExecutableElement> getterMethodsIn(Iterable<? extends Element> elements) {
-        List<ExecutableElement> getterMethods = new LinkedList<ExecutableElement>();
-
-        for ( ExecutableElement method : methodsIn( elements ) ) {
-            //TODO: consider is/has
-            String name = method.getSimpleName().toString();
-
-            if ( name.startsWith( "get" ) && name.length() > 3 && method.getParameters()
-                .isEmpty() && method.getReturnType().getKind() != TypeKind.VOID ) {
-                getterMethods.add( method );
-            }
-        }
-
-        return getterMethods;
-    }
-
-    private List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
-        List<ExecutableElement> setterMethods = new LinkedList<ExecutableElement>();
-
-        for ( ExecutableElement method : methodsIn( elements ) ) {
-            //TODO: consider is/has
-            String name = method.getSimpleName().toString();
-
-            if ( name.startsWith( "set" ) && name.length() > 3 && method.getParameters()
-                .size() == 1 && method.getReturnType().getKind() == TypeKind.VOID ) {
-                setterMethods.add( method );
-            }
-        }
-
-        return setterMethods;
     }
 }
