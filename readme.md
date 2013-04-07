@@ -2,65 +2,68 @@
 
 MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe bean mapping classes.
 
-All you have to do is to define one more more mapper interfaces, annotate them with the `@Mapper` annotation and add the required mapping methods. During compilation, MapStruct will generate an implementation for each mapper interface. This implementation uses plain Java method invocations, i.e. no reflection or similar.
+All you have to do is to define a mapper interfaces, annotate it with the `@Mapper` annotation and add the required mapping methods. During compilation, MapStruct will generate an implementation for the mapper interface. This implementation uses plain Java method invocations, i.e. no reflection or similar.
 
-The following shows an example. First, an object (e.g. a JPA entity) and an accompanying data transfer object (DTO):
+## Hello World
 
-	public class Car {
+The following shows a simple example for using MapStruct. First, let's define an object (e.g. a JPA entity) and an accompanying data transfer object (DTO):
 
-		private String make;
-		private int numberOfSeats;
-		private int yearOfManufacture;
-		
-		//constructor, getters, setters etc.
-	}
+```java
+public class Car {
+
+	private String make;
+	private int numberOfSeats;
 	
-	public class CarDto {
+	//constructor, getters, setters etc.
+}
 
-		private String make;
-		private int seatCount;
-		private int yearOfManufacture;
+public class CarDto {
 
-		//constructor, getters, setters etc.
-	}
-	
-Both types are rather similar, only the seat count attributes have different names. The mapper interface thus looks like this:
+	private String make;
+	private int seatCount;
 
-	@Mapper
-	public interface CarMapper {
+	//constructor, getters, setters etc.
+}
+```
 
-		CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+Both types are rather similar, only the seat count attributes have different names. A mapper interface could thus look like this:
 
-		@Mapping(source = "numberOfSeats", target = "seatCount"),
-		CarDto carToCarDto(Car car);
+```java
+@Mapper (1)
+public interface CarMapper {
 
-		Car carDtoToCar(CarDto carDto);
-	}
-	
+	CarMapper INSTANCE = Mappers.getMapper( CarMapper.class ); (3)
+
+	@Mapping(source = "numberOfSeats", target = "seatCount")
+	CarDto carToCarDto(Car car); (2)
+}
+```
+
 The interface is straight-forward: 
 
-* Annotating it with `@Mapper` let's the MapStruct processor kick in during compilation
-* The `INSTANCE` member provides access to the mapper implementation for clients (a service loader based alternative coming soon)
-* For each mapping direction (entity to DTO and vice versa) there is a conversion method. For those attributes which have differing names and thus can't be mapped automatically, a mapping is configured using the `@Mapping` annotation on one of the methods.
+1. Annotating it with `@Mapper` let's the MapStruct processor kick in during compilation
+1. The actual mapping method expects the source object as parameter and returns the target object. Its name can be freely chosen. Of course there can be multiple mapping methods in one interface. For attributes with different names in source and target object, the `@Mapping` annotation can be used to configure the names.
+1. An instance of the interface implementation can be retrieved from the `Mappers` class. By convention, the interface declares a member `INSTANCE`, providing access to the mapper implementation for clients
 
 Based on the mapper interface, clients can perform object mappings in a very easy and type-safe manner:
 
-	@Test
-	public void shouldMapCarToDto() {
+```java
+@Test
+public void shouldMapCarToDto() {
 
-		//given
-		Car car = new Car( "Morris", 2, 1980 );
+	//given
+	Car car = new Car( "Morris", 2 );
 
-		//when
-		CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
+	//when
+	CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
 
-		//then
-		assertThat( carDto ).isNotNull();
-		assertThat( carDto.getMake() ).isEqualTo( car.getMake() );
-		assertThat( carDto.getSeatCount() ).isEqualTo( car.getNumberOfSeats() );
-		assertThat( carDto.getyearOfManufacture() ).isEqualTo( car.getyearOfManufacture() );
-	}
-		
+	//then
+	assertThat( carDto ).isNotNull();
+	assertThat( carDto.getMake() ).isEqualTo( car.getMake() );
+	assertThat( carDto.getSeatCount() ).isEqualTo( car.getNumberOfSeats() );
+}
+```
+
 Sometimes not only the names of two corresponding attributes differ, but also their types. This can be addressed by defining a custom type converter:
 
 	public class IntToStringConverter implements Converter<Integer, String> {
