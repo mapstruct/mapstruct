@@ -20,78 +20,78 @@ import java.util.Date;
 
 public class Car {
 
-	private String make;
-	private int numberOfSeats;
-	private Date manufacturingDate;
-	private Person driver;
-	private ArrayList<Person> passengers;
-	private int price;
-	private Category category;
+    private String make;
+    private int numberOfSeats;
+    private Date manufacturingDate;
+    private Person driver;
+    private ArrayList<Person> passengers;
+    private int price;
+    private Category category;
 
-	public Car() {
-	}
+    public Car() {
+    }
 
-	public Car(String make, int numberOfSeats, Date manufacturingDate, Person driver, ArrayList<Person> passengers) {
-		this.make = make;
-		this.numberOfSeats = numberOfSeats;
-		this.manufacturingDate = manufacturingDate;
-		this.driver = driver;
-		this.passengers = passengers;
-	}
+    public Car(String make, int numberOfSeats, Date manufacturingDate, Person driver, ArrayList<Person> passengers) {
+        this.make = make;
+        this.numberOfSeats = numberOfSeats;
+        this.manufacturingDate = manufacturingDate;
+        this.driver = driver;
+        this.passengers = passengers;
+    }
 
-	public String getMake() {
-		return make;
-	}
+    public String getMake() {
+        return make;
+    }
 
-	public void setMake(String make) {
-		this.make = make;
-	}
+    public void setMake(String make) {
+        this.make = make;
+    }
 
-	public int getNumberOfSeats() {
-		return numberOfSeats;
-	}
+    public int getNumberOfSeats() {
+        return numberOfSeats;
+    }
 
-	public void setNumberOfSeats(int numberOfSeats) {
-		this.numberOfSeats = numberOfSeats;
-	}
+    public void setNumberOfSeats(int numberOfSeats) {
+        this.numberOfSeats = numberOfSeats;
+    }
 
-	public Date getManufacturingDate() {
-		return manufacturingDate;
-	}
+    public Date getManufacturingDate() {
+        return manufacturingDate;
+    }
 
-	public void setManufacturingDate(Date manufacturingDate) {
-		this.manufacturingDate = manufacturingDate;
-	}
+    public void setManufacturingDate(Date manufacturingDate) {
+        this.manufacturingDate = manufacturingDate;
+    }
 
-	public Person getDriver() {
-		return driver;
-	}
+    public Person getDriver() {
+        return driver;
+    }
 
-	public void setDriver(Person driver) {
-		this.driver = driver;
-	}
+    public void setDriver(Person driver) {
+        this.driver = driver;
+    }
 
-	public ArrayList<Person> getPassengers() {
-		return passengers;
-	}
+    public ArrayList<Person> getPassengers() {
+        return passengers;
+    }
 
-	public void setPassengers(ArrayList<Person> passengers) {
-		this.passengers = passengers;
-	}
+    public void setPassengers(ArrayList<Person> passengers) {
+        this.passengers = passengers;
+    }
 
-	public int getPrice() {
-		return price;
-	}
+    public int getPrice() {
+        return price;
+    }
 
-	public void setPrice(int price) {
-		this.price = price;
-	}
+    public void setPrice(int price) {
+        this.price = price;
+    }
 
-	public Category getCategory() {
-		return category;
-	}
+    public Category getCategory() {
+        return category;
+    }
 
-	public void setCategory(Category category) {
-		this.category = category;
-	}
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 }

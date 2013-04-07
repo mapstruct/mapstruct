@@ -25,25 +25,25 @@ import org.mapstruct.Mappings;
 @Mapper(uses = DateMapper.class)
 public interface CarMapper {
 
-	CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+    CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
-	@Mappings({
-			@Mapping(source = "numberOfSeats", target = "seatCount"),
-			@Mapping(source = "manufacturingDate", target = "manufacturingYear")
-	})
-	CarDto carToCarDto(Car car);
+    @Mappings({
+        @Mapping(source = "numberOfSeats", target = "seatCount"),
+        @Mapping(source = "manufacturingDate", target = "manufacturingYear")
+    })
+    CarDto carToCarDto(Car car);
 
-	Car carDtoToCar(CarDto carDto);
+    Car carDtoToCar(CarDto carDto);
 
-	ArrayList<CarDto> carsToCarDtos(ArrayList<Car> cars);
+    ArrayList<CarDto> carsToCarDtos(ArrayList<Car> cars);
 
-	ArrayList<Car> carDtosToCars(ArrayList<CarDto> carDtos);
+    ArrayList<Car> carDtosToCars(ArrayList<CarDto> carDtos);
 
-	PersonDto personToPersonDto(Person person);
+    PersonDto personToPersonDto(Person person);
 
-	Person personDtoToPerson(PersonDto personDto);
+    Person personDtoToPerson(PersonDto personDto);
 
-	ArrayList<PersonDto> personsToPersonDtos(ArrayList<Person> persons);
+    ArrayList<PersonDto> personsToPersonDtos(ArrayList<Person> persons);
 
-	ArrayList<Person> personDtosToPersons(ArrayList<PersonDto> personDtos);
+    ArrayList<Person> personDtosToPersons(ArrayList<PersonDto> personDtos);
 }

@@ -18,5 +18,5 @@ package org.mapstruct;
 
 public @interface Mappings {
 
-	Mapping[] value();
+    Mapping[] value();
 }

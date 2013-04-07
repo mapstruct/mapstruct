@@ -23,10 +23,10 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class MappersTest {
 
-	@Test
-	public void shouldReturnImplementationInstance() {
+    @Test
+    public void shouldReturnImplementationInstance() {
 
-		Foo mapper = Mappers.getMapper( Foo.class );
-		assertThat( mapper ).isNotNull();
-	}
+        Foo mapper = Mappers.getMapper( Foo.class );
+        assertThat( mapper ).isNotNull();
+    }
 }

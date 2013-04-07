@@ -33,45 +33,45 @@ import org.mapstruct.Mappings;
 
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
 @GeneratePrisms({
-		@GeneratePrism(value = Mapper.class),
-		@GeneratePrism(value = Mapping.class),
-		@GeneratePrism(value = Mappings.class)
+    @GeneratePrism(value = Mapper.class),
+    @GeneratePrism(value = Mapping.class),
+    @GeneratePrism(value = Mappings.class)
 })
 public class MappingProcessor extends AbstractProcessor {
 
-	/**
-	 * Whether this processor claims all processed annotations exclusively or not.
-	 */
-	private static final boolean ANNOTATIONS_CLAIMED_EXCLUSIVELY = false;
+    /**
+     * Whether this processor claims all processed annotations exclusively or not.
+     */
+    private static final boolean ANNOTATIONS_CLAIMED_EXCLUSIVELY = false;
 
-	@Override
-	public synchronized void init(ProcessingEnvironment processingEnv) {
-		super.init( processingEnv );
-	}
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init( processingEnv );
+    }
 
-	@Override
-	public SourceVersion getSupportedSourceVersion() {
-		return SourceVersion.latestSupported();
-	}
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
+    }
 
-	@Override
-	public boolean process(
-			final Set<? extends TypeElement> annotations,
-			final RoundEnvironment roundEnvironment) {
+    @Override
+    public boolean process(
+        final Set<? extends TypeElement> annotations,
+        final RoundEnvironment roundEnvironment) {
 
-		for ( TypeElement oneAnnotation : annotations ) {
+        for ( TypeElement oneAnnotation : annotations ) {
 
-			//Indicates that the annotation's type isn't on the class path of the compiled
-			//project. Let the compiler deal with that and print an appropriate error.
-			if ( oneAnnotation.getKind() != ElementKind.ANNOTATION_TYPE ) {
-				continue;
-			}
+            //Indicates that the annotation's type isn't on the class path of the compiled
+            //project. Let the compiler deal with that and print an appropriate error.
+            if ( oneAnnotation.getKind() != ElementKind.ANNOTATION_TYPE ) {
+                continue;
+            }
 
-			for ( Element oneAnnotatedElement : roundEnvironment.getElementsAnnotatedWith( oneAnnotation ) ) {
-				oneAnnotatedElement.accept( new MapperGenerationVisitor( processingEnv ), null );
-			}
-		}
+            for ( Element oneAnnotatedElement : roundEnvironment.getElementsAnnotatedWith( oneAnnotation ) ) {
+                oneAnnotatedElement.accept( new MapperGenerationVisitor( processingEnv ), null );
+            }
+        }
 
-		return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
-	}
+        return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
+    }
 }

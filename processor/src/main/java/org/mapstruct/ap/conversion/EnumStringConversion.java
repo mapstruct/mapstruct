@@ -19,13 +19,13 @@ import org.mapstruct.ap.model.Type;
 
 public class EnumStringConversion implements Conversion {
 
-	@Override
-	public String to(String sourcePropertyAccessor, Type type) {
-		return sourcePropertyAccessor + " != null ? " + sourcePropertyAccessor + ".toString() : null";
-	}
+    @Override
+    public String to(String sourcePropertyAccessor, Type type) {
+        return sourcePropertyAccessor + " != null ? " + sourcePropertyAccessor + ".toString() : null";
+    }
 
-	@Override
-	public String from(String targetPropertyAccessor, Type type) {
-		return targetPropertyAccessor + " != null ? Enum.valueOf( " + type.getName() + ".class, " + targetPropertyAccessor + " ) : null";
-	}
+    @Override
+    public String from(String targetPropertyAccessor, Type type) {
+        return targetPropertyAccessor + " != null ? Enum.valueOf( " + type.getName() + ".class, " + targetPropertyAccessor + " ) : null";
+    }
 }

@@ -29,5 +29,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
 public @interface Mapper {
-	Class<?>[] uses() default { };
+    Class<?>[] uses() default { };
 }

@@ -19,38 +19,38 @@ import java.util.List;
 
 public class Mapper {
 
-	private final String packageName;
-	private final String interfaceName;
-	private final String implementationName;
-	private final List<BeanMapping> beanMappings;
-	private final List<Type> usedMapperTypes;
+    private final String packageName;
+    private final String interfaceName;
+    private final String implementationName;
+    private final List<BeanMapping> beanMappings;
+    private final List<Type> usedMapperTypes;
 
-	public Mapper(String packageName, String interfaceName,
-				  String implementationName, List<BeanMapping> beanMappings, List<Type> usedMapperTypes) {
-		this.packageName = packageName;
-		this.interfaceName = interfaceName;
-		this.implementationName = implementationName;
-		this.beanMappings = beanMappings;
-		this.usedMapperTypes = usedMapperTypes;
-	}
+    public Mapper(String packageName, String interfaceName,
+                  String implementationName, List<BeanMapping> beanMappings, List<Type> usedMapperTypes) {
+        this.packageName = packageName;
+        this.interfaceName = interfaceName;
+        this.implementationName = implementationName;
+        this.beanMappings = beanMappings;
+        this.usedMapperTypes = usedMapperTypes;
+    }
 
-	public String getPackageName() {
-		return packageName;
-	}
+    public String getPackageName() {
+        return packageName;
+    }
 
-	public String getInterfaceName() {
-		return interfaceName;
-	}
+    public String getInterfaceName() {
+        return interfaceName;
+    }
 
-	public String getImplementationName() {
-		return implementationName;
-	}
+    public String getImplementationName() {
+        return implementationName;
+    }
 
-	public List<BeanMapping> getBeanMappings() {
-		return beanMappings;
-	}
+    public List<BeanMapping> getBeanMappings() {
+        return beanMappings;
+    }
 
-	public List<Type> getUsedMapperTypes() {
-		return usedMapperTypes;
-	}
+    public List<Type> getUsedMapperTypes() {
+        return usedMapperTypes;
+    }
 }

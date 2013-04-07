@@ -19,13 +19,13 @@ import org.mapstruct.ap.model.Type;
 
 public class IntLongConversion implements Conversion {
 
-	@Override
-	public String to(String sourcePropertyAccessor, Type type) {
-		return "Long.valueOf( " + sourcePropertyAccessor + " )";
-	}
+    @Override
+    public String to(String sourcePropertyAccessor, Type type) {
+        return "Long.valueOf( " + sourcePropertyAccessor + " )";
+    }
 
-	@Override
-	public String from(String targetPropertyAccessor, Type type) {
-		return targetPropertyAccessor + ".intValue()";
-	}
+    @Override
+    public String from(String targetPropertyAccessor, Type type) {
+        return targetPropertyAccessor + ".intValue()";
+    }
 }

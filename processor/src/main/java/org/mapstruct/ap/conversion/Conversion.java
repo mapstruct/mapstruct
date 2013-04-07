@@ -19,7 +19,7 @@ import org.mapstruct.ap.model.Type;
 
 public interface Conversion {
 
-	String to(String sourcePropertyAccessor, Type type);
+    String to(String sourcePropertyAccessor, Type type);
 
-	String from(String targetPropertyAccessor, Type type);
+    String from(String targetPropertyAccessor, Type type);
 }

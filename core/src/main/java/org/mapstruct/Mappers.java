@@ -18,28 +18,28 @@ package org.mapstruct;
 
 public class Mappers {
 
-	private final static String IMPLEMENTATION_SUFFIX = "Impl";
+    private final static String IMPLEMENTATION_SUFFIX = "Impl";
 
-	/**
-	 * TODO: Check that
-	 * - clazz is an interface
-	 * - the implementation type implements clazz
-	 * - clazz is annotated with @Mapper
-	 *
-	 * TODO: Use privileged action
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T getMapper(Class<T> clazz) {
-		try {
+    /**
+     * TODO: Check that
+     * - clazz is an interface
+     * - the implementation type implements clazz
+     * - clazz is annotated with @Mapper
+     *
+     * TODO: Use privileged action
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getMapper(Class<T> clazz) {
+        try {
 
 //            ClassLoader classLoader = clazz.getClassLoader();
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-			return (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
-		}
-		catch ( Exception e ) {
-			e.printStackTrace();
-			throw new RuntimeException( e );
-		}
-	}
+            return (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+            throw new RuntimeException( e );
+        }
+    }
 }

@@ -24,35 +24,35 @@ import freemarker.template.Template;
 
 public class ModelWriter {
 
-	private static final Configuration configuration;
+    private static final Configuration configuration;
 
-	private final String templateName;
+    private final String templateName;
 
-	static {
-		configuration = new Configuration();
-		configuration.setClassForTemplateLoading( ModelWriter.class, "/" );
-		configuration.setObjectWrapper( new DefaultObjectWrapper() );
-	}
+    static {
+        configuration = new Configuration();
+        configuration.setClassForTemplateLoading( ModelWriter.class, "/" );
+        configuration.setObjectWrapper( new DefaultObjectWrapper() );
+    }
 
-	public ModelWriter(String templateName) {
-		this.templateName = templateName;
-	}
+    public ModelWriter(String templateName) {
+        this.templateName = templateName;
+    }
 
-	public void writeModel(JavaFileObject sourceFile, Object model) {
+    public void writeModel(JavaFileObject sourceFile, Object model) {
 
-		try {
-			BufferedWriter writer = new BufferedWriter( sourceFile.openWriter() );
+        try {
+            BufferedWriter writer = new BufferedWriter( sourceFile.openWriter() );
 
-			Template template = configuration.getTemplate( templateName );
-			template.process( model, writer );
-			writer.flush();
-			writer.close();
-		}
-		catch ( RuntimeException e ) {
-			throw e;
-		}
-		catch ( Exception e ) {
-			throw new RuntimeException( e );
-		}
-	}
+            Template template = configuration.getTemplate( templateName );
+            template.process( model, writer );
+            writer.flush();
+            writer.close();
+        }
+        catch ( RuntimeException e ) {
+            throw e;
+        }
+        catch ( Exception e ) {
+            throw new RuntimeException( e );
+        }
+    }
 }

@@ -17,55 +17,55 @@ package org.mapstruct.ap.model;
 
 public class PropertyMapping {
 
-	private final String sourceName;
-	private final Type sourceType;
-	private final String targetName;
-	private final Type targetType;
-	private final MappingMethod mappingMethod;
-	private final MappingMethod reverseMappingMethod;
-	private final String toConversion;
-	private final String fromConversion;
+    private final String sourceName;
+    private final Type sourceType;
+    private final String targetName;
+    private final Type targetType;
+    private final MappingMethod mappingMethod;
+    private final MappingMethod reverseMappingMethod;
+    private final String toConversion;
+    private final String fromConversion;
 
-	public PropertyMapping(String sourceName, Type sourceType, String targetName, Type targetType, MappingMethod mappingMethod, MappingMethod reverseMappingMethod, String toConversion, String fromConversion) {
-		this.sourceName = sourceName;
-		this.sourceType = sourceType;
-		this.targetName = targetName;
-		this.targetType = targetType;
-		this.mappingMethod = mappingMethod;
-		this.reverseMappingMethod = reverseMappingMethod;
-		this.toConversion = toConversion;
-		this.fromConversion = fromConversion;
-	}
+    public PropertyMapping(String sourceName, Type sourceType, String targetName, Type targetType, MappingMethod mappingMethod, MappingMethod reverseMappingMethod, String toConversion, String fromConversion) {
+        this.sourceName = sourceName;
+        this.sourceType = sourceType;
+        this.targetName = targetName;
+        this.targetType = targetType;
+        this.mappingMethod = mappingMethod;
+        this.reverseMappingMethod = reverseMappingMethod;
+        this.toConversion = toConversion;
+        this.fromConversion = fromConversion;
+    }
 
-	public String getSourceName() {
-		return sourceName;
-	}
+    public String getSourceName() {
+        return sourceName;
+    }
 
-	public Type getSourceType() {
-		return sourceType;
-	}
+    public Type getSourceType() {
+        return sourceType;
+    }
 
-	public String getTargetName() {
-		return targetName;
-	}
+    public String getTargetName() {
+        return targetName;
+    }
 
-	public Type getTargetType() {
-		return targetType;
-	}
+    public Type getTargetType() {
+        return targetType;
+    }
 
-	public MappingMethod getMappingMethod() {
-		return mappingMethod;
-	}
+    public MappingMethod getMappingMethod() {
+        return mappingMethod;
+    }
 
-	public MappingMethod getReverseMappingMethod() {
-		return reverseMappingMethod;
-	}
+    public MappingMethod getReverseMappingMethod() {
+        return reverseMappingMethod;
+    }
 
-	public String getToConversion() {
-		return toConversion;
-	}
+    public String getToConversion() {
+        return toConversion;
+    }
 
-	public String getFromConversion() {
-		return fromConversion;
-	}
+    public String getFromConversion() {
+        return fromConversion;
+    }
 }

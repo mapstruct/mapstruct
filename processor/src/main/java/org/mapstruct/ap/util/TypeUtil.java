@@ -26,39 +26,39 @@ import org.mapstruct.ap.model.Type;
 
 public class TypeUtil {
 
-	private final Elements elementUtils;
-	private final Types typeUtils;
+    private final Elements elementUtils;
+    private final Types typeUtils;
 
-	public TypeUtil(Elements elementUtils, Types typeUtils) {
-		this.elementUtils = elementUtils;
-		this.typeUtils = typeUtils;
-	}
+    public TypeUtil(Elements elementUtils, Types typeUtils) {
+        this.elementUtils = elementUtils;
+        this.typeUtils = typeUtils;
+    }
 
-	public Type getType(DeclaredType type) {
-		Type elementType = isIterableType( type ) ? retrieveType( type.getTypeArguments().iterator().next() ) : null;
+    public Type getType(DeclaredType type) {
+        Type elementType = isIterableType( type ) ? retrieveType( type.getTypeArguments().iterator().next() ) : null;
 
-		return new Type(
-				elementUtils.getPackageOf( type.asElement() ).toString(),
-				type.asElement().getSimpleName().toString(),
-				elementType,
-				type.asElement().getKind() == ElementKind.ENUM
-		);
-	}
+        return new Type(
+            elementUtils.getPackageOf( type.asElement() ).toString(),
+            type.asElement().getSimpleName().toString(),
+            elementType,
+            type.asElement().getKind() == ElementKind.ENUM
+        );
+    }
 
-	private boolean isIterableType(DeclaredType type) {
-		TypeMirror iterableType = typeUtils.getDeclaredType( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ) );
-		return typeUtils.isSubtype( type, iterableType );
-	}
+    private boolean isIterableType(DeclaredType type) {
+        TypeMirror iterableType = typeUtils.getDeclaredType( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ) );
+        return typeUtils.isSubtype( type, iterableType );
+    }
 
-	public Type retrieveType(TypeMirror mirror) {
-		if ( mirror == null ) {
-			return null;
-		}
-		else if ( mirror.getKind() == TypeKind.DECLARED ) {
-			return getType( ( (DeclaredType) mirror ) );
-		}
-		else {
-			return new Type( mirror.toString() );
-		}
-	}
+    public Type retrieveType(TypeMirror mirror) {
+        if ( mirror == null ) {
+            return null;
+        }
+        else if ( mirror.getKind() == TypeKind.DECLARED ) {
+            return getType( ( (DeclaredType) mirror ) );
+        }
+        else {
+            return new Type( mirror.toString() );
+        }
+    }
 }

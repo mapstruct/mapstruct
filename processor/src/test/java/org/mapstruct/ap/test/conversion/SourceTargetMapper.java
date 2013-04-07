@@ -23,13 +23,13 @@ import org.mapstruct.Mappings;
 @Mapper
 public interface SourceTargetMapper {
 
-	public static SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    public static SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-	@Mappings({
-			@Mapping(source = "qax", target = "baz"),
-			@Mapping(source = "baz", target = "qax")
-	})
-	Target sourceToTarget(Source source);
+    @Mappings({
+        @Mapping(source = "qax", target = "baz"),
+        @Mapping(source = "baz", target = "qax")
+    })
+    Target sourceToTarget(Source source);
 
-	Source targetToSource(Target target);
+    Source targetToSource(Target target);
 }

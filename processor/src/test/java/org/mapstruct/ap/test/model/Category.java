@@ -16,5 +16,5 @@
 package org.mapstruct.ap.test.model;
 
 public enum Category {
-	SEDAN, CONVERTIBLE, TRUCK;
+    SEDAN, CONVERTIBLE, TRUCK;
 }

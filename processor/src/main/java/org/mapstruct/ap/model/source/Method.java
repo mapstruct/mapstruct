@@ -22,62 +22,62 @@ import org.mapstruct.ap.model.Type;
 
 public class Method {
 
-	private final Type declaringMapper;
-	private final String name;
-	private final String parameterName;
-	private final Type sourceType;
-	private final Type targetType;
-	private final List<MappedProperty> mappedProperties;
+    private final Type declaringMapper;
+    private final String name;
+    private final String parameterName;
+    private final Type sourceType;
+    private final Type targetType;
+    private final List<MappedProperty> mappedProperties;
 
-	public Method(String name, String parameterName, Type sourceType, Type targetType, List<MappedProperty> mappedProperties) {
-		this( null, name, parameterName, sourceType, targetType, mappedProperties );
-	}
+    public Method(String name, String parameterName, Type sourceType, Type targetType, List<MappedProperty> mappedProperties) {
+        this( null, name, parameterName, sourceType, targetType, mappedProperties );
+    }
 
-	public Method(Type declaringMapper, String name, String parameterName, Type sourceType, Type targetType, List<MappedProperty> mappedProperties) {
-		this.declaringMapper = declaringMapper;
-		this.name = name;
-		this.parameterName = parameterName;
-		this.sourceType = sourceType;
-		this.targetType = targetType;
-		this.mappedProperties = mappedProperties;
-	}
+    public Method(Type declaringMapper, String name, String parameterName, Type sourceType, Type targetType, List<MappedProperty> mappedProperties) {
+        this.declaringMapper = declaringMapper;
+        this.name = name;
+        this.parameterName = parameterName;
+        this.sourceType = sourceType;
+        this.targetType = targetType;
+        this.mappedProperties = mappedProperties;
+    }
 
-	public Type getDeclaringMapper() {
-		return declaringMapper;
-	}
+    public Type getDeclaringMapper() {
+        return declaringMapper;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getParameterName() {
-		return parameterName;
-	}
+    public String getParameterName() {
+        return parameterName;
+    }
 
-	public Type getSourceType() {
-		return sourceType;
-	}
+    public Type getSourceType() {
+        return sourceType;
+    }
 
-	public Type getTargetType() {
-		return targetType;
-	}
+    public Type getTargetType() {
+        return targetType;
+    }
 
-	public List<MappedProperty> getMappedProperties() {
-		return mappedProperties;
-	}
+    public List<MappedProperty> getMappedProperties() {
+        return mappedProperties;
+    }
 
-	public boolean reverses(Method method) {
-		return
-				equals( sourceType, method.getTargetType() ) &&
-						equals( targetType, method.getSourceType() );
-	}
+    public boolean reverses(Method method) {
+        return
+            equals( sourceType, method.getTargetType() ) &&
+                equals( targetType, method.getSourceType() );
+    }
 
-	private boolean equals(Object o1, Object o2) {
-		return ( o1 == null && o2 == null ) || ( o1 != null ) && o1.equals( o2 );
-	}
+    private boolean equals(Object o1, Object o2) {
+        return ( o1 == null && o2 == null ) || ( o1 != null ) && o1.equals( o2 );
+    }
 
-	@Override
-	public String toString() {
-		return targetType + " " + name + "(" + sourceType + " " + parameterName + ")";
-	}
+    @Override
+    public String toString() {
+        return targetType + " " + name + "(" + sourceType + " " + parameterName + ")";
+    }
 }

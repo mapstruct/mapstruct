@@ -17,7 +17,7 @@ package org.mapstruct;
 
 public @interface Mapping {
 
-	String source();
+    String source();
 
-	String target();
+    String target();
 }

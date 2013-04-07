@@ -17,19 +17,19 @@ package org.mapstruct.ap.model.source;
 
 public class Mapping {
 
-	private final String sourceName;
-	private final String targetName;
+    private final String sourceName;
+    private final String targetName;
 
-	public Mapping(String sourceName, String targetName) {
-		this.sourceName = sourceName;
-		this.targetName = targetName;
-	}
+    public Mapping(String sourceName, String targetName) {
+        this.sourceName = sourceName;
+        this.targetName = targetName;
+    }
 
-	public String getSourceName() {
-		return sourceName;
-	}
+    public String getSourceName() {
+        return sourceName;
+    }
 
-	public String getTargetName() {
-		return targetName;
-	}
+    public String getTargetName() {
+        return targetName;
+    }
 }

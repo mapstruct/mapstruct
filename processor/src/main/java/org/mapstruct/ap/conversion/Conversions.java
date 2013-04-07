@@ -28,94 +28,94 @@ import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 
 public class Conversions {
 
-	private TypeUtil typeUtil;
-	private final Map<Key, Conversion> conversions = new HashMap<Conversions.Key, Conversion>();
-	private final DeclaredType enumType;
-	private final DeclaredType stringType;
+    private TypeUtil typeUtil;
+    private final Map<Key, Conversion> conversions = new HashMap<Conversions.Key, Conversion>();
+    private final DeclaredType enumType;
+    private final DeclaredType stringType;
 
-	public Conversions(Elements elementUtils, Types typeUtils, TypeUtil typeUtil) {
-		this.typeUtil = typeUtil;
+    public Conversions(Elements elementUtils, Types typeUtils, TypeUtil typeUtil) {
+        this.typeUtil = typeUtil;
 
-		this.enumType = typeUtils.getDeclaredType( elementUtils.getTypeElement( Enum.class.getCanonicalName() ) );
-		this.stringType = typeUtils.getDeclaredType( elementUtils.getTypeElement( String.class.getCanonicalName() ) );
+        this.enumType = typeUtils.getDeclaredType( elementUtils.getTypeElement( Enum.class.getCanonicalName() ) );
+        this.stringType = typeUtils.getDeclaredType( elementUtils.getTypeElement( String.class.getCanonicalName() ) );
 
-		register( int.class, Long.class, new IntLongConversion() );
-		register( int.class, String.class, new IntStringConversion() );
-		register( Enum.class, String.class, new EnumStringConversion() );
-	}
+        register( int.class, Long.class, new IntLongConversion() );
+        register( int.class, String.class, new IntStringConversion() );
+        register( Enum.class, String.class, new EnumStringConversion() );
+    }
 
-	private void register(Class<?> sourceType, Class<?> targetType, Conversion conversion) {
-		conversions.put( Key.forClasses( sourceType, targetType ), conversion );
-		conversions.put( Key.forClasses( targetType, sourceType ), reverse( conversion ) );
-	}
+    private void register(Class<?> sourceType, Class<?> targetType, Conversion conversion) {
+        conversions.put( Key.forClasses( sourceType, targetType ), conversion );
+        conversions.put( Key.forClasses( targetType, sourceType ), reverse( conversion ) );
+    }
 
-	public Conversion getConversion(Type sourceType, Type targetType) {
-		if ( sourceType.isEnumType() && targetType.equals( typeUtil.getType( stringType ) ) ) {
-			sourceType = typeUtil.getType( enumType );
-		}
+    public Conversion getConversion(Type sourceType, Type targetType) {
+        if ( sourceType.isEnumType() && targetType.equals( typeUtil.getType( stringType ) ) ) {
+            sourceType = typeUtil.getType( enumType );
+        }
 
-		return conversions.get( new Key( sourceType, targetType ) );
-	}
+        return conversions.get( new Key( sourceType, targetType ) );
+    }
 
-	private static class Key {
-		private final Type sourceType;
-		private final Type targetType;
+    private static class Key {
+        private final Type sourceType;
+        private final Type targetType;
 
-		private static Key forClasses(Class<?> sourceType, Class<?> targetType) {
-			return new Key( Type.forClass( sourceType ), Type.forClass( targetType ) );
-		}
+        private static Key forClasses(Class<?> sourceType, Class<?> targetType) {
+            return new Key( Type.forClass( sourceType ), Type.forClass( targetType ) );
+        }
 
-		private Key(Type sourceType, Type targetType) {
-			this.sourceType = sourceType;
-			this.targetType = targetType;
-		}
+        private Key(Type sourceType, Type targetType) {
+            this.sourceType = sourceType;
+            this.targetType = targetType;
+        }
 
-		@Override
-		public String toString() {
-			return "Key [sourceType=" + sourceType + ", targetType="
-					+ targetType + "]";
-		}
+        @Override
+        public String toString() {
+            return "Key [sourceType=" + sourceType + ", targetType="
+                + targetType + "]";
+        }
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result
-					+ ( ( sourceType == null ) ? 0 : sourceType.hashCode() );
-			result = prime * result
-					+ ( ( targetType == null ) ? 0 : targetType.hashCode() );
-			return result;
-		}
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result
+                + ( ( sourceType == null ) ? 0 : sourceType.hashCode() );
+            result = prime * result
+                + ( ( targetType == null ) ? 0 : targetType.hashCode() );
+            return result;
+        }
 
-		@Override
-		public boolean equals(Object obj) {
-			if ( this == obj ) {
-				return true;
-			}
-			if ( obj == null ) {
-				return false;
-			}
-			if ( getClass() != obj.getClass() ) {
-				return false;
-			}
-			Key other = (Key) obj;
-			if ( sourceType == null ) {
-				if ( other.sourceType != null ) {
-					return false;
-				}
-			}
-			else if ( !sourceType.equals( other.sourceType ) ) {
-				return false;
-			}
-			if ( targetType == null ) {
-				if ( other.targetType != null ) {
-					return false;
-				}
-			}
-			else if ( !targetType.equals( other.targetType ) ) {
-				return false;
-			}
-			return true;
-		}
-	}
+        @Override
+        public boolean equals(Object obj) {
+            if ( this == obj ) {
+                return true;
+            }
+            if ( obj == null ) {
+                return false;
+            }
+            if ( getClass() != obj.getClass() ) {
+                return false;
+            }
+            Key other = (Key) obj;
+            if ( sourceType == null ) {
+                if ( other.sourceType != null ) {
+                    return false;
+                }
+            }
+            else if ( !sourceType.equals( other.sourceType ) ) {
+                return false;
+            }
+            if ( targetType == null ) {
+                if ( other.targetType != null ) {
+                    return false;
+                }
+            }
+            else if ( !targetType.equals( other.targetType ) ) {
+                return false;
+            }
+            return true;
+        }
+    }
 }

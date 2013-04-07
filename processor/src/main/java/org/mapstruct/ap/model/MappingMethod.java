@@ -17,42 +17,42 @@ package org.mapstruct.ap.model;
 
 public class MappingMethod {
 
-	private final Type declaringMapper;
-	private final String name;
-	private final String parameterName;
-	private final MappingMethod elementMappingMethod;
+    private final Type declaringMapper;
+    private final String name;
+    private final String parameterName;
+    private final MappingMethod elementMappingMethod;
 
-	public MappingMethod(Type declaringMapper, String name, String parameterName) {
-		this.declaringMapper = declaringMapper;
-		this.name = name;
-		this.parameterName = parameterName;
-		this.elementMappingMethod = null;
-	}
+    public MappingMethod(Type declaringMapper, String name, String parameterName) {
+        this.declaringMapper = declaringMapper;
+        this.name = name;
+        this.parameterName = parameterName;
+        this.elementMappingMethod = null;
+    }
 
-	public MappingMethod(Type declaringMapper, String name, String parameterName, MappingMethod elementMappingMethod) {
-		this.declaringMapper = declaringMapper;
-		this.name = name;
-		this.parameterName = parameterName;
-		this.elementMappingMethod = elementMappingMethod;
-	}
+    public MappingMethod(Type declaringMapper, String name, String parameterName, MappingMethod elementMappingMethod) {
+        this.declaringMapper = declaringMapper;
+        this.name = name;
+        this.parameterName = parameterName;
+        this.elementMappingMethod = elementMappingMethod;
+    }
 
-	public Type getDeclaringMapper() {
-		return declaringMapper;
-	}
+    public Type getDeclaringMapper() {
+        return declaringMapper;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getParameterName() {
-		return parameterName;
-	}
+    public String getParameterName() {
+        return parameterName;
+    }
 
-	public MappingMethod getElementMappingMethod() {
-		return elementMappingMethod;
-	}
+    public MappingMethod getElementMappingMethod() {
+        return elementMappingMethod;
+    }
 
-	public boolean isGenerationRequired() {
-		return declaringMapper == null;
-	}
+    public boolean isGenerationRequired() {
+        return declaringMapper == null;
+    }
 }

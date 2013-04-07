@@ -19,56 +19,56 @@ import java.util.List;
 
 public class BeanMapping {
 
-	private final Type sourceType;
-	private final Type targetType;
-	private final List<PropertyMapping> propertyMappings;
-	private final MappingMethod mappingMethod;
-	private final MappingMethod reverseMappingMethod;
-	private final boolean isIterableMapping;
+    private final Type sourceType;
+    private final Type targetType;
+    private final List<PropertyMapping> propertyMappings;
+    private final MappingMethod mappingMethod;
+    private final MappingMethod reverseMappingMethod;
+    private final boolean isIterableMapping;
 
-	public BeanMapping(Type sourceType, Type targetType, List<PropertyMapping> propertyMappings, MappingMethod mappingMethod,
-					   MappingMethod reverseMappingMethod) {
-		this.sourceType = sourceType;
-		this.targetType = targetType;
-		this.propertyMappings = propertyMappings;
-		this.mappingMethod = mappingMethod;
-		this.reverseMappingMethod = reverseMappingMethod;
-		this.isIterableMapping = mappingMethod.getElementMappingMethod() != null;
-	}
+    public BeanMapping(Type sourceType, Type targetType, List<PropertyMapping> propertyMappings, MappingMethod mappingMethod,
+                       MappingMethod reverseMappingMethod) {
+        this.sourceType = sourceType;
+        this.targetType = targetType;
+        this.propertyMappings = propertyMappings;
+        this.mappingMethod = mappingMethod;
+        this.reverseMappingMethod = reverseMappingMethod;
+        this.isIterableMapping = mappingMethod.getElementMappingMethod() != null;
+    }
 
-	public Type getSourceType() {
-		return sourceType;
-	}
+    public Type getSourceType() {
+        return sourceType;
+    }
 
-	public Type getTargetType() {
-		return targetType;
-	}
+    public Type getTargetType() {
+        return targetType;
+    }
 
-	public List<PropertyMapping> getPropertyMappings() {
-		return propertyMappings;
-	}
+    public List<PropertyMapping> getPropertyMappings() {
+        return propertyMappings;
+    }
 
-	public MappingMethod getMappingMethod() {
-		return mappingMethod;
-	}
+    public MappingMethod getMappingMethod() {
+        return mappingMethod;
+    }
 
-	public MappingMethod getReverseMappingMethod() {
-		return reverseMappingMethod;
-	}
+    public MappingMethod getReverseMappingMethod() {
+        return reverseMappingMethod;
+    }
 
-	public boolean getIterableMapping() {
-		return isIterableMapping;
-	}
+    public boolean getIterableMapping() {
+        return isIterableMapping;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder();
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
 
-		stringBuilder.append( sourceType );
-		stringBuilder.append( " <=> " );
-		stringBuilder.append( targetType );
+        stringBuilder.append( sourceType );
+        stringBuilder.append( " <=> " );
+        stringBuilder.append( targetType );
 
 
-		return stringBuilder.toString();
-	}
+        return stringBuilder.toString();
+    }
 }

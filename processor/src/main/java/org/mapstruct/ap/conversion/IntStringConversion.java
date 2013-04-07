@@ -19,13 +19,13 @@ import org.mapstruct.ap.model.Type;
 
 public class IntStringConversion implements Conversion {
 
-	@Override
-	public String to(String sourcePropertyAccessor, Type type) {
-		return "String.valueOf( " + sourcePropertyAccessor + " )";
-	}
+    @Override
+    public String to(String sourcePropertyAccessor, Type type) {
+        return "String.valueOf( " + sourcePropertyAccessor + " )";
+    }
 
-	@Override
-	public String from(String targetPropertyAccessor, Type type) {
-		return "Integer.parseInt( " + targetPropertyAccessor + " )";
-	}
+    @Override
+    public String from(String targetPropertyAccessor, Type type) {
+        return "Integer.parseInt( " + targetPropertyAccessor + " )";
+    }
 }
