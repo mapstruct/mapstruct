@@ -99,41 +99,69 @@ To make use of a converter, specify its type within the `@Mapping` annotation:
 
 MapStruct is a Java annotation processor based on [JSR 269](jcp.org/en/jsr/detail?id=269) and as such can be used within command line builds (javac, Ant, Maven etc.) as well as from within your IDE.
 
-Detailed instructions on the usage will be added soon, in between the [set up](http://docs.jboss.org/hibernate/stable/jpamodelgen/reference/en-US/html/chapter-usage.html) of the Hibernate JPA meta model generator can be used as general guideline for setting up an annotation processor.
+For Maven based projects add the following to your POM file in order to use MapStruct:
 
-In order to use MapStruct, you have to check out its sources as it is currently not available in any public Maven repository.
+```xml
+...
+<properties>
+    <org.mapstruct.version>[current MapStruct version]</org.mapstruct.version>
+    
+</properties>
+
+<!-- ... -->
+
+<dependencies>
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>${org.mapstruct.version}</version>
+    </dependency>
+</dependencies>
+
+<!-- ... -->
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.bsc.maven</groupId>
+            <artifactId>maven-processor-plugin</artifactId>
+            <version>2.0.2</version>
+            <configuration>
+                <defaultOutputDirectory>${project.build.directory}/generated-sources</defaultOutputDirectory>
+                <processors>
+                    <processor>org.mapstruct.ap.MappingProcessor</processor>
+                </processors>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>process</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                        <goal>process</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <dependencies>
+                <dependency>
+                    <groupId>org.mapstruct</groupId>
+                    <artifactId>mapstruct-processor</artifactId>
+                    <version>${org.mapstruct.version}</version>
+                </dependency>
+            </dependencies>
+        </plugin>
+    </plugins>
+</build>
+```
+
+NOTE: In order to use MapStruct, you currently have to check out its sources and build it yourself as it is not yet available in any public Maven repository.
 
 # What's next
 
-MapStruct is just in its very beginnings. There are several ideas for further features, including but not limited to:
+MapStruct is just in its very beginnings. Some ideas for further features:
 
-* Allow to generate mappers for several existing mapping frameworks (currently only Dozer is supported).
-* Generate "native" mappers, that is without any reflection, but by direcly invoking getters and setters within the generated mapper. This should deliver very efficient mapper implementations
-* Provide a way to access the underlying mapper in order to make use of advanced features not provided by the MapStruct API (similar to the `unwrap()` method of JPA etc.)
-* Provide a way to add custom mapping code in a very simple way
+* Support EL expressions to create derived attributes
+* Support mapping of collections of objects (lists, arrays, maps etc.)
+* Remove runtime dependencies to MapStruct by e.g. using the JDK service loader or dependency injection via CDI to retrieve mapper implementations
+* etc.
 
-Example:
-
-	@Mapper(extension=CarMapperCustomization.class)
-	public interface CarMapper {
-
-		CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
-	
-		//automatically generated mapping methods
-		CarDto carToCarDto(Car car);
-
-		Car carDtoToCar(CarDto carDto);
-
-		//very complex mapping which requires some hand-coding
-		Vehicle carToVehicle(Car car);
-	}
-
-	public abstract class CarMapperCustomization implements CarMapper {
-	
-		@Override
-		public Vehicle carToVehicle(Car car) {
-			//implement custom mapping logic
-		}
-	}
-
-* Remove runtime dependencies to MapStruct by using the JDK service loader to retrieve mapper implementations.
+Check out the [issue list](https://github.com/gunnarmorling/mapstruct/issues?state=open) for more details.
