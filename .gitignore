@@ -8,6 +8,7 @@
 *.iml
 *.ipr
 *.iws
+.idea
 
 # Build
 target
