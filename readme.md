@@ -4,7 +4,7 @@ MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/
 
 All you have to do is to define a mapper interfaces, annotate it with the `@Mapper` annotation and add the required mapping methods. During compilation, MapStruct will generate an implementation for the mapper interface. This implementation uses plain Java method invocations, i.e. no reflection or similar.
 
-## Hello World
+# Hello World
 
 The following shows a simple example for using MapStruct. First, let's define an object (e.g. a JPA entity) and an accompanying data transfer object (DTO):
 
@@ -64,37 +64,33 @@ public void shouldMapCarToDto() {
 }
 ```
 
-Sometimes not only the names of two corresponding attributes differ, but also their types. This can be addressed by defining a custom type converter:
+# Advanced mappings
 
-	public class IntToStringConverter implements Converter<Integer, String> {
+## Reverse mappings
 
-		@Override
-		public String from(Integer source) {
-			return source != null ? source.toString() : null;
-		}
+Often bi-directional mappings are required, e.g. from entity to DTO and from DTO to entity. For this purpose, simply declare a method with the required parameter and return type on the mapping interface which also declares the forward mapping method:
 
-		@Override
-		public Integer to(String target) {
-			return target != null ? Integer.valueOf( target ) : null;
-		}
-	}
-	
-To make use of a converter, specify its type within the `@Mapping` annotation:
+```java
+@Mapper
+public interface CarMapper {
 
-	@Mapper
-	public interface CarMapper {
+    CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
-		CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+	@Mapping(source = "numberOfSeats", target = "seatCount")
+	CarDto carToCarDto(Car car);
+    
+    Car carDtoToCar(CarDto carDto); (1)
+}
+```
 
-		@Mappings({
-			@Mapping(source = "numberOfSeats", target = "seatCount"),
-			@Mapping(source = "yearOfManufacture", target = "manufacturingYear", converter = IntToStringConverter.class)
-		})
-		CarDto carToCarDto(Car car);
+1. The `carDtoToCar()` method is the reverse mapping method for `carToCarDto()`. Note that the attribute mappings only have to be specified at one of the two methods and will be applied to the corresponding reverse mapping method as well.
 
-		Car carDtoToCar(CarDto carDto);
-	}
-	
+## Mapping referenced objects and collections
+
+Typically an object has not only primitive attributes but also references other objects. E.g. the `Car` class could contain a reference to a `Driver` object, while the `CarDto` class references a `DriverDto` object.
+
+TODO
+
 # Using MapStruct
 
 MapStruct is a Java annotation processor based on [JSR 269](jcp.org/en/jsr/detail?id=269) and as such can be used within command line builds (javac, Ant, Maven etc.) as well as from within your IDE.
@@ -107,9 +103,7 @@ For Maven based projects add the following to your POM file in order to use MapS
     <org.mapstruct.version>[current MapStruct version]</org.mapstruct.version>
     
 </properties>
-
-<!-- ... -->
-
+...
 <dependencies>
     <dependency>
         <groupId>org.mapstruct</groupId>
@@ -117,9 +111,7 @@ For Maven based projects add the following to your POM file in order to use MapS
         <version>${org.mapstruct.version}</version>
     </dependency>
 </dependencies>
-
-<!-- ... -->
-
+...
 <build>
     <plugins>
         <plugin>
