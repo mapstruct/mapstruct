@@ -131,11 +131,47 @@ public interface CarMapper {
 
 This method will be invoked by the generated implementation when mapping the `passengers` attribute.
 
-NOTE: Collection mapping methods may be generated without declaration in the future (see https://github.com/gunnarmorling/mapstruct/issues/3 and https://github.com/gunnarmorling/mapstruct/issues/4).
+NOTE: Collection mapping methods may be generated without declaration in the future (see issues [#3](https://github.com/gunnarmorling/mapstruct/issues/3) and [#4](https://github.com/gunnarmorling/mapstruct/issues/4)).
 
 ## Type mappings
 
-TODO
+Not always a mapped attribute has the same type in the source and target objects. MapStruct generates appropriate conversion code where possible (e.g. to map an `int` attribute to a String and vice versa by calling `toString()` and `parseInt()`, respectively.
+
+Where this is not automatically possible, you can implement mapping methods yourself and make these known to MapStruct. E.g. the `Car` class might contain an attribute `manufacturingDate` while the corresponding DTO attribute is of type String.
+
+In order to map this attribute, you could implement a mapper class like this:
+
+```java
+public class DateMapper {
+
+    public String asString(Date date) {
+        return date != null ? new SimpleDateFormat( "yyyy-MM-dd" ).format( date ) : null;
+    }
+
+    public Date asDate(String date) {
+        try {
+            return date != null ? new SimpleDateFormat( "yyyy-MM-dd" ).parse( date ) : null;
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+}
+```
+
+In the `@Mapper` annotation at the `CarMapper` interface reference this mapper class:
+
+```java
+@Mapper(uses=DateMapper.class)
+public class CarMapperMapper {
+
+    CarDto carToCarDto(Car car);
+    
+    //other mapping methods
+}
+```
+
+When generating code for the implementation of the `carToCarDto()` method, MapStruct will look for a method which maps a `Date` object into a String, find it on the `DateMapper` class and generate an invocation of `asString()` for mapping the `manufacturingDate` attribute.
 
 # Using MapStruct
 
