@@ -21,18 +21,49 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+        <relativePath/>
+    </parent>
+
     <groupId>org.mapstruct</groupId>
     <artifactId>mapstruct-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>MapStruct Parent</name>
-    <url>https://github.com/gunnarmorling/mapstruct</url>
+    <description>An annotation processor for generating type-safe bean mappers</description>
+    <url>http://http://www.mapstruct.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <com.jolira.hickory.version>1.0.0</com.jolira.hickory.version>
     </properties>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>gunnarmorling</id>
+            <name>Gunnar Morling</name>
+            <email>gunnar@mapstruct.org</email>
+            <url>http://www.gunnarmorling.de/</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/mapstruct/mapstruct.git</connection>
+        <developerConnection>scm:git:git@github.com:mapstruct/mapstruct.git</developerConnection>
+        <url>https://github.com/mapstruct/mapstruct/</url>
+    </scm>
 
     <dependencyManagement>
         <dependencies>
@@ -107,6 +138,11 @@
                     <artifactId>maven-processor-plugin</artifactId>
                     <version>2.0.2</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -117,6 +153,9 @@
                 <configuration>
                     <header>etc/license.txt</header>
                     <strictCheck>true</strictCheck>
+                    <excludes>
+                        <exclude>.idea/**</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
