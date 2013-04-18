@@ -244,4 +244,4 @@ MapStruct is just in its very beginnings. Some ideas for further features:
 * Remove runtime dependencies to MapStruct by e.g. using the JDK service loader or dependency injection via CDI to retrieve mapper implementations
 * etc.
 
-Check out the [issue list](https://github.com/gunnarmorling/mapstruct/issues?state=open) for more details.
+Check out the [issue list](https://github.com/mapstruct/mapstruct/issues?state=open) for more details.
