@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test;
+package org.mapstruct.ap.testutil;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,17 @@ import javax.tools.ToolProvider;
 
 import org.mapstruct.ap.MappingProcessor;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+/**
+ * Base class for all mapper tests. Sub-classes must implement
+ * {@link #getTestClasses()} to return the classes to be compiled for a given
+ * test.
+ *
+ * @author Gunnar Morling
+ */
 public abstract class MapperTestBase {
 
     private JavaCompiler compiler;
@@ -42,14 +52,14 @@ public abstract class MapperTestBase {
     private String sourceOutputDir;
     private List<File> classPath;
     private List<String> libraries;
+    private DiagnosticCollector<JavaFileObject> diagnostics;
 
-    public MapperTestBase(String... libraries) {
-        this.libraries = Arrays.asList( libraries );
+    public MapperTestBase() {
+        this.libraries = Arrays.asList( "mapstruct.jar" );
     }
 
     @BeforeClass
     public void setup() throws Exception {
-
         compiler = ToolProvider.getSystemJavaCompiler();
 
         String basePath = getBasePath();
@@ -75,29 +85,45 @@ public abstract class MapperTestBase {
         );
     }
 
-    protected File[] getSourceFiles(Class<?>... clazz) {
+    @BeforeMethod
+    public void generateMapperImplementation() {
+        diagnostics = new DiagnosticCollector<JavaFileObject>();
+        List<File> sourceFiles = getSourceFiles( getTestClasses() );
 
-        File[] sourceFiles = new File[clazz.length];
+        boolean compilationSuccessful = compile( diagnostics, sourceFiles );
 
-        for ( int i = 0; i < clazz.length; i++ ) {
+        assertThat( compilationSuccessful ).describedAs( "Compilation failed: " + diagnostics.getDiagnostics() )
+            .isTrue();
+    }
 
-            sourceFiles[i] = new File(
-                sourceDir +
-                    File.separator +
-                    clazz[i].getName().replace( ".", File.separator ) +
-                    ".java"
+    /**
+     * Returns the classes to be compiled for this test.
+     *
+     * @return A list containing the classes to be compiled for this test
+     */
+    protected abstract List<Class<?>> getTestClasses();
+
+    private List<File> getSourceFiles(List<Class<?>> classes) {
+        List<File> sourceFiles = new ArrayList<File>( classes.size() );
+
+        for ( Class<?> clazz : classes ) {
+            sourceFiles.add(
+                new File(
+                    sourceDir +
+                        File.separator +
+                        clazz.getName().replace( ".", File.separator ) +
+                        ".java"
+                )
             );
         }
-
 
         return sourceFiles;
     }
 
-    protected boolean compile(DiagnosticCollector<JavaFileObject> diagnostics, File... sourceFiles) {
-
+    private boolean compile(DiagnosticCollector<JavaFileObject> diagnostics, Iterable<File> sourceFiles) {
         StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, null );
 
-        Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjects( sourceFiles );
+        Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles( sourceFiles );
 
         try {
             fileManager.setLocation( StandardLocation.CLASS_PATH, classPath );
@@ -122,7 +148,6 @@ public abstract class MapperTestBase {
     }
 
     private String getBasePath() {
-
         try {
             return new File( "." ).getCanonicalPath();
         }
@@ -132,7 +157,6 @@ public abstract class MapperTestBase {
     }
 
     private void createOutputDirs() {
-
         File directory = new File( classOutputDir );
         deleteDirectory( directory );
         directory.mkdirs();
@@ -156,5 +180,4 @@ public abstract class MapperTestBase {
         }
         path.delete();
     }
-
 }

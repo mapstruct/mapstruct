@@ -13,41 +13,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test;
+package org.mapstruct.ap.test.conversion;
 
-import java.io.File;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaFileObject;
+import java.util.Arrays;
+import java.util.List;
 
-import org.mapstruct.ap.test.conversion.Source;
-import org.mapstruct.ap.test.conversion.SourceTargetMapper;
-import org.mapstruct.ap.test.conversion.Target;
-import org.testng.annotations.BeforeMethod;
+import org.mapstruct.ap.testutil.MapperTestBase;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ConversionTest extends MapperTestBase {
 
-    private DiagnosticCollector<JavaFileObject> diagnostics;
-
-    public ConversionTest() {
-        super( "mapstruct.jar" );
-    }
-
-    @BeforeMethod
-    public void generateMapperImplementation() {
-        diagnostics = new DiagnosticCollector<JavaFileObject>();
-        File[] sourceFiles = getSourceFiles(
+    @Override
+    protected List<Class<?>> getTestClasses() {
+        return Arrays.<Class<?>>asList(
             Source.class,
             Target.class,
             SourceTargetMapper.class
         );
-
-        boolean compilationSuccessful = compile( diagnostics, sourceFiles );
-
-        assertThat( compilationSuccessful ).describedAs( "Compilation failed: " + diagnostics.getDiagnostics() )
-            .isTrue();
     }
 
     @Test

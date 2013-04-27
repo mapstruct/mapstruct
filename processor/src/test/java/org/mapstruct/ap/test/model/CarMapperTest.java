@@ -13,40 +13,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test;
+package org.mapstruct.ap.test.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaFileObject;
 
-import org.mapstruct.ap.test.model.Car;
-import org.mapstruct.ap.test.model.CarDto;
-import org.mapstruct.ap.test.model.CarMapper;
-import org.mapstruct.ap.test.model.Category;
-import org.mapstruct.ap.test.model.DateMapper;
-import org.mapstruct.ap.test.model.Person;
-import org.mapstruct.ap.test.model.PersonDto;
-import org.testng.annotations.BeforeMethod;
+import org.mapstruct.ap.testutil.MapperTestBase;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class CarMapperTest extends MapperTestBase {
 
-    private DiagnosticCollector<JavaFileObject> diagnostics;
-
-    public CarMapperTest() {
-        super( "mapstruct.jar" );
-    }
-
-    @BeforeMethod
-    public void generateMapperImplementation() {
-        diagnostics = new DiagnosticCollector<JavaFileObject>();
-        File[] sourceFiles = getSourceFiles(
+    @Override
+    protected List<Class<?>> getTestClasses() {
+        return Arrays.<Class<?>>asList(
             Car.class,
             CarDto.class,
             Person.class,
@@ -55,11 +38,6 @@ public class CarMapperTest extends MapperTestBase {
             Category.class,
             DateMapper.class
         );
-
-        boolean compilationSuccessful = compile( diagnostics, sourceFiles );
-
-        assertThat( compilationSuccessful ).describedAs( "Compilation failed: " + diagnostics.getDiagnostics() )
-            .isTrue();
     }
 
     @Test
