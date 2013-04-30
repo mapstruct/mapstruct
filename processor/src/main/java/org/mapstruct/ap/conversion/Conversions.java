@@ -41,6 +41,7 @@ public class Conversions {
 
         register( int.class, Long.class, new IntLongConversion() );
         register( int.class, String.class, new IntStringConversion() );
+        register( Integer.class, String.class, new IntegerStringConversion() );
         register( Enum.class, String.class, new EnumStringConversion() );
     }
 
