@@ -34,6 +34,25 @@ public class Mapper {
         this.usedMapperTypes = usedMapperTypes;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder( "Mapper {" );
+
+        sb.append( "\n    packageName='" + packageName + "\'," );
+        sb.append( "\n    interfaceName='" + interfaceName + "\'," );
+        sb.append( "\n    implementationName='" + implementationName + "\'," );
+        sb.append( "\n    beanMappings=[" );
+
+        for ( BeanMapping beanMapping : beanMappings ) {
+            sb.append( "\n        " + beanMapping.toString().replaceAll( "\n", "\n        " ) );
+        }
+        sb.append( "\n    ]" );
+        sb.append( "\n    usedMapperTypes=" + usedMapperTypes );
+        sb.append( "\n}," );
+
+        return sb.toString();
+    }
+
     public String getPackageName() {
         return packageName;
     }

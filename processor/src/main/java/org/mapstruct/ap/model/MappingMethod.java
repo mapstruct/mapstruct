@@ -55,4 +55,13 @@ public class MappingMethod {
     public boolean isGenerationRequired() {
         return declaringMapper == null;
     }
+
+    @Override
+    public String toString() {
+        return "MappingMethod {" +
+            "\n    name='" + name + "\'," +
+            "\n    parameterName='" + parameterName + "\'," +
+            "\n    elementMappingMethod=" + elementMappingMethod +
+            "\n}";
+    }
 }

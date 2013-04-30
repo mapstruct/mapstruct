@@ -68,4 +68,18 @@ public class PropertyMapping {
     public String getFromConversion() {
         return fromConversion;
     }
+
+    @Override
+    public String toString() {
+        return "PropertyMapping {" +
+            "\n    sourceName='" + sourceName + "\'," +
+            "\n    sourceType=" + sourceType + "," +
+            "\n    targetName='" + targetName + "\'," +
+            "\n    targetType=" + targetType + "," +
+            "\n    mappingMethod=" + mappingMethod + "," +
+            "\n    reverseMappingMethod=" + reverseMappingMethod + "," +
+            "\n    toConversion='" + toConversion + "\'," +
+            "\n    fromConversion='" + fromConversion + "\'," +
+            "\n}";
+    }
 }

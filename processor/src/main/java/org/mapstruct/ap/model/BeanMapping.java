@@ -62,13 +62,23 @@ public class BeanMapping {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder sb = new StringBuilder( "BeanMapping {" );
 
-        stringBuilder.append( sourceType );
-        stringBuilder.append( " <=> " );
-        stringBuilder.append( targetType );
+        sb.append( "\n    sourceType=" + sourceType + ',' );
+        sb.append( "\n    targetType=" + targetType + ',' );
 
+        sb.append( "\n    propertyMappings=[\n" );
 
-        return stringBuilder.toString();
+        for ( PropertyMapping propertyMapping : propertyMappings ) {
+            sb.append( "        " + propertyMapping.toString().replaceAll( "\n", "\n        " ) );
+        }
+        sb.append( "\n    ]" );
+
+        sb.append( "\n    mappingMethod=" + mappingMethod.toString().replaceAll( "\n", "\n    " ) + ',' );
+        sb.append( "\n    reverseMappingMethod=" + reverseMappingMethod + ',' );
+        sb.append( "\n    isIterableMapping=" + isIterableMapping );
+        sb.append( "\n}" );
+
+        return sb.toString();
     }
 }
