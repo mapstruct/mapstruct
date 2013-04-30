@@ -15,9 +15,14 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Represents the type of a bean property, parameter etc.
@@ -30,10 +35,19 @@ public class Type {
         Arrays.asList( "boolean", "char", "byte", "short", "int", "long", "float", "double" )
     );
 
+    private final static ConcurrentMap<String, Type> defaultCollectionImplementationTypes = new ConcurrentHashMap<String, Type>();
+
+    static {
+        defaultCollectionImplementationTypes.put( List.class.getName(), forClass( ArrayList.class ) );
+        defaultCollectionImplementationTypes.put( Set.class.getName(), forClass( HashSet.class ) );
+        defaultCollectionImplementationTypes.put( Collection.class.getName(), forClass( ArrayList.class ) );
+    }
+
     private final String packageName;
     private final String name;
     private final Type elementType;
     private final boolean isEnumType;
+    private final Type implementingType;
 
     public static Type forClass(Class<?> clazz) {
         Package pakkage = clazz.getPackage();
@@ -50,15 +64,12 @@ public class Type {
         this( null, name, null, false );
     }
 
-    public Type(String packageName, String name) {
-        this( packageName, name, null, false );
-    }
-
     public Type(String packageName, String name, Type elementType, boolean isEnumType) {
         this.packageName = packageName;
         this.name = name;
         this.elementType = elementType;
         this.isEnumType = isEnumType;
+        implementingType = defaultCollectionImplementationTypes.get( packageName + "." + name );
     }
 
     public String getPackageName() {
@@ -79,6 +90,10 @@ public class Type {
 
     public boolean isEnumType() {
         return isEnumType;
+    }
+
+    public Type getImplementingType() {
+        return implementingType;
     }
 
     @Override

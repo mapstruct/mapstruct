@@ -18,7 +18,10 @@
 package ${packageName};
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Generated;
 import java.util.Date;
 
@@ -41,7 +44,7 @@ public class ${implementationName} implements ${interfaceName} {
             return null;
         }
 
-        ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.targetType.name?uncap_first} = new ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}>();
+        ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.targetType.name?uncap_first} = new <#if beanMapping.targetType.implementingType??>${beanMapping.targetType.implementingType.name}<#else>${beanMapping.targetType.name}</#if><${beanMapping.targetType.elementType.name}>();
         
         for ( ${beanMapping.sourceType.elementType.name} ${beanMapping.sourceType.elementType.name?uncap_first} : ${beanMapping.mappingMethod.parameterName} ) {
             ${beanMapping.targetType.name?uncap_first}.add( ${beanMapping.mappingMethod.elementMappingMethod.name}( ${beanMapping.sourceType.elementType.name?uncap_first} ) );
@@ -90,7 +93,7 @@ public class ${implementationName} implements ${interfaceName} {
             return null;
         }
 
-        ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.sourceType.name?uncap_first} = new ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}>();
+        ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.sourceType.name?uncap_first} = new <#if beanMapping.sourceType.implementingType??>${beanMapping.sourceType.implementingType.name}<#else>${beanMapping.sourceType.name}</#if><${beanMapping.sourceType.elementType.name}>();
         
         for ( ${beanMapping.targetType.elementType.name} ${beanMapping.targetType.elementType.name?uncap_first} : ${beanMapping.reverseMappingMethod.parameterName} ) {
             ${beanMapping.sourceType.name?uncap_first}.add( ${beanMapping.reverseMappingMethod.elementMappingMethod.name}( ${beanMapping.targetType.elementType.name?uncap_first} ) );

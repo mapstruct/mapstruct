@@ -15,7 +15,7 @@
  */
 package org.mapstruct.ap.test.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mappers;
@@ -35,15 +35,15 @@ public interface CarMapper {
 
     Car carDtoToCar(CarDto carDto);
 
-    ArrayList<CarDto> carsToCarDtos(ArrayList<Car> cars);
+    List<CarDto> carsToCarDtos(List<Car> cars);
 
-    ArrayList<Car> carDtosToCars(ArrayList<CarDto> carDtos);
+    List<Car> carDtosToCars(List<CarDto> carDtos);
 
     PersonDto personToPersonDto(Person person);
 
     Person personDtoToPerson(PersonDto personDto);
 
-    ArrayList<PersonDto> personsToPersonDtos(ArrayList<Person> persons);
+    List<PersonDto> personsToPersonDtos(List<Person> persons);
 
-    ArrayList<Person> personDtosToPersons(ArrayList<PersonDto> personDtos);
+    List<Person> personDtosToPersons(List<PersonDto> personDtos);
 }

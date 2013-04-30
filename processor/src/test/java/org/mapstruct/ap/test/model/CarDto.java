@@ -15,7 +15,7 @@
  */
 package org.mapstruct.ap.test.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CarDto {
 
@@ -23,14 +23,14 @@ public class CarDto {
     private int seatCount;
     private String manufacturingYear;
     private PersonDto driver;
-    private ArrayList<PersonDto> passengers;
+    private List<PersonDto> passengers;
     private Long price;
     private String category;
 
     public CarDto() {
     }
 
-    public CarDto(String make, int seatCount, String manufacturingYear, PersonDto driver, ArrayList<PersonDto> passengers) {
+    public CarDto(String make, int seatCount, String manufacturingYear, PersonDto driver, List<PersonDto> passengers) {
         this.make = make;
         this.seatCount = seatCount;
         this.manufacturingYear = manufacturingYear;
@@ -70,11 +70,11 @@ public class CarDto {
         this.driver = driver;
     }
 
-    public ArrayList<PersonDto> getPassengers() {
+    public List<PersonDto> getPassengers() {
         return passengers;
     }
 
-    public void setPassengers(ArrayList<PersonDto> passengers) {
+    public void setPassengers(List<PersonDto> passengers) {
         this.passengers = passengers;
     }
 
