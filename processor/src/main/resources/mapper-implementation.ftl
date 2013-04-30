@@ -38,7 +38,7 @@ public class ${implementationName} implements ${interfaceName} {
     @Override
     public ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.mappingMethod.name}(${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.mappingMethod.parameterName}) {
         if( ${beanMapping.mappingMethod.parameterName} == null ) {
-            return new ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}>();
+            return null;
         }
 
         ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.targetType.name?uncap_first} = new ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}>();
@@ -87,7 +87,7 @@ public class ${implementationName} implements ${interfaceName} {
     @Override
     public ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.reverseMappingMethod.name}(${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.reverseMappingMethod.parameterName}) {
         if( ${beanMapping.reverseMappingMethod.parameterName} == null ) {
-            return new ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}>();
+            return null;
         }
 
         ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.sourceType.name?uncap_first} = new ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}>();
