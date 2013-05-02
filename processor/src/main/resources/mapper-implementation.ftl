@@ -75,7 +75,13 @@ public class ${implementationName} implements ${interfaceName} {
                 <#elseif propertyMapping.mappingMethod??>
         ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( <#if propertyMapping.mappingMethod.declaringMapper??>${propertyMapping.mappingMethod.declaringMapper.name?uncap_first}.</#if>${propertyMapping.mappingMethod.name}( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() ) );
                 <#else>
+                    <#if propertyMapping.targetType.collectionType == true>
+        if ( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() != null ) {
+            ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( new <#if propertyMapping.targetType.implementingType??>${propertyMapping.targetType.implementingType.name}<#else>${propertyMapping.targetType.name}</#if><#if propertyMapping.targetType.elementType??><${propertyMapping.targetType.elementType.name}></#if>( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() ) );
+        }
+                    <#else>
         ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() );
+                    </#if>
                 </#if>
             </#list>
 
@@ -124,7 +130,13 @@ public class ${implementationName} implements ${interfaceName} {
                     <#elseif propertyMapping.reverseMappingMethod??>
         ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( <#if propertyMapping.reverseMappingMethod.declaringMapper??>${propertyMapping.reverseMappingMethod.declaringMapper.name?uncap_first}.</#if>${propertyMapping.reverseMappingMethod.name}( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() ) );
                     <#else>
+                        <#if propertyMapping.sourceType.collectionType == true>
+        if ( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() != null ) {
+            ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( new <#if propertyMapping.sourceType.implementingType??>${propertyMapping.sourceType.implementingType.name}<#else>${propertyMapping.sourceType.name}</#if><#if propertyMapping.sourceType.elementType??><${propertyMapping.sourceType.elementType.name}></#if>( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() ) );
+        }
+                        <#else>
         ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() );
+                        </#if>
                     </#if>
                 </#list>
 

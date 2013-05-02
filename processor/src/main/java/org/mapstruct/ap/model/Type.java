@@ -48,12 +48,19 @@ public class Type {
     private final Type elementType;
     private final boolean isEnumType;
     private final Type implementingType;
+    private final boolean isCollectionType;
 
     public static Type forClass(Class<?> clazz) {
         Package pakkage = clazz.getPackage();
 
         if ( pakkage != null ) {
-            return new Type( pakkage.getName(), clazz.getSimpleName(), null, clazz.isEnum() );
+            return new Type(
+                pakkage.getName(),
+                clazz.getSimpleName(),
+                null,
+                clazz.isEnum(),
+                Collection.class.isAssignableFrom( clazz )
+            );
         }
         else {
             return new Type( clazz.getSimpleName() );
@@ -61,15 +68,16 @@ public class Type {
     }
 
     public Type(String name) {
-        this( null, name, null, false );
+        this( null, name, null, false, false );
     }
 
-    public Type(String packageName, String name, Type elementType, boolean isEnumType) {
+    public Type(String packageName, String name, Type elementType, boolean isEnumType, boolean isCollectionType) {
         this.packageName = packageName;
         this.name = name;
         this.elementType = elementType;
         this.isEnumType = isEnumType;
         implementingType = defaultCollectionImplementationTypes.get( packageName + "." + name );
+        this.isCollectionType = isCollectionType;
     }
 
     public String getPackageName() {
@@ -94,6 +102,10 @@ public class Type {
 
     public Type getImplementingType() {
         return implementingType;
+    }
+
+    public boolean isCollectionType() {
+        return isCollectionType;
     }
 
     @Override

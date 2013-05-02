@@ -15,11 +15,23 @@
  */
 package org.mapstruct.ap.test.collection;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Source {
 
     private List<String> stringList;
+    private ArrayList<String> stringArrayList;
+
+    private Set<String> stringSet;
+    private HashSet<String> stringHashSet;
+
+    private Collection<String> stringCollection;
+
+    private List<Integer> integerList;
 
     public List<String> getStringList() {
         return stringList;
@@ -27,5 +39,45 @@ public class Source {
 
     public void setStringList(List<String> stringList) {
         this.stringList = stringList;
+    }
+
+    public ArrayList<String> getStringArrayList() {
+        return stringArrayList;
+    }
+
+    public void setStringArrayList(ArrayList<String> stringArrayList) {
+        this.stringArrayList = stringArrayList;
+    }
+
+    public Set<String> getStringSet() {
+        return stringSet;
+    }
+
+    public void setStringSet(Set<String> stringSet) {
+        this.stringSet = stringSet;
+    }
+
+    public HashSet<String> getStringHashSet() {
+        return stringHashSet;
+    }
+
+    public void setStringHashSet(HashSet<String> stringHashSet) {
+        this.stringHashSet = stringHashSet;
+    }
+
+    public Collection<String> getStringCollection() {
+        return stringCollection;
+    }
+
+    public void setStringCollection(Collection<String> stringCollection) {
+        this.stringCollection = stringCollection;
+    }
+
+    public List<Integer> getIntegerList() {
+        return integerList;
+    }
+
+    public void setIntegerList(List<Integer> integerList) {
+        this.integerList = integerList;
     }
 }

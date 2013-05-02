@@ -15,14 +15,20 @@
  */
 package org.mapstruct.ap.test.collection;
 
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mappers;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper
 public interface SourceTargetMapper {
 
     public static SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
+    @Mappings({
+        @Mapping(source = "integerList", target = "integerCollection")
+    })
     Target sourceToTarget(Source source);
+
+    Source targetToSource(Target target);
 }
