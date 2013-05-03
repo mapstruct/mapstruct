@@ -15,7 +15,6 @@
  */
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -37,4 +36,6 @@ public interface SourceTargetMapper {
     Set<TargetFoo> sourceFoosToTargetFoos(Set<SourceFoo> foos);
 
     Collection<TargetFoo> sourceFoosToTargetFoos(Collection<SourceFoo> foos);
+
+    Iterable<TargetFoo> sourceFoosToTargetFoos(Iterable<SourceFoo> foos);
 }

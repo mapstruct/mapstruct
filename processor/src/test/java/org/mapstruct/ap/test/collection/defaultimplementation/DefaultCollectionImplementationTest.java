@@ -70,4 +70,15 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
         assertThat( target ).isNotNull();
         assertThat( target.getFooCollection() ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
     }
+
+    @Test
+    @IssueKey("6")
+    public void shouldUseDefaultImplementationForIterable() {
+        Source source = new Source();
+        source.setFooIterable( Arrays.asList( new SourceFoo( "Bob" ), new SourceFoo( "Alice" ) ) );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getFooIterable() ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+    }
 }

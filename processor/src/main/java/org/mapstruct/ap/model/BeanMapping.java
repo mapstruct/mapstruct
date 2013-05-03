@@ -33,7 +33,7 @@ public class BeanMapping {
         this.propertyMappings = propertyMappings;
         this.mappingMethod = mappingMethod;
         this.reverseMappingMethod = reverseMappingMethod;
-        this.isIterableMapping = mappingMethod.getElementMappingMethod() != null;
+        this.isIterableMapping = sourceType.isIterableType() && targetType.isIterableType();
     }
 
     public Type getSourceType() {
@@ -56,7 +56,7 @@ public class BeanMapping {
         return reverseMappingMethod;
     }
 
-    public boolean getIterableMapping() {
+    public boolean isIterableMapping() {
         return isIterableMapping;
     }
 

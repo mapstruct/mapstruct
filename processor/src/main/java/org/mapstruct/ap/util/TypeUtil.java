@@ -29,18 +29,21 @@ public class TypeUtil {
 
     private final Elements elementUtils;
     private final Types typeUtils;
-    private TypeMirror collectionType;
+    private final TypeMirror collectionType;
+    private final TypeMirror iterableType;
 
     public TypeUtil(Elements elementUtils, Types typeUtils) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         collectionType = elementUtils.getTypeElement( Collection.class.getCanonicalName() ).asType();
+        iterableType = elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType();
     }
 
     public Type getType(DeclaredType type) {
         Type elementType = null;
 
-        if ( isIterableType( type ) && !type.getTypeArguments().isEmpty() ) {
+        boolean isIterableType = isIterableType( type );
+        if ( isIterableType && !type.getTypeArguments().isEmpty() ) {
             elementType = retrieveType( type.getTypeArguments().iterator().next() );
         }
 
@@ -49,13 +52,17 @@ public class TypeUtil {
             type.asElement().getSimpleName().toString(),
             elementType,
             type.asElement().getKind() == ElementKind.ENUM,
-            typeUtils.isAssignable( typeUtils.erasure( type ), typeUtils.erasure( collectionType ) )
+            isCollectionType( type ),
+            isIterableType
         );
     }
 
     private boolean isIterableType(DeclaredType type) {
-        TypeMirror iterableType = typeUtils.getDeclaredType( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ) );
-        return typeUtils.isSubtype( type, iterableType );
+        return typeUtils.isAssignable( typeUtils.erasure( type ), typeUtils.erasure( iterableType ) );
+    }
+
+    private boolean isCollectionType(DeclaredType type) {
+        return typeUtils.isAssignable( typeUtils.erasure( type ), typeUtils.erasure( collectionType ) );
     }
 
     public Type retrieveType(TypeMirror mirror) {

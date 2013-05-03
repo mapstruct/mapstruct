@@ -35,20 +35,26 @@ public class Type {
         Arrays.asList( "boolean", "char", "byte", "short", "int", "long", "float", "double" )
     );
 
+    private final static ConcurrentMap<String, Type> defaultIterableImplementationTypes = new ConcurrentHashMap<String, Type>();
     private final static ConcurrentMap<String, Type> defaultCollectionImplementationTypes = new ConcurrentHashMap<String, Type>();
 
     static {
         defaultCollectionImplementationTypes.put( List.class.getName(), forClass( ArrayList.class ) );
         defaultCollectionImplementationTypes.put( Set.class.getName(), forClass( HashSet.class ) );
         defaultCollectionImplementationTypes.put( Collection.class.getName(), forClass( ArrayList.class ) );
+
+        defaultIterableImplementationTypes.put( Iterable.class.getName(), forClass( ArrayList.class ) );
+        defaultIterableImplementationTypes.putAll( defaultCollectionImplementationTypes );
     }
 
     private final String packageName;
     private final String name;
     private final Type elementType;
     private final boolean isEnumType;
-    private final Type implementingType;
     private final boolean isCollectionType;
+    private final boolean isIterableType;
+    private final Type collectionImplementationType;
+    private final Type iterableImplementationType;
 
     public static Type forClass(Class<?> clazz) {
         Package pakkage = clazz.getPackage();
@@ -59,7 +65,8 @@ public class Type {
                 clazz.getSimpleName(),
                 null,
                 clazz.isEnum(),
-                Collection.class.isAssignableFrom( clazz )
+                Collection.class.isAssignableFrom( clazz ),
+                Iterable.class.isAssignableFrom( clazz )
             );
         }
         else {
@@ -68,16 +75,30 @@ public class Type {
     }
 
     public Type(String name) {
-        this( null, name, null, false, false );
+        this( null, name, null, false, false, false );
     }
 
-    public Type(String packageName, String name, Type elementType, boolean isEnumType, boolean isCollectionType) {
+    public Type(String packageName, String name, Type elementType, boolean isEnumType, boolean isCollectionType, boolean isIterableType) {
         this.packageName = packageName;
         this.name = name;
         this.elementType = elementType;
         this.isEnumType = isEnumType;
-        implementingType = defaultCollectionImplementationTypes.get( packageName + "." + name );
         this.isCollectionType = isCollectionType;
+        this.isIterableType = isIterableType;
+
+        if ( isCollectionType ) {
+            collectionImplementationType = defaultCollectionImplementationTypes.get( packageName + "." + name );
+        }
+        else {
+            collectionImplementationType = null;
+        }
+
+        if ( isIterableType ) {
+            iterableImplementationType = defaultIterableImplementationTypes.get( packageName + "." + name );
+        }
+        else {
+            iterableImplementationType = null;
+        }
     }
 
     public String getPackageName() {
@@ -100,12 +121,20 @@ public class Type {
         return isEnumType;
     }
 
-    public Type getImplementingType() {
-        return implementingType;
+    public Type getCollectionImplementationType() {
+        return collectionImplementationType;
+    }
+
+    public Type getIterableImplementationType() {
+        return iterableImplementationType;
     }
 
     public boolean isCollectionType() {
         return isCollectionType;
+    }
+
+    public boolean isIterableType() {
+        return isIterableType;
     }
 
     @Override

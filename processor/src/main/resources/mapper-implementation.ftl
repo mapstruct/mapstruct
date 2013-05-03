@@ -44,12 +44,13 @@ public class ${implementationName} implements ${interfaceName} {
             return null;
         }
 
-        ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.targetType.name?uncap_first} = new <#if beanMapping.targetType.implementingType??>${beanMapping.targetType.implementingType.name}<#else>${beanMapping.targetType.name}</#if><${beanMapping.targetType.elementType.name}>();
-        
+        <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
+        <#if beanMapping.targetType.name == "Iterable" && beanMapping.targetType.packageName == "java.lang">${beanMapping.targetType.iterableImplementationType.name}<#else>${beanMapping.targetType.name}</#if><${beanMapping.targetType.elementType.name}> ${beanMapping.targetType.name?uncap_first} = new <#if beanMapping.targetType.iterableImplementationType??>${beanMapping.targetType.iterableImplementationType.name}<#else>${beanMapping.targetType.name}</#if><${beanMapping.targetType.elementType.name}>();
+
         for ( ${beanMapping.sourceType.elementType.name} ${beanMapping.sourceType.elementType.name?uncap_first} : ${beanMapping.mappingMethod.parameterName} ) {
             ${beanMapping.targetType.name?uncap_first}.add( ${beanMapping.mappingMethod.elementMappingMethod.name}( ${beanMapping.sourceType.elementType.name?uncap_first} ) );
         }
-        
+
         return ${beanMapping.targetType.name?uncap_first};
     }
         <#else>
@@ -77,7 +78,7 @@ public class ${implementationName} implements ${interfaceName} {
                 <#else>
                     <#if propertyMapping.targetType.collectionType == true>
         if ( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() != null ) {
-            ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( new <#if propertyMapping.targetType.implementingType??>${propertyMapping.targetType.implementingType.name}<#else>${propertyMapping.targetType.name}</#if><#if propertyMapping.targetType.elementType??><${propertyMapping.targetType.elementType.name}></#if>( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() ) );
+            ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( new <#if propertyMapping.targetType.collectionImplementationType??>${propertyMapping.targetType.collectionImplementationType.name}<#else>${propertyMapping.targetType.name}</#if><#if propertyMapping.targetType.elementType??><${propertyMapping.targetType.elementType.name}></#if>( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() ) );
         }
                     <#else>
         ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() );
@@ -99,7 +100,8 @@ public class ${implementationName} implements ${interfaceName} {
             return null;
         }
 
-        ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.sourceType.name?uncap_first} = new <#if beanMapping.sourceType.implementingType??>${beanMapping.sourceType.implementingType.name}<#else>${beanMapping.sourceType.name}</#if><${beanMapping.sourceType.elementType.name}>();
+        <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
+        <#if beanMapping.sourceType.name == "Iterable" && beanMapping.sourceType.packageName == "java.lang">${beanMapping.sourceType.iterableImplementationType.name}<#else>${beanMapping.sourceType.name}</#if><${beanMapping.sourceType.elementType.name}> ${beanMapping.sourceType.name?uncap_first} = new <#if beanMapping.sourceType.iterableImplementationType??>${beanMapping.sourceType.iterableImplementationType.name}<#else>${beanMapping.sourceType.name}</#if><${beanMapping.sourceType.elementType.name}>();
         
         for ( ${beanMapping.targetType.elementType.name} ${beanMapping.targetType.elementType.name?uncap_first} : ${beanMapping.reverseMappingMethod.parameterName} ) {
             ${beanMapping.sourceType.name?uncap_first}.add( ${beanMapping.reverseMappingMethod.elementMappingMethod.name}( ${beanMapping.targetType.elementType.name?uncap_first} ) );
@@ -132,7 +134,7 @@ public class ${implementationName} implements ${interfaceName} {
                     <#else>
                         <#if propertyMapping.sourceType.collectionType == true>
         if ( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() != null ) {
-            ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( new <#if propertyMapping.sourceType.implementingType??>${propertyMapping.sourceType.implementingType.name}<#else>${propertyMapping.sourceType.name}</#if><#if propertyMapping.sourceType.elementType??><${propertyMapping.sourceType.elementType.name}></#if>( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() ) );
+            ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( new <#if propertyMapping.sourceType.collectionImplementationType??>${propertyMapping.sourceType.collectionImplementationType.name}<#else>${propertyMapping.sourceType.name}</#if><#if propertyMapping.sourceType.elementType??><${propertyMapping.sourceType.elementType.name}></#if>( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() ) );
         }
                         <#else>
         ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() );

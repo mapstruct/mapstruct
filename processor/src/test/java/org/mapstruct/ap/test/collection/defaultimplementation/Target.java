@@ -27,6 +27,8 @@ public class Target {
 
     private Collection<TargetFoo> fooCollection;
 
+    private Iterable<TargetFoo> fooIterable;
+
     public List<TargetFoo> getFooList() {
         return fooList;
     }
@@ -49,5 +51,13 @@ public class Target {
 
     public void setFooCollection(Collection<TargetFoo> fooCollection) {
         this.fooCollection = fooCollection;
+    }
+
+    public Iterable<TargetFoo> getFooIterable() {
+        return fooIterable;
+    }
+
+    public void setFooIterable(Iterable<TargetFoo> fooIterable) {
+        this.fooIterable = fooIterable;
     }
 }
