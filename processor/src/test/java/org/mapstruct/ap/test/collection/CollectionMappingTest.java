@@ -202,4 +202,16 @@ public class CollectionMappingTest extends MapperTestBase {
         assertThat( source ).isNotNull();
         assertThat( source.getIntegerList() ).containsOnly( 1, 2 );
     }
+
+    @Test
+    @IssueKey("6")
+    public void shouldMapIntegerSetToRawSet() {
+        Source source = new Source();
+        source.setIntegerSet( new HashSet<Integer>( Arrays.asList( 1, 2 ) ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getSet() ).containsOnly( 1, 2 );
+    }
 }

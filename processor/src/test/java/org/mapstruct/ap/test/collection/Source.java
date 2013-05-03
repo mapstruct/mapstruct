@@ -33,6 +33,8 @@ public class Source {
 
     private List<Integer> integerList;
 
+    private Set<Integer> integerSet;
+
     public List<String> getStringList() {
         return stringList;
     }
@@ -79,5 +81,13 @@ public class Source {
 
     public void setIntegerList(List<Integer> integerList) {
         this.integerList = integerList;
+    }
+
+    public Set<Integer> getIntegerSet() {
+        return integerSet;
+    }
+
+    public void setIntegerSet(Set<Integer> integerSet) {
+        this.integerSet = integerSet;
     }
 }

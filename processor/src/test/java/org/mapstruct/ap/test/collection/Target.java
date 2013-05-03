@@ -33,6 +33,9 @@ public class Target {
 
     private Collection<Integer> integerCollection;
 
+    @SuppressWarnings("rawtypes")
+    private Set set;
+
     public List<String> getStringList() {
         return stringList;
     }
@@ -79,5 +82,15 @@ public class Target {
 
     public void setIntegerCollection(Collection<Integer> integerCollection) {
         this.integerCollection = integerCollection;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public Set getSet() {
+        return set;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void setSet(Set set) {
+        this.set = set;
     }
 }

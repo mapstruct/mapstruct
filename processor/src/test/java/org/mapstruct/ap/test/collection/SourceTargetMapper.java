@@ -26,7 +26,8 @@ public interface SourceTargetMapper {
     public static SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
-        @Mapping(source = "integerList", target = "integerCollection")
+        @Mapping(source = "integerList", target = "integerCollection"),
+        @Mapping(source = "integerSet", target = "set")
     })
     Target sourceToTarget(Source source);
 
