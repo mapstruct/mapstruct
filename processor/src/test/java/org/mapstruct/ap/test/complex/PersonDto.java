@@ -13,16 +13,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.model;
+package org.mapstruct.ap.test.complex;
 
-public class Person {
+public class PersonDto {
 
     private String name;
 
-    public Person() {
+    public PersonDto() {
     }
 
-    public Person(String name) {
+    public PersonDto(String name) {
         this.name = name;
     }
 

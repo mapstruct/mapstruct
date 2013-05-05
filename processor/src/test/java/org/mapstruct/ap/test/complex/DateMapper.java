@@ -13,24 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.model;
+package org.mapstruct.ap.test.complex;
 
-public class PersonDto {
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-    private String name;
+public class DateMapper {
 
-    public PersonDto() {
+    public String asString(Date date) {
+        return date != null ? new SimpleDateFormat( "yyyy" ).format( date ) : null;
     }
 
-    public PersonDto(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public Date asDate(String date) {
+        try {
+            return date != null ? new SimpleDateFormat( "yyyy" ).parse( date ) : null;
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
     }
 }
