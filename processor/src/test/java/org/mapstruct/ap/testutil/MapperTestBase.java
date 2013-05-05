@@ -101,7 +101,10 @@ public abstract class MapperTestBase {
      *
      * @return A list containing the classes to be compiled for this test
      */
-    protected abstract List<Class<?>> getTestClasses();
+    private List<Class<?>> getTestClasses() {
+        WithClasses withClasses = this.getClass().getAnnotation( WithClasses.class );
+        return withClasses != null ? Arrays.asList( withClasses.value() ) : Collections.<Class<?>>emptyList();
+    }
 
     private List<File> getSourceFiles(List<Class<?>> classes) {
         List<File> sourceFiles = new ArrayList<File>( classes.size() );

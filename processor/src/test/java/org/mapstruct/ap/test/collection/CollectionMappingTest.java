@@ -19,25 +19,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+@WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class })
 public class CollectionMappingTest extends MapperTestBase {
-
-    @Override
-    protected List<Class<?>> getTestClasses() {
-        return Arrays.<Class<?>>asList(
-            Source.class,
-            Target.class,
-            Colour.class,
-            SourceTargetMapper.class
-        );
-    }
 
     @Test
     @IssueKey("6")

@@ -15,24 +15,14 @@
  */
 package org.mapstruct.ap.test.conversion;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.mapstruct.ap.testutil.MapperTestBase;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+@WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 public class ConversionTest extends MapperTestBase {
-
-    @Override
-    protected List<Class<?>> getTestClasses() {
-        return Arrays.<Class<?>>asList(
-            Source.class,
-            Target.class,
-            SourceTargetMapper.class
-        );
-    }
 
     @Test
     public void shouldApplyConversions() {

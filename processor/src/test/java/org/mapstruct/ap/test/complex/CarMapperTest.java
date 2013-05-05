@@ -21,24 +21,21 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.mapstruct.ap.testutil.MapperTestBase;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+@WithClasses({
+    Car.class,
+    CarDto.class,
+    Person.class,
+    PersonDto.class,
+    CarMapper.class,
+    Category.class,
+    DateMapper.class
+})
 public class CarMapperTest extends MapperTestBase {
-
-    @Override
-    protected List<Class<?>> getTestClasses() {
-        return Arrays.<Class<?>>asList(
-            Car.class,
-            CarDto.class,
-            Person.class,
-            PersonDto.class,
-            CarMapper.class,
-            Category.class,
-            DateMapper.class
-        );
-    }
 
     @Test
     public void shouldProvideMapperInstance() throws Exception {
