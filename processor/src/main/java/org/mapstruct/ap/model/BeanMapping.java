@@ -25,15 +25,19 @@ public class BeanMapping {
     private final MappingMethod mappingMethod;
     private final MappingMethod reverseMappingMethod;
     private final boolean isIterableMapping;
+    private final String toConversion;
+    private final String fromConversion;
 
     public BeanMapping(Type sourceType, Type targetType, List<PropertyMapping> propertyMappings, MappingMethod mappingMethod,
-                       MappingMethod reverseMappingMethod) {
+                       MappingMethod reverseMappingMethod, String toConversion, String fromConversion) {
         this.sourceType = sourceType;
         this.targetType = targetType;
         this.propertyMappings = propertyMappings;
         this.mappingMethod = mappingMethod;
         this.reverseMappingMethod = reverseMappingMethod;
         this.isIterableMapping = sourceType.isIterableType() && targetType.isIterableType();
+        this.toConversion = toConversion;
+        this.fromConversion = fromConversion;
     }
 
     public Type getSourceType() {
@@ -60,6 +64,14 @@ public class BeanMapping {
         return isIterableMapping;
     }
 
+    public String getToConversion() {
+        return toConversion;
+    }
+
+    public String getFromConversion() {
+        return fromConversion;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder( "BeanMapping {" );
@@ -76,6 +88,8 @@ public class BeanMapping {
 
         sb.append( "\n    mappingMethod=" + mappingMethod.toString().replaceAll( "\n", "\n    " ) + ',' );
         sb.append( "\n    reverseMappingMethod=" + reverseMappingMethod + ',' );
+        sb.append( "\n    toConversion=" + toConversion + ',' );
+        sb.append( "\n    fromConversion=" + fromConversion + ',' );
         sb.append( "\n    isIterableMapping=" + isIterableMapping );
         sb.append( "\n}" );
 

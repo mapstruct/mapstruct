@@ -35,6 +35,10 @@ public class Source {
 
     private Set<Integer> integerSet;
 
+    private Set<Integer> anotherIntegerSet;
+
+    private Set<Colour> colours;
+
     public List<String> getStringList() {
         return stringList;
     }
@@ -89,5 +93,21 @@ public class Source {
 
     public void setIntegerSet(Set<Integer> integerSet) {
         this.integerSet = integerSet;
+    }
+
+    public Set<Integer> getAnotherIntegerSet() {
+        return anotherIntegerSet;
+    }
+
+    public void setAnotherIntegerSet(Set<Integer> anotherIntegerSet) {
+        this.anotherIntegerSet = anotherIntegerSet;
+    }
+
+    public Set<Colour> getColours() {
+        return colours;
+    }
+
+    public void setColours(Set<Colour> colours) {
+        this.colours = colours;
     }
 }

@@ -15,6 +15,8 @@
  */
 package org.mapstruct.ap.test.collection;
 
+import java.util.Set;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mappers;
 import org.mapstruct.Mapping;
@@ -27,9 +29,18 @@ public interface SourceTargetMapper {
 
     @Mappings({
         @Mapping(source = "integerList", target = "integerCollection"),
-        @Mapping(source = "integerSet", target = "set")
+        @Mapping(source = "integerSet", target = "set"),
+        @Mapping(source = "anotherIntegerSet", target = "anotherStringSet")
     })
     Target sourceToTarget(Source source);
 
     Source targetToSource(Target target);
+
+    Set<String> integerSetToStringSet(Set<Integer> integers);
+
+    Set<Integer> stringSetToIntegerSet(Set<String> strings);
+
+    Set<String> colourSetToStringSet(Set<Colour> colours);
+
+    Set<Colour> stringSetToColourSet(Set<String> colours);
 }

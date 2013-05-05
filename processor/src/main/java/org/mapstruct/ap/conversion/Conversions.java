@@ -54,6 +54,9 @@ public class Conversions {
         if ( sourceType.isEnumType() && targetType.equals( typeUtil.getType( stringType ) ) ) {
             sourceType = typeUtil.getType( enumType );
         }
+        else if ( targetType.isEnumType() && sourceType.equals( typeUtil.getType( stringType ) ) ) {
+            targetType = typeUtil.getType( enumType );
+        }
 
         return conversions.get( new Key( sourceType, targetType ) );
     }

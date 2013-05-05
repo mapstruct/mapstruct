@@ -48,7 +48,11 @@ public class ${implementationName} implements ${interfaceName} {
         <#if beanMapping.targetType.name == "Iterable" && beanMapping.targetType.packageName == "java.lang">${beanMapping.targetType.iterableImplementationType.name}<#else>${beanMapping.targetType.name}</#if><${beanMapping.targetType.elementType.name}> ${beanMapping.targetType.name?uncap_first} = new <#if beanMapping.targetType.iterableImplementationType??>${beanMapping.targetType.iterableImplementationType.name}<#else>${beanMapping.targetType.name}</#if><${beanMapping.targetType.elementType.name}>();
 
         for ( ${beanMapping.sourceType.elementType.name} ${beanMapping.sourceType.elementType.name?uncap_first} : ${beanMapping.mappingMethod.parameterName} ) {
+            <#if beanMapping.toConversion??>
+            ${beanMapping.targetType.name?uncap_first}.add( ${beanMapping.toConversion} );
+            <#else>
             ${beanMapping.targetType.name?uncap_first}.add( ${beanMapping.mappingMethod.elementMappingMethod.name}( ${beanMapping.sourceType.elementType.name?uncap_first} ) );
+            </#if>
         }
 
         return ${beanMapping.targetType.name?uncap_first};
@@ -94,6 +98,7 @@ public class ${implementationName} implements ${interfaceName} {
     <#if beanMapping.reverseMappingMethod??>
         <#if beanMapping.reverseMappingMethod.generationRequired == true>
             <#if beanMapping.iterableMapping == true>
+
     @Override
     public ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.reverseMappingMethod.name}(${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.reverseMappingMethod.parameterName}) {
         if( ${beanMapping.reverseMappingMethod.parameterName} == null ) {
@@ -102,9 +107,13 @@ public class ${implementationName} implements ${interfaceName} {
 
         <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
         <#if beanMapping.sourceType.name == "Iterable" && beanMapping.sourceType.packageName == "java.lang">${beanMapping.sourceType.iterableImplementationType.name}<#else>${beanMapping.sourceType.name}</#if><${beanMapping.sourceType.elementType.name}> ${beanMapping.sourceType.name?uncap_first} = new <#if beanMapping.sourceType.iterableImplementationType??>${beanMapping.sourceType.iterableImplementationType.name}<#else>${beanMapping.sourceType.name}</#if><${beanMapping.sourceType.elementType.name}>();
-        
+
         for ( ${beanMapping.targetType.elementType.name} ${beanMapping.targetType.elementType.name?uncap_first} : ${beanMapping.reverseMappingMethod.parameterName} ) {
+            <#if beanMapping.fromConversion??>
+            ${beanMapping.sourceType.name?uncap_first}.add( ${beanMapping.fromConversion} );
+            <#else>
             ${beanMapping.sourceType.name?uncap_first}.add( ${beanMapping.reverseMappingMethod.elementMappingMethod.name}( ${beanMapping.targetType.elementType.name?uncap_first} ) );
+            </#if>
         }
 
         return ${beanMapping.sourceType.name?uncap_first};

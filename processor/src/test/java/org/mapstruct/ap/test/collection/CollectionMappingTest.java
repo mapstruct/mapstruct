@@ -17,6 +17,7 @@ package org.mapstruct.ap.test.collection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class CollectionMappingTest extends MapperTestBase {
         return Arrays.<Class<?>>asList(
             Source.class,
             Target.class,
+            Colour.class,
             SourceTargetMapper.class
         );
     }
@@ -213,5 +215,53 @@ public class CollectionMappingTest extends MapperTestBase {
 
         assertThat( target ).isNotNull();
         assertThat( target.getSet() ).containsOnly( 1, 2 );
+    }
+
+    @Test
+    @IssueKey("6")
+    public void shouldMapIntegerSetToStringSet() {
+        Source source = new Source();
+        source.setAnotherIntegerSet( new HashSet<Integer>( Arrays.asList( 1, 2 ) ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getAnotherStringSet() ).containsOnly( "1", "2" );
+    }
+
+    @Test
+    @IssueKey("6")
+    public void shouldReverseMapIntegerSetToStringSet() {
+        Target target = new Target();
+        target.setAnotherStringSet( new HashSet<String>( Arrays.asList( "1", "2" ) ) );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getAnotherIntegerSet() ).containsOnly( 1, 2 );
+    }
+
+    @Test
+    @IssueKey("6")
+    public void shouldMapSetOfEnumToStringSet() {
+        Source source = new Source();
+        source.setColours( EnumSet.of( Colour.BLUE, Colour.GREEN ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getColours() ).containsOnly( "BLUE", "GREEN" );
+    }
+
+    @Test
+    @IssueKey("6")
+    public void shouldReverseMapSetOfEnumToStringSet() {
+        Target target = new Target();
+        target.setColours( new HashSet<String>( Arrays.asList( "BLUE", "GREEN" ) ) );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getColours() ).containsOnly( Colour.GREEN, Colour.BLUE );
     }
 }

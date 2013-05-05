@@ -178,17 +178,54 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                     )
                 );
             }
+
+            boolean isIterableMapping = method.getSourceType().isIterableType() && method.getTargetType()
+                .isIterableType();
+
+            String toConversionString = null;
+            String fromConversionString = null;
+
+            if ( isIterableMapping ) {
+                toConversionString = getIterableConversionString(
+                    conversions,
+                    method.getSourceType().getElementType(),
+                    method.getTargetType().getElementType(),
+                    true
+                );
+                fromConversionString = getIterableConversionString(
+                    conversions,
+                    method.getTargetType().getElementType(),
+                    method.getSourceType().getElementType(),
+                    false
+                );
+            }
+
             BeanMapping mapping = new BeanMapping(
                 method.getSourceType(),
                 method.getTargetType(),
                 propertyMappings,
                 mappingMethod,
-                reverseMappingMethod
+                reverseMappingMethod,
+                toConversionString,
+                fromConversionString
             );
 
             mappings.add( mapping );
         }
         return mappings;
+    }
+
+    private String getIterableConversionString(Conversions conversions, Type sourceElementType, Type targetElementType, boolean isToConversion) {
+        Conversion conversion = conversions.getConversion( sourceElementType, targetElementType );
+
+        if ( conversion == null ) {
+            return null;
+        }
+
+        return conversion.to(
+            Introspector.decapitalize( sourceElementType.getName() ),
+            targetElementType
+        );
     }
 
     private List<Type> getUsedMapperTypes(TypeElement element) {

@@ -33,6 +33,10 @@ public class Target {
 
     private Collection<Integer> integerCollection;
 
+    private Set<String> anotherStringSet;
+
+    private Set<String> colours;
+
     @SuppressWarnings("rawtypes")
     private Set set;
 
@@ -92,5 +96,21 @@ public class Target {
     @SuppressWarnings("rawtypes")
     public void setSet(Set set) {
         this.set = set;
+    }
+
+    public Set<String> getAnotherStringSet() {
+        return anotherStringSet;
+    }
+
+    public void setAnotherStringSet(Set<String> anotherStringSet) {
+        this.anotherStringSet = anotherStringSet;
+    }
+
+    public void setColours(Set<String> colours) {
+        this.colours = colours;
+    }
+
+    public Set<String> getColours() {
+        return colours;
     }
 }
