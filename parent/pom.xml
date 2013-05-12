@@ -83,6 +83,11 @@
                 <version>1.4</version>
             </dependency>
             <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>14.0.1</version>
+            </dependency>
+            <dependency>
                 <groupId>com.jolira</groupId>
                 <artifactId>hickory</artifactId>
                 <version>${com.jolira.hickory.version}</version>

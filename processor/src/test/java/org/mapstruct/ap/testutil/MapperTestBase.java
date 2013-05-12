@@ -59,7 +59,7 @@ public abstract class MapperTestBase {
     private DiagnosticCollector<JavaFileObject> diagnostics;
 
     public MapperTestBase() {
-        this.libraries = Arrays.asList( "mapstruct.jar" );
+        this.libraries = Arrays.asList( "mapstruct.jar", "guava.jar" );
     }
 
     @BeforeClass
@@ -107,7 +107,7 @@ public abstract class MapperTestBase {
 
         if ( expectedResult.getCompilationResult() == CompilationResult.SUCCEEDED ) {
             assertThat( actualResult.getCompilationResult() )
-                .describedAs( "Compilation failed. Diagnostics: " + actualResult.getDiagnostics() )
+                .describedAs( "Compilation failed. Diagnostics: " + diagnostics.getDiagnostics() )
                 .isEqualTo( CompilationResult.SUCCEEDED );
         }
         else {

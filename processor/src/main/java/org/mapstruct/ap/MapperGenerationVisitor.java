@@ -34,6 +34,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import org.mapstruct.ap.conversion.Conversion;
@@ -308,6 +309,26 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                     properties
                 )
             );
+
+            if ( declaringMapper == null ) {
+                if ( parameter.getType().isIterableType() && !returnType.isIterableType() ) {
+                    processingEnvironment.getMessager()
+                        .printMessage(
+                            Kind.ERROR,
+                            "Can't generate mapping method from iterable type to non-iterable ype.",
+                            method
+                        );
+                }
+
+                if ( !parameter.getType().isIterableType() && returnType.isIterableType() ) {
+                    processingEnvironment.getMessager()
+                        .printMessage(
+                            Kind.ERROR,
+                            "Can't generate mapping method from non-iterable type to iterable ype.",
+                            method
+                        );
+                }
+            }
         }
 
         MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -63,7 +64,10 @@ public class CompilationOutcomeDescriptor {
 
         Set<DiagnosticDescriptor> diagnosticDescriptors = new HashSet<DiagnosticDescriptor>();
         for ( javax.tools.Diagnostic<? extends JavaFileObject> diagnostic : diagnostics ) {
-            diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( sourceDir, diagnostic ) );
+            //ignore notes created by the compiler
+            if ( diagnostic.getKind() != Kind.NOTE ) {
+                diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( sourceDir, diagnostic ) );
+            }
         }
 
         return new CompilationOutcomeDescriptor( compilationResult, diagnosticDescriptors );
