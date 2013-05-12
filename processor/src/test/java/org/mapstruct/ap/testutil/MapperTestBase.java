@@ -17,6 +17,7 @@ package org.mapstruct.ap.testutil;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -32,6 +33,9 @@ import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
 import org.mapstruct.ap.MappingProcessor;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
@@ -71,8 +75,8 @@ public abstract class MapperTestBase {
         String testDependenciesDir = basePath + "/target/test-dependencies/";
 
         classPath = new ArrayList<File>();
-        for ( String oneLibrary : libraries ) {
-            classPath.add( new File( testDependenciesDir, oneLibrary ) );
+        for ( String library : libraries ) {
+            classPath.add( new File( testDependenciesDir, library ) );
         }
 
         createOutputDirs();
@@ -86,14 +90,33 @@ public abstract class MapperTestBase {
     }
 
     @BeforeMethod
-    public void generateMapperImplementation() {
+    public void generateMapperImplementation(Method testMethod) {
         diagnostics = new DiagnosticCollector<JavaFileObject>();
         List<File> sourceFiles = getSourceFiles( getTestClasses() );
 
         boolean compilationSuccessful = compile( diagnostics, sourceFiles );
 
-        assertThat( compilationSuccessful ).describedAs( "Compilation failed: " + diagnostics.getDiagnostics() )
-            .isTrue();
+        CompilationOutcomeDescriptor actualResult = CompilationOutcomeDescriptor.forResult(
+            sourceDir,
+            compilationSuccessful,
+            diagnostics.getDiagnostics()
+        );
+        CompilationOutcomeDescriptor expectedResult = CompilationOutcomeDescriptor.forExpectedCompilationResult(
+            testMethod.getAnnotation( ExpectedCompilationOutcome.class )
+        );
+
+        if ( expectedResult.getCompilationResult() == CompilationResult.SUCCEEDED ) {
+            assertThat( actualResult.getCompilationResult() )
+                .describedAs( "Compilation failed. Diagnostics: " + actualResult.getDiagnostics() )
+                .isEqualTo( CompilationResult.SUCCEEDED );
+        }
+        else {
+            assertThat( actualResult.getCompilationResult() )
+                .describedAs( "Compilation succeeded but should have failed." )
+                .isEqualTo( CompilationResult.FAILED );
+        }
+
+        assertThat( actualResult.getDiagnostics() ).isEqualTo( expectedResult.getDiagnostics() );
     }
 
     /**
