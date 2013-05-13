@@ -17,14 +17,13 @@ package org.mapstruct.ap.testutil.compilation.model;
 
 import java.io.File;
 import java.io.IOException;
-
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 
 /**
- * Represents a diagnostic ocurred during a compilation.
+ * Represents a diagnostic occurred during a compilation.
  *
  * @author Gunnar Morling
  */
@@ -48,18 +47,26 @@ public class DiagnosticDescriptor {
     }
 
     public static DiagnosticDescriptor forDiagnostic(String sourceDir, javax.tools.Diagnostic<? extends JavaFileObject> diagnostic) {
-        try
-        {
-            String sourceName = new File(diagnostic.getSource().toUri()).getCanonicalPath();
-            return new DiagnosticDescriptor(
-                (sourceName.length() > sourceDir.length() ? sourceName.substring( sourceDir.length() + 1 ) : sourceName),
-                diagnostic.getKind(),
-                diagnostic.getLineNumber(),
-                ""
-            );
+        return new DiagnosticDescriptor(
+            getSourceName( sourceDir, diagnostic ),
+            diagnostic.getKind(),
+            diagnostic.getLineNumber(),
+            ""
+        );
+    }
+
+    private static String getSourceName(String sourceDir, javax.tools.Diagnostic<? extends JavaFileObject> diagnostic) {
+        if ( diagnostic.getSource() == null ) {
+            return null;
         }
-        catch ( IOException e )
-        {
+
+        try {
+            String sourceName = new File( diagnostic.getSource().toUri() ).getCanonicalPath();
+            return sourceName.length() > sourceDir.length() ?
+                sourceName.substring( sourceDir.length() + 1 ) :
+                sourceName;
+        }
+        catch ( IOException e ) {
             throw new RuntimeException( e );
         }
     }
