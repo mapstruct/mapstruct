@@ -24,14 +24,16 @@ public class Mapper {
     private final String implementationName;
     private final List<BeanMapping> beanMappings;
     private final List<Type> usedMapperTypes;
+    private final Options options;
 
     public Mapper(String packageName, String interfaceName,
-                  String implementationName, List<BeanMapping> beanMappings, List<Type> usedMapperTypes) {
+                  String implementationName, List<BeanMapping> beanMappings, List<Type> usedMapperTypes, Options options) {
         this.packageName = packageName;
         this.interfaceName = interfaceName;
         this.implementationName = implementationName;
         this.beanMappings = beanMappings;
         this.usedMapperTypes = usedMapperTypes;
+        this.options = options;
     }
 
     @Override
@@ -71,5 +73,10 @@ public class Mapper {
 
     public List<Type> getUsedMapperTypes() {
         return usedMapperTypes;
+    }
+
+    public Options getOptions()
+    {
+        return options;
     }
 }

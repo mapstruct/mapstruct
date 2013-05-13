@@ -26,8 +26,8 @@ import javax.annotation.Generated;
 import java.util.Date;
 
 @Generated(
-    value = "org.mapstruct.ap.MappingProcessor",
-    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"
+    value = "org.mapstruct.ap.MappingProcessor"<#if options.suppressGeneratorTimestamp == false>,
+    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
 )
 public class ${implementationName} implements ${interfaceName} {
 
