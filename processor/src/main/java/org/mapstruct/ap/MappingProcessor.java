@@ -20,6 +20,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -38,6 +39,7 @@ import org.mapstruct.ap.model.Options;
     @GeneratePrism(value = Mapping.class),
     @GeneratePrism(value = Mappings.class)
 })
+@SupportedOptions(MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP)
 public class MappingProcessor extends AbstractProcessor {
 
     /**
@@ -45,7 +47,7 @@ public class MappingProcessor extends AbstractProcessor {
      */
     private static final boolean ANNOTATIONS_CLAIMED_EXCLUSIVELY = false;
 
-    private static final String SUPPRESS_GENERATOR_TIMESTAMP = "suppressGeneratorTimestamp";
+    protected static final String SUPPRESS_GENERATOR_TIMESTAMP = "suppressGeneratorTimestamp";
 
     private Options options;
 
@@ -83,7 +85,6 @@ public class MappingProcessor extends AbstractProcessor {
     }
     
     private Options createOptions() {
-        System.out.println( processingEnv.getOptions() );
         return new Options(Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ))); 
     }
 }
