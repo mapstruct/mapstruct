@@ -30,6 +30,7 @@ import net.java.dev.hickory.prism.GeneratePrisms;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.model.Options;
 
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
 @GeneratePrisms({
@@ -44,9 +45,15 @@ public class MappingProcessor extends AbstractProcessor {
      */
     private static final boolean ANNOTATIONS_CLAIMED_EXCLUSIVELY = false;
 
+    private static final String SUPPRESS_GENERATOR_TIMESTAMP = "suppressGeneratorTimestamp";
+
+    private Options options;
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init( processingEnv );
+
+        options = createOptions();
     }
 
     @Override
@@ -68,10 +75,15 @@ public class MappingProcessor extends AbstractProcessor {
             }
 
             for ( Element oneAnnotatedElement : roundEnvironment.getElementsAnnotatedWith( oneAnnotation ) ) {
-                oneAnnotatedElement.accept( new MapperGenerationVisitor( processingEnv ), null );
+                oneAnnotatedElement.accept( new MapperGenerationVisitor( processingEnv, options ), null );
             }
         }
 
         return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
+    }
+    
+    private Options createOptions() {
+        System.out.println( processingEnv.getOptions() );
+        return new Options(Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ))); 
     }
 }

@@ -60,6 +60,10 @@
                     <processors>
                         <processor>org.mapstruct.ap.MappingProcessor</processor>
                     </processors>
+                    <options>
+                      <!-- suppressGeneratorTimestamp=false is the default -->
+                      <suppressGeneratorTimestamp>false</suppressGeneratorTimestamp>
+                    </options>
                 </configuration>
                 <executions>
                     <execution>

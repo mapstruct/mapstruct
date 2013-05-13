@@ -42,6 +42,7 @@ import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.BeanMapping;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MappingMethod;
+import org.mapstruct.ap.model.Options;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.source.MappedProperty;
@@ -62,12 +63,14 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     private final Types typeUtils;
     private final Elements elementUtils;
     private final TypeUtil typeUtil;
+    private final Options options;
 
-    public MapperGenerationVisitor(ProcessingEnvironment processingEnvironment) {
+    public MapperGenerationVisitor(ProcessingEnvironment processingEnvironment, Options options) {
         this.processingEnvironment = processingEnvironment;
         this.typeUtils = processingEnvironment.getTypeUtils();
         this.elementUtils = processingEnvironment.getElementUtils();
         this.typeUtil = new TypeUtil( elementUtils, typeUtils );
+        this.options = options;
     }
 
     @Override
@@ -103,7 +106,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             element.getSimpleName().toString(),
             element.getSimpleName() + IMPLEMENTATION_SUFFIX,
             mappings,
-            usedMapperTypes
+            usedMapperTypes,
+            options
         );
 
         return mapper;

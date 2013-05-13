@@ -16,6 +16,8 @@
 package org.mapstruct.ap.testutil.compilation.model;
 
 import java.io.File;
+import java.io.IOException;
+
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
@@ -41,17 +43,25 @@ public class DiagnosticDescriptor {
     }
 
     public static DiagnosticDescriptor forDiagnostic(Diagnostic diagnostic) {
-        String soureFileName = diagnostic.type().getName().replaceAll( "\\.", File.separator ) + ".java";
+        String soureFileName = diagnostic.type().getName().replace( ".", File.separator ) + ".java";
         return new DiagnosticDescriptor( soureFileName, diagnostic.kind(), diagnostic.line(), "" );
     }
 
     public static DiagnosticDescriptor forDiagnostic(String sourceDir, javax.tools.Diagnostic<? extends JavaFileObject> diagnostic) {
-        return new DiagnosticDescriptor(
-            diagnostic.getSource().getName().substring( sourceDir.length() + 1 ),
-            diagnostic.getKind(),
-            diagnostic.getLineNumber(),
-            ""
-        );
+        try
+        {
+            String sourceName = new File(diagnostic.getSource().toUri()).getCanonicalPath();
+            return new DiagnosticDescriptor(
+                (sourceName.length() > sourceDir.length() ? sourceName.substring( sourceDir.length() + 1 ) : sourceName),
+                diagnostic.getKind(),
+                diagnostic.getLineNumber(),
+                ""
+            );
+        }
+        catch ( IOException e )
+        {
+            throw new RuntimeException( e );
+        }
     }
 
     public String getSourceFileName() {
