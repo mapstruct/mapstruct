@@ -83,8 +83,8 @@ public class MappingProcessor extends AbstractProcessor {
 
         return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
     }
-    
+
     private Options createOptions() {
-        return new Options(Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ))); 
+        return new Options( Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ) );
     }
 }

@@ -15,17 +15,19 @@
  */
 package org.mapstruct.ap.model;
 
-public class Options
-{
+/**
+ * The options passed to the code generator.
+ *
+ * @author Andreas Gudian
+ */
+public class Options {
     private final boolean suppressGeneratorTimestamp;
 
-    public Options( boolean suppressGeneratorTimestamp )
-    {
+    public Options(boolean suppressGeneratorTimestamp) {
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
     }
 
-    public boolean isSuppressGeneratorTimestamp()
-    {
+    public boolean isSuppressGeneratorTimestamp() {
         return suppressGeneratorTimestamp;
     }
 }

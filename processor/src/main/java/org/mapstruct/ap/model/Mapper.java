@@ -75,8 +75,7 @@ public class Mapper {
         return usedMapperTypes;
     }
 
-    public Options getOptions()
-    {
+    public Options getOptions() {
         return options;
     }
 }
