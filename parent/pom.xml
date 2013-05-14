@@ -2,6 +2,9 @@
 <!--
 
  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ and/or other contributors as indicated by the @authors tag. See the
+ copyright.txt file in the distribution for a full listing of all
+ contributors.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -160,6 +163,7 @@
                     <strictCheck>true</strictCheck>
                     <excludes>
                         <exclude>.idea/**</exclude>
+                        <exclude>copyright.txt</exclude>
                     </excludes>
                 </configuration>
                 <executions>
