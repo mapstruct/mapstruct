@@ -37,7 +37,6 @@ import static org.fest.assertions.Assertions.assertThat;
 })
 public class DefaultCollectionImplementationTest extends MapperTestBase {
 
-
     @Test
     @IssueKey("6")
     public void shouldUseDefaultImplementationForList() {

@@ -16,24 +16,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.complex;
+package org.mapstruct.ap.test.complex.source;
 
-public class Person {
-
-    private String name;
-
-    public Person() {
-    }
-
-    public Person(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+public enum Category {
+    SEDAN, CONVERTIBLE, TRUCK;
 }

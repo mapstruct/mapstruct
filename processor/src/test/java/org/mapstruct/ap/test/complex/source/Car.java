@@ -16,27 +16,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.complex;
+package org.mapstruct.ap.test.complex.source;
 
+import java.util.Date;
 import java.util.List;
 
-public class CarDto {
+
+public class Car {
 
     private String make;
-    private int seatCount;
-    private String manufacturingYear;
-    private PersonDto driver;
-    private List<PersonDto> passengers;
-    private Long price;
-    private String category;
+    private int numberOfSeats;
+    private Date manufacturingDate;
+    private Person driver;
+    private List<Person> passengers;
+    private int price;
+    private Category category;
 
-    public CarDto() {
+    public Car() {
     }
 
-    public CarDto(String make, int seatCount, String manufacturingYear, PersonDto driver, List<PersonDto> passengers) {
+    public Car(String make, int numberOfSeats, Date manufacturingDate, Person driver, List<Person> passengers) {
         this.make = make;
-        this.seatCount = seatCount;
-        this.manufacturingYear = manufacturingYear;
+        this.numberOfSeats = numberOfSeats;
+        this.manufacturingDate = manufacturingDate;
         this.driver = driver;
         this.passengers = passengers;
     }
@@ -49,51 +51,51 @@ public class CarDto {
         this.make = make;
     }
 
-    public int getSeatCount() {
-        return seatCount;
+    public int getNumberOfSeats() {
+        return numberOfSeats;
     }
 
-    public void setSeatCount(int seatCount) {
-        this.seatCount = seatCount;
+    public void setNumberOfSeats(int numberOfSeats) {
+        this.numberOfSeats = numberOfSeats;
     }
 
-    public String getManufacturingYear() {
-        return manufacturingYear;
+    public Date getManufacturingDate() {
+        return manufacturingDate;
     }
 
-    public void setManufacturingYear(String manufacturingYear) {
-        this.manufacturingYear = manufacturingYear;
+    public void setManufacturingDate(Date manufacturingDate) {
+        this.manufacturingDate = manufacturingDate;
     }
 
-    public PersonDto getDriver() {
+    public Person getDriver() {
         return driver;
     }
 
-    public void setDriver(PersonDto driver) {
+    public void setDriver(Person driver) {
         this.driver = driver;
     }
 
-    public List<PersonDto> getPassengers() {
+    public List<Person> getPassengers() {
         return passengers;
     }
 
-    public void setPassengers(List<PersonDto> passengers) {
+    public void setPassengers(List<Person> passengers) {
         this.passengers = passengers;
     }
 
-    public Long getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 }

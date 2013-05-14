@@ -23,6 +23,11 @@ import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.mapstruct.ap.test.complex.source.Car;
+import org.mapstruct.ap.test.complex.source.Category;
+import org.mapstruct.ap.test.complex.source.Person;
+import org.mapstruct.ap.test.complex.target.CarDto;
+import org.mapstruct.ap.test.complex.target.PersonDto;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;

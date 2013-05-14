@@ -20,13 +20,9 @@
 -->
 package ${packageName};
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.annotation.Generated;
-import java.util.Date;
+<#list importedTypes as importedType>
+import ${importedType.fullyQualifiedName};
+</#list>
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor"<#if options.suppressGeneratorTimestamp == false>,

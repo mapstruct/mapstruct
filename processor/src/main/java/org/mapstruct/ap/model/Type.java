@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author Gunnar Morling
  */
-public class Type {
+public class Type implements Comparable<Type> {
 
     private final static Set<String> primitiveTypeNames = new HashSet<String>(
         Arrays.asList( "boolean", "char", "byte", "short", "int", "long", "float", "double" )
@@ -140,6 +140,10 @@ public class Type {
         return isIterableType;
     }
 
+    public String getFullyQualifiedName() {
+        return packageName == null ? name : packageName + "." + name;
+    }
+
     @Override
     public String toString() {
         if ( packageName == null ) {
@@ -202,5 +206,10 @@ public class Type {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(Type o) {
+        return getFullyQualifiedName().compareTo( o.getFullyQualifiedName() );
     }
 }

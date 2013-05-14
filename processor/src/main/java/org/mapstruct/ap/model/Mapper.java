@@ -18,7 +18,11 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import javax.annotation.Generated;
 
 public class Mapper {
 
@@ -28,6 +32,7 @@ public class Mapper {
     private final List<BeanMapping> beanMappings;
     private final List<Type> usedMapperTypes;
     private final Options options;
+    private final SortedSet<Type> importedTypes;
 
     public Mapper(String packageName, String interfaceName,
                   String implementationName, List<BeanMapping> beanMappings, List<Type> usedMapperTypes, Options options) {
@@ -37,6 +42,40 @@ public class Mapper {
         this.beanMappings = beanMappings;
         this.usedMapperTypes = usedMapperTypes;
         this.options = options;
+        this.importedTypes = determineImportedTypes();
+    }
+
+    private SortedSet<Type> determineImportedTypes() {
+        SortedSet<Type> importedTypes = new TreeSet<Type>();
+        importedTypes.add( Type.forClass( Generated.class ) );
+
+        for ( BeanMapping beanMapping : beanMappings ) {
+            addWithDependents( importedTypes, beanMapping.getSourceType() );
+            addWithDependents( importedTypes, beanMapping.getTargetType() );
+
+            for ( PropertyMapping propertyMapping : beanMapping.getPropertyMappings() ) {
+                addWithDependents( importedTypes, propertyMapping.getSourceType() );
+                addWithDependents( importedTypes, propertyMapping.getTargetType() );
+            }
+        }
+
+        return importedTypes;
+    }
+
+    private void addWithDependents(Collection<Type> collection, Type typeToAdd) {
+        if ( typeToAdd == null ) {
+            return;
+        }
+
+        if ( typeToAdd.getPackageName() != null &&
+                !typeToAdd.getPackageName().equals( packageName ) &&
+                !typeToAdd.getPackageName().startsWith( "java.lang" ) ) {
+            collection.add( typeToAdd );
+        }
+
+        addWithDependents( collection, typeToAdd.getCollectionImplementationType() );
+        addWithDependents( collection, typeToAdd.getIterableImplementationType() );
+        addWithDependents( collection, typeToAdd.getElementType() );
     }
 
     @Override
@@ -80,5 +119,9 @@ public class Mapper {
 
     public Options getOptions() {
         return options;
+    }
+
+    public SortedSet<Type> getImportedTypes() {
+        return importedTypes;
     }
 }
