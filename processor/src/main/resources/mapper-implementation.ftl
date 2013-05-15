@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.mapstruct.ap.model.Mapper" -->
 <#--
 
      Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
@@ -66,27 +67,14 @@ public class ${implementationName} implements ${interfaceName} {
         ${beanMapping.targetType.name} ${beanMapping.targetType.name?uncap_first} = new ${beanMapping.targetType.name}();
 
             <#list beanMapping.propertyMappings as propertyMapping>
-                <#-- primitive conversion -->
-                <#if propertyMapping.toConversion??>
-                    <#if propertyMapping.targetType.primitive == true>
-        if( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() != null ) {
-            ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( ${propertyMapping.toConversion} );
-        }
-                    <#else>
-        ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( ${propertyMapping.toConversion} );
-                    </#if>
-                <#-- invoke mapping method -->
-                <#elseif propertyMapping.mappingMethod??>
-        ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( <#if propertyMapping.mappingMethod.declaringMapper??>${propertyMapping.mappingMethod.declaringMapper.name?uncap_first}.</#if>${propertyMapping.mappingMethod.name}( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() ) );
-                <#else>
-                    <#if propertyMapping.targetType.collectionType == true>
-        if ( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() != null ) {
-            ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( new <#if propertyMapping.targetType.collectionImplementationType??>${propertyMapping.targetType.collectionImplementationType.name}<#else>${propertyMapping.targetType.name}</#if><#if propertyMapping.targetType.elementType??><${propertyMapping.targetType.elementType.name}></#if>( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() ) );
-        }
-                    <#else>
-        ${beanMapping.targetType.name?uncap_first}.set${propertyMapping.targetName?cap_first}( ${beanMapping.mappingMethod.parameterName}.get${propertyMapping.sourceName?cap_first}() );
-                    </#if>
-                </#if>
+                <@simpleMap
+                    targetBeanName=beanMapping.targetType.name?uncap_first
+                    beanMappingMappingMethod=beanMapping.mappingMethod
+                    conversion=propertyMapping.toConversion
+                    mappingMethod=propertyMapping.mappingMethod!""
+                    sourceName=propertyMapping.sourceName
+                    targetPropertyName=propertyMapping.targetName?cap_first
+                    targetType=propertyMapping.targetType />
             </#list>
 
         return ${beanMapping.targetType.name?uncap_first};
@@ -127,27 +115,14 @@ public class ${implementationName} implements ${interfaceName} {
         ${beanMapping.sourceType.name} ${beanMapping.sourceType.name?uncap_first} = new ${beanMapping.sourceType.name}();
 
                 <#list beanMapping.propertyMappings as propertyMapping>
-                    <#-- primitive conversion -->
-                    <#if propertyMapping.fromConversion??>
-                        <#if propertyMapping.sourceType.primitive == true>
-        if( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() != null ) {
-            ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( ${propertyMapping.fromConversion} );
-        }
-                        <#else>
-        ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( ${propertyMapping.fromConversion} );
-                        </#if>
-                    <#-- invoke mapping method -->
-                    <#elseif propertyMapping.reverseMappingMethod??>
-        ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( <#if propertyMapping.reverseMappingMethod.declaringMapper??>${propertyMapping.reverseMappingMethod.declaringMapper.name?uncap_first}.</#if>${propertyMapping.reverseMappingMethod.name}( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() ) );
-                    <#else>
-                        <#if propertyMapping.sourceType.collectionType == true>
-        if ( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() != null ) {
-            ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( new <#if propertyMapping.sourceType.collectionImplementationType??>${propertyMapping.sourceType.collectionImplementationType.name}<#else>${propertyMapping.sourceType.name}</#if><#if propertyMapping.sourceType.elementType??><${propertyMapping.sourceType.elementType.name}></#if>( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() ) );
-        }
-                        <#else>
-        ${beanMapping.sourceType.name?uncap_first}.set${propertyMapping.sourceName?cap_first}( ${beanMapping.reverseMappingMethod.parameterName}.get${propertyMapping.targetName?cap_first}() );
-                        </#if>
-                    </#if>
+                    <@simpleMap
+                        targetBeanName=beanMapping.sourceType.name?uncap_first
+                        beanMappingMappingMethod=beanMapping.reverseMappingMethod
+                        conversion=propertyMapping.fromConversion
+                        mappingMethod=propertyMapping.reverseMappingMethod!""
+                        sourceName=propertyMapping.targetName
+                        targetPropertyName=propertyMapping.sourceName?cap_first
+                        targetType=propertyMapping.sourceType />
                 </#list>
 
         return ${beanMapping.sourceType.name?uncap_first};
@@ -157,3 +132,25 @@ public class ${implementationName} implements ${interfaceName} {
     </#if>
 </#list>
 }
+<#macro simpleMap targetType sourceName targetBeanName targetPropertyName beanMappingMappingMethod mappingMethod conversion="">
+        <#if conversion != "">
+            <#if targetType.primitive == true>
+        if( ${beanMappingMappingMethod.parameterName}.get${sourceName?cap_first}() != null ) {
+            ${targetBeanName}.set${targetPropertyName}( ${conversion} );
+        }
+            <#else>
+        ${targetBeanName}.set${targetPropertyName}( ${conversion} );
+            </#if>
+        <#-- invoke mapping method -->
+        <#elseif mappingMethod != "">
+        ${targetBeanName}.set${targetPropertyName}( <#if mappingMethod.declaringMapper??>${mappingMethod.declaringMapper.name?uncap_first}.</#if>${mappingMethod.name}( ${beanMappingMappingMethod.parameterName}.get${sourceName?cap_first}() ) );
+        <#else>
+            <#if targetType.collectionType == true>
+        if ( ${beanMappingMappingMethod.parameterName}.get${sourceName?cap_first}() != null ) {
+            ${targetBeanName}.set${targetPropertyName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${beanMappingMappingMethod.parameterName}.get${sourceName?cap_first}() ) );
+        }
+            <#else>
+        ${targetBeanName}.set${targetPropertyName}( ${beanMappingMappingMethod.parameterName}.get${sourceName?cap_first}() );
+            </#if>
+        </#if>
+</#macro>
