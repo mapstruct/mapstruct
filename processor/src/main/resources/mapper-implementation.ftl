@@ -39,7 +39,7 @@ public class ${implementationName} implements ${interfaceName} {
         <#if beanMapping.iterableMapping == true>
     @Override
     public ${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.mappingMethod.name}(${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.mappingMethod.parameterName}) {
-        if( ${beanMapping.mappingMethod.parameterName} == null ) {
+        if ( ${beanMapping.mappingMethod.parameterName} == null ) {
             return null;
         }
 
@@ -59,7 +59,7 @@ public class ${implementationName} implements ${interfaceName} {
         <#else>
     @Override
     public ${beanMapping.targetType.name} ${beanMapping.mappingMethod.name}(${beanMapping.sourceType.name} ${beanMapping.mappingMethod.parameterName}) {
-        if( ${beanMapping.mappingMethod.parameterName} == null ) {
+        if ( ${beanMapping.mappingMethod.parameterName} == null ) {
             return null;
         }
 
@@ -89,7 +89,7 @@ public class ${implementationName} implements ${interfaceName} {
 
     @Override
     public ${beanMapping.sourceType.name}<${beanMapping.sourceType.elementType.name}> ${beanMapping.reverseMappingMethod.name}(${beanMapping.targetType.name}<${beanMapping.targetType.elementType.name}> ${beanMapping.reverseMappingMethod.parameterName}) {
-        if( ${beanMapping.reverseMappingMethod.parameterName} == null ) {
+        if ( ${beanMapping.reverseMappingMethod.parameterName} == null ) {
             return null;
         }
 
@@ -109,7 +109,7 @@ public class ${implementationName} implements ${interfaceName} {
             <#else>
     @Override
     public ${beanMapping.sourceType.name} ${beanMapping.reverseMappingMethod.name}(${beanMapping.targetType.name} ${beanMapping.reverseMappingMethod.parameterName}) {
-        if( ${beanMapping.reverseMappingMethod.parameterName} == null ) {
+        if ( ${beanMapping.reverseMappingMethod.parameterName} == null ) {
             return null;
         }
 
@@ -141,7 +141,7 @@ public class ${implementationName} implements ${interfaceName} {
         <#-- a) simple conversion -->
         <#if conversion != "">
             <#if sourceType.primitive == false>
-        if( ${sourceBeanName}.get${sourcePropertyName?cap_first}() != null ) {
+        if ( ${sourceBeanName}.get${sourcePropertyName?cap_first}() != null ) {
             ${targetBeanName}.set${targetPropertyName}( ${conversion} );
         }
             <#else>
