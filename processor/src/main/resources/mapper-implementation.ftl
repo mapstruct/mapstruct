@@ -68,9 +68,10 @@ public class ${implementationName} implements ${interfaceName} {
             <#list beanMapping.propertyMappings as propertyMapping>
                 <@simpleMap
                     sourceBeanName=beanMapping.mappingMethod.parameterName
+                    sourceType=propertyMapping.sourceType
                     sourcePropertyName=propertyMapping.sourceName
-                    targetType=propertyMapping.targetType
                     targetBeanName=beanMapping.targetType.name?uncap_first
+                    targetType=propertyMapping.targetType
                     targetPropertyName=propertyMapping.targetName?cap_first
                     conversion=propertyMapping.toConversion
                     mappingMethod=propertyMapping.mappingMethod
@@ -117,9 +118,10 @@ public class ${implementationName} implements ${interfaceName} {
                 <#list beanMapping.propertyMappings as propertyMapping>
                     <@simpleMap
                         sourceBeanName=beanMapping.reverseMappingMethod.parameterName
+                        sourceType=propertyMapping.targetType
                         sourcePropertyName=propertyMapping.targetName
-                        targetType=propertyMapping.sourceType
                         targetBeanName=beanMapping.sourceType.name?uncap_first
+                        targetType=propertyMapping.sourceType
                         targetPropertyName=propertyMapping.sourceName?cap_first
                         conversion=propertyMapping.fromConversion
                         mappingMethod=propertyMapping.reverseMappingMethod
@@ -135,10 +137,10 @@ public class ${implementationName} implements ${interfaceName} {
 }
 
 <#-- Generates the mapping of one bean property -->
-<#macro simpleMap sourceBeanName sourcePropertyName targetType targetBeanName targetPropertyName conversion="" mappingMethod="">
+<#macro simpleMap sourceBeanName sourceType sourcePropertyName targetBeanName targetType targetPropertyName conversion="" mappingMethod="">
         <#-- a) simple conversion -->
         <#if conversion != "">
-            <#if targetType.primitive == true>
+            <#if sourceType.primitive == false>
         if( ${sourceBeanName}.get${sourcePropertyName?cap_first}() != null ) {
             ${targetBeanName}.set${targetPropertyName}( ${conversion} );
         }

@@ -20,15 +20,25 @@ package org.mapstruct.ap.conversion;
 
 import org.mapstruct.ap.model.Type;
 
-public class IntLongConversion implements Conversion {
+public class PrimitiveToPrimitiveConversion implements Conversion {
+
+    private final Class<?> sourceType;
+
+    public PrimitiveToPrimitiveConversion(Class<?> sourceType) {
+        if ( !sourceType.isPrimitive() ) {
+            throw new IllegalArgumentException( sourceType + " is no primitive type." );
+        }
+
+        this.sourceType = sourceType;
+    }
 
     @Override
     public String to(String sourcePropertyAccessor, Type type) {
-        return "Long.valueOf( " + sourcePropertyAccessor + " )";
+        return sourcePropertyAccessor;
     }
 
     @Override
     public String from(String targetPropertyAccessor, Type type) {
-        return targetPropertyAccessor + ".intValue()";
+        return "(" + sourceType + ") " + targetPropertyAccessor;
     }
 }

@@ -68,8 +68,8 @@ public class Mapper {
         }
 
         if ( typeToAdd.getPackageName() != null &&
-                !typeToAdd.getPackageName().equals( packageName ) &&
-                !typeToAdd.getPackageName().startsWith( "java.lang" ) ) {
+            !typeToAdd.getPackageName().equals( packageName ) &&
+            !typeToAdd.getPackageName().startsWith( "java.lang" ) ) {
             collection.add( typeToAdd );
         }
 
