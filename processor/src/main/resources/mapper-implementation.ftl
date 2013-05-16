@@ -1,4 +1,3 @@
-<#-- @ftlvariable name="" type="org.mapstruct.ap.model.Mapper" -->
 <#--
 
      Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
@@ -68,13 +67,14 @@ public class ${implementationName} implements ${interfaceName} {
 
             <#list beanMapping.propertyMappings as propertyMapping>
                 <@simpleMap
+                    sourceBeanName=beanMapping.mappingMethod.parameterName
+                    sourcePropertyName=propertyMapping.sourceName
+                    targetType=propertyMapping.targetType
                     targetBeanName=beanMapping.targetType.name?uncap_first
-                    beanMappingMappingMethod=beanMapping.mappingMethod
-                    conversion=propertyMapping.toConversion
-                    mappingMethod=propertyMapping.mappingMethod!""
-                    sourceName=propertyMapping.sourceName
                     targetPropertyName=propertyMapping.targetName?cap_first
-                    targetType=propertyMapping.targetType />
+                    conversion=propertyMapping.toConversion
+                    mappingMethod=propertyMapping.mappingMethod
+                />
             </#list>
 
         return ${beanMapping.targetType.name?uncap_first};
@@ -116,13 +116,14 @@ public class ${implementationName} implements ${interfaceName} {
 
                 <#list beanMapping.propertyMappings as propertyMapping>
                     <@simpleMap
+                        sourceBeanName=beanMapping.reverseMappingMethod.parameterName
+                        sourcePropertyName=propertyMapping.targetName
+                        targetType=propertyMapping.sourceType
                         targetBeanName=beanMapping.sourceType.name?uncap_first
-                        beanMappingMappingMethod=beanMapping.reverseMappingMethod
-                        conversion=propertyMapping.fromConversion
-                        mappingMethod=propertyMapping.reverseMappingMethod!""
-                        sourceName=propertyMapping.targetName
                         targetPropertyName=propertyMapping.sourceName?cap_first
-                        targetType=propertyMapping.sourceType />
+                        conversion=propertyMapping.fromConversion
+                        mappingMethod=propertyMapping.reverseMappingMethod
+                    />
                 </#list>
 
         return ${beanMapping.sourceType.name?uncap_first};
@@ -132,25 +133,29 @@ public class ${implementationName} implements ${interfaceName} {
     </#if>
 </#list>
 }
-<#macro simpleMap targetType sourceName targetBeanName targetPropertyName beanMappingMappingMethod mappingMethod conversion="">
+
+<#-- Generates the mapping of one bean property -->
+<#macro simpleMap sourceBeanName sourcePropertyName targetType targetBeanName targetPropertyName conversion="" mappingMethod="">
+        <#-- a) simple conversion -->
         <#if conversion != "">
             <#if targetType.primitive == true>
-        if( ${beanMappingMappingMethod.parameterName}.get${sourceName?cap_first}() != null ) {
+        if( ${sourceBeanName}.get${sourcePropertyName?cap_first}() != null ) {
             ${targetBeanName}.set${targetPropertyName}( ${conversion} );
         }
             <#else>
         ${targetBeanName}.set${targetPropertyName}( ${conversion} );
             </#if>
-        <#-- invoke mapping method -->
+        <#-- b) invoke mapping method -->
         <#elseif mappingMethod != "">
-        ${targetBeanName}.set${targetPropertyName}( <#if mappingMethod.declaringMapper??>${mappingMethod.declaringMapper.name?uncap_first}.</#if>${mappingMethod.name}( ${beanMappingMappingMethod.parameterName}.get${sourceName?cap_first}() ) );
+        ${targetBeanName}.set${targetPropertyName}( <#if mappingMethod.declaringMapper??>${mappingMethod.declaringMapper.name?uncap_first}.</#if>${mappingMethod.name}( ${sourceBeanName}.get${sourcePropertyName?cap_first}() ) );
         <#else>
             <#if targetType.collectionType == true>
-        if ( ${beanMappingMappingMethod.parameterName}.get${sourceName?cap_first}() != null ) {
-            ${targetBeanName}.set${targetPropertyName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${beanMappingMappingMethod.parameterName}.get${sourceName?cap_first}() ) );
+        if ( ${sourceBeanName}.get${sourcePropertyName?cap_first}() != null ) {
+            ${targetBeanName}.set${targetPropertyName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${sourceBeanName}.get${sourcePropertyName?cap_first}() ) );
         }
+        <#-- c) simply set -->
             <#else>
-        ${targetBeanName}.set${targetPropertyName}( ${beanMappingMappingMethod.parameterName}.get${sourceName?cap_first}() );
+        ${targetBeanName}.set${targetPropertyName}( ${sourceBeanName}.get${sourcePropertyName?cap_first}() );
             </#if>
         </#if>
 </#macro>
