@@ -24,11 +24,11 @@ public class EnumStringConversion implements Conversion {
 
     @Override
     public String to(String sourcePropertyAccessor, Type type) {
-        return sourcePropertyAccessor + " != null ? " + sourcePropertyAccessor + ".toString() : null";
+        return sourcePropertyAccessor + ".toString()";
     }
 
     @Override
     public String from(String targetPropertyAccessor, Type type) {
-        return targetPropertyAccessor + " != null ? Enum.valueOf( " + type.getName() + ".class, " + targetPropertyAccessor + " ) : null";
+        return "Enum.valueOf( " + type.getName() + ".class, " + targetPropertyAccessor + " )";
     }
 }
