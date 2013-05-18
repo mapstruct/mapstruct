@@ -16,19 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.test.conversion.string;
 
-import org.mapstruct.ap.model.Type;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mappers;
 
-public class IntStringConversion implements Conversion {
+@Mapper
+public interface SourceTargetMapper {
 
-    @Override
-    public String to(String sourcePropertyAccessor, Type type) {
-        return "String.valueOf( " + sourcePropertyAccessor + " )";
-    }
+    public static SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Override
-    public String from(String targetPropertyAccessor, Type type) {
-        return "Integer.parseInt( " + targetPropertyAccessor + " )";
-    }
+    Target sourceToTarget(Source source);
+
+    Source targetToSource(Target target);
 }

@@ -53,6 +53,7 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.Parameter;
 import org.mapstruct.ap.util.Filters;
+import org.mapstruct.ap.util.Strings;
 import org.mapstruct.ap.util.TypeUtil;
 import org.mapstruct.ap.writer.ModelWriter;
 
@@ -246,11 +247,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     }
 
     private String getAccessor(String name) {
-        return "get" + capitalize( name ) + "()";
-    }
-
-    private String capitalize(String name) {
-        return name.substring( 0, 1 ).toUpperCase() + name.substring( 1 );
+        return "get" + Strings.capitalize( name ) + "()";
     }
 
     private MappingMethod getElementMappingMethod(Iterable<Method> methods, Method method) {

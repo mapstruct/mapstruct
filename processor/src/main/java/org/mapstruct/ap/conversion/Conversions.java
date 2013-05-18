@@ -119,8 +119,23 @@ public class Conversions {
 
         registerNumberConversion( double.class, Double.class );
 
-        register( int.class, String.class, new IntStringConversion() );
-        register( Integer.class, String.class, new IntegerStringConversion() );
+        registerToStringConversion( byte.class );
+        registerToStringConversion( Byte.class );
+        registerToStringConversion( short.class );
+        registerToStringConversion( Short.class );
+        registerToStringConversion( int.class );
+        registerToStringConversion( Integer.class );
+        registerToStringConversion( long.class );
+        registerToStringConversion( Long.class );
+        registerToStringConversion( float.class );
+        registerToStringConversion( Float.class );
+        registerToStringConversion( double.class );
+        registerToStringConversion( Double.class );
+        registerToStringConversion( boolean.class );
+        registerToStringConversion( Boolean.class );
+        register( char.class, String.class, new CharToStringConversion() );
+        register( Character.class, String.class, new CharWrapperToStringConversion() );
+
         register( Enum.class, String.class, new EnumStringConversion() );
     }
 
@@ -136,6 +151,15 @@ public class Conversions {
         }
         else {
             register( sourceType, targetType, new WrapperToWrapperConversion( sourceType, targetType ) );
+        }
+    }
+
+    private void registerToStringConversion(Class<?> sourceType) {
+        if ( sourceType.isPrimitive() ) {
+            register( sourceType, String.class, new PrimitiveToStringConversion( sourceType ) );
+        }
+        else {
+            register( sourceType, String.class, new WrapperToStringConversion( sourceType ) );
         }
     }
 
