@@ -52,8 +52,8 @@ import org.mapstruct.ap.model.source.MappedProperty;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.Parameter;
+import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
-import org.mapstruct.ap.util.Strings;
 import org.mapstruct.ap.util.TypeUtil;
 import org.mapstruct.ap.writer.ModelWriter;
 
@@ -158,9 +158,11 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
                 propertyMappings.add(
                     new PropertyMapping(
-                        property.getSourceName(),
+                        property.getSourceReadAccessorName(),
+                        property.getSourceWriteAccessorName(),
                         property.getSourceType(),
-                        property.getTargetName(),
+                        property.getTargetReadAccessorName(),
+                        property.getTargetWriteAccessorName(),
                         property.getTargetType(),
                         propertyMappingMethod != null ? new MappingMethod(
                             propertyMappingMethod.getDeclaringMapper(),
@@ -173,15 +175,11 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                             reversePropertyMappingMethod.getParameterName()
                         ) : null,
                         conversion != null ? conversion.to(
-                            mappingMethod.getParameterName() + "." + getAccessor(
-                                property.getSourceName()
-                            ),
+                            mappingMethod.getParameterName() + "." + property.getSourceReadAccessorName() + "()",
                             property.getTargetType()
                         ) : null,
                         conversion != null ? conversion.from(
-                            reverseMappingMethod.getParameterName() + "." + getAccessor(
-                                property.getTargetName()
-                            ),
+                            reverseMappingMethod.getParameterName() + "." + property.getTargetReadAccessorName() + "()",
                             property.getSourceType()
                         ) : null
                     )
@@ -244,10 +242,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             usedMapperTypes.add( typeUtil.retrieveType( usedMapper ) );
         }
         return usedMapperTypes;
-    }
-
-    private String getAccessor(String name) {
-        return "get" + Strings.capitalize( name ) + "()";
     }
 
     private MappingMethod getElementMappingMethod(Iterable<Method> methods, Method method) {
@@ -376,19 +370,27 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
         for ( ExecutableElement getterMethod : Filters.getterMethodsIn( parameterElement.getEnclosedElements() ) ) {
 
-            String sourcePropertyName = getPropertyName( getterMethod );
+            String sourcePropertyName = Executables.getPropertyName( getterMethod );
             Mapping mapping = mappings.get( sourcePropertyName );
 
             for ( ExecutableElement setterMethod : Filters.setterMethodsIn( returnTypeElement.getEnclosedElements() ) ) {
 
-                String targetPropertyName = getPropertyName( setterMethod );
+                String targetPropertyName = Executables.getPropertyName( setterMethod );
 
                 if ( targetPropertyName.equals( mapping != null ? mapping.getTargetName() : sourcePropertyName ) ) {
                     properties.add(
                         new MappedProperty(
                             sourcePropertyName,
+                            getterMethod.getSimpleName().toString(),
+                            Executables.getCorrespondingSetterMethod( parameterElement, getterMethod )
+                                .getSimpleName()
+                                .toString(),
                             retrieveReturnType( getterMethod ),
                             mapping != null ? mapping.getTargetName() : targetPropertyName,
+                            Executables.getCorrespondingGetterMethod( returnTypeElement, setterMethod )
+                                .getSimpleName()
+                                .toString(),
+                            setterMethod.getSimpleName().toString(),
                             retrieveParameter( setterMethod ).getType()
                         )
                     );
@@ -397,13 +399,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         }
 
         return properties;
-    }
-
-    private String getPropertyName(ExecutableElement getterOrSetterMethod) {
-        //TODO consider is/has
-        return Introspector.decapitalize(
-            getterOrSetterMethod.getSimpleName().toString().substring( 3 )
-        );
     }
 
     private Map<String, Mapping> getMappings(MappingsPrism mappingsAnnotation) {

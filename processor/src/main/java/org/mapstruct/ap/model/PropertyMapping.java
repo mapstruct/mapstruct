@@ -18,21 +18,34 @@
  */
 package org.mapstruct.ap.model;
 
+/**
+ * Represents the mapping between a source and target property, e.g. from
+ * {@code String Source#foo} to {@code int Target#bar}. Name and type of source
+ * and target property can differ. If they have different types, the mapping
+ * must either refer to a mapping method or a conversion.
+ *
+ * @author Gunnar Morling
+ */
 public class PropertyMapping {
 
-    private final String sourceName;
+    private final String sourceReadAccessorName;
+    private final String sourceWriteAccessorName;
     private final Type sourceType;
-    private final String targetName;
+    private final String targetReadAccessorName;
+    private final String targetWriteAccessorName;
     private final Type targetType;
+
     private final MappingMethod mappingMethod;
     private final MappingMethod reverseMappingMethod;
     private final String toConversion;
     private final String fromConversion;
 
-    public PropertyMapping(String sourceName, Type sourceType, String targetName, Type targetType, MappingMethod mappingMethod, MappingMethod reverseMappingMethod, String toConversion, String fromConversion) {
-        this.sourceName = sourceName;
+    public PropertyMapping(String sourceReadAccessorName, String sourceWriteAccessorName, Type sourceType, String targetReadAccessorName, String targetWriteAccessorName, Type targetType, MappingMethod mappingMethod, MappingMethod reverseMappingMethod, String toConversion, String fromConversion) {
+        this.sourceReadAccessorName = sourceReadAccessorName;
+        this.sourceWriteAccessorName = sourceWriteAccessorName;
         this.sourceType = sourceType;
-        this.targetName = targetName;
+        this.targetReadAccessorName = targetReadAccessorName;
+        this.targetWriteAccessorName = targetWriteAccessorName;
         this.targetType = targetType;
         this.mappingMethod = mappingMethod;
         this.reverseMappingMethod = reverseMappingMethod;
@@ -40,16 +53,24 @@ public class PropertyMapping {
         this.fromConversion = fromConversion;
     }
 
-    public String getSourceName() {
-        return sourceName;
+    public String getSourceReadAccessorName() {
+        return sourceReadAccessorName;
+    }
+
+    public String getSourceWriteAccessorName() {
+        return sourceWriteAccessorName;
     }
 
     public Type getSourceType() {
         return sourceType;
     }
 
-    public String getTargetName() {
-        return targetName;
+    public String getTargetReadAccessorName() {
+        return targetReadAccessorName;
+    }
+
+    public String getTargetWriteAccessorName() {
+        return targetWriteAccessorName;
     }
 
     public Type getTargetType() {
@@ -75,9 +96,9 @@ public class PropertyMapping {
     @Override
     public String toString() {
         return "PropertyMapping {" +
-            "\n    sourceName='" + sourceName + "\'," +
+            "\n    sourceName='" + sourceReadAccessorName + "/" + sourceWriteAccessorName + "\'," +
             "\n    sourceType=" + sourceType + "," +
-            "\n    targetName='" + targetName + "\'," +
+            "\n    targetName='" + targetReadAccessorName + "/" + targetWriteAccessorName + "\'," +
             "\n    targetType=" + targetType + "," +
             "\n    mappingMethod=" + mappingMethod + "," +
             "\n    reverseMappingMethod=" + reverseMappingMethod + "," +

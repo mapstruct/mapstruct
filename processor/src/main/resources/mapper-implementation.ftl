@@ -69,10 +69,10 @@ public class ${implementationName} implements ${interfaceName} {
                 <@simpleMap
                     sourceBeanName=beanMapping.mappingMethod.parameterName
                     sourceType=propertyMapping.sourceType
-                    sourcePropertyName=propertyMapping.sourceName
+                    sourceAccessorName=propertyMapping.sourceReadAccessorName
                     targetBeanName=beanMapping.targetType.name?uncap_first
                     targetType=propertyMapping.targetType
-                    targetPropertyName=propertyMapping.targetName?cap_first
+                    targetAccessorName=propertyMapping.targetWriteAccessorName
                     conversion=propertyMapping.toConversion
                     mappingMethod=propertyMapping.mappingMethod
                 />
@@ -119,10 +119,10 @@ public class ${implementationName} implements ${interfaceName} {
                     <@simpleMap
                         sourceBeanName=beanMapping.reverseMappingMethod.parameterName
                         sourceType=propertyMapping.targetType
-                        sourcePropertyName=propertyMapping.targetName
+                        sourceAccessorName=propertyMapping.targetReadAccessorName
                         targetBeanName=beanMapping.sourceType.name?uncap_first
                         targetType=propertyMapping.sourceType
-                        targetPropertyName=propertyMapping.sourceName?cap_first
+                        targetAccessorName=propertyMapping.sourceWriteAccessorName
                         conversion=propertyMapping.fromConversion
                         mappingMethod=propertyMapping.reverseMappingMethod
                     />
@@ -137,27 +137,27 @@ public class ${implementationName} implements ${interfaceName} {
 }
 
 <#-- Generates the mapping of one bean property -->
-<#macro simpleMap sourceBeanName sourceType sourcePropertyName targetBeanName targetType targetPropertyName conversion="" mappingMethod="">
+<#macro simpleMap sourceBeanName sourceType sourceAccessorName targetBeanName targetType targetAccessorName conversion="" mappingMethod="">
         <#-- a) simple conversion -->
         <#if conversion != "">
             <#if sourceType.primitive == false>
-        if ( ${sourceBeanName}.get${sourcePropertyName?cap_first}() != null ) {
-            ${targetBeanName}.set${targetPropertyName}( ${conversion} );
+        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+            ${targetBeanName}.${targetAccessorName}( ${conversion} );
         }
             <#else>
-        ${targetBeanName}.set${targetPropertyName}( ${conversion} );
+        ${targetBeanName}.${targetAccessorName}( ${conversion} );
             </#if>
         <#-- b) invoke mapping method -->
         <#elseif mappingMethod != "">
-        ${targetBeanName}.set${targetPropertyName}( <#if mappingMethod.declaringMapper??>${mappingMethod.declaringMapper.name?uncap_first}.</#if>${mappingMethod.name}( ${sourceBeanName}.get${sourcePropertyName?cap_first}() ) );
+        ${targetBeanName}.${targetAccessorName}( <#if mappingMethod.declaringMapper??>${mappingMethod.declaringMapper.name?uncap_first}.</#if>${mappingMethod.name}( ${sourceBeanName}.${sourceAccessorName}() ) );
         <#else>
             <#if targetType.collectionType == true>
-        if ( ${sourceBeanName}.get${sourcePropertyName?cap_first}() != null ) {
-            ${targetBeanName}.set${targetPropertyName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${sourceBeanName}.get${sourcePropertyName?cap_first}() ) );
+        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+            ${targetBeanName}.${targetAccessorName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
         }
         <#-- c) simply set -->
             <#else>
-        ${targetBeanName}.set${targetPropertyName}( ${sourceBeanName}.get${sourcePropertyName?cap_first}() );
+        ${targetBeanName}.${targetAccessorName}( ${sourceBeanName}.${sourceAccessorName}() );
             </#if>
         </#if>
 </#macro>

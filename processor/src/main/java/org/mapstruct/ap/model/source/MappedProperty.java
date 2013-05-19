@@ -23,19 +23,37 @@ import org.mapstruct.ap.model.Type;
 public class MappedProperty {
 
     private final String sourceName;
+    private final String sourceReadAccessorName;
+    private final String sourceWriteAccessorName;
     private final Type sourceType;
     private final String targetName;
+    private final String targetReadAccessorName;
+    private final String targetWriteAccessorName;
     private final Type targetType;
 
-    public MappedProperty(String sourceName, Type sourceType, String targetName, Type targetType) {
+    public MappedProperty(String sourceName, String sourceReadAccessorName, String sourceWriteAccessorName,
+                          Type sourceType, String targetName, String targetReadAccessorName, String targetWriteAccessorName,
+                          Type targetType) {
         this.sourceName = sourceName;
+        this.sourceReadAccessorName = sourceReadAccessorName;
+        this.sourceWriteAccessorName = sourceWriteAccessorName;
         this.sourceType = sourceType;
         this.targetName = targetName;
+        this.targetReadAccessorName = targetReadAccessorName;
+        this.targetWriteAccessorName = targetWriteAccessorName;
         this.targetType = targetType;
     }
 
     public String getSourceName() {
         return sourceName;
+    }
+
+    public String getSourceReadAccessorName() {
+        return sourceReadAccessorName;
+    }
+
+    public String getSourceWriteAccessorName() {
+        return sourceWriteAccessorName;
     }
 
     public Type getSourceType() {
@@ -44,6 +62,14 @@ public class MappedProperty {
 
     public String getTargetName() {
         return targetName;
+    }
+
+    public String getTargetReadAccessorName() {
+        return targetReadAccessorName;
+    }
+
+    public String getTargetWriteAccessorName() {
+        return targetWriteAccessorName;
     }
 
     public Type getTargetType() {

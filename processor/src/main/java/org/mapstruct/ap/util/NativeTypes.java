@@ -22,6 +22,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Provides functionality around the Java primitive data types and their wrapper
+ * types.
+ *
+ * @author Gunnar Morling
+ */
 public class NativeTypes {
 
     private final static Map<Class<?>, Class<?>> wrapperToPrimitiveTypes;

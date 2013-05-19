@@ -20,7 +20,17 @@ package org.mapstruct.ap.test.conversion.nativetypes;
 
 public class BooleanTarget {
 
+    private Boolean b;
+
     private Boolean bool;
+
+    public Boolean getB() {
+        return b;
+    }
+
+    public void setB(Boolean b) {
+        this.b = b;
+    }
 
     public Boolean getBool() {
         return bool;

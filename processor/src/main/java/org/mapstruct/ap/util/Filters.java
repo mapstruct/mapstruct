@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeKind;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
@@ -37,11 +36,7 @@ public class Filters {
         List<ExecutableElement> getterMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : methodsIn( elements ) ) {
-            //TODO: consider is/has
-            String name = method.getSimpleName().toString();
-
-            if ( name.startsWith( "get" ) && name.length() > 3 && method.getParameters()
-                .isEmpty() && method.getReturnType().getKind() != TypeKind.VOID ) {
+            if ( Executables.isGetterMethod( method ) ) {
                 getterMethods.add( method );
             }
         }
@@ -53,11 +48,7 @@ public class Filters {
         List<ExecutableElement> setterMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : methodsIn( elements ) ) {
-            //TODO: consider is/has
-            String name = method.getSimpleName().toString();
-
-            if ( name.startsWith( "set" ) && name.length() > 3 && method.getParameters()
-                .size() == 1 && method.getReturnType().getKind() == TypeKind.VOID ) {
+            if ( Executables.isSetterMethod( method ) ) {
                 setterMethods.add( method );
             }
         }

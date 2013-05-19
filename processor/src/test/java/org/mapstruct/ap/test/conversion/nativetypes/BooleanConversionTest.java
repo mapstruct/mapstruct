@@ -34,22 +34,26 @@ public class BooleanConversionTest extends MapperTestBase {
     @Test
     public void shouldApplyBooleanConversion() {
         BooleanSource source = new BooleanSource();
+        source.setB( true );
         source.setBool( true );
 
         BooleanTarget target = BooleanMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
+        assertThat( target.getB() ).isEqualTo( Boolean.TRUE );
         assertThat( target.getBool() ).isEqualTo( Boolean.TRUE );
     }
 
     @Test
     public void shouldApplyReverseBooleanConversion() {
         BooleanTarget target = new BooleanTarget();
+        target.setB( Boolean.TRUE );
         target.setBool( Boolean.TRUE );
 
         BooleanSource source = BooleanMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
+        assertThat( source.isB() ).isEqualTo( true );
         assertThat( source.getBool() ).isEqualTo( true );
     }
 }
