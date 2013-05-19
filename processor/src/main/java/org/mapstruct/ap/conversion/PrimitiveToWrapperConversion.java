@@ -18,27 +18,10 @@
  */
 package org.mapstruct.ap.conversion;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.util.NativeTypes;
 
 public class PrimitiveToWrapperConversion implements Conversion {
-
-    private final static Map<Class<?>, Class<?>> wrapperToPrimitiveTypes;
-
-    static {
-        Map<Class<?>, Class<?>> tmp = new HashMap<Class<?>, Class<?>>();
-        tmp.put( Byte.class, byte.class );
-        tmp.put( Short.class, short.class );
-        tmp.put( Integer.class, int.class );
-        tmp.put( Long.class, long.class );
-        tmp.put( Float.class, float.class );
-        tmp.put( Double.class, double.class );
-
-        wrapperToPrimitiveTypes = Collections.unmodifiableMap( tmp );
-    }
 
     private final Class<?> sourceType;
     private final Class<?> targetType;
@@ -52,7 +35,7 @@ public class PrimitiveToWrapperConversion implements Conversion {
         }
 
         this.sourceType = sourceType;
-        this.targetType = wrapperToPrimitiveTypes.get( targetType );
+        this.targetType = NativeTypes.getPrimitiveType( targetType );
     }
 
     @Override

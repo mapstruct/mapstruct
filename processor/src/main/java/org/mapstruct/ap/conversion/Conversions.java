@@ -42,82 +42,85 @@ public class Conversions {
         this.enumType = typeUtils.getDeclaredType( elementUtils.getTypeElement( Enum.class.getCanonicalName() ) );
         this.stringType = typeUtils.getDeclaredType( elementUtils.getTypeElement( String.class.getCanonicalName() ) );
 
-        registerNumberConversion( byte.class, Byte.class );
-        registerNumberConversion( byte.class, short.class );
-        registerNumberConversion( byte.class, Short.class );
-        registerNumberConversion( byte.class, int.class );
-        registerNumberConversion( byte.class, Integer.class );
-        registerNumberConversion( byte.class, long.class );
-        registerNumberConversion( byte.class, Long.class );
-        registerNumberConversion( byte.class, float.class );
-        registerNumberConversion( byte.class, Float.class );
-        registerNumberConversion( byte.class, double.class );
-        registerNumberConversion( byte.class, Double.class );
+        registerNativeTypeConversion( byte.class, Byte.class );
+        registerNativeTypeConversion( byte.class, short.class );
+        registerNativeTypeConversion( byte.class, Short.class );
+        registerNativeTypeConversion( byte.class, int.class );
+        registerNativeTypeConversion( byte.class, Integer.class );
+        registerNativeTypeConversion( byte.class, long.class );
+        registerNativeTypeConversion( byte.class, Long.class );
+        registerNativeTypeConversion( byte.class, float.class );
+        registerNativeTypeConversion( byte.class, Float.class );
+        registerNativeTypeConversion( byte.class, double.class );
+        registerNativeTypeConversion( byte.class, Double.class );
 
-        registerNumberConversion( Byte.class, short.class );
-        registerNumberConversion( Byte.class, Short.class );
-        registerNumberConversion( Byte.class, int.class );
-        registerNumberConversion( Byte.class, Integer.class );
-        registerNumberConversion( Byte.class, long.class );
-        registerNumberConversion( Byte.class, Long.class );
-        registerNumberConversion( Byte.class, float.class );
-        registerNumberConversion( Byte.class, Float.class );
-        registerNumberConversion( Byte.class, double.class );
-        registerNumberConversion( Byte.class, Double.class );
+        registerNativeTypeConversion( Byte.class, short.class );
+        registerNativeTypeConversion( Byte.class, Short.class );
+        registerNativeTypeConversion( Byte.class, int.class );
+        registerNativeTypeConversion( Byte.class, Integer.class );
+        registerNativeTypeConversion( Byte.class, long.class );
+        registerNativeTypeConversion( Byte.class, Long.class );
+        registerNativeTypeConversion( Byte.class, float.class );
+        registerNativeTypeConversion( Byte.class, Float.class );
+        registerNativeTypeConversion( Byte.class, double.class );
+        registerNativeTypeConversion( Byte.class, Double.class );
 
-        registerNumberConversion( short.class, Short.class );
-        registerNumberConversion( short.class, int.class );
-        registerNumberConversion( short.class, Integer.class );
-        registerNumberConversion( short.class, long.class );
-        registerNumberConversion( short.class, Long.class );
-        registerNumberConversion( short.class, float.class );
-        registerNumberConversion( short.class, Float.class );
-        registerNumberConversion( short.class, double.class );
-        registerNumberConversion( short.class, Double.class );
+        registerNativeTypeConversion( short.class, Short.class );
+        registerNativeTypeConversion( short.class, int.class );
+        registerNativeTypeConversion( short.class, Integer.class );
+        registerNativeTypeConversion( short.class, long.class );
+        registerNativeTypeConversion( short.class, Long.class );
+        registerNativeTypeConversion( short.class, float.class );
+        registerNativeTypeConversion( short.class, Float.class );
+        registerNativeTypeConversion( short.class, double.class );
+        registerNativeTypeConversion( short.class, Double.class );
 
-        registerNumberConversion( Short.class, int.class );
-        registerNumberConversion( Short.class, Integer.class );
-        registerNumberConversion( Short.class, long.class );
-        registerNumberConversion( Short.class, Long.class );
-        registerNumberConversion( Short.class, float.class );
-        registerNumberConversion( Short.class, Float.class );
-        registerNumberConversion( Short.class, double.class );
-        registerNumberConversion( Short.class, Double.class );
+        registerNativeTypeConversion( Short.class, int.class );
+        registerNativeTypeConversion( Short.class, Integer.class );
+        registerNativeTypeConversion( Short.class, long.class );
+        registerNativeTypeConversion( Short.class, Long.class );
+        registerNativeTypeConversion( Short.class, float.class );
+        registerNativeTypeConversion( Short.class, Float.class );
+        registerNativeTypeConversion( Short.class, double.class );
+        registerNativeTypeConversion( Short.class, Double.class );
 
-        registerNumberConversion( int.class, Integer.class );
-        registerNumberConversion( int.class, long.class );
-        registerNumberConversion( int.class, Long.class );
-        registerNumberConversion( int.class, float.class );
-        registerNumberConversion( int.class, Float.class );
-        registerNumberConversion( int.class, double.class );
-        registerNumberConversion( int.class, Double.class );
+        registerNativeTypeConversion( int.class, Integer.class );
+        registerNativeTypeConversion( int.class, long.class );
+        registerNativeTypeConversion( int.class, Long.class );
+        registerNativeTypeConversion( int.class, float.class );
+        registerNativeTypeConversion( int.class, Float.class );
+        registerNativeTypeConversion( int.class, double.class );
+        registerNativeTypeConversion( int.class, Double.class );
 
-        registerNumberConversion( Integer.class, long.class );
-        registerNumberConversion( Integer.class, Long.class );
-        registerNumberConversion( Integer.class, float.class );
-        registerNumberConversion( Integer.class, Float.class );
-        registerNumberConversion( Integer.class, double.class );
-        registerNumberConversion( Integer.class, Double.class );
+        registerNativeTypeConversion( Integer.class, long.class );
+        registerNativeTypeConversion( Integer.class, Long.class );
+        registerNativeTypeConversion( Integer.class, float.class );
+        registerNativeTypeConversion( Integer.class, Float.class );
+        registerNativeTypeConversion( Integer.class, double.class );
+        registerNativeTypeConversion( Integer.class, Double.class );
 
-        registerNumberConversion( long.class, Long.class );
-        registerNumberConversion( long.class, float.class );
-        registerNumberConversion( long.class, Float.class );
-        registerNumberConversion( long.class, double.class );
-        registerNumberConversion( long.class, Double.class );
+        registerNativeTypeConversion( long.class, Long.class );
+        registerNativeTypeConversion( long.class, float.class );
+        registerNativeTypeConversion( long.class, Float.class );
+        registerNativeTypeConversion( long.class, double.class );
+        registerNativeTypeConversion( long.class, Double.class );
 
-        registerNumberConversion( Long.class, float.class );
-        registerNumberConversion( Long.class, Float.class );
-        registerNumberConversion( Long.class, double.class );
-        registerNumberConversion( Long.class, Double.class );
+        registerNativeTypeConversion( Long.class, float.class );
+        registerNativeTypeConversion( Long.class, Float.class );
+        registerNativeTypeConversion( Long.class, double.class );
+        registerNativeTypeConversion( Long.class, Double.class );
 
-        registerNumberConversion( float.class, Float.class );
-        registerNumberConversion( float.class, double.class );
-        registerNumberConversion( float.class, Double.class );
+        registerNativeTypeConversion( float.class, Float.class );
+        registerNativeTypeConversion( float.class, double.class );
+        registerNativeTypeConversion( float.class, Double.class );
 
-        registerNumberConversion( Float.class, double.class );
-        registerNumberConversion( Float.class, Double.class );
+        registerNativeTypeConversion( Float.class, double.class );
+        registerNativeTypeConversion( Float.class, Double.class );
 
-        registerNumberConversion( double.class, Double.class );
+        registerNativeTypeConversion( double.class, Double.class );
+
+        registerNativeTypeConversion( boolean.class, Boolean.class );
+        registerNativeTypeConversion( char.class, Character.class );
 
         registerToStringConversion( byte.class );
         registerToStringConversion( Byte.class );
@@ -139,7 +142,7 @@ public class Conversions {
         register( Enum.class, String.class, new EnumStringConversion() );
     }
 
-    private void registerNumberConversion(Class<?> sourceType, Class<?> targetType) {
+    private void registerNativeTypeConversion(Class<?> sourceType, Class<?> targetType) {
         if ( sourceType.isPrimitive() && targetType.isPrimitive() ) {
             register( sourceType, targetType, new PrimitiveToPrimitiveConversion( sourceType ) );
         }
