@@ -69,6 +69,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     private final TypeUtil typeUtil;
     private final Options options;
 
+    private boolean mappingErronuous = false;
+
     public MapperGenerationVisitor(ProcessingEnvironment processingEnvironment, Options options) {
         this.processingEnvironment = processingEnvironment;
         this.typeUtils = processingEnvironment.getTypeUtils();
@@ -80,9 +82,11 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     @Override
     public Void visitTypeAsInterface(TypeElement element, Void p) {
         Mapper model = retrieveModel( element );
-        String sourceFileName = element.getQualifiedName() + IMPLEMENTATION_SUFFIX;
 
-        writeModelToSourceFile( sourceFileName, model );
+        if ( !mappingErronuous ) {
+            String sourceFileName = element.getQualifiedName() + IMPLEMENTATION_SUFFIX;
+            writeModelToSourceFile( sourceFileName, model );
+        }
 
         return null;
     }
@@ -153,8 +157,16 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             for ( MappedProperty property : method.getMappedProperties() ) {
                 Method propertyMappingMethod = getPropertyMappingMethod( methods, property );
                 Method reversePropertyMappingMethod = getReversePropertyMappingMethod( methods, property );
-
                 Conversion conversion = conversions.getConversion( property.getSourceType(), property.getTargetType() );
+
+                reportErrorIfPropertyCanNotBeMapped(
+                    method,
+                    rawReverseMappingMethod,
+                    property,
+                    propertyMappingMethod,
+                    reversePropertyMappingMethod,
+                    conversion
+                );
 
                 propertyMappings.add(
                     new PropertyMapping(
@@ -220,6 +232,48 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             mappings.add( mapping );
         }
         return mappings;
+    }
+
+    private void reportErrorIfPropertyCanNotBeMapped(Method method, Method reverseMethod, MappedProperty property, Method propertyMappingMethod, Method reversePropertyMappingMethod, Conversion conversion) {
+        if ( property.getSourceType().equals( property.getTargetType() ) ||
+            propertyMappingMethod != null ||
+            conversion != null ||
+            ( property.getTargetType().isCollectionType() && property.getTargetType()
+                .getCollectionImplementationType() != null ) ) {
+            return;
+        }
+
+        reportError(
+            String.format(
+                "Can't map property \"%s %s\" to \"%s %s\".",
+                property.getSourceType(),
+                property.getSourceName(),
+                property.getTargetType(),
+                property.getTargetName()
+            ),
+            method.getExecutable()
+        );
+
+        mappingErronuous = true;
+
+        if ( reverseMethod == null ||
+            reversePropertyMappingMethod != null ||
+            conversion != null ||
+            ( property.getSourceType().isCollectionType() && property.getSourceType()
+                .getCollectionImplementationType() == null ) ) {
+            return;
+        }
+
+        reportError(
+            String.format(
+                "Can't map property \"%s %s\" to \"%s %s\".",
+                property.getTargetType(),
+                property.getTargetName(),
+                property.getSourceType(),
+                property.getSourceName()
+            ),
+            reverseMethod.getExecutable()
+        );
     }
 
     private String getIterableConversionString(Conversions conversions, Type sourceElementType, Type targetElementType, boolean isToConversion) {
@@ -300,7 +354,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             methods.add(
                 new Method(
                     declaringMapper,
-                    method.getSimpleName().toString(),
+                    method,
                     parameter.getName(),
                     parameter.getType(),
                     returnType,
@@ -310,21 +364,11 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
             if ( declaringMapper == null ) {
                 if ( parameter.getType().isIterableType() && !returnType.isIterableType() ) {
-                    processingEnvironment.getMessager()
-                        .printMessage(
-                            Kind.ERROR,
-                            "Can't generate mapping method from iterable type to non-iterable ype.",
-                            method
-                        );
+                    reportError( "Can't generate mapping method from iterable type to non-iterable ype.", method );
                 }
 
                 if ( !parameter.getType().isIterableType() && returnType.isIterableType() ) {
-                    processingEnvironment.getMessager()
-                        .printMessage(
-                            Kind.ERROR,
-                            "Can't generate mapping method from non-iterable type to iterable ype.",
-                            method
-                        );
+                    reportError( "Can't generate mapping method from non-iterable type to iterable ype.", method );
                 }
             }
         }
@@ -433,5 +477,10 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
     private Type retrieveReturnType(ExecutableElement method) {
         return typeUtil.retrieveType( method.getReturnType() );
+    }
+
+    private void reportError(String message, Element element) {
+        processingEnvironment.getMessager().printMessage( Kind.ERROR, message, element );
+        mappingErronuous = true;
     }
 }

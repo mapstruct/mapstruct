@@ -150,12 +150,12 @@ public class ${implementationName} implements ${interfaceName} {
         <#-- b) invoke mapping method -->
         <#elseif mappingMethod != "">
         ${targetBeanName}.${targetAccessorName}( <#if mappingMethod.declaringMapper??>${mappingMethod.declaringMapper.name?uncap_first}.</#if>${mappingMethod.name}( ${sourceBeanName}.${sourceAccessorName}() ) );
+        <#-- c) simply set -->
         <#else>
             <#if targetType.collectionType == true>
         if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
             ${targetBeanName}.${targetAccessorName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
         }
-        <#-- c) simply set -->
             <#else>
         ${targetBeanName}.${targetAccessorName}( ${sourceBeanName}.${sourceAccessorName}() );
             </#if>

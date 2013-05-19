@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.List;
+import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.model.Type;
 
@@ -26,19 +27,15 @@ import org.mapstruct.ap.model.Type;
 public class Method {
 
     private final Type declaringMapper;
-    private final String name;
+    private final ExecutableElement executable;
     private final String parameterName;
     private final Type sourceType;
     private final Type targetType;
     private final List<MappedProperty> mappedProperties;
 
-    public Method(String name, String parameterName, Type sourceType, Type targetType, List<MappedProperty> mappedProperties) {
-        this( null, name, parameterName, sourceType, targetType, mappedProperties );
-    }
-
-    public Method(Type declaringMapper, String name, String parameterName, Type sourceType, Type targetType, List<MappedProperty> mappedProperties) {
+    public Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType, Type targetType, List<MappedProperty> mappedProperties) {
         this.declaringMapper = declaringMapper;
-        this.name = name;
+        this.executable = executable;
         this.parameterName = parameterName;
         this.sourceType = sourceType;
         this.targetType = targetType;
@@ -49,8 +46,12 @@ public class Method {
         return declaringMapper;
     }
 
+    public ExecutableElement getExecutable() {
+        return executable;
+    }
+
     public String getName() {
-        return name;
+        return executable.getSimpleName().toString();
     }
 
     public String getParameterName() {
@@ -81,6 +82,6 @@ public class Method {
 
     @Override
     public String toString() {
-        return targetType + " " + name + "(" + sourceType + " " + parameterName + ")";
+        return targetType + " " + getName() + "(" + sourceType + " " + parameterName + ")";
     }
 }
