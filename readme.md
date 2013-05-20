@@ -245,3 +245,7 @@ MapStruct is just in its very beginnings. Some ideas for further features:
 * etc.
 
 Check out the [issue list](https://github.com/mapstruct/mapstruct/issues?state=open) for more details.
+
+<div style="float: right">
+    <a href="https://mapstruct.ci.cloudbees.com/"><img src="http://www.cloudbees.com/sites/default/files/Button-Built-on-CB-1.png"/></a>
+</div>
