@@ -21,6 +21,7 @@ package org.mapstruct.ap;
 import java.beans.Introspector;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -69,7 +70,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     private final TypeUtil typeUtil;
     private final Options options;
 
-    private boolean mappingErronuous = false;
+    private boolean mappingErroneous = false;
 
     public MapperGenerationVisitor(ProcessingEnvironment processingEnvironment, Options options) {
         this.processingEnvironment = processingEnvironment;
@@ -83,7 +84,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     public Void visitTypeAsInterface(TypeElement element, Void p) {
         Mapper model = retrieveModel( element );
 
-        if ( !mappingErronuous ) {
+        if ( !mappingErroneous ) {
             String sourceFileName = element.getQualifiedName() + IMPLEMENTATION_SUFFIX;
             writeModelToSourceFile( sourceFileName, model );
         }
@@ -254,7 +255,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             method.getExecutable()
         );
 
-        mappingErronuous = true;
+        mappingErroneous = true;
 
         if ( reverseMethod == null ||
             reversePropertyMappingMethod != null ||
@@ -349,7 +350,29 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         for ( ExecutableElement method : methodsIn( element.getEnclosedElements() ) ) {
             Parameter parameter = retrieveParameter( method );
             Type returnType = retrieveReturnType( method );
-            List<MappedProperty> properties = retrieveMappedProperties( method );
+
+            if ( declaringMapper == null ) {
+                if ( parameter.getType().isIterableType() && !returnType.isIterableType() ) {
+                    reportError( "Can't generate mapping method from iterable type to non-iterable ype.", method );
+                }
+                if ( !parameter.getType().isIterableType() && returnType.isIterableType() ) {
+                    reportError( "Can't generate mapping method from non-iterable type to iterable ype.", method );
+                }
+                if ( parameter.getType().isPrimitive() ) {
+                    reportError( "Can't generate mapping method with primitive parameter type.", method );
+                }
+                if ( returnType.isPrimitive() ) {
+                    reportError( "Can't generate mapping method with primitive return type.", method );
+                }
+
+                if ( mappingErroneous ) {
+                    continue;
+                }
+            }
+
+            //retrieve property mappings if an implementation for the method needs to be generated
+            List<MappedProperty> properties = declaringMapper == null ? retrieveMappedProperties( method ) : Collections
+                .<MappedProperty>emptyList();
 
             methods.add(
                 new Method(
@@ -361,16 +384,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                     properties
                 )
             );
-
-            if ( declaringMapper == null ) {
-                if ( parameter.getType().isIterableType() && !returnType.isIterableType() ) {
-                    reportError( "Can't generate mapping method from iterable type to non-iterable ype.", method );
-                }
-
-                if ( !parameter.getType().isIterableType() && returnType.isIterableType() ) {
-                    reportError( "Can't generate mapping method from non-iterable type to iterable ype.", method );
-                }
-            }
         }
 
         MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
@@ -481,6 +494,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
     private void reportError(String message, Element element) {
         processingEnvironment.getMessager().printMessage( Kind.ERROR, message, element );
-        mappingErronuous = true;
+        mappingErroneous = true;
     }
 }

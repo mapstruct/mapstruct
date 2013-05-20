@@ -35,4 +35,12 @@ public class Mapping {
     public String getTargetName() {
         return targetName;
     }
+
+    @Override
+    public String toString() {
+        return "Mapping {" +
+            "\n    sourceName='" + sourceName + "\'," +
+            "\n    targetName='" + targetName + "\'," +
+            "\n}";
+    }
 }

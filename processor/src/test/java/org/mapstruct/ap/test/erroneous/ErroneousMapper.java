@@ -16,17 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.erronuous;
+package org.mapstruct.ap.test.erroneous;
 
-public class Source {
+import org.mapstruct.Mapper;
 
-    private boolean foo;
+@Mapper
+public interface ErroneousMapper {
 
-    public boolean isFoo() {
-        return foo;
-    }
+    Target sourceToTarget(Source source);
 
-    public void setFoo(boolean foo) {
-        this.foo = foo;
-    }
+    Source targetToSource(Target target);
+
+    long sourceToLong(Source source);
+
+    Source longToSource(long id);
 }
