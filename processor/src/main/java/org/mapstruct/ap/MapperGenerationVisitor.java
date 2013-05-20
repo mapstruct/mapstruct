@@ -236,45 +236,50 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     }
 
     private void reportErrorIfPropertyCanNotBeMapped(Method method, Method reverseMethod, MappedProperty property, Method propertyMappingMethod, Method reversePropertyMappingMethod, Conversion conversion) {
-        if ( property.getSourceType().equals( property.getTargetType() ) ||
+        if ( property.getSourceType().equals( property.getTargetType() ) ) {
+            return;
+        }
+
+        //no mapping method nor conversion nor collection with default implementation
+        if ( !(
             propertyMappingMethod != null ||
-            conversion != null ||
-            ( property.getTargetType().isCollectionType() && property.getTargetType()
-                .getCollectionImplementationType() != null ) ) {
+                conversion != null ||
+                ( property.getTargetType().isCollectionType() && property.getTargetType()
+                    .getCollectionImplementationType() != null ) ) ) {
+
+            reportError(
+                String.format(
+                    "Can't map property \"%s %s\" to \"%s %s\".",
+                    property.getSourceType(),
+                    property.getSourceName(),
+                    property.getTargetType(),
+                    property.getTargetName()
+                ),
+                method.getExecutable()
+            );
+        }
+
+        if ( reverseMethod == null ) {
             return;
         }
 
-        reportError(
-            String.format(
-                "Can't map property \"%s %s\" to \"%s %s\".",
-                property.getSourceType(),
-                property.getSourceName(),
-                property.getTargetType(),
-                property.getTargetName()
-            ),
-            method.getExecutable()
-        );
-
-        mappingErroneous = true;
-
-        if ( reverseMethod == null ||
+        if ( !(
             reversePropertyMappingMethod != null ||
-            conversion != null ||
-            ( property.getSourceType().isCollectionType() && property.getSourceType()
-                .getCollectionImplementationType() == null ) ) {
-            return;
-        }
+                conversion != null ||
+                ( property.getSourceType().isCollectionType() && property.getSourceType()
+                    .getCollectionImplementationType() != null ) ) ) {
 
-        reportError(
-            String.format(
-                "Can't map property \"%s %s\" to \"%s %s\".",
-                property.getTargetType(),
-                property.getTargetName(),
-                property.getSourceType(),
-                property.getSourceName()
-            ),
-            reverseMethod.getExecutable()
-        );
+            reportError(
+                String.format(
+                    "Can't map property \"%s %s\" to \"%s %s\".",
+                    property.getTargetType(),
+                    property.getTargetName(),
+                    property.getSourceType(),
+                    property.getSourceName()
+                ),
+                reverseMethod.getExecutable()
+            );
+        }
     }
 
     private String getIterableConversionString(Conversions conversions, Type sourceElementType, Type targetElementType, boolean isToConversion) {
