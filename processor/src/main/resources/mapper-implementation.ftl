@@ -138,8 +138,11 @@ public class ${implementationName} implements ${interfaceName} {
 
 <#-- Generates the mapping of one bean property -->
 <#macro simpleMap sourceBeanName sourceType sourceAccessorName targetBeanName targetType targetAccessorName conversion="" mappingMethod="">
-        <#-- a) simple conversion -->
-        <#if conversion != "">
+        <#-- a) invoke mapping method -->
+        <#if mappingMethod != "">
+        ${targetBeanName}.${targetAccessorName}( <#if mappingMethod.declaringMapper??>${mappingMethod.declaringMapper.name?uncap_first}.</#if>${mappingMethod.name}( ${sourceBeanName}.${sourceAccessorName}() ) );
+        <#-- b) simple conversion -->
+        <#elseif conversion != "">
             <#if sourceType.primitive == false>
         if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
             ${targetBeanName}.${targetAccessorName}( ${conversion} );
@@ -147,9 +150,6 @@ public class ${implementationName} implements ${interfaceName} {
             <#else>
         ${targetBeanName}.${targetAccessorName}( ${conversion} );
             </#if>
-        <#-- b) invoke mapping method -->
-        <#elseif mappingMethod != "">
-        ${targetBeanName}.${targetAccessorName}( <#if mappingMethod.declaringMapper??>${mappingMethod.declaringMapper.name?uncap_first}.</#if>${mappingMethod.name}( ${sourceBeanName}.${sourceAccessorName}() ) );
         <#-- c) simply set -->
         <#else>
             <#if targetType.collectionType == true>
