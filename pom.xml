@@ -41,6 +41,7 @@
         <module>core</module>
         <module>processor</module>
         <module>integrationtest</module>
+        <module>distribution</module>
     </modules>
 
     <build>
