@@ -38,11 +38,13 @@
 
     <name>MapStruct Parent</name>
     <description>An annotation processor for generating type-safe bean mappers</description>
-    <url>http://http://www.mapstruct.org/</url>
+    <url>http://mapstruct.org/</url>
+    <inceptionYear>2012</inceptionYear>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <com.jolira.hickory.version>1.0.0</com.jolira.hickory.version>
+        <org.apache.maven.plugins.enforcer.version>1.2</org.apache.maven.plugins.enforcer.version>
     </properties>
 
     <licenses>
@@ -67,6 +69,27 @@
         <developerConnection>scm:git:git@github.com:mapstruct/mapstruct.git</developerConnection>
         <url>https://github.com/mapstruct/mapstruct/</url>
     </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/mapstruct/mapstruct/issues</url>
+    </issueManagement>
+
+    <ciManagement>
+        <system>Jenkins</system>
+        <url>https://mapstruct.ci.cloudbees.com/</url>
+    </ciManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>mapstruct-users</name>
+            <archive>https://groups.google.com/forum/?fromgroups#!forum/mapstruct-users</archive>
+        </mailingList>
+    </mailingLists>
+
+    <prerequisites>
+        <maven>3.0.3</maven>
+    </prerequisites>
 
     <dependencyManagement>
         <dependencies>
@@ -141,6 +164,24 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>2.7</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${org.apache.maven.plugins.enforcer.version}</version>
+                    <configuration>
+                        <rules>
+                            <requireJavaVersion>
+                                <version>[1.6,)</version>
+                            </requireJavaVersion>
+                            <DependencyConvergence/>
+                            <requirePluginVersions/>
+                            <requireMavenVersion>
+                                <version>[3.0.3,)</version>
+                            </requireMavenVersion>
+                        </rules>
+                    </configuration>
+                </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
@@ -256,6 +297,21 @@
                                 <version>1.0</version>
                             </signature>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <!-- Overriding version specified in execution in OSS super POM -->
+                <version>${org.apache.maven.plugins.enforcer.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-mapstruct-rules</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
