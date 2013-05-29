@@ -18,8 +18,17 @@
  */
 package org.mapstruct;
 
-
+/**
+ * Configures the mappings of several bean attributes.
+ *
+ * @author Gunnar Morling
+ */
 public @interface Mappings {
 
+    /**
+     * The onfiguration of the bean attributes.
+     *
+     * @return The configuration of the bean attributes.
+     */
     Mapping[] value();
 }

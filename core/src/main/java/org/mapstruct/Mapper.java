@@ -32,5 +32,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
 public @interface Mapper {
+
+    /**
+     * The mapper types used by this mapper.
+     *
+     * @return The mapper types used by this mapper.
+     */
     Class<?>[] uses() default { };
 }

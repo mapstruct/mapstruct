@@ -18,30 +18,43 @@
  */
 package org.mapstruct;
 
-
+/**
+ * Factory for getting mapper instances.
+ *
+ * @author Gunnar Morling
+ */
 public class Mappers {
 
     private final static String IMPLEMENTATION_SUFFIX = "Impl";
 
     /**
-     * TODO: Check that
-     * - clazz is an interface
-     * - the implementation type implements clazz
-     * - clazz is annotated with @Mapper
+     * Returns an instance of the given mapper type.
      *
-     * TODO: Use privileged action
+     * @param clazz The type of the mapper to return.
+     *
+     * @return An instance of the given mapper type.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T getMapper(Class<T> clazz) {
         try {
 
-//            ClassLoader classLoader = clazz.getClassLoader();
+            // Check that
+            // - clazz is an interface
+            // - the implementation type implements clazz
+            // - clazz is annotated with @Mapper
+            //
+            // Use privileged action
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-            return (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
+            if ( classLoader == null ) {
+                classLoader = Mappers.class.getClassLoader();
+            }
+
+            @SuppressWarnings("unchecked")
+            T mapper = (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
+
+            return mapper;
         }
         catch ( Exception e ) {
-            e.printStackTrace();
             throw new RuntimeException( e );
         }
     }

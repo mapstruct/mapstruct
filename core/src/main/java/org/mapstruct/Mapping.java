@@ -18,9 +18,24 @@
  */
 package org.mapstruct;
 
+/**
+ * Configures the mapping of one bean attribute.
+ *
+ * @author Gunnar Morling
+ */
 public @interface Mapping {
 
+    /**
+     * The source name of the configured property as defined by the JavaBeans specification.
+     *
+     * @return The source name of the configured property.
+     */
     String source();
 
+    /**
+     * The target name of the configured property as defined by the JavaBeans specification.
+     *
+     * @return The target name of the configured property.
+     */
     String target();
 }
