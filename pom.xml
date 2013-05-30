@@ -41,7 +41,6 @@
         <module>core</module>
         <module>processor</module>
         <module>integrationtest</module>
-        <module>distribution</module>
     </modules>
 
     <build>
@@ -70,4 +69,18 @@
         <url>https://github.com/mapstruct/mapstruct/</url>
     </scm>
 
+    <profiles>
+        <profile>
+            <id>distribution</id>
+            <activation>
+                <property>
+                    <name>skipDistribution</name>
+                    <value>!true</value>
+                </property>
+            </activation>
+            <modules>
+                <module>distribution</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
