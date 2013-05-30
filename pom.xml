@@ -55,4 +55,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- Required here as the maven-release-plugin will otherwise get the URL wrong -->
+    <scm>
+        <connection>scm:git:git://github.com/mapstruct/mapstruct.git</connection>
+        <developerConnection>scm:git:git@github.com:mapstruct/mapstruct.git</developerConnection>
+        <url>https://github.com/mapstruct/mapstruct/</url>
+    </scm>
+
 </project>
