@@ -272,7 +272,7 @@
                 <groupId>com.mycila.maven-license-plugin</groupId>
                 <artifactId>maven-license-plugin</artifactId>
                 <configuration>
-                    <header>etc/license.txt</header>
+                    <header>${basedir}/../etc/license.txt</header>
                     <strictCheck>true</strictCheck>
                     <excludes>
                         <exclude>.idea/**</exclude>
