@@ -141,6 +141,25 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>2.10</version>
+                    <configuration>
+                        <configLocation>build-config/checkstyle.xml</configLocation>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>true</failsOnError>
+                        <violationSeverity>error</violationSeverity>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>mapstruct-build-config</artifactId>
+                            <version>${project.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>2.5</version>
                 </plugin>
@@ -276,6 +295,7 @@
                     <strictCheck>true</strictCheck>
                     <excludes>
                         <exclude>.idea/**</exclude>
+                        <exclude>**/checkstyle.xml</exclude>
                         <exclude>copyright.txt</exclude>
                         <exclude>**/license.txt</exclude>
                         <exclude>**/mapstruct.xml</exclude>
