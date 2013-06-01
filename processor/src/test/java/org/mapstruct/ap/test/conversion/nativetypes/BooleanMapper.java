@@ -24,7 +24,7 @@ import org.mapstruct.Mappers;
 @Mapper
 public interface BooleanMapper {
 
-    public static BooleanMapper INSTANCE = Mappers.getMapper( BooleanMapper.class );
+    BooleanMapper INSTANCE = Mappers.getMapper( BooleanMapper.class );
 
     BooleanTarget sourceToTarget(BooleanSource source);
 

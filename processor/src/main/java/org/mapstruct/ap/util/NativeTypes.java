@@ -30,8 +30,11 @@ import java.util.Map;
  */
 public class NativeTypes {
 
-    private final static Map<Class<?>, Class<?>> wrapperToPrimitiveTypes;
-    private final static Map<Class<?>, Class<?>> primitiveToWrapperTypes;
+    private static final Map<Class<?>, Class<?>> WRAPPER_TO_PRIMITIVE_TYPES;
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER_TYPES;
+
+    private NativeTypes() {
+    }
 
     static {
         Map<Class<?>, Class<?>> tmp = new HashMap<Class<?>, Class<?>>();
@@ -44,7 +47,7 @@ public class NativeTypes {
         tmp.put( Boolean.class, boolean.class );
         tmp.put( Character.class, char.class );
 
-        wrapperToPrimitiveTypes = Collections.unmodifiableMap( tmp );
+        WRAPPER_TO_PRIMITIVE_TYPES = Collections.unmodifiableMap( tmp );
 
         tmp = new HashMap<Class<?>, Class<?>>();
         tmp.put( byte.class, Byte.class );
@@ -56,7 +59,7 @@ public class NativeTypes {
         tmp.put( boolean.class, Boolean.class );
         tmp.put( char.class, Character.class );
 
-        primitiveToWrapperTypes = Collections.unmodifiableMap( tmp );
+        PRIMITIVE_TO_WRAPPER_TYPES = Collections.unmodifiableMap( tmp );
     }
 
     public static Class<?> getWrapperType(Class<?> clazz) {
@@ -64,7 +67,7 @@ public class NativeTypes {
             throw new IllegalArgumentException( clazz + " is no primitive type." );
         }
 
-        return primitiveToWrapperTypes.get( clazz );
+        return PRIMITIVE_TO_WRAPPER_TYPES.get( clazz );
     }
 
     public static Class<?> getPrimitiveType(Class<?> clazz) {
@@ -72,6 +75,6 @@ public class NativeTypes {
             throw new IllegalArgumentException( clazz + " is no wrapper type." );
         }
 
-        return wrapperToPrimitiveTypes.get( clazz );
+        return WRAPPER_TO_PRIMITIVE_TYPES.get( clazz );
     }
 }

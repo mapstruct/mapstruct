@@ -34,20 +34,22 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class Type implements Comparable<Type> {
 
-    private final static Set<String> primitiveTypeNames = new HashSet<String>(
+    private static final Set<String> PRIMITIVE_TYPE_NAMES = new HashSet<String>(
         Arrays.asList( "boolean", "char", "byte", "short", "int", "long", "float", "double" )
     );
 
-    private final static ConcurrentMap<String, Type> defaultIterableImplementationTypes = new ConcurrentHashMap<String, Type>();
-    private final static ConcurrentMap<String, Type> defaultCollectionImplementationTypes = new ConcurrentHashMap<String, Type>();
+    private static final ConcurrentMap<String, Type> DEFAULT_ITERABLE_IMPLEMENTATION_TYPES =
+            new ConcurrentHashMap<String, Type>();
+    private static final ConcurrentMap<String, Type> DEFAULT_COLLECTION_IMPLEMENTATION_TYPES =
+            new ConcurrentHashMap<String, Type>();
 
     static {
-        defaultCollectionImplementationTypes.put( List.class.getName(), forClass( ArrayList.class ) );
-        defaultCollectionImplementationTypes.put( Set.class.getName(), forClass( HashSet.class ) );
-        defaultCollectionImplementationTypes.put( Collection.class.getName(), forClass( ArrayList.class ) );
+        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( List.class.getName(), forClass( ArrayList.class ) );
+        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( Set.class.getName(), forClass( HashSet.class ) );
+        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( Collection.class.getName(), forClass( ArrayList.class ) );
 
-        defaultIterableImplementationTypes.put( Iterable.class.getName(), forClass( ArrayList.class ) );
-        defaultIterableImplementationTypes.putAll( defaultCollectionImplementationTypes );
+        DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.put( Iterable.class.getName(), forClass( ArrayList.class ) );
+        DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.putAll( DEFAULT_COLLECTION_IMPLEMENTATION_TYPES );
     }
 
     private final String packageName;
@@ -81,7 +83,8 @@ public class Type implements Comparable<Type> {
         this( null, name, null, false, false, false );
     }
 
-    public Type(String packageName, String name, Type elementType, boolean isEnumType, boolean isCollectionType, boolean isIterableType) {
+    public Type(String packageName, String name, Type elementType, boolean isEnumType, boolean isCollectionType,
+                boolean isIterableType) {
         this.packageName = packageName;
         this.name = name;
         this.elementType = elementType;
@@ -90,14 +93,14 @@ public class Type implements Comparable<Type> {
         this.isIterableType = isIterableType;
 
         if ( isCollectionType ) {
-            collectionImplementationType = defaultCollectionImplementationTypes.get( packageName + "." + name );
+            collectionImplementationType = DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.get( packageName + "." + name );
         }
         else {
             collectionImplementationType = null;
         }
 
         if ( isIterableType ) {
-            iterableImplementationType = defaultIterableImplementationTypes.get( packageName + "." + name );
+            iterableImplementationType = DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.get( packageName + "." + name );
         }
         else {
             iterableImplementationType = null;
@@ -117,7 +120,7 @@ public class Type implements Comparable<Type> {
     }
 
     public boolean isPrimitive() {
-        return packageName == null && primitiveTypeNames.contains( name );
+        return packageName == null && PRIMITIVE_TYPE_NAMES.contains( name );
     }
 
     public boolean isEnumType() {

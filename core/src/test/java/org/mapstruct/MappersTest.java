@@ -18,12 +18,16 @@
  */
 package org.mapstruct;
 
-
 import org.mapstruct.test.model.Foo;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+/**
+ * Unit test for {@link Mappers}.
+ *
+ * @author Gunnar Morling
+ */
 public class MappersTest {
 
     @Test

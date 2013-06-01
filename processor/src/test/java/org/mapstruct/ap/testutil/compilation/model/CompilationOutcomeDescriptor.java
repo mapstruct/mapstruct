@@ -22,11 +22,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 /**
@@ -45,7 +45,8 @@ public class CompilationOutcomeDescriptor {
         this.diagnostics = diagnostics;
     }
 
-    public static CompilationOutcomeDescriptor forExpectedCompilationResult(ExpectedCompilationOutcome expectedCompilationResult) {
+    public static CompilationOutcomeDescriptor forExpectedCompilationResult(
+        ExpectedCompilationOutcome expectedCompilationResult) {
         if ( expectedCompilationResult == null ) {
             return new CompilationOutcomeDescriptor(
                 CompilationResult.SUCCEEDED,
@@ -54,7 +55,8 @@ public class CompilationOutcomeDescriptor {
         }
         else {
             Set<DiagnosticDescriptor> diagnosticDescriptors = new HashSet<DiagnosticDescriptor>();
-            for ( Diagnostic diagnostic : expectedCompilationResult.diagnostics() ) {
+            for ( org.mapstruct.ap.testutil.compilation.annotation.Diagnostic diagnostic :
+                expectedCompilationResult.diagnostics() ) {
                 diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( diagnostic ) );
             }
 
@@ -62,11 +64,13 @@ public class CompilationOutcomeDescriptor {
         }
     }
 
-    public static CompilationOutcomeDescriptor forResult(String sourceDir, boolean compilationSuccessful, List<javax.tools.Diagnostic<? extends JavaFileObject>> diagnostics) {
-        CompilationResult compilationResult = compilationSuccessful ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
+    public static CompilationOutcomeDescriptor forResult(String sourceDir, boolean compilationSuccessful,
+                                                         List<Diagnostic<? extends JavaFileObject>> diagnostics) {
+        CompilationResult compilationResult =
+            compilationSuccessful ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
 
         Set<DiagnosticDescriptor> diagnosticDescriptors = new HashSet<DiagnosticDescriptor>();
-        for ( javax.tools.Diagnostic<? extends JavaFileObject> diagnostic : diagnostics ) {
+        for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics ) {
             //ignore notes created by the compiler
             if ( diagnostic.getKind() != Kind.NOTE ) {
                 diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( sourceDir, diagnostic ) );

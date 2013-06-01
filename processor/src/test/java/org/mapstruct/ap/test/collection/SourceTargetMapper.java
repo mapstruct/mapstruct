@@ -28,7 +28,7 @@ import org.mapstruct.Mappings;
 @Mapper
 public interface SourceTargetMapper {
 
-    public static SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
         @Mapping(source = "integerList", target = "integerCollection"),

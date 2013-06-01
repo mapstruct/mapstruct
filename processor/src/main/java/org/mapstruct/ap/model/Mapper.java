@@ -35,7 +35,8 @@ public class Mapper {
     private final SortedSet<Type> importedTypes;
 
     public Mapper(String packageName, String interfaceName,
-                  String implementationName, List<BeanMapping> beanMappings, List<Type> usedMapperTypes, Options options) {
+                  String implementationName, List<BeanMapping> beanMappings, List<Type> usedMapperTypes,
+                  Options options) {
         this.packageName = packageName;
         this.interfaceName = interfaceName;
         this.implementationName = implementationName;

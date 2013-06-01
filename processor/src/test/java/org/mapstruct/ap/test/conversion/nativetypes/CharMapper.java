@@ -24,7 +24,7 @@ import org.mapstruct.Mappers;
 @Mapper
 public interface CharMapper {
 
-    public static CharMapper INSTANCE = Mappers.getMapper( CharMapper.class );
+    CharMapper INSTANCE = Mappers.getMapper( CharMapper.class );
 
     CharTarget sourceToTarget(CharSource source);
 

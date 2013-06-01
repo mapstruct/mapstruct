@@ -28,7 +28,7 @@ import org.mapstruct.Mappers;
 @Mapper
 public interface SourceTargetMapper {
 
-    public static SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     Target sourceToTarget(Source source);
 

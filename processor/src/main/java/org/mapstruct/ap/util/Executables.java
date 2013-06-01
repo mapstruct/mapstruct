@@ -30,6 +30,9 @@ import javax.lang.model.type.TypeKind;
  */
 public class Executables {
 
+    private Executables() {
+    }
+
     public static boolean isGetterMethod(ExecutableElement method) {
         return isNonBooleanGetterMethod( method ) || isBooleanGetterMethod( method );
     }

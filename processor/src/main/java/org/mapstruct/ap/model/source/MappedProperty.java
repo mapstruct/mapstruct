@@ -32,7 +32,8 @@ public class MappedProperty {
     private final Type targetType;
 
     public MappedProperty(String sourceName, String sourceReadAccessorName, String sourceWriteAccessorName,
-                          Type sourceType, String targetName, String targetReadAccessorName, String targetWriteAccessorName,
+                          Type sourceType, String targetName, String targetReadAccessorName,
+                          String targetWriteAccessorName,
                           Type targetType) {
         this.sourceName = sourceName;
         this.sourceReadAccessorName = sourceReadAccessorName;

@@ -62,7 +62,7 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
 
 public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
-    private final static String IMPLEMENTATION_SUFFIX = "Impl";
+    private static final String IMPLEMENTATION_SUFFIX = "Impl";
 
     private final ProcessingEnvironment processingEnvironment;
     private final Types typeUtils;
@@ -235,7 +235,9 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return mappings;
     }
 
-    private void reportErrorIfPropertyCanNotBeMapped(Method method, Method reverseMethod, MappedProperty property, Method propertyMappingMethod, Method reversePropertyMappingMethod, Conversion conversion) {
+    private void reportErrorIfPropertyCanNotBeMapped(Method method, Method reverseMethod, MappedProperty property,
+                                                     Method propertyMappingMethod, Method reversePropertyMappingMethod,
+                                                     Conversion conversion) {
         if ( property.getSourceType().equals( property.getTargetType() ) ) {
             return;
         }
@@ -282,7 +284,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         }
     }
 
-    private String getIterableConversionString(Conversions conversions, Type sourceElementType, Type targetElementType, boolean isToConversion) {
+    private String getIterableConversionString(Conversions conversions, Type sourceElementType, Type targetElementType,
+                                               boolean isToConversion) {
         Conversion conversion = conversions.getConversion( sourceElementType, targetElementType );
 
         if ( conversion == null ) {
@@ -435,7 +438,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             String sourcePropertyName = Executables.getPropertyName( getterMethod );
             Mapping mapping = mappings.get( sourcePropertyName );
 
-            for ( ExecutableElement setterMethod : Filters.setterMethodsIn( returnTypeElement.getEnclosedElements() ) ) {
+            for ( ExecutableElement setterMethod :Filters.setterMethodsIn( returnTypeElement
+                    .getEnclosedElements() ) ) {
 
                 String targetPropertyName = Executables.getPropertyName( setterMethod );
 

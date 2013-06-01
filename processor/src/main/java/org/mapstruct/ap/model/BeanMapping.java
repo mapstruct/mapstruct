@@ -31,7 +31,8 @@ public class BeanMapping {
     private final String toConversion;
     private final String fromConversion;
 
-    public BeanMapping(Type sourceType, Type targetType, List<PropertyMapping> propertyMappings, MappingMethod mappingMethod,
+    public BeanMapping(Type sourceType, Type targetType, List<PropertyMapping> propertyMappings,
+                       MappingMethod mappingMethod,
                        MappingMethod reverseMappingMethod, String toConversion, String fromConversion) {
         this.sourceType = sourceType;
         this.targetType = targetType;

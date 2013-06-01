@@ -20,8 +20,10 @@ package org.mapstruct.ap.util;
 
 public class Strings {
 
+    private Strings() {
+    }
+
     public static String capitalize(String name) {
         return name == null ? null : name.substring( 0, 1 ).toUpperCase() + name.substring( 1 );
     }
-
 }

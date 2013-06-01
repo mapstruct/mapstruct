@@ -43,6 +43,7 @@ public class PrimitiveToStringConversion implements Conversion {
 
     @Override
     public String from(String targetPropertyAccessor, Type type) {
-        return wrapperType.getSimpleName() + ".parse" + Strings.capitalize( sourceType.getSimpleName() ) + "( " + targetPropertyAccessor + " )";
+        return wrapperType.getSimpleName() + ".parse" + Strings.capitalize( sourceType.getSimpleName() ) + "( " +
+            targetPropertyAccessor + " )";
     }
 }

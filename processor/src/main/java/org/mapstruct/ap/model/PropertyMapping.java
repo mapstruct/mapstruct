@@ -40,7 +40,10 @@ public class PropertyMapping {
     private final String toConversion;
     private final String fromConversion;
 
-    public PropertyMapping(String sourceReadAccessorName, String sourceWriteAccessorName, Type sourceType, String targetReadAccessorName, String targetWriteAccessorName, Type targetType, MappingMethod mappingMethod, MappingMethod reverseMappingMethod, String toConversion, String fromConversion) {
+    public PropertyMapping(String sourceReadAccessorName, String sourceWriteAccessorName, Type sourceType,
+                           String targetReadAccessorName, String targetWriteAccessorName, Type targetType,
+                           MappingMethod mappingMethod, MappingMethod reverseMappingMethod, String toConversion,
+                           String fromConversion) {
         this.sourceReadAccessorName = sourceReadAccessorName;
         this.sourceWriteAccessorName = sourceWriteAccessorName;
         this.sourceType = sourceType;

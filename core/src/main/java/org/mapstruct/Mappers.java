@@ -25,7 +25,10 @@ package org.mapstruct;
  */
 public class Mappers {
 
-    private final static String IMPLEMENTATION_SUFFIX = "Impl";
+    private static final String IMPLEMENTATION_SUFFIX = "Impl";
+
+    private Mappers() {
+    }
 
     /**
      * Returns an instance of the given mapper type.

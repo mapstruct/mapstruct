@@ -25,16 +25,26 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 
+/**
+ * Writes Java source files based on given mapper models, using a FreeMarker
+ * template.
+ *
+ * @author Gunnar Morling
+ */
 public class ModelWriter {
 
-    private static final Configuration configuration;
+    /**
+     * FreeMarker configuration. As per the documentation, thread-safe if not
+     * altered after original initialization
+     */
+    private static final Configuration CONFIGURATION;
 
     private final String templateName;
 
     static {
-        configuration = new Configuration();
-        configuration.setClassForTemplateLoading( ModelWriter.class, "/" );
-        configuration.setObjectWrapper( new DefaultObjectWrapper() );
+        CONFIGURATION = new Configuration();
+        CONFIGURATION.setClassForTemplateLoading( ModelWriter.class, "/" );
+        CONFIGURATION.setObjectWrapper( new DefaultObjectWrapper() );
     }
 
     public ModelWriter(String templateName) {
@@ -46,7 +56,7 @@ public class ModelWriter {
         try {
             BufferedWriter writer = new BufferedWriter( sourceFile.openWriter() );
 
-            Template template = configuration.getTemplate( templateName );
+            Template template = CONFIGURATION.getTemplate( templateName );
             template.process( model, writer );
             writer.flush();
             writer.close();

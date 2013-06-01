@@ -32,6 +32,9 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
  */
 public class Filters {
 
+    private Filters() {
+    }
+
     public static List<ExecutableElement> getterMethodsIn(Iterable<? extends Element> elements) {
         List<ExecutableElement> getterMethods = new LinkedList<ExecutableElement>();
 

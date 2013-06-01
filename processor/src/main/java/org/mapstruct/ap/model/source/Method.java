@@ -33,7 +33,8 @@ public class Method {
     private final Type targetType;
     private final List<MappedProperty> mappedProperties;
 
-    public Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType, Type targetType, List<MappedProperty> mappedProperties) {
+    public Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType,
+                  Type targetType, List<MappedProperty> mappedProperties) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameterName = parameterName;

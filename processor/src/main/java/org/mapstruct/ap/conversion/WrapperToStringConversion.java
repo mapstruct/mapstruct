@@ -43,6 +43,7 @@ public class WrapperToStringConversion implements Conversion {
 
     @Override
     public String from(String targetPropertyAccessor, Type type) {
-        return sourceType.getSimpleName() + ".parse" + Strings.capitalize( primitiveType.getSimpleName() ) + "( " + targetPropertyAccessor + " )";
+        return sourceType.getSimpleName() + ".parse" + Strings.capitalize( primitiveType.getSimpleName() ) + "( " +
+            targetPropertyAccessor + " )";
     }
 }

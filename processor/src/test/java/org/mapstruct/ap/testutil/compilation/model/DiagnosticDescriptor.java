@@ -49,7 +49,8 @@ public class DiagnosticDescriptor {
         return new DiagnosticDescriptor( soureFileName, diagnostic.kind(), diagnostic.line(), "" );
     }
 
-    public static DiagnosticDescriptor forDiagnostic(String sourceDir, javax.tools.Diagnostic<? extends JavaFileObject> diagnostic) {
+    public static DiagnosticDescriptor forDiagnostic(String sourceDir,
+                                                     javax.tools.Diagnostic<? extends JavaFileObject> diagnostic) {
         return new DiagnosticDescriptor(
             getSourceName( sourceDir, diagnostic ),
             diagnostic.getKind(),
