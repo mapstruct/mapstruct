@@ -193,7 +193,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                             mappingMethod.getParameterName() + "." + property.getSourceReadAccessorName() + "()",
                             property.getTargetType()
                         ) : null,
-                        conversion != null ? conversion.from(
+                        conversion != null && reverseMappingMethod != null ? conversion.from(
                             reverseMappingMethod.getParameterName() + "." + property.getTargetReadAccessorName() + "()",
                             property.getSourceType()
                         ) : null
