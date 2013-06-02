@@ -23,7 +23,12 @@ import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.model.Type;
 
-
+/**
+ * Represents a mapping method with source and target type and the mappings
+ * between the properties of source and target type.
+ *
+ * @author Gunnar Morling
+ */
 public class Method {
 
     private final Type declaringMapper;

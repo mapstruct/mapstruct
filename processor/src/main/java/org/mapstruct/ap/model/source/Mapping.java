@@ -21,6 +21,11 @@ package org.mapstruct.ap.model.source;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 
+/**
+ * Represents a property mapping as configured via {@code @Mapping}.
+ *
+ * @author Gunnar Morling
+ */
 public class Mapping {
 
     private final String sourceName;

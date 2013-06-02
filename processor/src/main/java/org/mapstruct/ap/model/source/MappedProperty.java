@@ -20,6 +20,12 @@ package org.mapstruct.ap.model.source;
 
 import org.mapstruct.ap.model.Type;
 
+/**
+ * Represents a property mapped from source to target with the names of its
+ * accessor methods.
+ *
+ * @author Gunnar Morling
+ */
 public class MappedProperty {
 
     private final String sourceName;

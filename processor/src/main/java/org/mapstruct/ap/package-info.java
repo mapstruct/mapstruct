@@ -16,35 +16,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.source;
-
-import org.mapstruct.ap.model.Type;
-
 /**
- * A parameter of a mapping method.
- *
- * @author Gunnar Morling
+ * <p>
+ * This package and it sub-packages contain the implementation of the MapStruct annotation processor. Application code
+ * using MapStruct should never work with these types directly.
+ * </p>
  */
-public class Parameter {
-
-    private final String name;
-    private final Type type;
-
-    public Parameter(String name, Type type) {
-        this.name = name;
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    @Override
-    public String toString() {
-        return type.toString() + " " + name;
-    }
-}
+package org.mapstruct.ap;

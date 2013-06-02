@@ -62,9 +62,13 @@
                     <packagesheader>MapStruct Packages</packagesheader>
                     <doctitle>MapStruct ${project.version}</doctitle>
                     <windowtitle>MapStruct ${project.version}</windowtitle>
+                    <bottom>
+                        <![CDATA[Copyright &copy; ${project.inceptionYear}-{currentYear} <a href="http://mapstruct.org/">Gunnar Morling</a>; All rights reserved. Released under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache Software License 2.0</a>.]]>
+                    </bottom>
+
                     <groups>
                         <group>
-                            <title>MapStruct</title>
+                            <title>MapStruct API</title>
                             <packages>org.mapstruct*</packages>
                         </group>
                         <group>

@@ -16,35 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.source;
-
-import org.mapstruct.ap.model.Type;
-
 /**
- * A parameter of a mapping method.
+ * <p>
+ * MapStruct is a code generator which simplifies the implementation of mappings between Java bean types by generating
+ * mapping code at compile time, following a convention-over-configuration approach. The generated code uses plain
+ * method invocations and thus is fast and type-safe.
+ * </p>
+ * <p>
+ * This package contains several annotations which allow to configure how mapper interfaces are generated.
+ * </p>
  *
- * @author Gunnar Morling
+ * @see <a href="http://mapstruct.org/">MapStruct reference documentation</a>
  */
-public class Parameter {
-
-    private final String name;
-    private final Type type;
-
-    public Parameter(String name, Type type) {
-        this.name = name;
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    @Override
-    public String toString() {
-        return type.toString() + " " + name;
-    }
-}
+package org.mapstruct;

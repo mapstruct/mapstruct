@@ -29,6 +29,11 @@ import org.mapstruct.ap.util.TypeUtil;
 
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 
+/**
+ * Holds built-in {@link Conversion}s such as from {@code int} to {@code String}.
+ *
+ * @author Gunnar Morling
+ */
 public class Conversions {
 
     private TypeUtil typeUtil;
