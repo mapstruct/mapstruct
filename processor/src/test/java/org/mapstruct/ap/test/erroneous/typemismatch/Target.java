@@ -16,30 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.source;
+package org.mapstruct.ap.test.erroneous.typemismatch;
 
-import org.mapstruct.ap.model.Type;
+public class Target {
 
-public class Parameter {
+    private int foo;
 
-    private final String name;
-    private final Type type;
-
-    public Parameter(String name, Type type) {
-        this.name = name;
-        this.type = type;
+    public int getFoo() {
+        return foo;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    @Override
-    public String toString() {
-        return type.toString() + " " + name;
+    public void setFoo(int foo) {
+        this.foo = foo;
     }
 }

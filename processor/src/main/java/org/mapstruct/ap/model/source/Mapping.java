@@ -18,14 +18,24 @@
  */
 package org.mapstruct.ap.model.source;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+
 public class Mapping {
 
     private final String sourceName;
     private final String targetName;
+    private final AnnotationMirror mirror;
+    private final AnnotationValue sourceAnnotationValue;
+    private final AnnotationValue targetAnnotationValue;
 
-    public Mapping(String sourceName, String targetName) {
+    public Mapping(String sourceName, String targetName, AnnotationMirror mirror, AnnotationValue sourceAnnotationValue,
+                   AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
         this.targetName = targetName;
+        this.mirror = mirror;
+        this.sourceAnnotationValue = sourceAnnotationValue;
+        this.targetAnnotationValue = targetAnnotationValue;
     }
 
     public String getSourceName() {
@@ -34,6 +44,18 @@ public class Mapping {
 
     public String getTargetName() {
         return targetName;
+    }
+
+    public AnnotationMirror getMirror() {
+        return mirror;
+    }
+
+    public AnnotationValue getSourceAnnotationValue() {
+        return sourceAnnotationValue;
+    }
+
+    public AnnotationValue getTargetAnnotationValue() {
+        return targetAnnotationValue;
     }
 
     @Override

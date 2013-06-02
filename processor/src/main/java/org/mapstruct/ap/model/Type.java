@@ -39,9 +39,9 @@ public class Type implements Comparable<Type> {
     );
 
     private static final ConcurrentMap<String, Type> DEFAULT_ITERABLE_IMPLEMENTATION_TYPES =
-            new ConcurrentHashMap<String, Type>();
+        new ConcurrentHashMap<String, Type>();
     private static final ConcurrentMap<String, Type> DEFAULT_COLLECTION_IMPLEMENTATION_TYPES =
-            new ConcurrentHashMap<String, Type>();
+        new ConcurrentHashMap<String, Type>();
 
     static {
         DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( List.class.getName(), forClass( ArrayList.class ) );

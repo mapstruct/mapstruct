@@ -16,17 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.erroneous;
+package org.mapstruct.ap.test.erroneous.attributereference;
 
 public class Source {
 
-    private boolean foo;
+    private int foo;
 
-    public boolean isFoo() {
+    public int getFoo() {
         return foo;
     }
 
-    public void setFoo(boolean foo) {
+    public void setFoo(int foo) {
         this.foo = foo;
     }
 }

@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -358,19 +360,24 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         for ( ExecutableElement method : methodsIn( element.getEnclosedElements() ) ) {
             Parameter parameter = retrieveParameter( method );
             Type returnType = retrieveReturnType( method );
+            boolean mappingErroneous = false;
 
             if ( declaringMapper == null ) {
                 if ( parameter.getType().isIterableType() && !returnType.isIterableType() ) {
                     reportError( "Can't generate mapping method from iterable type to non-iterable ype.", method );
+                    mappingErroneous = true;
                 }
                 if ( !parameter.getType().isIterableType() && returnType.isIterableType() ) {
                     reportError( "Can't generate mapping method from non-iterable type to iterable ype.", method );
+                    mappingErroneous = true;
                 }
                 if ( parameter.getType().isPrimitive() ) {
                     reportError( "Can't generate mapping method with primitive parameter type.", method );
+                    mappingErroneous = true;
                 }
                 if ( returnType.isPrimitive() ) {
                     reportError( "Can't generate mapping method with primitive return type.", method );
+                    mappingErroneous = true;
                 }
 
                 if ( mappingErroneous ) {
@@ -432,15 +439,16 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         Element parameterElement = typeUtils.asElement( method.getParameters().get( 0 ).asType() );
 
         List<MappedProperty> properties = new ArrayList<MappedProperty>();
+        List<ExecutableElement> sourceGetters = Filters.getterMethodsIn( parameterElement.getEnclosedElements() );
+        List<ExecutableElement> targetSetters = Filters.setterMethodsIn( returnTypeElement.getEnclosedElements() );
 
-        for ( ExecutableElement getterMethod : Filters.getterMethodsIn( parameterElement.getEnclosedElements() ) ) {
+        reportErrorIfMappedPropertiesDontExist( method, mappings, sourceGetters, targetSetters );
 
+        for ( ExecutableElement getterMethod : sourceGetters ) {
             String sourcePropertyName = Executables.getPropertyName( getterMethod );
             Mapping mapping = mappings.get( sourcePropertyName );
 
-            for ( ExecutableElement setterMethod :Filters.setterMethodsIn( returnTypeElement
-                    .getEnclosedElements() ) ) {
-
+            for ( ExecutableElement setterMethod : targetSetters ) {
                 String targetPropertyName = Executables.getPropertyName( setterMethod );
 
                 if ( targetPropertyName.equals( mapping != null ? mapping.getTargetName() : sourcePropertyName ) ) {
@@ -467,6 +475,45 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return properties;
     }
 
+    private void reportErrorIfMappedPropertiesDontExist(ExecutableElement method, Map<String, Mapping> mappings,
+                                                        List<ExecutableElement> sourceGetters,
+                                                        List<ExecutableElement> targetSetters) {
+
+        Set<String> sourcePropertyNames = getPropertyNames( sourceGetters );
+        Set<String> targetPropertyNames = getPropertyNames( targetSetters );
+
+        for ( Mapping mappedProperty : mappings.values() ) {
+            if ( !sourcePropertyNames.contains( mappedProperty.getSourceName() ) ) {
+                reportError(
+                    String.format(
+                        "Unknown property \"%s\" in parameter type %s.",
+                        mappedProperty.getSourceName(),
+                        retrieveParameter( method ).getType()
+                    ), method, mappedProperty.getMirror(), mappedProperty.getSourceAnnotationValue()
+                );
+            }
+            if ( !targetPropertyNames.contains( mappedProperty.getTargetName() ) ) {
+                reportError(
+                    String.format(
+                        "Unknown property \"%s\" in return type %s.",
+                        mappedProperty.getTargetName(),
+                        retrieveReturnType( method )
+                    ), method, mappedProperty.getMirror(), mappedProperty.getTargetAnnotationValue()
+                );
+            }
+        }
+    }
+
+    private Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
+        Set<String> propertyNames = new HashSet<String>();
+
+        for ( ExecutableElement executableElement : propertyAccessors ) {
+            propertyNames.add( Executables.getPropertyName( executableElement ) );
+        }
+
+        return propertyNames;
+    }
+
     private Map<String, Mapping> getMappings(MappingsPrism mappingsAnnotation) {
         Map<String, Mapping> mappings = new HashMap<String, Mapping>();
 
@@ -478,7 +525,13 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     }
 
     private Mapping getMapping(MappingPrism mapping) {
-        return new Mapping( mapping.source(), mapping.target() );
+        return new Mapping(
+            mapping.source(),
+            mapping.target(),
+            mapping.mirror,
+            mapping.values.source(),
+            mapping.values.target()
+        );
     }
 
     private Parameter retrieveParameter(ExecutableElement method) {
@@ -503,6 +556,13 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
     private void reportError(String message, Element element) {
         processingEnvironment.getMessager().printMessage( Kind.ERROR, message, element );
+        mappingErroneous = true;
+    }
+
+    private void reportError(String message, Element element, AnnotationMirror annotationMirror,
+                             AnnotationValue annotationValue) {
+        processingEnvironment.getMessager()
+            .printMessage( Kind.ERROR, message, element, annotationMirror, annotationValue );
         mappingErroneous = true;
     }
 }

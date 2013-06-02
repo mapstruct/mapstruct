@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.erroneous;
+package org.mapstruct.ap.test.erroneous.attributereference;
 
 import javax.tools.Diagnostic.Kind;
 
@@ -28,18 +28,16 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.testng.annotations.Test;
 
-@WithClasses({ ErroneousMapper.class, Source.class, Target.class })
+@WithClasses({ ErroneousMapper.class, Source.class, Target.class, AnotherTarget.class })
 public class ErroneousMappingsTest extends MapperTestBase {
 
     @Test
-    @IssueKey("6")
+    @IssueKey("11")
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 26),
-            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 28),
-            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 30),
-            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 32)
+            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 27),
+            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 30)
         }
     )
     public void shouldFailToGenerateMappings() {
