@@ -27,13 +27,16 @@ public class BeanMapping {
     private final List<PropertyMapping> propertyMappings;
     private final MappingMethod mappingMethod;
     private final MappingMethod reverseMappingMethod;
+    private final MappingMethod existingObjectMappingMethod;
+    private final MappingMethod reverseExistingObjectMappingMethod;
     private final boolean isIterableMapping;
     private final String toConversion;
     private final String fromConversion;
 
     public BeanMapping(Type sourceType, Type targetType, List<PropertyMapping> propertyMappings,
                        MappingMethod mappingMethod,
-                       MappingMethod reverseMappingMethod, String toConversion, String fromConversion) {
+                       MappingMethod reverseMappingMethod, MappingMethod existingObjectMappingMethod,
+                       MappingMethod reverseExistingObjectMappingMethod, String toConversion, String fromConversion) {
         this.sourceType = sourceType;
         this.targetType = targetType;
         this.propertyMappings = propertyMappings;
@@ -42,6 +45,8 @@ public class BeanMapping {
         this.isIterableMapping = sourceType.isIterableType() && targetType.isIterableType();
         this.toConversion = toConversion;
         this.fromConversion = fromConversion;
+        this.existingObjectMappingMethod = existingObjectMappingMethod;
+        this.reverseExistingObjectMappingMethod = reverseExistingObjectMappingMethod;
     }
 
     public Type getSourceType() {
@@ -74,6 +79,30 @@ public class BeanMapping {
 
     public String getFromConversion() {
         return fromConversion;
+    }
+
+    public MappingMethod getExistingObjectMappingMethod() {
+        return existingObjectMappingMethod;
+    }
+
+    public MappingMethod getReverseExistingObjectMappingMethod() {
+        return reverseExistingObjectMappingMethod;
+    }
+
+    public boolean isCreateMappingMethod() {
+        return ( null != mappingMethod );
+    }
+
+    public boolean isCreateReverseMappingMethod() {
+        return ( null != reverseMappingMethod );
+    }
+
+    public boolean isCreateExistingObjectMappingMethod() {
+        return ( null != existingObjectMappingMethod );
+    }
+
+    public boolean isCreateReverseExistingObjectMappingMethod() {
+        return ( null != reverseExistingObjectMappingMethod );
     }
 
     @Override

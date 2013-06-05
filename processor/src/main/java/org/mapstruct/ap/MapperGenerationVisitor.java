@@ -130,41 +130,52 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         List<BeanMapping> mappings = new ArrayList<BeanMapping>();
         Set<Method> processedMethods = new HashSet<Method>();
 
-        for ( Method method : methods ) {
-            if ( processedMethods.contains( method ) ) {
+        for ( Method methodStart : methods ) {
+            if ( processedMethods.contains( methodStart ) ) {
                 continue;
             }
 
-            MappingMethod mappingMethod = new MappingMethod(
-                method.getDeclaringMapper(),
-                method.getName(),
-                method.getParameterName(),
-                getElementMappingMethod( methods, method )
+            Method rawNewObjectMappingMethod = getNewObjectMappingMethod( methods, methodStart );
+            MappingMethod newObjectMappingMethod = createMappingMethod(
+                methods,
+                processedMethods,
+                rawNewObjectMappingMethod
             );
 
-            MappingMethod reverseMappingMethod = null;
-            Method rawReverseMappingMethod = getReverseMappingMethod( methods, method );
-            if ( rawReverseMappingMethod != null ) {
-                processedMethods.add( rawReverseMappingMethod );
+            Method rawExistingObjectMappingMethod = getExistingObjectMappingMethod( methods, methodStart );
+            MappingMethod existingObjectMappingMethod = createMappingMethod(
+                methods,
+                processedMethods,
+                rawExistingObjectMappingMethod
+            );
 
-                reverseMappingMethod = new MappingMethod(
-                    rawReverseMappingMethod.getDeclaringMapper(),
-                    rawReverseMappingMethod.getName(),
-                    rawReverseMappingMethod.getParameterName(),
-                    getElementMappingMethod( methods, rawReverseMappingMethod )
-                );
-            }
+            Method rawReverseNewObjectMappingMethod = getReverseMappingMethod( methods, rawNewObjectMappingMethod );
+            MappingMethod reverseNewObjectMappingMethod = createMappingMethod(
+                methods, processedMethods,
+                rawReverseNewObjectMappingMethod
+            );
+
+            Method reverseRawExistingObjectMappingMethod = getReverseMappingMethod(
+                methods,
+                rawExistingObjectMappingMethod
+            );
+            MappingMethod reverseExistingObjectMappingMethod = createMappingMethod(
+                methods,
+                processedMethods,
+                reverseRawExistingObjectMappingMethod
+            );
 
             List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
 
-            for ( MappedProperty property : method.getMappedProperties() ) {
+            for ( MappedProperty property : methodStart.getMappedProperties() ) {
                 Method propertyMappingMethod = getPropertyMappingMethod( methods, property );
                 Method reversePropertyMappingMethod = getReversePropertyMappingMethod( methods, property );
+
                 Conversion conversion = conversions.getConversion( property.getSourceType(), property.getTargetType() );
 
                 reportErrorIfPropertyCanNotBeMapped(
-                    method,
-                    rawReverseMappingMethod,
+                    methodStart,
+                    rawReverseNewObjectMappingMethod,
                     property,
                     propertyMappingMethod,
                     reversePropertyMappingMethod,
@@ -182,27 +193,33 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                         propertyMappingMethod != null ? new MappingMethod(
                             propertyMappingMethod.getDeclaringMapper(),
                             propertyMappingMethod.getName(),
-                            propertyMappingMethod.getParameterName()
+                            propertyMappingMethod.getParameterName(),
+                            propertyMappingMethod.getTargetParameterName()
                         ) : null,
                         reversePropertyMappingMethod != null ? new MappingMethod(
                             reversePropertyMappingMethod.getDeclaringMapper(),
                             reversePropertyMappingMethod.getName(),
-                            reversePropertyMappingMethod.getParameterName()
+                            reversePropertyMappingMethod.getParameterName(),
+                            reversePropertyMappingMethod.getTargetParameterName()
                         ) : null,
                         conversion != null ? conversion.to(
-                            mappingMethod.getParameterName() + "." + property.getSourceReadAccessorName() + "()",
+                            rawNewObjectMappingMethod.getParameterName() + "." + property.getSourceReadAccessorName() +
+                                "()",
                             property.getTargetType()
                         ) : null,
-                        conversion != null && reverseMappingMethod != null ? conversion.from(
-                            reverseMappingMethod.getParameterName() + "." + property.getTargetReadAccessorName() + "()",
+                        conversion != null && rawReverseNewObjectMappingMethod != null ? conversion.from(
+                            rawReverseNewObjectMappingMethod.getParameterName() + "." +
+                                property.getTargetReadAccessorName() + "()",
                             property.getSourceType()
                         ) : null
                     )
                 );
             }
 
-            boolean isIterableMapping = method.getSourceType().isIterableType() && method.getTargetType()
-                .isIterableType();
+            boolean isIterableMapping =
+                rawNewObjectMappingMethod.getSourceType().isIterableType() && rawNewObjectMappingMethod
+                    .getTargetType()
+                    .isIterableType();
 
             String toConversionString = null;
             String fromConversionString = null;
@@ -210,24 +227,26 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             if ( isIterableMapping ) {
                 toConversionString = getIterableConversionString(
                     conversions,
-                    method.getSourceType().getElementType(),
-                    method.getTargetType().getElementType(),
+                    rawNewObjectMappingMethod.getSourceType().getElementType(),
+                    rawNewObjectMappingMethod.getTargetType().getElementType(),
                     true
                 );
                 fromConversionString = getIterableConversionString(
                     conversions,
-                    method.getTargetType().getElementType(),
-                    method.getSourceType().getElementType(),
+                    rawNewObjectMappingMethod.getTargetType().getElementType(),
+                    rawNewObjectMappingMethod.getSourceType().getElementType(),
                     false
                 );
             }
 
             BeanMapping mapping = new BeanMapping(
-                method.getSourceType(),
-                method.getTargetType(),
+                rawNewObjectMappingMethod.getSourceType(),
+                rawNewObjectMappingMethod.getTargetType(),
                 propertyMappings,
-                mappingMethod,
-                reverseMappingMethod,
+                newObjectMappingMethod,
+                reverseNewObjectMappingMethod,
+                existingObjectMappingMethod,
+                reverseExistingObjectMappingMethod,
                 toConversionString,
                 fromConversionString
             );
@@ -286,6 +305,23 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         }
     }
 
+    private MappingMethod createMappingMethod(List<Method> methods, Set<Method> processedMethods,
+                                              Method rawMappingMethod) {
+        MappingMethod mappingMethod = null;
+
+        if ( rawMappingMethod != null ) {
+            processedMethods.add( rawMappingMethod );
+            mappingMethod = new MappingMethod(
+                rawMappingMethod.getDeclaringMapper(),
+                rawMappingMethod.getName(),
+                rawMappingMethod.getParameterName(),
+                rawMappingMethod.getTargetParameterName(),
+                getElementMappingMethod( methods, rawMappingMethod )
+            );
+        }
+        return mappingMethod;
+    }
+
     private String getIterableConversionString(Conversions conversions, Type sourceElementType, Type targetElementType,
                                                boolean isToConversion) {
         Conversion conversion = conversions.getConversion( sourceElementType, targetElementType );
@@ -320,7 +356,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return elementMappingMethod == null ? null : new MappingMethod(
             elementMappingMethod.getDeclaringMapper(),
             elementMappingMethod.getName(),
-            elementMappingMethod.getParameterName()
+            elementMappingMethod.getParameterName(),
+            elementMappingMethod.getTargetParameterName()
         );
     }
 
@@ -347,7 +384,27 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     private Method getReverseMappingMethod(List<Method> rawMethods,
                                            Method method) {
         for ( Method oneMethod : rawMethods ) {
-            if ( oneMethod.reverses( method ) ) {
+            if ( method != null && oneMethod.reverses( method ) ) {
+                return oneMethod;
+            }
+        }
+        return null;
+    }
+
+    private Method getExistingObjectMappingMethod(List<Method> rawMethods,
+                                                  Method method) {
+        for ( Method oneMethod : rawMethods ) {
+            if ( method != null && method.relatedExistingObjetcMapping( oneMethod ) ) {
+                return oneMethod;
+            }
+        }
+        return null;
+    }
+
+    private Method getNewObjectMappingMethod(List<Method> rawMethods,
+                                             Method method) {
+        for ( Method oneMethod : rawMethods ) {
+            if ( method != null && method.relatedNewObjectMapping( oneMethod ) ) {
                 return oneMethod;
             }
         }
@@ -358,20 +415,28 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         List<Method> methods = new ArrayList<Method>();
 
         for ( ExecutableElement method : methodsIn( element.getEnclosedElements() ) ) {
-            Parameter parameter = retrieveParameter( method );
+            List<Parameter> parameters = retrieveParameters( method );
+            Parameter parameterSource = parameters.get( 0 );
+            boolean existingObjectMapping = parameters.size() > 1;
+
+            String targetParameterName = null;
+            if ( existingObjectMapping ) {
+                Parameter parameterTarget = parameters.get( 1 );
+                targetParameterName = parameterTarget.getName();
+            }
             Type returnType = retrieveReturnType( method );
             boolean mappingErroneous = false;
 
             if ( declaringMapper == null ) {
-                if ( parameter.getType().isIterableType() && !returnType.isIterableType() ) {
-                    reportError( "Can't generate mapping method from iterable type to non-iterable type.", method );
+                if ( parameterSource.getType().isIterableType() && !returnType.isIterableType() ) {
+                    reportError( "Can't generate mapping method from iterable type to non-iterable ype.", method );
                     mappingErroneous = true;
                 }
-                if ( !parameter.getType().isIterableType() && returnType.isIterableType() ) {
-                    reportError( "Can't generate mapping method from non-iterable type to iterable type.", method );
+                if ( !parameterSource.getType().isIterableType() && returnType.isIterableType() ) {
+                    reportError( "Can't generate mapping method from non-iterable type to iterable ype.", method );
                     mappingErroneous = true;
                 }
-                if ( parameter.getType().isPrimitive() ) {
+                if ( parameterSource.getType().isPrimitive() ) {
                     reportError( "Can't generate mapping method with primitive parameter type.", method );
                     mappingErroneous = true;
                 }
@@ -393,10 +458,12 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 new Method(
                     declaringMapper,
                     method,
-                    parameter.getName(),
-                    parameter.getType(),
+                    parameterSource.getName(),
+                    parameterSource.getType(),
+                    targetParameterName,
                     returnType,
-                    properties
+                    properties,
+                    existingObjectMapping
                 )
             );
         }
@@ -435,12 +502,23 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     }
 
     private List<MappedProperty> getMappedProperties(ExecutableElement method, Map<String, Mapping> mappings) {
-        Element returnTypeElement = typeUtils.asElement( method.getReturnType() );
-        Element parameterElement = typeUtils.asElement( method.getParameters().get( 0 ).asType() );
+        TypeElement returnTypeElement = (TypeElement) typeUtils.asElement( method.getReturnType() );
+        TypeElement parameterElement = (TypeElement) typeUtils.asElement( method.getParameters().get( 0 ).asType() );
+
 
         List<MappedProperty> properties = new ArrayList<MappedProperty>();
-        List<ExecutableElement> sourceGetters = Filters.getterMethodsIn( parameterElement.getEnclosedElements() );
-        List<ExecutableElement> targetSetters = Filters.setterMethodsIn( returnTypeElement.getEnclosedElements() );
+        List<ExecutableElement> sourceGetters = Filters.getterMethodsIn(
+            elementUtils.getAllMembers( parameterElement )
+        );
+        List<ExecutableElement> targetSetters = Filters.setterMethodsIn(
+            elementUtils.getAllMembers( returnTypeElement )
+        );
+        List<ExecutableElement> sourceSetters = Filters.setterMethodsIn(
+            elementUtils.getAllMembers( parameterElement )
+        );
+        List<ExecutableElement> targetGetters = Filters.getterMethodsIn(
+            elementUtils.getAllMembers( returnTypeElement )
+        );
 
         reportErrorIfMappedPropertiesDontExist( method, mappings, sourceGetters, targetSetters );
 
@@ -449,6 +527,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             Mapping mapping = mappings.get( sourcePropertyName );
 
             for ( ExecutableElement setterMethod : targetSetters ) {
+
                 String targetPropertyName = Executables.getPropertyName( setterMethod );
 
                 if ( targetPropertyName.equals( mapping != null ? mapping.getTargetName() : sourcePropertyName ) ) {
@@ -456,12 +535,16 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                         new MappedProperty(
                             sourcePropertyName,
                             getterMethod.getSimpleName().toString(),
-                            Executables.getCorrespondingSetterMethod( parameterElement, getterMethod )
+                            Executables.getCorrespondingPropertyAccessor(
+                                sourceSetters, getterMethod
+                            )
                                 .getSimpleName()
                                 .toString(),
                             retrieveReturnType( getterMethod ),
                             mapping != null ? mapping.getTargetName() : targetPropertyName,
-                            Executables.getCorrespondingGetterMethod( returnTypeElement, setterMethod )
+                            Executables.getCorrespondingPropertyAccessor(
+                                targetGetters, setterMethod
+                            )
                                 .getSimpleName()
                                 .toString(),
                             setterMethod.getSimpleName().toString(),
@@ -472,7 +555,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             }
         }
 
-        return properties;
+        return new ArrayList<MappedProperty>( properties );
     }
 
     private void reportErrorIfMappedPropertiesDontExist(ExecutableElement method, Map<String, Mapping> mappings,
@@ -535,19 +618,34 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     }
 
     private Parameter retrieveParameter(ExecutableElement method) {
-        List<? extends VariableElement> parameters = method.getParameters();
+        List<Parameter> parameters = retrieveParameters( method );
 
-        if ( parameters.size() != 1 ) {
-            //TODO: Log error
+        if ( parameters.size() > 1 ) {
+            // TODO: Log error
             return null;
         }
 
-        VariableElement parameter = parameters.get( 0 );
+        return parameters.get( 0 );
+    }
 
-        return new Parameter(
-            parameter.getSimpleName().toString(),
-            typeUtil.retrieveType( parameter.asType() )
-        );
+    private List<Parameter> retrieveParameters(ExecutableElement method) {
+        List<Parameter> mappingParameters = new ArrayList<Parameter>();
+        List<? extends VariableElement> parameters = method.getParameters();
+
+        if ( parameters.size() > 2 ) {
+            // TODO: Log error
+            return null;
+        }
+
+        for ( VariableElement variableElement : parameters ) {
+            Parameter parameter = new Parameter(
+                variableElement.getSimpleName().toString(),
+                typeUtil.retrieveType( variableElement.asType() )
+            );
+            mappingParameters.add( parameter );
+        }
+
+        return mappingParameters;
     }
 
     private Type retrieveReturnType(ExecutableElement method) {

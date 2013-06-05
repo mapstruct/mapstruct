@@ -21,8 +21,7 @@ package org.mapstruct.ap.test.complex.source;
 import java.util.Date;
 import java.util.List;
 
-
-public class Car {
+public class Car extends MotorizedObject {
 
     private String make;
     private int numberOfSeats;
@@ -33,9 +32,12 @@ public class Car {
     private Category category;
 
     public Car() {
+        super( -1, null );
     }
 
-    public Car(String make, int numberOfSeats, Date manufacturingDate, Person driver, List<Person> passengers) {
+    public Car(String make, int numberOfSeats, Date manufacturingDate, Person driver, List<Person> passengers
+        , int maxSpeed, Motor motor) {
+        super( maxSpeed, motor );
         this.make = make;
         this.numberOfSeats = numberOfSeats;
         this.manufacturingDate = manufacturingDate;
