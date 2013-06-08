@@ -62,6 +62,31 @@ import org.mapstruct.ap.writer.ModelWriter;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
+/**
+ * An {@link ElementVisitor} which generates the implementations for mapper
+ * interfaces (interfaces annotated with {@code @Mapper}.
+ * </p>
+ * Implementation notes:
+ * </p>
+ * The mapper generation happens by building up a model representation of
+ * the mapper to be generated (a {@link Mapper} object), which is then written
+ * into a file using the FreeMarker template engine.
+ * </p>
+ * The model instantiation happens in two phases/passes: The first one retrieves
+ * the mapping methods of the given interfaces and their configuration (the
+ * <i>source</i> model). In the second pass the individual methods are
+ * aggregated into the <i>target</i> model, which contains a {@link BeanMapping}
+ * each pair of source and target type which has references to forward and
+ * reverse mapping methods as well as the methods for mapping the element types
+ * (if it is a collection mapping) and {@link Conversion}s if applicable.
+ * </p>
+ * For reading annotation attributes, prisms as generated with help of the <a
+ * href="https://java.net/projects/hickory">Hickory</a> tool are used. These
+ * prisms allow a comfortable access to annotations and their attributes without
+ * depending on their class objects.
+ *
+ * @author Gunnar Morling
+ */
 public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
     private static final String IMPLEMENTATION_SUFFIX = "Impl";
@@ -494,8 +519,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                                                         List<ExecutableElement> sourceGetters,
                                                         List<ExecutableElement> targetSetters) {
 
-        Set<String> sourcePropertyNames = getPropertyNames( sourceGetters );
-        Set<String> targetPropertyNames = getPropertyNames( targetSetters );
+        Set<String> sourcePropertyNames = Executables.getPropertyNames( sourceGetters );
+        Set<String> targetPropertyNames = Executables.getPropertyNames( targetSetters );
 
         for ( Mapping mappedProperty : mappings.values() ) {
             if ( !sourcePropertyNames.contains( mappedProperty.getSourceName() ) ) {
@@ -517,16 +542,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 );
             }
         }
-    }
-
-    private Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
-        Set<String> propertyNames = new HashSet<String>();
-
-        for ( ExecutableElement executableElement : propertyAccessors ) {
-            propertyNames.add( Executables.getPropertyName( executableElement ) );
-        }
-
-        return propertyNames;
     }
 
     private Map<String, Mapping> getMappings(MappingsPrism mappingsAnnotation) {
