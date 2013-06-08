@@ -19,7 +19,10 @@
 package org.mapstruct.ap.util;
 
 import java.beans.Introspector;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 
@@ -108,5 +111,15 @@ public class Executables {
         }
 
         return null;
+    }
+
+    public static Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
+        Set<String> propertyNames = new HashSet<String>();
+
+        for ( ExecutableElement executableElement : propertyAccessors ) {
+            propertyNames.add( Executables.getPropertyName( executableElement ) );
+        }
+
+        return propertyNames;
     }
 }
