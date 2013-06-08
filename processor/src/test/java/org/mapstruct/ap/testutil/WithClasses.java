@@ -18,13 +18,20 @@
  */
 package org.mapstruct.ap.testutil;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Specifies the classes to compile during an annotation processor test. If
+ * given both on the class-level and the method-level for a given test, the
+ * settings on the method take precedence.
+ *
  * @author Gunnar Morling
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface WithClasses {
     Class<?>[] value();
 }

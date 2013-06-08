@@ -45,9 +45,8 @@ import org.testng.annotations.BeforeMethod;
 import static org.fest.assertions.Assertions.assertThat;
 
 /**
- * Base class for all mapper tests. Sub-classes must implement
- * {@link #getTestClasses()} to return the classes to be compiled for a given
- * test.
+ * Base class for all mapper tests. The classes to be compiled for a given test
+ * method must be specified via {@link WithClasses}.
  *
  * @author Gunnar Morling
  */
@@ -95,7 +94,7 @@ public abstract class MapperTestBase {
     @BeforeMethod
     public void generateMapperImplementation(Method testMethod) {
         diagnostics = new DiagnosticCollector<JavaFileObject>();
-        List<File> sourceFiles = getSourceFiles( getTestClasses() );
+        List<File> sourceFiles = getSourceFiles( getTestClasses( testMethod ) );
 
         boolean compilationSuccessful = compile( diagnostics, sourceFiles );
 
@@ -125,11 +124,24 @@ public abstract class MapperTestBase {
     /**
      * Returns the classes to be compiled for this test.
      *
+     * @param testMethod The test method of interest
+     *
      * @return A list containing the classes to be compiled for this test
      */
-    private List<Class<?>> getTestClasses() {
-        WithClasses withClasses = this.getClass().getAnnotation( WithClasses.class );
-        return withClasses != null ? Arrays.asList( withClasses.value() ) : Collections.<Class<?>>emptyList();
+    private List<Class<?>> getTestClasses(Method testMethod) {
+        WithClasses withClasses = testMethod.getAnnotation( WithClasses.class );
+
+        if ( withClasses == null ) {
+            withClasses = this.getClass().getAnnotation( WithClasses.class );
+        }
+
+        if ( withClasses == null || withClasses.value().length == 0 ) {
+            throw new IllegalStateException(
+                "The classes to be compiled during the test must be specified via @WithClasses."
+            );
+        }
+
+        return Arrays.asList( withClasses.value() );
     }
 
     private List<File> getSourceFiles(List<Class<?>> classes) {

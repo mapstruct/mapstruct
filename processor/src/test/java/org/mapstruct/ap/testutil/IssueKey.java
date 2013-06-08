@@ -29,5 +29,11 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.SOURCE)
 public @interface IssueKey {
+
+    /**
+     * The issue number.
+     *
+     * @return the issue number
+     */
     String value();
 }
