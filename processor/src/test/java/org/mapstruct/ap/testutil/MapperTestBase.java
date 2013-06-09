@@ -40,6 +40,7 @@ import javax.tools.ToolProvider;
 import org.mapstruct.ap.MappingProcessor;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 import org.testng.annotations.BeforeClass;
@@ -51,9 +52,15 @@ import static org.fest.assertions.Assertions.assertThat;
  * Base class for all mapper tests.
  * </p>
  * The classes to be compiled for a given test method must be specified via
- * {@link WithClasses}. Optionally the expected compilation outcome and expected
- * diagnostics can be specified via {@link ExpectedCompilationOutcome}. If no
- * outcome is specified, a successful compilation is assumed.
+ * {@link WithClasses}. In addition the following things can be configured
+ * optionally :
+ * <ul>
+ * <li>Processor options to be considered during compilation via
+ * {@link ProcessorOption}.</li>
+ * <li>The expected compilation outcome and expected diagnostics can be
+ * specified via {@link ExpectedCompilationOutcome}. If no outcome is specified,
+ * a successful compilation is assumed.</li>
+ * </ul>
  *
  * @author Gunnar Morling
  */
@@ -104,8 +111,9 @@ public abstract class MapperTestBase {
     public void generateMapperImplementation(Method testMethod) {
         diagnostics = new DiagnosticCollector<JavaFileObject>();
         List<File> sourceFiles = getSourceFiles( getTestClasses( testMethod ) );
+        List<String> processorOptions = getProcessorOptions( testMethod );
 
-        boolean compilationSuccessful = compile( diagnostics, sourceFiles );
+        boolean compilationSuccessful = compile( diagnostics, sourceFiles, processorOptions );
 
         CompilationOutcomeDescriptor actualResult = CompilationOutcomeDescriptor.forResult(
             sourceDir,
@@ -196,6 +204,28 @@ public abstract class MapperTestBase {
         return Arrays.asList( withClasses.value() );
     }
 
+    /**
+     * Returns the processor options to be used this test.
+     *
+     * @param testMethod The test method of interest
+     *
+     * @return A list containing the processor options to be used for this test
+     */
+    private List<String> getProcessorOptions(Method testMethod) {
+        ProcessorOption processorOption = testMethod.getAnnotation( ProcessorOption.class );
+
+        if ( processorOption == null ) {
+            processorOption = this.getClass().getAnnotation( ProcessorOption.class );
+        }
+
+        return processorOption != null ? Arrays.asList( asOptionString( processorOption ) ) :
+            Collections.<String>emptyList();
+    }
+
+    private String asOptionString(ProcessorOption processorOption) {
+        return String.format( "-A%s=%s", processorOption.name(), processorOption.value() );
+    }
+
     private List<File> getSourceFiles(List<Class<?>> classes) {
         List<File> sourceFiles = new ArrayList<File>( classes.size() );
 
@@ -213,7 +243,8 @@ public abstract class MapperTestBase {
         return sourceFiles;
     }
 
-    private boolean compile(DiagnosticCollector<JavaFileObject> diagnostics, Iterable<File> sourceFiles) {
+    private boolean compile(DiagnosticCollector<JavaFileObject> diagnostics, Iterable<File> sourceFiles,
+                            List<String> processorOptions) {
         StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, null );
 
         Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles( sourceFiles );
@@ -231,7 +262,7 @@ public abstract class MapperTestBase {
             null,
             fileManager,
             diagnostics,
-            Collections.<String>emptyList(),
+            processorOptions,
             null,
             compilationUnits
         );
