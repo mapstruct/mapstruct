@@ -18,33 +18,29 @@
  */
 package org.mapstruct;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.tools.Diagnostic.Kind;
 
 /**
- * Marks an interface as mapper interface and activates the generation of a
- * mapper implementation for that interface.
+ * Policy for reporting issues occurring during the generation of a mapper
+ * implementation.
  *
  * @author Gunnar Morling
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.SOURCE)
-public @interface Mapper {
+public enum ReportingPolicy {
 
     /**
-     * The mapper types used by this mapper.
-     *
-     * @return The mapper types used by this mapper.
+     * No report will be created for the given issue.
      */
-    Class<?>[] uses() default { };
+    IGNORE,
 
     /**
-     * How unmapped properties of the target type of a mapping should be
-     * reported.
-     *
-     * @return The reporting policy for unmapped target properties.
+     * A report with {@link Kind#WARNING} will be created for the given issue.
      */
-    ReportingPolicy unmappedTargetPolicy() default ReportingPolicy.WARN;
+    WARN,
+
+    /**
+     * A report with {@link Kind#ERROR} will be created for the given issue,
+     * causing the compilation to fail.
+     */
+    ERROR;
 }

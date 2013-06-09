@@ -16,37 +16,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.util;
+package org.mapstruct.ap.test.unmappedtarget;
 
-/**
- * Helper class for dealing with strings.
- *
- * @author Gunnar Morling
- */
-public class Strings {
+public class Target {
 
-    private Strings() {
+    private Long foo;
+    private int bar;
+
+    public Long getFoo() {
+        return foo;
     }
 
-    public static String capitalize(String name) {
-        return name == null ? null : name.substring( 0, 1 ).toUpperCase() + name.substring( 1 );
+    public void setFoo(Long foo) {
+        this.foo = foo;
     }
 
-    public static String join(Iterable<?> iterable, String separator) {
-        StringBuilder sb = new StringBuilder();
-        boolean isFirst = true;
+    public int getBar() {
+        return bar;
+    }
 
-        for ( Object object : iterable ) {
-            if ( !isFirst ) {
-                sb.append( separator );
-            }
-            else {
-                isFirst = false;
-            }
-
-            sb.append( object );
-        }
-
-        return sb.toString();
+    public void setBar(int bar) {
+        this.bar = bar;
     }
 }
