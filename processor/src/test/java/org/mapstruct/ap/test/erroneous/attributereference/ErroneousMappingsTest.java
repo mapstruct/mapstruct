@@ -28,6 +28,11 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.testng.annotations.Test;
 
+/**
+ * Test for using unknown attributes in {@code @Mapping}.
+ *
+ * @author Gunnar Morling
+ */
 @WithClasses({ ErroneousMapper.class, Source.class, Target.class, AnotherTarget.class })
 public class ErroneousMappingsTest extends MapperTestBase {
 
@@ -36,8 +41,14 @@ public class ErroneousMappingsTest extends MapperTestBase {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 27),
-            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 30)
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 27,
+                messageRegExp = "Unknown property \"bar\" in return type.*"),
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 30,
+                messageRegExp = "Unknown property \"bar\" in parameter type.*")
         }
     )
     public void shouldFailToGenerateMappings() {
