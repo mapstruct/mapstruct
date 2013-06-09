@@ -41,7 +41,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import org.mapstruct.ap.conversion.Conversion;
@@ -327,7 +326,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 ( property.getTargetType().isCollectionType() && property.getTargetType()
                     .getCollectionImplementationType() != null ) ) ) {
 
-            reportError(
+            printMessage(
+                ReportingPolicy.ERROR,
                 String.format(
                     "Can't map property \"%s %s\" to \"%s %s\".",
                     property.getSourceType(),
@@ -349,7 +349,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 ( property.getSourceType().isCollectionType() && property.getSourceType()
                     .getCollectionImplementationType() != null ) ) ) {
 
-            reportError(
+            printMessage(
+                ReportingPolicy.ERROR,
                 String.format(
                     "Can't map property \"%s %s\" to \"%s %s\".",
                     property.getTargetType(),
@@ -457,19 +458,35 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
             if ( implementationRequired ) {
                 if ( parameter.getType().isIterableType() && !returnType.isIterableType() ) {
-                    reportError( "Can't generate mapping method from iterable type to non-iterable type.", method );
+                    printMessage(
+                        ReportingPolicy.ERROR,
+                        "Can't generate mapping method from iterable type to non-iterable type.",
+                        method
+                    );
                     mappingErroneous = true;
                 }
                 if ( !parameter.getType().isIterableType() && returnType.isIterableType() ) {
-                    reportError( "Can't generate mapping method from non-iterable type to iterable type.", method );
+                    printMessage(
+                        ReportingPolicy.ERROR,
+                        "Can't generate mapping method from non-iterable type to iterable type.",
+                        method
+                    );
                     mappingErroneous = true;
                 }
                 if ( parameter.getType().isPrimitive() ) {
-                    reportError( "Can't generate mapping method with primitive parameter type.", method );
+                    printMessage(
+                        ReportingPolicy.ERROR,
+                        "Can't generate mapping method with primitive parameter type.",
+                        method
+                    );
                     mappingErroneous = true;
                 }
                 if ( returnType.isPrimitive() ) {
-                    reportError( "Can't generate mapping method with primitive return type.", method );
+                    printMessage(
+                        ReportingPolicy.ERROR,
+                        "Can't generate mapping method with primitive return type.",
+                        method
+                    );
                     mappingErroneous = true;
                 }
 
@@ -605,7 +622,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
         for ( Mapping mappedProperty : mappings.values() ) {
             if ( !sourcePropertyNames.contains( mappedProperty.getSourceName() ) ) {
-                reportError(
+                printMessage(
+                    ReportingPolicy.ERROR,
                     String.format(
                         "Unknown property \"%s\" in parameter type %s.",
                         mappedProperty.getSourceName(),
@@ -614,7 +632,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 );
             }
             if ( !targetPropertyNames.contains( mappedProperty.getTargetName() ) ) {
-                reportError(
+                printMessage(
+                    ReportingPolicy.ERROR,
                     String.format(
                         "Unknown property \"%s\" in return type %s.",
                         mappedProperty.getTargetName(),
@@ -670,20 +689,17 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return typeUtil.retrieveType( method.getReturnType() );
     }
 
-    private void reportError(String message, Element element) {
-        processingEnvironment.getMessager().printMessage( Kind.ERROR, message, element );
-        mappingErroneous = true;
-    }
-
-    private void reportError(String message, Element element, AnnotationMirror annotationMirror,
-                             AnnotationValue annotationValue) {
-        processingEnvironment.getMessager()
-            .printMessage( Kind.ERROR, message, element, annotationMirror, annotationValue );
-        mappingErroneous = true;
-    }
-
     private void printMessage(ReportingPolicy reportingPolicy, String message, Element element) {
         processingEnvironment.getMessager().printMessage( reportingPolicy.getDiagnosticKind(), message, element );
+        if ( reportingPolicy.failsBuild() ) {
+            mappingErroneous = true;
+        }
+    }
+
+    private void printMessage(ReportingPolicy reportingPolicy, String message, Element element,
+                              AnnotationMirror annotationMirror, AnnotationValue annotationValue) {
+        processingEnvironment.getMessager()
+            .printMessage( reportingPolicy.getDiagnosticKind(), message, element, annotationMirror, annotationValue );
         if ( reportingPolicy.failsBuild() ) {
             mappingErroneous = true;
         }
