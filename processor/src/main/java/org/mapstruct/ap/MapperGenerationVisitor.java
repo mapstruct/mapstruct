@@ -20,8 +20,8 @@ package org.mapstruct.ap;
 
 import java.beans.Introspector;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -32,6 +32,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -50,6 +51,7 @@ import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.Options;
 import org.mapstruct.ap.model.PropertyMapping;
+import org.mapstruct.ap.model.ReportingPolicy;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.source.MappedProperty;
 import org.mapstruct.ap.model.source.Mapping;
@@ -57,6 +59,7 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.Parameter;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
+import org.mapstruct.ap.util.Strings;
 import org.mapstruct.ap.util.TypeUtil;
 import org.mapstruct.ap.writer.ModelWriter;
 
@@ -133,8 +136,14 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     }
 
     private Mapper retrieveModel(TypeElement element) {
-        List<Method> methods = retrieveMethods( null, element );
-        List<BeanMapping> mappings = getMappings( methods );
+        //1.) build up "source" model
+        List<Method> methods = retrieveMethods( element, true );
+
+        //2.) build up aggregated "target" model
+        List<BeanMapping> mappings = getMappings(
+            methods,
+            ReportingPolicy.valueOf( MapperPrism.getInstanceOn( element ).unmappedTargetPolicy() )
+        );
         List<Type> usedMapperTypes = getUsedMapperTypes( element );
 
         Mapper mapper = new Mapper(
@@ -149,7 +158,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return mapper;
     }
 
-    private List<BeanMapping> getMappings(List<Method> methods) {
+    private List<BeanMapping> getMappings(List<Method> methods,
+                                          ReportingPolicy unmappedTargetPolicy) {
         Conversions conversions = new Conversions( elementUtils, typeUtils, typeUtil );
 
         List<BeanMapping> mappings = new ArrayList<BeanMapping>();
@@ -181,8 +191,13 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             }
 
             List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
+            Set<String> mappedSourceProperties = new HashSet<String>();
+            Set<String> mappedTargetProperties = new HashSet<String>();
 
             for ( MappedProperty property : method.getMappedProperties() ) {
+                mappedSourceProperties.add( property.getSourceName() );
+                mappedTargetProperties.add( property.getTargetName() );
+
                 Method propertyMappingMethod = getPropertyMappingMethod( methods, property );
                 Method reversePropertyMappingMethod = getReversePropertyMappingMethod( methods, property );
                 Conversion conversion = conversions.getConversion( property.getSourceType(), property.getTargetType() );
@@ -229,6 +244,23 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             boolean isIterableMapping = method.getSourceType().isIterableType() && method.getTargetType()
                 .isIterableType();
 
+            if ( mappingMethod.isGenerationRequired() && !isIterableMapping ) {
+                reportErrorForUnmappedTargetPropertiesIfRequired(
+                    method.getExecutable(),
+                    unmappedTargetPolicy,
+                    method.getTargetProeprties(),
+                    mappedTargetProperties
+                );
+            }
+            if ( reverseMappingMethod != null && reverseMappingMethod.isGenerationRequired() && !isIterableMapping ) {
+                reportErrorForUnmappedTargetPropertiesIfRequired(
+                    rawReverseMappingMethod.getExecutable(),
+                    unmappedTargetPolicy,
+                    method.getSourceProperties(),
+                    mappedSourceProperties
+                );
+            }
+
             String toConversionString = null;
             String fromConversionString = null;
 
@@ -260,6 +292,25 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             mappings.add( mapping );
         }
         return mappings;
+    }
+
+    private void reportErrorForUnmappedTargetPropertiesIfRequired(ExecutableElement method,
+                                                                  ReportingPolicy unmappedTargetPolicy,
+                                                                  Set<String> targetProperties,
+                                                                  Set<String> mappedTargetProperties) {
+
+        if ( targetProperties.size() > mappedTargetProperties.size() && unmappedTargetPolicy.requiresReport() ) {
+            targetProperties.removeAll( mappedTargetProperties );
+            printMessage(
+                unmappedTargetPolicy,
+                MessageFormat.format(
+                    "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
+                    targetProperties.size(),
+                    Strings.join( targetProperties, ", " )
+                ),
+                method
+            );
+        }
     }
 
     private void reportErrorIfPropertyCanNotBeMapped(Method method, Method reverseMethod, MappedProperty property,
@@ -379,15 +430,32 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return null;
     }
 
-    private List<Method> retrieveMethods(Type declaringMapper, Element element) {
+    /**
+     * Retrieves the mapping methods declared by the given mapper type.
+     *
+     * @param element The type of interest
+     * @param implementationRequired Whether an implementation of this type must be generated or
+     * not. {@code true} if the type is the currently processed
+     * mapper interface, {@code false} if the given type is one
+     * referred to via {@code Mapper#uses()}.
+     *
+     * @return All mapping methods declared by the given type
+     */
+    private List<Method> retrieveMethods(TypeElement element, boolean implementationRequired) {
         List<Method> methods = new ArrayList<Method>();
 
+        MapperPrism mapperPrism = implementationRequired ? MapperPrism.getInstanceOn( element ) : null;
+
+        //TODO Extract to separate method
         for ( ExecutableElement method : methodsIn( element.getEnclosedElements() ) ) {
             Parameter parameter = retrieveParameter( method );
             Type returnType = retrieveReturnType( method );
+            Element returnTypeElement = typeUtils.asElement( method.getReturnType() );
+            Element parameterElement = typeUtils.asElement( method.getParameters().get( 0 ).asType() );
+
             boolean mappingErroneous = false;
 
-            if ( declaringMapper == null ) {
+            if ( implementationRequired ) {
                 if ( parameter.getType().isIterableType() && !returnType.isIterableType() ) {
                     reportError( "Can't generate mapping method from iterable type to non-iterable type.", method );
                     mappingErroneous = true;
@@ -410,30 +478,48 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 }
             }
 
-            //retrieve property mappings if an implementation for the method needs to be generated
-            List<MappedProperty> properties = declaringMapper == null ? retrieveMappedProperties( method ) : Collections
-                .<MappedProperty>emptyList();
+            //add method with property mappings if an implementation needs to be generated
+            if ( implementationRequired ) {
+                Set<String> sourceProperties = Executables.getPropertyNames(
+                    Filters.getterMethodsIn( parameterElement.getEnclosedElements() )
+                );
+                Set<String> targetProperties = Executables.getPropertyNames(
+                    Filters.setterMethodsIn( returnTypeElement.getEnclosedElements() )
+                );
 
-            methods.add(
-                new Method(
-                    declaringMapper,
-                    method,
-                    parameter.getName(),
-                    parameter.getType(),
-                    returnType,
-                    properties
-                )
-            );
+                methods.add(
+                    Method.forMethodRequiringImplementation(
+                        method,
+                        parameter.getName(),
+                        parameter.getType(),
+                        returnType,
+                        sourceProperties,
+                        targetProperties,
+                        retrieveMappedProperties( method, sourceProperties, targetProperties )
+                    )
+                );
+            }
+            //otherwise add reference to existing mapper method
+            else {
+                methods.add(
+                    Method.forReferencedMethod(
+                        typeUtil.getType( typeUtils.getDeclaredType( element ) ),
+                        method,
+                        parameter.getName(),
+                        parameter.getType(),
+                        returnType
+                    )
+                );
+            }
         }
 
-        MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
-
-        if ( mapperPrism != null ) {
+        //Add all methods of used mappers in order to reference them in the aggregated model
+        if ( implementationRequired ) {
             for ( TypeMirror usedMapper : mapperPrism.uses() ) {
                 methods.addAll(
                     retrieveMethods(
-                        typeUtil.retrieveType( usedMapper ),
-                        ( (DeclaredType) usedMapper ).asElement()
+                        (TypeElement) ( (DeclaredType) usedMapper ).asElement(),
+                        false
                     )
                 );
             }
@@ -448,10 +534,14 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
      * method.
      *
      * @param method The method of interest
+     * @param targetProperties
+     * @param sourceProperties
      *
      * @return All mapped properties for the given method
      */
-    private List<MappedProperty> retrieveMappedProperties(ExecutableElement method) {
+    private List<MappedProperty> retrieveMappedProperties(ExecutableElement method, Set<String> sourceProperties,
+                                                          Set<String> targetProperties) {
+
         Map<String, Mapping> mappings = getMappings( method );
 
         TypeElement returnTypeElement = (TypeElement) typeUtils.asElement( method.getReturnType() );
@@ -472,7 +562,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             elementUtils.getAllMembers( returnTypeElement )
         );
 
-        reportErrorIfMappedPropertiesDontExist( method, mappings, sourceGetters, targetSetters );
+        reportErrorIfMappedPropertiesDontExist( method, sourceProperties, targetProperties, mappings );
 
         for ( ExecutableElement getterMethod : sourceGetters ) {
             String sourcePropertyName = Executables.getPropertyName( getterMethod );
@@ -509,12 +599,9 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return properties;
     }
 
-    private void reportErrorIfMappedPropertiesDontExist(ExecutableElement method, Map<String, Mapping> mappings,
-                                                        List<ExecutableElement> sourceGetters,
-                                                        List<ExecutableElement> targetSetters) {
-
-        Set<String> sourcePropertyNames = Executables.getPropertyNames( sourceGetters );
-        Set<String> targetPropertyNames = Executables.getPropertyNames( targetSetters );
+    private void reportErrorIfMappedPropertiesDontExist(ExecutableElement method, Set<String> sourcePropertyNames,
+                                                        Set<String> targetPropertyNames,
+                                                        Map<String, Mapping> mappings) {
 
         for ( Mapping mappedProperty : mappings.values() ) {
             if ( !sourcePropertyNames.contains( mappedProperty.getSourceName() ) ) {
@@ -593,5 +680,12 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         processingEnvironment.getMessager()
             .printMessage( Kind.ERROR, message, element, annotationMirror, annotationValue );
         mappingErroneous = true;
+    }
+
+    private void printMessage(ReportingPolicy reportingPolicy, String message, Element element) {
+        processingEnvironment.getMessager().printMessage( reportingPolicy.getDiagnosticKind(), message, element );
+        if ( reportingPolicy.failsBuild() ) {
+            mappingErroneous = true;
+        }
     }
 }

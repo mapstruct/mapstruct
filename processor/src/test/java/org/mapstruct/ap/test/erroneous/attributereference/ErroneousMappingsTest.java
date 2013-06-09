@@ -46,6 +46,10 @@ public class ErroneousMappingsTest extends MapperTestBase {
                 line = 27,
                 messageRegExp = ".*Unknown property \"bar\" in return type.*"),
             @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.WARNING,
+                line = 28,
+                messageRegExp = "Unmapped target property: \"foo\""),
+            @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 30,
                 messageRegExp = ".*Unknown property \"bar\" in parameter type.*")

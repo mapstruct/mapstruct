@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.model.source;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.model.Type;
@@ -36,18 +38,64 @@ public class Method {
     private final String parameterName;
     private final Type sourceType;
     private final Type targetType;
+    private Set<String> sourceProperties;
+    private Set<String> targetProeprties;
     private final List<MappedProperty> mappedProperties;
 
-    public Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType,
-                  Type targetType, List<MappedProperty> mappedProperties) {
+    public static Method forMethodRequiringImplementation(ExecutableElement executable, String parameterName,
+                                                          Type sourceType,
+                                                          Type targetType, Set<String> sourceProperties,
+                                                          Set<String> targetProperties,
+                                                          List<MappedProperty> mappedProperties) {
+
+        return new Method(
+            null,
+            executable,
+            parameterName,
+            sourceType,
+            targetType,
+            sourceProperties,
+            targetProperties,
+            mappedProperties
+        );
+    }
+
+    public static Method forReferencedMethod(Type declaringMapper, ExecutableElement executable, String parameterName,
+                                             Type sourceType,
+                                             Type targetType) {
+
+        return new Method(
+            declaringMapper,
+            executable,
+            parameterName,
+            sourceType,
+            targetType,
+            Collections.<String>emptySet(),
+            Collections.<String>emptySet(),
+            Collections.<MappedProperty>emptyList()
+        );
+    }
+
+    private Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType,
+                   Type targetType, Set<String> sourceProperties, Set<String> targetProperties,
+                   List<MappedProperty> mappedProperties) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameterName = parameterName;
         this.sourceType = sourceType;
         this.targetType = targetType;
+        this.sourceProperties = sourceProperties;
+        this.targetProeprties = targetProperties;
         this.mappedProperties = mappedProperties;
     }
 
+    /**
+     * Returns the mapper type declaring this method if it is not declared by
+     * the mapper interface currently processed but by another mapper imported
+     * via {@code Mapper#users()}.
+     *
+     * @return The declaring mapper type
+     */
     public Type getDeclaringMapper() {
         return declaringMapper;
     }
@@ -70,6 +118,14 @@ public class Method {
 
     public Type getTargetType() {
         return targetType;
+    }
+
+    public Set<String> getSourceProperties() {
+        return sourceProperties;
+    }
+
+    public Set<String> getTargetProeprties() {
+        return targetProeprties;
     }
 
     public List<MappedProperty> getMappedProperties() {
