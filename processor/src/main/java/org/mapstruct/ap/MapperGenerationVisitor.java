@@ -442,24 +442,18 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return methods;
     }
 
+    /**
+     * Returns all properties of the parameter type of the given method which
+     * are mapped to a corresponding property of the return type of the given
+     * method.
+     *
+     * @param method The method of interest
+     *
+     * @return All mapped properties for the given method
+     */
     private List<MappedProperty> retrieveMappedProperties(ExecutableElement method) {
-        Map<String, Mapping> mappings = new HashMap<String, Mapping>();
+        Map<String, Mapping> mappings = getMappings( method );
 
-        MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( method );
-        MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
-
-        if ( mappingAnnotation != null ) {
-            mappings.put( mappingAnnotation.source(), getMapping( mappingAnnotation ) );
-        }
-
-        if ( mappingsAnnotation != null ) {
-            mappings.putAll( getMappings( mappingsAnnotation ) );
-        }
-
-        return getMappedProperties( method, mappings );
-    }
-
-    private List<MappedProperty> getMappedProperties(ExecutableElement method, Map<String, Mapping> mappings) {
         TypeElement returnTypeElement = (TypeElement) typeUtils.asElement( method.getReturnType() );
         TypeElement parameterElement = (TypeElement) typeUtils.asElement( method.getParameters().get( 0 ).asType() );
 
@@ -544,24 +538,29 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         }
     }
 
-    private Map<String, Mapping> getMappings(MappingsPrism mappingsAnnotation) {
+    /**
+     * Retrieves the mappings configured via {@code @Mapping} from the given
+     * method.
+     *
+     * @param method The method of interest
+     *
+     * @return The mappings for the given method, keyed by source property name
+     */
+    private Map<String, Mapping> getMappings(ExecutableElement method) {
         Map<String, Mapping> mappings = new HashMap<String, Mapping>();
 
-        for ( MappingPrism mapping : mappingsAnnotation.value() ) {
-            mappings.put( mapping.source(), getMapping( mapping ) );
+        MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( method );
+        MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
+
+        if ( mappingAnnotation != null ) {
+            mappings.put( mappingAnnotation.source(), Mapping.fromMappingPrism( mappingAnnotation ) );
+        }
+
+        if ( mappingsAnnotation != null ) {
+            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation ) );
         }
 
         return mappings;
-    }
-
-    private Mapping getMapping(MappingPrism mapping) {
-        return new Mapping(
-            mapping.source(),
-            mapping.target(),
-            mapping.mirror,
-            mapping.values.source(),
-            mapping.values.target()
-        );
     }
 
     private Parameter retrieveParameter(ExecutableElement method) {
