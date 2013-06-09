@@ -28,6 +28,11 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.testng.annotations.Test;
 
+/**
+ * Test for illegal mappings between iterable and non-iterable types.
+ *
+ * @author Gunnar Morling
+ */
 @WithClasses({ ErronuousMapper.class })
 public class ErronuousCollectionMappingTest extends MapperTestBase {
 
@@ -36,8 +41,14 @@ public class ErronuousCollectionMappingTest extends MapperTestBase {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErronuousMapper.class, kind = Kind.ERROR, line = 28),
-            @Diagnostic(type = ErronuousMapper.class, kind = Kind.ERROR, line = 30)
+            @Diagnostic(type = ErronuousMapper.class,
+                kind = Kind.ERROR,
+                line = 28,
+                messageRegExp = "Can't generate mapping method from iterable type to non-iterable type\\."),
+            @Diagnostic(type = ErronuousMapper.class,
+                kind = Kind.ERROR,
+                line = 30,
+                messageRegExp = "Can't generate mapping method from non-iterable type to iterable type\\.")
         }
     )
     public void shouldFailToGenerateMappingFromListToString() {

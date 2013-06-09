@@ -364,11 +364,11 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
             if ( declaringMapper == null ) {
                 if ( parameter.getType().isIterableType() && !returnType.isIterableType() ) {
-                    reportError( "Can't generate mapping method from iterable type to non-iterable ype.", method );
+                    reportError( "Can't generate mapping method from iterable type to non-iterable type.", method );
                     mappingErroneous = true;
                 }
                 if ( !parameter.getType().isIterableType() && returnType.isIterableType() ) {
-                    reportError( "Can't generate mapping method from non-iterable type to iterable ype.", method );
+                    reportError( "Can't generate mapping method from non-iterable type to iterable type.", method );
                     mappingErroneous = true;
                 }
                 if ( parameter.getType().isPrimitive() ) {

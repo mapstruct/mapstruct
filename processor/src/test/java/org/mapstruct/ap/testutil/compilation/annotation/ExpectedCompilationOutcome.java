@@ -29,7 +29,18 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExpectedCompilationOutcome {
+
+    /**
+     * The expected result of a compilation.
+     *
+     * @return The expected result of a compilation.
+     */
     CompilationResult value();
 
-    Diagnostic[] diagnostics();
+    /**
+     * The expected diagnostics created during a compilation.
+     *
+     * @return The expected diagnostics created during a compilation.
+     */
+    Diagnostic[] diagnostics() default { };
 }

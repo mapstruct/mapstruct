@@ -28,6 +28,11 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.testng.annotations.Test;
 
+/**
+ * Tests failures expected for unmappable attributes.
+ *
+ * @author Gunnar Morling
+ */
 @WithClasses({ ErroneousMapper.class, Source.class, Target.class })
 public class ErroneousMappingsTest extends MapperTestBase {
 
@@ -36,10 +41,22 @@ public class ErroneousMappingsTest extends MapperTestBase {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 26),
-            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 28),
-            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 30),
-            @Diagnostic(type = ErroneousMapper.class, kind = Kind.ERROR, line = 32)
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 26,
+                messageRegExp = "Can't map property \"boolean foo\" to \"int foo\"\\."),
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 28,
+                messageRegExp = "Can't map property \"int foo\" to \"boolean foo\"\\."),
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 30,
+                messageRegExp = "Can't generate mapping method with primitive return type\\."),
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 32,
+                messageRegExp = "Can't generate mapping method with primitive parameter type\\.")
         }
     )
     public void shouldFailToGenerateMappings() {
