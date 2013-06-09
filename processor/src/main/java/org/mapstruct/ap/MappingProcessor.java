@@ -38,9 +38,9 @@ import org.mapstruct.ap.model.Options;
 
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
 @GeneratePrisms({
-    @GeneratePrism(value = Mapper.class),
-    @GeneratePrism(value = Mapping.class),
-    @GeneratePrism(value = Mappings.class)
+    @GeneratePrism(value = Mapper.class, publicAccess = true),
+    @GeneratePrism(value = Mapping.class, publicAccess = true),
+    @GeneratePrism(value = Mappings.class, publicAccess = true)
 })
 @SupportedOptions(MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP)
 public class MappingProcessor extends AbstractProcessor {

@@ -18,8 +18,13 @@
  */
 package org.mapstruct.ap.model.source;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+
+import org.mapstruct.ap.MappingPrism;
+import org.mapstruct.ap.MappingsPrism;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.
@@ -34,8 +39,29 @@ public class Mapping {
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
 
-    public Mapping(String sourceName, String targetName, AnnotationMirror mirror, AnnotationValue sourceAnnotationValue,
-                   AnnotationValue targetAnnotationValue) {
+    public static Map<String, Mapping> fromMappingsPrism(MappingsPrism mappingsAnnotation) {
+        Map<String, Mapping> mappings = new HashMap<String, Mapping>();
+
+        for ( MappingPrism mapping : mappingsAnnotation.value() ) {
+            mappings.put( mapping.source(), fromMappingPrism( mapping ) );
+        }
+
+        return mappings;
+    }
+
+    public static Mapping fromMappingPrism(MappingPrism mapping) {
+        return new Mapping(
+            mapping.source(),
+            mapping.target(),
+            mapping.mirror,
+            mapping.values.source(),
+            mapping.values.target()
+        );
+    }
+
+    private Mapping(String sourceName, String targetName, AnnotationMirror mirror,
+                    AnnotationValue sourceAnnotationValue,
+                    AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
         this.targetName = targetName;
         this.mirror = mirror;
