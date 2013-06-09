@@ -18,10 +18,9 @@
  */
 package org.mapstruct.ap.testutil.compilation.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
@@ -37,10 +36,10 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 public class CompilationOutcomeDescriptor {
 
     private CompilationResult compilationResult;
-    private Set<DiagnosticDescriptor> diagnostics;
+    private List<DiagnosticDescriptor> diagnostics;
 
     private CompilationOutcomeDescriptor(CompilationResult compilationResult,
-                                         Set<DiagnosticDescriptor> diagnostics) {
+                                         List<DiagnosticDescriptor> diagnostics) {
         this.compilationResult = compilationResult;
         this.diagnostics = diagnostics;
     }
@@ -50,11 +49,11 @@ public class CompilationOutcomeDescriptor {
         if ( expectedCompilationResult == null ) {
             return new CompilationOutcomeDescriptor(
                 CompilationResult.SUCCEEDED,
-                Collections.<DiagnosticDescriptor>emptySet()
+                Collections.<DiagnosticDescriptor>emptyList()
             );
         }
         else {
-            Set<DiagnosticDescriptor> diagnosticDescriptors = new HashSet<DiagnosticDescriptor>();
+            List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
             for ( org.mapstruct.ap.testutil.compilation.annotation.Diagnostic diagnostic :
                 expectedCompilationResult.diagnostics() ) {
                 diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( diagnostic ) );
@@ -69,7 +68,7 @@ public class CompilationOutcomeDescriptor {
         CompilationResult compilationResult =
             compilationSuccessful ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
 
-        Set<DiagnosticDescriptor> diagnosticDescriptors = new HashSet<DiagnosticDescriptor>();
+        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
         for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics ) {
             //ignore notes created by the compiler
             if ( diagnostic.getKind() != Kind.NOTE ) {
@@ -84,7 +83,7 @@ public class CompilationOutcomeDescriptor {
         return compilationResult;
     }
 
-    public Set<DiagnosticDescriptor> getDiagnostics() {
+    public List<DiagnosticDescriptor> getDiagnostics() {
         return diagnostics;
     }
 

@@ -46,7 +46,12 @@ public class DiagnosticDescriptor {
 
     public static DiagnosticDescriptor forDiagnostic(Diagnostic diagnostic) {
         String soureFileName = diagnostic.type().getName().replace( ".", File.separator ) + ".java";
-        return new DiagnosticDescriptor( soureFileName, diagnostic.kind(), diagnostic.line(), "" );
+        return new DiagnosticDescriptor(
+            soureFileName,
+            diagnostic.kind(),
+            diagnostic.line(),
+            diagnostic.messageRegExp()
+        );
     }
 
     public static DiagnosticDescriptor forDiagnostic(String sourceDir,
@@ -55,7 +60,7 @@ public class DiagnosticDescriptor {
             getSourceName( sourceDir, diagnostic ),
             diagnostic.getKind(),
             diagnostic.getLineNumber(),
-            ""
+            diagnostic.getMessage( null )
         );
     }
 

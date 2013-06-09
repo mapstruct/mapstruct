@@ -27,9 +27,31 @@ import javax.tools.Diagnostic.Kind;
  */
 public @interface Diagnostic {
 
+    /**
+     * The type for which the diagnostic was created.
+     *
+     * @return The type for which the diagnostic was created.
+     */
     Class<?> type();
 
+    /**
+     * The expected kind of diagnostic.
+     *
+     * @return The expected kind of diagnostic.
+     */
     Kind kind();
 
+    /**
+     * The expected line number of the diagnostic.
+     *
+     * @return The expected line number of the diagnostic.
+     */
     int line();
+
+    /**
+     * A regular expression matching the expected message of the diagnostic.
+     *
+     * @return A regular expression matching the expected message of the diagnostic.
+     */
+    String messageRegExp() default ".*";
 }
