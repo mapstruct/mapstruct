@@ -26,6 +26,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -80,5 +81,24 @@ public class UnmappedTargetTest extends MapperTestBase {
         }
     )
     public void shouldRaiseErrorDueToUnsetTargetProperty() {
+    }
+
+    @Test
+    @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
+    @ProcessorOption(name = "unmappedTargetPolicy", value = "ERROR")
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = SourceTargetMapper.class,
+                kind = Kind.ERROR,
+                line = 29,
+                messageRegExp = "Unmapped target property: \"bar\""),
+            @Diagnostic(type = SourceTargetMapper.class,
+                kind = Kind.ERROR,
+                line = 31,
+                messageRegExp = "Unmapped target property: \"qux\"")
+        }
+    )
+    public void shouldRaiseErrorDueToUnsetTargetPropertyWithPolicySetViaProcessorOption() {
     }
 }

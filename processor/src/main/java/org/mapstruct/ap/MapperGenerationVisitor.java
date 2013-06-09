@@ -141,7 +141,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         //2.) build up aggregated "target" model
         List<BeanMapping> mappings = getMappings(
             methods,
-            ReportingPolicy.valueOf( MapperPrism.getInstanceOn( element ).unmappedTargetPolicy() )
+            getEffectiveUnmappedTargetPolicy( element )
         );
         List<Type> usedMapperTypes = getUsedMapperTypes( element );
 
@@ -155,6 +155,31 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         );
 
         return mapper;
+    }
+
+    /**
+     * Returns the effective policy for reporting unmapped target properties. If
+     * explicitly set via {@code Mapper}, this value will be returned. Otherwise
+     * the value from the corresponding processor option will be returned. If
+     * that is not set either, the default value from
+     * {@code Mapper#unmappedTargetPolicy()} will be returned.
+     *
+     * @param element The type declaring the generated mapper type
+     *
+     * @return The effective policy for reporting unmapped target properties.
+     */
+    private ReportingPolicy getEffectiveUnmappedTargetPolicy(TypeElement element) {
+        MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
+        boolean setViaAnnotation = mapperPrism.values.unmappedTargetPolicy() != null;
+        ReportingPolicy annotationValue = ReportingPolicy.valueOf( mapperPrism.unmappedTargetPolicy() );
+
+        if ( setViaAnnotation ||
+            options.getUnmappedTargetPolicy() == null ) {
+            return annotationValue;
+        }
+        else {
+            return options.getUnmappedTargetPolicy();
+        }
     }
 
     private List<BeanMapping> getMappings(List<Method> methods,
