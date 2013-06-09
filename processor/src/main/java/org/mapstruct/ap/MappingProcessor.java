@@ -35,6 +35,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ap.model.Options;
+import org.mapstruct.ap.model.ReportingPolicy;
 
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
 @GeneratePrisms({
@@ -42,7 +43,7 @@ import org.mapstruct.ap.model.Options;
     @GeneratePrism(value = Mapping.class, publicAccess = true),
     @GeneratePrism(value = Mappings.class, publicAccess = true)
 })
-@SupportedOptions(MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP)
+@SupportedOptions({ MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP, MappingProcessor.UNMAPPED_TARGET_POLICY })
 public class MappingProcessor extends AbstractProcessor {
 
     /**
@@ -51,6 +52,7 @@ public class MappingProcessor extends AbstractProcessor {
     private static final boolean ANNOTATIONS_CLAIMED_EXCLUSIVELY = false;
 
     protected static final String SUPPRESS_GENERATOR_TIMESTAMP = "suppressGeneratorTimestamp";
+    protected static final String UNMAPPED_TARGET_POLICY = "unmappedTargetPolicy";
 
     private Options options;
 
@@ -88,6 +90,11 @@ public class MappingProcessor extends AbstractProcessor {
     }
 
     private Options createOptions() {
-        return new Options( Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ) );
+        String unmappedTargetPolicy = processingEnv.getOptions().get( UNMAPPED_TARGET_POLICY );
+
+        return new Options(
+            Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
+            unmappedTargetPolicy != null ? ReportingPolicy.valueOf( unmappedTargetPolicy ) : null
+        );
     }
 }

@@ -22,15 +22,22 @@ package org.mapstruct.ap.model;
  * The options passed to the code generator.
  *
  * @author Andreas Gudian
+ * @autor Gunnar Morling
  */
 public class Options {
     private final boolean suppressGeneratorTimestamp;
+    private final ReportingPolicy unmappedTargetPolicy;
 
-    public Options(boolean suppressGeneratorTimestamp) {
+    public Options(boolean suppressGeneratorTimestamp, ReportingPolicy unmappedTargetPolicy) {
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
+        this.unmappedTargetPolicy = unmappedTargetPolicy;
     }
 
     public boolean isSuppressGeneratorTimestamp() {
         return suppressGeneratorTimestamp;
+    }
+
+    public ReportingPolicy getUnmappedTargetPolicy() {
+        return unmappedTargetPolicy;
     }
 }
