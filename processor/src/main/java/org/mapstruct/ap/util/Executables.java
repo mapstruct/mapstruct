@@ -19,7 +19,7 @@
 package org.mapstruct.ap.util;
 
 import java.beans.Introspector;
-import javax.lang.model.element.Element;
+import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 
@@ -86,24 +86,24 @@ public class Executables {
         throw new IllegalArgumentException( "Executable " + getterOrSetterMethod + " is not getter or setter method." );
     }
 
-    public static ExecutableElement getCorrespondingSetterMethod(Element element, ExecutableElement getterMethod) {
-        String propertyName = getPropertyName( getterMethod );
+    /**
+     * Returns that setter or getter from the given list of executables which
+     * corresponds to the given getter or setter method.
+     *
+     * @param getterOrSetter The getter or setter method of interest.
+     * @param elements A list of executables to retrieve the corresponding accessor
+     * from.
+     *
+     * @return The setter corresponding to the given getter or the getter
+     *         corresponding to the given getter
+     */
+    public static ExecutableElement getCorrespondingPropertyAccessor(ExecutableElement getterOrSetter,
+                                                                     List<ExecutableElement> elements) {
+        String propertyName = getPropertyName( getterOrSetter );
 
-        for ( ExecutableElement setterMethod : Filters.setterMethodsIn( element.getEnclosedElements() ) ) {
-            if ( getPropertyName( setterMethod ).equals( propertyName ) ) {
-                return setterMethod;
-            }
-        }
-
-        return null;
-    }
-
-    public static ExecutableElement getCorrespondingGetterMethod(Element element, ExecutableElement setterMethod) {
-        String propertyName = getPropertyName( setterMethod );
-
-        for ( ExecutableElement getterMethod : Filters.getterMethodsIn( element.getEnclosedElements() ) ) {
-            if ( getPropertyName( getterMethod ).equals( propertyName ) ) {
-                return getterMethod;
+        for ( ExecutableElement method : elements ) {
+            if ( getPropertyName( method ).equals( propertyName ) ) {
+                return method;
             }
         }
 

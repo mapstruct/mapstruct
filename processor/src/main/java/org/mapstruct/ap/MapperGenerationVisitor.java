@@ -435,12 +435,23 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     }
 
     private List<MappedProperty> getMappedProperties(ExecutableElement method, Map<String, Mapping> mappings) {
-        Element returnTypeElement = typeUtils.asElement( method.getReturnType() );
-        Element parameterElement = typeUtils.asElement( method.getParameters().get( 0 ).asType() );
+        TypeElement returnTypeElement = (TypeElement) typeUtils.asElement( method.getReturnType() );
+        TypeElement parameterElement = (TypeElement) typeUtils.asElement( method.getParameters().get( 0 ).asType() );
 
         List<MappedProperty> properties = new ArrayList<MappedProperty>();
-        List<ExecutableElement> sourceGetters = Filters.getterMethodsIn( parameterElement.getEnclosedElements() );
-        List<ExecutableElement> targetSetters = Filters.setterMethodsIn( returnTypeElement.getEnclosedElements() );
+
+        List<ExecutableElement> sourceGetters = Filters.getterMethodsIn(
+            elementUtils.getAllMembers( parameterElement )
+        );
+        List<ExecutableElement> targetSetters = Filters.setterMethodsIn(
+            elementUtils.getAllMembers( returnTypeElement )
+        );
+        List<ExecutableElement> sourceSetters = Filters.setterMethodsIn(
+            elementUtils.getAllMembers( parameterElement )
+        );
+        List<ExecutableElement> targetGetters = Filters.getterMethodsIn(
+            elementUtils.getAllMembers( returnTypeElement )
+        );
 
         reportErrorIfMappedPropertiesDontExist( method, mappings, sourceGetters, targetSetters );
 
@@ -456,12 +467,12 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                         new MappedProperty(
                             sourcePropertyName,
                             getterMethod.getSimpleName().toString(),
-                            Executables.getCorrespondingSetterMethod( parameterElement, getterMethod )
+                            Executables.getCorrespondingPropertyAccessor( getterMethod, sourceSetters )
                                 .getSimpleName()
                                 .toString(),
                             retrieveReturnType( getterMethod ),
                             mapping != null ? mapping.getTargetName() : targetPropertyName,
-                            Executables.getCorrespondingGetterMethod( returnTypeElement, setterMethod )
+                            Executables.getCorrespondingPropertyAccessor( setterMethod, targetGetters )
                                 .getSimpleName()
                                 .toString(),
                             setterMethod.getSimpleName().toString(),
