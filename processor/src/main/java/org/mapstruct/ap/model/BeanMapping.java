@@ -20,7 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.util.List;
 
-public class BeanMapping {
+public class BeanMapping extends AbstractModelElement {
 
     private final Type sourceType;
     private final Type targetType;
