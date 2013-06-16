@@ -27,8 +27,8 @@ import ${importedType.fullyQualifiedName};
 </#list>
 
 @Generated(
-value = "org.mapstruct.ap.MappingProcessor"<#if options.suppressGeneratorTimestamp == false>,
-date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
+    value = "org.mapstruct.ap.MappingProcessor"<#if options.suppressGeneratorTimestamp == false>,
+    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
 )
 public class ${implementationName} implements ${interfaceName} {
 
