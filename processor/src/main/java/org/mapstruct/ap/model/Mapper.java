@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.Generated;
 
-public class Mapper {
+public class Mapper extends AbstractModelElement {
 
     private final String packageName;
     private final String interfaceName;

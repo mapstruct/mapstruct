@@ -130,8 +130,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             throw new RuntimeException( e );
         }
 
-        ModelWriter modelWriter = new ModelWriter( "mapper-implementation.ftl" );
-        modelWriter.writeModel( sourceFile, model );
+        new ModelWriter().writeModel( sourceFile, model );
     }
 
     private Mapper retrieveModel(TypeElement element) {
