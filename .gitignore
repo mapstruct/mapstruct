@@ -12,5 +12,5 @@
 .idea
 
 # Build
-target
+/*/target
 test-output
