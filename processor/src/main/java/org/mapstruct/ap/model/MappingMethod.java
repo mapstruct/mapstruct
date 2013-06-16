@@ -23,19 +23,23 @@ public class MappingMethod {
     private final Type declaringMapper;
     private final String name;
     private final String parameterName;
+    private final String targetParameterName;
     private final MappingMethod elementMappingMethod;
 
-    public MappingMethod(Type declaringMapper, String name, String parameterName) {
+    public MappingMethod(Type declaringMapper, String name, String parameterName, String targetParameterName) {
         this.declaringMapper = declaringMapper;
         this.name = name;
         this.parameterName = parameterName;
+        this.targetParameterName = targetParameterName;
         this.elementMappingMethod = null;
     }
 
-    public MappingMethod(Type declaringMapper, String name, String parameterName, MappingMethod elementMappingMethod) {
+    public MappingMethod(Type declaringMapper, String name, String parameterName, String targetParameterName,
+                         MappingMethod elementMappingMethod) {
         this.declaringMapper = declaringMapper;
         this.name = name;
         this.parameterName = parameterName;
+        this.targetParameterName = targetParameterName;
         this.elementMappingMethod = elementMappingMethod;
     }
 
@@ -57,6 +61,10 @@ public class MappingMethod {
 
     public boolean isGenerationRequired() {
         return declaringMapper == null;
+    }
+
+    public String getTargetParameterName() {
+        return targetParameterName;
     }
 
     @Override

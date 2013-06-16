@@ -84,6 +84,64 @@ public class MappedProperty {
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( sourceName == null ) ? 0 : sourceName.hashCode() );
+        result = prime * result + ( ( sourceType == null ) ? 0 : sourceType.hashCode() );
+        result = prime * result + ( ( targetName == null ) ? 0 : targetName.hashCode() );
+        result = prime * result + ( ( targetType == null ) ? 0 : targetType.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
+        if ( obj == null ) {
+            return false;
+        }
+        if ( getClass() != obj.getClass() ) {
+            return false;
+        }
+        MappedProperty other = (MappedProperty) obj;
+        if ( sourceName == null ) {
+            if ( other.sourceName != null ) {
+                return false;
+            }
+        }
+        else if ( !sourceName.equals( other.sourceName ) ) {
+            return false;
+        }
+        if ( sourceType == null ) {
+            if ( other.sourceType != null ) {
+                return false;
+            }
+        }
+        else if ( !sourceType.equals( other.sourceType ) ) {
+            return false;
+        }
+        if ( targetName == null ) {
+            if ( other.targetName != null ) {
+                return false;
+            }
+        }
+        else if ( !targetName.equals( other.targetName ) ) {
+            return false;
+        }
+        if ( targetType == null ) {
+            if ( other.targetType != null ) {
+                return false;
+            }
+        }
+        else if ( !targetType.equals( other.targetType ) ) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public String toString() {
         return sourceType + " " + sourceName + " <=> " + targetType + " " + targetName;
     }

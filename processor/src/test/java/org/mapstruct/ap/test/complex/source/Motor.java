@@ -16,24 +16,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.complex.target;
 
-public class PersonDto {
+package org.mapstruct.ap.test.complex.source;
 
-    private String name;
+public class Motor {
 
-    public PersonDto() {
+    private String type;
+
+    public Motor() {
     }
 
-    public PersonDto(String name) {
-        this.name = name;
+    public Motor(String type) {
+        this.type = type;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setType(String type) {
+        this.type = type;
     }
+
 }

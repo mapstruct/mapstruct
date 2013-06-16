@@ -34,18 +34,32 @@ public class Method {
     private final Type declaringMapper;
     private final ExecutableElement executable;
     private final String parameterName;
+    private final String targetParameterName;
     private final Type sourceType;
     private final Type targetType;
     private final List<MappedProperty> mappedProperties;
+    private final boolean mapExistingObject;
+
+    public Method(ExecutableElement executable, String parameterName, Type sourceType, String targetParameterName,
+                  Type targetType,
+                  List<MappedProperty> mappedProperties, boolean mapExistingObject) {
+        this(
+            null, executable, parameterName, sourceType, targetParameterName, targetType, mappedProperties,
+            mapExistingObject
+        );
+    }
 
     public Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType,
-                  Type targetType, List<MappedProperty> mappedProperties) {
+                  String targetParameterName, Type targetType,
+                  List<MappedProperty> mappedProperties, boolean mapExistingObject) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameterName = parameterName;
+        this.targetParameterName = targetParameterName;
         this.sourceType = sourceType;
         this.targetType = targetType;
         this.mappedProperties = mappedProperties;
+        this.mapExistingObject = mapExistingObject;
     }
 
     public Type getDeclaringMapper() {
@@ -76,10 +90,38 @@ public class Method {
         return mappedProperties;
     }
 
+    public String getTargetParameterName() {
+        return targetParameterName;
+    }
+
+    public boolean isMapExistingObject() {
+        return mapExistingObject;
+    }
+
     public boolean reverses(Method method) {
-        return
-            equals( sourceType, method.getTargetType() ) &&
-                equals( targetType, method.getSourceType() );
+        return equals( sourceType, method.getTargetType() ) &&
+            equals( targetType, method.getSourceType() ) &&
+            equals( isMapExistingObject(), method.isMapExistingObject() );
+    }
+
+    public boolean relatedNewObjectMapping(Method method) {
+        return equals( method ) && !method.isMapExistingObject();
+    }
+
+    public boolean relatedExistingObjetcMapping(Method method) {
+        return equals( method ) && method.isMapExistingObject();
+    }
+
+    public boolean equals(Method method) {
+        return equals( sourceType, method.getSourceType() ) &&
+            equals( targetType, method.getTargetType() );
+    }
+
+    @Override
+    public int hashCode() {
+        int result = sourceType != null ? sourceType.hashCode() : 0;
+        result = 31 * result + ( targetType != null ? targetType.hashCode() : 0 );
+        return result;
     }
 
     private boolean equals(Object o1, Object o2) {

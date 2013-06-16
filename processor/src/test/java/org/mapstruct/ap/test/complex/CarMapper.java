@@ -25,9 +25,11 @@ import org.mapstruct.Mappers;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ap.test.complex.source.Car;
+import org.mapstruct.ap.test.complex.source.Motor;
 import org.mapstruct.ap.test.complex.source.Person;
-import org.mapstruct.ap.test.complex.target.CarDto;
-import org.mapstruct.ap.test.complex.target.PersonDto;
+import org.mapstruct.ap.test.complex.dest.CarDto;
+import org.mapstruct.ap.test.complex.dest.MotorDto;
+import org.mapstruct.ap.test.complex.dest.PersonDto;
 
 @Mapper(uses = DateMapper.class)
 public interface CarMapper {
@@ -40,7 +42,13 @@ public interface CarMapper {
     })
     CarDto carToCarDto(Car car);
 
+    CarDto carToCarDto(Car car, CarDto carDto);
+
     Car carDtoToCar(CarDto carDto);
+
+    Motor motorDtoToMotor(MotorDto motorDto);
+
+    MotorDto motorToMotorDto(Motor motor);
 
     List<CarDto> carsToCarDtos(List<Car> cars);
 

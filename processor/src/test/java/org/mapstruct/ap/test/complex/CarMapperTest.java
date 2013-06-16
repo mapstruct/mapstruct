@@ -25,9 +25,13 @@ import java.util.List;
 
 import org.mapstruct.ap.test.complex.source.Car;
 import org.mapstruct.ap.test.complex.source.Category;
+import org.mapstruct.ap.test.complex.source.Motor;
+import org.mapstruct.ap.test.complex.source.MotorizedObject;
 import org.mapstruct.ap.test.complex.source.Person;
-import org.mapstruct.ap.test.complex.target.CarDto;
-import org.mapstruct.ap.test.complex.target.PersonDto;
+import org.mapstruct.ap.test.complex.dest.CarDto;
+import org.mapstruct.ap.test.complex.dest.MotorDto;
+import org.mapstruct.ap.test.complex.dest.MotorizedObjectDto;
+import org.mapstruct.ap.test.complex.dest.PersonDto;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
@@ -41,7 +45,11 @@ import static org.fest.assertions.Assertions.assertThat;
     PersonDto.class,
     CarMapper.class,
     Category.class,
-    DateMapper.class
+    DateMapper.class,
+    MotorizedObject.class,
+    MotorizedObjectDto.class,
+    Motor.class,
+    MotorDto.class
 })
 public class CarMapperTest extends MapperTestBase {
 
@@ -52,52 +60,60 @@ public class CarMapperTest extends MapperTestBase {
 
     @Test
     public void shouldMapAttributeByName() {
-        //given
+        // given
         Car car = new Car(
             "Morris",
             2,
             new GregorianCalendar( 1980, 0, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>()
+            new ArrayList<Person>(),
+            40,
+            new Motor( "V8" )
         );
 
-        //when
+        // when
         CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
 
-        //then
+        // then
         assertThat( carDto ).isNotNull();
         assertThat( carDto.getMake() ).isEqualTo( car.getMake() );
+        assertThat( carDto.getMaxSpeed() ).isEqualTo( car.getMaxSpeed() );
     }
 
     @Test
     public void shouldMapReferenceAttribute() {
-        //given
+        // given
         Car car = new Car(
             "Morris",
             2,
             new GregorianCalendar( 1980, 0, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>()
+            new ArrayList<Person>(),
+            40,
+            new Motor( "V8" )
         );
 
-        //when
+        // when
         CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
 
-        //then
+        // then
         assertThat( carDto ).isNotNull();
         assertThat( carDto.getDriver() ).isNotNull();
         assertThat( carDto.getDriver().getName() ).isEqualTo( "Bob" );
+
+        assertThat( carDto.getMotor() ).isNotNull();
+        assertThat( carDto.getMotor().getType() ).isEqualTo( "V8" );
     }
 
     @Test
     public void shouldReverseMapReferenceAttribute() {
-        //given
-        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>() );
+        // given
+        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>(), 30 );
 
-        //when
+        // when
         Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
 
-        //then
+        // then
         assertThat( car ).isNotNull();
         assertThat( car.getDriver() ).isNotNull();
         assertThat( car.getDriver().getName() ).isEqualTo( "Bob" );
@@ -105,90 +121,98 @@ public class CarMapperTest extends MapperTestBase {
 
     @Test
     public void shouldMapAttributeWithCustomMapping() {
-        //given
+        // given
         Car car = new Car(
             "Morris",
             2,
             new GregorianCalendar( 1980, 0, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>()
+            new ArrayList<Person>(),
+            40,
+            new Motor( "V8" )
         );
 
-        //when
+        // when
         CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
 
-        //then
+        // then
         assertThat( carDto ).isNotNull();
         assertThat( carDto.getSeatCount() ).isEqualTo( car.getNumberOfSeats() );
     }
 
     @Test
     public void shouldConsiderCustomMappingForReverseMapping() {
-        //given
-        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>() );
+        // given
+        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>(), 30 );
 
-        //when
+        // when
         Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
 
-        //then
+        // then
         assertThat( car ).isNotNull();
         assertThat( car.getNumberOfSeats() ).isEqualTo( carDto.getSeatCount() );
     }
 
     @Test
     public void shouldApplyConverter() {
-        //given
+        // given
         Car car = new Car(
             "Morris",
             2,
             new GregorianCalendar( 1980, 0, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>()
+            new ArrayList<Person>(),
+            40,
+            new Motor( "V8" )
         );
 
-        //when
+        // when
         CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
 
-        //then
+        // then
         assertThat( carDto ).isNotNull();
         assertThat( carDto.getManufacturingYear() ).isEqualTo( "1980" );
     }
 
     @Test
     public void shouldApplyConverterForReverseMapping() {
-        //given
-        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>() );
+        // given
+        CarDto carDto = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>(), 30 );
 
-        //when
+        // when
         Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
 
-        //then
+        // then
         assertThat( car ).isNotNull();
         assertThat( car.getManufacturingDate() ).isEqualTo( new GregorianCalendar( 1980, 0, 1 ).getTime() );
     }
 
     @Test
     public void shouldMapIterable() {
-        //given
+        // given
         Car car1 = new Car(
             "Morris",
             2,
             new GregorianCalendar( 1980, 0, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>()
+            new ArrayList<Person>(),
+            40,
+            new Motor( "V8" )
         );
         Car car2 = new Car(
             "Railton",
             4,
             new GregorianCalendar( 1934, 0, 1 ).getTime(),
             new Person( "Bill" ),
-            new ArrayList<Person>()
+            new ArrayList<Person>(),
+            40,
+            new Motor( "V8" )
         );
 
-        //when
+        // when
         List<CarDto> dtos = CarMapper.INSTANCE.carsToCarDtos( new ArrayList<Car>( Arrays.asList( car1, car2 ) ) );
 
-        //then
+        // then
         assertThat( dtos ).isNotNull();
         assertThat( dtos ).hasSize( 2 );
 
@@ -205,14 +229,14 @@ public class CarMapperTest extends MapperTestBase {
 
     @Test
     public void shouldReverseMapIterable() {
-        //given
-        CarDto car1 = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>() );
-        CarDto car2 = new CarDto( "Railton", 4, "1934", new PersonDto( "Bill" ), new ArrayList<PersonDto>() );
+        // given
+        CarDto car1 = new CarDto( "Morris", 2, "1980", new PersonDto( "Bob" ), new ArrayList<PersonDto>(), 30 );
+        CarDto car2 = new CarDto( "Railton", 4, "1934", new PersonDto( "Bill" ), new ArrayList<PersonDto>(), 30 );
 
-        //when
+        // when
         List<Car> cars = CarMapper.INSTANCE.carDtosToCars( new ArrayList<CarDto>( Arrays.asList( car1, car2 ) ) );
 
-        //then
+        // then
         assertThat( cars ).isNotNull();
         assertThat( cars ).hasSize( 2 );
 
@@ -229,19 +253,21 @@ public class CarMapperTest extends MapperTestBase {
 
     @Test
     public void shouldMapIterableAttribute() {
-        //given
+        // given
         Car car = new Car(
             "Morris",
             2,
             new GregorianCalendar( 1980, 0, 1 ).getTime(),
             new Person( "Bob" ),
-            new ArrayList<Person>( Arrays.asList( new Person( "Alice" ), new Person( "Bill" ) ) )
+            new ArrayList<Person>( Arrays.asList( new Person( "Alice" ), new Person( "Bill" ) ) ),
+            40,
+            new Motor( "V8" )
         );
 
-        //when
+        // when
         CarDto dto = CarMapper.INSTANCE.carToCarDto( car );
 
-        //then
+        // then
         assertThat( dto ).isNotNull();
 
         assertThat( dto.getPassengers() ).hasSize( 2 );
@@ -251,19 +277,20 @@ public class CarMapperTest extends MapperTestBase {
 
     @Test
     public void shouldReverseMapIterableAttribute() {
-        //given
+        // given
         CarDto carDto = new CarDto(
             "Morris",
             2,
             "1980",
             new PersonDto( "Bob" ),
-            new ArrayList<PersonDto>( Arrays.asList( new PersonDto( "Alice" ), new PersonDto( "Bill" ) ) )
+            new ArrayList<PersonDto>( Arrays.asList( new PersonDto( "Alice" ), new PersonDto( "Bill" ) ) ),
+            40
         );
 
-        //when
+        // when
         Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
 
-        //then
+        // then
         assertThat( car ).isNotNull();
 
         assertThat( car.getPassengers() ).hasSize( 2 );
@@ -273,26 +300,26 @@ public class CarMapperTest extends MapperTestBase {
 
     @Test
     public void shouldMapEnumToString() {
-        //given
+        // given
         Car car = new Car();
         car.setCategory( Category.CONVERTIBLE );
-        //when
+        // when
         CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
 
-        //then
+        // then
         assertThat( carDto ).isNotNull();
         assertThat( carDto.getCategory() ).isEqualTo( "CONVERTIBLE" );
     }
 
     @Test
     public void shouldMapStringToEnum() {
-        //given
+        // given
         CarDto carDto = new CarDto();
         carDto.setCategory( "CONVERTIBLE" );
-        //when
+        // when
         Car car = CarMapper.INSTANCE.carDtoToCar( carDto );
 
-        //then
+        // then
         assertThat( car ).isNotNull();
         assertThat( car.getCategory() ).isEqualTo( Category.CONVERTIBLE );
     }
