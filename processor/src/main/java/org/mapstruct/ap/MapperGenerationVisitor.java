@@ -463,18 +463,22 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 String targetPropertyName = Executables.getPropertyName( setterMethod );
 
                 if ( targetPropertyName.equals( mapping != null ? mapping.getTargetName() : sourcePropertyName ) ) {
+                    ExecutableElement correspondingSetter = Executables.getCorrespondingPropertyAccessor(
+                        getterMethod,
+                        sourceSetters
+                    );
+                    ExecutableElement correspondingGetter = Executables.getCorrespondingPropertyAccessor(
+                        setterMethod,
+                        targetGetters
+                    );
                     properties.add(
                         new MappedProperty(
                             sourcePropertyName,
                             getterMethod.getSimpleName().toString(),
-                            Executables.getCorrespondingPropertyAccessor( getterMethod, sourceSetters )
-                                .getSimpleName()
-                                .toString(),
+                            correspondingSetter != null ? correspondingSetter.getSimpleName().toString() : null,
                             retrieveReturnType( getterMethod ),
                             mapping != null ? mapping.getTargetName() : targetPropertyName,
-                            Executables.getCorrespondingPropertyAccessor( setterMethod, targetGetters )
-                                .getSimpleName()
-                                .toString(),
+                            correspondingGetter != null ? correspondingGetter.getSimpleName().toString() : null,
                             setterMethod.getSimpleName().toString(),
                             retrieveParameter( setterMethod ).getType()
                         )
