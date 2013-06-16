@@ -44,19 +44,19 @@ public class ErroneousMappingsTest extends MapperTestBase {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 26,
-                messageRegExp = "Can't map property \"boolean foo\" to \"int foo\"\\."),
+                messageRegExp = ".*Can't map property \"boolean foo\" to \"int foo\"\\."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 28,
-                messageRegExp = "Can't map property \"int foo\" to \"boolean foo\"\\."),
+                messageRegExp = ".*Can't map property \"int foo\" to \"boolean foo\"\\."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 30,
-                messageRegExp = "Can't generate mapping method with primitive return type\\."),
+                messageRegExp = ".*Can't generate mapping method with primitive return type\\."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 32,
-                messageRegExp = "Can't generate mapping method with primitive parameter type\\.")
+                messageRegExp = ".*Can't generate mapping method with primitive parameter type\\.")
         }
     )
     public void shouldFailToGenerateMappings() {
