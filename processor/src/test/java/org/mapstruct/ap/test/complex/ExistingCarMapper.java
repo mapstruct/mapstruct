@@ -32,17 +32,17 @@ import org.mapstruct.ap.test.complex.dest.MotorDto;
 import org.mapstruct.ap.test.complex.dest.PersonDto;
 
 @Mapper(uses = DateMapper.class)
-public interface CarMapper {
+public interface ExistingCarMapper {
 
-    CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+    ExistingCarMapper INSTANCE = Mappers.getMapper( ExistingCarMapper.class );
 
     @Mappings({
         @Mapping(source = "numberOfSeats", target = "seatCount"),
         @Mapping(source = "manufacturingDate", target = "manufacturingYear")
     })
     CarDto carToCarDto(Car car);
-
-    Car carDtoToCar(CarDto carDto);
+    
+    CarDto carToCarDto(Car car, CarDto carDto);
 
     Motor motorDtoToMotor(MotorDto motorDto);
 
@@ -50,13 +50,9 @@ public interface CarMapper {
 
     List<CarDto> carsToCarDtos(List<Car> cars);
 
-    List<Car> carDtosToCars(List<CarDto> carDtos);
+    List<CarDto> carsToCarDtos(List<Car> cars, List<CarDto> carDtos);
 
     PersonDto personToPersonDto(Person person);
-
-    Person personDtoToPerson(PersonDto personDto);
-
+    
     List<PersonDto> personsToPersonDtos(List<Person> persons);
-
-    List<Person> personDtosToPersons(List<PersonDto> personDtos);
 }
