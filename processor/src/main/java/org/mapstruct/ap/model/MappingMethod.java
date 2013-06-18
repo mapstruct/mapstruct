@@ -18,25 +18,44 @@
  */
 package org.mapstruct.ap.model;
 
-public class MappingMethod {
+import java.util.List;
+
+public class MappingMethod extends AbstractModelElement {
 
     private final Type declaringMapper;
     private final String name;
     private final String parameterName;
+    private final Type sourceType;
+    private final Type targetType;
+    private final List<PropertyMapping> propertyMappings;
     private final MappingMethod elementMappingMethod;
+    private final boolean isIterableMapping;
+    private final String toConversion;
 
-    public MappingMethod(Type declaringMapper, String name, String parameterName) {
+    public MappingMethod(Type declaringMapper, String name, String parameterName, Type sourceType, Type targetType) {
         this.declaringMapper = declaringMapper;
         this.name = name;
         this.parameterName = parameterName;
+        this.sourceType = sourceType;
+        this.targetType = targetType;
+        this.propertyMappings = null;
         this.elementMappingMethod = null;
+        this.isIterableMapping = false;
+        this.toConversion = null;
     }
 
-    public MappingMethod(Type declaringMapper, String name, String parameterName, MappingMethod elementMappingMethod) {
+    public MappingMethod(Type declaringMapper, String name, String parameterName, Type sourceType, Type targetType,
+                         List<PropertyMapping> propertyMappings, MappingMethod elementMappingMethod,
+                         String toConversion) {
         this.declaringMapper = declaringMapper;
         this.name = name;
         this.parameterName = parameterName;
+        this.sourceType = sourceType;
+        this.targetType = targetType;
+        this.propertyMappings = propertyMappings;
         this.elementMappingMethod = elementMappingMethod;
+        this.isIterableMapping = sourceType.isIterableType() && targetType.isIterableType();
+        this.toConversion = toConversion;
     }
 
     public Type getDeclaringMapper() {
@@ -51,8 +70,28 @@ public class MappingMethod {
         return parameterName;
     }
 
+    public Type getSourceType() {
+        return sourceType;
+    }
+
+    public Type getTargetType() {
+        return targetType;
+    }
+
+    public List<PropertyMapping> getPropertyMappings() {
+        return propertyMappings;
+    }
+
     public MappingMethod getElementMappingMethod() {
         return elementMappingMethod;
+    }
+
+    public boolean isIterableMapping() {
+        return isIterableMapping;
+    }
+
+    public String getToConversion() {
+        return toConversion;
     }
 
     public boolean isGenerationRequired() {

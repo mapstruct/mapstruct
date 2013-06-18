@@ -29,47 +29,29 @@ package org.mapstruct.ap.model;
 public class PropertyMapping {
 
     private final String sourceReadAccessorName;
-    private final String sourceWriteAccessorName;
     private final Type sourceType;
-    private final String targetReadAccessorName;
     private final String targetWriteAccessorName;
     private final Type targetType;
 
     private final MappingMethod mappingMethod;
-    private final MappingMethod reverseMappingMethod;
     private final String toConversion;
-    private final String fromConversion;
 
-    public PropertyMapping(String sourceReadAccessorName, String sourceWriteAccessorName, Type sourceType,
-                           String targetReadAccessorName, String targetWriteAccessorName, Type targetType,
-                           MappingMethod mappingMethod, MappingMethod reverseMappingMethod, String toConversion,
-                           String fromConversion) {
+    public PropertyMapping(String sourceReadAccessorName, Type sourceType, String targetWriteAccessorName,
+                           Type targetType, MappingMethod mappingMethod, String toConversion) {
         this.sourceReadAccessorName = sourceReadAccessorName;
-        this.sourceWriteAccessorName = sourceWriteAccessorName;
         this.sourceType = sourceType;
-        this.targetReadAccessorName = targetReadAccessorName;
         this.targetWriteAccessorName = targetWriteAccessorName;
         this.targetType = targetType;
         this.mappingMethod = mappingMethod;
-        this.reverseMappingMethod = reverseMappingMethod;
         this.toConversion = toConversion;
-        this.fromConversion = fromConversion;
     }
 
     public String getSourceReadAccessorName() {
         return sourceReadAccessorName;
     }
 
-    public String getSourceWriteAccessorName() {
-        return sourceWriteAccessorName;
-    }
-
     public Type getSourceType() {
         return sourceType;
-    }
-
-    public String getTargetReadAccessorName() {
-        return targetReadAccessorName;
     }
 
     public String getTargetWriteAccessorName() {
@@ -84,29 +66,19 @@ public class PropertyMapping {
         return mappingMethod;
     }
 
-    public MappingMethod getReverseMappingMethod() {
-        return reverseMappingMethod;
-    }
-
     public String getToConversion() {
         return toConversion;
-    }
-
-    public String getFromConversion() {
-        return fromConversion;
     }
 
     @Override
     public String toString() {
         return "PropertyMapping {" +
-            "\n    sourceName='" + sourceReadAccessorName + "/" + sourceWriteAccessorName + "\'," +
+            "\n    sourceName='" + sourceReadAccessorName + "\'," +
             "\n    sourceType=" + sourceType + "," +
-            "\n    targetName='" + targetReadAccessorName + "/" + targetWriteAccessorName + "\'," +
+            "\n    targetName='" + targetWriteAccessorName + "\'," +
             "\n    targetType=" + targetType + "," +
             "\n    mappingMethod=" + mappingMethod + "," +
-            "\n    reverseMappingMethod=" + reverseMappingMethod + "," +
             "\n    toConversion='" + toConversion + "\'," +
-            "\n    fromConversion='" + fromConversion + "\'," +
             "\n}";
     }
 }

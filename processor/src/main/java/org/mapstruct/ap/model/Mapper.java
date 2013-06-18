@@ -51,10 +51,10 @@ public class Mapper extends AbstractModelElement {
         importedTypes.add( Type.forClass( Generated.class ) );
 
         for ( BeanMapping beanMapping : beanMappings ) {
-            addWithDependents( importedTypes, beanMapping.getSourceType() );
-            addWithDependents( importedTypes, beanMapping.getTargetType() );
+            addWithDependents( importedTypes, beanMapping.getMappingMethod().getSourceType() );
+            addWithDependents( importedTypes, beanMapping.getMappingMethod().getTargetType() );
 
-            for ( PropertyMapping propertyMapping : beanMapping.getPropertyMappings() ) {
+            for ( PropertyMapping propertyMapping : beanMapping.getMappingMethod().getPropertyMappings() ) {
                 addWithDependents( importedTypes, propertyMapping.getSourceType() );
                 addWithDependents( importedTypes, propertyMapping.getTargetType() );
             }

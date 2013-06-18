@@ -193,27 +193,31 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 continue;
             }
 
-            MappingMethod mappingMethod = new MappingMethod(
-                method.getDeclaringMapper(),
-                method.getName(),
-                method.getParameterName(),
-                getElementMappingMethod( methods, method )
-            );
-
-            MappingMethod reverseMappingMethod = null;
             Method rawReverseMappingMethod = getReverseMappingMethod( methods, method );
-            if ( rawReverseMappingMethod != null ) {
-                processedMethods.add( rawReverseMappingMethod );
 
-                reverseMappingMethod = new MappingMethod(
-                    rawReverseMappingMethod.getDeclaringMapper(),
-                    rawReverseMappingMethod.getName(),
-                    rawReverseMappingMethod.getParameterName(),
-                    getElementMappingMethod( methods, rawReverseMappingMethod )
+            String toConversionString = null;
+            String fromConversionString = null;
+
+            boolean isIterableMapping = method.getSourceType().isIterableType() && method.getTargetType()
+                .isIterableType();
+
+            if ( isIterableMapping ) {
+                toConversionString = getIterableConversionString(
+                    conversions,
+                    method.getSourceType().getElementType(),
+                    method.getTargetType().getElementType(),
+                    true
+                );
+                fromConversionString = getIterableConversionString(
+                    conversions,
+                    method.getTargetType().getElementType(),
+                    method.getSourceType().getElementType(),
+                    false
                 );
             }
 
             List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
+            List<PropertyMapping> reversePropertyMappings = new ArrayList<PropertyMapping>();
             Set<String> mappedSourceProperties = new HashSet<String>();
             Set<String> mappedTargetProperties = new HashSet<String>();
 
@@ -237,35 +241,71 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 propertyMappings.add(
                     new PropertyMapping(
                         property.getSourceReadAccessorName(),
-                        property.getSourceWriteAccessorName(),
                         property.getSourceType(),
-                        property.getTargetReadAccessorName(),
                         property.getTargetWriteAccessorName(),
                         property.getTargetType(),
                         propertyMappingMethod != null ? new MappingMethod(
                             propertyMappingMethod.getDeclaringMapper(),
                             propertyMappingMethod.getName(),
-                            propertyMappingMethod.getParameterName()
+                            propertyMappingMethod.getParameterName(),
+                            property.getSourceType(),
+                            property.getTargetType()
                         ) : null,
+                        conversion != null ? conversion.to(
+                            method.getParameterName() + "." + property.getSourceReadAccessorName() + "()",
+                            property.getTargetType()
+                        ) : null
+                    )
+                );
+
+                reversePropertyMappings.add(
+                    new PropertyMapping(
+                        property.getTargetReadAccessorName(),
+                        property.getTargetType(),
+                        property.getSourceWriteAccessorName(),
+                        property.getSourceType(),
                         reversePropertyMappingMethod != null ? new MappingMethod(
                             reversePropertyMappingMethod.getDeclaringMapper(),
                             reversePropertyMappingMethod.getName(),
-                            reversePropertyMappingMethod.getParameterName()
+                            reversePropertyMappingMethod.getParameterName(),
+                            property.getTargetType(),
+                            property.getSourceType()
                         ) : null,
-                        conversion != null ? conversion.to(
-                            mappingMethod.getParameterName() + "." + property.getSourceReadAccessorName() + "()",
-                            property.getTargetType()
-                        ) : null,
-                        conversion != null && reverseMappingMethod != null ? conversion.from(
-                            reverseMappingMethod.getParameterName() + "." + property.getTargetReadAccessorName() + "()",
+                        conversion != null && rawReverseMappingMethod != null ? conversion.from(
+                            rawReverseMappingMethod.getParameterName() + "." + property.getTargetReadAccessorName() +
+                                "()",
                             property.getSourceType()
                         ) : null
                     )
                 );
             }
 
-            boolean isIterableMapping = method.getSourceType().isIterableType() && method.getTargetType()
-                .isIterableType();
+            MappingMethod mappingMethod = new MappingMethod(
+                method.getDeclaringMapper(),
+                method.getName(),
+                method.getParameterName(),
+                method.getSourceType(),
+                method.getTargetType(),
+                propertyMappings,
+                getElementMappingMethod( methods, method ),
+                toConversionString
+            );
+
+            MappingMethod reverseMappingMethod = null;
+            if ( rawReverseMappingMethod != null ) {
+                processedMethods.add( rawReverseMappingMethod );
+
+                reverseMappingMethod = new MappingMethod(
+                    rawReverseMappingMethod.getDeclaringMapper(),
+                    rawReverseMappingMethod.getName(),
+                    rawReverseMappingMethod.getParameterName(),
+                    method.getTargetType(),
+                    method.getSourceType(),
+                    reversePropertyMappings,
+                    getElementMappingMethod( methods, rawReverseMappingMethod ),
+                    fromConversionString
+                );
+            }
 
             if ( mappingMethod.isGenerationRequired() && !isIterableMapping ) {
                 reportErrorForUnmappedTargetPropertiesIfRequired(
@@ -284,32 +324,9 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 );
             }
 
-            String toConversionString = null;
-            String fromConversionString = null;
-
-            if ( isIterableMapping ) {
-                toConversionString = getIterableConversionString(
-                    conversions,
-                    method.getSourceType().getElementType(),
-                    method.getTargetType().getElementType(),
-                    true
-                );
-                fromConversionString = getIterableConversionString(
-                    conversions,
-                    method.getTargetType().getElementType(),
-                    method.getSourceType().getElementType(),
-                    false
-                );
-            }
-
             BeanMapping mapping = new BeanMapping(
-                method.getSourceType(),
-                method.getTargetType(),
-                propertyMappings,
                 mappingMethod,
-                reverseMappingMethod,
-                toConversionString,
-                fromConversionString
+                reverseMappingMethod
             );
 
             mappings.add( mapping );
@@ -421,7 +438,9 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return elementMappingMethod == null ? null : new MappingMethod(
             elementMappingMethod.getDeclaringMapper(),
             elementMappingMethod.getName(),
-            elementMappingMethod.getParameterName()
+            elementMappingMethod.getParameterName(),
+            elementMappingMethod.getSourceType(),
+            elementMappingMethod.getTargetType()
         );
     }
 
