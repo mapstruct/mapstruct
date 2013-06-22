@@ -26,44 +26,9 @@
 
         ${targetType.name} ${targetType.name?uncap_first} = new ${targetType.name}();
 
-            <#list propertyMappings as propertyMapping>
-                <@simpleMap
-                    sourceBeanName=parameterName
-                    sourceType=propertyMapping.sourceType
-                    sourceAccessorName=propertyMapping.sourceReadAccessorName
-                    targetBeanName=targetType.name?uncap_first
-                    targetType=propertyMapping.targetType
-                    targetAccessorName=propertyMapping.targetWriteAccessorName
-                    conversion=propertyMapping.toConversion
-                    mappingMethod=propertyMapping.mappingMethod
-                />
-            </#list>
+        <#list propertyMappings as propertyMapping>
+            <@includeModel object=propertyMapping/>
+        </#list>
 
         return ${targetType.name?uncap_first};
     }
-
-<#-- Generates the mapping of one bean property -->
-<#macro simpleMap sourceBeanName sourceType sourceAccessorName targetBeanName targetType targetAccessorName conversion="" mappingMethod="">
-        <#-- a) invoke mapping method -->
-        <#if mappingMethod != "">
-        ${targetBeanName}.${targetAccessorName}( <#if mappingMethod.declaringMapper??>${mappingMethod.declaringMapper.name?uncap_first}.</#if>${mappingMethod.name}( ${sourceBeanName}.${sourceAccessorName}() ) );
-        <#-- b) simple conversion -->
-        <#elseif conversion != "">
-            <#if sourceType.primitive == false>
-        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-            ${targetBeanName}.${targetAccessorName}( ${conversion} );
-        }
-            <#else>
-        ${targetBeanName}.${targetAccessorName}( ${conversion} );
-            </#if>
-        <#-- c) simply set -->
-        <#else>
-            <#if targetType.collectionType == true>
-        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-            ${targetBeanName}.${targetAccessorName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
-        }
-            <#else>
-        ${targetBeanName}.${targetAccessorName}( ${sourceBeanName}.${sourceAccessorName}() );
-            </#if>
-        </#if>
-</#macro>

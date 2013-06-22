@@ -244,6 +244,8 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
             propertyMappings.add(
                 new PropertyMapping(
+                    method.getParameterName(),
+                    Introspector.decapitalize( method.getTargetType().getName() ),
                     property.getSourceReadAccessorName(),
                     property.getSourceType(),
                     property.getTargetWriteAccessorName(),
@@ -262,27 +264,31 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 )
             );
 
-            reversePropertyMappings.add(
-                new PropertyMapping(
-                    property.getTargetReadAccessorName(),
-                    property.getTargetType(),
-                    property.getSourceWriteAccessorName(),
-                    property.getSourceType(),
-                    reversePropertyMappingMethod != null ? new MappingMethodReference(
-                        reversePropertyMappingMethod.getDeclaringMapper(),
-                        reversePropertyMappingMethod.getName(),
-                        reversePropertyMappingMethod.getParameterName(),
+            if ( rawReverseMappingMethod != null ) {
+                reversePropertyMappings.add(
+                    new PropertyMapping(
+                        rawReverseMappingMethod.getParameterName(),
+                        Introspector.decapitalize( rawReverseMappingMethod.getTargetType().getName() ),
+                        property.getTargetReadAccessorName(),
                         property.getTargetType(),
-                        property.getSourceType()
-                    ) : null,
-                    conversion != null && rawReverseMappingMethod != null ? conversion.from(
-                        rawReverseMappingMethod.getParameterName() + "." +
-                            property.getTargetReadAccessorName() +
-                            "()",
-                        property.getSourceType()
-                    ) : null
-                )
-            );
+                        property.getSourceWriteAccessorName(),
+                        property.getSourceType(),
+                        reversePropertyMappingMethod != null ? new MappingMethodReference(
+                            reversePropertyMappingMethod.getDeclaringMapper(),
+                            reversePropertyMappingMethod.getName(),
+                            reversePropertyMappingMethod.getParameterName(),
+                            property.getTargetType(),
+                            property.getSourceType()
+                        ) : null,
+                        conversion != null && rawReverseMappingMethod != null ? conversion.from(
+                            rawReverseMappingMethod.getParameterName() + "." +
+                                property.getTargetReadAccessorName() +
+                                "()",
+                            property.getSourceType()
+                        ) : null
+                    )
+                );
+            }
         }
 
         MappingMethod mappingMethod = new SimpleMappingMethod(

@@ -26,36 +26,49 @@ package org.mapstruct.ap.model;
  *
  * @author Gunnar Morling
  */
-public class PropertyMapping {
+public class PropertyMapping extends AbstractModelElement {
 
-    private final String sourceReadAccessorName;
+    private final String sourceBeanName;
+    private final String targetBeanName;
+    private final String sourceAccessorName;
     private final Type sourceType;
-    private final String targetWriteAccessorName;
+    private final String targetAccessorName;
     private final Type targetType;
 
     private final MappingMethodReference mappingMethod;
-    private final String toConversion;
+    private final String conversion;
 
-    public PropertyMapping(String sourceReadAccessorName, Type sourceType, String targetWriteAccessorName,
-                           Type targetType, MappingMethodReference mappingMethod, String toConversion) {
-        this.sourceReadAccessorName = sourceReadAccessorName;
+    public PropertyMapping(String sourceBeanName, String targetBeanName, String sourceAccessorName, Type sourceType,
+                           String targetAccessorName, Type targetType, MappingMethodReference mappingMethod,
+                           String conversion) {
+        this.sourceBeanName = sourceBeanName;
+        this.targetBeanName = targetBeanName;
+        this.sourceAccessorName = sourceAccessorName;
         this.sourceType = sourceType;
-        this.targetWriteAccessorName = targetWriteAccessorName;
+        this.targetAccessorName = targetAccessorName;
         this.targetType = targetType;
         this.mappingMethod = mappingMethod;
-        this.toConversion = toConversion;
+        this.conversion = conversion;
     }
 
-    public String getSourceReadAccessorName() {
-        return sourceReadAccessorName;
+    public String getSourceBeanName() {
+        return sourceBeanName;
+    }
+
+    public String getTargetBeanName() {
+        return targetBeanName;
+    }
+
+    public String getSourceAccessorName() {
+        return sourceAccessorName;
     }
 
     public Type getSourceType() {
         return sourceType;
     }
 
-    public String getTargetWriteAccessorName() {
-        return targetWriteAccessorName;
+    public String getTargetAccessorName() {
+        return targetAccessorName;
     }
 
     public Type getTargetType() {
@@ -66,19 +79,19 @@ public class PropertyMapping {
         return mappingMethod;
     }
 
-    public String getToConversion() {
-        return toConversion;
+    public String getConversion() {
+        return conversion;
     }
 
     @Override
     public String toString() {
         return "PropertyMapping {" +
-            "\n    sourceName='" + sourceReadAccessorName + "\'," +
+            "\n    sourceName='" + sourceAccessorName + "\'," +
             "\n    sourceType=" + sourceType + "," +
-            "\n    targetName='" + targetWriteAccessorName + "\'," +
+            "\n    targetName='" + targetAccessorName + "\'," +
             "\n    targetType=" + targetType + "," +
             "\n    mappingMethod=" + mappingMethod + "," +
-            "\n    toConversion='" + toConversion + "\'," +
+            "\n    Conversion='" + conversion + "\'," +
             "\n}";
     }
 }
