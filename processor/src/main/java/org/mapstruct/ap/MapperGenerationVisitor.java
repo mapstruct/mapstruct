@@ -46,11 +46,14 @@ import javax.tools.JavaFileObject;
 import org.mapstruct.ap.conversion.Conversion;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.BeanMapping;
+import org.mapstruct.ap.model.IterableMappingMethod;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MappingMethod;
+import org.mapstruct.ap.model.MappingMethodReference;
 import org.mapstruct.ap.model.Options;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.ReportingPolicy;
+import org.mapstruct.ap.model.SimpleMappingMethod;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.source.MappedProperty;
 import org.mapstruct.ap.model.source.Mapping;
@@ -97,6 +100,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     private final Types typeUtils;
     private final Elements elementUtils;
     private final TypeUtil typeUtil;
+    private final Conversions conversions;
     private final Options options;
 
     private boolean mappingErroneous = false;
@@ -106,6 +110,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         this.typeUtils = processingEnvironment.getTypeUtils();
         this.elementUtils = processingEnvironment.getElementUtils();
         this.typeUtil = new TypeUtil( elementUtils, typeUtils );
+        this.conversions = new Conversions( elementUtils, typeUtils, typeUtil );
         this.options = options;
     }
 
@@ -183,155 +188,177 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
     private List<BeanMapping> getMappings(List<Method> methods,
                                           ReportingPolicy unmappedTargetPolicy) {
-        Conversions conversions = new Conversions( elementUtils, typeUtils, typeUtil );
-
         List<BeanMapping> mappings = new ArrayList<BeanMapping>();
         Set<Method> processedMethods = new HashSet<Method>();
 
         for ( Method method : methods ) {
-            if ( processedMethods.contains( method ) ) {
+            if ( processedMethods.contains( method ) || method.getDeclaringMapper() != null ) {
                 continue;
             }
 
-            Method rawReverseMappingMethod = getReverseMappingMethod( methods, method );
+            Method reverseMappingMethod = getReverseMappingMethod( methods, method );
 
-            String toConversionString = null;
-            String fromConversionString = null;
+            if ( reverseMappingMethod != null ) {
+                processedMethods.add( reverseMappingMethod );
+            }
 
             boolean isIterableMapping = method.getSourceType().isIterableType() && method.getTargetType()
                 .isIterableType();
 
             if ( isIterableMapping ) {
-                toConversionString = getIterableConversionString(
-                    conversions,
-                    method.getSourceType().getElementType(),
-                    method.getTargetType().getElementType(),
-                    true
-                );
-                fromConversionString = getIterableConversionString(
-                    conversions,
-                    method.getTargetType().getElementType(),
-                    method.getSourceType().getElementType(),
-                    false
-                );
+                mappings.add( getIterableBeanMapping( methods, method, reverseMappingMethod ) );
             }
-
-            List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
-            List<PropertyMapping> reversePropertyMappings = new ArrayList<PropertyMapping>();
-            Set<String> mappedSourceProperties = new HashSet<String>();
-            Set<String> mappedTargetProperties = new HashSet<String>();
-
-            for ( MappedProperty property : method.getMappedProperties() ) {
-                mappedSourceProperties.add( property.getSourceName() );
-                mappedTargetProperties.add( property.getTargetName() );
-
-                Method propertyMappingMethod = getPropertyMappingMethod( methods, property );
-                Method reversePropertyMappingMethod = getReversePropertyMappingMethod( methods, property );
-                Conversion conversion = conversions.getConversion( property.getSourceType(), property.getTargetType() );
-
-                reportErrorIfPropertyCanNotBeMapped(
-                    method,
-                    rawReverseMappingMethod,
-                    property,
-                    propertyMappingMethod,
-                    reversePropertyMappingMethod,
-                    conversion
-                );
-
-                propertyMappings.add(
-                    new PropertyMapping(
-                        property.getSourceReadAccessorName(),
-                        property.getSourceType(),
-                        property.getTargetWriteAccessorName(),
-                        property.getTargetType(),
-                        propertyMappingMethod != null ? new MappingMethod(
-                            propertyMappingMethod.getDeclaringMapper(),
-                            propertyMappingMethod.getName(),
-                            propertyMappingMethod.getParameterName(),
-                            property.getSourceType(),
-                            property.getTargetType()
-                        ) : null,
-                        conversion != null ? conversion.to(
-                            method.getParameterName() + "." + property.getSourceReadAccessorName() + "()",
-                            property.getTargetType()
-                        ) : null
-                    )
-                );
-
-                reversePropertyMappings.add(
-                    new PropertyMapping(
-                        property.getTargetReadAccessorName(),
-                        property.getTargetType(),
-                        property.getSourceWriteAccessorName(),
-                        property.getSourceType(),
-                        reversePropertyMappingMethod != null ? new MappingMethod(
-                            reversePropertyMappingMethod.getDeclaringMapper(),
-                            reversePropertyMappingMethod.getName(),
-                            reversePropertyMappingMethod.getParameterName(),
-                            property.getTargetType(),
-                            property.getSourceType()
-                        ) : null,
-                        conversion != null && rawReverseMappingMethod != null ? conversion.from(
-                            rawReverseMappingMethod.getParameterName() + "." + property.getTargetReadAccessorName() +
-                                "()",
-                            property.getSourceType()
-                        ) : null
-                    )
-                );
+            else {
+                mappings.add( getSimpleBeanMapping( methods, unmappedTargetPolicy, method, reverseMappingMethod ) );
             }
-
-            MappingMethod mappingMethod = new MappingMethod(
-                method.getDeclaringMapper(),
-                method.getName(),
-                method.getParameterName(),
-                method.getSourceType(),
-                method.getTargetType(),
-                propertyMappings,
-                getElementMappingMethod( methods, method ),
-                toConversionString
-            );
-
-            MappingMethod reverseMappingMethod = null;
-            if ( rawReverseMappingMethod != null ) {
-                processedMethods.add( rawReverseMappingMethod );
-
-                reverseMappingMethod = new MappingMethod(
-                    rawReverseMappingMethod.getDeclaringMapper(),
-                    rawReverseMappingMethod.getName(),
-                    rawReverseMappingMethod.getParameterName(),
-                    method.getTargetType(),
-                    method.getSourceType(),
-                    reversePropertyMappings,
-                    getElementMappingMethod( methods, rawReverseMappingMethod ),
-                    fromConversionString
-                );
-            }
-
-            if ( mappingMethod.isGenerationRequired() && !isIterableMapping ) {
-                reportErrorForUnmappedTargetPropertiesIfRequired(
-                    method.getExecutable(),
-                    unmappedTargetPolicy,
-                    method.getTargetProeprties(),
-                    mappedTargetProperties
-                );
-            }
-            if ( reverseMappingMethod != null && reverseMappingMethod.isGenerationRequired() && !isIterableMapping ) {
-                reportErrorForUnmappedTargetPropertiesIfRequired(
-                    rawReverseMappingMethod.getExecutable(),
-                    unmappedTargetPolicy,
-                    method.getSourceProperties(),
-                    mappedSourceProperties
-                );
-            }
-
-            BeanMapping mapping = new BeanMapping(
-                mappingMethod,
-                reverseMappingMethod
-            );
-
-            mappings.add( mapping );
         }
         return mappings;
+    }
+
+    private BeanMapping getSimpleBeanMapping(List<Method> methods, ReportingPolicy unmappedTargetPolicy, Method method,
+                                             Method rawReverseMappingMethod) {
+        List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
+        List<PropertyMapping> reversePropertyMappings = new ArrayList<PropertyMapping>();
+        Set<String> mappedSourceProperties = new HashSet<String>();
+        Set<String> mappedTargetProperties = new HashSet<String>();
+
+        for ( MappedProperty property : method.getMappedProperties() ) {
+            mappedSourceProperties.add( property.getSourceName() );
+            mappedTargetProperties.add( property.getTargetName() );
+
+            Method propertyMappingMethod = getPropertyMappingMethod( methods, property );
+            Method reversePropertyMappingMethod = getReversePropertyMappingMethod( methods, property );
+            Conversion conversion = conversions.getConversion(
+                property.getSourceType(),
+                property.getTargetType()
+            );
+
+            reportErrorIfPropertyCanNotBeMapped(
+                method,
+                rawReverseMappingMethod,
+                property,
+                propertyMappingMethod,
+                reversePropertyMappingMethod,
+                conversion
+            );
+
+            propertyMappings.add(
+                new PropertyMapping(
+                    property.getSourceReadAccessorName(),
+                    property.getSourceType(),
+                    property.getTargetWriteAccessorName(),
+                    property.getTargetType(),
+                    propertyMappingMethod != null ? new MappingMethodReference(
+                        propertyMappingMethod.getDeclaringMapper(),
+                        propertyMappingMethod.getName(),
+                        propertyMappingMethod.getParameterName(),
+                        property.getSourceType(),
+                        property.getTargetType()
+                    ) : null,
+                    conversion != null ? conversion.to(
+                        method.getParameterName() + "." + property.getSourceReadAccessorName() + "()",
+                        property.getTargetType()
+                    ) : null
+                )
+            );
+
+            reversePropertyMappings.add(
+                new PropertyMapping(
+                    property.getTargetReadAccessorName(),
+                    property.getTargetType(),
+                    property.getSourceWriteAccessorName(),
+                    property.getSourceType(),
+                    reversePropertyMappingMethod != null ? new MappingMethodReference(
+                        reversePropertyMappingMethod.getDeclaringMapper(),
+                        reversePropertyMappingMethod.getName(),
+                        reversePropertyMappingMethod.getParameterName(),
+                        property.getTargetType(),
+                        property.getSourceType()
+                    ) : null,
+                    conversion != null && rawReverseMappingMethod != null ? conversion.from(
+                        rawReverseMappingMethod.getParameterName() + "." +
+                            property.getTargetReadAccessorName() +
+                            "()",
+                        property.getSourceType()
+                    ) : null
+                )
+            );
+        }
+
+        MappingMethod mappingMethod = new SimpleMappingMethod(
+            method.getName(),
+            method.getParameterName(),
+            method.getSourceType(),
+            method.getTargetType(),
+            propertyMappings
+        );
+
+        reportErrorForUnmappedTargetPropertiesIfRequired(
+            method.getExecutable(),
+            unmappedTargetPolicy,
+            method.getTargetProeprties(),
+            mappedTargetProperties
+        );
+
+        MappingMethod reverseMappingMethod = null;
+        if ( rawReverseMappingMethod != null ) {
+            reverseMappingMethod = new SimpleMappingMethod(
+                rawReverseMappingMethod.getName(),
+                rawReverseMappingMethod.getParameterName(),
+                method.getTargetType(),
+                method.getSourceType(),
+                reversePropertyMappings
+            );
+
+            reportErrorForUnmappedTargetPropertiesIfRequired(
+                rawReverseMappingMethod.getExecutable(),
+                unmappedTargetPolicy,
+                method.getSourceProperties(),
+                mappedSourceProperties
+            );
+        }
+
+        return new BeanMapping( mappingMethod, reverseMappingMethod );
+    }
+
+    private BeanMapping getIterableBeanMapping(List<Method> methods, Method method, Method rawReverseMappingMethod) {
+        String toConversionString = getIterableConversionString(
+            conversions,
+            method.getSourceType().getElementType(),
+            method.getTargetType().getElementType(),
+            true
+        );
+
+        String fromConversionString = getIterableConversionString(
+            conversions,
+            method.getTargetType().getElementType(),
+            method.getSourceType().getElementType(),
+            false
+        );
+
+        MappingMethod mappingMethod = new IterableMappingMethod(
+            method.getName(),
+            method.getParameterName(),
+            method.getSourceType(),
+            method.getTargetType(),
+            getElementMappingMethod( methods, method ),
+            toConversionString
+        );
+
+        MappingMethod reverseMappingMethod = null;
+
+        if ( rawReverseMappingMethod != null ) {
+            reverseMappingMethod = new IterableMappingMethod(
+                rawReverseMappingMethod.getName(),
+                rawReverseMappingMethod.getParameterName(),
+                method.getTargetType(),
+                method.getSourceType(),
+                getElementMappingMethod( methods, rawReverseMappingMethod ),
+                fromConversionString
+            );
+        }
+
+        return new BeanMapping( mappingMethod, reverseMappingMethod );
     }
 
     private void reportErrorForUnmappedTargetPropertiesIfRequired(ExecutableElement method,
@@ -427,7 +454,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return usedMapperTypes;
     }
 
-    private MappingMethod getElementMappingMethod(Iterable<Method> methods, Method method) {
+    private MappingMethodReference getElementMappingMethod(Iterable<Method> methods, Method method) {
         Method elementMappingMethod = null;
         for ( Method oneMethod : methods ) {
             if ( oneMethod.getSourceType().equals( method.getSourceType().getElementType() ) ) {
@@ -435,7 +462,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                 break;
             }
         }
-        return elementMappingMethod == null ? null : new MappingMethod(
+        return elementMappingMethod == null ? null : new MappingMethodReference(
             elementMappingMethod.getDeclaringMapper(),
             elementMappingMethod.getName(),
             elementMappingMethod.getParameterName(),
@@ -742,7 +769,13 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
     private void printMessage(ReportingPolicy reportingPolicy, String message, Element element,
                               AnnotationMirror annotationMirror, AnnotationValue annotationValue) {
         processingEnvironment.getMessager()
-            .printMessage( reportingPolicy.getDiagnosticKind(), message, element, annotationMirror, annotationValue );
+            .printMessage(
+                reportingPolicy.getDiagnosticKind(),
+                message,
+                element,
+                annotationMirror,
+                annotationValue
+            );
         if ( reportingPolicy.failsBuild() ) {
             mappingErroneous = true;
         }

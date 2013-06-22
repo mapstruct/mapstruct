@@ -18,9 +18,7 @@
      limitations under the License.
 
 -->
-    <#if mappingMethod.generationRequired == true>
-        <@includeModel object=mappingMethod/>
-    </#if>
+    <@includeModel object=mappingMethod/>
 
     <#if reverseMappingMethod??>
         <@includeModel object=reverseMappingMethod/>

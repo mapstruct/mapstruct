@@ -33,11 +33,11 @@ public class PropertyMapping {
     private final String targetWriteAccessorName;
     private final Type targetType;
 
-    private final MappingMethod mappingMethod;
+    private final MappingMethodReference mappingMethod;
     private final String toConversion;
 
     public PropertyMapping(String sourceReadAccessorName, Type sourceType, String targetWriteAccessorName,
-                           Type targetType, MappingMethod mappingMethod, String toConversion) {
+                           Type targetType, MappingMethodReference mappingMethod, String toConversion) {
         this.sourceReadAccessorName = sourceReadAccessorName;
         this.sourceType = sourceType;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -62,7 +62,7 @@ public class PropertyMapping {
         return targetType;
     }
 
-    public MappingMethod getMappingMethod() {
+    public MappingMethodReference getMappingMethod() {
         return mappingMethod;
     }
 

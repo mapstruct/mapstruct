@@ -18,28 +18,6 @@
      limitations under the License.
 
 -->
-    <#if generationRequired == true>
-        <#if iterableMapping == true>
-    @Override
-    public ${targetType.name}<${targetType.elementType.name}> ${name}(${sourceType.name}<${sourceType.elementType.name}> ${parameterName}) {
-        if ( ${parameterName} == null ) {
-            return null;
-        }
-
-        <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
-        <#if targetType.name == "Iterable" && targetType.packageName == "java.lang">${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><${targetType.elementType.name}> ${targetType.name?uncap_first} = new <#if targetType.iterableImplementationType??>${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><${targetType.elementType.name}>();
-
-        for ( ${sourceType.elementType.name} ${sourceType.elementType.name?uncap_first} : ${parameterName} ) {
-            <#if toConversion??>
-            ${targetType.name?uncap_first}.add( ${toConversion} );
-            <#else>
-            ${targetType.name?uncap_first}.add( ${elementMappingMethod.name}( ${sourceType.elementType.name?uncap_first} ) );
-            </#if>
-        }
-
-        return ${targetType.name?uncap_first};
-    }
-        <#else>
     @Override
     public ${targetType.name} ${name}(${sourceType.name} ${parameterName}) {
         if ( ${parameterName} == null ) {
@@ -63,8 +41,6 @@
 
         return ${targetType.name?uncap_first};
     }
-        </#if>
-    </#if>
 
 <#-- Generates the mapping of one bean property -->
 <#macro simpleMap sourceBeanName sourceType sourceAccessorName targetBeanName targetType targetAccessorName conversion="" mappingMethod="">
