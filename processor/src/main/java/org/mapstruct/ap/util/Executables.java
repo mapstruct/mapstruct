@@ -88,30 +88,6 @@ public class Executables {
         throw new IllegalArgumentException( "Executable " + getterOrSetterMethod + " is not getter or setter method." );
     }
 
-    /**
-     * Returns that setter or getter from the given list of executables which
-     * corresponds to the given getter or setter method.
-     *
-     * @param getterOrSetter The getter or setter method of interest.
-     * @param elements A list of executables to retrieve the corresponding accessor
-     * from.
-     *
-     * @return The setter corresponding to the given getter or the getter
-     *         corresponding to the given getter
-     */
-    public static ExecutableElement getCorrespondingPropertyAccessor(ExecutableElement getterOrSetter,
-                                                                     List<ExecutableElement> elements) {
-        String propertyName = getPropertyName( getterOrSetter );
-
-        for ( ExecutableElement method : elements ) {
-            if ( getPropertyName( method ).equals( propertyName ) ) {
-                return method;
-            }
-        }
-
-        return null;
-    }
-
     public static Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
         Set<String> propertyNames = new HashSet<String>();
 

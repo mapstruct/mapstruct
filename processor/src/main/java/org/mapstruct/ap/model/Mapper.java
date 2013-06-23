@@ -29,18 +29,18 @@ public class Mapper extends AbstractModelElement {
     private final String packageName;
     private final String interfaceName;
     private final String implementationName;
-    private final List<BeanMapping> beanMappings;
+    private final List<MappingMethod> mappingMethods;
     private final List<Type> usedMapperTypes;
     private final Options options;
     private final SortedSet<Type> importedTypes;
 
     public Mapper(String packageName, String interfaceName,
-                  String implementationName, List<BeanMapping> beanMappings, List<Type> usedMapperTypes,
+                  String implementationName, List<MappingMethod> mappingMethods, List<Type> usedMapperTypes,
                   Options options) {
         this.packageName = packageName;
         this.interfaceName = interfaceName;
         this.implementationName = implementationName;
-        this.beanMappings = beanMappings;
+        this.mappingMethods = mappingMethods;
         this.usedMapperTypes = usedMapperTypes;
         this.options = options;
         this.importedTypes = determineImportedTypes();
@@ -50,9 +50,9 @@ public class Mapper extends AbstractModelElement {
         SortedSet<Type> importedTypes = new TreeSet<Type>();
         importedTypes.add( Type.forClass( Generated.class ) );
 
-        for ( BeanMapping beanMapping : beanMappings ) {
+        for ( MappingMethod mappingMethod : mappingMethods ) {
 
-            for ( Type type : beanMapping.getMappingMethod().getReferencedTypes() ) {
+            for ( Type type : mappingMethod.getReferencedTypes() ) {
                 addWithDependents( importedTypes, type );
             }
         }
@@ -85,7 +85,7 @@ public class Mapper extends AbstractModelElement {
         sb.append( "\n    implementationName='" + implementationName + "\'," );
         sb.append( "\n    beanMappings=[" );
 
-        for ( BeanMapping beanMapping : beanMappings ) {
+        for ( MappingMethod beanMapping : mappingMethods ) {
             sb.append( "\n        " + beanMapping.toString().replaceAll( "\n", "\n        " ) );
         }
         sb.append( "\n    ]" );
@@ -107,8 +107,8 @@ public class Mapper extends AbstractModelElement {
         return implementationName;
     }
 
-    public List<BeanMapping> getBeanMappings() {
-        return beanMappings;
+    public List<MappingMethod> getMappingMethods() {
+        return mappingMethods;
     }
 
     public List<Type> getUsedMapperTypes() {

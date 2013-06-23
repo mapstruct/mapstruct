@@ -19,7 +19,7 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 
@@ -38,15 +38,15 @@ public class Method {
     private final String parameterName;
     private final Type sourceType;
     private final Type targetType;
-    private Set<String> sourceProperties;
-    private Set<String> targetProeprties;
-    private final List<MappedProperty> mappedProperties;
+    private final Set<String> sourceProperties;
+    private final Set<String> targetProeprties;
+    private Map<String, Mapping> mappings;
 
     public static Method forMethodRequiringImplementation(ExecutableElement executable, String parameterName,
                                                           Type sourceType,
                                                           Type targetType, Set<String> sourceProperties,
                                                           Set<String> targetProperties,
-                                                          List<MappedProperty> mappedProperties) {
+                                                          Map<String, Mapping> mappings) {
 
         return new Method(
             null,
@@ -56,13 +56,12 @@ public class Method {
             targetType,
             sourceProperties,
             targetProperties,
-            mappedProperties
+            mappings
         );
     }
 
     public static Method forReferencedMethod(Type declaringMapper, ExecutableElement executable, String parameterName,
-                                             Type sourceType,
-                                             Type targetType) {
+                                             Type sourceType, Type targetType) {
 
         return new Method(
             declaringMapper,
@@ -72,13 +71,13 @@ public class Method {
             targetType,
             Collections.<String>emptySet(),
             Collections.<String>emptySet(),
-            Collections.<MappedProperty>emptyList()
+            Collections.<String, Mapping>emptyMap()
         );
     }
 
     private Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType,
                    Type targetType, Set<String> sourceProperties, Set<String> targetProperties,
-                   List<MappedProperty> mappedProperties) {
+                   Map<String, Mapping> mappings) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameterName = parameterName;
@@ -86,7 +85,7 @@ public class Method {
         this.targetType = targetType;
         this.sourceProperties = sourceProperties;
         this.targetProeprties = targetProperties;
-        this.mappedProperties = mappedProperties;
+        this.mappings = mappings;
     }
 
     /**
@@ -128,14 +127,22 @@ public class Method {
         return targetProeprties;
     }
 
-    public List<MappedProperty> getMappedProperties() {
-        return mappedProperties;
+    public Map<String, Mapping> getMappings() {
+        return mappings;
+    }
+
+    public void setMappings(Map<String, Mapping> mappings) {
+        this.mappings = mappings;
     }
 
     public boolean reverses(Method method) {
         return
             equals( sourceType, method.getTargetType() ) &&
                 equals( targetType, method.getSourceType() );
+    }
+
+    public boolean isIterableMapping() {
+        return sourceType.isIterableType() && targetType.isIterableType();
     }
 
     private boolean equals(Object o1, Object o2) {

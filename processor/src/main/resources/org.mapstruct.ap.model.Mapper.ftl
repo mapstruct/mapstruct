@@ -34,7 +34,7 @@ public class ${implementationName} implements ${interfaceName} {
     private final ${mapperType.name} ${mapperType.name?uncap_first} = new ${mapperType.name}();
 </#list>
 
-<#list beanMappings as beanMapping>
-<@includeModel object=beanMapping/>
+<#list mappingMethods as mappingMethod>
+<@includeModel object=mappingMethod/>
 </#list>
 }
