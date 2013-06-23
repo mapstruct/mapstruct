@@ -54,7 +54,6 @@ import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.ReportingPolicy;
 import org.mapstruct.ap.model.SimpleMappingMethod;
 import org.mapstruct.ap.model.Type;
-import org.mapstruct.ap.model.source.MappedProperty;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.Parameter;
@@ -224,43 +223,45 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         Set<String> mappedTargetProperties = new HashSet<String>();
 
-        List<MappedProperty> mappedProperties = retrieveMappedProperties( method );
+        Map<String, Mapping> mappings = method.getMappings();
 
-        for ( MappedProperty property : mappedProperties ) {
-            mappedTargetProperties.add( property.getTargetName() );
+        TypeElement returnTypeElement = (TypeElement) typeUtils.asElement( method.getExecutable().getReturnType() );
+        TypeElement parameterElement = (TypeElement) typeUtils.asElement(
+            method.getExecutable()
+                .getParameters()
+                .get( 0 )
+                .asType()
+        );
 
-            MappingMethodReference propertyMappingMethod = getMappingMethodReference(
-                methods,
-                property.getSourceType(),
-                property.getTargetType()
-            );
-            Conversion conversion = conversions.getConversion(
-                property.getSourceType(),
-                property.getTargetType()
-            );
+        List<ExecutableElement> sourceGetters = Filters.getterMethodsIn(
+            elementUtils.getAllMembers( parameterElement )
+        );
+        List<ExecutableElement> targetSetters = Filters.setterMethodsIn(
+            elementUtils.getAllMembers( returnTypeElement )
+        );
 
-            reportErrorIfPropertyCanNotBeMapped(
-                method,
-                property,
-                propertyMappingMethod,
-                conversion
-            );
+        reportErrorIfMappedPropertiesDontExist( method );
 
-            propertyMappings.add(
-                new PropertyMapping(
-                    method.getParameterName(),
-                    Introspector.decapitalize( method.getTargetType().getName() ),
-                    property.getSourceReadAccessorName(),
-                    property.getSourceType(),
-                    property.getTargetWriteAccessorName(),
-                    property.getTargetType(),
-                    propertyMappingMethod,
-                    conversion != null ? conversion.to(
-                        method.getParameterName() + "." + property.getSourceReadAccessorName() + "()",
-                        property.getTargetType()
-                    ) : null
-                )
-            );
+        for ( ExecutableElement getterMethod : sourceGetters ) {
+            String sourcePropertyName = Executables.getPropertyName( getterMethod );
+            Mapping mapping = mappings.get( sourcePropertyName );
+
+            for ( ExecutableElement setterMethod : targetSetters ) {
+                String targetPropertyName = Executables.getPropertyName( setterMethod );
+
+                if ( targetPropertyName.equals( mapping != null ? mapping.getTargetName() : sourcePropertyName ) ) {
+                    PropertyMapping property = getPropertyMapping(
+                        methods,
+                        method,
+                        getterMethod,
+                        setterMethod
+                    );
+
+                    propertyMappings.add( property );
+
+                    mappedTargetProperties.add( targetPropertyName );
+                }
+            }
         }
 
         reportErrorForUnmappedTargetPropertiesIfRequired(
@@ -276,6 +277,41 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             method.getTargetType(),
             propertyMappings
         );
+    }
+
+    private PropertyMapping getPropertyMapping(List<Method> methods, Method method, ExecutableElement getterMethod,
+                                               ExecutableElement setterMethod) {
+        Type sourceType = retrieveReturnType( getterMethod );
+        Type targetType = retrieveParameter( setterMethod ).getType();
+
+        MappingMethodReference propertyMappingMethod = getMappingMethodReference( methods, sourceType, targetType );
+        Conversion conversion = conversions.getConversion(
+            sourceType,
+            targetType
+        );
+
+        PropertyMapping property = new PropertyMapping(
+            method.getParameterName(),
+            Introspector.decapitalize( method.getTargetType().getName() ),
+            Executables.getPropertyName( getterMethod ),
+            getterMethod.getSimpleName().toString(),
+            sourceType,
+            Executables.getPropertyName( setterMethod ),
+            setterMethod.getSimpleName().toString(),
+            targetType,
+            propertyMappingMethod,
+            conversion != null ? conversion.to(
+                method.getParameterName() + "." + getterMethod.getSimpleName().toString() + "()",
+                targetType
+            ) : null
+        );
+
+        reportErrorIfPropertyCanNotBeMapped(
+            method,
+            property
+        );
+
+        return property;
     }
 
     private MappingMethod getIterableMappingMethod(List<Method> methods, Method method) {
@@ -319,17 +355,15 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         }
     }
 
-    private void reportErrorIfPropertyCanNotBeMapped(Method method, MappedProperty property,
-                                                     MappingMethodReference propertyMappingMethod,
-                                                     Conversion conversion) {
+    private void reportErrorIfPropertyCanNotBeMapped(Method method, PropertyMapping property) {
         if ( property.getSourceType().equals( property.getTargetType() ) ) {
             return;
         }
 
         //no mapping method nor conversion nor collection with default implementation
         if ( !(
-            propertyMappingMethod != null ||
-                conversion != null ||
+            property.getMappingMethod() != null ||
+                property.getConversion() != null ||
                 ( property.getTargetType().isCollectionType() && property.getTargetType()
                     .getCollectionImplementationType() != null ) ) ) {
 
@@ -508,62 +542,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         }
 
         return methods;
-    }
-
-    /**
-     * Returns all properties of the parameter type of the given method which
-     * are mapped to a corresponding property of the return type of the given
-     * method.
-     *
-     * @param method The method of interest
-     *
-     * @return All mapped properties for the given method
-     */
-    private List<MappedProperty> retrieveMappedProperties(Method method) {
-        Map<String, Mapping> mappings = method.getMappings();
-
-        TypeElement returnTypeElement = (TypeElement) typeUtils.asElement( method.getExecutable().getReturnType() );
-        TypeElement parameterElement = (TypeElement) typeUtils.asElement(
-            method.getExecutable()
-                .getParameters()
-                .get( 0 )
-                .asType()
-        );
-
-        List<MappedProperty> properties = new ArrayList<MappedProperty>();
-
-        List<ExecutableElement> sourceGetters = Filters.getterMethodsIn(
-            elementUtils.getAllMembers( parameterElement )
-        );
-        List<ExecutableElement> targetSetters = Filters.setterMethodsIn(
-            elementUtils.getAllMembers( returnTypeElement )
-        );
-
-        reportErrorIfMappedPropertiesDontExist( method );
-
-        for ( ExecutableElement getterMethod : sourceGetters ) {
-            String sourcePropertyName = Executables.getPropertyName( getterMethod );
-            Mapping mapping = mappings.get( sourcePropertyName );
-
-            for ( ExecutableElement setterMethod : targetSetters ) {
-                String targetPropertyName = Executables.getPropertyName( setterMethod );
-
-                if ( targetPropertyName.equals( mapping != null ? mapping.getTargetName() : sourcePropertyName ) ) {
-                    properties.add(
-                        new MappedProperty(
-                            sourcePropertyName,
-                            getterMethod.getSimpleName().toString(),
-                            retrieveReturnType( getterMethod ),
-                            mapping != null ? mapping.getTargetName() : targetPropertyName,
-                            setterMethod.getSimpleName().toString(),
-                            retrieveParameter( setterMethod ).getType()
-                        )
-                    );
-                }
-            }
-        }
-
-        return properties;
     }
 
     private void reportErrorIfMappedPropertiesDontExist(Method method) {

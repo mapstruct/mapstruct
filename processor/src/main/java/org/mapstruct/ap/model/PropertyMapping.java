@@ -30,23 +30,32 @@ public class PropertyMapping extends AbstractModelElement {
 
     private final String sourceBeanName;
     private final String targetBeanName;
+
+    private final String sourceName;
     private final String sourceAccessorName;
     private final Type sourceType;
+
+    private final String targetName;
     private final String targetAccessorName;
     private final Type targetType;
 
     private final MappingMethodReference mappingMethod;
     private final String conversion;
 
-    public PropertyMapping(String sourceBeanName, String targetBeanName, String sourceAccessorName, Type sourceType,
-                           String targetAccessorName, Type targetType, MappingMethodReference mappingMethod,
-                           String conversion) {
+    public PropertyMapping(String sourceBeanName, String targetBeanName, String sourceName, String sourceAccessorName,
+                           Type sourceType, String targetName, String targetAccessorName, Type targetType,
+                           MappingMethodReference mappingMethod, String conversion) {
         this.sourceBeanName = sourceBeanName;
         this.targetBeanName = targetBeanName;
+
+        this.sourceName = sourceName;
         this.sourceAccessorName = sourceAccessorName;
         this.sourceType = sourceType;
+
+        this.targetName = targetName;
         this.targetAccessorName = targetAccessorName;
         this.targetType = targetType;
+
         this.mappingMethod = mappingMethod;
         this.conversion = conversion;
     }
@@ -59,12 +68,20 @@ public class PropertyMapping extends AbstractModelElement {
         return targetBeanName;
     }
 
+    public String getSourceName() {
+        return sourceName;
+    }
+
     public String getSourceAccessorName() {
         return sourceAccessorName;
     }
 
     public Type getSourceType() {
         return sourceType;
+    }
+
+    public String getTargetName() {
+        return targetName;
     }
 
     public String getTargetAccessorName() {
