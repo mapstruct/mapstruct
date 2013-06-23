@@ -240,7 +240,14 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
             elementUtils.getAllMembers( returnTypeElement )
         );
 
-        reportErrorIfMappedPropertiesDontExist( method );
+        Set<String> sourceProperties = Executables.getPropertyNames(
+            Filters.getterMethodsIn( sourceGetters )
+        );
+        Set<String> targetProperties = Executables.getPropertyNames(
+            Filters.setterMethodsIn( targetSetters )
+        );
+
+        reportErrorIfMappedPropertiesDontExist( method, sourceProperties, targetProperties );
 
         for ( ExecutableElement getterMethod : sourceGetters ) {
             String sourcePropertyName = Executables.getPropertyName( getterMethod );
@@ -267,6 +274,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         reportErrorForUnmappedTargetPropertiesIfRequired(
             method,
             unmappedTargetPolicy,
+            targetProperties,
             mappedTargetProperties
         );
 
@@ -338,17 +346,18 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
     private void reportErrorForUnmappedTargetPropertiesIfRequired(Method method,
                                                                   ReportingPolicy unmappedTargetPolicy,
+                                                                  Set<String> targetProperties,
                                                                   Set<String> mappedTargetProperties) {
 
-        if ( method.getTargetProeprties().size() > mappedTargetProperties.size() &&
+        if ( targetProperties.size() > mappedTargetProperties.size() &&
             unmappedTargetPolicy.requiresReport() ) {
-            method.getTargetProeprties().removeAll( mappedTargetProperties );
+            targetProperties.removeAll( mappedTargetProperties );
             printMessage(
                 unmappedTargetPolicy,
                 MessageFormat.format(
                     "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
-                    method.getTargetProeprties().size(),
-                    Strings.join( method.getTargetProeprties(), ", " )
+                    targetProperties.size(),
+                    Strings.join( targetProperties, ", " )
                 ),
                 method.getExecutable()
             );
@@ -450,8 +459,6 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         for ( ExecutableElement method : methodsIn( element.getEnclosedElements() ) ) {
             Parameter parameter = retrieveParameter( method );
             Type returnType = retrieveReturnType( method );
-            Element returnTypeElement = typeUtils.asElement( method.getReturnType() );
-            Element parameterElement = typeUtils.asElement( method.getParameters().get( 0 ).asType() );
 
             boolean mappingErroneous = false;
 
@@ -496,21 +503,12 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
 
             //add method with property mappings if an implementation needs to be generated
             if ( implementationRequired ) {
-                Set<String> sourceProperties = Executables.getPropertyNames(
-                    Filters.getterMethodsIn( parameterElement.getEnclosedElements() )
-                );
-                Set<String> targetProperties = Executables.getPropertyNames(
-                    Filters.setterMethodsIn( returnTypeElement.getEnclosedElements() )
-                );
-
                 methods.add(
                     Method.forMethodRequiringImplementation(
                         method,
                         parameter.getName(),
                         parameter.getType(),
                         returnType,
-                        sourceProperties,
-                        targetProperties,
                         getMappings( method )
                     )
                 );
@@ -544,9 +542,10 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
         return methods;
     }
 
-    private void reportErrorIfMappedPropertiesDontExist(Method method) {
+    private void reportErrorIfMappedPropertiesDontExist(Method method, Set<String> sourceProperties,
+                                                        Set<String> targetProperties) {
         for ( Mapping mappedProperty : method.getMappings().values() ) {
-            if ( !method.getSourceProperties().contains( mappedProperty.getSourceName() ) ) {
+            if ( !sourceProperties.contains( mappedProperty.getSourceName() ) ) {
                 printMessage(
                     ReportingPolicy.ERROR,
                     String.format(
@@ -556,7 +555,7 @@ public class MapperGenerationVisitor extends ElementKindVisitor6<Void, Void> {
                     ), method.getExecutable(), mappedProperty.getMirror(), mappedProperty.getSourceAnnotationValue()
                 );
             }
-            if ( !method.getTargetProeprties().contains( mappedProperty.getTargetName() ) ) {
+            if ( !targetProperties.contains( mappedProperty.getTargetName() ) ) {
                 printMessage(
                     ReportingPolicy.ERROR,
                     String.format(

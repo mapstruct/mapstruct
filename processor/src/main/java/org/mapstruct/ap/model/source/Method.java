@@ -20,7 +20,6 @@ package org.mapstruct.ap.model.source;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.model.Type;
@@ -38,14 +37,10 @@ public class Method {
     private final String parameterName;
     private final Type sourceType;
     private final Type targetType;
-    private final Set<String> sourceProperties;
-    private final Set<String> targetProeprties;
     private Map<String, Mapping> mappings;
 
     public static Method forMethodRequiringImplementation(ExecutableElement executable, String parameterName,
-                                                          Type sourceType,
-                                                          Type targetType, Set<String> sourceProperties,
-                                                          Set<String> targetProperties,
+                                                          Type sourceType, Type targetType,
                                                           Map<String, Mapping> mappings) {
 
         return new Method(
@@ -54,8 +49,6 @@ public class Method {
             parameterName,
             sourceType,
             targetType,
-            sourceProperties,
-            targetProperties,
             mappings
         );
     }
@@ -69,22 +62,17 @@ public class Method {
             parameterName,
             sourceType,
             targetType,
-            Collections.<String>emptySet(),
-            Collections.<String>emptySet(),
             Collections.<String, Mapping>emptyMap()
         );
     }
 
     private Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType,
-                   Type targetType, Set<String> sourceProperties, Set<String> targetProperties,
-                   Map<String, Mapping> mappings) {
+                   Type targetType, Map<String, Mapping> mappings) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameterName = parameterName;
         this.sourceType = sourceType;
         this.targetType = targetType;
-        this.sourceProperties = sourceProperties;
-        this.targetProeprties = targetProperties;
         this.mappings = mappings;
     }
 
@@ -117,14 +105,6 @@ public class Method {
 
     public Type getTargetType() {
         return targetType;
-    }
-
-    public Set<String> getSourceProperties() {
-        return sourceProperties;
-    }
-
-    public Set<String> getTargetProeprties() {
-        return targetProeprties;
     }
 
     public Map<String, Mapping> getMappings() {
