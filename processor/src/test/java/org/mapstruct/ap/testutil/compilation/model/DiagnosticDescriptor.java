@@ -20,6 +20,8 @@ package org.mapstruct.ap.testutil.compilation.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
@@ -69,13 +71,31 @@ public class DiagnosticDescriptor {
             return null;
         }
 
+        URI uri = getUri( diagnostic );
+
         try {
-            String sourceName = new File( diagnostic.getSource().toUri() ).getCanonicalPath();
+            String sourceName = new File( uri ).getCanonicalPath();
             return sourceName.length() > sourceDir.length() ?
                 sourceName.substring( sourceDir.length() + 1 ) :
                 sourceName;
         }
         catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    private static URI getUri(javax.tools.Diagnostic<? extends JavaFileObject> diagnostic) {
+        URI uri = diagnostic.getSource().toUri();
+
+        if ( uri.isAbsolute() ) {
+            return uri;
+        }
+
+        //Make the URI absolute in case it isn't (the case with JDK 6)
+        try {
+            return new URI( "file:" + uri.toString() );
+        }
+        catch ( URISyntaxException e ) {
             throw new RuntimeException( e );
         }
     }

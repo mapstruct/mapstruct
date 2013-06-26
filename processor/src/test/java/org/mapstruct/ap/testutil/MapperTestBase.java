@@ -164,12 +164,12 @@ public abstract class MapperTestBase {
             assertThat( actual.getKind() ).isEqualTo( expected.getKind() );
             assertThat( actual.getMessage() ).describedAs(
                 String.format(
-                    "%s:%s %s",
+                    "Unexpected message for diagnostic %s:%s %s",
                     actual.getSourceFileName(),
                     actual.getLine(),
                     actual.getKind()
                 )
-            ).matches( expected.getMessage() );
+            ).matches( ".*" + expected.getMessage() + ".*" );
         }
 
         assertThat( expectedIterator.hasNext() ).describedAs(
