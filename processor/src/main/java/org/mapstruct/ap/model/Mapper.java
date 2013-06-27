@@ -33,10 +33,11 @@ public class Mapper extends AbstractModelElement {
     private final List<Type> usedMapperTypes;
     private final Options options;
     private final SortedSet<Type> importedTypes;
+    private final boolean isErroneous;
 
     public Mapper(String packageName, String interfaceName,
                   String implementationName, List<MappingMethod> mappingMethods, List<Type> usedMapperTypes,
-                  Options options) {
+                  Options options, boolean isErroneous) {
         this.packageName = packageName;
         this.interfaceName = interfaceName;
         this.implementationName = implementationName;
@@ -44,6 +45,7 @@ public class Mapper extends AbstractModelElement {
         this.usedMapperTypes = usedMapperTypes;
         this.options = options;
         this.importedTypes = determineImportedTypes();
+        this.isErroneous = isErroneous;
     }
 
     private SortedSet<Type> determineImportedTypes() {
@@ -121,5 +123,9 @@ public class Mapper extends AbstractModelElement {
 
     public SortedSet<Type> getImportedTypes() {
         return importedTypes;
+    }
+
+    public boolean isErroneous() {
+        return isErroneous;
     }
 }

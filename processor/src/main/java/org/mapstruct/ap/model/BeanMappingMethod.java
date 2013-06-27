@@ -28,12 +28,12 @@ import java.util.Set;
  *
  * @author Gunnar Morling
  */
-public class SimpleMappingMethod extends MappingMethod {
+public class BeanMappingMethod extends MappingMethod {
 
     private final List<PropertyMapping> propertyMappings;
 
-    public SimpleMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
-                               List<PropertyMapping> propertyMappings) {
+    public BeanMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
+                             List<PropertyMapping> propertyMappings) {
         super( name, parameterName, sourceType, targetType );
         this.propertyMappings = propertyMappings;
     }
