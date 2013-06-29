@@ -93,6 +93,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return getMapper( mapperTypeElement, sourceElement );
     }
 
+    @Override
+    public int getPriority() {
+        return 1000;
+    }
+
+
     private Mapper getMapper(TypeElement element, List<Method> methods) {
         ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy( element );
         List<MappingMethod> mappingMethods = getMappingMethods( methods, unmappedTargetPolicy );

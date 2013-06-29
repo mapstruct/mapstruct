@@ -56,4 +56,9 @@ public class CdiComponentProcessor implements ModelElementProcessor<Mapper, Mapp
 
         return mapper;
     }
+
+    @Override
+    public int getPriority() {
+        return 1100;
+    }
 }

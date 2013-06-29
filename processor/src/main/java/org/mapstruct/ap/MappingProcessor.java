@@ -18,7 +18,12 @@
  */
 package org.mapstruct.ap;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -39,11 +44,7 @@ import org.mapstruct.Mappings;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.Options;
 import org.mapstruct.ap.model.ReportingPolicy;
-import org.mapstruct.ap.processor.CdiComponentProcessor;
 import org.mapstruct.ap.processor.DefaultModelElementProcessorContext;
-import org.mapstruct.ap.processor.MapperCreationProcessor;
-import org.mapstruct.ap.processor.MapperRenderingProcessor;
-import org.mapstruct.ap.processor.MethodRetrievalProcessor;
 import org.mapstruct.ap.processor.ModelElementProcessor;
 import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
 
@@ -142,14 +143,31 @@ public class MappingProcessor extends AbstractProcessor {
         return processor.process( context, mapperTypeElement, sourceElement );
     }
 
-    //TODO Retrieve via service loader
+    /**
+     * Retrieves all model element processors, ordered by their priority value
+     * (with the method retrieval processor having the lowest priority value (1)
+     * and the code generation processor the highest priority value.
+     *
+     * @return A list with all model element processors.
+     */
     private Iterable<ModelElementProcessor<?, ?>> getProcessors() {
-        return Arrays.<ModelElementProcessor<?, ?>>asList(
-            new MethodRetrievalProcessor(),
-            new MapperCreationProcessor(),
-            new CdiComponentProcessor(),
-            new MapperRenderingProcessor()
-        );
+        // TODO Re-consider which class loader to use in case processors are
+        // loaded from other modules, too
+        @SuppressWarnings("rawtypes")
+        Iterator<ModelElementProcessor> processorIterator = ServiceLoader.load(
+            ModelElementProcessor.class,
+            MappingProcessor.class.getClassLoader()
+        )
+            .iterator();
+        List<ModelElementProcessor<?, ?>> processors = new ArrayList<ModelElementProcessor<?, ?>>();
+
+        while ( processorIterator.hasNext() ) {
+            processors.add( processorIterator.next() );
+        }
+
+        Collections.sort( processors, new ProcessorComparator() );
+
+        return processors;
     }
 
     private TypeElement asTypeElement(Element element) {
@@ -162,5 +180,16 @@ public class MappingProcessor extends AbstractProcessor {
 
             }, null
         );
+    }
+
+    private static class ProcessorComparator implements Comparator<ModelElementProcessor<?, ?>> {
+
+        @Override
+        public int compare(ModelElementProcessor<?, ?> o1, ModelElementProcessor<?, ?> o2) {
+            return
+                o1.getPriority() < o2.getPriority() ? -1 :
+                    o1.getPriority() == o2.getPriority() ? 0 :
+                        1;
+        }
     }
 }

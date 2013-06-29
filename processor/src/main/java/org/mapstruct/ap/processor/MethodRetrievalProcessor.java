@@ -68,6 +68,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<TypeEleme
         return retrieveMethods( mapperTypeElement, true );
     }
 
+    @Override
+    public int getPriority() {
+        return 1;
+    }
+
     /**
      * Retrieves the mapping methods declared by the given mapper type.
      *

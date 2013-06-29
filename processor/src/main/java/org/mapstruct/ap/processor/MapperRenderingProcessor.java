@@ -55,4 +55,9 @@ public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, V
 
         new ModelWriter().writeModel( sourceFile, model );
     }
+
+    @Override
+    public int getPriority() {
+        return 10000;
+    }
 }
