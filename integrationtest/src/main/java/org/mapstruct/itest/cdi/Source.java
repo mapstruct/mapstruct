@@ -16,24 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.complex;
+package org.mapstruct.itest.cdi;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
-public class DateMapper {
+public class Source {
 
-    public String asString(Date date) {
-        return date != null ? new SimpleDateFormat( "yyyy" ).format( date ) : null;
+    private int foo = 42;
+
+    private Date date = new GregorianCalendar( 1980, 0, 1 ).getTime();
+
+    public int getFoo() {
+        return foo;
     }
 
-    public Date asDate(String date) {
-        try {
-            return date != null ? new SimpleDateFormat( "yyyy" ).parse( date ) : null;
-        }
-        catch ( ParseException e ) {
-            throw new RuntimeException( e );
-        }
+    public Date getDate() {
+        return date;
     }
 }

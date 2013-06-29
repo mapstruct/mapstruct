@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model;
 
 import java.io.Writer;
+import java.util.Set;
 
 /**
  * A model element with the ability to write itself into a given {@link Writer}.
@@ -54,4 +55,13 @@ public interface ModelElement {
      * implementations.
      */
     void write(Context context, Writer writer) throws Exception;
+
+    /**
+     * Returns a set containing those {@link Type}s referenced by this model
+     * element for which an import statement needs to be declared.
+     *
+     * @return A set with type referenced by this model element. Must not be
+     *         {@code null.}
+     */
+    Set<Type> getImportTypes();
 }

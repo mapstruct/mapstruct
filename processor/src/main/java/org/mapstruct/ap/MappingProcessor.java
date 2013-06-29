@@ -39,6 +39,7 @@ import org.mapstruct.Mappings;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.Options;
 import org.mapstruct.ap.model.ReportingPolicy;
+import org.mapstruct.ap.processor.CdiComponentProcessor;
 import org.mapstruct.ap.processor.DefaultModelElementProcessorContext;
 import org.mapstruct.ap.processor.MapperCreationProcessor;
 import org.mapstruct.ap.processor.MapperRenderingProcessor;
@@ -146,6 +147,7 @@ public class MappingProcessor extends AbstractProcessor {
         return Arrays.<ModelElementProcessor<?, ?>>asList(
             new MethodRetrievalProcessor(),
             new MapperCreationProcessor(),
+            new CdiComponentProcessor(),
             new MapperRenderingProcessor()
         );
     }

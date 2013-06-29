@@ -16,24 +16,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.itest.cdi.other;
 
-import java.io.Writer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.enterprise.context.ApplicationScoped;
 
-import org.mapstruct.ap.writer.FreeMarkerModelElementWriter;
+@ApplicationScoped
+public class DateMapper {
 
-/**
- * Default implementation of {@link ModelElement} which writes model elements
- * using FreeMarker templates. By default, the fully-qualified class name of the
- * given model element type, appended with the extension {@code *.ftl} is used
- * as template file name.
- *
- * @author Gunnar Morling
- */
-public abstract class AbstractModelElement implements ModelElement {
+    public String asString(Date date) {
+        return date != null ? new SimpleDateFormat( "yyyy" ).format( date ) : null;
+    }
 
-    @Override
-    public void write(Context context, Writer writer) throws Exception {
-        new FreeMarkerModelElementWriter().write( this, context, writer );
+    public Date asDate(String date) {
+        try {
+            return date != null ? new SimpleDateFormat( "yyyy" ).parse( date ) : null;
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
     }
 }

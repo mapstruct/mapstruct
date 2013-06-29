@@ -18,26 +18,4 @@
      limitations under the License.
 
 -->
-package ${packageName};
-
-<#list importTypes as importedType>
-import ${importedType.fullyQualifiedName};
-</#list>
-
-@Generated(
-    value = "org.mapstruct.ap.MappingProcessor"<#if options.suppressGeneratorTimestamp == false>,
-    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
-)
-<#list annotations as annotation>
-<@includeModel object=annotation/>
-</#list>
-public class ${implementationName} implements ${interfaceName} {
-
-<#list referencedMappers as mapper>
-    <@includeModel object=mapper/>
-</#list>
-
-<#list mappingMethods as mappingMethod>
-<@includeModel object=mappingMethod/>
-</#list>
-}
+@${type.name}

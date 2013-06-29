@@ -18,6 +18,10 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.Set;
+
+import org.mapstruct.ap.util.Collections;
+
 /**
  * Represents the mapping between a source and target property, e.g. from
  * {@code String Source#foo} to {@code int Target#bar}. Name and type of source
@@ -98,6 +102,11 @@ public class PropertyMapping extends AbstractModelElement {
 
     public String getConversion() {
         return conversion;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        return Collections.asSet( sourceType, targetType );
     }
 
     @Override

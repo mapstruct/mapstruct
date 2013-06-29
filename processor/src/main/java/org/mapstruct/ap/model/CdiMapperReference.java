@@ -18,38 +18,32 @@
  */
 package org.mapstruct.ap.model;
 
-import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.util.Collections;
+
 /**
- * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one
- * bean type to another, optionally configured by one or more
- * {@link PropertyMapping}s.
+ * Mapper reference which is retrieved via CDI-based dependency injection.
+ * method. Used if "cdi" is specified as component model via
+ * {@code Mapper#uses()}.
  *
  * @author Gunnar Morling
  */
-public class BeanMappingMethod extends MappingMethod {
+public class CdiMapperReference extends AbstractModelElement implements MapperReference {
 
-    private final List<PropertyMapping> propertyMappings;
+    private Type type;
 
-    public BeanMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
-                             List<PropertyMapping> propertyMappings) {
-        super( name, parameterName, sourceType, targetType );
-        this.propertyMappings = propertyMappings;
+    public CdiMapperReference(Type type) {
+        this.type = type;
     }
 
-    public List<PropertyMapping> getPropertyMappings() {
-        return propertyMappings;
+    @Override
+    public Type getMapperType() {
+        return type;
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> types = super.getImportTypes();
-
-        for ( PropertyMapping propertyMapping : propertyMappings ) {
-            types.addAll( propertyMapping.getImportTypes() );
-        }
-
-        return types;
+        return Collections.asSet( type, new Type( "javax.inject", "Inject" ) );
     }
 }

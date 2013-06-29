@@ -18,38 +18,24 @@
  */
 package org.mapstruct.ap.model;
 
-import java.util.List;
 import java.util.Set;
 
-/**
- * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one
- * bean type to another, optionally configured by one or more
- * {@link PropertyMapping}s.
- *
- * @author Gunnar Morling
- */
-public class BeanMappingMethod extends MappingMethod {
+import org.mapstruct.ap.util.Collections;
 
-    private final List<PropertyMapping> propertyMappings;
+public class Annotation extends AbstractModelElement {
 
-    public BeanMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
-                             List<PropertyMapping> propertyMappings) {
-        super( name, parameterName, sourceType, targetType );
-        this.propertyMappings = propertyMappings;
+    private Type type;
+
+    public Annotation(Type type) {
+        this.type = type;
     }
 
-    public List<PropertyMapping> getPropertyMappings() {
-        return propertyMappings;
+    public Type getType() {
+        return type;
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> types = super.getImportTypes();
-
-        for ( PropertyMapping propertyMapping : propertyMappings ) {
-            types.addAll( propertyMapping.getImportTypes() );
-        }
-
-        return types;
+        return Collections.asSet( type );
     }
 }

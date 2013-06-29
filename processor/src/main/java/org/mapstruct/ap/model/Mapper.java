@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
@@ -29,34 +30,44 @@ public class Mapper extends AbstractModelElement {
     private final String packageName;
     private final String interfaceName;
     private final String implementationName;
+    private final List<Annotation> annotations;
     private final List<MappingMethod> mappingMethods;
-    private final List<Type> usedMapperTypes;
+    private final List<MapperReference> referencedMappers;
     private final Options options;
-    private final SortedSet<Type> importedTypes;
     private final boolean isErroneous;
 
-    public Mapper(String packageName, String interfaceName,
-                  String implementationName, List<MappingMethod> mappingMethods, List<Type> usedMapperTypes,
-                  Options options, boolean isErroneous) {
+    public Mapper(String packageName, String interfaceName, String implementationName,
+                  List<MappingMethod> mappingMethods, List<MapperReference> referencedMappers, Options options,
+                  boolean isErroneous) {
         this.packageName = packageName;
         this.interfaceName = interfaceName;
         this.implementationName = implementationName;
+        this.annotations = new ArrayList<Annotation>();
         this.mappingMethods = mappingMethods;
-        this.usedMapperTypes = usedMapperTypes;
+        this.referencedMappers = referencedMappers;
         this.options = options;
-        this.importedTypes = determineImportedTypes();
         this.isErroneous = isErroneous;
     }
 
-    private SortedSet<Type> determineImportedTypes() {
+    @Override
+    public SortedSet<Type> getImportTypes() {
         SortedSet<Type> importedTypes = new TreeSet<Type>();
         importedTypes.add( Type.forClass( Generated.class ) );
 
         for ( MappingMethod mappingMethod : mappingMethods ) {
-
-            for ( Type type : mappingMethod.getReferencedTypes() ) {
+            for ( Type type : mappingMethod.getImportTypes() ) {
                 addWithDependents( importedTypes, type );
             }
+        }
+
+        for ( MapperReference mapperReference : referencedMappers ) {
+            for ( Type type : mapperReference.getImportTypes() ) {
+                addWithDependents( importedTypes, type );
+            }
+        }
+
+        for ( Annotation annotation : annotations ) {
+            addWithDependents( importedTypes, annotation.getType() );
         }
 
         return importedTypes;
@@ -91,7 +102,7 @@ public class Mapper extends AbstractModelElement {
             sb.append( "\n        " + beanMapping.toString().replaceAll( "\n", "\n        " ) );
         }
         sb.append( "\n    ]" );
-        sb.append( "\n    usedMapperTypes=" + usedMapperTypes );
+        sb.append( "\n    referencedMappers=" + referencedMappers );
         sb.append( "\n}," );
 
         return sb.toString();
@@ -113,19 +124,23 @@ public class Mapper extends AbstractModelElement {
         return mappingMethods;
     }
 
-    public List<Type> getUsedMapperTypes() {
-        return usedMapperTypes;
+    public List<MapperReference> getReferencedMappers() {
+        return referencedMappers;
     }
 
     public Options getOptions() {
         return options;
     }
 
-    public SortedSet<Type> getImportedTypes() {
-        return importedTypes;
-    }
-
     public boolean isErroneous() {
         return isErroneous;
+    }
+
+    public void addAnnotation(Annotation annotation) {
+        annotations.add( annotation );
+    }
+
+    public List<Annotation> getAnnotations() {
+        return annotations;
     }
 }

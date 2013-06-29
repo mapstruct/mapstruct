@@ -18,22 +18,13 @@
  */
 package org.mapstruct.ap.model;
 
-import java.io.Writer;
-
-import org.mapstruct.ap.writer.FreeMarkerModelElementWriter;
-
 /**
- * Default implementation of {@link ModelElement} which writes model elements
- * using FreeMarker templates. By default, the fully-qualified class name of the
- * given model element type, appended with the extension {@code *.ftl} is used
- * as template file name.
+ * A reference to another mapper class, which itself may be generated or
+ * hand-written.
  *
  * @author Gunnar Morling
  */
-public abstract class AbstractModelElement implements ModelElement {
+public interface MapperReference extends ModelElement {
 
-    @Override
-    public void write(Context context, Writer writer) throws Exception {
-        new FreeMarkerModelElementWriter().write( this, context, writer );
-    }
+    Type getMapperType();
 }

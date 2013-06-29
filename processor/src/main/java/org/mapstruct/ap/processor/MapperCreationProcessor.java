@@ -41,8 +41,10 @@ import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.conversion.Conversion;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.BeanMappingMethod;
+import org.mapstruct.ap.model.DefaultMapperReference;
 import org.mapstruct.ap.model.IterableMappingMethod;
 import org.mapstruct.ap.model.Mapper;
+import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.MappingMethodReference;
 import org.mapstruct.ap.model.Options;
@@ -91,17 +93,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return getMapper( mapperTypeElement, sourceElement );
     }
 
-    public Mapper getMapper(TypeElement element, List<Method> methods) {
-        List<Type> usedMapperTypes = getUsedMapperTypes( element );
-
+    private Mapper getMapper(TypeElement element, List<Method> methods) {
         ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy( element );
+        List<MappingMethod> mappingMethods = getMappingMethods( methods, unmappedTargetPolicy );
+        List<MapperReference> mapperReferences = getReferencedMappers( element );
 
         return new Mapper(
             elementUtils.getPackageOf( element ).getQualifiedName().toString(),
             element.getSimpleName().toString(),
             element.getSimpleName() + IMPLEMENTATION_SUFFIX,
-            getMappingMethods( methods, unmappedTargetPolicy ),
-            usedMapperTypes,
+            mappingMethods,
+            mapperReferences,
             options,
             isErroneous
         );
@@ -132,13 +134,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         }
     }
 
-    private List<Type> getUsedMapperTypes(TypeElement element) {
-        List<Type> usedMapperTypes = new LinkedList<Type>();
+    private List<MapperReference> getReferencedMappers(TypeElement element) {
+        List<MapperReference> mapperReferences = new LinkedList<MapperReference>();
         MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
+
         for ( TypeMirror usedMapper : mapperPrism.uses() ) {
-            usedMapperTypes.add( typeUtil.retrieveType( usedMapper ) );
+            mapperReferences.add( new DefaultMapperReference( typeUtil.retrieveType( usedMapper ) ) );
         }
-        return usedMapperTypes;
+
+        return mapperReferences;
     }
 
     private List<MappingMethod> getMappingMethods(List<Method> methods, ReportingPolicy unmappedTargetPolicy) {

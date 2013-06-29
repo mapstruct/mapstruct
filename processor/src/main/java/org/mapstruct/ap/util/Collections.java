@@ -16,24 +16,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.util;
 
-import java.io.Writer;
-
-import org.mapstruct.ap.writer.FreeMarkerModelElementWriter;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Default implementation of {@link ModelElement} which writes model elements
- * using FreeMarker templates. By default, the fully-qualified class name of the
- * given model element type, appended with the extension {@code *.ftl} is used
- * as template file name.
+ * Provides utility methods around collections.
  *
  * @author Gunnar Morling
  */
-public abstract class AbstractModelElement implements ModelElement {
+public class Collections {
 
-    @Override
-    public void write(Context context, Writer writer) throws Exception {
-        new FreeMarkerModelElementWriter().write( this, context, writer );
+    private Collections() {
+    }
+
+    public static <T> Set<T> asSet(T... elements) {
+        Set<T> set = new HashSet<T>();
+
+        for ( T element : elements ) {
+            set.add( element );
+        }
+
+        return set;
     }
 }

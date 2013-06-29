@@ -24,6 +24,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mappers;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.test.complex.other.DateMapper;
 import org.mapstruct.ap.test.complex.source.Car;
 import org.mapstruct.ap.test.complex.source.Person;
 import org.mapstruct.ap.test.complex.target.CarDto;

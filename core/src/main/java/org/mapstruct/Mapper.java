@@ -47,4 +47,19 @@ public @interface Mapper {
      * @return The reporting policy for unmapped target properties.
      */
     ReportingPolicy unmappedTargetPolicy() default ReportingPolicy.WARN;
+
+    /**
+     * Specifies the component model to which the generated mapper should
+     * adhere. Supported values are
+     * <ul>
+     * <li> {@code default}: the mapper uses no component model, instances are
+     * typically retrieved via {@link Mappers#getMapper(Class)}</li>
+     * <li>
+     * {@code cdi}: the generated mapper is an application-scoped CDI bean and
+     * can be retrieved via {@code @Inject}</li>
+     * </ul>
+     *
+     * @return The component model for the generated mapper.
+     */
+    String componentModel() default "default";
 }

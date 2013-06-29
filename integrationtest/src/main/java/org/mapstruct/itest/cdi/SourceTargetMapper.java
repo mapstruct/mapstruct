@@ -16,24 +16,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.itest.cdi;
 
-import java.io.Writer;
+import org.mapstruct.Mapper;
+import org.mapstruct.itest.cdi.other.DateMapper;
 
-import org.mapstruct.ap.writer.FreeMarkerModelElementWriter;
+@Mapper(componentModel = "cdi", uses = DateMapper.class)
+public interface SourceTargetMapper {
 
-/**
- * Default implementation of {@link ModelElement} which writes model elements
- * using FreeMarker templates. By default, the fully-qualified class name of the
- * given model element type, appended with the extension {@code *.ftl} is used
- * as template file name.
- *
- * @author Gunnar Morling
- */
-public abstract class AbstractModelElement implements ModelElement {
-
-    @Override
-    public void write(Context context, Writer writer) throws Exception {
-        new FreeMarkerModelElementWriter().write( this, context, writer );
-    }
+    Target sourceToTarget(Source source);
 }

@@ -56,7 +56,8 @@ public abstract class MappingMethod extends AbstractModelElement {
         return targetType;
     }
 
-    public Set<Type> getReferencedTypes() {
+    @Override
+    public Set<Type> getImportTypes() {
         Set<Type> types = new HashSet<Type>();
         types.add( getSourceType() );
         types.add( getTargetType() );
