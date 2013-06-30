@@ -89,75 +89,10 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<TypeEleme
 
         MapperPrism mapperPrism = implementationRequired ? MapperPrism.getInstanceOn( element ) : null;
 
-        //TODO Extract to separate method
-        for ( ExecutableElement method : methodsIn( element.getEnclosedElements() ) ) {
-            Parameter parameter = executables.retrieveParameter( method );
-            Type returnType = executables.retrieveReturnType( method );
-
-            boolean mappingErroneous = false;
-
-            if ( implementationRequired ) {
-                if ( parameter.getType().isIterableType() && !returnType.isIterableType() ) {
-                    printMessage(
-                        ReportingPolicy.ERROR,
-                        "Can't generate mapping method from iterable type to non-iterable type.",
-                        method
-                    );
-                    mappingErroneous = true;
-                }
-                if ( !parameter.getType().isIterableType() && returnType.isIterableType() ) {
-                    printMessage(
-                        ReportingPolicy.ERROR,
-                        "Can't generate mapping method from non-iterable type to iterable type.",
-                        method
-                    );
-                    mappingErroneous = true;
-                }
-                if ( parameter.getType().isPrimitive() ) {
-                    printMessage(
-                        ReportingPolicy.ERROR,
-                        "Can't generate mapping method with primitive parameter type.",
-                        method
-                    );
-                    mappingErroneous = true;
-                }
-                if ( returnType.isPrimitive() ) {
-                    printMessage(
-                        ReportingPolicy.ERROR,
-                        "Can't generate mapping method with primitive return type.",
-                        method
-                    );
-                    mappingErroneous = true;
-                }
-
-                if ( mappingErroneous ) {
-                    continue;
-                }
-            }
-
-            //add method with property mappings if an implementation needs to be generated
-            if ( implementationRequired ) {
-                methods.add(
-                    Method.forMethodRequiringImplementation(
-                        method,
-                        parameter.getName(),
-                        parameter.getType(),
-                        returnType,
-                        getMappings( method )
-                    )
-                );
-            }
-            //otherwise add reference to existing mapper method
-            else {
-                methods.add(
-                    Method.forReferencedMethod(
-                        typeUtil.getType( typeUtils.getDeclaredType( element ) ),
-                        method,
-                        parameter.getName(),
-                        parameter.getType(),
-                        returnType
-                    )
-                );
+        for ( ExecutableElement executable : methodsIn( element.getEnclosedElements() ) ) {
+            Method method = getMethod( element, executable, implementationRequired );
+            if ( method != null ) {
+                methods.add( method );
             }
         }
 
@@ -174,6 +109,81 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<TypeEleme
         }
 
         return methods;
+    }
+
+    private Method getMethod(TypeElement element, ExecutableElement method, boolean implementationRequired) {
+        Parameter parameter = executables.retrieveParameter( method );
+        Type returnType = executables.retrieveReturnType( method );
+
+        //add method with property mappings if an implementation needs to be generated
+        if ( implementationRequired ) {
+            boolean isValid = checkParameterAndReturnType( method, parameter.getType(), returnType );
+
+            if ( isValid ) {
+                return
+                    Method.forMethodRequiringImplementation(
+                        method,
+                        parameter.getName(),
+                        parameter.getType(),
+                        returnType,
+                        getMappings( method )
+                    );
+            }
+            else {
+                return null;
+            }
+        }
+        //otherwise add reference to existing mapper method
+        else {
+            return
+                Method.forReferencedMethod(
+                    typeUtil.getType( typeUtils.getDeclaredType( element ) ),
+                    method,
+                    parameter.getName(),
+                    parameter.getType(),
+                    returnType
+                );
+        }
+    }
+
+    private boolean checkParameterAndReturnType(ExecutableElement method, Type parameterType, Type returnType) {
+        if ( parameterType.isIterableType() && !returnType.isIterableType() ) {
+            printMessage(
+                ReportingPolicy.ERROR,
+                "Can't generate mapping method from iterable type to non-iterable type.",
+                method
+            );
+            return false;
+        }
+
+        if ( !parameterType.isIterableType() && returnType.isIterableType() ) {
+            printMessage(
+                ReportingPolicy.ERROR,
+                "Can't generate mapping method from non-iterable type to iterable type.",
+                method
+            );
+            return false;
+        }
+
+        if ( parameterType.isPrimitive() ) {
+            printMessage(
+                ReportingPolicy.ERROR,
+                "Can't generate mapping method with primitive parameter type.",
+                method
+            );
+            return false;
+        }
+
+        if ( returnType.isPrimitive() ) {
+            printMessage(
+                ReportingPolicy.ERROR,
+                "Can't generate mapping method with primitive return type.",
+                method
+            );
+            return false;
+        }
+
+        return true;
     }
 
     /**

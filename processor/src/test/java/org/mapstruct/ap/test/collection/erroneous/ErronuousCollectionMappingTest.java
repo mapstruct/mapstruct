@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erronuous;
+package org.mapstruct.ap.test.collection.erroneous;
 
 import javax.tools.Diagnostic.Kind;
 
