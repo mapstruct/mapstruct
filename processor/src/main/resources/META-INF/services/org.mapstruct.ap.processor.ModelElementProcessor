@@ -15,4 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-org.mapstruct.ap.MappingProcessor
+org.mapstruct.ap.processor.CdiComponentProcessor
+org.mapstruct.ap.processor.MapperCreationProcessor
+org.mapstruct.ap.processor.MapperRenderingProcessor
+org.mapstruct.ap.processor.MethodRetrievalProcessor

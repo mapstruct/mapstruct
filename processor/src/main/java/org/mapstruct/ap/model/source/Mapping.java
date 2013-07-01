@@ -89,6 +89,10 @@ public class Mapping {
         return targetAnnotationValue;
     }
 
+    public Mapping reverse() {
+        return new Mapping( targetName, sourceName, mirror, sourceAnnotationValue, targetAnnotationValue );
+    }
+
     @Override
     public String toString() {
         return "Mapping {" +

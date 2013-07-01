@@ -44,7 +44,7 @@ public class ErroneousMappingsTest extends MapperTestBase {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 27,
-                messageRegExp = ".*Unknown property \"bar\" in return type.*"),
+                messageRegExp = "Unknown property \"bar\" in return type"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.WARNING,
                 line = 28,
@@ -52,7 +52,7 @@ public class ErroneousMappingsTest extends MapperTestBase {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 30,
-                messageRegExp = ".*Unknown property \"bar\" in parameter type.*")
+                messageRegExp = "Unknown property \"bar\" in parameter type")
         }
     )
     public void shouldFailToGenerateMappings() {

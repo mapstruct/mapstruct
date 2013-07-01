@@ -117,6 +117,32 @@
                 <artifactId>hickory</artifactId>
                 <version>${com.jolira.hickory.version}</version>
             </dependency>
+
+            <!-- CDI, Weld, Arquillian -->
+            <dependency>
+                <groupId>javax.enterprise</groupId>
+                <artifactId>cdi-api</artifactId>
+                <version>1.1-PFD</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>1.0.4.Final</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
+                <version>1.0.0.CR3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-core</artifactId>
+                <version>1.1.5.Final</version>
+            </dependency>
+
+            <!-- Project modules -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>mapstruct</artifactId>
@@ -126,6 +152,18 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>mapstruct-processor</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <!-- Not directly used but required for dependency convergence -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.cal10n</groupId>
+                <artifactId>cal10n-api</artifactId>
+                <version>0.7.4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

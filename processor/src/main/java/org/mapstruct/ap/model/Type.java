@@ -83,6 +83,10 @@ public class Type implements Comparable<Type> {
         this( null, name, null, false, false, false );
     }
 
+    public Type(String packageName, String name) {
+        this( packageName, name, null, false, false, false );
+    }
+
     public Type(String packageName, String name, Type elementType, boolean isEnumType, boolean isCollectionType,
                 boolean isIterableType) {
         this.packageName = packageName;

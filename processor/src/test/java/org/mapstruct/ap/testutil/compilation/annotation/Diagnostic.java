@@ -50,8 +50,11 @@ public @interface Diagnostic {
 
     /**
      * A regular expression matching the expected message of the diagnostic.
+     * Wild-cards matching any character (".*") will be added to the beginning
+     * and end of the given expression when applying it.
      *
-     * @return A regular expression matching the expected message of the diagnostic.
+     * @return A regular expression matching the expected message of the
+     *         diagnostic.
      */
     String messageRegExp() default ".*";
 }

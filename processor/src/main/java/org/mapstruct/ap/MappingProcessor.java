@@ -18,9 +18,16 @@
  */
 package org.mapstruct.ap;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
@@ -28,18 +35,42 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.ElementKindVisitor6;
 
 import net.java.dev.hickory.prism.GeneratePrism;
 import net.java.dev.hickory.prism.GeneratePrisms;
-import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.Options;
 import org.mapstruct.ap.model.ReportingPolicy;
+import org.mapstruct.ap.processor.DefaultModelElementProcessorContext;
+import org.mapstruct.ap.processor.ModelElementProcessor;
+import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
 
+/**
+ * A {@link Processor} which generates the implementations for mapper interfaces
+ * (interfaces annotated with {@code @Mapper}.
+ * </p>
+ * Implementation notes:
+ * </p>
+ * The generation happens by incrementally building up a model representation of
+ * each mapper to be generated (a {@link Mapper} object), which is then written
+ * into the resulting Java source file using the FreeMarker template engine.
+ * </p>
+ * The model instantiation and processing happens in several phases/passes by applying
+ * a sequence of {@link ModelElementProcessor}s.
+ * </p>
+ * For reading annotation attributes, prisms as generated with help of the <a
+ * href="https://java.net/projects/hickory">Hickory</a> tool are used. These
+ * prisms allow a comfortable access to annotations and their attributes without
+ * depending on their class objects.
+ *
+ * @author Gunnar Morling
+ */
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
 @GeneratePrisms({
-    @GeneratePrism(value = Mapper.class, publicAccess = true),
+    @GeneratePrism(value = org.mapstruct.Mapper.class, publicAccess = true),
     @GeneratePrism(value = Mapping.class, publicAccess = true),
     @GeneratePrism(value = Mappings.class, publicAccess = true)
 })
@@ -63,32 +94,6 @@ public class MappingProcessor extends AbstractProcessor {
         options = createOptions();
     }
 
-    @Override
-    public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.latestSupported();
-    }
-
-    @Override
-    public boolean process(
-        final Set<? extends TypeElement> annotations,
-        final RoundEnvironment roundEnvironment) {
-
-        for ( TypeElement oneAnnotation : annotations ) {
-
-            //Indicates that the annotation's type isn't on the class path of the compiled
-            //project. Let the compiler deal with that and print an appropriate error.
-            if ( oneAnnotation.getKind() != ElementKind.ANNOTATION_TYPE ) {
-                continue;
-            }
-
-            for ( Element oneAnnotatedElement : roundEnvironment.getElementsAnnotatedWith( oneAnnotation ) ) {
-                oneAnnotatedElement.accept( new MapperGenerationVisitor( processingEnv, options ), null );
-            }
-        }
-
-        return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
-    }
-
     private Options createOptions() {
         String unmappedTargetPolicy = processingEnv.getOptions().get( UNMAPPED_TARGET_POLICY );
 
@@ -96,5 +101,103 @@ public class MappingProcessor extends AbstractProcessor {
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
             unmappedTargetPolicy != null ? ReportingPolicy.valueOf( unmappedTargetPolicy ) : null
         );
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
+    }
+
+    @Override
+    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnvironment) {
+        ProcessorContext context = new DefaultModelElementProcessorContext( processingEnv, options );
+
+        for ( TypeElement annotation : annotations ) {
+
+            //Indicates that the annotation's type isn't on the class path of the compiled
+            //project. Let the compiler deal with that and print an appropriate error.
+            if ( annotation.getKind() != ElementKind.ANNOTATION_TYPE ) {
+                continue;
+            }
+
+            for ( Element mapperElement : roundEnvironment.getElementsAnnotatedWith( annotation ) ) {
+                TypeElement mapperTypeElement = asTypeElement( mapperElement );
+                processMapperTypeElement( context, mapperTypeElement );
+            }
+        }
+
+        return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
+    }
+
+    /**
+     * Applies all registered {@link ModelElementProcessor}s to the given mapper
+     * type.
+     *
+     * @param context The processor context.
+     * @param mapperTypeElement The mapper type element.
+     */
+    private void processMapperTypeElement(ProcessorContext context, TypeElement mapperTypeElement) {
+        Object model = null;
+
+        for ( ModelElementProcessor<?, ?> processor : getProcessors() ) {
+            model = process( context, processor, mapperTypeElement, model );
+        }
+    }
+
+    private <P, R> R process(ProcessorContext context, ModelElementProcessor<P, R> processor,
+                             TypeElement mapperTypeElement, Object modelElement) {
+        @SuppressWarnings("unchecked")
+        P sourceElement = (P) modelElement;
+        return processor.process( context, mapperTypeElement, sourceElement );
+    }
+
+    /**
+     * Retrieves all model element processors, ordered by their priority value
+     * (with the method retrieval processor having the lowest priority value (1)
+     * and the code generation processor the highest priority value.
+     *
+     * @return A list with all model element processors.
+     */
+    private Iterable<ModelElementProcessor<?, ?>> getProcessors() {
+        // TODO Re-consider which class loader to use in case processors are
+        // loaded from other modules, too
+        @SuppressWarnings("rawtypes")
+        Iterator<ModelElementProcessor> processorIterator = ServiceLoader.load(
+            ModelElementProcessor.class,
+            MappingProcessor.class.getClassLoader()
+        )
+            .iterator();
+        List<ModelElementProcessor<?, ?>> processors = new ArrayList<ModelElementProcessor<?, ?>>();
+
+        while ( processorIterator.hasNext() ) {
+            processors.add( processorIterator.next() );
+        }
+
+        Collections.sort( processors, new ProcessorComparator() );
+
+        return processors;
+    }
+
+    private TypeElement asTypeElement(Element element) {
+        return element.accept(
+            new ElementKindVisitor6<TypeElement, Void>() {
+                @Override
+                public TypeElement visitTypeAsInterface(TypeElement e, Void p) {
+                    return e;
+                }
+
+            }, null
+        );
+    }
+
+    private static class ProcessorComparator implements Comparator<ModelElementProcessor<?, ?>> {
+
+        @Override
+        public int compare(ModelElementProcessor<?, ?> o1, ModelElementProcessor<?, ?> o2) {
+            return
+                o1.getPriority() < o2.getPriority() ? -1 :
+                    o1.getPriority() == o2.getPriority() ? 0 :
+                        1;
+        }
     }
 }

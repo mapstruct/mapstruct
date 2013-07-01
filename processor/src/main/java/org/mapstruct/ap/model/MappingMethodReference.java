@@ -22,54 +22,29 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A method implemented or referenced by a {@link Mapper} class.
+ * Represents a reference to {@link MappingMethod}.
  *
  * @author Gunnar Morling
  */
-public abstract class MappingMethod extends AbstractModelElement {
+public class MappingMethodReference extends MappingMethod {
 
-    private final String name;
-    private final String parameterName;
-    private final Type sourceType;
-    private final Type targetType;
+    private final Type declaringMapper;
 
-    protected MappingMethod(String name, String parameterName, Type sourceType, Type targetType) {
-        this.name = name;
-        this.parameterName = parameterName;
-        this.sourceType = sourceType;
-        this.targetType = targetType;
+    public MappingMethodReference(Type declaringMapper, String name, String parameterName, Type sourceType,
+                                  Type targetType) {
+        super( name, parameterName, sourceType, targetType );
+        this.declaringMapper = declaringMapper;
     }
 
-    public String getName() {
-        return name;
+    public Type getDeclaringMapper() {
+        return declaringMapper;
     }
 
-    public String getParameterName() {
-        return parameterName;
-    }
-
-    public Type getSourceType() {
-        return sourceType;
-    }
-
-    public Type getTargetType() {
-        return targetType;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
+    public Set<Type> getReferencedTypes() {
         Set<Type> types = new HashSet<Type>();
         types.add( getSourceType() );
         types.add( getTargetType() );
 
         return types;
-    }
-
-    @Override
-    public String toString() {
-        return "MappingMethod {" +
-            "\n    name='" + name + "\'," +
-            "\n    parameterName='" + parameterName + "\'," +
-            "\n}";
     }
 }

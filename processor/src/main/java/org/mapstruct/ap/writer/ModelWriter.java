@@ -19,11 +19,14 @@
 package org.mapstruct.ap.writer;
 
 import java.io.BufferedWriter;
+import java.util.HashMap;
+import java.util.Map;
 import javax.tools.JavaFileObject;
 
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
+import org.mapstruct.ap.model.ModelElement;
+import org.mapstruct.ap.model.ModelElement.Context;
 
 /**
  * Writes Java source files based on given mapper models, using a FreeMarker
@@ -39,25 +42,22 @@ public class ModelWriter {
      */
     private static final Configuration CONFIGURATION;
 
-    private final String templateName;
-
     static {
         CONFIGURATION = new Configuration();
         CONFIGURATION.setClassForTemplateLoading( ModelWriter.class, "/" );
         CONFIGURATION.setObjectWrapper( new DefaultObjectWrapper() );
+        CONFIGURATION.setSharedVariable(
+            "includeModel",
+            new ModelIncludeDirective( new DefaultModelElementWriterContext( CONFIGURATION ) )
+        );
     }
 
-    public ModelWriter(String templateName) {
-        this.templateName = templateName;
-    }
-
-    public void writeModel(JavaFileObject sourceFile, Object model) {
-
+    public void writeModel(JavaFileObject sourceFile, ModelElement model) {
         try {
             BufferedWriter writer = new BufferedWriter( sourceFile.openWriter() );
 
-            Template template = CONFIGURATION.getTemplate( templateName );
-            template.process( model, writer );
+            model.write( new DefaultModelElementWriterContext( CONFIGURATION ), writer );
+
             writer.flush();
             writer.close();
         }
@@ -66,6 +66,27 @@ public class ModelWriter {
         }
         catch ( Exception e ) {
             throw new RuntimeException( e );
+        }
+    }
+
+    /**
+     * {@link Context} implementation which provides access to the current
+     * FreeMarker {@link Configuration}.
+     *
+     * @author Gunnar Morling
+     */
+    static class DefaultModelElementWriterContext implements Context {
+
+        private Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
+
+        private DefaultModelElementWriterContext(Configuration configuration) {
+            values.put( Configuration.class, configuration );
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> T get(Class<T> type) {
+            return (T) values.get( type );
         }
     }
 }

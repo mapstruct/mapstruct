@@ -23,7 +23,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
+
+import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.model.source.Parameter;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.
@@ -32,14 +36,17 @@ import javax.lang.model.type.TypeKind;
  */
 public class Executables {
 
-    private Executables() {
+    private final TypeUtil typeUtil;
+
+    public Executables(TypeUtil typeUtil) {
+        this.typeUtil = typeUtil;
     }
 
-    public static boolean isGetterMethod(ExecutableElement method) {
+    public boolean isGetterMethod(ExecutableElement method) {
         return isNonBooleanGetterMethod( method ) || isBooleanGetterMethod( method );
     }
 
-    private static boolean isNonBooleanGetterMethod(ExecutableElement method) {
+    private boolean isNonBooleanGetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
         return method.getParameters().isEmpty() &&
@@ -48,7 +55,7 @@ public class Executables {
             method.getReturnType().getKind() != TypeKind.VOID;
     }
 
-    private static boolean isBooleanGetterMethod(ExecutableElement method) {
+    private boolean isBooleanGetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
         return method.getParameters().isEmpty() &&
@@ -57,7 +64,7 @@ public class Executables {
             method.getReturnType().getKind() == TypeKind.BOOLEAN;
     }
 
-    public static boolean isSetterMethod(ExecutableElement method) {
+    public boolean isSetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
         if ( name.startsWith( "set" ) && name.length() > 3 && method.getParameters()
@@ -68,7 +75,7 @@ public class Executables {
         return false;
     }
 
-    public static String getPropertyName(ExecutableElement getterOrSetterMethod) {
+    public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         if ( isNonBooleanGetterMethod( getterOrSetterMethod ) ) {
             return Introspector.decapitalize(
                 getterOrSetterMethod.getSimpleName().toString().substring( 3 )
@@ -88,37 +95,33 @@ public class Executables {
         throw new IllegalArgumentException( "Executable " + getterOrSetterMethod + " is not getter or setter method." );
     }
 
-    /**
-     * Returns that setter or getter from the given list of executables which
-     * corresponds to the given getter or setter method.
-     *
-     * @param getterOrSetter The getter or setter method of interest.
-     * @param elements A list of executables to retrieve the corresponding accessor
-     * from.
-     *
-     * @return The setter corresponding to the given getter or the getter
-     *         corresponding to the given getter
-     */
-    public static ExecutableElement getCorrespondingPropertyAccessor(ExecutableElement getterOrSetter,
-                                                                     List<ExecutableElement> elements) {
-        String propertyName = getPropertyName( getterOrSetter );
-
-        for ( ExecutableElement method : elements ) {
-            if ( getPropertyName( method ).equals( propertyName ) ) {
-                return method;
-            }
-        }
-
-        return null;
-    }
-
-    public static Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
+    public Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
         Set<String> propertyNames = new HashSet<String>();
 
         for ( ExecutableElement executableElement : propertyAccessors ) {
-            propertyNames.add( Executables.getPropertyName( executableElement ) );
+            propertyNames.add( getPropertyName( executableElement ) );
         }
 
         return propertyNames;
+    }
+
+    public Parameter retrieveParameter(ExecutableElement method) {
+        List<? extends VariableElement> parameters = method.getParameters();
+
+        if ( parameters.size() != 1 ) {
+            //TODO: Log error
+            return null;
+        }
+
+        VariableElement parameter = parameters.get( 0 );
+
+        return new Parameter(
+            parameter.getSimpleName().toString(),
+            typeUtil.retrieveType( parameter.asType() )
+        );
+    }
+
+    public Type retrieveReturnType(ExecutableElement method) {
+        return typeUtil.retrieveType( method.getReturnType() );
     }
 }

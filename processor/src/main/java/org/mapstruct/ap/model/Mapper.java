@@ -18,46 +18,53 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.Generated;
 
-public class Mapper {
+public class Mapper extends AbstractModelElement {
 
     private final String packageName;
     private final String interfaceName;
     private final String implementationName;
-    private final List<BeanMapping> beanMappings;
-    private final List<Type> usedMapperTypes;
+    private final List<Annotation> annotations;
+    private final List<MappingMethod> mappingMethods;
+    private final List<MapperReference> referencedMappers;
     private final Options options;
-    private final SortedSet<Type> importedTypes;
 
-    public Mapper(String packageName, String interfaceName,
-                  String implementationName, List<BeanMapping> beanMappings, List<Type> usedMapperTypes,
-                  Options options) {
+    public Mapper(String packageName, String interfaceName, String implementationName,
+                  List<MappingMethod> mappingMethods, List<MapperReference> referencedMappers, Options options) {
         this.packageName = packageName;
         this.interfaceName = interfaceName;
         this.implementationName = implementationName;
-        this.beanMappings = beanMappings;
-        this.usedMapperTypes = usedMapperTypes;
+        this.annotations = new ArrayList<Annotation>();
+        this.mappingMethods = mappingMethods;
+        this.referencedMappers = referencedMappers;
         this.options = options;
-        this.importedTypes = determineImportedTypes();
     }
 
-    private SortedSet<Type> determineImportedTypes() {
+    @Override
+    public SortedSet<Type> getImportTypes() {
         SortedSet<Type> importedTypes = new TreeSet<Type>();
         importedTypes.add( Type.forClass( Generated.class ) );
 
-        for ( BeanMapping beanMapping : beanMappings ) {
-            addWithDependents( importedTypes, beanMapping.getSourceType() );
-            addWithDependents( importedTypes, beanMapping.getTargetType() );
-
-            for ( PropertyMapping propertyMapping : beanMapping.getPropertyMappings() ) {
-                addWithDependents( importedTypes, propertyMapping.getSourceType() );
-                addWithDependents( importedTypes, propertyMapping.getTargetType() );
+        for ( MappingMethod mappingMethod : mappingMethods ) {
+            for ( Type type : mappingMethod.getImportTypes() ) {
+                addWithDependents( importedTypes, type );
             }
+        }
+
+        for ( MapperReference mapperReference : referencedMappers ) {
+            for ( Type type : mapperReference.getImportTypes() ) {
+                addWithDependents( importedTypes, type );
+            }
+        }
+
+        for ( Annotation annotation : annotations ) {
+            addWithDependents( importedTypes, annotation.getType() );
         }
 
         return importedTypes;
@@ -88,11 +95,11 @@ public class Mapper {
         sb.append( "\n    implementationName='" + implementationName + "\'," );
         sb.append( "\n    beanMappings=[" );
 
-        for ( BeanMapping beanMapping : beanMappings ) {
+        for ( MappingMethod beanMapping : mappingMethods ) {
             sb.append( "\n        " + beanMapping.toString().replaceAll( "\n", "\n        " ) );
         }
         sb.append( "\n    ]" );
-        sb.append( "\n    usedMapperTypes=" + usedMapperTypes );
+        sb.append( "\n    referencedMappers=" + referencedMappers );
         sb.append( "\n}," );
 
         return sb.toString();
@@ -110,19 +117,23 @@ public class Mapper {
         return implementationName;
     }
 
-    public List<BeanMapping> getBeanMappings() {
-        return beanMappings;
+    public List<MappingMethod> getMappingMethods() {
+        return mappingMethods;
     }
 
-    public List<Type> getUsedMapperTypes() {
-        return usedMapperTypes;
+    public List<MapperReference> getReferencedMappers() {
+        return referencedMappers;
     }
 
     public Options getOptions() {
         return options;
     }
 
-    public SortedSet<Type> getImportedTypes() {
-        return importedTypes;
+    public void addAnnotation(Annotation annotation) {
+        annotations.add( annotation );
+    }
+
+    public List<Annotation> getAnnotations() {
+        return annotations;
     }
 }

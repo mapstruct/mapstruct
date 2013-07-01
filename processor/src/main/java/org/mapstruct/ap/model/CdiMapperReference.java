@@ -16,16 +16,34 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erronuous;
+package org.mapstruct.ap.model;
 
 import java.util.Set;
 
-import org.mapstruct.Mapper;
+import org.mapstruct.ap.util.Collections;
 
-@Mapper
-public interface ErronuousMapper {
+/**
+ * Mapper reference which is retrieved via CDI-based dependency injection.
+ * method. Used if "cdi" is specified as component model via
+ * {@code Mapper#uses()}.
+ *
+ * @author Gunnar Morling
+ */
+public class CdiMapperReference extends AbstractModelElement implements MapperReference {
 
-    Integer stringSetToInteger(Set<String> strings);
+    private Type type;
 
-    Set<String> integerToStringSet(Integer integer);
+    public CdiMapperReference(Type type) {
+        this.type = type;
+    }
+
+    @Override
+    public Type getMapperType() {
+        return type;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        return Collections.asSet( type, new Type( "javax.inject", "Inject" ) );
+    }
 }

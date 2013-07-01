@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erronuous;
+package org.mapstruct.ap.test.collection.erroneous;
 
 import javax.tools.Diagnostic.Kind;
 
@@ -44,11 +44,11 @@ public class ErronuousCollectionMappingTest extends MapperTestBase {
             @Diagnostic(type = ErronuousMapper.class,
                 kind = Kind.ERROR,
                 line = 28,
-                messageRegExp = ".*Can't generate mapping method from iterable type to non-iterable type\\."),
+                messageRegExp = "Can't generate mapping method from iterable type to non-iterable type\\."),
             @Diagnostic(type = ErronuousMapper.class,
                 kind = Kind.ERROR,
                 line = 30,
-                messageRegExp = ".*Can't generate mapping method from non-iterable type to iterable type\\.")
+                messageRegExp = "Can't generate mapping method from non-iterable type to iterable type\\.")
         }
     )
     public void shouldFailToGenerateMappingFromListToString() {
