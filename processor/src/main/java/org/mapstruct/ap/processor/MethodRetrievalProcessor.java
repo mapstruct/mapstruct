@@ -23,17 +23,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.processing.Messager;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.MappingPrism;
 import org.mapstruct.ap.MappingsPrism;
-import org.mapstruct.ap.model.ReportingPolicy;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
@@ -51,17 +50,17 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
  *
  * @author Gunnar Morling
  */
-public class MethodRetrievalProcessor implements ModelElementProcessor<TypeElement, List<Method>> {
+public class MethodRetrievalProcessor implements ModelElementProcessor<Void, List<Method>> {
 
-    private Types typeUtils;
     private Messager messager;
+    private Types typeUtils;
     private TypeUtil typeUtil;
     private Executables executables;
 
     @Override
-    public List<Method> process(ProcessorContext context, TypeElement mapperTypeElement, TypeElement sourceElement) {
-        this.typeUtils = context.getTypeUtils();
+    public List<Method> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
         this.messager = context.getMessager();
+        this.typeUtils = context.getTypeUtils();
         this.typeUtil = new TypeUtil( context.getElementUtils(), typeUtils );
         this.executables = new Executables( typeUtil );
 
@@ -148,8 +147,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<TypeEleme
 
     private boolean checkParameterAndReturnType(ExecutableElement method, Type parameterType, Type returnType) {
         if ( parameterType.isIterableType() && !returnType.isIterableType() ) {
-            printMessage(
-                ReportingPolicy.ERROR,
+            messager.printMessage(
+                Kind.ERROR,
                 "Can't generate mapping method from iterable type to non-iterable type.",
                 method
             );
@@ -157,8 +156,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<TypeEleme
         }
 
         if ( !parameterType.isIterableType() && returnType.isIterableType() ) {
-            printMessage(
-                ReportingPolicy.ERROR,
+            messager.printMessage(
+                Kind.ERROR,
                 "Can't generate mapping method from non-iterable type to iterable type.",
                 method
             );
@@ -166,20 +165,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<TypeEleme
         }
 
         if ( parameterType.isPrimitive() ) {
-            printMessage(
-                ReportingPolicy.ERROR,
-                "Can't generate mapping method with primitive parameter type.",
-                method
-            );
+            messager.printMessage( Kind.ERROR, "Can't generate mapping method with primitive parameter type.", method );
             return false;
         }
 
         if ( returnType.isPrimitive() ) {
-            printMessage(
-                ReportingPolicy.ERROR,
-                "Can't generate mapping method with primitive return type.",
-                method
-            );
+            messager.printMessage( Kind.ERROR, "Can't generate mapping method with primitive return type.", method );
             return false;
         }
 
@@ -209,9 +200,5 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<TypeEleme
         }
 
         return mappings;
-    }
-
-    private void printMessage(ReportingPolicy reportingPolicy, String message, Element element) {
-        messager.printMessage( reportingPolicy.getDiagnosticKind(), message, element );
     }
 }

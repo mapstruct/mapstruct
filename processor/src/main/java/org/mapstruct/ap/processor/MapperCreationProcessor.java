@@ -28,14 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.Messager;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.conversion.Conversion;
@@ -77,10 +75,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     private Conversions conversions;
     private Executables executables;
 
-    private boolean isErroneous = false;
-
     @Override
-    public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<Method> sourceElement) {
+    public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<Method> sourceModel) {
         this.elementUtils = context.getElementUtils();
         this.typeUtils = context.getTypeUtils();
         this.messager = context.getMessager();
@@ -90,14 +86,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         this.conversions = new Conversions( elementUtils, typeUtils, typeUtil );
         this.executables = new Executables( typeUtil );
 
-        return getMapper( mapperTypeElement, sourceElement );
+        return getMapper( mapperTypeElement, sourceModel );
     }
 
     @Override
     public int getPriority() {
         return 1000;
     }
-
 
     private Mapper getMapper(TypeElement element, List<Method> methods) {
         ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy( element );
@@ -110,8 +105,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             element.getSimpleName() + IMPLEMENTATION_SUFFIX,
             mappingMethods,
             mapperReferences,
-            options,
-            isErroneous
+            options
         );
     }
 
@@ -262,8 +256,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         if ( targetProperties.size() > mappedTargetProperties.size() &&
             unmappedTargetPolicy.requiresReport() ) {
             targetProperties.removeAll( mappedTargetProperties );
-            printMessage(
-                unmappedTargetPolicy,
+            messager.printMessage(
+                unmappedTargetPolicy.getDiagnosticKind(),
                 MessageFormat.format(
                     "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
                     targetProperties.size(),
@@ -287,23 +281,29 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                                                         Set<String> targetProperties) {
         for ( Mapping mappedProperty : method.getMappings().values() ) {
             if ( !sourceProperties.contains( mappedProperty.getSourceName() ) ) {
-                printMessage(
-                    ReportingPolicy.ERROR,
+                messager.printMessage(
+                    Kind.ERROR,
                     String.format(
                         "Unknown property \"%s\" in parameter type %s.",
                         mappedProperty.getSourceName(),
                         method.getSourceType()
-                    ), method.getExecutable(), mappedProperty.getMirror(), mappedProperty.getSourceAnnotationValue()
+                    ),
+                    method.getExecutable(),
+                    mappedProperty.getMirror(),
+                    mappedProperty.getSourceAnnotationValue()
                 );
             }
             if ( !targetProperties.contains( mappedProperty.getTargetName() ) ) {
-                printMessage(
-                    ReportingPolicy.ERROR,
+                messager.printMessage(
+                    Kind.ERROR,
                     String.format(
                         "Unknown property \"%s\" in return type %s.",
                         mappedProperty.getTargetName(),
                         method.getTargetType()
-                    ), method.getExecutable(), mappedProperty.getMirror(), mappedProperty.getTargetAnnotationValue()
+                    ),
+                    method.getExecutable(),
+                    mappedProperty.getMirror(),
+                    mappedProperty.getTargetAnnotationValue()
                 );
             }
         }
@@ -397,51 +397,33 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return null;
     }
 
+    /**
+     * Reports an error if source and target type of the property are different
+     * and neither a mapping method nor a conversion exists nor the property is
+     * of a collection type with default implementation
+     *
+     * @param method The mapping method owning the property mapping.
+     * @param property The property mapping to check.
+     */
     private void reportErrorIfPropertyCanNotBeMapped(Method method, PropertyMapping property) {
-        if ( property.getSourceType().equals( property.getTargetType() ) ) {
+        if ( property.getSourceType().equals( property.getTargetType() ) ||
+            property.getMappingMethod() != null ||
+            property.getConversion() != null ||
+            ( property.getTargetType().isCollectionType() &&
+                property.getTargetType().getCollectionImplementationType() != null ) ) {
             return;
         }
 
-        //no mapping method nor conversion nor collection with default implementation
-        if ( !(
-            property.getMappingMethod() != null ||
-                property.getConversion() != null ||
-                ( property.getTargetType().isCollectionType() && property.getTargetType()
-                    .getCollectionImplementationType() != null ) ) ) {
-
-            printMessage(
-                ReportingPolicy.ERROR,
-                String.format(
-                    "Can't map property \"%s %s\" to \"%s %s\".",
-                    property.getSourceType(),
-                    property.getSourceName(),
-                    property.getTargetType(),
-                    property.getTargetName()
-                ),
-                method.getExecutable()
-            );
-        }
-    }
-
-    private void printMessage(ReportingPolicy reportingPolicy, String message, Element element) {
-        messager.printMessage( reportingPolicy.getDiagnosticKind(), message, element );
-        if ( reportingPolicy.failsBuild() ) {
-            isErroneous = true;
-        }
-    }
-
-    private void printMessage(ReportingPolicy reportingPolicy, String message, Element element,
-                              AnnotationMirror annotationMirror, AnnotationValue annotationValue) {
-        messager
-            .printMessage(
-                reportingPolicy.getDiagnosticKind(),
-                message,
-                element,
-                annotationMirror,
-                annotationValue
-            );
-        if ( reportingPolicy.failsBuild() ) {
-            isErroneous = true;
-        }
+        messager.printMessage(
+            Kind.ERROR,
+            String.format(
+                "Can't map property \"%s %s\" to \"%s %s\".",
+                property.getSourceType(),
+                property.getSourceName(),
+                property.getTargetType(),
+                property.getTargetName()
+            ),
+            method.getExecutable()
+        );
     }
 }

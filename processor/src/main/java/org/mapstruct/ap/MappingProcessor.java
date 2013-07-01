@@ -129,10 +129,18 @@ public class MappingProcessor extends AbstractProcessor {
         return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
     }
 
+    /**
+     * Applies all registered {@link ModelElementProcessor}s to the given mapper
+     * type.
+     *
+     * @param context The processor context.
+     * @param mapperTypeElement The mapper type element.
+     */
     private void processMapperTypeElement(ProcessorContext context, TypeElement mapperTypeElement) {
-        Object mapper = mapperTypeElement;
+        Object model = null;
+
         for ( ModelElementProcessor<?, ?> processor : getProcessors() ) {
-            mapper = process( context, processor, mapperTypeElement, mapper );
+            model = process( context, processor, mapperTypeElement, model );
         }
     }
 

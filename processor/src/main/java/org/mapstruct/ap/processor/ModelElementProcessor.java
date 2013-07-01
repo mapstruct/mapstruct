@@ -23,6 +23,7 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.Options;
 
@@ -57,6 +58,16 @@ public interface ModelElementProcessor<P, R> {
         Messager getMessager();
 
         Options getOptions();
+
+        /**
+         * Whether the currently processed mapper type is erroneous which is the
+         * case if at least one diagnostic with {@link Kind#ERROR} is reported
+         * by any of the participating processors.
+         *
+         * @return {@code true} if the currently processed mapper type is
+         *         erroneous, {@code false} otherwise.
+         */
+        boolean isErroneous();
     }
 
     /**
@@ -66,7 +77,7 @@ public interface ModelElementProcessor<P, R> {
      * @param context Context providing common infrastructure objects.
      * @param mapperTypeElement The original type element from which the given mapper object
      * is derived.
-     * @param sourceElement The current representation of the bean mapper. Never
+     * @param sourceModel The current representation of the bean mapper. Never
      * {@code null} (the very first processor receives the original
      * type element).
      *
@@ -76,7 +87,7 @@ public interface ModelElementProcessor<P, R> {
      *         return {@code null} except for the very last processor which
      *         generates the resulting Java source file.
      */
-    R process(ProcessorContext context, TypeElement mapperTypeElement, P sourceElement);
+    R process(ProcessorContext context, TypeElement mapperTypeElement, P sourceModel);
 
     /**
      * Returns the priority value of this processor which must be between 1

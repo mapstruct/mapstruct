@@ -28,17 +28,18 @@ import org.mapstruct.ap.writer.ModelWriter;
 
 /**
  * A {@link ModelElementProcessor} which creates a Java source file representing
- * the given {@link Mapper} object.
+ * the given {@link Mapper} object, unless the given mapper type is erroneous.
  *
  * @author Gunnar Morling
  */
 public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, Void> {
 
     @Override
-    public Void process(ProcessorContext context, TypeElement mapperTypeElement, Mapper sourceElement) {
-        if ( !sourceElement.isErroneous() ) {
-            writeToSourceFile( context.getFiler(), sourceElement );
+    public Void process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
+        if ( !context.isErroneous() ) {
+            writeToSourceFile( context.getFiler(), mapper );
         }
+
         return null;
     }
 

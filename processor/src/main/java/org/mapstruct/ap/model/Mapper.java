@@ -34,11 +34,9 @@ public class Mapper extends AbstractModelElement {
     private final List<MappingMethod> mappingMethods;
     private final List<MapperReference> referencedMappers;
     private final Options options;
-    private final boolean isErroneous;
 
     public Mapper(String packageName, String interfaceName, String implementationName,
-                  List<MappingMethod> mappingMethods, List<MapperReference> referencedMappers, Options options,
-                  boolean isErroneous) {
+                  List<MappingMethod> mappingMethods, List<MapperReference> referencedMappers, Options options) {
         this.packageName = packageName;
         this.interfaceName = interfaceName;
         this.implementationName = implementationName;
@@ -46,7 +44,6 @@ public class Mapper extends AbstractModelElement {
         this.mappingMethods = mappingMethods;
         this.referencedMappers = referencedMappers;
         this.options = options;
-        this.isErroneous = isErroneous;
     }
 
     @Override
@@ -130,10 +127,6 @@ public class Mapper extends AbstractModelElement {
 
     public Options getOptions() {
         return options;
-    }
-
-    public boolean isErroneous() {
-        return isErroneous;
     }
 
     public void addAnnotation(Annotation annotation) {

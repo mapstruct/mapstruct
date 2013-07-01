@@ -21,8 +21,12 @@ package org.mapstruct.ap.processor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.Options;
 
@@ -33,11 +37,13 @@ import org.mapstruct.ap.model.Options;
  */
 public class DefaultModelElementProcessorContext implements ModelElementProcessor.ProcessorContext {
 
-    private ProcessingEnvironment processingEnvironment;
-    private Options options;
+    private final ProcessingEnvironment processingEnvironment;
+    private final DelegatingMessager messager;
+    private final Options options;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options) {
         this.processingEnvironment = processingEnvironment;
+        this.messager = new DelegatingMessager( processingEnvironment.getMessager() );
         this.options = options;
     }
 
@@ -58,11 +64,58 @@ public class DefaultModelElementProcessorContext implements ModelElementProcesso
 
     @Override
     public Messager getMessager() {
-        return processingEnvironment.getMessager();
+        return messager;
     }
 
     @Override
     public Options getOptions() {
         return options;
+    }
+
+    @Override
+    public boolean isErroneous() {
+        return messager.isErroneous();
+    }
+
+    private static class DelegatingMessager implements Messager {
+
+        private final Messager delegate;
+        private boolean isErroneous = false;
+
+        public DelegatingMessager(Messager delegate) {
+            this.delegate = delegate;
+        }
+
+        public void printMessage(Kind kind, CharSequence msg) {
+            delegate.printMessage( kind, msg );
+            if ( kind == Kind.ERROR ) {
+                isErroneous = true;
+            }
+        }
+
+        public void printMessage(Kind kind, CharSequence msg, Element e) {
+            delegate.printMessage( kind, msg, e );
+            if ( kind == Kind.ERROR ) {
+                isErroneous = true;
+            }
+        }
+
+        public void printMessage(Kind kind, CharSequence msg, Element e, AnnotationMirror a) {
+            delegate.printMessage( kind, msg, e, a );
+            if ( kind == Kind.ERROR ) {
+                isErroneous = true;
+            }
+        }
+
+        public void printMessage(Kind kind, CharSequence msg, Element e, AnnotationMirror a, AnnotationValue v) {
+            delegate.printMessage( kind, msg, e, a, v );
+            if ( kind == Kind.ERROR ) {
+                isErroneous = true;
+            }
+        }
+
+        public boolean isErroneous() {
+            return isErroneous;
+        }
     }
 }

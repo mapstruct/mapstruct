@@ -150,7 +150,7 @@ public abstract class MapperTestBase {
         while ( actualIterator.hasNext() ) {
             assertThat( expectedIterator.hasNext() ).describedAs(
                 String.format(
-                    "Found less diagnostics than expected. Actual: %s; Expected: %s.",
+                    "Found more diagnostics than expected. Actual: %s; Expected: %s.",
                     actualDiagnostics,
                     expectedDiagnostics
                 )
@@ -174,7 +174,7 @@ public abstract class MapperTestBase {
 
         assertThat( expectedIterator.hasNext() ).describedAs(
             String.format(
-                "Found more diagnostics than expected. Actual: %s; Expected: %s.",
+                "Found less diagnostics than expected. Actual: %s; Expected: %s.",
                 actualDiagnostics,
                 expectedDiagnostics
             )
