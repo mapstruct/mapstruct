@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import javax.lang.model.type.DeclaredType;
@@ -47,6 +48,7 @@ public class Conversions {
         this.enumType = typeUtils.getDeclaredType( elementUtils.getTypeElement( Enum.class.getCanonicalName() ) );
         this.stringType = typeUtils.getDeclaredType( elementUtils.getTypeElement( String.class.getCanonicalName() ) );
 
+        //native types <> native types, including wrappers
         registerNativeTypeConversion( byte.class, Byte.class );
         registerNativeTypeConversion( byte.class, short.class );
         registerNativeTypeConversion( byte.class, Short.class );
@@ -127,6 +129,21 @@ public class Conversions {
         registerNativeTypeConversion( boolean.class, Boolean.class );
         registerNativeTypeConversion( char.class, Character.class );
 
+        //BigInteger <> native types
+        registerBigIntegerConversion( byte.class );
+        registerBigIntegerConversion( Byte.class );
+        registerBigIntegerConversion( short.class );
+        registerBigIntegerConversion( Short.class );
+        registerBigIntegerConversion( int.class );
+        registerBigIntegerConversion( Integer.class );
+        registerBigIntegerConversion( long.class );
+        registerBigIntegerConversion( Long.class );
+        registerBigIntegerConversion( float.class );
+        registerBigIntegerConversion( Float.class );
+        registerBigIntegerConversion( double.class );
+        registerBigIntegerConversion( Double.class );
+
+        //native types <> String
         registerToStringConversion( byte.class );
         registerToStringConversion( Byte.class );
         registerToStringConversion( short.class );
@@ -143,7 +160,9 @@ public class Conversions {
         registerToStringConversion( Boolean.class );
         register( char.class, String.class, new CharToStringConversion() );
         register( Character.class, String.class, new CharWrapperToStringConversion() );
+        register( BigInteger.class, String.class, new BigIntegerToStringConversion() );
 
+        //misc.
         register( Enum.class, String.class, new EnumStringConversion() );
     }
 
@@ -168,6 +187,15 @@ public class Conversions {
         }
         else {
             register( sourceType, String.class, new WrapperToStringConversion( sourceType ) );
+        }
+    }
+
+    private void registerBigIntegerConversion(Class<?> targetType) {
+        if ( targetType.isPrimitive() ) {
+            register( BigInteger.class, targetType, new BigIntegerToPrimitiveConversion( targetType ) );
+        }
+        else {
+            register( BigInteger.class, targetType, new BigIntegerToWrapperConversion( targetType ) );
         }
     }
 
