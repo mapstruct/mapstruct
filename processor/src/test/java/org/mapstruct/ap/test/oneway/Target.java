@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.oneway;
 public class Target {
 
     private Long foo;
+    private int bar = 23;
 
     public void setFoo(Long foo) {
         this.foo = foo;
@@ -28,5 +29,9 @@ public class Target {
 
     public Long retrieveFoo() {
         return foo;
+    }
+
+    public int getBar() {
+        return bar;
     }
 }

@@ -27,4 +27,6 @@ public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     Target sourceToTarget(Source source);
+
+    Source targetToSource(Target target);
 }

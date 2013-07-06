@@ -21,8 +21,17 @@ package org.mapstruct.ap.test.oneway;
 public class Source {
 
     private int foo = 42;
+    private int bar;
 
     public int getFoo() {
         return foo;
+    }
+
+    public void setBar(int bar) {
+        this.bar = bar;
+    }
+
+    public int retrieveBar() {
+        return bar;
     }
 }

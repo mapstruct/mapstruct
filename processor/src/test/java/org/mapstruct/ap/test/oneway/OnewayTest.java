@@ -44,4 +44,15 @@ public class OnewayTest extends MapperTestBase {
         assertThat( target ).isNotNull();
         assertThat( target.retrieveFoo() ).isEqualTo( Long.valueOf( 42 ) );
     }
+
+    @Test
+    @IssueKey("41")
+    public void shouldReverseMapAttributeWithoutSetterInTargetType() {
+        Target target = new Target();
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.retrieveBar() ).isEqualTo( 23 );
+    }
 }
