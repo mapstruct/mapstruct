@@ -336,6 +336,7 @@
                         <exclude>copyright.txt</exclude>
                         <exclude>**/license.txt</exclude>
                         <exclude>**/mapstruct.xml</exclude>
+                        <exclude>maven-settings.xml</exclude>
                     </excludes>
                 </configuration>
                 <executions>
