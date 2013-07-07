@@ -18,11 +18,15 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.util.NativeTypes;
 import org.mapstruct.ap.util.Strings;
 
-public class WrapperToStringConversion implements Conversion {
+/**
+ * Conversion between wrapper types such as {@link Integer} and {@link String}.
+ *
+ * @author Gunnar Morling
+ */
+public class WrapperToStringConversion extends SimpleConversion {
 
     private final Class<?> sourceType;
     private final Class<?> primitiveType;
@@ -37,13 +41,13 @@ public class WrapperToStringConversion implements Conversion {
     }
 
     @Override
-    public String to(String sourcePropertyAccessor, Type type) {
-        return "String.valueOf( " + sourcePropertyAccessor + " )";
+    public String getToConversionString(String sourceReference, Context conversionContext) {
+        return "String.valueOf( " + sourceReference + " )";
     }
 
     @Override
-    public String from(String targetPropertyAccessor, Type type) {
+    public String getFromConversionString(String targetReference, Context conversionContext) {
         return sourceType.getSimpleName() + ".parse" + Strings.capitalize( primitiveType.getSimpleName() ) + "( " +
-            targetPropertyAccessor + " )";
+            targetReference + " )";
     }
 }

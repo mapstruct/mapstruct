@@ -16,13 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.test.conversion.date;
 
-import org.mapstruct.ap.model.Type;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mappers;
+import org.mapstruct.Mapping;
 
-public interface Conversion {
+@Mapper
+public interface SourceTargetMapper {
 
-    String to(String sourcePropertyAccessor, Type type);
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    String from(String targetPropertyAccessor, Type type);
+    @Mapping(source = "date", dateFormat = "dd.MM.yyyy")
+    Target sourceToTarget(Source source);
+
+    Source targetToSource(Target target);
 }

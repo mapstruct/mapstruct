@@ -18,11 +18,16 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.util.NativeTypes;
 import org.mapstruct.ap.util.Strings;
 
-public class PrimitiveToStringConversion implements Conversion {
+/**
+ * Conversion between primitive types such as {@code byte} or {@code long} and
+ * {@link String}.
+ *
+ * @author Gunnar Morling
+ */
+public class PrimitiveToStringConversion extends SimpleConversion {
 
     private final Class<?> sourceType;
     private final Class<?> wrapperType;
@@ -37,13 +42,13 @@ public class PrimitiveToStringConversion implements Conversion {
     }
 
     @Override
-    public String to(String sourcePropertyAccessor, Type type) {
-        return "String.valueOf( " + sourcePropertyAccessor + " )";
+    public String getToConversionString(String sourceReference, Context conversionContext) {
+        return "String.valueOf( " + sourceReference + " )";
     }
 
     @Override
-    public String from(String targetPropertyAccessor, Type type) {
+    public String getFromConversionString(String targetReference, Context conversionContext) {
         return wrapperType.getSimpleName() + ".parse" + Strings.capitalize( sourceType.getSimpleName() ) + "( " +
-            targetPropertyAccessor + " )";
+            targetReference + " )";
     }
 }

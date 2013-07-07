@@ -18,6 +18,9 @@
  */
 package org.mapstruct;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Configures the mapping of one bean attribute.
  *
@@ -33,9 +36,18 @@ public @interface Mapping {
     String source();
 
     /**
-     * The target name of the configured property as defined by the JavaBeans specification.
+     * The target name of the configured property as defined by the JavaBeans specification. Defaults to the
+     * source name if not given.
      *
      * @return The target name of the configured property.
      */
-    String target();
+    String target() default "";
+
+    /**
+     * A format string as processable by {@link SimpleDateFormat} if the attribute is mapped from {@code String} to
+     * {@link Date} or vice-versa. Will be ignored for all other attribute types.
+     *
+     * @return A date format string as processable by {@link SimpleDateFormat}.
+     */
+    String dateFormat() default "";
 }

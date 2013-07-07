@@ -18,9 +18,8 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.HashSet;
 import java.util.Set;
-
-import org.mapstruct.ap.util.Collections;
 
 /**
  * Represents the mapping between a source and target property, e.g. from
@@ -44,11 +43,11 @@ public class PropertyMapping extends AbstractModelElement {
     private final Type targetType;
 
     private final MappingMethodReference mappingMethod;
-    private final String conversion;
+    private final TypeConversion conversion;
 
     public PropertyMapping(String sourceBeanName, String targetBeanName, String sourceName, String sourceAccessorName,
                            Type sourceType, String targetName, String targetAccessorName, Type targetType,
-                           MappingMethodReference mappingMethod, String conversion) {
+                           MappingMethodReference mappingMethod, TypeConversion conversion) {
         this.sourceBeanName = sourceBeanName;
         this.targetBeanName = targetBeanName;
 
@@ -100,13 +99,20 @@ public class PropertyMapping extends AbstractModelElement {
         return mappingMethod;
     }
 
-    public String getConversion() {
+    public TypeConversion getConversion() {
         return conversion;
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        return Collections.asSet( sourceType, targetType );
+        Set<Type> importTypes = new HashSet<Type>();
+        importTypes.add( sourceType );
+        importTypes.add( targetType );
+        if ( conversion != null ) {
+            importTypes.addAll( conversion.getImportTypes() );
+        }
+
+        return importTypes;
     }
 
     @Override

@@ -16,22 +16,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.test.conversion.date;
 
-/**
- * Conversion between {@link String} and {@link Enum} types.
- *
- * @author Gunnar Morling
- */
-public class EnumStringConversion extends SimpleConversion {
+import java.util.Date;
 
-    @Override
-    public String getToConversionString(String sourceReference, Context conversionContext) {
-        return sourceReference + ".toString()";
+public class Source {
+
+    private Date date;
+    private Date anotherDate;
+
+    public Date getDate() {
+        return date;
     }
 
-    @Override
-    public String getFromConversionString(String targetReference, Context conversionContext) {
-        return "Enum.valueOf( " + conversionContext.getTargetType().getName() + ".class, " + targetReference + " )";
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Date getAnotherDate() {
+        return anotherDate;
+    }
+
+    public void setAnotherDate(Date anotherDate) {
+        this.anotherDate = anotherDate;
     }
 }

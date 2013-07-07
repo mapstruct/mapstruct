@@ -19,6 +19,7 @@
 package org.mapstruct.ap.conversion;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.lang.model.type.DeclaredType;
@@ -31,14 +32,14 @@ import org.mapstruct.ap.util.TypeUtil;
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 
 /**
- * Holds built-in {@link Conversion}s such as from {@code int} to {@code String}.
+ * Holds built-in {@link ConversionProvider}s such as from {@code int} to {@code String}.
  *
  * @author Gunnar Morling
  */
 public class Conversions {
 
     private TypeUtil typeUtil;
-    private final Map<Key, Conversion> conversions = new HashMap<Conversions.Key, Conversion>();
+    private final Map<Key, ConversionProvider> conversions = new HashMap<Conversions.Key, ConversionProvider>();
     private final DeclaredType enumType;
     private final DeclaredType stringType;
 
@@ -164,6 +165,7 @@ public class Conversions {
 
         //misc.
         register( Enum.class, String.class, new EnumStringConversion() );
+        register( Date.class, String.class, new DateToStringConversion() );
     }
 
     private void registerNativeTypeConversion(Class<?> sourceType, Class<?> targetType) {
@@ -199,12 +201,12 @@ public class Conversions {
         }
     }
 
-    private void register(Class<?> sourceType, Class<?> targetType, Conversion conversion) {
+    private void register(Class<?> sourceType, Class<?> targetType, ConversionProvider conversion) {
         conversions.put( Key.forClasses( sourceType, targetType ), conversion );
         conversions.put( Key.forClasses( targetType, sourceType ), reverse( conversion ) );
     }
 
-    public Conversion getConversion(Type sourceType, Type targetType) {
+    public ConversionProvider getConversion(Type sourceType, Type targetType) {
         if ( sourceType.isEnumType() && targetType.equals( typeUtil.getType( stringType ) ) ) {
             sourceType = typeUtil.getType( enumType );
         }

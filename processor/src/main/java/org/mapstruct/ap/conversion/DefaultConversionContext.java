@@ -18,20 +18,31 @@
  */
 package org.mapstruct.ap.conversion;
 
+import org.mapstruct.ap.conversion.ConversionProvider.Context;
+import org.mapstruct.ap.model.Type;
+
 /**
- * Conversion between {@link String} and {@link Enum} types.
+ * Default implementation of the {@link Context} passed to conversion providers.
  *
  * @author Gunnar Morling
  */
-public class EnumStringConversion extends SimpleConversion {
+public class DefaultConversionContext implements ConversionProvider.Context {
 
-    @Override
-    public String getToConversionString(String sourceReference, Context conversionContext) {
-        return sourceReference + ".toString()";
+    private final Type targetType;
+    private final String format;
+
+    public DefaultConversionContext(Type targetType, String format) {
+        this.targetType = targetType;
+        this.format = format;
     }
 
     @Override
-    public String getFromConversionString(String targetReference, Context conversionContext) {
-        return "Enum.valueOf( " + conversionContext.getTargetType().getName() + ".class, " + targetReference + " )";
+    public Type getTargetType() {
+        return targetType;
+    }
+
+    @Override
+    public String getDateFormat() {
+        return format;
     }
 }

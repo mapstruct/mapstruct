@@ -18,10 +18,14 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.util.NativeTypes;
 
-public class WrapperToWrapperConversion implements Conversion {
+/**
+ * Conversion between wrapper types such as {@link Integer} or {@link Long}.
+ *
+ * @author Gunnar Morling
+ */
+public class WrapperToWrapperConversion extends SimpleConversion {
 
     private final Class<?> sourceType;
     private final Class<?> targetType;
@@ -39,22 +43,22 @@ public class WrapperToWrapperConversion implements Conversion {
     }
 
     @Override
-    public String to(String sourcePropertyAccessor, Type type) {
+    public String getToConversionString(String sourceReference, Context conversionContext) {
         if ( sourceType == targetType ) {
-            return sourcePropertyAccessor;
+            return sourceReference;
         }
         else {
-            return sourcePropertyAccessor + "." + targetType.getName() + "Value()";
+            return sourceReference + "." + targetType.getName() + "Value()";
         }
     }
 
     @Override
-    public String from(String targetPropertyAccessor, Type type) {
+    public String getFromConversionString(String targetReference, Context conversionContext) {
         if ( sourceType == targetType ) {
-            return targetPropertyAccessor;
+            return targetReference;
         }
         else {
-            return targetPropertyAccessor + "." + sourceType.getName() + "Value()";
+            return targetReference + "." + sourceType.getName() + "Value()";
         }
     }
 }

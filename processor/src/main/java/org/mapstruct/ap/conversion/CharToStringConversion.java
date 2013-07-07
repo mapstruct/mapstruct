@@ -18,17 +18,20 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.Type;
-
-public class CharToStringConversion implements Conversion {
+/**
+ * Conversion between {@code char} and {@link String}.
+ *
+ * @author Gunnar Morling
+ */
+public class CharToStringConversion extends SimpleConversion {
 
     @Override
-    public String to(String sourcePropertyAccessor, Type type) {
-        return "String.valueOf( " + sourcePropertyAccessor + " )";
+    public String getToConversionString(String sourceReference, Context conversionContext) {
+        return "String.valueOf( " + sourceReference + " )";
     }
 
     @Override
-    public String from(String targetPropertyAccessor, Type type) {
-        return targetPropertyAccessor + ".charAt( 0 )";
+    public String getFromConversionString(String targetReference, Context conversionContext) {
+        return targetReference + ".charAt( 0 )";
     }
 }

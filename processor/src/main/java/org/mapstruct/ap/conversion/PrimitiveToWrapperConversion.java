@@ -18,10 +18,15 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.util.NativeTypes;
 
-public class PrimitiveToWrapperConversion implements Conversion {
+/**
+ * Conversion between primitive types such as {@code byte} and wrapper types
+ * such as {@link Integer}.
+ *
+ * @author Gunnar Morling
+ */
+public class PrimitiveToWrapperConversion extends SimpleConversion {
 
     private final Class<?> sourceType;
     private final Class<?> targetType;
@@ -39,17 +44,17 @@ public class PrimitiveToWrapperConversion implements Conversion {
     }
 
     @Override
-    public String to(String sourcePropertyAccessor, Type type) {
+    public String getToConversionString(String sourceReference, Context conversionContext) {
         if ( sourceType == targetType ) {
-            return sourcePropertyAccessor;
+            return sourceReference;
         }
         else {
-            return "(" + targetType.getName() + ") " + sourcePropertyAccessor;
+            return "(" + targetType.getName() + ") " + sourceReference;
         }
     }
 
     @Override
-    public String from(String targetPropertyAccessor, Type type) {
-        return targetPropertyAccessor + "." + sourceType.getName() + "Value()";
+    public String getFromConversionString(String targetReference, Context conversionContext) {
+        return targetReference + "." + sourceType.getName() + "Value()";
     }
 }

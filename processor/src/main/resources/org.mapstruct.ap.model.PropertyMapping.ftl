@@ -25,10 +25,32 @@
         <#elseif conversion??>
             <#if sourceType.primitive == false>
         if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-            ${targetBeanName}.${targetAccessorName}( ${conversion} );
+            <#if (conversion.exceptionTypes?size == 0) >
+            ${targetBeanName}.${targetAccessorName}( <@includeModel object=conversion/> );
+            <#else>
+            try {
+                ${targetBeanName}.${targetAccessorName}( <@includeModel object=conversion/> );
+            }
+                <#list conversion.exceptionTypes as exceptionType>
+            catch( ${exceptionType.name} e ) {
+                throw new RuntimeException( e );
+            }
+                </#list>
+            </#if>
         }
             <#else>
-        ${targetBeanName}.${targetAccessorName}( ${conversion} );
+                <#if (conversion.exceptionTypes?size == 0) >
+        ${targetBeanName}.${targetAccessorName}( <@includeModel object=conversion/> );
+                <#else>
+        try {
+            ${targetBeanName}.${targetAccessorName}( <@includeModel object=conversion/> );
+        }
+                    <#list conversion.exceptionTypes as exceptionType>
+        catch( ${exceptionType.name} e ) {
+            throw new RuntimeException( e );
+        }
+                    </#list>
+                </#if>
             </#if>
         <#-- c) simply set -->
         <#else>

@@ -18,27 +18,33 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.model.TypeConversion;
 
-public class ReverseConversion implements Conversion {
+/**
+ * A {@link ConversionProvider} which creates the reversed conversions for a
+ * given conversion provider.
+ *
+ * @author Gunnar Morling
+ */
+public class ReverseConversion implements ConversionProvider {
 
-    private Conversion conversion;
+    private ConversionProvider conversionProvider;
 
-    public static ReverseConversion reverse(Conversion conversion) {
-        return new ReverseConversion( conversion );
+    public static ReverseConversion reverse(ConversionProvider conversionProvider) {
+        return new ReverseConversion( conversionProvider );
     }
 
-    private ReverseConversion(Conversion conversion) {
-        this.conversion = conversion;
+    private ReverseConversion(ConversionProvider conversionProvider) {
+        this.conversionProvider = conversionProvider;
     }
 
     @Override
-    public String to(String sourcePropertyAccessor, Type type) {
-        return conversion.from( sourcePropertyAccessor, type );
+    public TypeConversion to(String sourceReference, Context conversionContext) {
+        return conversionProvider.from( sourceReference, conversionContext );
     }
 
     @Override
-    public String from(String targetPropertyAccessor, Type type) {
-        return conversion.to( targetPropertyAccessor, type );
+    public TypeConversion from(String targetReference, Context conversionContext) {
+        return conversionProvider.to( targetReference, conversionContext );
     }
 }

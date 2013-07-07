@@ -35,6 +35,7 @@ public class Mapping {
 
     private final String sourceName;
     private final String targetName;
+    private final String dateFormat;
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
@@ -53,17 +54,18 @@ public class Mapping {
         return new Mapping(
             mapping.source(),
             mapping.target(),
+            mapping.dateFormat(),
             mapping.mirror,
             mapping.values.source(),
             mapping.values.target()
         );
     }
 
-    private Mapping(String sourceName, String targetName, AnnotationMirror mirror,
-                    AnnotationValue sourceAnnotationValue,
-                    AnnotationValue targetAnnotationValue) {
+    private Mapping(String sourceName, String targetName, String dateFormat, AnnotationMirror mirror,
+                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
-        this.targetName = targetName;
+        this.targetName = targetName.equals( "" ) ? sourceName : targetName;
+        this.dateFormat = dateFormat;
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
@@ -75,6 +77,10 @@ public class Mapping {
 
     public String getTargetName() {
         return targetName;
+    }
+
+    public String getDateFormat() {
+        return dateFormat;
     }
 
     public AnnotationMirror getMirror() {
@@ -90,7 +96,7 @@ public class Mapping {
     }
 
     public Mapping reverse() {
-        return new Mapping( targetName, sourceName, mirror, sourceAnnotationValue, targetAnnotationValue );
+        return new Mapping( targetName, sourceName, dateFormat, mirror, sourceAnnotationValue, targetAnnotationValue );
     }
 
     @Override

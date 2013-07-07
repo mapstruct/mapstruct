@@ -20,7 +20,6 @@ package org.mapstruct.ap.conversion;
 
 import java.math.BigInteger;
 
-import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.util.NativeTypes;
 
 /**
@@ -28,7 +27,7 @@ import org.mapstruct.ap.util.NativeTypes;
  *
  * @author Gunnar Morling
  */
-public class BigIntegerToWrapperConversion implements Conversion {
+public class BigIntegerToWrapperConversion extends SimpleConversion {
 
     private final Class<?> targetType;
 
@@ -41,15 +40,15 @@ public class BigIntegerToWrapperConversion implements Conversion {
     }
 
     @Override
-    public String to(String sourcePropertyAccessor, Type type) {
-        return sourcePropertyAccessor + "." + targetType.getName() + "Value()";
+    public String getToConversionString(String sourceReference, Context conversionContext) {
+        return sourceReference + "." + targetType.getName() + "Value()";
     }
 
     @Override
-    public String from(String targetPropertyAccessor, Type type) {
+    public String getFromConversionString(String targetReference, Context conversionContext) {
         StringBuilder conversion = new StringBuilder( "BigInteger.valueOf( " );
 
-        conversion.append( targetPropertyAccessor );
+        conversion.append( targetReference );
 
         if ( targetType == float.class || targetType == double.class ) {
             conversion.append( ".longValue()" );

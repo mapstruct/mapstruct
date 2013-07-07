@@ -20,14 +20,12 @@ package org.mapstruct.ap.conversion;
 
 import java.math.BigInteger;
 
-import org.mapstruct.ap.model.Type;
-
 /**
  * Conversion between {@link BigInteger} and native number types.
  *
  * @author Gunnar Morling
  */
-public class BigIntegerToPrimitiveConversion implements Conversion {
+public class BigIntegerToPrimitiveConversion extends SimpleConversion {
 
     private final Class<?> targetType;
 
@@ -40,19 +38,19 @@ public class BigIntegerToPrimitiveConversion implements Conversion {
     }
 
     @Override
-    public String to(String sourcePropertyAccessor, Type type) {
-        return sourcePropertyAccessor + "." + targetType.getName() + "Value()";
+    public String getToConversionString(String sourceReference, Context conversionContext) {
+        return sourceReference + "." + targetType.getName() + "Value()";
     }
 
     @Override
-    public String from(String targetPropertyAccessor, Type type) {
+    public String getFromConversionString(String targetReference, Context conversionContext) {
         StringBuilder conversion = new StringBuilder( "BigInteger.valueOf( " );
 
         if ( targetType == float.class || targetType == double.class ) {
             conversion.append( "(long) " );
         }
 
-        conversion.append( targetPropertyAccessor ).append( " )" );
+        conversion.append( targetReference ).append( " )" );
 
         return conversion.toString();
     }

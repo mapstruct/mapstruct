@@ -36,8 +36,9 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.MapperPrism;
-import org.mapstruct.ap.conversion.Conversion;
+import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
+import org.mapstruct.ap.conversion.DefaultConversionContext;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.DefaultMapperReference;
 import org.mapstruct.ap.model.IterableMappingMethod;
@@ -213,6 +214,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         for ( ExecutableElement getterMethod : sourceGetters ) {
             String sourcePropertyName = executables.getPropertyName( getterMethod );
             Mapping mapping = mappings.get( sourcePropertyName );
+            String dateFormat = mapping != null ? mapping.getDateFormat() : null;
 
             for ( ExecutableElement setterMethod : targetSetters ) {
                 String targetPropertyName = executables.getPropertyName( setterMethod );
@@ -222,7 +224,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                         methods,
                         method,
                         getterMethod,
-                        setterMethod
+                        setterMethod,
+                        dateFormat
                     );
 
                     propertyMappings.add( property );
@@ -310,12 +313,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private PropertyMapping getPropertyMapping(List<Method> methods, Method method, ExecutableElement getterMethod,
-                                               ExecutableElement setterMethod) {
+                                               ExecutableElement setterMethod, String dateFormat) {
         Type sourceType = executables.retrieveReturnType( getterMethod );
         Type targetType = executables.retrieveParameter( setterMethod ).getType();
 
         MappingMethodReference propertyMappingMethod = getMappingMethodReference( methods, sourceType, targetType );
-        Conversion conversion = conversions.getConversion(
+        ConversionProvider conversionProvider = conversions.getConversion(
             sourceType,
             targetType
         );
@@ -330,9 +333,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             setterMethod.getSimpleName().toString(),
             targetType,
             propertyMappingMethod,
-            conversion != null ? conversion.to(
+            conversionProvider != null ? conversionProvider.to(
                 method.getParameterName() + "." + getterMethod.getSimpleName().toString() + "()",
-                targetType
+                new DefaultConversionContext( targetType, dateFormat )
             ) : null
         );
 
@@ -368,7 +371,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private String getIterableConversionString(Conversions conversions, Type sourceElementType, Type targetElementType,
                                                boolean isToConversion) {
-        Conversion conversion = conversions.getConversion( sourceElementType, targetElementType );
+        ConversionProvider conversion = conversions.getConversion( sourceElementType, targetElementType );
 
         if ( conversion == null ) {
             return null;
@@ -376,8 +379,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
         return conversion.to(
             Introspector.decapitalize( sourceElementType.getName() ),
-            targetElementType
-        );
+            new DefaultConversionContext( targetElementType, null )
+        ).getConversionString();
     }
 
     private MappingMethodReference getMappingMethodReference(Iterable<Method> methods, Type parameterType,

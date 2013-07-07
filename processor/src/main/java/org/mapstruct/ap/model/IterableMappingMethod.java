@@ -18,12 +18,10 @@
  */
 package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.conversion.Conversion;
-
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one
  * iterable type to another. The collection elements are mapped either by a
- * {@link Conversion} or another mapping method.
+ * {@link TypeConversion} or another mapping method.
  *
  * @author Gunnar Morling
  */

@@ -20,22 +20,20 @@ package org.mapstruct.ap.conversion;
 
 import java.math.BigInteger;
 
-import org.mapstruct.ap.model.Type;
-
 /**
  * Conversion between {@link BigInteger} and {@link String}.
  *
  * @author Gunnar Morling
  */
-public class BigIntegerToStringConversion implements Conversion {
+public class BigIntegerToStringConversion extends SimpleConversion {
 
     @Override
-    public String to(String sourcePropertyAccessor, Type type) {
-        return sourcePropertyAccessor + ".toString()";
+    public String getToConversionString(String sourceReference, Context conversionContext) {
+        return sourceReference + ".toString()";
     }
 
     @Override
-    public String from(String targetPropertyAccessor, Type type) {
-        return "new BigInteger( " + targetPropertyAccessor + " )";
+    public String getFromConversionString(String targetReference, Context conversionContext) {
+        return "new BigInteger( " + targetReference + " )";
     }
 }
