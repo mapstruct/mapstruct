@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.tools.JavaFileObject;
 
+import freemarker.log.Logger;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import org.mapstruct.ap.model.ModelElement;
@@ -43,6 +44,13 @@ public class ModelWriter {
     private static final Configuration CONFIGURATION;
 
     static {
+        try {
+            Logger.selectLoggerLibrary( Logger.LIBRARY_NONE );
+        }
+        catch ( ClassNotFoundException e ) {
+            throw new RuntimeException( e );
+        }
+
         CONFIGURATION = new Configuration();
         CONFIGURATION.setClassForTemplateLoading( ModelWriter.class, "/" );
         CONFIGURATION.setObjectWrapper( new DefaultObjectWrapper() );
