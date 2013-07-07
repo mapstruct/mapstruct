@@ -16,28 +16,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.conversion.date;
+package org.mapstruct;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
-import org.mapstruct.Mapping;
+/**
+ * Configures the mapping between two iterable types, e.g. {@code List<String>} and {@code List<Date>}.
+ *
+ * @author Gunnar Morling
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.SOURCE)
+public @interface IterableMapping {
 
-@Mapper
-public interface SourceTargetMapper {
-
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    @Mapping(source = "date", dateFormat = "dd.MM.yyyy")
-    Target sourceToTarget(Source source);
-
-    Source targetToSource(Target target);
-
-    @IterableMapping(dateFormat = "dd.MM.yyyy")
-    List<String> stringListToDateList(List<Date> dates);
-
-    List<Date> dateListToStringList(List<String> strings);
+    /**
+     * A format string as processable by {@link SimpleDateFormat} if the annotated method maps from an iterable of
+     * {@code String} to an iterable {@link Date} or vice-versa. Will be ignored for all other element types.
+     *
+     * @return A date format string as processable by {@link SimpleDateFormat}.
+     */
+    String dateFormat();
 }

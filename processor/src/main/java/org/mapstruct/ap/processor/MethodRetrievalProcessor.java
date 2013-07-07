@@ -30,10 +30,12 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
+import org.mapstruct.ap.IterableMappingPrism;
 import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.MappingPrism;
 import org.mapstruct.ap.MappingsPrism;
 import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.Parameter;
@@ -125,7 +127,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                         parameter.getName(),
                         parameter.getType(),
                         returnType,
-                        getMappings( method )
+                        getMappings( method ),
+                        getIterableMapping( method )
                     );
             }
             else {
@@ -201,4 +204,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         return mappings;
     }
+
+    private IterableMapping getIterableMapping(ExecutableElement method) {
+        IterableMappingPrism iterableMappingAnnotation = IterableMappingPrism.getInstanceOn( method );
+        return iterableMappingAnnotation != null ?
+            IterableMapping.fromIterableMappingPrism( iterableMappingAnnotation ) : null;
+    }
+
 }

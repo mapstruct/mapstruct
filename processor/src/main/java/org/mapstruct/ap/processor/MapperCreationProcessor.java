@@ -50,6 +50,8 @@ import org.mapstruct.ap.model.Options;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.ReportingPolicy;
 import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Executables;
@@ -154,17 +156,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 continue;
             }
 
-            if ( method.getMappings().isEmpty() ) {
-                Method reverseMappingMethod = getReverseMappingMethod( methods, method );
-                if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
-                    method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
-                }
-            }
+            Method reverseMappingMethod = getReverseMappingMethod( methods, method );
 
             if ( method.isIterableMapping() ) {
+                if ( method.getIterableMapping() == null && reverseMappingMethod != null &&
+                    reverseMappingMethod.getIterableMapping() != null ) {
+                    method.setIterableMapping( reverseMappingMethod.getIterableMapping() );
+                }
                 mappingMethods.add( getIterableMappingMethod( methods, method ) );
             }
             else {
+                if ( method.getMappings().isEmpty() ) {
+                    if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
+                        method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
+                    }
+                }
                 mappingMethods.add( getBeanMappingMethod( methods, method, unmappedTargetPolicy ) );
             }
         }
@@ -348,11 +354,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private MappingMethod getIterableMappingMethod(List<Method> methods, Method method) {
-        String toConversionString = getIterableConversionString(
+        TypeConversion conversion = getIterableConversion(
             conversions,
             method.getSourceType().getElementType(),
             method.getTargetType().getElementType(),
-            true
+            method.getIterableMapping()
         );
 
         return new IterableMappingMethod(
@@ -365,22 +371,25 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 method.getSourceType().getElementType(),
                 method.getTargetType().getElementType()
             ),
-            toConversionString
+            conversion
         );
     }
 
-    private String getIterableConversionString(Conversions conversions, Type sourceElementType, Type targetElementType,
-                                               boolean isToConversion) {
-        ConversionProvider conversion = conversions.getConversion( sourceElementType, targetElementType );
+    private TypeConversion getIterableConversion(Conversions conversions, Type sourceElementType,
+                                                 Type targetElementType, IterableMapping iterableMapping) {
+        ConversionProvider conversionProvider = conversions.getConversion( sourceElementType, targetElementType );
 
-        if ( conversion == null ) {
+        if ( conversionProvider == null ) {
             return null;
         }
 
-        return conversion.to(
+        return conversionProvider.to(
             Introspector.decapitalize( sourceElementType.getName() ),
-            new DefaultConversionContext( targetElementType, null )
-        ).getConversionString();
+            new DefaultConversionContext(
+                targetElementType,
+                iterableMapping != null ? iterableMapping.getDateFormat() : null
+            )
+        );
     }
 
     private MappingMethodReference getMappingMethodReference(Iterable<Method> methods, Type parameterType,

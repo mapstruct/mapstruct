@@ -38,10 +38,12 @@ public class Method {
     private final Type sourceType;
     private final Type targetType;
     private Map<String, Mapping> mappings;
+    private IterableMapping iterableMapping;
 
     public static Method forMethodRequiringImplementation(ExecutableElement executable, String parameterName,
                                                           Type sourceType, Type targetType,
-                                                          Map<String, Mapping> mappings) {
+                                                          Map<String, Mapping> mappings,
+                                                          IterableMapping iterableMapping) {
 
         return new Method(
             null,
@@ -49,7 +51,8 @@ public class Method {
             parameterName,
             sourceType,
             targetType,
-            mappings
+            mappings,
+            iterableMapping
         );
     }
 
@@ -62,18 +65,20 @@ public class Method {
             parameterName,
             sourceType,
             targetType,
-            Collections.<String, Mapping>emptyMap()
+            Collections.<String, Mapping>emptyMap(),
+            null
         );
     }
 
     private Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType,
-                   Type targetType, Map<String, Mapping> mappings) {
+                   Type targetType, Map<String, Mapping> mappings, IterableMapping iterableMapping) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameterName = parameterName;
         this.sourceType = sourceType;
         this.targetType = targetType;
         this.mappings = mappings;
+        this.iterableMapping = iterableMapping;
     }
 
     /**
@@ -113,6 +118,14 @@ public class Method {
 
     public void setMappings(Map<String, Mapping> mappings) {
         this.mappings = mappings;
+    }
+
+    public IterableMapping getIterableMapping() {
+        return iterableMapping;
+    }
+
+    public void setIterableMapping(IterableMapping iterableMapping) {
+        this.iterableMapping = iterableMapping;
     }
 
     public boolean reverses(Method method) {

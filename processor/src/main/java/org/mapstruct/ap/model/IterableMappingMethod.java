@@ -28,22 +28,21 @@ package org.mapstruct.ap.model;
 public class IterableMappingMethod extends MappingMethod {
 
     private final MappingMethodReference elementMappingMethod;
-    private final String toConversion;
+    private final TypeConversion conversion;
 
     public IterableMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
-                                 MappingMethodReference elementMappingMethod,
-                                 String toConversion) {
+                                 MappingMethodReference elementMappingMethod, TypeConversion conversion) {
         super( name, parameterName, sourceType, targetType );
         this.elementMappingMethod = elementMappingMethod;
-        this.toConversion = toConversion;
+        this.conversion = conversion;
     }
 
     public MappingMethodReference getElementMappingMethod() {
         return elementMappingMethod;
     }
 
-    public String getToConversion() {
-        return toConversion;
+    public TypeConversion getConversion() {
+        return conversion;
     }
 
     @Override

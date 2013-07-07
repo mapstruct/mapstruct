@@ -28,8 +28,19 @@
         <#if targetType.name == "Iterable" && targetType.packageName == "java.lang">${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><${targetType.elementType.name}> ${targetType.name?uncap_first} = new <#if targetType.iterableImplementationType??>${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><${targetType.elementType.name}>();
 
         for ( ${sourceType.elementType.name} ${sourceType.elementType.name?uncap_first} : ${parameterName} ) {
-            <#if toConversion??>
-            ${targetType.name?uncap_first}.add( ${toConversion} );
+            <#if conversion??>
+                <#if (conversion.exceptionTypes?size == 0) >
+            ${targetType.name?uncap_first}.add( <@includeModel object=conversion/> );
+                <#else>
+            try {
+                ${targetType.name?uncap_first}.add( <@includeModel object=conversion/> );
+            }
+                    <#list conversion.exceptionTypes as exceptionType>
+            catch( ${exceptionType.name} e ) {
+                throw new RuntimeException( e );
+            }
+                    </#list>
+                </#if>
             <#else>
             ${targetType.name?uncap_first}.add( ${elementMappingMethod.name}( ${sourceType.elementType.name?uncap_first} ) );
             </#if>

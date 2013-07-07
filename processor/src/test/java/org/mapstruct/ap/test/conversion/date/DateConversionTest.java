@@ -18,7 +18,10 @@
  */
 package org.mapstruct.ap.test.conversion.date;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 import org.mapstruct.ap.testutil.IssueKey;
@@ -71,5 +74,33 @@ public class DateConversionTest extends MapperTestBase {
         assertThat( source ).isNotNull();
         assertThat( source.getDate() ).isEqualTo( new GregorianCalendar( 2013, 6, 6 ).getTime() );
         assertThat( source.getAnotherDate() ).isEqualTo( new GregorianCalendar( 2013, 1, 14, 8, 30 ).getTime() );
+    }
+
+    @Test
+    public void shouldApplyStringConversionForIterableMethod() {
+        List<Date> dates = Arrays.asList(
+            new GregorianCalendar( 2013, 6, 6 ).getTime(),
+            new GregorianCalendar( 2013, 1, 14 ).getTime(),
+            new GregorianCalendar( 2013, 3, 11 ).getTime()
+        );
+
+        List<String> stringDates = SourceTargetMapper.INSTANCE.stringListToDateList( dates );
+
+        assertThat( stringDates ).isNotNull();
+        assertThat( stringDates ).containsExactly( "06.07.2013", "14.02.2013", "11.04.2013" );
+    }
+
+    @Test
+    public void shouldApplyStringConversionForReverseIterableMethod() {
+        List<String> stringDates = Arrays.asList( "06.07.2013", "14.02.2013", "11.04.2013" );
+
+        List<Date> dates = SourceTargetMapper.INSTANCE.dateListToStringList( stringDates );
+
+        assertThat( dates ).isNotNull();
+        assertThat( dates ).containsExactly(
+            new GregorianCalendar( 2013, 6, 6 ).getTime(),
+            new GregorianCalendar( 2013, 1, 14 ).getTime(),
+            new GregorianCalendar( 2013, 3, 11 ).getTime()
+        );
     }
 }

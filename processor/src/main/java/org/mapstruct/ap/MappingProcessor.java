@@ -39,6 +39,7 @@ import javax.lang.model.util.ElementKindVisitor6;
 
 import net.java.dev.hickory.prism.GeneratePrism;
 import net.java.dev.hickory.prism.GeneratePrisms;
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ap.model.Mapper;
@@ -72,7 +73,8 @@ import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
 @GeneratePrisms({
     @GeneratePrism(value = org.mapstruct.Mapper.class, publicAccess = true),
     @GeneratePrism(value = Mapping.class, publicAccess = true),
-    @GeneratePrism(value = Mappings.class, publicAccess = true)
+    @GeneratePrism(value = Mappings.class, publicAccess = true),
+    @GeneratePrism(value = IterableMapping.class, publicAccess = true)
 })
 @SupportedOptions({ MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP, MappingProcessor.UNMAPPED_TARGET_POLICY })
 public class MappingProcessor extends AbstractProcessor {
