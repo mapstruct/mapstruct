@@ -32,12 +32,13 @@ import ${importedType.fullyQualifiedName};
 <@includeModel object=annotation/>
 </#list>
 public class ${implementationName} implements ${interfaceName} {
-
 <#list referencedMappers as mapper>
+
     <@includeModel object=mapper/>
 </#list>
 
 <#list mappingMethods as mappingMethod>
+
 <@includeModel object=mappingMethod/>
 </#list>
 }
