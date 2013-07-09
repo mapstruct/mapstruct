@@ -23,20 +23,21 @@ import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.model.Annotation;
-import org.mapstruct.ap.model.CdiMapperReference;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
+import org.mapstruct.ap.model.SpringMapperReference;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.util.OptionsHelper;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
- * object into an application-scoped CDI bean in case CDI is configured as the
+ * object into a Spring bean in case Spring is configured as the
  * target component model for this mapper.
  *
  * @author Gunnar Morling
+ * @author Andreas Gudian
  */
-public class CdiComponentProcessor implements ModelElementProcessor<Mapper, Mapper> {
+public class SpringComponentProcessor implements ModelElementProcessor<Mapper, Mapper> {
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
@@ -46,17 +47,17 @@ public class CdiComponentProcessor implements ModelElementProcessor<Mapper, Mapp
             componentModel
         );
 
-        if ( !"cdi".equalsIgnoreCase( effectiveComponentModel ) ) {
+        if ( !"spring".equalsIgnoreCase( effectiveComponentModel ) ) {
             return mapper;
         }
 
-        mapper.addAnnotation( new Annotation( new Type( "javax.enterprise.context", "ApplicationScoped" ) ) );
+        mapper.addAnnotation( new Annotation( new Type( "org.springframework.stereotype", "Component" ) ) );
 
         ListIterator<MapperReference> iterator = mapper.getReferencedMappers().listIterator();
         while ( iterator.hasNext() ) {
             MapperReference reference = iterator.next();
             iterator.remove();
-            iterator.add( new CdiMapperReference( reference.getMapperType() ) );
+            iterator.add( new SpringMapperReference( reference.getMapperType() ) );
         }
 
         return mapper;
@@ -64,6 +65,6 @@ public class CdiComponentProcessor implements ModelElementProcessor<Mapper, Mapp
 
     @Override
     public int getPriority() {
-        return 1100;
+        return 1105;
     }
 }

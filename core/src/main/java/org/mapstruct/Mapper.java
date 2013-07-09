@@ -57,6 +57,9 @@ public @interface Mapper {
      * <li>
      * {@code cdi}: the generated mapper is an application-scoped CDI bean and
      * can be retrieved via {@code @Inject}</li>
+     * <li>
+     * {@code spring}: the generated mapper is a Spring bean and
+     * can be retrieved via {@code @Autowired}</li>
      * </ul>
      *
      * @return The component model for the generated mapper.

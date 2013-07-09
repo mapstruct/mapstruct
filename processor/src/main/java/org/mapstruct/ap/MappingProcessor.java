@@ -76,7 +76,11 @@ import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
     @GeneratePrism(value = Mappings.class, publicAccess = true),
     @GeneratePrism(value = IterableMapping.class, publicAccess = true)
 })
-@SupportedOptions({ MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP, MappingProcessor.UNMAPPED_TARGET_POLICY })
+@SupportedOptions({
+    MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,
+    MappingProcessor.UNMAPPED_TARGET_POLICY,
+    MappingProcessor.DEFAULT_COMPONENT_MODEL
+})
 public class MappingProcessor extends AbstractProcessor {
 
     /**
@@ -86,6 +90,7 @@ public class MappingProcessor extends AbstractProcessor {
 
     protected static final String SUPPRESS_GENERATOR_TIMESTAMP = "suppressGeneratorTimestamp";
     protected static final String UNMAPPED_TARGET_POLICY = "unmappedTargetPolicy";
+    protected static final String DEFAULT_COMPONENT_MODEL = "defaultComponentModel";
 
     private Options options;
 
@@ -101,7 +106,8 @@ public class MappingProcessor extends AbstractProcessor {
 
         return new Options(
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
-            unmappedTargetPolicy != null ? ReportingPolicy.valueOf( unmappedTargetPolicy ) : null
+            unmappedTargetPolicy != null ? ReportingPolicy.valueOf( unmappedTargetPolicy ) : null,
+            processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL )
         );
     }
 

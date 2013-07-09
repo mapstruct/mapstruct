@@ -18,33 +18,33 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.Set;
+
+import org.mapstruct.ap.util.Collections;
+
 /**
- * The options passed to the code generator.
+ * Mapper reference which is retrieved via Spring-based dependency injection.
+ * method. Used if "spring" is specified as component model via
+ * {@code Mapper#uses()}.
  *
+ * @author Gunnar Morling
  * @author Andreas Gudian
- * @autor Gunnar Morling
  */
-public class Options {
-    private final boolean suppressGeneratorTimestamp;
-    private final ReportingPolicy unmappedTargetPolicy;
-    private final String defaultComponentModel;
+public class SpringMapperReference extends AbstractModelElement implements MapperReference {
 
-    public Options(boolean suppressGeneratorTimestamp, ReportingPolicy unmappedTargetPolicy,
-                   String defaultComponentModel) {
-        this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
-        this.unmappedTargetPolicy = unmappedTargetPolicy;
-        this.defaultComponentModel = defaultComponentModel;
+    private Type type;
+
+    public SpringMapperReference(Type type) {
+        this.type = type;
     }
 
-    public boolean isSuppressGeneratorTimestamp() {
-        return suppressGeneratorTimestamp;
+    @Override
+    public Type getMapperType() {
+        return type;
     }
 
-    public ReportingPolicy getUnmappedTargetPolicy() {
-        return unmappedTargetPolicy;
-    }
-
-    public String getDefaultComponentModel() {
-        return defaultComponentModel;
+    @Override
+    public Set<Type> getImportTypes() {
+        return Collections.asSet( type, new Type( "org.springframework.beans.factory.annotation", "Autowired" ) );
     }
 }
