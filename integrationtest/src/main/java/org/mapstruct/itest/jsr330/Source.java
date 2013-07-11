@@ -16,39 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.util;
+package org.mapstruct.itest.jsr330;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
-/**
- * Provides utility methods around collections.
- *
- * @author Gunnar Morling
- */
-public class Collections {
+public class Source {
 
-    private Collections() {
+    private int foo = 42;
+
+    private Date date = new GregorianCalendar( 1980, 0, 1 ).getTime();
+
+    public int getFoo() {
+        return foo;
     }
 
-    public static <T> Set<T> asSet(T... elements) {
-        Set<T> set = new HashSet<T>();
-
-        for ( T element : elements ) {
-            set.add( element );
-        }
-
-        return set;
-    }
-
-    public static <T> Set<T> asSet(Collection<T> collection, T... elements) {
-        Set<T> set = new HashSet<T>( collection );
-
-        for ( T element : elements ) {
-            set.add( element );
-        }
-
-        return set;
+    public Date getDate() {
+        return date;
     }
 }

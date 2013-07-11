@@ -16,39 +16,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.util;
+package org.mapstruct.itest.jsr330;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import org.mapstruct.Mapper;
+import org.mapstruct.itest.jsr330.other.DateMapper;
 
-/**
- * Provides utility methods around collections.
- *
- * @author Gunnar Morling
- */
-public class Collections {
+@Mapper(componentModel = "jsr330", uses = DateMapper.class)
+public interface SourceTargetMapper {
 
-    private Collections() {
-    }
-
-    public static <T> Set<T> asSet(T... elements) {
-        Set<T> set = new HashSet<T>();
-
-        for ( T element : elements ) {
-            set.add( element );
-        }
-
-        return set;
-    }
-
-    public static <T> Set<T> asSet(Collection<T> collection, T... elements) {
-        Set<T> set = new HashSet<T>( collection );
-
-        for ( T element : elements ) {
-            set.add( element );
-        }
-
-        return set;
-    }
+    Target sourceToTarget(Source source);
 }

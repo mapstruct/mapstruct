@@ -18,16 +18,9 @@
  */
 package org.mapstruct.ap.processor;
 
-import java.util.ListIterator;
-import javax.lang.model.element.TypeElement;
-
-import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.model.Annotation;
-import org.mapstruct.ap.model.CdiMapperReference;
 import org.mapstruct.ap.model.Mapper;
-import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.Type;
-import org.mapstruct.ap.util.OptionsHelper;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -36,34 +29,19 @@ import org.mapstruct.ap.util.OptionsHelper;
  *
  * @author Gunnar Morling
  */
-public class CdiComponentProcessor implements ModelElementProcessor<Mapper, Mapper> {
-
+public class CdiComponentProcessor extends AnnotationBasedComponentModelProcessor {
     @Override
-    public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
-        String componentModel = MapperPrism.getInstanceOn( mapperTypeElement ).componentModel();
-        String effectiveComponentModel = OptionsHelper.getEffectiveComponentModel(
-            context.getOptions(),
-            componentModel
-        );
-
-        if ( !"cdi".equalsIgnoreCase( effectiveComponentModel ) ) {
-            return mapper;
-        }
-
-        mapper.addAnnotation( new Annotation( new Type( "javax.enterprise.context", "ApplicationScoped" ) ) );
-
-        ListIterator<MapperReference> iterator = mapper.getReferencedMappers().listIterator();
-        while ( iterator.hasNext() ) {
-            MapperReference reference = iterator.next();
-            iterator.remove();
-            iterator.add( new CdiMapperReference( reference.getMapperType() ) );
-        }
-
-        return mapper;
+    protected String getComponentModelIdentifier() {
+        return "cdi";
     }
 
     @Override
-    public int getPriority() {
-        return 1100;
+    protected Annotation getTypeAnnotation() {
+        return new Annotation( new Type( "javax.enterprise.context", "ApplicationScoped" ) );
+    }
+
+    @Override
+    protected Annotation getMapperReferenceAnnotation() {
+        return new Annotation( new Type( "javax.inject", "Inject" ) );
     }
 }

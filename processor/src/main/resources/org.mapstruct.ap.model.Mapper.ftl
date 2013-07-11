@@ -29,7 +29,7 @@ import ${importedType.fullyQualifiedName};
     date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
 )
 <#list annotations as annotation>
-<@includeModel object=annotation/>
+<#nt><@includeModel object=annotation/>
 </#list>
 public class ${implementationName} implements ${interfaceName} {
 <#list referencedMappers as mapper>

@@ -23,17 +23,18 @@ import java.util.Set;
 import org.mapstruct.ap.util.Collections;
 
 /**
- * Mapper reference which is retrieved via CDI-based dependency injection.
- * method. Used if "cdi" is specified as component model via
- * {@code Mapper#uses()}.
+ * Mapper reference which is retrieved via Annotation-based dependency injection.
  *
  * @author Gunnar Morling
+ * @author Andreas Gudian
  */
-public class CdiMapperReference extends AbstractModelElement implements MapperReference {
+public class AnnotationMapperReference extends AbstractModelElement implements MapperReference {
 
+    private Annotation annotation;
     private Type type;
 
-    public CdiMapperReference(Type type) {
+    public AnnotationMapperReference(Annotation annotation, Type type) {
+        this.annotation = annotation;
         this.type = type;
     }
 
@@ -42,8 +43,12 @@ public class CdiMapperReference extends AbstractModelElement implements MapperRe
         return type;
     }
 
+    public Annotation getAnnotation() {
+        return annotation;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
-        return Collections.asSet( type, new Type( "javax.inject", "Inject" ) );
+        return Collections.asSet( annotation.getImportTypes(), type );
     }
 }

@@ -60,6 +60,9 @@ public @interface Mapper {
      * <li>
      * {@code spring}: the generated mapper is a Spring bean and
      * can be retrieved via {@code @Autowired}</li>
+     * <li>
+     * {@code jsr330}: the generated mapper is annotated with {@code @Named} and
+     * can be retrieved via {@code @Inject}</li>
      * </ul>
      *
      * @return The component model for the generated mapper.
