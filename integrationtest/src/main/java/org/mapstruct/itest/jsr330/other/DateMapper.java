@@ -16,35 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.itest.jsr330.other;
 
-import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import org.mapstruct.ap.util.Collections;
+import javax.inject.Named;
 
-/**
- * Mapper reference which is retrieved via Spring-based dependency injection.
- * method. Used if "spring" is specified as component model via
- * {@code Mapper#uses()}.
- *
- * @author Gunnar Morling
- * @author Andreas Gudian
- */
-public class SpringMapperReference extends AbstractModelElement implements MapperReference {
+@Named
+public class DateMapper {
 
-    private Type type;
-
-    public SpringMapperReference(Type type) {
-        this.type = type;
+    public String asString(Date date) {
+        return date != null ? new SimpleDateFormat( "yyyy" ).format( date ) : null;
     }
 
-    @Override
-    public Type getMapperType() {
-        return type;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        return Collections.asSet( type, new Type( "org.springframework.beans.factory.annotation", "Autowired" ) );
+    public Date asDate(String date) {
+        try {
+            return date != null ? new SimpleDateFormat( "yyyy" ).parse( date ) : null;
+        }
+        catch ( ParseException e ) {
+            throw new RuntimeException( e );
+        }
     }
 }

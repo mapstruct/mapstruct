@@ -24,25 +24,25 @@ import org.mapstruct.ap.model.Type;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
- * object into a Spring bean in case Spring is configured as the
+ * object into a JSR 330 style bean in case "jsr330" is configured as the
  * target component model for this mapper.
  *
  * @author Gunnar Morling
  * @author Andreas Gudian
  */
-public class SpringComponentProcessor extends AnnotationBasedComponentModelProcessor {
+public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProcessor {
     @Override
     protected String getComponentModelIdentifier() {
-        return "spring";
+        return "jsr330";
     }
 
     @Override
     protected Annotation getTypeAnnotation() {
-        return new Annotation( new Type( "org.springframework.stereotype", "Component" ) );
+        return new Annotation( new Type( "javax.inject", "Named" ) );
     }
 
     @Override
     protected Annotation getMapperReferenceAnnotation() {
-        return new Annotation( new Type( "org.springframework.beans.factory.annotation", "Autowired" ) );
+        return new Annotation( new Type( "javax.inject", "Inject" ) );
     }
 }

@@ -16,39 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.util;
+package org.mapstruct.itest.jsr330;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+public class Target {
 
-/**
- * Provides utility methods around collections.
- *
- * @author Gunnar Morling
- */
-public class Collections {
+    private Long foo;
 
-    private Collections() {
+    private String date;
+
+    public void setFoo(Long foo) {
+        this.foo = foo;
     }
 
-    public static <T> Set<T> asSet(T... elements) {
-        Set<T> set = new HashSet<T>();
-
-        for ( T element : elements ) {
-            set.add( element );
-        }
-
-        return set;
+    public Long getFoo() {
+        return foo;
     }
 
-    public static <T> Set<T> asSet(Collection<T> collection, T... elements) {
-        Set<T> set = new HashSet<T>( collection );
+    public String getDate() {
+        return date;
+    }
 
-        for ( T element : elements ) {
-            set.add( element );
-        }
-
-        return set;
+    public void setDate(String date) {
+        this.date = date;
     }
 }

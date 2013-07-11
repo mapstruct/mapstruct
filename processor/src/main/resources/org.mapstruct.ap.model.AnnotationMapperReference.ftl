@@ -18,5 +18,5 @@
      limitations under the License.
 
 -->
-    @Autowired
+    <#nt><@includeModel object=annotation/>
     private ${mapperType.name} ${mapperType.name?uncap_first};
