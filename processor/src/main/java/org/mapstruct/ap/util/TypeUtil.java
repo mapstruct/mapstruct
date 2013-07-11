@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -43,20 +45,20 @@ public class TypeUtil {
     }
 
     public Type getType(DeclaredType type) {
-        Type elementType = null;
+        List<Type> typeParameters = new ArrayList<Type>();
 
         boolean isIterableType = isIterableType( type );
-        if ( isIterableType && !type.getTypeArguments().isEmpty() ) {
-            elementType = retrieveType( type.getTypeArguments().iterator().next() );
+        for ( TypeMirror mirror : type.getTypeArguments() ) {
+            typeParameters.add( retrieveType( mirror ) );
         }
 
         return new Type(
             elementUtils.getPackageOf( type.asElement() ).toString(),
             type.asElement().getSimpleName().toString(),
-            elementType,
             type.asElement().getKind() == ElementKind.ENUM,
             isCollectionType( type ),
-            isIterableType
+            isIterableType,
+            typeParameters
         );
     }
 

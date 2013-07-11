@@ -21,6 +21,7 @@ package org.mapstruct.ap.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +33,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author Gunnar Morling
  */
-public class Type implements Comparable<Type> {
+public class Type extends AbstractModelElement implements Comparable<Type> {
 
     private static final Set<String> PRIMITIVE_TYPE_NAMES = new HashSet<String>(
         Arrays.asList( "boolean", "char", "byte", "short", "int", "long", "float", "double" )
@@ -54,7 +55,7 @@ public class Type implements Comparable<Type> {
 
     private final String packageName;
     private final String name;
-    private final Type elementType;
+    private final List<Type> typeParameters;
     private final boolean isEnumType;
     private final boolean isCollectionType;
     private final boolean isIterableType;
@@ -68,10 +69,10 @@ public class Type implements Comparable<Type> {
             return new Type(
                 pakkage.getName(),
                 clazz.getSimpleName(),
-                null,
                 clazz.isEnum(),
                 Collection.class.isAssignableFrom( clazz ),
-                Iterable.class.isAssignableFrom( clazz )
+                Iterable.class.isAssignableFrom( clazz ),
+                Collections.<Type>emptyList()
             );
         }
         else {
@@ -80,21 +81,21 @@ public class Type implements Comparable<Type> {
     }
 
     public Type(String name) {
-        this( null, name, null, false, false, false );
+        this( null, name, false, false, false, Collections.<Type>emptyList() );
     }
 
     public Type(String packageName, String name) {
-        this( packageName, name, null, false, false, false );
+        this( packageName, name, false, false, false, Collections.<Type>emptyList() );
     }
 
-    public Type(String packageName, String name, Type elementType, boolean isEnumType, boolean isCollectionType,
-                boolean isIterableType) {
+    public Type(String packageName, String name, boolean isEnumType, boolean isCollectionType,
+                boolean isIterableType, List<Type> typeParameters) {
         this.packageName = packageName;
         this.name = name;
-        this.elementType = elementType;
         this.isEnumType = isEnumType;
         this.isCollectionType = isCollectionType;
         this.isIterableType = isIterableType;
+        this.typeParameters = typeParameters;
 
         if ( isCollectionType ) {
             collectionImplementationType = DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.get( packageName + "." + name );
@@ -119,8 +120,8 @@ public class Type implements Comparable<Type> {
         return name;
     }
 
-    public Type getElementType() {
-        return elementType;
+    public List<Type> getTypeParameters() {
+        return typeParameters;
     }
 
     public boolean isPrimitive() {
@@ -152,27 +153,17 @@ public class Type implements Comparable<Type> {
     }
 
     @Override
-    public String toString() {
-        if ( packageName == null ) {
-            return name;
-        }
-        else if ( elementType == null ) {
-            return packageName + "." + name;
-        }
-        else {
-            return packageName + "." + name + "<" + elementType + ">";
-        }
+    public Set<Type> getImportTypes() {
+        return Collections.emptySet();
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-            + ( ( elementType == null ) ? 0 : elementType.hashCode() );
         result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
-        result = prime * result
-            + ( ( packageName == null ) ? 0 : packageName.hashCode() );
+        result = prime * result + ( ( packageName == null ) ? 0 : packageName.hashCode() );
+        result = prime * result + ( ( typeParameters == null ) ? 0 : typeParameters.hashCode() );
         return result;
     }
 
@@ -188,14 +179,6 @@ public class Type implements Comparable<Type> {
             return false;
         }
         Type other = (Type) obj;
-        if ( elementType == null ) {
-            if ( other.elementType != null ) {
-                return false;
-            }
-        }
-        else if ( !elementType.equals( other.elementType ) ) {
-            return false;
-        }
         if ( name == null ) {
             if ( other.name != null ) {
                 return false;
@@ -210,6 +193,14 @@ public class Type implements Comparable<Type> {
             }
         }
         else if ( !packageName.equals( other.packageName ) ) {
+            return false;
+        }
+        if ( typeParameters == null ) {
+            if ( other.typeParameters != null ) {
+                return false;
+            }
+        }
+        else if ( !typeParameters.equals( other.typeParameters ) ) {
             return false;
         }
         return true;

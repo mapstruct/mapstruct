@@ -356,8 +356,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     private MappingMethod getIterableMappingMethod(List<Method> methods, Method method) {
         TypeConversion conversion = getIterableConversion(
             conversions,
-            method.getSourceType().getElementType(),
-            method.getTargetType().getElementType(),
+            method.getSourceType().getTypeParameters().iterator().next(),
+            method.getTargetType().getTypeParameters().iterator().next(),
             method.getIterableMapping()
         );
 
@@ -368,8 +368,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             method.getTargetType(),
             getMappingMethodReference(
                 methods,
-                method.getSourceType().getElementType(),
-                method.getTargetType().getElementType()
+                method.getSourceType().getTypeParameters().iterator().next(),
+                method.getTargetType().getTypeParameters().iterator().next()
             ),
             conversion
         );
@@ -430,9 +430,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             Kind.ERROR,
             String.format(
                 "Can't map property \"%s %s\" to \"%s %s\".",
-                property.getSourceType(),
+                property.getSourceType().getName(),
                 property.getSourceName(),
-                property.getTargetType(),
+                property.getTargetType().getName(),
                 property.getTargetName()
             ),
             method.getExecutable()

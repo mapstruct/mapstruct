@@ -83,7 +83,9 @@ public class Mapper extends AbstractModelElement {
 
         addWithDependents( collection, typeToAdd.getCollectionImplementationType() );
         addWithDependents( collection, typeToAdd.getIterableImplementationType() );
-        addWithDependents( collection, typeToAdd.getElementType() );
+        for ( Type type : typeToAdd.getTypeParameters() ) {
+            addWithDependents( collection, type );
+        }
     }
 
     @Override
