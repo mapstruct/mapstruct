@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -43,6 +45,8 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         new ConcurrentHashMap<String, Type>();
     private static final ConcurrentMap<String, Type> DEFAULT_COLLECTION_IMPLEMENTATION_TYPES =
         new ConcurrentHashMap<String, Type>();
+    private static final ConcurrentMap<String, Type> DEFAULT_MAP_IMPLEMENTATION_TYPES =
+        new ConcurrentHashMap<String, Type>();
 
     static {
         DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( List.class.getName(), forClass( ArrayList.class ) );
@@ -51,6 +55,8 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
 
         DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.put( Iterable.class.getName(), forClass( ArrayList.class ) );
         DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.putAll( DEFAULT_COLLECTION_IMPLEMENTATION_TYPES );
+
+        DEFAULT_MAP_IMPLEMENTATION_TYPES.put( Map.class.getName(), forClass( HashMap.class ) );
     }
 
     private final String packageName;
@@ -59,8 +65,10 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
     private final boolean isEnumType;
     private final boolean isCollectionType;
     private final boolean isIterableType;
+    private final boolean isMapType;
     private final Type collectionImplementationType;
     private final Type iterableImplementationType;
+    private final Type mapImplementationType;
 
     public static Type forClass(Class<?> clazz) {
         Package pakkage = clazz.getPackage();
@@ -72,6 +80,7 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
                 clazz.isEnum(),
                 Collection.class.isAssignableFrom( clazz ),
                 Iterable.class.isAssignableFrom( clazz ),
+                Map.class.isAssignableFrom( clazz ),
                 Collections.<Type>emptyList()
             );
         }
@@ -81,20 +90,21 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
     }
 
     public Type(String name) {
-        this( null, name, false, false, false, Collections.<Type>emptyList() );
+        this( null, name, false, false, false, false, Collections.<Type>emptyList() );
     }
 
     public Type(String packageName, String name) {
-        this( packageName, name, false, false, false, Collections.<Type>emptyList() );
+        this( packageName, name, false, false, false, false, Collections.<Type>emptyList() );
     }
 
     public Type(String packageName, String name, boolean isEnumType, boolean isCollectionType,
-                boolean isIterableType, List<Type> typeParameters) {
+                boolean isIterableType, boolean isMapType, List<Type> typeParameters) {
         this.packageName = packageName;
         this.name = name;
         this.isEnumType = isEnumType;
         this.isCollectionType = isCollectionType;
         this.isIterableType = isIterableType;
+        this.isMapType = isMapType;
         this.typeParameters = typeParameters;
 
         if ( isCollectionType ) {
@@ -109,6 +119,22 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         }
         else {
             iterableImplementationType = null;
+        }
+
+        if ( isMapType ) {
+            Type mapType = DEFAULT_MAP_IMPLEMENTATION_TYPES.get( packageName + "." + name );
+            mapImplementationType = mapType != null ? new Type(
+                mapType.getPackageName(),
+                mapType.getName(),
+                mapType.isEnumType(),
+                mapType.isCollectionType(),
+                mapType.isIterableType(),
+                true,
+                typeParameters
+            ) : null;
+        }
+        else {
+            mapImplementationType = null;
         }
     }
 
@@ -140,12 +166,20 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         return iterableImplementationType;
     }
 
+    public Type getMapImplementationType() {
+        return mapImplementationType;
+    }
+
     public boolean isCollectionType() {
         return isCollectionType;
     }
 
     public boolean isIterableType() {
         return isIterableType;
+    }
+
+    public boolean isMapType() {
+        return isMapType;
     }
 
     public String getFullyQualifiedName() {
