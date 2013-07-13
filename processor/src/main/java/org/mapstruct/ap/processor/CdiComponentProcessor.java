@@ -30,6 +30,7 @@ import org.mapstruct.ap.model.Type;
  * @author Gunnar Morling
  */
 public class CdiComponentProcessor extends AnnotationBasedComponentModelProcessor {
+
     @Override
     protected String getComponentModelIdentifier() {
         return "cdi";

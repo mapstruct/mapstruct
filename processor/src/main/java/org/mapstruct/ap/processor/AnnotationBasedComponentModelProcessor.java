@@ -88,6 +88,6 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
 
     @Override
     public int getPriority() {
-        return 1105;
+        return 1100;
     }
 }
