@@ -28,7 +28,9 @@
         <#if targetType.name == "Iterable" && targetType.packageName == "java.lang">${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><<@includeModel object=targetType.typeParameters[0]/>> ${targetType.name?uncap_first} = new <#if targetType.iterableImplementationType??>${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><<@includeModel object=targetType.typeParameters[0]/>>();
 
         for ( <@includeModel object=sourceType.typeParameters[0]/> ${sourceType.typeParameters[0].name?uncap_first} : ${parameterName} ) {
-            <#if conversion??>
+            <#if elementMappingMethod??>
+            ${targetType.name?uncap_first}.add( <@includeModel object=elementMappingMethod input="${sourceType.typeParameters[0].name?uncap_first}"/> );
+            <#else>
                 <#if (conversion.exceptionTypes?size == 0) >
             ${targetType.name?uncap_first}.add( <@includeModel object=conversion/> );
                 <#else>
@@ -41,8 +43,6 @@
             }
                     </#list>
                 </#if>
-            <#else>
-            ${targetType.name?uncap_first}.add( <@includeModel object=elementMappingMethod input="${sourceType.typeParameters[0].name?uncap_first}"/> );
             </#if>
         }
 

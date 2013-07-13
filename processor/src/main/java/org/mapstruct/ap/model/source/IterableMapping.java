@@ -34,7 +34,11 @@ public class IterableMapping {
     private final AnnotationMirror mirror;
     private final AnnotationValue dateFormatAnnotationValue;
 
-    public static IterableMapping fromIterableMappingPrism(IterableMappingPrism iterableMapping) {
+    public static IterableMapping fromPrism(IterableMappingPrism iterableMapping) {
+        if ( iterableMapping == null ) {
+            return null;
+        }
+
         return new IterableMapping(
             iterableMapping.dateFormat(),
             iterableMapping.mirror,
