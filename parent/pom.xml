@@ -370,6 +370,7 @@
                         <exclude>copyright.txt</exclude>
                         <exclude>**/license.txt</exclude>
                         <exclude>**/mapstruct.xml</exclude>
+                        <exclude>**/eclipse-formatter-config.xml</exclude>
                         <exclude>maven-settings.xml</exclude>
                     </excludes>
                 </configuration>
