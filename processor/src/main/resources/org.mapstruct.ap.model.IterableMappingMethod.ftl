@@ -42,7 +42,7 @@
                     </#list>
                 </#if>
             <#else>
-            ${targetType.name?uncap_first}.add( ${elementMappingMethod.name}( ${sourceType.typeParameters[0].name?uncap_first} ) );
+            ${targetType.name?uncap_first}.add( <@includeModel object=elementMappingMethod input="${sourceType.typeParameters[0].name?uncap_first}"/> );
             </#if>
         }
 

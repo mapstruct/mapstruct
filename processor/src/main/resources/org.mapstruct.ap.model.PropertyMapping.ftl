@@ -20,7 +20,7 @@
 -->
         <#-- a) invoke mapping method -->
         <#if mappingMethod??>
-        ${targetBeanName}.${targetAccessorName}( <#if mappingMethod.declaringMapper??>${mappingMethod.declaringMapper.name?uncap_first}.</#if>${mappingMethod.name}( ${sourceBeanName}.${sourceAccessorName}() ) );
+        ${targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()"/> );
         <#-- b) simple conversion -->
         <#elseif conversion??>
             <#if sourceType.primitive == false>
