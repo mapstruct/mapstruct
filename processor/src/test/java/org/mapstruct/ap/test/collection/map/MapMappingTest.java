@@ -36,7 +36,7 @@ import static org.fest.assertions.MapAssert.entry;
  *
  * @author Gunnar Morling
  */
-@WithClasses({ SourceTargetMapper.class, CustomNumberMapper.class })
+@WithClasses({ SourceTargetMapper.class, CustomNumberMapper.class, Source.class, Target.class })
 @IssueKey("44")
 public class MapMappingTest extends MapperTestBase {
 
@@ -50,7 +50,10 @@ public class MapMappingTest extends MapperTestBase {
 
         assertThat( target ).isNotNull();
         assertThat( target ).hasSize( 2 );
-        assertThat( target ).includes( entry( "42", "01.01.1980" ), entry( "121", "20.07.2013" ) );
+        assertThat( target ).includes(
+            entry( "42", "01.01.1980" ),
+            entry( "121", "20.07.2013" )
+        );
     }
 
     @Test
@@ -64,6 +67,46 @@ public class MapMappingTest extends MapperTestBase {
         assertThat( target ).isNotNull();
         assertThat( target ).hasSize( 2 );
         assertThat( target ).includes(
+            entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
+            entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
+        );
+    }
+
+    @Test
+    public void shouldInvokeMapMethodImplementationForMapTypedProperty() {
+        Map<Long, Date> values = new HashMap<Long, Date>();
+        values.put( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() );
+        values.put( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() );
+
+        Source source = new Source();
+        source.setValues( values );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getValues() ).isNotNull();
+        assertThat( target.getValues() ).hasSize( 2 );
+        assertThat( target.getValues() ).includes(
+            entry( "42", "01.01.1980" ),
+            entry( "121", "20.07.2013" )
+        );
+    }
+
+    @Test
+    public void shouldInvokeReverseMapMethodImplementationForMapTypedProperty() {
+        Map<String, String> values = new HashMap<String, String>();
+        values.put( "42", "01.01.1980" );
+        values.put( "121", "20.07.2013" );
+
+        Target target = new Target();
+        target.setValues( values );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getValues() ).isNotNull();
+        assertThat( source.getValues() ).hasSize( 2 );
+        assertThat( source.getValues() ).includes(
             entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
             entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
         );

@@ -21,21 +21,15 @@ package org.mapstruct.ap.test.collection.map;
 import java.util.Date;
 import java.util.Map;
 
-import org.mapstruct.MapMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
+public class Source {
 
-@Mapper(uses = CustomNumberMapper.class)
-public interface SourceTargetMapper {
+    private Map<Long, Date> values;
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    public Map<Long, Date> getValues() {
+        return values;
+    }
 
-    @MapMapping( valueDateFormat = "dd.MM.yyyy" )
-    Map<String, String> longDateMapToStringStringMap(Map<Long, Date> source);
-
-    Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source);
-
-    Target sourceToTarget(Source source);
-
-    Source targetToSource(Target target);
+    public void setValues(Map<Long, Date> values) {
+        this.values = values;
+    }
 }
