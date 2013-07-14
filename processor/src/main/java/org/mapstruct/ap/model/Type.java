@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.mapstruct.ap.util.Strings;
+
 /**
  * Represents the type of a bean property, parameter etc.
  *
@@ -243,5 +245,15 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
     @Override
     public int compareTo(Type o) {
         return getFullyQualifiedName().compareTo( o.getFullyQualifiedName() );
+    }
+
+    @Override
+    public String toString() {
+        if ( !typeParameters.isEmpty() ) {
+            return name + "<" + Strings.join( typeParameters, ", " ) + ">";
+        }
+        else {
+            return name;
+        }
     }
 }

@@ -166,6 +166,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 mappingMethods.add( getIterableMappingMethod( methods, method ) );
             }
             else if ( method.isMapMapping() ) {
+                if ( method.getMapMapping() == null && reverseMappingMethod != null &&
+                    reverseMappingMethod.getMapMapping() != null ) {
+                    method.setMapMapping( reverseMappingMethod.getMapMapping() );
+                }
                 mappingMethods.add( getMapMappingMethod( methods, method ) );
             }
             else {
@@ -382,8 +386,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         Type targetKeyType = method.getTargetType().getTypeParameters().get( 0 );
         Type targetValueType = method.getTargetType().getTypeParameters().get( 1 );
 
-        TypeConversion valueConversion = getConversion( sourceValueType, targetValueType, null, "entry.getValue()" );
-        TypeConversion keyConversion = getConversion( sourceKeyType, targetKeyType, null, "entry.getKey()" );
+        String keyDateFormat = method.getMapMapping() != null ? method.getMapMapping().getKeyFormat() : null;
+        String valueDateFormat = method.getMapMapping() != null ? method.getMapMapping().getValueFormat() : null;
+
+        TypeConversion keyConversion = getConversion( sourceKeyType, targetKeyType, keyDateFormat, "entry.getKey()" );
+        TypeConversion valueConversion = getConversion(
+            sourceValueType,
+            targetValueType,
+            valueDateFormat,
+            "entry.getValue()"
+        );
+
         MappingMethodReference keyMappingMethod = getMappingMethodReference( methods, sourceKeyType, targetKeyType );
         MappingMethodReference valueMappingMethod = getMappingMethodReference(
             methods,

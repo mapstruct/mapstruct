@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.collection.map;
 import java.util.Date;
 import java.util.Map;
 
+import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mappers;
 
@@ -29,6 +30,7 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
+    @MapMapping( valueDateFormat = "dd.MM.yyyy" )
     Map<String, String> longDateMapToStringStringMap(Map<Long, Date> source);
 
     Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source);

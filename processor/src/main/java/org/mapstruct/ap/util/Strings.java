@@ -49,4 +49,8 @@ public class Strings {
 
         return sb.toString();
     }
+
+    public static boolean isEmpty(String string) {
+        return string == null || string.isEmpty();
+    }
 }

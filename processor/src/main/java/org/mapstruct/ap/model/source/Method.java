@@ -39,11 +39,12 @@ public class Method {
     private final Type targetType;
     private Map<String, Mapping> mappings;
     private IterableMapping iterableMapping;
+    private MapMapping mapMapping;
 
     public static Method forMethodRequiringImplementation(ExecutableElement executable, String parameterName,
                                                           Type sourceType, Type targetType,
                                                           Map<String, Mapping> mappings,
-                                                          IterableMapping iterableMapping) {
+                                                          IterableMapping iterableMapping, MapMapping mapMapping) {
 
         return new Method(
             null,
@@ -52,7 +53,8 @@ public class Method {
             sourceType,
             targetType,
             mappings,
-            iterableMapping
+            iterableMapping,
+            mapMapping
         );
     }
 
@@ -66,12 +68,14 @@ public class Method {
             sourceType,
             targetType,
             Collections.<String, Mapping>emptyMap(),
+            null,
             null
         );
     }
 
     private Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType,
-                   Type targetType, Map<String, Mapping> mappings, IterableMapping iterableMapping) {
+                   Type targetType, Map<String, Mapping> mappings, IterableMapping iterableMapping,
+                   MapMapping mapMapping) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameterName = parameterName;
@@ -79,6 +83,7 @@ public class Method {
         this.targetType = targetType;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
+        this.mapMapping = mapMapping;
     }
 
     /**
@@ -126,6 +131,14 @@ public class Method {
 
     public void setIterableMapping(IterableMapping iterableMapping) {
         this.iterableMapping = iterableMapping;
+    }
+
+    public MapMapping getMapMapping() {
+        return mapMapping;
+    }
+
+    public void setMapMapping(MapMapping mapMapping) {
+        this.mapMapping = mapMapping;
     }
 
     public boolean reverses(Method method) {

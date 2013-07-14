@@ -40,9 +40,10 @@ import javax.lang.model.util.ElementKindVisitor6;
 import net.java.dev.hickory.prism.GeneratePrism;
 import net.java.dev.hickory.prism.GeneratePrisms;
 import org.mapstruct.IterableMapping;
+import org.mapstruct.MapMapping;
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.Options;
 import org.mapstruct.ap.model.ReportingPolicy;
 import org.mapstruct.ap.processor.DefaultModelElementProcessorContext;
@@ -71,10 +72,11 @@ import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
  */
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
 @GeneratePrisms({
-    @GeneratePrism(value = org.mapstruct.Mapper.class, publicAccess = true),
+    @GeneratePrism(value = Mapper.class, publicAccess = true),
     @GeneratePrism(value = Mapping.class, publicAccess = true),
     @GeneratePrism(value = Mappings.class, publicAccess = true),
-    @GeneratePrism(value = IterableMapping.class, publicAccess = true)
+    @GeneratePrism(value = IterableMapping.class, publicAccess = true),
+    @GeneratePrism(value = MapMapping.class, publicAccess = true)
 })
 @SupportedOptions({
     MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,

@@ -21,13 +21,11 @@ package org.mapstruct.ap.test.collection.map;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -42,11 +40,6 @@ import static org.fest.assertions.MapAssert.entry;
 @IssueKey("44")
 public class MapMappingTest extends MapperTestBase {
 
-    @BeforeMethod
-    public void setDefaultLocale() {
-        Locale.setDefault( Locale.GERMAN );
-    }
-
     @Test
     public void shouldCreateMapMethodImplementation() {
         Map<Long, Date> values = new HashMap<Long, Date>();
@@ -57,14 +50,14 @@ public class MapMappingTest extends MapperTestBase {
 
         assertThat( target ).isNotNull();
         assertThat( target ).hasSize( 2 );
-        assertThat( target ).includes( entry( "42", "01.01.80 00:00" ), entry( "121", "20.07.13 00:00" ) );
+        assertThat( target ).includes( entry( "42", "01.01.1980" ), entry( "121", "20.07.2013" ) );
     }
 
     @Test
     public void shouldCreateReverseMapMethodImplementation() {
         Map<String, String> values = new HashMap<String, String>();
-        values.put( "42", "01.01.80 00:00" );
-        values.put( "121", "20.07.13 00:00" );
+        values.put( "42", "01.01.1980" );
+        values.put( "121", "20.07.2013" );
 
         Map<Long, Date> target = SourceTargetMapper.INSTANCE.stringStringMapToLongDateMap( values );
 
