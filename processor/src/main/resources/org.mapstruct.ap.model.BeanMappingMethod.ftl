@@ -24,11 +24,11 @@
             return null;
         }
 
-        ${targetType.name} ${targetType.name?uncap_first} = new ${targetType.name}();
+        ${targetType.name} ${returnValueName} = new ${targetType.name}();
 
         <#list propertyMappings as propertyMapping>
             <@includeModel object=propertyMapping/>
         </#list>
 
-        return ${targetType.name?uncap_first};
+        return ${returnValueName};
     }

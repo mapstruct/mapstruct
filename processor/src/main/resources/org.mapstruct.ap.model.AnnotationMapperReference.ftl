@@ -19,4 +19,4 @@
 
 -->
     <#nt><@includeModel object=annotation/>
-    private ${mapperType.name} ${mapperType.name?uncap_first};
+    private ${mapperType.name} ${variableName};

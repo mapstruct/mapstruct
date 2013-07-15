@@ -18,4 +18,4 @@
      limitations under the License.
 
 -->
-    private final ${mapperType.name} ${mapperType.name?uncap_first} = new ${mapperType.name}();
+    private final ${mapperType.name} ${variableName} = new ${mapperType.name}();

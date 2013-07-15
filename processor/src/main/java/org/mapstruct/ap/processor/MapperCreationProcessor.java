@@ -340,7 +340,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
         PropertyMapping property = new PropertyMapping(
             method.getParameterName(),
-            Introspector.decapitalize( method.getTargetType().getName() ),
+            Strings.getSaveVariableName(
+                Introspector.decapitalize( method.getTargetType().getName() ),
+                method.getParameterName()
+            ),
             executables.getPropertyName( getterMethod ),
             getterMethod.getSimpleName().toString(),
             sourceType,
@@ -367,7 +370,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             sourceElementType,
             targetElementType,
             method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null,
-            Introspector.decapitalize( sourceElementType.getName() )
+            Strings.getSaveVariableName(
+                Introspector.decapitalize( sourceElementType.getName() ),
+                method.getParameterName()
+            )
         );
 
         return new IterableMappingMethod(

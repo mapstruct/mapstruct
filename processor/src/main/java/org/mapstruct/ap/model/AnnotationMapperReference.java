@@ -18,9 +18,11 @@
  */
 package org.mapstruct.ap.model;
 
+import java.beans.Introspector;
 import java.util.Set;
 
 import org.mapstruct.ap.util.Collections;
+import org.mapstruct.ap.util.Strings;
 
 /**
  * Mapper reference which is retrieved via Annotation-based dependency injection.
@@ -30,8 +32,8 @@ import org.mapstruct.ap.util.Collections;
  */
 public class AnnotationMapperReference extends AbstractModelElement implements MapperReference {
 
-    private Annotation annotation;
-    private Type type;
+    private final Annotation annotation;
+    private final Type type;
 
     public AnnotationMapperReference(Annotation annotation, Type type) {
         this.annotation = annotation;
@@ -50,5 +52,9 @@ public class AnnotationMapperReference extends AbstractModelElement implements M
     @Override
     public Set<Type> getImportTypes() {
         return Collections.asSet( annotation.getImportTypes(), type );
+    }
+
+    public String getVariableName() {
+        return Strings.getSaveVariableName( Introspector.decapitalize( type.getName() ) );
     }
 }

@@ -18,20 +18,21 @@
  */
 package org.mapstruct.ap.model;
 
+import java.beans.Introspector;
 import java.util.Set;
 
 import org.mapstruct.ap.util.Collections;
+import org.mapstruct.ap.util.Strings;
 
 /**
- * Mapper reference which is retrieved via the {@code Mappers#getMapper()}
- * method. Used by default if no other component model is specified via
- * {@code Mapper#uses()}.
+ * Mapper reference which is retrieved via the {@code Mappers#getMapper()} method. Used by default if no other component
+ * model is specified via {@code Mapper#uses()}.
  *
  * @author Gunnar Morling
  */
 public class DefaultMapperReference extends AbstractModelElement implements MapperReference {
 
-    private Type type;
+    private final Type type;
 
     public DefaultMapperReference(Type type) {
         this.type = type;
@@ -45,5 +46,9 @@ public class DefaultMapperReference extends AbstractModelElement implements Mapp
     @Override
     public Set<Type> getImportTypes() {
         return Collections.asSet( type );
+    }
+
+    public String getVariableName() {
+        return Strings.getSaveVariableName( Introspector.decapitalize( type.getName() ) );
     }
 }

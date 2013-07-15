@@ -20,6 +20,8 @@ package org.mapstruct.ap.model;
 
 import java.util.Set;
 
+import org.mapstruct.ap.util.Strings;
+
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one {@code Map} type to another. Keys and
  * values are mapped either by a {@link TypeConversion} or another mapping method if required.
@@ -29,8 +31,8 @@ import java.util.Set;
 public class MapMappingMethod extends MappingMethod {
 
     private final MappingMethodReference keyMappingMethod;
-    private final TypeConversion keyConversion;
     private final MappingMethodReference valueMappingMethod;
+    private final TypeConversion keyConversion;
     private final TypeConversion valueConversion;
 
     public MapMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
@@ -69,7 +71,24 @@ public class MapMappingMethod extends MappingMethod {
         return types;
     }
 
-    public String getReturnValueName() {
-        return "map";
+    public String getKeyVariableName() {
+        return Strings.getSaveVariableName(
+            "key",
+            getParameterName()
+        );
+    }
+
+    public String getValueVariableName() {
+        return Strings.getSaveVariableName(
+            "value",
+            getParameterName()
+        );
+    }
+
+    public String getEntryVariableName() {
+        return Strings.getSaveVariableName(
+            "entry",
+            getParameterName()
+        );
     }
 }

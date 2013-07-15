@@ -18,12 +18,71 @@
  */
 package org.mapstruct.ap.util;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.mapstruct.ap.util.Collections.asSet;
+
 /**
  * Helper class for dealing with strings.
  *
  * @author Gunnar Morling
  */
 public class Strings {
+
+    private static final Set<String> KEYWORDS = asSet(
+        "abstract",
+        "continue",
+        "for",
+        "new",
+        "switch",
+        "assert",
+        "default",
+        "goto",
+        "package",
+        "synchronized",
+        "boolean",
+        "do",
+        "if",
+        "private",
+        "this",
+        "break",
+        "double",
+        "implements",
+        "protected",
+        "throw",
+        "byte",
+        "else",
+        "import",
+        "public",
+        "throws",
+        "case",
+        "enum",
+        "instanceof",
+        "return",
+        "transient",
+        "catch",
+        "extends",
+        "int",
+        "short",
+        "try",
+        "char",
+        "final",
+        "interface",
+        "static",
+        "void",
+        "class",
+        "finally",
+        "long",
+        "strictfp",
+        "volatile",
+        "const",
+        "float",
+        "native",
+        "super",
+        "while"
+    );
 
     private Strings() {
     }
@@ -52,5 +111,16 @@ public class Strings {
 
     public static boolean isEmpty(String string) {
         return string == null || string.isEmpty();
+    }
+
+    public static String getSaveVariableName(String name, String... existingVariableNames) {
+        Set<String> conflictingNames = new HashSet<String>( KEYWORDS );
+        conflictingNames.addAll( Arrays.asList( existingVariableNames ) );
+
+        while ( conflictingNames.contains( name ) ) {
+            name = name + "_";
+        }
+
+        return name;
     }
 }
