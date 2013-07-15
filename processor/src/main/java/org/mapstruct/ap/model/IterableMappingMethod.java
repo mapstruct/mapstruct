@@ -18,7 +18,10 @@
  */
 package org.mapstruct.ap.model;
 
+import java.beans.Introspector;
 import java.util.Set;
+
+import org.mapstruct.ap.util.Strings;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one iterable type to another. The collection
@@ -55,5 +58,15 @@ public class IterableMappingMethod extends MappingMethod {
         }
 
         return types;
+    }
+
+    public String getLoopVariableName() {
+        return Strings.getSaveVariableName(
+            Introspector.decapitalize(
+                getSourceType().getTypeParameters()
+                    .get( 0 )
+                    .getName()
+            ), getParameterName()
+        );
     }
 }

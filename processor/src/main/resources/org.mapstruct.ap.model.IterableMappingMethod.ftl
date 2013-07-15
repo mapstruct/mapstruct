@@ -25,17 +25,17 @@
         }
 
         <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
-        <#if targetType.name == "Iterable" && targetType.packageName == "java.lang">${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><<@includeModel object=targetType.typeParameters[0]/>> ${targetType.name?uncap_first} = new <#if targetType.iterableImplementationType??>${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><<@includeModel object=targetType.typeParameters[0]/>>();
+        <#if targetType.name == "Iterable" && targetType.packageName == "java.lang">${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><<@includeModel object=targetType.typeParameters[0]/>> ${returnValueName} = new <#if targetType.iterableImplementationType??>${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><<@includeModel object=targetType.typeParameters[0]/>>();
 
-        for ( <@includeModel object=sourceType.typeParameters[0]/> ${sourceType.typeParameters[0].name?uncap_first} : ${parameterName} ) {
+        for ( <@includeModel object=sourceType.typeParameters[0]/> ${loopVariableName} : ${parameterName} ) {
             <#if elementMappingMethod??>
-            ${targetType.name?uncap_first}.add( <@includeModel object=elementMappingMethod input="${sourceType.typeParameters[0].name?uncap_first}"/> );
+            ${returnValueName}.add( <@includeModel object=elementMappingMethod input="${loopVariableName}"/> );
             <#else>
                 <#if (conversion.exceptionTypes?size == 0) >
-            ${targetType.name?uncap_first}.add( <@includeModel object=conversion/> );
+            ${returnValueName}.add( <@includeModel object=conversion/> );
                 <#else>
             try {
-                ${targetType.name?uncap_first}.add( <@includeModel object=conversion/> );
+                ${returnValueName}.add( <@includeModel object=conversion/> );
             }
                     <#list conversion.exceptionTypes as exceptionType>
             catch( ${exceptionType.name} e ) {
@@ -46,5 +46,5 @@
             </#if>
         }
 
-        return ${targetType.name?uncap_first};
+        return ${returnValueName};
     }

@@ -26,18 +26,18 @@
 
         <@includeModel object=targetType /> ${returnValueName} = new <#if targetType.mapImplementationType??><@includeModel object=targetType.mapImplementationType /><#else><@includeModel object=targetType /></#if>();
 
-        for ( Map.Entry<<#list sourceType.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> entry : ${parameterName}.entrySet() ) {
+        for ( Map.Entry<<#list sourceType.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${parameterName}.entrySet() ) {
 
         <#-- key -->
         <#if keyMappingMethod??>
-            <@includeModel object=targetType.typeParameters[0]/> key = <@includeModel object=keyMappingMethod input="entry.getKey()"/>;
+            <@includeModel object=targetType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyMappingMethod input="entry.getKey()"/>;
         <#elseif keyConversion??>
             <#if (keyConversion.exceptionTypes?size == 0) >
-            <@includeModel object=targetType.typeParameters[0]/> key = <@includeModel object=keyConversion/>;
+            <@includeModel object=targetType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyConversion/>;
             <#else>
-            <@includeModel object=targetType.typeParameters[0]/> key;
+            <@includeModel object=targetType.typeParameters[0]/> ${keyVariableName};
             try {
-                key = <@includeModel object=keyConversion/>;
+                ${keyVariableName} = <@includeModel object=keyConversion/>;
             }
                 <#list keyConversion.exceptionTypes as exceptionType>
             catch( ${exceptionType.name} e ) {
@@ -46,18 +46,18 @@
                 </#list>
             </#if>
         <#else>
-            <@includeModel object=targetType.typeParameters[0]/> key = entry.getKey();
+            <@includeModel object=targetType.typeParameters[0]/> ${keyVariableName} = entry.getKey();
         </#if>
         <#-- value -->
         <#if valueMappingMethod??>
-            <@includeModel object=targetType.typeParameters[1]/> value = <@includeModel object=valueMappingMethod input="entry.getValue()"/>;
+            <@includeModel object=targetType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueMappingMethod input="entry.getValue()"/>;
         <#elseif valueConversion??>
             <#if (valueConversion.exceptionTypes?size == 0) >
-            <@includeModel object=targetType.typeParameters[1]/> value = <@includeModel object=valueConversion/>;
+            <@includeModel object=targetType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueConversion/>;
             <#else>
-            <@includeModel object=targetType.typeParameters[1]/> value;
+            <@includeModel object=targetType.typeParameters[1]/> ${valueVariableName};
             try {
-                value = <@includeModel object=valueConversion/>;
+                ${valueVariableName} = <@includeModel object=valueConversion/>;
             }
                 <#list valueConversion.exceptionTypes as exceptionType>
             catch( ${exceptionType.name} e ) {
@@ -66,10 +66,10 @@
                 </#list>
             </#if>
         <#else>
-            <@includeModel object=targetType.typeParameters[1]/> value = entry.getValue();
+            <@includeModel object=targetType.typeParameters[1]/> ${valueVariableName} = entry.getValue();
         </#if>
 
-            ${returnValueName}.put( key, value );
+            ${returnValueName}.put( ${keyVariableName}, ${valueVariableName} );
         }
 
         return ${returnValueName};

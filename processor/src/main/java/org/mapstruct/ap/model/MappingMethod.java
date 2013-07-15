@@ -18,8 +18,11 @@
  */
 package org.mapstruct.ap.model;
 
+import java.beans.Introspector;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.mapstruct.ap.util.Strings;
 
 /**
  * A method implemented or referenced by a {@link Mapper} class.
@@ -63,6 +66,13 @@ public abstract class MappingMethod extends AbstractModelElement {
         types.add( getTargetType() );
 
         return types;
+    }
+
+    public String getReturnValueName() {
+        return Strings.getSaveVariableName(
+            Introspector.decapitalize( getTargetType().getName() ),
+            getParameterName()
+        );
     }
 
     @Override
