@@ -19,16 +19,18 @@
 
 -->
     @Override
-    public ${targetType.name}<${targetType.elementType.name}> ${name}(${sourceType.name}<${sourceType.elementType.name}> ${parameterName}) {
+    public <@includeModel object=targetType/> ${name}(<@includeModel object=sourceType/> ${parameterName}) {
         if ( ${parameterName} == null ) {
             return null;
         }
 
         <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
-        <#if targetType.name == "Iterable" && targetType.packageName == "java.lang">${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><${targetType.elementType.name}> ${targetType.name?uncap_first} = new <#if targetType.iterableImplementationType??>${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><${targetType.elementType.name}>();
+        <#if targetType.name == "Iterable" && targetType.packageName == "java.lang">${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><<@includeModel object=targetType.typeParameters[0]/>> ${targetType.name?uncap_first} = new <#if targetType.iterableImplementationType??>${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><<@includeModel object=targetType.typeParameters[0]/>>();
 
-        for ( ${sourceType.elementType.name} ${sourceType.elementType.name?uncap_first} : ${parameterName} ) {
-            <#if conversion??>
+        for ( <@includeModel object=sourceType.typeParameters[0]/> ${sourceType.typeParameters[0].name?uncap_first} : ${parameterName} ) {
+            <#if elementMappingMethod??>
+            ${targetType.name?uncap_first}.add( <@includeModel object=elementMappingMethod input="${sourceType.typeParameters[0].name?uncap_first}"/> );
+            <#else>
                 <#if (conversion.exceptionTypes?size == 0) >
             ${targetType.name?uncap_first}.add( <@includeModel object=conversion/> );
                 <#else>
@@ -41,8 +43,6 @@
             }
                     </#list>
                 </#if>
-            <#else>
-            ${targetType.name?uncap_first}.add( ${elementMappingMethod.name}( ${sourceType.elementType.name?uncap_first} ) );
             </#if>
         }
 

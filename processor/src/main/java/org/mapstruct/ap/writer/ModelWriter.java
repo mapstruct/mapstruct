@@ -56,7 +56,7 @@ public class ModelWriter {
         CONFIGURATION.setObjectWrapper( new DefaultObjectWrapper() );
         CONFIGURATION.setSharedVariable(
             "includeModel",
-            new ModelIncludeDirective( new DefaultModelElementWriterContext( CONFIGURATION ) )
+            new ModelIncludeDirective( CONFIGURATION )
         );
     }
 
@@ -64,7 +64,9 @@ public class ModelWriter {
         try {
             BufferedWriter writer = new BufferedWriter( sourceFile.openWriter() );
 
-            model.write( new DefaultModelElementWriterContext( CONFIGURATION ), writer );
+            Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
+            values.put( Configuration.class, CONFIGURATION );
+            model.write( new DefaultModelElementWriterContext( values ), writer );
 
             writer.flush();
             writer.close();
@@ -85,10 +87,10 @@ public class ModelWriter {
      */
     static class DefaultModelElementWriterContext implements Context {
 
-        private Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
+        private Map<Class<?>, Object> values;
 
-        private DefaultModelElementWriterContext(Configuration configuration) {
-            values.put( Configuration.class, configuration );
+        DefaultModelElementWriterContext(Map<Class<?>, Object> values) {
+            this.values = new HashMap<Class<?>, Object>( values );
         }
 
         @Override

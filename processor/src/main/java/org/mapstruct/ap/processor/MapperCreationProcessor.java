@@ -42,6 +42,7 @@ import org.mapstruct.ap.conversion.DefaultConversionContext;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.DefaultMapperReference;
 import org.mapstruct.ap.model.IterableMappingMethod;
+import org.mapstruct.ap.model.MapMappingMethod;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
@@ -51,7 +52,6 @@ import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.ReportingPolicy;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.TypeConversion;
-import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Executables;
@@ -164,6 +164,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                     method.setIterableMapping( reverseMappingMethod.getIterableMapping() );
                 }
                 mappingMethods.add( getIterableMappingMethod( methods, method ) );
+            }
+            else if ( method.isMapMapping() ) {
+                if ( method.getMapMapping() == null && reverseMappingMethod != null &&
+                    reverseMappingMethod.getMapMapping() != null ) {
+                    method.setMapMapping( reverseMappingMethod.getMapMapping() );
+                }
+                mappingMethods.add( getMapMappingMethod( methods, method ) );
             }
             else {
                 if ( method.getMappings().isEmpty() ) {
@@ -324,9 +331,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         Type targetType = executables.retrieveParameter( setterMethod ).getType();
 
         MappingMethodReference propertyMappingMethod = getMappingMethodReference( methods, sourceType, targetType );
-        ConversionProvider conversionProvider = conversions.getConversion(
+        TypeConversion conversion = getConversion(
             sourceType,
-            targetType
+            targetType,
+            dateFormat,
+            method.getParameterName() + "." + getterMethod.getSimpleName().toString() + "()"
         );
 
         PropertyMapping property = new PropertyMapping(
@@ -339,10 +348,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             setterMethod.getSimpleName().toString(),
             targetType,
             propertyMappingMethod,
-            conversionProvider != null ? conversionProvider.to(
-                method.getParameterName() + "." + getterMethod.getSimpleName().toString() + "()",
-                new DefaultConversionContext( targetType, dateFormat )
-            ) : null
+            conversion
         );
 
         reportErrorIfPropertyCanNotBeMapped(
@@ -354,11 +360,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private MappingMethod getIterableMappingMethod(List<Method> methods, Method method) {
-        TypeConversion conversion = getIterableConversion(
-            conversions,
-            method.getSourceType().getElementType(),
-            method.getTargetType().getElementType(),
-            method.getIterableMapping()
+        Type sourceElementType = method.getSourceType().getTypeParameters().get( 0 );
+        Type targetElementType = method.getTargetType().getTypeParameters().get( 0 );
+
+        TypeConversion conversion = getConversion(
+            sourceElementType,
+            targetElementType,
+            method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null,
+            Introspector.decapitalize( sourceElementType.getName() )
         );
 
         return new IterableMappingMethod(
@@ -366,30 +375,55 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             method.getParameterName(),
             method.getSourceType(),
             method.getTargetType(),
-            getMappingMethodReference(
-                methods,
-                method.getSourceType().getElementType(),
-                method.getTargetType().getElementType()
-            ),
+            getMappingMethodReference( methods, sourceElementType, targetElementType ),
             conversion
         );
     }
 
-    private TypeConversion getIterableConversion(Conversions conversions, Type sourceElementType,
-                                                 Type targetElementType, IterableMapping iterableMapping) {
-        ConversionProvider conversionProvider = conversions.getConversion( sourceElementType, targetElementType );
+    private MappingMethod getMapMappingMethod(List<Method> methods, Method method) {
+        Type sourceKeyType = method.getSourceType().getTypeParameters().get( 0 );
+        Type sourceValueType = method.getSourceType().getTypeParameters().get( 1 );
+        Type targetKeyType = method.getTargetType().getTypeParameters().get( 0 );
+        Type targetValueType = method.getTargetType().getTypeParameters().get( 1 );
+
+        String keyDateFormat = method.getMapMapping() != null ? method.getMapMapping().getKeyFormat() : null;
+        String valueDateFormat = method.getMapMapping() != null ? method.getMapMapping().getValueFormat() : null;
+
+        TypeConversion keyConversion = getConversion( sourceKeyType, targetKeyType, keyDateFormat, "entry.getKey()" );
+        TypeConversion valueConversion = getConversion(
+            sourceValueType,
+            targetValueType,
+            valueDateFormat,
+            "entry.getValue()"
+        );
+
+        MappingMethodReference keyMappingMethod = getMappingMethodReference( methods, sourceKeyType, targetKeyType );
+        MappingMethodReference valueMappingMethod = getMappingMethodReference(
+            methods,
+            sourceValueType,
+            targetValueType
+        );
+
+        return new MapMappingMethod(
+            method.getName(),
+            method.getParameterName(),
+            method.getSourceType(),
+            method.getTargetType(),
+            keyMappingMethod,
+            keyConversion,
+            valueMappingMethod,
+            valueConversion
+        );
+    }
+
+    private TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {
+        ConversionProvider conversionProvider = conversions.getConversion( sourceType, targetType );
 
         if ( conversionProvider == null ) {
             return null;
         }
 
-        return conversionProvider.to(
-            Introspector.decapitalize( sourceElementType.getName() ),
-            new DefaultConversionContext(
-                targetElementType,
-                iterableMapping != null ? iterableMapping.getDateFormat() : null
-            )
-        );
+        return conversionProvider.to( sourceReference, new DefaultConversionContext( targetType, dateFormat ) );
     }
 
     private MappingMethodReference getMappingMethodReference(Iterable<Method> methods, Type parameterType,
@@ -430,9 +464,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             Kind.ERROR,
             String.format(
                 "Can't map property \"%s %s\" to \"%s %s\".",
-                property.getSourceType(),
+                property.getSourceType().getName(),
                 property.getSourceName(),
-                property.getTargetType(),
+                property.getTargetType().getName(),
                 property.getTargetName()
             ),
             method.getExecutable()

@@ -25,6 +25,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.Generated;
 
+/**
+ * Represents a type implementing a mapper interface (annotated with {@code @Mapper}. This is the root object of the
+ * mapper model.
+ *
+ * @author Gunnar Morling
+ */
 public class Mapper extends AbstractModelElement {
 
     private final String packageName;
@@ -83,7 +89,11 @@ public class Mapper extends AbstractModelElement {
 
         addWithDependents( collection, typeToAdd.getCollectionImplementationType() );
         addWithDependents( collection, typeToAdd.getIterableImplementationType() );
-        addWithDependents( collection, typeToAdd.getElementType() );
+        addWithDependents( collection, typeToAdd.getMapImplementationType() );
+
+        for ( Type type : typeToAdd.getTypeParameters() ) {
+            addWithDependents( collection, type );
+        }
     }
 
     @Override

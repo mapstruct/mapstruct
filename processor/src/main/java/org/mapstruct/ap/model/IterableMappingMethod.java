@@ -18,10 +18,11 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.Set;
+
 /**
- * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one
- * iterable type to another. The collection elements are mapped either by a
- * {@link TypeConversion} or another mapping method.
+ * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one iterable type to another. The collection
+ * elements are mapped either by a {@link TypeConversion} or another mapping method.
  *
  * @author Gunnar Morling
  */
@@ -46,9 +47,13 @@ public class IterableMappingMethod extends MappingMethod {
     }
 
     @Override
-    public String toString() {
-        return "MappingMethod {" +
-            "\n    elementMappingMethod=" + elementMappingMethod +
-            "\n}";
+    public Set<Type> getImportTypes() {
+        Set<Type> types = super.getImportTypes();
+
+        if ( conversion != null ) {
+            types.addAll( conversion.getImportTypes() );
+        }
+
+        return types;
     }
 }

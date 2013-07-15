@@ -19,48 +19,47 @@
 package org.mapstruct.ap.model.source;
 
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 
-import org.mapstruct.ap.IterableMappingPrism;
+import org.mapstruct.ap.MapMappingPrism;
 
 /**
- * Represents an iterable mapping as configured via {@code @IterableMapping}.
+ * Represents a map mapping as configured via {@code @MapMapping}.
  *
  * @author Gunnar Morling
  */
-public class IterableMapping {
+public class MapMapping {
 
-    private final String dateFormat;
+    private final String keyFormat;
+    private final String valueFormat;
     private final AnnotationMirror mirror;
-    private final AnnotationValue dateFormatAnnotationValue;
 
-    public static IterableMapping fromPrism(IterableMappingPrism iterableMapping) {
-        if ( iterableMapping == null ) {
+    public static MapMapping fromPrism(MapMappingPrism mapMapping) {
+        if ( mapMapping == null ) {
             return null;
         }
 
-        return new IterableMapping(
-            iterableMapping.dateFormat(),
-            iterableMapping.mirror,
-            iterableMapping.values.dateFormat()
+        return new MapMapping(
+            mapMapping.keyDateFormat(),
+            mapMapping.valueDateFormat(),
+            mapMapping.mirror
         );
     }
 
-    private IterableMapping(String dateFormat, AnnotationMirror mirror, AnnotationValue dateFormatAnnotationValue) {
-        this.dateFormat = dateFormat;
+    private MapMapping(String keyFormat, String valueFormat, AnnotationMirror mirror) {
+        this.keyFormat = keyFormat;
+        this.valueFormat = valueFormat;
         this.mirror = mirror;
-        this.dateFormatAnnotationValue = dateFormatAnnotationValue;
     }
 
-    public String getDateFormat() {
-        return dateFormat;
+    public String getKeyFormat() {
+        return keyFormat;
+    }
+
+    public String getValueFormat() {
+        return valueFormat;
     }
 
     public AnnotationMirror getMirror() {
         return mirror;
-    }
-
-    public AnnotationValue getDateFormatAnnotationValue() {
-        return dateFormatAnnotationValue;
     }
 }

@@ -19,10 +19,12 @@
 package org.mapstruct.ap.writer;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeanModel;
+import freemarker.template.Configuration;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
 import freemarker.template.TemplateException;
@@ -40,10 +42,10 @@ import org.mapstruct.ap.writer.ModelWriter.DefaultModelElementWriterContext;
  */
 public class ModelIncludeDirective implements TemplateDirectiveModel {
 
-    private DefaultModelElementWriterContext context;
+    private final Configuration configuration;
 
-    public ModelIncludeDirective(DefaultModelElementWriterContext context) {
-        this.context = context;
+    public ModelIncludeDirective(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @Override
@@ -51,13 +53,8 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
                         TemplateDirectiveBody body)
         throws TemplateException, IOException {
 
-        Object wrappedObject = ( (BeanModel) params.get( "object" ) ).getWrappedObject();
-
-        if ( !( wrappedObject instanceof ModelElement ) ) {
-            throw new IllegalArgumentException( "Given object isn't a ModelElement:" + wrappedObject );
-        }
-
-        ModelElement modelElement = (ModelElement) wrappedObject;
+        ModelElement modelElement = getModelElement( params );
+        DefaultModelElementWriterContext context = createContext( params );
 
         try {
             modelElement.write( context, env.getOut() );
@@ -74,5 +71,49 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
         catch ( Exception e ) {
             throw new RuntimeException( e );
         }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private ModelElement getModelElement(Map params) {
+        if ( !params.containsKey( "object" ) ) {
+            throw new IllegalArgumentException(
+                "Object to be included must be passed to this directive via the 'object' parameter"
+            );
+        }
+
+        BeanModel objectModel = (BeanModel) params.get( "object" );
+
+        if ( objectModel == null ) {
+            throw new IllegalArgumentException(
+                "Object passed to this directive via the 'object' parameter must not be null"
+            );
+        }
+
+        if ( !( objectModel.getWrappedObject() instanceof ModelElement ) ) {
+            throw new IllegalArgumentException( "Given object isn't a ModelElement:" + objectModel.getWrappedObject() );
+        }
+
+        return (ModelElement) objectModel.getWrappedObject();
+    }
+
+    /**
+     * Creates a writer context providing access to the FreeMarker
+     * {@link Configuration} and a map with any additional parameters passed to
+     * the directive.
+     *
+     * @param params The parameter map passed to this directive.
+     *
+     * @return A writer context.
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private DefaultModelElementWriterContext createContext(Map params) {
+        Map<String, Object> ext = new HashMap<String, Object>( params );
+        ext.remove( "object" );
+
+        Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
+        values.put( Configuration.class, configuration );
+        values.put( Map.class, ext );
+
+        return new DefaultModelElementWriterContext( values );
     }
 }
