@@ -19,16 +19,19 @@
 
 -->
     @Override
-    public ${targetType.name} ${name}(${sourceType.name} ${parameterName}) {
-        if ( ${parameterName} == null ) {
-            return null;
+    public ${returnType.name} ${name}(<#list parameters as param>${param.type.name} ${param.name}<#if param_has_next>, </#if></#list>) {
+        if ( ${sourceParameters[0].name} == null ) {
+            return<#if returnType.name != "void"> null</#if>;
         }
-
-        ${targetType.name} ${targetType.name?uncap_first} = new ${targetType.name}();
+        <#if !existingInstanceMapping>
+        ${resultType.name} ${resultName} = new ${resultType.name}();
+        </#if>
 
         <#list propertyMappings as propertyMapping>
             <@includeModel object=propertyMapping/>
         </#list>
+        <#if returnType.name != "void">
 
-        return ${targetType.name?uncap_first};
+        return ${resultName};
+        </#if>
     }

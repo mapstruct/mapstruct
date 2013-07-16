@@ -18,7 +18,10 @@
  */
 package org.mapstruct.ap.model.source;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.ExecutableElement;
 
@@ -34,23 +37,28 @@ public class Method {
 
     private final Type declaringMapper;
     private final ExecutableElement executable;
-    private final String parameterName;
-    private final Type sourceType;
-    private final Type targetType;
+    private final List<Parameter> parameters;
+    private final List<Parameter> sourceParameters;
+    private final String resultName;
+    private final Type resultType;
+    private final Type returnType;
     private Map<String, Mapping> mappings;
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
 
-    public static Method forMethodRequiringImplementation(ExecutableElement executable, String parameterName,
-                                                          Type sourceType, Type targetType,
+    public static Method forMethodRequiringImplementation(ExecutableElement executable, List<Parameter> parameters,
+                                                          List<Parameter> sourceParameters, Type resultType,
+                                                          String resultName, Type targetType,
                                                           Map<String, Mapping> mappings,
                                                           IterableMapping iterableMapping, MapMapping mapMapping) {
 
         return new Method(
             null,
             executable,
-            parameterName,
-            sourceType,
+            parameters,
+            sourceParameters,
+            resultType,
+            resultName,
             targetType,
             mappings,
             iterableMapping,
@@ -64,8 +72,10 @@ public class Method {
         return new Method(
             declaringMapper,
             executable,
-            parameterName,
-            sourceType,
+            Arrays.asList( new Parameter( parameterName, sourceType ) ),
+            Arrays.asList( new Parameter( parameterName, sourceType ) ),
+            targetType,
+            null,
             targetType,
             Collections.<String, Mapping>emptyMap(),
             null,
@@ -73,14 +83,18 @@ public class Method {
         );
     }
 
-    private Method(Type declaringMapper, ExecutableElement executable, String parameterName, Type sourceType,
-                   Type targetType, Map<String, Mapping> mappings, IterableMapping iterableMapping,
+    private Method(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
+                   List<Parameter> sourceParameters, Type resultType, String resultName,
+                   Type returnType,
+                   Map<String, Mapping> mappings, IterableMapping iterableMapping,
                    MapMapping mapMapping) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
-        this.parameterName = parameterName;
-        this.sourceType = sourceType;
-        this.targetType = targetType;
+        this.parameters = parameters;
+        this.sourceParameters = sourceParameters;
+        this.resultType = resultType;
+        this.resultName = resultName;
+        this.returnType = returnType;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
@@ -105,16 +119,24 @@ public class Method {
         return executable.getSimpleName().toString();
     }
 
-    public String getParameterName() {
-        return parameterName;
+    public List<Parameter> getParameters() {
+        return parameters;
     }
 
-    public Type getSourceType() {
-        return sourceType;
+    public String getResultName() {
+        return resultName;
     }
 
-    public Type getTargetType() {
-        return targetType;
+    public List<Parameter> getSourceParameters() {
+        return sourceParameters;
+    }
+
+    public Type getResultType() {
+        return resultType;
+    }
+
+    public Type getReturnType() {
+        return returnType;
     }
 
     public Map<String, Mapping> getMappings() {
@@ -143,16 +165,20 @@ public class Method {
 
     public boolean reverses(Method method) {
         return
-            equals( sourceType, method.getTargetType() ) &&
-                equals( targetType, method.getSourceType() );
+            equals( getSingleSourceType(), method.getReturnType() )
+                && equals( returnType, method.getSingleSourceType() );
+    }
+
+    public Type getSingleSourceType() {
+        return sourceParameters.size() == 1 ? sourceParameters.get( 0 ).getType() : null;
     }
 
     public boolean isIterableMapping() {
-        return sourceType.isIterableType() && targetType.isIterableType();
+        return getSingleSourceType().isIterableType() && resultType.isIterableType();
     }
 
     public boolean isMapMapping() {
-        return sourceType.isMapType() && targetType.isMapType();
+        return getSingleSourceType().isMapType() && resultType.isMapType();
     }
 
     private boolean equals(Object o1, Object o2) {
@@ -161,6 +187,19 @@ public class Method {
 
     @Override
     public String toString() {
-        return targetType + " " + getName() + "(" + sourceType + " " + parameterName + ")";
+        return returnType + " " + getName() + "(" + getParamsList() + ")";
+    }
+
+    private String getParamsList() {
+        StringBuilder sb = new StringBuilder();
+        for ( Iterator<Parameter> it = parameters.iterator(); it.hasNext(); ) {
+            Parameter param = it.next();
+            sb.append( param.getType() ).append( " " ).append( param.getName() );
+            if ( it.hasNext() ) {
+                sb.append( ", " );
+            }
+        }
+
+        return sb.toString();
     }
 }

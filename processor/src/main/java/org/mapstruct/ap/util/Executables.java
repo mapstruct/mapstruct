@@ -19,13 +19,16 @@
 package org.mapstruct.ap.util;
 
 import java.beans.Introspector;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 
+import org.mapstruct.ap.MappingTargetPrism;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.source.Parameter;
 
@@ -105,7 +108,7 @@ public class Executables {
         return propertyNames;
     }
 
-    public Parameter retrieveParameter(ExecutableElement method) {
+    public Parameter retrieveSingleParameter(ExecutableElement method) {
         List<? extends VariableElement> parameters = method.getParameters();
 
         if ( parameters.size() != 1 ) {
@@ -117,8 +120,40 @@ public class Executables {
 
         return new Parameter(
             parameter.getSimpleName().toString(),
-            typeUtil.retrieveType( parameter.asType() )
+            typeUtil.retrieveType( parameter.asType() ),
+            false
         );
+    }
+
+    public List<Parameter> retrieveParameters(ExecutableElement method) {
+        List<? extends VariableElement> parameters = method.getParameters();
+        List<Parameter> result = new ArrayList<Parameter>( parameters.size() );
+
+        boolean mappingTargetDefined = false;
+        for ( Iterator<? extends VariableElement> it = parameters.iterator(); it.hasNext(); ) {
+            VariableElement parameter = it.next();
+
+            boolean isExplicitMappingTarget = null != MappingTargetPrism.getInstanceOn( parameter );
+            mappingTargetDefined |= isExplicitMappingTarget;
+
+            result
+                .add(
+                    new Parameter(
+                        parameter.getSimpleName().toString(),
+                        typeUtil.retrieveType( parameter.asType() ),
+                        // the parameter is a mapping target, if it was either defined explicitly or if if this is the
+                        // last parameter in a multi-argument void method
+                        isExplicitMappingTarget
+                            || ( !mappingTargetDefined && isMultiArgVoidMethod( method ) && !it.hasNext() )
+                    )
+                );
+        }
+
+        return result;
+    }
+
+    public boolean isMultiArgVoidMethod(ExecutableElement method) {
+        return method.getParameters().size() > 1 && Type.VOID == retrieveReturnType( method );
     }
 
     public Type retrieveReturnType(ExecutableElement method) {

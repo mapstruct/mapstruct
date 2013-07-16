@@ -19,23 +19,27 @@
 
 -->
     @Override
-    public <@includeModel object=targetType/> ${name}(<@includeModel object=sourceType/> ${parameterName}) {
-        if ( ${parameterName} == null ) {
-            return null;
+    public <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param.type/> ${param.name}<#if param_has_next>, </#if></#list>) {
+        if ( ${sourceParameters[0].name} == null ) {
+            return<#if returnType.name != "void"> null</#if>;
         }
 
+        <#if existingInstanceMapping>
+        ${resultName}.clear();
+        <#else>
         <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
-        <#if targetType.name == "Iterable" && targetType.packageName == "java.lang">${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><<@includeModel object=targetType.typeParameters[0]/>> ${targetType.name?uncap_first} = new <#if targetType.iterableImplementationType??>${targetType.iterableImplementationType.name}<#else>${targetType.name}</#if><<@includeModel object=targetType.typeParameters[0]/>>();
+        <#if resultType.name == "Iterable" && resultType.packageName == "java.lang">${resultType.iterableImplementationType.name}<#else>${resultType.name}</#if><<@includeModel object=resultType.typeParameters[0]/>> ${resultName} = new <#if resultType.iterableImplementationType??>${resultType.iterableImplementationType.name}<#else>${resultType.name}</#if><<@includeModel object=resultType.typeParameters[0]/>>();
+        </#if>
 
-        for ( <@includeModel object=sourceType.typeParameters[0]/> ${sourceType.typeParameters[0].name?uncap_first} : ${parameterName} ) {
+        for ( <@includeModel object=sourceParameters[0].type.typeParameters[0]/> ${sourceParameters[0].type.typeParameters[0].name?uncap_first} : ${sourceParameters[0].name} ) {
             <#if elementMappingMethod??>
-            ${targetType.name?uncap_first}.add( <@includeModel object=elementMappingMethod input="${sourceType.typeParameters[0].name?uncap_first}"/> );
+            ${resultName}.add( <@includeModel object=elementMappingMethod input="${sourceParameters[0].type.typeParameters[0].name?uncap_first}"/> );
             <#else>
                 <#if (conversion.exceptionTypes?size == 0) >
-            ${targetType.name?uncap_first}.add( <@includeModel object=conversion/> );
+            ${resultName}.add( <@includeModel object=conversion/> );
                 <#else>
             try {
-                ${targetType.name?uncap_first}.add( <@includeModel object=conversion/> );
+                ${resultName}.add( <@includeModel object=conversion/> );
             }
                     <#list conversion.exceptionTypes as exceptionType>
             catch( ${exceptionType.name} e ) {
@@ -45,6 +49,8 @@
                 </#if>
             </#if>
         }
+        <#if returnType.name != "void">
 
-        return ${targetType.name?uncap_first};
+        return ${resultName};
+        </#if>
     }

@@ -38,6 +38,10 @@ import org.mapstruct.ap.util.Strings;
  * @author Gunnar Morling
  */
 public class Type extends AbstractModelElement implements Comparable<Type> {
+    /**
+     * Type representing {@code void}
+     */
+    public static final Type VOID = new Type( "void" );
 
     private static final Set<String> PRIMITIVE_TYPE_NAMES = new HashSet<String>(
         Arrays.asList( "boolean", "char", "byte", "short", "int", "long", "float", "double" )
@@ -61,6 +65,7 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         DEFAULT_MAP_IMPLEMENTATION_TYPES.put( Map.class.getName(), forClass( HashMap.class ) );
     }
 
+    private final String canonicalName;
     private final String packageName;
     private final String name;
     private final List<Type> typeParameters;
@@ -77,6 +82,7 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
 
         if ( pakkage != null ) {
             return new Type(
+                clazz.getCanonicalName(),
                 pakkage.getName(),
                 clazz.getSimpleName(),
                 clazz.isEnum(),
@@ -92,15 +98,16 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
     }
 
     public Type(String name) {
-        this( null, name, false, false, false, false, Collections.<Type>emptyList() );
+        this( name, null, name, false, false, false, false, Collections.<Type>emptyList() );
     }
 
     public Type(String packageName, String name) {
-        this( packageName, name, false, false, false, false, Collections.<Type>emptyList() );
+        this( packageName + "." + name, packageName, name, false, false, false, false, Collections.<Type>emptyList() );
     }
 
-    public Type(String packageName, String name, boolean isEnumType, boolean isCollectionType,
+    public Type(String canonicalName, String packageName, String name, boolean isEnumType, boolean isCollectionType,
                 boolean isIterableType, boolean isMapType, List<Type> typeParameters) {
+        this.canonicalName = canonicalName;
         this.packageName = packageName;
         this.name = name;
         this.isEnumType = isEnumType;
@@ -126,6 +133,7 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         if ( isMapType ) {
             Type mapType = DEFAULT_MAP_IMPLEMENTATION_TYPES.get( packageName + "." + name );
             mapImplementationType = mapType != null ? new Type(
+                mapType.getPackageName() + "." + mapType.getName(),
                 mapType.getPackageName(),
                 mapType.getName(),
                 mapType.isEnumType(),
@@ -138,6 +146,10 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         else {
             mapImplementationType = null;
         }
+    }
+
+    public String getCanonicalName() {
+        return canonicalName;
     }
 
     public String getPackageName() {

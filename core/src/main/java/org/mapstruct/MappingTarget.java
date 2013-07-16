@@ -16,30 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 /**
- * Represents a reference to {@link MappingMethod}.
+ * Declares a parameter of a mapping method to be the target of the mapping.
+ * <p>
+ * Not more than one parameter can be declared as {@code MappingTarget}.
+ * <p>
+ * For methods with return type {@code void}, the last parameter of the method is regarded as {@code MappingTarget},
+ * unless another parameter carries this annotation.
  *
- * @author Gunnar Morling
+ * @author Andreas Gudian
  */
-public class MappingMethodReference extends MappingMethod {
-
-    private final Type declaringMapper;
-
-    public MappingMethodReference(Type declaringMapper, String name) {
-        super( name, null, null, null, null, null );
-        this.declaringMapper = declaringMapper;
-    }
-
-    public Type getDeclaringMapper() {
-        return declaringMapper;
-    }
-
-    public Set<Type> getReferencedTypes() {
-        return new HashSet<Type>();
-    }
+@Target( ElementType.PARAMETER )
+public @interface MappingTarget {
 }

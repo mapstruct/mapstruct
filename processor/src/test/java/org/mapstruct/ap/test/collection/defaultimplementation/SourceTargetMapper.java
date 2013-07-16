@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mappers;
+import org.mapstruct.MappingTarget;
 
 @Mapper
 public interface SourceTargetMapper {
@@ -41,4 +42,11 @@ public interface SourceTargetMapper {
     Collection<TargetFoo> sourceFoosToTargetFoos(Collection<SourceFoo> foos);
 
     Iterable<TargetFoo> sourceFoosToTargetFoos(Iterable<SourceFoo> foos);
+
+    void sourceFoosToTargetFoos1(Iterable<SourceFoo> sourceFoos, List<TargetFoo> targetFoos);
+
+    void sourceFoosToTargetFoos2(@MappingTarget List<TargetFoo> targetFoos, Iterable<SourceFoo> sourceFoos);
+
+    Iterable<TargetFoo> sourceFoosToTargetFoos3(Iterable<SourceFoo> sourceFoos,
+                                                @MappingTarget List<TargetFoo> targetFoos);
 }

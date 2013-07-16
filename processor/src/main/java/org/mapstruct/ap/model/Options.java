@@ -22,7 +22,7 @@ package org.mapstruct.ap.model;
  * The options passed to the code generator.
  *
  * @author Andreas Gudian
- * @autor Gunnar Morling
+ * @author Gunnar Morling
  */
 public class Options {
     private final boolean suppressGeneratorTimestamp;

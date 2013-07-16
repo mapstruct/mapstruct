@@ -58,18 +58,68 @@ public class MapMappingTest extends MapperTestBase {
 
     @Test
     public void shouldCreateReverseMapMethodImplementation() {
-        Map<String, String> values = new HashMap<String, String>();
-        values.put( "42", "01.01.1980" );
-        values.put( "121", "20.07.2013" );
+        Map<String, String> values = createStringStringMap();
 
         Map<Long, Date> target = SourceTargetMapper.INSTANCE.stringStringMapToLongDateMap( values );
 
+        assertResult( target );
+    }
+
+    @Test
+    @IssueKey("19")
+    public void shouldCreateReverseMapMethodImplementation1() {
+        Map<String, String> values = createStringStringMap();
+
+        Map<Long, Date> target = new HashMap<Long, Date>();
+        target.put( 66L, new GregorianCalendar( 2013, 7, 16 ).getTime() );
+
+        SourceTargetMapper.INSTANCE.stringStringMapToLongDateMap( values, target );
+
+        assertResult( target );
+    }
+
+    @Test
+    @IssueKey("19")
+    public void shouldCreateReverseMapMethodImplementation2() {
+        Map<String, String> values = createStringStringMap();
+
+        Map<Long, Date> target = new HashMap<Long, Date>();
+        target.put( 66L, new GregorianCalendar( 2013, 7, 16 ).getTime() );
+
+        SourceTargetMapper.INSTANCE.stringStringMapToLongDateMap2( target, values );
+
+        assertResult( target );
+    }
+
+    @Test
+    @IssueKey("19")
+    public void shouldCreateReverseMapMethodImplementation3() {
+        Map<String, String> values = createStringStringMap();
+
+        Map<Long, Date> target = new HashMap<Long, Date>();
+        target.put( 66L, new GregorianCalendar( 2013, 7, 16 ).getTime() );
+
+        Map<Long, Date> returnedTarget = SourceTargetMapper.INSTANCE.stringStringMapToLongDateMap3( values, target );
+
+        assertThat( target ).isSameAs( returnedTarget );
+
+        assertResult( target );
+    }
+
+    private void assertResult(Map<Long, Date> target) {
         assertThat( target ).isNotNull();
         assertThat( target ).hasSize( 2 );
         assertThat( target ).includes(
             entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
             entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
         );
+    }
+
+    private Map<String, String> createStringStringMap() {
+        Map<String, String> values = new HashMap<String, String>();
+        values.put( "42", "01.01.1980" );
+        values.put( "121", "20.07.2013" );
+        return values;
     }
 
     @Test
@@ -94,9 +144,7 @@ public class MapMappingTest extends MapperTestBase {
 
     @Test
     public void shouldInvokeReverseMapMethodImplementationForMapTypedProperty() {
-        Map<String, String> values = new HashMap<String, String>();
-        values.put( "42", "01.01.1980" );
-        values.put( "121", "20.07.2013" );
+        Map<String, String> values = createStringStringMap();
 
         Target target = new Target();
         target.setValues( values );

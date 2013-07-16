@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.inheritance;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mappers;
+import org.mapstruct.MappingTarget;
 
 @Mapper
 public interface SourceTargetMapper {
@@ -27,6 +28,12 @@ public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     TargetExt sourceToTarget(SourceExt source);
+
+    void sourceToTarget1(SourceExt source, TargetExt target);
+
+    void sourceToTarget2(@MappingTarget TargetExt target, SourceExt source);
+
+    TargetBase sourceToTarget3(SourceExt source, @MappingTarget TargetExt target);
 
     SourceExt targetToSource(TargetExt target);
 }

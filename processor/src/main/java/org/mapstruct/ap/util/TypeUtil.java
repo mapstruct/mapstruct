@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -56,6 +57,7 @@ public class TypeUtil {
         }
 
         return new Type(
+            ( (TypeElement) type.asElement() ).getQualifiedName().toString(),
             elementUtils.getPackageOf( type.asElement() ).toString(),
             type.asElement().getSimpleName().toString(),
             type.asElement().getKind() == ElementKind.ENUM,
@@ -85,8 +87,42 @@ public class TypeUtil {
         else if ( mirror.getKind() == TypeKind.DECLARED ) {
             return getType( ( (DeclaredType) mirror ) );
         }
+        else if ( mirror.getKind() == TypeKind.VOID ) {
+            return Type.VOID;
+        }
         else {
             return new Type( mirror.toString() );
         }
+    }
+
+    /**
+     * @param type1 first type
+     * @param type2 second type
+     *
+     * @return {@code true} if and only if the first type is assignable to the second
+     */
+    public boolean isAssignable(Type type1, Type type2) {
+        if ( type1.equals( type2 ) ) {
+            return true;
+        }
+
+        TypeMirror mirror1 = toTypeMirror( type1 );
+        TypeMirror mirror2 = toTypeMirror( type2 );
+        return null != mirror1 && null != mirror2 && typeUtils.isAssignable( mirror1, mirror2 );
+    }
+
+    private TypeMirror toTypeMirror(Type type) {
+        TypeElement rawType = elementUtils.getTypeElement( type.getCanonicalName() );
+
+        if ( null == rawType ) {
+            return null;
+        }
+
+        TypeMirror[] parameters = new TypeMirror[type.getTypeParameters().size()];
+        for ( int i = 0; i < type.getTypeParameters().size(); i++ ) {
+            parameters[i] = toTypeMirror( type.getTypeParameters().get( i ) );
+        }
+
+        return typeUtils.getDeclaredType( rawType, parameters );
     }
 }

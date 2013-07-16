@@ -19,7 +19,10 @@
 package org.mapstruct.ap.model;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.model.source.Parameter;
 
 /**
  * A method implemented or referenced by a {@link Mapper} class.
@@ -29,38 +32,62 @@ import java.util.Set;
 public abstract class MappingMethod extends AbstractModelElement {
 
     private final String name;
-    private final String parameterName;
-    private final Type sourceType;
-    private final Type targetType;
+    private final List<Parameter> parameters;
+    private final List<Parameter> sourceParameters;
+    private final Type resultType;
+    private final String resultName;
+    private final Type returnType;
+    private final boolean existingInstanceMapping;
 
-    protected MappingMethod(String name, String parameterName, Type sourceType, Type targetType) {
+    protected MappingMethod(String name, List<Parameter> parameters, List<Parameter> sourceParameters, Type resultType,
+                            String resultName, Type returnType) {
         this.name = name;
-        this.parameterName = parameterName;
-        this.sourceType = sourceType;
-        this.targetType = targetType;
+        this.parameters = parameters;
+        this.sourceParameters = sourceParameters;
+        this.resultType = resultType;
+        this.resultName = resultName;
+        this.returnType = returnType;
+        this.existingInstanceMapping =
+            ( null != parameters && null != sourceParameters && parameters.size() > sourceParameters.size() );
     }
 
     public String getName() {
         return name;
     }
 
-    public String getParameterName() {
-        return parameterName;
+    public List<Parameter> getParameters() {
+        return parameters;
     }
 
-    public Type getSourceType() {
-        return sourceType;
+    public List<Parameter> getSourceParameters() {
+        return sourceParameters;
     }
 
-    public Type getTargetType() {
-        return targetType;
+    public Type getResultType() {
+        return resultType;
+    }
+
+    public String getResultName() {
+        return resultName;
+    }
+
+    public Type getReturnType() {
+        return returnType;
+    }
+
+    public boolean isExistingInstanceMapping() {
+        return existingInstanceMapping;
     }
 
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = new HashSet<Type>();
-        types.add( getSourceType() );
-        types.add( getTargetType() );
+
+        for ( Parameter param : getParameters() ) {
+            types.add( param.getType() );
+        }
+
+        types.add( getReturnType() );
 
         return types;
     }
@@ -69,7 +96,7 @@ public abstract class MappingMethod extends AbstractModelElement {
     public String toString() {
         return "MappingMethod {" +
             "\n    name='" + name + "\'," +
-            "\n    parameterName='" + parameterName + "\'," +
+            "\n    parameters='" + parameters + "\'," +
             "\n}";
     }
 }

@@ -36,15 +36,59 @@ public class InheritanceTest extends MapperTestBase {
     @Test
     @IssueKey("17")
     public void shouldMapAttributeFromSuperType() {
-        SourceExt source = new SourceExt();
-        source.setFoo( 42 );
-        source.setBar( 23L );
+        SourceExt source = createSource();
 
         TargetExt target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
+        assertResult( target );
+    }
+
+    @Test
+    @IssueKey("19")
+    public void existingMapping1() {
+        SourceExt source = createSource();
+
+        TargetExt target = new TargetExt();
+        SourceTargetMapper.INSTANCE.sourceToTarget1( source, target );
+
+        assertResult( target );
+    }
+
+    @Test
+    @IssueKey("19")
+    public void existingMapping2() {
+        SourceExt source = createSource();
+
+        TargetExt target = new TargetExt();
+        SourceTargetMapper.INSTANCE.sourceToTarget2( target, source );
+
+        assertResult( target );
+    }
+
+    @Test
+    @IssueKey("19")
+    public void existingMapping3() {
+        SourceExt source = createSource();
+
+        TargetExt target = new TargetExt();
+        TargetBase result = SourceTargetMapper.INSTANCE.sourceToTarget3( source, target );
+
+        assertThat( target ).isSameAs( result );
+
+        assertResult( target );
+    }
+
+    private void assertResult(TargetExt target) {
         assertThat( target ).isNotNull();
         assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 42 ) );
         assertThat( target.getBar() ).isEqualTo( 23 );
+    }
+
+    private SourceExt createSource() {
+        SourceExt source = new SourceExt();
+        source.setFoo( 42 );
+        source.setBar( 23L );
+        return source;
     }
 
     @Test

@@ -18,7 +18,10 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.model.source.Parameter;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one {@code Map} type to another. Keys and
@@ -33,10 +36,11 @@ public class MapMappingMethod extends MappingMethod {
     private final MappingMethodReference valueMappingMethod;
     private final TypeConversion valueConversion;
 
-    public MapMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
+    public MapMappingMethod(String name, List<Parameter> parameters, List<Parameter> sourceParameters, Type resultType,
+                            String resultName, Type returnType,
                             MappingMethodReference keyMappingMethod, TypeConversion keyConversion,
                             MappingMethodReference valueMappingMethod, TypeConversion valueConversion) {
-        super( name, parameterName, sourceType, targetType );
+        super( name, parameters, sourceParameters, resultType, resultName, returnType );
 
         this.keyMappingMethod = keyMappingMethod;
         this.keyConversion = keyConversion;
@@ -67,9 +71,5 @@ public class MapMappingMethod extends MappingMethod {
         types.addAll( keyConversion.getImportTypes() );
 
         return types;
-    }
-
-    public String getReturnValueName() {
-        return "map";
     }
 }

@@ -18,7 +18,10 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.model.source.Parameter;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one iterable type to another. The collection
@@ -31,9 +34,10 @@ public class IterableMappingMethod extends MappingMethod {
     private final MappingMethodReference elementMappingMethod;
     private final TypeConversion conversion;
 
-    public IterableMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
+    public IterableMappingMethod(String name, List<Parameter> parameters, List<Parameter> sourceParameters,
+                                 Type resultType, String resultName, Type returnType,
                                  MappingMethodReference elementMappingMethod, TypeConversion conversion) {
-        super( name, parameterName, sourceType, targetType );
+        super( name, parameters, sourceParameters, resultType, resultName, returnType );
         this.elementMappingMethod = elementMappingMethod;
         this.conversion = conversion;
     }
