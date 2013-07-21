@@ -67,39 +67,27 @@ public class MapMappingTest extends MapperTestBase {
 
     @Test
     @IssueKey("19")
-    public void shouldCreateReverseMapMethodImplementation1() {
+    public void shouldCreateMapMethodImplementationWithTargetParameter() {
         Map<String, String> values = createStringStringMap();
 
         Map<Long, Date> target = new HashMap<Long, Date>();
         target.put( 66L, new GregorianCalendar( 2013, 7, 16 ).getTime() );
 
-        SourceTargetMapper.INSTANCE.stringStringMapToLongDateMap( values, target );
+        SourceTargetMapper.INSTANCE.stringStringMapToLongDateMapUsingTargetParameter( target, values );
 
         assertResult( target );
     }
 
     @Test
     @IssueKey("19")
-    public void shouldCreateReverseMapMethodImplementation2() {
+    public void shouldCreateMapMethodImplementationWithReturnedTargetParameter() {
         Map<String, String> values = createStringStringMap();
 
         Map<Long, Date> target = new HashMap<Long, Date>();
         target.put( 66L, new GregorianCalendar( 2013, 7, 16 ).getTime() );
 
-        SourceTargetMapper.INSTANCE.stringStringMapToLongDateMap2( target, values );
-
-        assertResult( target );
-    }
-
-    @Test
-    @IssueKey("19")
-    public void shouldCreateReverseMapMethodImplementation3() {
-        Map<String, String> values = createStringStringMap();
-
-        Map<Long, Date> target = new HashMap<Long, Date>();
-        target.put( 66L, new GregorianCalendar( 2013, 7, 16 ).getTime() );
-
-        Map<Long, Date> returnedTarget = SourceTargetMapper.INSTANCE.stringStringMapToLongDateMap3( values, target );
+        Map<Long, Date> returnedTarget = SourceTargetMapper.INSTANCE
+            .stringStringMapToLongDateMapUsingTargetParameterAndReturn( values, target );
 
         assertThat( target ).isSameAs( returnedTarget );
 

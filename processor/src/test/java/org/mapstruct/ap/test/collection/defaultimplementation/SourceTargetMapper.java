@@ -43,10 +43,9 @@ public interface SourceTargetMapper {
 
     Iterable<TargetFoo> sourceFoosToTargetFoos(Iterable<SourceFoo> foos);
 
-    void sourceFoosToTargetFoos1(Iterable<SourceFoo> sourceFoos, List<TargetFoo> targetFoos);
+    void sourceFoosToTargetFoosUsingTargetParameter(@MappingTarget List<TargetFoo> targetFoos,
+                                                    Iterable<SourceFoo> sourceFoos);
 
-    void sourceFoosToTargetFoos2(@MappingTarget List<TargetFoo> targetFoos, Iterable<SourceFoo> sourceFoos);
-
-    Iterable<TargetFoo> sourceFoosToTargetFoos3(Iterable<SourceFoo> sourceFoos,
-                                                @MappingTarget List<TargetFoo> targetFoos);
+    Iterable<TargetFoo> sourceFoosToTargetFoosUsingTargetParameterAndReturn(Iterable<SourceFoo> sourceFoos,
+                                                                            @MappingTarget List<TargetFoo> targetFoos);
 }

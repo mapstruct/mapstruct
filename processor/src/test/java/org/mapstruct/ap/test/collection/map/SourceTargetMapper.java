@@ -37,13 +37,12 @@ public interface SourceTargetMapper {
     Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source);
 
     @MapMapping(valueDateFormat = "dd.MM.yyyy")
-    void stringStringMapToLongDateMap(Map<String, String> source, Map<Long, Date> target);
+    void stringStringMapToLongDateMapUsingTargetParameter(@MappingTarget Map<Long, Date> target,
+                                                          Map<String, String> source);
 
     @MapMapping(valueDateFormat = "dd.MM.yyyy")
-    void stringStringMapToLongDateMap2(@MappingTarget Map<Long, Date> target, Map<String, String> source);
-
-    @MapMapping(valueDateFormat = "dd.MM.yyyy")
-    Map<Long, Date> stringStringMapToLongDateMap3(Map<String, String> source, @MappingTarget Map<Long, Date> target);
+    Map<Long, Date> stringStringMapToLongDateMapUsingTargetParameterAndReturn(Map<String, String> source,
+                                                                              @MappingTarget Map<Long, Date> target);
 
     Target sourceToTarget(Source source);
 

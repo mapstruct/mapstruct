@@ -95,28 +95,20 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
 
     @Test
     @IssueKey("19")
-    public void existingMapping1() {
+    public void shouldUseTargetParameterForMapping() {
         List<TargetFoo> target = new ArrayList<TargetFoo>();
-        SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos1( createSourceFooList(), target );
+        SourceTargetMapper.INSTANCE.sourceFoosToTargetFoosUsingTargetParameter( target, createSourceFooList() );
 
         assertResultList( target );
     }
 
     @Test
     @IssueKey("19")
-    public void existingMapping2() {
-        List<TargetFoo> target = new ArrayList<TargetFoo>();
-        SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos2( target, createSourceFooList() );
-
-        assertResultList( target );
-    }
-
-    @Test
-    @IssueKey("19")
-    public void existingMapping3() {
+    public void shouldUseAndReturnTargetParameterForMapping() {
         List<TargetFoo> target = new ArrayList<TargetFoo>();
         Iterable<TargetFoo> result =
-            SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos3( createSourceFooList(), target );
+            SourceTargetMapper.INSTANCE
+                .sourceFoosToTargetFoosUsingTargetParameterAndReturn( createSourceFooList(), target );
 
         assertThat( target == result ).isTrue();
         assertResultList( target );

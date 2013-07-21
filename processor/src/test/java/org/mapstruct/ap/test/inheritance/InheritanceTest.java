@@ -45,33 +45,22 @@ public class InheritanceTest extends MapperTestBase {
 
     @Test
     @IssueKey("19")
-    public void existingMapping1() {
+    public void shouldMapAttributeFromSuperTypeUsingTargetParameter() {
         SourceExt source = createSource();
 
         TargetExt target = new TargetExt();
-        SourceTargetMapper.INSTANCE.sourceToTarget1( source, target );
+        SourceTargetMapper.INSTANCE.sourceToTargetWithTargetParameter( target, source );
 
         assertResult( target );
     }
 
     @Test
     @IssueKey("19")
-    public void existingMapping2() {
+    public void shouldMapAttributeFromSuperTypeUsingReturnedTargetParameter() {
         SourceExt source = createSource();
 
         TargetExt target = new TargetExt();
-        SourceTargetMapper.INSTANCE.sourceToTarget2( target, source );
-
-        assertResult( target );
-    }
-
-    @Test
-    @IssueKey("19")
-    public void existingMapping3() {
-        SourceExt source = createSource();
-
-        TargetExt target = new TargetExt();
-        TargetBase result = SourceTargetMapper.INSTANCE.sourceToTarget3( source, target );
+        TargetBase result = SourceTargetMapper.INSTANCE.sourceToTargetWithTargetParameterAndReturn( source, target );
 
         assertThat( target ).isSameAs( result );
 

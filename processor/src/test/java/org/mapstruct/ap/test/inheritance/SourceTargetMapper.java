@@ -29,11 +29,9 @@ public interface SourceTargetMapper {
 
     TargetExt sourceToTarget(SourceExt source);
 
-    void sourceToTarget1(SourceExt source, TargetExt target);
+    void sourceToTargetWithTargetParameter(@MappingTarget TargetExt target, SourceExt source);
 
-    void sourceToTarget2(@MappingTarget TargetExt target, SourceExt source);
-
-    TargetBase sourceToTarget3(SourceExt source, @MappingTarget TargetExt target);
+    TargetBase sourceToTargetWithTargetParameterAndReturn(SourceExt source, @MappingTarget TargetExt target);
 
     SourceExt targetToSource(TargetExt target);
 }
