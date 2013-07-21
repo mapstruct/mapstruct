@@ -20,6 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.util.Set;
 
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -35,10 +36,9 @@ public class MapMappingMethod extends MappingMethod {
     private final TypeConversion keyConversion;
     private final TypeConversion valueConversion;
 
-    public MapMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
-                            MappingMethodReference keyMappingMethod, TypeConversion keyConversion,
+    public MapMappingMethod(Method method, MappingMethodReference keyMappingMethod, TypeConversion keyConversion,
                             MappingMethodReference valueMappingMethod, TypeConversion valueConversion) {
-        super( name, parameterName, sourceType, targetType );
+        super( method );
 
         this.keyMappingMethod = keyMappingMethod;
         this.keyConversion = keyConversion;
@@ -74,21 +74,21 @@ public class MapMappingMethod extends MappingMethod {
     public String getKeyVariableName() {
         return Strings.getSaveVariableName(
             "key",
-            getParameterName()
+            getParameterNames()
         );
     }
 
     public String getValueVariableName() {
         return Strings.getSaveVariableName(
             "value",
-            getParameterName()
+            getParameterNames()
         );
     }
 
     public String getEntryVariableName() {
         return Strings.getSaveVariableName(
             "entry",
-            getParameterName()
+            getParameterNames()
         );
     }
 }

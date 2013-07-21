@@ -16,24 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.inheritance;
+package org.mapstruct;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
-import org.mapstruct.MappingTarget;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
-@Mapper
-public interface SourceTargetMapper {
-
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    TargetExt sourceToTarget(SourceExt source);
-
-    void sourceToTarget1(SourceExt source, TargetExt target);
-
-    void sourceToTarget2(@MappingTarget TargetExt target, SourceExt source);
-
-    TargetBase sourceToTarget3(SourceExt source, @MappingTarget TargetExt target);
-
-    SourceExt targetToSource(TargetExt target);
+/**
+ * Declares a parameter of a mapping method to be the target of the mapping.
+ * <p>
+ * Not more than one parameter can be declared as {@code MappingTarget}.
+ * <p>
+ * For methods with return type {@code void}, the last parameter of the method is regarded as {@code MappingTarget},
+ * unless another parameter carries this annotation.
+ *
+ * @author Andreas Gudian
+ */
+@Target( ElementType.PARAMETER )
+public @interface MappingTarget {
 }

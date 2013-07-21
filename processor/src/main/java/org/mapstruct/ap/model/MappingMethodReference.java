@@ -22,6 +22,7 @@ import java.beans.Introspector;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -33,10 +34,9 @@ public class MappingMethodReference extends MappingMethod {
 
     private final Type declaringMapper;
 
-    public MappingMethodReference(Type declaringMapper, String name, String parameterName, Type sourceType,
-                                  Type targetType) {
-        super( name, parameterName, sourceType, targetType );
-        this.declaringMapper = declaringMapper;
+    public MappingMethodReference(Method method) {
+        super( method );
+        this.declaringMapper = method.getDeclaringMapper();
     }
 
     public Type getDeclaringMapper() {
@@ -48,10 +48,6 @@ public class MappingMethodReference extends MappingMethod {
     }
 
     public Set<Type> getReferencedTypes() {
-        Set<Type> types = new HashSet<Type>();
-        types.add( getSourceType() );
-        types.add( getTargetType() );
-
-        return types;
+        return new HashSet<Type>();
     }
 }

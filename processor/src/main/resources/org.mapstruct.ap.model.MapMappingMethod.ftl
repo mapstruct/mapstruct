@@ -19,23 +19,27 @@
 
 -->
     @Override
-    public <@includeModel object=targetType /> ${name}(<@includeModel object=sourceType /> ${parameterName}) {
-        if ( ${parameterName} == null ) {
-            return null;
+    public <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param.type/> ${param.name}<#if param_has_next>, </#if></#list>) {
+        if ( ${singleSourceParameter.name} == null ) {
+            return<#if returnType.name != "void"> null</#if>;
         }
 
-        <@includeModel object=targetType /> ${returnValueName} = new <#if targetType.mapImplementationType??><@includeModel object=targetType.mapImplementationType /><#else><@includeModel object=targetType /></#if>();
+        <#if existingInstanceMapping>
+        ${resultName}.clear();
+        <#else>
+        <@includeModel object=resultType /> ${resultName} = new <#if resultType.mapImplementationType??><@includeModel object=resultType.mapImplementationType /><#else><@includeModel object=resultType /></#if>();
+        </#if>
 
-        for ( Map.Entry<<#list sourceType.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${parameterName}.entrySet() ) {
+        for ( Map.Entry<<#list singleSourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${singleSourceParameter.name}.entrySet() ) {
 
         <#-- key -->
         <#if keyMappingMethod??>
-            <@includeModel object=targetType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyMappingMethod input="entry.getKey()"/>;
+            <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyMappingMethod input="entry.getKey()"/>;
         <#elseif keyConversion??>
             <#if (keyConversion.exceptionTypes?size == 0) >
-            <@includeModel object=targetType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyConversion/>;
+            <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyConversion/>;
             <#else>
-            <@includeModel object=targetType.typeParameters[0]/> ${keyVariableName};
+            <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName};
             try {
                 ${keyVariableName} = <@includeModel object=keyConversion/>;
             }
@@ -46,16 +50,16 @@
                 </#list>
             </#if>
         <#else>
-            <@includeModel object=targetType.typeParameters[0]/> ${keyVariableName} = entry.getKey();
+            <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = entry.getKey();
         </#if>
         <#-- value -->
         <#if valueMappingMethod??>
-            <@includeModel object=targetType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueMappingMethod input="entry.getValue()"/>;
+            <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueMappingMethod input="entry.getValue()"/>;
         <#elseif valueConversion??>
             <#if (valueConversion.exceptionTypes?size == 0) >
-            <@includeModel object=targetType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueConversion/>;
+            <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueConversion/>;
             <#else>
-            <@includeModel object=targetType.typeParameters[1]/> ${valueVariableName};
+            <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName};
             try {
                 ${valueVariableName} = <@includeModel object=valueConversion/>;
             }
@@ -66,11 +70,13 @@
                 </#list>
             </#if>
         <#else>
-            <@includeModel object=targetType.typeParameters[1]/> ${valueVariableName} = entry.getValue();
+            <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = entry.getValue();
         </#if>
 
-            ${returnValueName}.put( ${keyVariableName}, ${valueVariableName} );
+            ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
         }
+        <#if returnType.name != "void">
 
-        return ${returnValueName};
+        return ${resultName};
+        </#if>
     }

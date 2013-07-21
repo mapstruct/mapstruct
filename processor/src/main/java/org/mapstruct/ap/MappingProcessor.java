@@ -43,6 +43,7 @@ import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.ap.model.Options;
 import org.mapstruct.ap.model.ReportingPolicy;
@@ -76,7 +77,8 @@ import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
     @GeneratePrism(value = Mapping.class, publicAccess = true),
     @GeneratePrism(value = Mappings.class, publicAccess = true),
     @GeneratePrism(value = IterableMapping.class, publicAccess = true),
-    @GeneratePrism(value = MapMapping.class, publicAccess = true)
+    @GeneratePrism(value = MapMapping.class, publicAccess = true),
+    @GeneratePrism(value = MappingTarget.class, publicAccess = true)
 })
 @SupportedOptions({
     MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,

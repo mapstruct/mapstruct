@@ -18,8 +18,10 @@
  */
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
@@ -41,7 +43,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     @IssueKey("6")
     public void shouldUseDefaultImplementationForList() {
         Source source = new Source();
-        source.setFooList( Arrays.asList( new SourceFoo( "Bob" ), new SourceFoo( "Alice" ) ) );
+        source.setFooList( createSourceFooList() );
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
@@ -52,7 +54,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     @IssueKey("6")
     public void shouldUseDefaultImplementationForSet() {
         Source source = new Source();
-        source.setFooSet( new HashSet<SourceFoo>( Arrays.asList( new SourceFoo( "Bob" ), new SourceFoo( "Alice" ) ) ) );
+        source.setFooSet( new HashSet<SourceFoo>( createSourceFooList() ) );
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
@@ -63,7 +65,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     @IssueKey("6")
     public void shouldUseDefaultImplementationForCollection() {
         Source source = new Source();
-        source.setFooCollection( Arrays.asList( new SourceFoo( "Bob" ), new SourceFoo( "Alice" ) ) );
+        source.setFooCollection( createSourceFooList() );
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
@@ -74,10 +76,49 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     @IssueKey("6")
     public void shouldUseDefaultImplementationForIterable() {
         Source source = new Source();
-        source.setFooIterable( Arrays.asList( new SourceFoo( "Bob" ), new SourceFoo( "Alice" ) ) );
+        source.setFooIterable( createSourceFooList() );
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getFooIterable() ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+        Iterable<TargetFoo> fooIterable = target.getFooIterable();
+        assertResultList( fooIterable );
+    }
+
+    private void assertResultList(Iterable<TargetFoo> fooIterable) {
+        assertThat( fooIterable ).isNotNull();
+        assertThat( fooIterable ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+    }
+
+    private List<SourceFoo> createSourceFooList() {
+        return Arrays.asList( new SourceFoo( "Bob" ), new SourceFoo( "Alice" ) );
+    }
+
+    @Test
+    @IssueKey("19")
+    public void existingMapping1() {
+        List<TargetFoo> target = new ArrayList<TargetFoo>();
+        SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos1( createSourceFooList(), target );
+
+        assertResultList( target );
+    }
+
+    @Test
+    @IssueKey("19")
+    public void existingMapping2() {
+        List<TargetFoo> target = new ArrayList<TargetFoo>();
+        SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos2( target, createSourceFooList() );
+
+        assertResultList( target );
+    }
+
+    @Test
+    @IssueKey("19")
+    public void existingMapping3() {
+        List<TargetFoo> target = new ArrayList<TargetFoo>();
+        Iterable<TargetFoo> result =
+            SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos3( createSourceFooList(), target );
+
+        assertThat( target == result ).isTrue();
+        assertResultList( target );
     }
 }

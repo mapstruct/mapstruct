@@ -19,6 +19,7 @@
 package org.mapstruct.ap.util;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -114,8 +115,12 @@ public class Strings {
     }
 
     public static String getSaveVariableName(String name, String... existingVariableNames) {
+        return getSaveVariableName( name, Arrays.asList( existingVariableNames ) );
+    }
+
+    public static String getSaveVariableName(String name, Collection<String> existingVariableNames) {
         Set<String> conflictingNames = new HashSet<String>( KEYWORDS );
-        conflictingNames.addAll( Arrays.asList( existingVariableNames ) );
+        conflictingNames.addAll( existingVariableNames );
 
         while ( conflictingNames.contains( name ) ) {
             name = name + "_";

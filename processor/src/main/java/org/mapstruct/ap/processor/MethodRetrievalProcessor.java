@@ -115,19 +115,23 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private Method getMethod(TypeElement element, ExecutableElement method, boolean implementationRequired) {
-        Parameter parameter = executables.retrieveParameter( method );
+        List<Parameter> parameters = executables.retrieveParameters( method );
         Type returnType = executables.retrieveReturnType( method );
 
         //add method with property mappings if an implementation needs to be generated
         if ( implementationRequired ) {
-            boolean isValid = checkParameterAndReturnType( method, parameter.getType(), returnType );
+            List<Parameter> sourceParameters = extractSourceParameters( parameters );
+            Parameter targetParameter = extractTargetParameter( parameters );
+            Type resultType = selectResultType( returnType, targetParameter );
+
+            boolean isValid =
+                checkParameterAndReturnType( method, sourceParameters, targetParameter, resultType, returnType );
 
             if ( isValid ) {
                 return
                     Method.forMethodRequiringImplementation(
                         method,
-                        parameter.getName(),
-                        parameter.getType(),
+                        parameters,
                         returnType,
                         getMappings( method ),
                         IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ) ),
@@ -139,20 +143,92 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             }
         }
         //otherwise add reference to existing mapper method
-        else {
+        else if ( parameters.size() == 1 ) {
             return
                 Method.forReferencedMethod(
                     typeUtil.getType( typeUtils.getDeclaredType( element ) ),
                     method,
-                    parameter.getName(),
-                    parameter.getType(),
+                    parameters,
                     returnType
                 );
         }
+        else {
+            return null;
+        }
     }
 
-    private boolean checkParameterAndReturnType(ExecutableElement method, Type parameterType, Type returnType) {
-        if ( parameterType.isIterableType() && !returnType.isIterableType() ) {
+    private Parameter extractTargetParameter(List<Parameter> parameters) {
+        for ( Parameter param : parameters ) {
+            if ( param.isMappingTarget() ) {
+                return param;
+            }
+        }
+
+        return null;
+    }
+
+    private List<Parameter> extractSourceParameters(List<Parameter> parameters) {
+        List<Parameter> sourceParameters = new ArrayList<Parameter>( parameters.size() );
+        for ( Parameter param : parameters ) {
+            if ( !param.isMappingTarget() ) {
+                sourceParameters.add( param );
+            }
+        }
+
+        return sourceParameters;
+    }
+
+    private Type selectResultType(Type returnType, Parameter targetParameter) {
+        if ( null != targetParameter ) {
+            return targetParameter.getType();
+        }
+        else {
+            return returnType;
+        }
+    }
+
+    private boolean checkParameterAndReturnType(ExecutableElement method, List<Parameter> sourceParameters,
+                                                Parameter targetParameter, Type resultType, Type returnType) {
+        if ( sourceParameters.isEmpty() ) {
+            messager.printMessage( Kind.ERROR, "Can't generate mapping method with no input arguments.", method );
+            return false;
+        }
+
+        if ( sourceParameters.size() > 1 ) {
+            messager.printMessage(
+                Kind.ERROR,
+                "Mappings from more than one source objects are not yet supported.",
+                method
+            );
+            return false;
+        }
+
+        if ( targetParameter != null && ( sourceParameters.size() + 1 != method.getParameters().size() ) ) {
+            messager.printMessage(
+                Kind.ERROR,
+                "Can't generate mapping method with more than one @MappingTarget parameter.",
+                method
+            );
+            return false;
+        }
+
+        if ( resultType == Type.VOID ) {
+            messager.printMessage( Kind.ERROR, "Can't generate mapping method with return type void.", method );
+            return false;
+        }
+
+        if ( returnType != Type.VOID && !typeUtil.isAssignable( resultType, returnType ) ) {
+            messager.printMessage(
+                Kind.ERROR,
+                "The result type is not assignable to the the return type.",
+                method
+            );
+            return false;
+        }
+
+        Type parameterType = sourceParameters.get( 0 ).getType();
+
+        if ( parameterType.isIterableType() && !resultType.isIterableType() ) {
             messager.printMessage(
                 Kind.ERROR,
                 "Can't generate mapping method from iterable type to non-iterable type.",
@@ -161,7 +237,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( !parameterType.isIterableType() && returnType.isIterableType() ) {
+        if ( !parameterType.isIterableType() && resultType.isIterableType() ) {
             messager.printMessage(
                 Kind.ERROR,
                 "Can't generate mapping method from non-iterable type to iterable type.",
@@ -175,7 +251,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( returnType.isPrimitive() ) {
+        if ( resultType.isPrimitive() ) {
             messager.printMessage( Kind.ERROR, "Can't generate mapping method with primitive return type.", method );
             return false;
         }

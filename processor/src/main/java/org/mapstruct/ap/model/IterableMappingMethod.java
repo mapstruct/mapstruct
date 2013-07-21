@@ -21,6 +21,7 @@ package org.mapstruct.ap.model;
 import java.beans.Introspector;
 import java.util.Set;
 
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -34,9 +35,9 @@ public class IterableMappingMethod extends MappingMethod {
     private final MappingMethodReference elementMappingMethod;
     private final TypeConversion conversion;
 
-    public IterableMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
-                                 MappingMethodReference elementMappingMethod, TypeConversion conversion) {
-        super( name, parameterName, sourceType, targetType );
+    public IterableMappingMethod(Method method, MappingMethodReference elementMappingMethod,
+                                 TypeConversion conversion) {
+        super( method );
         this.elementMappingMethod = elementMappingMethod;
         this.conversion = conversion;
     }
@@ -63,10 +64,11 @@ public class IterableMappingMethod extends MappingMethod {
     public String getLoopVariableName() {
         return Strings.getSaveVariableName(
             Introspector.decapitalize(
-                getSourceType().getTypeParameters()
+                getSingleSourceParameter().getType()
+                    .getTypeParameters()
                     .get( 0 )
                     .getName()
-            ), getParameterName()
+            ), getParameterNames()
         );
     }
 }

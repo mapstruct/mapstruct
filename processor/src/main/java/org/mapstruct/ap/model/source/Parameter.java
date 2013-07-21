@@ -29,10 +29,16 @@ public class Parameter {
 
     private final String name;
     private final Type type;
+    private final boolean mappingTarget;
 
-    public Parameter(String name, Type type) {
+    public Parameter(String name, Type type, boolean mappingTarget) {
         this.name = name;
         this.type = type;
+        this.mappingTarget = mappingTarget;
+    }
+
+    public Parameter(String name, Type type) {
+        this( name, type, false );
     }
 
     public String getName() {
@@ -43,8 +49,12 @@ public class Parameter {
         return type;
     }
 
+    public boolean isMappingTarget() {
+        return mappingTarget;
+    }
+
     @Override
     public String toString() {
-        return type.toString() + " " + name;
+        return ( mappingTarget ? "@MappingTarget " : "" ) + type.toString() + " " + name;
     }
 }

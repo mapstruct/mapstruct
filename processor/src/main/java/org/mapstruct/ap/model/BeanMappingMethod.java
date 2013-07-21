@@ -21,6 +21,8 @@ package org.mapstruct.ap.model;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.model.source.Method;
+
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one
  * bean type to another, optionally configured by one or more
@@ -32,9 +34,8 @@ public class BeanMappingMethod extends MappingMethod {
 
     private final List<PropertyMapping> propertyMappings;
 
-    public BeanMappingMethod(String name, String parameterName, Type sourceType, Type targetType,
-                             List<PropertyMapping> propertyMappings) {
-        super( name, parameterName, sourceType, targetType );
+    public BeanMappingMethod(Method method, List<PropertyMapping> propertyMappings) {
+        super( method );
         this.propertyMappings = propertyMappings;
     }
 
