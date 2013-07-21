@@ -16,16 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.source;
+package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.model.Type;
+import java.util.Set;
+
+import org.mapstruct.ap.util.Collections;
 
 /**
  * A parameter of a mapping method.
  *
  * @author Gunnar Morling
  */
-public class Parameter {
+public class Parameter extends AbstractModelElement {
 
     private final String name;
     private final Type type;
@@ -56,5 +58,10 @@ public class Parameter {
     @Override
     public String toString() {
         return ( mappingTarget ? "@MappingTarget " : "" ) + type.toString() + " " + name;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        return Collections.asSet( type );
     }
 }

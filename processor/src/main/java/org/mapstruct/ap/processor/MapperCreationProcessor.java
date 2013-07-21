@@ -48,13 +48,13 @@ import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.MappingMethodReference;
 import org.mapstruct.ap.model.Options;
+import org.mapstruct.ap.model.Parameter;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.ReportingPolicy;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.TypeConversion;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.model.source.Parameter;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.Strings;
@@ -334,8 +334,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
 
         PropertyMapping property = new PropertyMapping(
-            method.getSingleSourceParameter().getName(),
-            method.getResultName(),
             executables.getPropertyName( getterMethod ),
             getterMethod.getSimpleName().toString(),
             sourceType,

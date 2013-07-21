@@ -35,12 +35,12 @@ import org.mapstruct.ap.MapMappingPrism;
 import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.MappingPrism;
 import org.mapstruct.ap.MappingsPrism;
+import org.mapstruct.ap.model.Parameter;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.MapMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.model.source.Parameter;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.TypeUtil;
 

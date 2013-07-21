@@ -20,24 +20,24 @@
 -->
         <#-- a) invoke mapping method -->
         <#if mappingMethod??>
-        ${targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()"/> );
+        ${ext.targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${ext.sourceBeanName}.${sourceAccessorName}()"/> );
         <#-- b) simple conversion -->
         <#elseif conversion??>
             <#if sourceType.primitive == false>
-        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-             <@applyConversion targetBeanName=targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
+        if ( ${ext.sourceBeanName}.${sourceAccessorName}() != null ) {
+             <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
         }
             <#else>
-        <@applyConversion targetBeanName=targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
+        <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
             </#if>
         <#-- c) simply set -->
         <#else>
             <#if targetType.collectionType == true>
-        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-            ${targetBeanName}.${targetAccessorName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
+        if ( ${ext.sourceBeanName}.${sourceAccessorName}() != null ) {
+            ${ext.targetBeanName}.${targetAccessorName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${ext.sourceBeanName}.${sourceAccessorName}() ) );
         }
             <#else>
-        ${targetBeanName}.${targetAccessorName}( ${sourceBeanName}.${sourceAccessorName}() );
+        ${ext.targetBeanName}.${targetAccessorName}( ${ext.sourceBeanName}.${sourceAccessorName}() );
             </#if>
         </#if>
 <#macro applyConversion targetBeanName targetAccessorName conversion>

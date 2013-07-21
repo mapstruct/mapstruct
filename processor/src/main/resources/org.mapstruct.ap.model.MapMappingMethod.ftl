@@ -19,7 +19,7 @@
 
 -->
     @Override
-    public <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param.type/> ${param.name}<#if param_has_next>, </#if></#list>) {
+    public <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
         if ( ${singleSourceParameter.name} == null ) {
             return<#if returnType.name != "void"> null</#if>;
         }

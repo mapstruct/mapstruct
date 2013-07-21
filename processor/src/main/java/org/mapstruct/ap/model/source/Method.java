@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.model.source;
 
-import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.ExecutableElement;
 
+import org.mapstruct.ap.model.Parameter;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.util.Strings;
 
@@ -143,11 +143,6 @@ public class Method {
         }
 
         return parameterNames;
-    }
-
-    public String getResultName() {
-        return targetParameter != null ? targetParameter.getName() :
-            Strings.getSaveVariableName( Introspector.decapitalize( getResultType().getName() ), getParameterNames() );
     }
 
     public Type getResultType() {

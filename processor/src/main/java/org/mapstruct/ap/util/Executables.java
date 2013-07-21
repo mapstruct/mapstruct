@@ -29,8 +29,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.MappingTargetPrism;
+import org.mapstruct.ap.model.Parameter;
 import org.mapstruct.ap.model.Type;
-import org.mapstruct.ap.model.source.Parameter;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.

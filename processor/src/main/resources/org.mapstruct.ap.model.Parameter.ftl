@@ -18,21 +18,4 @@
      limitations under the License.
 
 -->
-    @Override
-    public ${returnType.name} ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
-        if ( ${singleSourceParameter.name} == null ) {
-            return<#if returnType.name != "void"> null</#if>;
-        }
-
-        <#if !existingInstanceMapping>
-        ${resultType.name} ${resultName} = new ${resultType.name}();
-        </#if>
-
-        <#list propertyMappings as propertyMapping>
-            <@includeModel object=propertyMapping sourceBeanName=singleSourceParameter.name targetBeanName=resultName/>
-        </#list>
-        <#if returnType.name != "void">
-
-        return ${resultName};
-        </#if>
-    }
+${type} ${name}
