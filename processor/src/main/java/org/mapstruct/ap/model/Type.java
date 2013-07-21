@@ -26,9 +26,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentNavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.mapstruct.ap.util.Strings;
 
@@ -55,20 +63,32 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         new ConcurrentHashMap<String, Type>();
 
     static {
-        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( List.class.getName(), forClass( ArrayList.class ) );
-        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( Set.class.getName(), forClass( HashSet.class ) );
+        DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.put( Iterable.class.getName(), forClass( ArrayList.class ) );
         DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( Collection.class.getName(), forClass( ArrayList.class ) );
 
-        DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.put( Iterable.class.getName(), forClass( ArrayList.class ) );
+        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( List.class.getName(), forClass( ArrayList.class ) );
+
+        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( Set.class.getName(), forClass( HashSet.class ) );
+        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( SortedSet.class.getName(), forClass( TreeSet.class ) );
+        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( NavigableSet.class.getName(), forClass( TreeSet.class ) );
+
         DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.putAll( DEFAULT_COLLECTION_IMPLEMENTATION_TYPES );
 
         DEFAULT_MAP_IMPLEMENTATION_TYPES.put( Map.class.getName(), forClass( HashMap.class ) );
+        DEFAULT_MAP_IMPLEMENTATION_TYPES.put( SortedMap.class.getName(), forClass( TreeMap.class ) );
+        DEFAULT_MAP_IMPLEMENTATION_TYPES.put( NavigableMap.class.getName(), forClass( TreeMap.class ) );
+        DEFAULT_MAP_IMPLEMENTATION_TYPES.put( ConcurrentMap.class.getName(), forClass( ConcurrentHashMap.class ) );
+        DEFAULT_MAP_IMPLEMENTATION_TYPES.put(
+            ConcurrentNavigableMap.class.getName(),
+            forClass( ConcurrentSkipListMap.class )
+        );
     }
 
     private final String canonicalName;
     private final String packageName;
     private final String name;
     private final List<Type> typeParameters;
+    private final boolean isInterface;
     private final boolean isEnumType;
     private final boolean isCollectionType;
     private final boolean isIterableType;
@@ -85,6 +105,7 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
                 clazz.getCanonicalName(),
                 pakkage.getName(),
                 clazz.getSimpleName(),
+                clazz.isInterface(),
                 clazz.isEnum(),
                 Collection.class.isAssignableFrom( clazz ),
                 Iterable.class.isAssignableFrom( clazz ),
@@ -98,18 +119,30 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
     }
 
     public Type(String name) {
-        this( name, null, name, false, false, false, false, Collections.<Type>emptyList() );
+        this( name, null, name, false, false, false, false, false, Collections.<Type>emptyList() );
     }
 
     public Type(String packageName, String name) {
-        this( packageName + "." + name, packageName, name, false, false, false, false, Collections.<Type>emptyList() );
+        this(
+            packageName + "." + name,
+            packageName,
+            name,
+            false,
+            false,
+            false,
+            false,
+            false,
+            Collections.<Type>emptyList()
+        );
     }
 
-    public Type(String canonicalName, String packageName, String name, boolean isEnumType, boolean isCollectionType,
+    public Type(String canonicalName, String packageName, String name, boolean isInterface, boolean isEnumType,
+                boolean isCollectionType,
                 boolean isIterableType, boolean isMapType, List<Type> typeParameters) {
         this.canonicalName = canonicalName;
         this.packageName = packageName;
         this.name = name;
+        this.isInterface = isInterface;
         this.isEnumType = isEnumType;
         this.isCollectionType = isCollectionType;
         this.isIterableType = isIterableType;
@@ -136,6 +169,7 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
                 mapType.getPackageName() + "." + mapType.getName(),
                 mapType.getPackageName(),
                 mapType.getName(),
+                mapType.isInterface(),
                 mapType.isEnumType(),
                 mapType.isCollectionType(),
                 mapType.isIterableType(),
@@ -168,6 +202,10 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         return packageName == null && PRIMITIVE_TYPE_NAMES.contains( name );
     }
 
+    public boolean isInterface() {
+        return isInterface;
+    }
+
     public boolean isEnumType() {
         return isEnumType;
     }
@@ -186,6 +224,12 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
 
     public boolean isCollectionType() {
         return isCollectionType;
+    }
+
+    public Type getImplementationType() {
+        return collectionImplementationType != null ? collectionImplementationType :
+            iterableImplementationType != null ? iterableImplementationType :
+                mapImplementationType;
     }
 
     public boolean isIterableType() {

@@ -65,8 +65,13 @@ public class MapMappingMethod extends MappingMethod {
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = super.getImportTypes();
-        types.addAll( valueConversion.getImportTypes() );
-        types.addAll( keyConversion.getImportTypes() );
+
+        if ( valueConversion != null ) {
+            types.addAll( valueConversion.getImportTypes() );
+        }
+        if ( keyConversion != null ) {
+            types.addAll( keyConversion.getImportTypes() );
+        }
 
         return types;
     }

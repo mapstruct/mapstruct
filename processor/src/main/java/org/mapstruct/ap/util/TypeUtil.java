@@ -60,6 +60,7 @@ public class TypeUtil {
             ( (TypeElement) type.asElement() ).getQualifiedName().toString(),
             elementUtils.getPackageOf( type.asElement() ).toString(),
             type.asElement().getSimpleName().toString(),
+            type.asElement().getKind() == ElementKind.INTERFACE,
             type.asElement().getKind() == ElementKind.ENUM,
             isCollectionType( type ),
             isIterableType,

@@ -157,6 +157,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 continue;
             }
 
+            reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType( method );
+
             Method reverseMappingMethod = getReverseMappingMethod( methods, method );
 
             if ( method.isIterableMapping() ) {
@@ -183,6 +185,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             }
         }
         return mappingMethods;
+    }
+
+    private void reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType(Method method) {
+        if ( method.getReturnType() != Type.VOID && method.getReturnType().isInterface() &&
+            method.getReturnType().getImplementationType() == null ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "No implementation type is registered for return type %s.",
+                    method.getReturnType()
+                ),
+                method.getExecutable()
+            );
+        }
     }
 
     private Map<String, Mapping> reverse(Map<String, Mapping> mappings) {
