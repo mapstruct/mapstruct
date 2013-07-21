@@ -133,9 +133,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     Method.forMethodRequiringImplementation(
                         method,
                         parameters,
-                        sourceParameters,
-                        resultType,
-                        selectResultName( targetParameter, resultType ),
                         returnType,
                         getMappings( method ),
                         IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ) ),
@@ -152,8 +149,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 Method.forReferencedMethod(
                     typeUtil.getType( typeUtils.getDeclaredType( element ) ),
                     method,
-                    parameters.get( 0 ).getName(),
-                    parameters.get( 0 ).getType(),
+                    parameters,
                     returnType
                 );
         }

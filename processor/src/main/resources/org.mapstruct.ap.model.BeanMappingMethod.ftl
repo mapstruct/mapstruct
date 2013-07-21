@@ -20,7 +20,7 @@
 -->
     @Override
     public ${returnType.name} ${name}(<#list parameters as param>${param.type.name} ${param.name}<#if param_has_next>, </#if></#list>) {
-        if ( ${sourceParameters[0].name} == null ) {
+        if ( ${singleSourceParameter.name} == null ) {
             return<#if returnType.name != "void"> null</#if>;
         }
         <#if !existingInstanceMapping>

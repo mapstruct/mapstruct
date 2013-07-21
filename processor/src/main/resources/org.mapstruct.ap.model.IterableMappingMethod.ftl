@@ -20,7 +20,7 @@
 -->
     @Override
     public <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param.type/> ${param.name}<#if param_has_next>, </#if></#list>) {
-        if ( ${sourceParameters[0].name} == null ) {
+        if ( ${singleSourceParameter.name} == null ) {
             return<#if returnType.name != "void"> null</#if>;
         }
 
@@ -31,9 +31,9 @@
         <#if resultType.name == "Iterable" && resultType.packageName == "java.lang">${resultType.iterableImplementationType.name}<#else>${resultType.name}</#if><<@includeModel object=resultType.typeParameters[0]/>> ${resultName} = new <#if resultType.iterableImplementationType??>${resultType.iterableImplementationType.name}<#else>${resultType.name}</#if><<@includeModel object=resultType.typeParameters[0]/>>();
         </#if>
 
-        for ( <@includeModel object=sourceParameters[0].type.typeParameters[0]/> ${sourceParameters[0].type.typeParameters[0].name?uncap_first} : ${sourceParameters[0].name} ) {
+        for ( <@includeModel object=singleSourceParameter.type.typeParameters[0]/> ${singleSourceParameter.type.typeParameters[0].name?uncap_first} : ${singleSourceParameter.name} ) {
             <#if elementMappingMethod??>
-            ${resultName}.add( <@includeModel object=elementMappingMethod input="${sourceParameters[0].type.typeParameters[0].name?uncap_first}"/> );
+            ${resultName}.add( <@includeModel object=elementMappingMethod input="${singleSourceParameter.type.typeParameters[0].name?uncap_first}"/> );
             <#else>
                 <#if (conversion.exceptionTypes?size == 0) >
             ${resultName}.add( <@includeModel object=conversion/> );

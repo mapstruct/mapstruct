@@ -202,7 +202,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         Map<String, Mapping> mappings = method.getMappings();
 
         TypeElement resultTypeElement = elementUtils.getTypeElement( method.getResultType().getCanonicalName() );
-        TypeElement parameterElement = elementUtils.getTypeElement( method.getSingleSourceType().getCanonicalName() );
+        TypeElement parameterElement = elementUtils.getTypeElement(
+            method.getSingleSourceParameter()
+                .getType()
+                .getCanonicalName()
+        );
 
         List<ExecutableElement> sourceGetters = Filters.getterMethodsIn(
             elementUtils.getAllMembers( parameterElement )
@@ -251,15 +255,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             mappedTargetProperties
         );
 
-        return new BeanMappingMethod(
-            method.getName(),
-            method.getParameters(),
-            method.getSourceParameters(),
-            method.getResultType(),
-            method.getResultName(),
-            method.getReturnType(),
-            propertyMappings
-        );
+        return new BeanMappingMethod( method, propertyMappings );
     }
 
     private void reportErrorForUnmappedTargetPropertiesIfRequired(Method method,
@@ -300,7 +296,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                     String.format(
                         "Unknown property \"%s\" in parameter type %s.",
                         mappedProperty.getSourceName(),
-                        method.getSingleSourceType()
+                        method.getSingleSourceParameter().getType()
                     ),
                     method.getExecutable(),
                     mappedProperty.getMirror(),
@@ -333,12 +329,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             sourceType,
             targetType,
             dateFormat,
-            method.getSourceParameters().get( 0 ).getName() + "."
+            method.getSingleSourceParameter().getName() + "."
                 + getterMethod.getSimpleName().toString() + "()"
         );
 
         PropertyMapping property = new PropertyMapping(
-            method.getSourceParameters().get( 0 ).getName(),
+            method.getSingleSourceParameter().getName(),
             method.getResultName(),
             executables.getPropertyName( getterMethod ),
             getterMethod.getSimpleName().toString(),
@@ -359,7 +355,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private MappingMethod getIterableMappingMethod(List<Method> methods, Method method) {
-        Type sourceElementType = method.getSourceParameters().get( 0 ).getType().getTypeParameters().get( 0 );
+        Type sourceElementType = method.getSingleSourceParameter().getType().getTypeParameters().get( 0 );
         Type targetElementType = method.getResultType().getTypeParameters().get( 0 );
 
         TypeConversion conversion = getConversion(
@@ -370,19 +366,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
 
         return new IterableMappingMethod(
-            method.getName(),
-            method.getParameters(),
-            method.getSourceParameters(),
-            method.getResultType(),
-            method.getResultName(),
-            method.getReturnType(),
+            method,
             getMappingMethodReference( methods, sourceElementType, targetElementType ),
             conversion
         );
     }
 
     private MappingMethod getMapMappingMethod(List<Method> methods, Method method) {
-        List<Type> sourceTypeParams = method.getSourceParameters().get( 0 ).getType().getTypeParameters();
+        List<Type> sourceTypeParams = method.getSingleSourceParameter().getType().getTypeParameters();
         Type sourceKeyType = sourceTypeParams.get( 0 );
         Type sourceValueType = sourceTypeParams.get( 1 );
 
@@ -408,18 +399,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             targetValueType
         );
 
-        return new MapMappingMethod(
-            method.getName(),
-            method.getParameters(),
-            method.getSourceParameters(),
-            method.getResultType(),
-            method.getResultName(),
-            method.getReturnType(),
-            keyMappingMethod,
-            keyConversion,
-            valueMappingMethod,
-            valueConversion
-        );
+        return new MapMappingMethod( method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion );
     }
 
     private TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {
@@ -435,14 +415,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     private MappingMethodReference getMappingMethodReference(Iterable<Method> methods, Type parameterType,
                                                              Type returnType) {
         for ( Method oneMethod : methods ) {
-            Parameter singleSourceParam = oneMethod.getSourceParameters().get( 0 );
+            Parameter singleSourceParam = oneMethod.getSingleSourceParameter();
 
             if ( singleSourceParam.getType().equals( parameterType ) &&
-                oneMethod.getReturnType().equals( returnType ) ) {
-                return new MappingMethodReference(
-                    oneMethod.getDeclaringMapper(),
-                    oneMethod.getName()
-                );
+                oneMethod.getResultType().equals( returnType ) ) {
+                return new MappingMethodReference( oneMethod );
             }
         }
 

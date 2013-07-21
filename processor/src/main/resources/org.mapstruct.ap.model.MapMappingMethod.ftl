@@ -20,7 +20,7 @@
 -->
     @Override
     public <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param.type/> ${param.name}<#if param_has_next>, </#if></#list>) {
-        if ( ${sourceParameters[0].name} == null ) {
+        if ( ${singleSourceParameter.name} == null ) {
             return<#if returnType.name != "void"> null</#if>;
         }
 
@@ -30,7 +30,7 @@
         <@includeModel object=resultType /> ${resultName} = new <#if resultType.mapImplementationType??><@includeModel object=resultType.mapImplementationType /><#else><@includeModel object=resultType /></#if>();
         </#if>
 
-        for ( Map.Entry<<#list sourceParameters[0].type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> entry : ${sourceParameters[0].name}.entrySet() ) {
+        for ( Map.Entry<<#list singleSourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> entry : ${singleSourceParameter.name}.entrySet() ) {
 
         <#-- key -->
         <#if keyMappingMethod??>

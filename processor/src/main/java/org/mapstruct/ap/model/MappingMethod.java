@@ -18,10 +18,12 @@
  */
 package org.mapstruct.ap.model;
 
+import java.beans.Introspector;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.Parameter;
 
 /**
@@ -33,22 +35,16 @@ public abstract class MappingMethod extends AbstractModelElement {
 
     private final String name;
     private final List<Parameter> parameters;
-    private final List<Parameter> sourceParameters;
-    private final Type resultType;
-    private final String resultName;
     private final Type returnType;
-    private final boolean existingInstanceMapping;
+    private final Parameter singleSourceParameter;
+    private final Parameter targetParameter;
 
-    protected MappingMethod(String name, List<Parameter> parameters, List<Parameter> sourceParameters, Type resultType,
-                            String resultName, Type returnType) {
-        this.name = name;
-        this.parameters = parameters;
-        this.sourceParameters = sourceParameters;
-        this.resultType = resultType;
-        this.resultName = resultName;
-        this.returnType = returnType;
-        this.existingInstanceMapping =
-            ( null != parameters && null != sourceParameters && parameters.size() > sourceParameters.size() );
+    public MappingMethod(Method method) {
+        this.name = method.getName();
+        this.parameters = method.getParameters();
+        this.returnType = method.getReturnType();
+        this.singleSourceParameter = method.getSingleSourceParameter();
+        this.targetParameter = method.getTargetParameter();
     }
 
     public String getName() {
@@ -59,16 +55,16 @@ public abstract class MappingMethod extends AbstractModelElement {
         return parameters;
     }
 
-    public List<Parameter> getSourceParameters() {
-        return sourceParameters;
+    public Parameter getSingleSourceParameter() {
+        return singleSourceParameter;
     }
 
     public Type getResultType() {
-        return resultType;
+        return targetParameter != null ? targetParameter.getType() : returnType;
     }
 
     public String getResultName() {
-        return resultName;
+        return targetParameter != null ? targetParameter.getName() : Introspector.decapitalize( returnType.getName() );
     }
 
     public Type getReturnType() {
@@ -76,14 +72,14 @@ public abstract class MappingMethod extends AbstractModelElement {
     }
 
     public boolean isExistingInstanceMapping() {
-        return existingInstanceMapping;
+        return targetParameter != null;
     }
 
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = new HashSet<Type>();
 
-        for ( Parameter param : getParameters() ) {
+        for ( Parameter param : parameters ) {
             types.add( param.getType() );
         }
 

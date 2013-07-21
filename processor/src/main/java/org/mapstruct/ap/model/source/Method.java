@@ -18,18 +18,18 @@
  */
 package org.mapstruct.ap.model.source;
 
-import java.util.Arrays;
+import java.beans.Introspector;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.util.Strings;
 
 /**
- * Represents a mapping method with source and target type and the mappings
- * between the properties of source and target type.
+ * Represents a mapping method with source and target type and the mappings between the properties of source and target
+ * type.
  *
  * @author Gunnar Morling
  */
@@ -38,66 +38,77 @@ public class Method {
     private final Type declaringMapper;
     private final ExecutableElement executable;
     private final List<Parameter> parameters;
-    private final List<Parameter> sourceParameters;
-    private final String resultName;
-    private final Type resultType;
     private final Type returnType;
+
     private Map<String, Mapping> mappings;
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
 
+    private final Parameter singleSourceParameter;
+    private final Parameter targetParameter;
+
     public static Method forMethodRequiringImplementation(ExecutableElement executable, List<Parameter> parameters,
-                                                          List<Parameter> sourceParameters, Type resultType,
-                                                          String resultName, Type targetType,
-                                                          Map<String, Mapping> mappings,
+                                                          Type returnType, Map<String, Mapping> mappings,
                                                           IterableMapping iterableMapping, MapMapping mapMapping) {
 
         return new Method(
             null,
             executable,
             parameters,
-            sourceParameters,
-            resultType,
-            resultName,
-            targetType,
+            returnType,
             mappings,
             iterableMapping,
             mapMapping
         );
     }
 
-    public static Method forReferencedMethod(Type declaringMapper, ExecutableElement executable, String parameterName,
-                                             Type sourceType, Type targetType) {
+    public static Method forReferencedMethod(Type declaringMapper, ExecutableElement executable,
+                                             List<Parameter> parameters, Type returnType) {
 
         return new Method(
             declaringMapper,
             executable,
-            Arrays.asList( new Parameter( parameterName, sourceType ) ),
-            Arrays.asList( new Parameter( parameterName, sourceType ) ),
-            targetType,
-            null,
-            targetType,
+            parameters,
+            returnType,
             Collections.<String, Mapping>emptyMap(),
             null,
             null
         );
     }
 
-    private Method(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
-                   List<Parameter> sourceParameters, Type resultType, String resultName,
-                   Type returnType,
-                   Map<String, Mapping> mappings, IterableMapping iterableMapping,
-                   MapMapping mapMapping) {
+    private Method(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters, Type returnType,
+                   Map<String, Mapping> mappings, IterableMapping iterableMapping, MapMapping mapMapping) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
-        this.sourceParameters = sourceParameters;
-        this.resultType = resultType;
-        this.resultName = resultName;
         this.returnType = returnType;
+
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
+
+        this.singleSourceParameter = determineSingleSourceParameter();
+        this.targetParameter = determineTargetParameter( parameters );
+    }
+
+    private Parameter determineTargetParameter(Iterable<Parameter> parameters) {
+        for ( Parameter parameter : parameters ) {
+            if ( parameter.isMappingTarget() ) {
+                return parameter;
+            }
+        }
+
+        return null;
+    }
+
+    private Parameter determineSingleSourceParameter() {
+        for ( Parameter parameter : parameters ) {
+            if ( !parameter.isMappingTarget() ) {
+                return parameter;
+            }
+        }
+
+        throw new IllegalStateException( "Method " + this + " has no source parameter." );
     }
 
     /**
@@ -124,15 +135,11 @@ public class Method {
     }
 
     public String getResultName() {
-        return resultName;
-    }
-
-    public List<Parameter> getSourceParameters() {
-        return sourceParameters;
+        return targetParameter != null ? targetParameter.getName() : Introspector.decapitalize( returnType.getName() );
     }
 
     public Type getResultType() {
-        return resultType;
+        return targetParameter != null ? targetParameter.getType() : returnType;
     }
 
     public Type getReturnType() {
@@ -165,20 +172,24 @@ public class Method {
 
     public boolean reverses(Method method) {
         return
-            equals( getSingleSourceType(), method.getReturnType() )
-                && equals( returnType, method.getSingleSourceType() );
+            equals( getSingleSourceParameter().getType(), method.getResultType() )
+                && equals( getResultType(), method.getSingleSourceParameter().getType() );
     }
 
-    public Type getSingleSourceType() {
-        return sourceParameters.size() == 1 ? sourceParameters.get( 0 ).getType() : null;
+    public Parameter getSingleSourceParameter() {
+        return singleSourceParameter;
+    }
+
+    public Parameter getTargetParameter() {
+        return targetParameter;
     }
 
     public boolean isIterableMapping() {
-        return getSingleSourceType().isIterableType() && resultType.isIterableType();
+        return getSingleSourceParameter().getType().isIterableType() && getResultType().isIterableType();
     }
 
     public boolean isMapMapping() {
-        return getSingleSourceType().isMapType() && resultType.isMapType();
+        return getSingleSourceParameter().getType().isMapType() && getResultType().isMapType();
     }
 
     private boolean equals(Object o1, Object o2) {
@@ -187,19 +198,6 @@ public class Method {
 
     @Override
     public String toString() {
-        return returnType + " " + getName() + "(" + getParamsList() + ")";
-    }
-
-    private String getParamsList() {
-        StringBuilder sb = new StringBuilder();
-        for ( Iterator<Parameter> it = parameters.iterator(); it.hasNext(); ) {
-            Parameter param = it.next();
-            sb.append( param.getType() ).append( " " ).append( param.getName() );
-            if ( it.hasNext() ) {
-                sb.append( ", " );
-            }
-        }
-
-        return sb.toString();
+        return returnType + " " + getName() + "(" + Strings.join( parameters, ", " ) + ")";
     }
 }

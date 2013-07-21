@@ -21,6 +21,8 @@ package org.mapstruct.ap.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mapstruct.ap.model.source.Method;
+
 /**
  * Represents a reference to {@link MappingMethod}.
  *
@@ -30,9 +32,9 @@ public class MappingMethodReference extends MappingMethod {
 
     private final Type declaringMapper;
 
-    public MappingMethodReference(Type declaringMapper, String name) {
-        super( name, null, null, null, null, null );
-        this.declaringMapper = declaringMapper;
+    public MappingMethodReference(Method method) {
+        super( method );
+        this.declaringMapper = method.getDeclaringMapper();
     }
 
     public Type getDeclaringMapper() {
