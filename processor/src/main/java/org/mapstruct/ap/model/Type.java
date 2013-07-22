@@ -63,17 +63,21 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         new ConcurrentHashMap<String, Type>();
 
     static {
+        //base
         DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.put( Iterable.class.getName(), forClass( ArrayList.class ) );
         DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( Collection.class.getName(), forClass( ArrayList.class ) );
 
+        //list
         DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( List.class.getName(), forClass( ArrayList.class ) );
 
+        //set
         DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( Set.class.getName(), forClass( HashSet.class ) );
         DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( SortedSet.class.getName(), forClass( TreeSet.class ) );
         DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( NavigableSet.class.getName(), forClass( TreeSet.class ) );
 
         DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.putAll( DEFAULT_COLLECTION_IMPLEMENTATION_TYPES );
 
+        //map
         DEFAULT_MAP_IMPLEMENTATION_TYPES.put( Map.class.getName(), forClass( HashMap.class ) );
         DEFAULT_MAP_IMPLEMENTATION_TYPES.put( SortedMap.class.getName(), forClass( TreeMap.class ) );
         DEFAULT_MAP_IMPLEMENTATION_TYPES.put( NavigableMap.class.getName(), forClass( TreeMap.class ) );
