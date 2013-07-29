@@ -73,7 +73,7 @@ public abstract class MapperTestBase {
     private String classOutputDir;
     private String sourceOutputDir;
     private List<File> classPath;
-    private List<String> libraries;
+    private final List<String> libraries;
     private DiagnosticCollector<JavaFileObject> diagnostics;
 
     public MapperTestBase() {
@@ -147,14 +147,18 @@ public abstract class MapperTestBase {
         Iterator<DiagnosticDescriptor> actualIterator = actualDiagnostics.iterator();
         Iterator<DiagnosticDescriptor> expectedIterator = expectedDiagnostics.iterator();
 
+        assertThat( actualDiagnostics ).describedAs(
+            String.format(
+                "Numbers of expected and actual diagnostics are diffent. Actual:%s%s%sExpected:%s%s.",
+                System.lineSeparator(),
+                actualDiagnostics.toString().replace( ", ", System.lineSeparator() ),
+                System.lineSeparator(),
+                System.lineSeparator(),
+                expectedDiagnostics.toString().replace( ", ", System.lineSeparator() )
+            )
+        ).hasSize( expectedDiagnostics.size() );
+
         while ( actualIterator.hasNext() ) {
-            assertThat( expectedIterator.hasNext() ).describedAs(
-                String.format(
-                    "Found more diagnostics than expected. Actual: %s; Expected: %s.",
-                    actualDiagnostics,
-                    expectedDiagnostics
-                )
-            ).isTrue();
 
             DiagnosticDescriptor actual = actualIterator.next();
             DiagnosticDescriptor expected = expectedIterator.next();
@@ -171,14 +175,6 @@ public abstract class MapperTestBase {
                 )
             ).matches( ".*" + expected.getMessage() + ".*" );
         }
-
-        assertThat( expectedIterator.hasNext() ).describedAs(
-            String.format(
-                "Found less diagnostics than expected. Actual: %s; Expected: %s.",
-                actualDiagnostics,
-                expectedDiagnostics
-            )
-        ).isFalse();
     }
 
     /**

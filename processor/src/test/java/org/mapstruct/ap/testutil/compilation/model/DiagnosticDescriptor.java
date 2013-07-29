@@ -167,8 +167,8 @@ public class DiagnosticDescriptor {
 
     @Override
     public String toString() {
-        return "DiagnosticDescriptor [sourceFileName=" + sourceFileName
-            + ", kind=" + kind + ", line=" + line + ", message=" + message
-            + "]";
+        String sourceFileName = this.sourceFileName
+            .substring( this.sourceFileName.lastIndexOf( File.separatorChar ) + 1 );
+        return "DiagnosticDescriptor: " + kind + " " + sourceFileName + ":" + line + " " + message;
     }
 }
