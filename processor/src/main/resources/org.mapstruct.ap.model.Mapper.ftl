@@ -38,7 +38,9 @@ public class ${implementationName} implements ${interfaceName} {
 </#list>
 
 <#list mappingMethods as mappingMethod>
-
 <@includeModel object=mappingMethod/>
+<#if mappingMethod_has_next>
+
+</#if>
 </#list>
 }
