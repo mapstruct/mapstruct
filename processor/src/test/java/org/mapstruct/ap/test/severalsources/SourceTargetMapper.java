@@ -16,22 +16,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.erroneous.attributereference;
+package org.mapstruct.ap.test.severalsources;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mappers;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 
 @Mapper
-public interface ErroneousMapper {
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
-        @Mapping(source = "bar", target = "foo"),
-        @Mapping(source = "source1.foo", target = "foo"),
-        @Mapping(source = "foo", target = "bar"),
-        @Mapping(source = "source.foobar", target = "foo")
+        @Mapping(source = "houseNo", target = "houseNumber"),
+        @Mapping(source = "person.description", target = "description")
     })
-    Target sourceToTarget(Source source);
+    DeliveryAddress personAndAddressToDeliveryAddress(Person person, Address address);
 
-    AnotherTarget sourceToAnotherTarget(Source source);
+    @Mappings({
+        @Mapping(source = "houseNo", target = "houseNumber"),
+        @Mapping(source = "person.description", target = "description")
+    })
+    void personAndAddressToDeliveryAddress(Person person, Address address,
+                                           @MappingTarget DeliveryAddress deliveryAddress);
 }

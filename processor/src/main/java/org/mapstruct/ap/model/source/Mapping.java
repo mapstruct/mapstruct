@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
 
+import org.mapstruct.ap.AnnotationProcessingException;
 import org.mapstruct.ap.MappingPrism;
 import org.mapstruct.ap.MappingsPrism;
 
@@ -34,25 +36,36 @@ import org.mapstruct.ap.MappingsPrism;
 public class Mapping {
 
     private final String sourceName;
+    private final String sourceParameterName;
+    private final String sourcePropertyName;
     private final String targetName;
     private final String dateFormat;
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
 
-    public static Map<String, Mapping> fromMappingsPrism(MappingsPrism mappingsAnnotation) {
+    public static Map<String, Mapping> fromMappingsPrism(MappingsPrism mappingsAnnotation, Element element) {
         Map<String, Mapping> mappings = new HashMap<String, Mapping>();
 
         for ( MappingPrism mapping : mappingsAnnotation.value() ) {
-            mappings.put( mapping.source(), fromMappingPrism( mapping ) );
+            mappings.put( mapping.source(), fromMappingPrism( mapping, element ) );
         }
 
         return mappings;
     }
 
-    public static Mapping fromMappingPrism(MappingPrism mapping) {
+    public static Mapping fromMappingPrism(MappingPrism mapping, Element element) {
+        String[] sourceNameParts = getSourceNameParts(
+            mapping.source(),
+            element,
+            mapping.mirror,
+            mapping.values.source()
+        );
+
         return new Mapping(
             mapping.source(),
+            sourceNameParts != null ? sourceNameParts[0] : null,
+            sourceNameParts != null ? sourceNameParts[1] : mapping.source(),
             mapping.target(),
             mapping.dateFormat(),
             mapping.mirror,
@@ -61,9 +74,31 @@ public class Mapping {
         );
     }
 
-    private Mapping(String sourceName, String targetName, String dateFormat, AnnotationMirror mirror,
-                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
+    private static String[] getSourceNameParts(String sourceName, Element element, AnnotationMirror annotationMirror,
+                                               AnnotationValue annotationValue) {
+        if ( !sourceName.contains( "." ) ) {
+            return null;
+        }
+
+        String[] parts = sourceName.split( "\\." );
+        if ( parts.length != 2 ) {
+            throw new AnnotationProcessingException(
+                "Mapping of nested attributes not supported yet.",
+                element,
+                annotationMirror,
+                annotationValue
+            );
+        }
+
+        return parts;
+    }
+
+    private Mapping(String sourceName, String sourceParameterName, String sourcePropertyName, String targetName,
+                    String dateFormat, AnnotationMirror mirror, AnnotationValue sourceAnnotationValue,
+                    AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
+        this.sourceParameterName = sourceParameterName;
+        this.sourcePropertyName = sourcePropertyName;
         this.targetName = targetName.equals( "" ) ? sourceName : targetName;
         this.dateFormat = dateFormat;
         this.mirror = mirror;
@@ -71,8 +106,32 @@ public class Mapping {
         this.targetAnnotationValue = targetAnnotationValue;
     }
 
+    /**
+     * Returns the complete source name of this mapping, either a qualified (e.g. {@code parameter1.foo}) or
+     * unqualified (e.g. {@code foo}) property reference.
+     *
+     * @return The complete source name of this mapping.
+     */
     public String getSourceName() {
         return sourceName;
+    }
+
+    /**
+     * Returns the unqualified name of the source property (i.e. without the parameter name if given) of this mapping.
+     *
+     * @return The unqualified name of the source property of this mapping.
+     */
+    public String getSourcePropertyName() {
+        return sourcePropertyName;
+    }
+
+    /**
+     * Returns the name of the source parameter of this mapping if the source name is qualified.
+     *
+     * @return The name of the source parameter of this mapping if given, {@code null} otherwise.
+     */
+    public String getSourceParameterName() {
+        return sourceParameterName;
     }
 
     public String getTargetName() {
@@ -96,7 +155,16 @@ public class Mapping {
     }
 
     public Mapping reverse() {
-        return new Mapping( targetName, sourceName, dateFormat, mirror, sourceAnnotationValue, targetAnnotationValue );
+        return new Mapping(
+            targetName,
+            null,
+            targetName,
+            sourceName,
+            dateFormat,
+            mirror,
+            sourceAnnotationValue,
+            targetAnnotationValue
+        );
     }
 
     @Override

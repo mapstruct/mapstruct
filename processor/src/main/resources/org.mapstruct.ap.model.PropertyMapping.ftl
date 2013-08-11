@@ -20,11 +20,11 @@
 -->
         <#-- a) invoke mapping method -->
         <#if mappingMethod??>
-        ${ext.targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${ext.sourceBeanName}.${sourceAccessorName}()"/> );
+        ${ext.targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()"/> );
         <#-- b) simple conversion -->
         <#elseif conversion??>
             <#if sourceType.primitive == false>
-        if ( ${ext.sourceBeanName}.${sourceAccessorName}() != null ) {
+        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
              <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
         }
             <#else>
@@ -33,11 +33,11 @@
         <#-- c) simply set -->
         <#else>
             <#if targetType.collectionType == true>
-        if ( ${ext.sourceBeanName}.${sourceAccessorName}() != null ) {
-            ${ext.targetBeanName}.${targetAccessorName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${ext.sourceBeanName}.${sourceAccessorName}() ) );
+        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+            ${ext.targetBeanName}.${targetAccessorName}( new <#if targetType.collectionImplementationType??>${targetType.collectionImplementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
         }
             <#else>
-        ${ext.targetBeanName}.${targetAccessorName}( ${ext.sourceBeanName}.${sourceAccessorName}() );
+        ${ext.targetBeanName}.${targetAccessorName}( ${sourceBeanName}.${sourceAccessorName}() );
             </#if>
         </#if>
 <#macro applyConversion targetBeanName targetAccessorName conversion>

@@ -18,7 +18,10 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.mapstruct.ap.model.source.Method;
@@ -41,6 +44,22 @@ public class BeanMappingMethod extends MappingMethod {
 
     public List<PropertyMapping> getPropertyMappings() {
         return propertyMappings;
+    }
+
+    public Map<String, List<PropertyMapping>> getPropertyMappingsByParameter() {
+        Map<String, List<PropertyMapping>> mappingsByParameter = new HashMap<String, List<PropertyMapping>>();
+
+        for ( Parameter sourceParameter : getSourceParameters() ) {
+            ArrayList<PropertyMapping> mappingsOfParameter = new ArrayList<PropertyMapping>();
+            mappingsByParameter.put( sourceParameter.getName(), mappingsOfParameter );
+            for ( PropertyMapping mapping : propertyMappings ) {
+                if ( mapping.getSourceBeanName().equals( sourceParameter.getName() ) ) {
+                    mappingsOfParameter.add( mapping );
+                }
+            }
+        }
+
+        return mappingsByParameter;
     }
 
     @Override

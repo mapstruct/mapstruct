@@ -45,7 +45,6 @@ public class Method {
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
 
-    private final Parameter singleSourceParameter;
     private final Parameter targetParameter;
 
     public static Method forMethodRequiringImplementation(ExecutableElement executable, List<Parameter> parameters,
@@ -83,12 +82,10 @@ public class Method {
         this.executable = executable;
         this.parameters = parameters;
         this.returnType = returnType;
-
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
 
-        this.singleSourceParameter = determineSingleSourceParameter();
         this.targetParameter = determineTargetParameter( parameters );
     }
 
@@ -100,16 +97,6 @@ public class Method {
         }
 
         return null;
-    }
-
-    private Parameter determineSingleSourceParameter() {
-        for ( Parameter parameter : parameters ) {
-            if ( !parameter.isMappingTarget() ) {
-                return parameter;
-            }
-        }
-
-        throw new IllegalStateException( "Method " + this + " has no source parameter." );
     }
 
     /**
@@ -133,6 +120,18 @@ public class Method {
 
     public List<Parameter> getParameters() {
         return parameters;
+    }
+
+    public List<Parameter> getSourceParameters() {
+        List<Parameter> sourceParameters = new ArrayList<Parameter>();
+
+        for ( Parameter parameter : parameters ) {
+            if ( !parameter.isMappingTarget() ) {
+                sourceParameters.add( parameter );
+            }
+        }
+
+        return sourceParameters;
     }
 
     public List<String> getParameterNames() {
@@ -179,12 +178,10 @@ public class Method {
 
     public boolean reverses(Method method) {
         return
-            equals( getSingleSourceParameter().getType(), method.getResultType() )
-                && equals( getResultType(), method.getSingleSourceParameter().getType() );
-    }
-
-    public Parameter getSingleSourceParameter() {
-        return singleSourceParameter;
+            getSourceParameters().size() == 1 &&
+                method.getSourceParameters().size() == 1 &&
+                equals( getSourceParameters().iterator().next().getType(), method.getResultType() ) &&
+                equals( getResultType(), method.getSourceParameters().iterator().next().getType() );
     }
 
     public Parameter getTargetParameter() {
@@ -192,11 +189,13 @@ public class Method {
     }
 
     public boolean isIterableMapping() {
-        return getSingleSourceParameter().getType().isIterableType() && getResultType().isIterableType();
+        return getSourceParameters().size() == 1 &&
+            getSourceParameters().iterator().next().getType().isIterableType() && getResultType().isIterableType();
     }
 
     public boolean isMapMapping() {
-        return getSingleSourceParameter().getType().isMapType() && getResultType().isMapType();
+        return getSourceParameters().size() == 1 && getSourceParameters().iterator().next().getType().isMapType() &&
+            getResultType().isMapType();
     }
 
     private boolean equals(Object o1, Object o2) {
@@ -206,5 +205,25 @@ public class Method {
     @Override
     public String toString() {
         return returnType + " " + getName() + "(" + Strings.join( parameters, ", " ) + ")";
+    }
+
+    public Mapping getMapping(String targetPropertyName) {
+        for ( Mapping mapping : mappings.values() ) {
+            if ( mapping.getTargetName().equals( targetPropertyName ) ) {
+                return mapping;
+            }
+        }
+
+        return null;
+    }
+
+    public Parameter getSourceParameter(String sourceParameterName) {
+        for ( Parameter parameter : getSourceParameters() ) {
+            if ( parameter.getName().equals( sourceParameterName ) ) {
+                return parameter;
+            }
+        }
+
+        return null;
     }
 }

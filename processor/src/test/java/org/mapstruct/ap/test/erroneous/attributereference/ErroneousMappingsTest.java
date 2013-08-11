@@ -43,16 +43,24 @@ public class ErroneousMappingsTest extends MapperTestBase {
         diagnostics = {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 27,
-                messageRegExp = "Unknown property \"bar\" in return type"),
-            @Diagnostic(type = ErroneousMapper.class,
-                kind = Kind.WARNING,
-                line = 28,
-                messageRegExp = "Unmapped target property: \"foo\""),
+                line = 29,
+                messageRegExp = "No property named \"bar\" exists in source parameter\\(s\\)"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 30,
-                messageRegExp = "Unknown property \"bar\" in parameter type")
+                messageRegExp = "Method has no parameter named \"source1\""),
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 31,
+                messageRegExp = "Unknown property \"bar\" in return type"),
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 32,
+                messageRegExp = "The type of parameter \"source\" has no property named \"foobar\""),
+            @Diagnostic(type = ErroneousMapper.class,
+                kind = Kind.WARNING,
+                line = 36,
+                messageRegExp = "Unmapped target property: \"bar\""),
         }
     )
     public void shouldFailToGenerateMappings() {

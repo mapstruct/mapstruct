@@ -46,6 +46,16 @@ public class MapMappingMethod extends MappingMethod {
         this.valueConversion = valueConversion;
     }
 
+    public Parameter getSourceParameter() {
+        for ( Parameter parameter : getParameters() ) {
+            if ( !parameter.isMappingTarget() ) {
+                return parameter;
+            }
+        }
+
+        throw new IllegalStateException( "Method " + this + " has no source parameter." );
+    }
+
     public MappingMethodReference getKeyMappingMethod() {
         return keyMappingMethod;
     }

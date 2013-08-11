@@ -20,17 +20,29 @@
 -->
     @Override
     public ${returnType.name} ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
-        if ( ${singleSourceParameter.name} == null ) {
+        if ( <#list sourceParameters as sourceParam>${sourceParam.name} == null<#if sourceParam_has_next> && </#if></#list> ) {
             return<#if returnType.name != "void"> null</#if>;
         }
 
         <#if !existingInstanceMapping>
         ${resultType.name} ${resultName} = new ${resultType.name}();
+
         </#if>
 
-        <#list propertyMappings as propertyMapping>
-            <@includeModel object=propertyMapping sourceBeanName=singleSourceParameter.name targetBeanName=resultName/>
-        </#list>
+        <#if (sourceParameters?size > 1)>
+            <#list sourceParameters as sourceParam>
+        if ( ${sourceParam.name} != null ) {
+                <#list propertyMappingsByParameter[sourceParam.name] as propertyMapping>
+                    <@includeModel object=propertyMapping targetBeanName=resultName/>
+                </#list>
+        }
+            </#list>
+        <#else>
+            <#list propertyMappingsByParameter[sourceParameters[0].name] as propertyMapping>
+                <@includeModel object=propertyMapping targetBeanName=resultName/>
+            </#list>
+        </#if>
+
         <#if returnType.name != "void">
 
         return ${resultName};

@@ -31,6 +31,7 @@ import java.util.Set;
  */
 public class PropertyMapping extends AbstractModelElement {
 
+    private final String sourceBeanName;
     private final String sourceName;
     private final String sourceAccessorName;
     private final Type sourceType;
@@ -42,10 +43,11 @@ public class PropertyMapping extends AbstractModelElement {
     private final MappingMethodReference mappingMethod;
     private final TypeConversion conversion;
 
-    public PropertyMapping(String sourceName, String sourceAccessorName, Type sourceType, String targetName,
-                           String targetAccessorName, Type targetType, MappingMethodReference mappingMethod,
-                           TypeConversion conversion) {
+    public PropertyMapping(String sourceBeanName, String sourceName, String sourceAccessorName, Type sourceType,
+                           String targetName, String targetAccessorName, Type targetType,
+                           MappingMethodReference mappingMethod, TypeConversion conversion) {
 
+        this.sourceBeanName = sourceBeanName;
         this.sourceName = sourceName;
         this.sourceAccessorName = sourceAccessorName;
         this.sourceType = sourceType;
@@ -56,6 +58,10 @@ public class PropertyMapping extends AbstractModelElement {
 
         this.mappingMethod = mappingMethod;
         this.conversion = conversion;
+    }
+
+    public String getSourceBeanName() {
+        return sourceBeanName;
     }
 
     public String getSourceName() {

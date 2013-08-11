@@ -194,15 +194,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( sourceParameters.size() > 1 ) {
-            messager.printMessage(
-                Kind.ERROR,
-                "Mappings from more than one source objects are not yet supported.",
-                method
-            );
-            return false;
-        }
-
         if ( targetParameter != null && ( sourceParameters.size() + 1 != method.getParameters().size() ) ) {
             messager.printMessage(
                 Kind.ERROR,
@@ -274,11 +265,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
 
         if ( mappingAnnotation != null ) {
-            mappings.put( mappingAnnotation.source(), Mapping.fromMappingPrism( mappingAnnotation ) );
+            mappings.put( mappingAnnotation.source(), Mapping.fromMappingPrism( mappingAnnotation, method ) );
         }
 
         if ( mappingsAnnotation != null ) {
-            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation ) );
+            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation, method ) );
         }
 
         return mappings;
