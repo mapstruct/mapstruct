@@ -29,6 +29,7 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.Options;
+import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * Default implementation of the processor context.
@@ -40,10 +41,15 @@ public class DefaultModelElementProcessorContext implements ModelElementProcesso
     private final ProcessingEnvironment processingEnvironment;
     private final DelegatingMessager messager;
     private final Options options;
+    private final TypeFactory typeFactory;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options) {
         this.processingEnvironment = processingEnvironment;
         this.messager = new DelegatingMessager( processingEnvironment.getMessager() );
+        this.typeFactory = new TypeFactory(
+            processingEnvironment.getElementUtils(),
+            processingEnvironment.getTypeUtils()
+        );
         this.options = options;
     }
 
@@ -60,6 +66,11 @@ public class DefaultModelElementProcessorContext implements ModelElementProcesso
     @Override
     public Elements getElementUtils() {
         return processingEnvironment.getElementUtils();
+    }
+
+    @Override
+    public TypeFactory getTypeFactory() {
+        return typeFactory;
     }
 
     @Override
@@ -86,6 +97,7 @@ public class DefaultModelElementProcessorContext implements ModelElementProcesso
             this.delegate = delegate;
         }
 
+        @Override
         public void printMessage(Kind kind, CharSequence msg) {
             delegate.printMessage( kind, msg );
             if ( kind == Kind.ERROR ) {
@@ -93,6 +105,7 @@ public class DefaultModelElementProcessorContext implements ModelElementProcesso
             }
         }
 
+        @Override
         public void printMessage(Kind kind, CharSequence msg, Element e) {
             delegate.printMessage( kind, msg, e );
             if ( kind == Kind.ERROR ) {
@@ -100,6 +113,7 @@ public class DefaultModelElementProcessorContext implements ModelElementProcesso
             }
         }
 
+        @Override
         public void printMessage(Kind kind, CharSequence msg, Element e, AnnotationMirror a) {
             delegate.printMessage( kind, msg, e, a );
             if ( kind == Kind.ERROR ) {
@@ -107,6 +121,7 @@ public class DefaultModelElementProcessorContext implements ModelElementProcesso
             }
         }
 
+        @Override
         public void printMessage(Kind kind, CharSequence msg, Element e, AnnotationMirror a, AnnotationValue v) {
             delegate.printMessage( kind, msg, e, a, v );
             if ( kind == Kind.ERROR ) {

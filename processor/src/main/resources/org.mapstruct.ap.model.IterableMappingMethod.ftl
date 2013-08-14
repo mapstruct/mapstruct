@@ -28,7 +28,7 @@
         ${resultName}.clear();
         <#else>
         <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
-        <#if resultType.name == "Iterable" && resultType.packageName == "java.lang">${resultType.iterableImplementationType.name}<#else>${resultType.name}</#if><<@includeModel object=resultType.typeParameters[0]/>> ${resultName} = new <#if resultType.iterableImplementationType??>${resultType.iterableImplementationType.name}<#else>${resultType.name}</#if><<@includeModel object=resultType.typeParameters[0]/>>();
+        <#if resultType.fullyQualifiedName == "java.lang.Iterable">${resultType.implementationType.name}<#else>${resultType.name}</#if><<@includeModel object=resultType.typeParameters[0]/>> ${resultName} = new <#if resultType.implementationType??>${resultType.implementationType.name}<#else>${resultType.name}</#if><<@includeModel object=resultType.typeParameters[0]/>>();
        </#if>
 
         for ( <@includeModel object=sourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${sourceParameter.name} ) {

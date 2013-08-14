@@ -25,6 +25,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.Generated;
 
+import org.mapstruct.ap.util.TypeFactory;
+
 /**
  * Represents a type implementing a mapper interface (annotated with {@code @Mapper}. This is the root object of the
  * mapper model.
@@ -33,6 +35,7 @@ import javax.annotation.Generated;
  */
 public class Mapper extends AbstractModelElement {
 
+    private final TypeFactory typeFactory;
     private final String packageName;
     private final String interfaceName;
     private final String implementationName;
@@ -41,7 +44,7 @@ public class Mapper extends AbstractModelElement {
     private final List<MapperReference> referencedMappers;
     private final Options options;
 
-    public Mapper(String packageName, String interfaceName, String implementationName,
+    public Mapper(TypeFactory typeFactory, String packageName, String interfaceName, String implementationName,
                   List<MappingMethod> mappingMethods, List<MapperReference> referencedMappers, Options options) {
         this.packageName = packageName;
         this.interfaceName = interfaceName;
@@ -50,12 +53,13 @@ public class Mapper extends AbstractModelElement {
         this.mappingMethods = mappingMethods;
         this.referencedMappers = referencedMappers;
         this.options = options;
+        this.typeFactory = typeFactory;
     }
 
     @Override
     public SortedSet<Type> getImportTypes() {
         SortedSet<Type> importedTypes = new TreeSet<Type>();
-        importedTypes.add( Type.forClass( Generated.class ) );
+        importedTypes.add( typeFactory.getType( Generated.class ) );
 
         for ( MappingMethod mappingMethod : mappingMethods ) {
             for ( Type type : mappingMethod.getImportTypes() ) {
@@ -87,9 +91,7 @@ public class Mapper extends AbstractModelElement {
             collection.add( typeToAdd );
         }
 
-        addWithDependents( collection, typeToAdd.getCollectionImplementationType() );
-        addWithDependents( collection, typeToAdd.getIterableImplementationType() );
-        addWithDependents( collection, typeToAdd.getMapImplementationType() );
+        addWithDependents( collection, typeToAdd.getImplementationType() );
 
         for ( Type type : typeToAdd.getTypeParameters() ) {
             addWithDependents( collection, type );

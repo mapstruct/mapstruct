@@ -18,176 +18,88 @@
  */
 package org.mapstruct.ap.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.NavigableSet;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentNavigableMap;
-import java.util.concurrent.ConcurrentSkipListMap;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleElementVisitor6;
+import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.util.Strings;
+import org.mapstruct.ap.util.TypeFactory;
 
 /**
- * Represents the type of a bean property, parameter etc.
+ * Represents the type of a bean property, parameter etc. Each type corresponds to a {@link TypeMirror}, i.e. there are
+ * different instances for e.g. {@code Set<String>} and {@code Set<Integer>}.
+ * <p>
+ * Allows for a unified handling of declared and primitive types and usage within templates. Instances are obtained
+ * through {@link TypeFactory}.
  *
  * @author Gunnar Morling
  */
 public class Type extends AbstractModelElement implements Comparable<Type> {
-    /**
-     * Type representing {@code void}
-     */
-    public static final Type VOID = new Type( "void" );
 
-    private static final Set<String> PRIMITIVE_TYPE_NAMES = new HashSet<String>(
-        Arrays.asList( "boolean", "char", "byte", "short", "int", "long", "float", "double" )
-    );
-
-    private static final ConcurrentMap<String, Type> DEFAULT_ITERABLE_IMPLEMENTATION_TYPES =
-        new ConcurrentHashMap<String, Type>();
-    private static final ConcurrentMap<String, Type> DEFAULT_COLLECTION_IMPLEMENTATION_TYPES =
-        new ConcurrentHashMap<String, Type>();
-    private static final ConcurrentMap<String, Type> DEFAULT_MAP_IMPLEMENTATION_TYPES =
-        new ConcurrentHashMap<String, Type>();
-
-    static {
-        //base
-        DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.put( Iterable.class.getName(), forClass( ArrayList.class ) );
-        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( Collection.class.getName(), forClass( ArrayList.class ) );
-
-        //list
-        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( List.class.getName(), forClass( ArrayList.class ) );
-
-        //set
-        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( Set.class.getName(), forClass( HashSet.class ) );
-        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( SortedSet.class.getName(), forClass( TreeSet.class ) );
-        DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.put( NavigableSet.class.getName(), forClass( TreeSet.class ) );
-
-        DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.putAll( DEFAULT_COLLECTION_IMPLEMENTATION_TYPES );
-
-        //map
-        DEFAULT_MAP_IMPLEMENTATION_TYPES.put( Map.class.getName(), forClass( HashMap.class ) );
-        DEFAULT_MAP_IMPLEMENTATION_TYPES.put( SortedMap.class.getName(), forClass( TreeMap.class ) );
-        DEFAULT_MAP_IMPLEMENTATION_TYPES.put( NavigableMap.class.getName(), forClass( TreeMap.class ) );
-        DEFAULT_MAP_IMPLEMENTATION_TYPES.put( ConcurrentMap.class.getName(), forClass( ConcurrentHashMap.class ) );
-        DEFAULT_MAP_IMPLEMENTATION_TYPES.put(
-            ConcurrentNavigableMap.class.getName(),
-            forClass( ConcurrentSkipListMap.class )
-        );
-    }
-
-    private final String canonicalName;
     private final String packageName;
     private final String name;
+    private final String qualifiedName;
     private final List<Type> typeParameters;
     private final boolean isInterface;
     private final boolean isEnumType;
-    private final boolean isCollectionType;
     private final boolean isIterableType;
     private final boolean isMapType;
-    private final Type collectionImplementationType;
-    private final Type iterableImplementationType;
-    private final Type mapImplementationType;
+    private final Type implementationType;
+    private final TypeMirror typeMirror;
+    private final Types typeUtils;
+    private final TypeElement typeElement;
 
-    public static Type forClass(Class<?> clazz) {
-        Package pakkage = clazz.getPackage();
-
-        if ( pakkage != null ) {
-            return new Type(
-                clazz.getCanonicalName(),
-                pakkage.getName(),
-                clazz.getSimpleName(),
-                clazz.isInterface(),
-                clazz.isEnum(),
-                Collection.class.isAssignableFrom( clazz ),
-                Iterable.class.isAssignableFrom( clazz ),
-                Map.class.isAssignableFrom( clazz ),
-                Collections.<Type>emptyList()
-            );
-        }
-        else {
-            return new Type( clazz.getSimpleName() );
-        }
-    }
-
-    public Type(String name) {
-        this( name, null, name, false, false, false, false, false, Collections.<Type>emptyList() );
-    }
-
-    public Type(String packageName, String name) {
-        this(
-            packageName + "." + name,
-            packageName,
-            name,
-            false,
-            false,
-            false,
-            false,
-            false,
-            Collections.<Type>emptyList()
-        );
-    }
-
-    public Type(String canonicalName, String packageName, String name, boolean isInterface, boolean isEnumType,
-                boolean isCollectionType,
-                boolean isIterableType, boolean isMapType, List<Type> typeParameters) {
-        this.canonicalName = canonicalName;
-        this.packageName = packageName;
-        this.name = name;
-        this.isInterface = isInterface;
-        this.isEnumType = isEnumType;
-        this.isCollectionType = isCollectionType;
+    public Type(TypeMirror typeMirror, List<Type> typeParameters, Type implementationType, boolean isIterableType,
+                boolean isMapType,
+                Types typeUtils, Elements elementUtils) {
+        this.typeMirror = typeMirror;
+        this.implementationType = implementationType;
+        this.typeParameters = typeParameters;
         this.isIterableType = isIterableType;
         this.isMapType = isMapType;
-        this.typeParameters = typeParameters;
+        this.typeUtils = typeUtils;
 
-        if ( isCollectionType ) {
-            collectionImplementationType = DEFAULT_COLLECTION_IMPLEMENTATION_TYPES.get( packageName + "." + name );
+        DeclaredType declaredType = typeMirror.getKind() == TypeKind.DECLARED ? (DeclaredType) typeMirror : null;
+
+        if ( declaredType != null ) {
+            isEnumType = declaredType.asElement().getKind() == ElementKind.ENUM;
+            isInterface = declaredType.asElement().getKind() == ElementKind.INTERFACE;
+            name = declaredType.asElement().getSimpleName().toString();
+
+            typeElement = declaredType.asElement().accept( new TypeElementRetrievalVisitor(), null );
+
+            if ( typeElement != null ) {
+                packageName = elementUtils.getPackageOf( typeElement ).getQualifiedName().toString();
+                qualifiedName = typeElement.getQualifiedName().toString();
+            }
+            else {
+                packageName = null;
+                qualifiedName = name;
+            }
         }
         else {
-            collectionImplementationType = null;
-        }
-
-        if ( isIterableType ) {
-            iterableImplementationType = DEFAULT_ITERABLE_IMPLEMENTATION_TYPES.get( packageName + "." + name );
-        }
-        else {
-            iterableImplementationType = null;
-        }
-
-        if ( isMapType ) {
-            Type mapType = DEFAULT_MAP_IMPLEMENTATION_TYPES.get( packageName + "." + name );
-            mapImplementationType = mapType != null ? new Type(
-                mapType.getPackageName() + "." + mapType.getName(),
-                mapType.getPackageName(),
-                mapType.getName(),
-                mapType.isInterface(),
-                mapType.isEnumType(),
-                mapType.isCollectionType(),
-                mapType.isIterableType(),
-                true,
-                typeParameters
-            ) : null;
-        }
-        else {
-            mapImplementationType = null;
+            isEnumType = false;
+            isInterface = false;
+            typeElement = null;
+            name = typeMirror.toString();
+            packageName = null;
+            qualifiedName = name;
         }
     }
 
-    public String getCanonicalName() {
-        return canonicalName;
+    public TypeMirror getTypeMirror() {
+        return typeMirror;
+    }
+
+    public TypeElement getTypeElement() {
+        return typeElement;
     }
 
     public String getPackageName() {
@@ -203,7 +115,7 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
     }
 
     public boolean isPrimitive() {
-        return packageName == null && PRIMITIVE_TYPE_NAMES.contains( name );
+        return typeMirror.getKind().isPrimitive();
     }
 
     public boolean isInterface() {
@@ -214,26 +126,8 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         return isEnumType;
     }
 
-    public Type getCollectionImplementationType() {
-        return collectionImplementationType;
-    }
-
-    public Type getIterableImplementationType() {
-        return iterableImplementationType;
-    }
-
-    public Type getMapImplementationType() {
-        return mapImplementationType;
-    }
-
-    public boolean isCollectionType() {
-        return isCollectionType;
-    }
-
     public Type getImplementationType() {
-        return collectionImplementationType != null ? collectionImplementationType :
-            iterableImplementationType != null ? iterableImplementationType :
-                mapImplementationType;
+        return implementationType;
     }
 
     public boolean isIterableType() {
@@ -245,12 +139,13 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
     }
 
     public String getFullyQualifiedName() {
-        return packageName == null ? name : packageName + "." + name;
+        return qualifiedName;
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        return Collections.emptySet();
+        return implementationType != null ? org.mapstruct.ap.util.Collections.<Type>asSet( implementationType ) :
+            Collections.<Type>emptySet();
     }
 
     @Override
@@ -259,7 +154,6 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         int result = 1;
         result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
         result = prime * result + ( ( packageName == null ) ? 0 : packageName.hashCode() );
-        result = prime * result + ( ( typeParameters == null ) ? 0 : typeParameters.hashCode() );
         return result;
     }
 
@@ -275,31 +169,8 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
             return false;
         }
         Type other = (Type) obj;
-        if ( name == null ) {
-            if ( other.name != null ) {
-                return false;
-            }
-        }
-        else if ( !name.equals( other.name ) ) {
-            return false;
-        }
-        if ( packageName == null ) {
-            if ( other.packageName != null ) {
-                return false;
-            }
-        }
-        else if ( !packageName.equals( other.packageName ) ) {
-            return false;
-        }
-        if ( typeParameters == null ) {
-            if ( other.typeParameters != null ) {
-                return false;
-            }
-        }
-        else if ( !typeParameters.equals( other.typeParameters ) ) {
-            return false;
-        }
-        return true;
+
+        return typeUtils.isSameType( typeMirror, other.typeMirror );
     }
 
     @Override
@@ -309,11 +180,13 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
 
     @Override
     public String toString() {
-        if ( !typeParameters.isEmpty() ) {
-            return name + "<" + Strings.join( typeParameters, ", " ) + ">";
-        }
-        else {
-            return name;
+        return typeMirror.toString();
+    }
+
+    private static class TypeElementRetrievalVisitor extends SimpleElementVisitor6<TypeElement, Void> {
+        @Override
+        public TypeElement visitType(TypeElement e, Void p) {
+            return e;
         }
     }
 }

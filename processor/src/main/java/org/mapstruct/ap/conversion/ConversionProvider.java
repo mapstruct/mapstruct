@@ -20,6 +20,7 @@ package org.mapstruct.ap.conversion;
 
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * Implementations create inline {@link TypeConversion}s such as
@@ -80,5 +81,7 @@ public interface ConversionProvider {
          * @return The date format if this conversion.
          */
         String getDateFormat();
+
+        TypeFactory getTypeFactory();
     }
 }

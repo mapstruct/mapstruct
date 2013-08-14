@@ -20,6 +20,7 @@ package org.mapstruct.ap.conversion;
 
 import org.mapstruct.ap.conversion.ConversionProvider.Context;
 import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * Default implementation of the {@link Context} passed to conversion providers.
@@ -30,8 +31,10 @@ public class DefaultConversionContext implements ConversionProvider.Context {
 
     private final Type targetType;
     private final String format;
+    private final TypeFactory typeFactory;
 
-    public DefaultConversionContext(Type targetType, String format) {
+    public DefaultConversionContext(TypeFactory typeFactory, Type targetType, String format) {
+        this.typeFactory = typeFactory;
         this.targetType = targetType;
         this.format = format;
     }
@@ -44,5 +47,10 @@ public class DefaultConversionContext implements ConversionProvider.Context {
     @Override
     public String getDateFormat() {
         return format;
+    }
+
+    @Override
+    public TypeFactory getTypeFactory() {
+        return typeFactory;
     }
 }

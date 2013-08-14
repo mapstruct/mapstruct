@@ -32,13 +32,13 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
  */
 public class Filters {
 
-    //TODO
-    private static Executables executables = new Executables( null );
+    private final Executables executables;
 
-    private Filters() {
+    public Filters(Executables executables) {
+        this.executables = executables;
     }
 
-    public static List<ExecutableElement> getterMethodsIn(Iterable<? extends Element> elements) {
+    public List<ExecutableElement> getterMethodsIn(Iterable<? extends Element> elements) {
         List<ExecutableElement> getterMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : methodsIn( elements ) ) {
@@ -50,7 +50,7 @@ public class Filters {
         return getterMethods;
     }
 
-    public static List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
+    public List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
         List<ExecutableElement> setterMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : methodsIn( elements ) ) {

@@ -30,9 +30,9 @@ import java.util.Set;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.MapperPrism;
@@ -58,7 +58,7 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.Strings;
-import org.mapstruct.ap.util.TypeUtil;
+import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -71,24 +71,24 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     private static final String IMPLEMENTATION_SUFFIX = "Impl";
 
     private Elements elementUtils;
-    private Types typeUtils;
     private Messager messager;
     private Options options;
 
-    private TypeUtil typeUtil;
+    private TypeFactory typeFactory;
     private Conversions conversions;
     private Executables executables;
+    private Filters filters;
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<Method> sourceModel) {
         this.elementUtils = context.getElementUtils();
-        this.typeUtils = context.getTypeUtils();
         this.messager = context.getMessager();
         this.options = context.getOptions();
 
-        this.typeUtil = new TypeUtil( context.getElementUtils(), context.getTypeUtils() );
-        this.conversions = new Conversions( elementUtils, typeUtils, typeUtil );
-        this.executables = new Executables( typeUtil );
+        this.typeFactory = context.getTypeFactory();
+        this.conversions = new Conversions( elementUtils, typeFactory );
+        this.executables = new Executables( typeFactory );
+        this.filters = new Filters( executables );
 
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -104,6 +104,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         List<MapperReference> mapperReferences = getReferencedMappers( element );
 
         return new Mapper(
+            typeFactory,
             elementUtils.getPackageOf( element ).getQualifiedName().toString(),
             element.getSimpleName().toString(),
             element.getSimpleName() + IMPLEMENTATION_SUFFIX,
@@ -143,7 +144,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
 
         for ( TypeMirror usedMapper : mapperPrism.uses() ) {
-            mapperReferences.add( new DefaultMapperReference( typeUtil.retrieveType( usedMapper ) ) );
+            mapperReferences.add( new DefaultMapperReference( typeFactory.getType( usedMapper ) ) );
         }
 
         return mapperReferences;
@@ -191,7 +192,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private void reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType(Method method) {
-        if ( method.getReturnType() != Type.VOID && method.getReturnType().isInterface() &&
+        if ( method.getReturnType().getTypeMirror().getKind() != TypeKind.VOID &&
+            method.getReturnType().isInterface() &&
             method.getReturnType().getImplementationType() == null ) {
             messager.printMessage(
                 Kind.ERROR,
@@ -219,8 +221,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         Mapping mapping = method.getMapping( targetPropertyName );
         String dateFormat = mapping != null ? mapping.getDateFormat() : null;
         String sourcePropertyName = mapping != null ? mapping.getSourcePropertyName() : targetPropertyName;
-        TypeElement parameterElement = elementUtils.getTypeElement( parameter.getType().getCanonicalName() );
-        List<ExecutableElement> sourceGetters = Filters.getterMethodsIn(
+        TypeElement parameterElement = parameter.getType().getTypeElement();
+        List<ExecutableElement> sourceGetters = filters.getterMethodsIn(
             elementUtils.getAllMembers( parameterElement )
         );
 
@@ -252,8 +254,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             return null;
         }
 
-        TypeElement resultTypeElement = elementUtils.getTypeElement( method.getResultType().getCanonicalName() );
-        List<ExecutableElement> targetSetters = Filters.setterMethodsIn(
+        TypeElement resultTypeElement = method.getResultType().getTypeElement();
+        List<ExecutableElement> targetSetters = filters.setterMethodsIn(
             elementUtils.getAllMembers( resultTypeElement )
         );
 
@@ -348,8 +350,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private boolean hasProperty(Parameter parameter, String propertyName) {
-        TypeElement parameterTypeElement = elementUtils.getTypeElement( parameter.getType().getCanonicalName() );
-        List<ExecutableElement> getters = Filters.setterMethodsIn(
+        TypeElement parameterTypeElement = parameter.getType().getTypeElement();
+        List<ExecutableElement> getters = filters.setterMethodsIn(
             elementUtils.getAllMembers( parameterTypeElement )
         );
 
@@ -357,8 +359,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private boolean reportErrorIfMappedPropertiesDontExist(Method method) {
-        TypeElement resultTypeElement = elementUtils.getTypeElement( method.getResultType().getCanonicalName() );
-        List<ExecutableElement> targetSetters = Filters.setterMethodsIn(
+        TypeElement resultTypeElement = method.getResultType().getTypeElement();
+        List<ExecutableElement> targetSetters = filters.setterMethodsIn(
             elementUtils.getAllMembers( resultTypeElement )
         );
 
@@ -528,7 +530,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             return null;
         }
 
-        return conversionProvider.to( sourceReference, new DefaultConversionContext( targetType, dateFormat ) );
+        return conversionProvider.to(
+            sourceReference,
+            new DefaultConversionContext( typeFactory, targetType, dateFormat )
+        );
     }
 
     private MappingMethodReference getMappingMethodReference(Iterable<Method> methods, Type parameterType,
@@ -540,8 +545,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
             Parameter singleSourceParam = method.getSourceParameters().iterator().next();
 
-            if ( singleSourceParam.getType().equals( parameterType ) &&
-                method.getResultType().equals( returnType ) ) {
+            if ( singleSourceParam.getType().equals( parameterType ) && method.getResultType().equals( returnType ) ) {
                 return new MappingMethodReference( method );
             }
         }
@@ -561,8 +565,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         if ( property.getSourceType().equals( property.getTargetType() ) ||
             property.getMappingMethod() != null ||
             property.getConversion() != null ||
-            ( property.getTargetType().isCollectionType() &&
-                property.getTargetType().getCollectionImplementationType() != null ) ) {
+            property.getTargetType().getImplementationType() != null ) {
             return;
         }
 

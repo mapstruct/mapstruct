@@ -20,7 +20,6 @@ package org.mapstruct.ap.processor;
 
 import org.mapstruct.ap.model.Annotation;
 import org.mapstruct.ap.model.Mapper;
-import org.mapstruct.ap.model.Type;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -38,11 +37,11 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
 
     @Override
     protected Annotation getTypeAnnotation() {
-        return new Annotation( new Type( "javax.inject", "Named" ) );
+        return new Annotation( getTypeFactory().getType( "javax.inject.Named" ) );
     }
 
     @Override
     protected Annotation getMapperReferenceAnnotation() {
-        return new Annotation( new Type( "javax.inject", "Inject" ) );
+        return new Annotation( getTypeFactory().getType( "javax.inject.Inject" ) );
     }
 }

@@ -20,7 +20,6 @@ package org.mapstruct.ap.processor;
 
 import org.mapstruct.ap.model.Annotation;
 import org.mapstruct.ap.model.Mapper;
-import org.mapstruct.ap.model.Type;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -38,11 +37,11 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
 
     @Override
     protected Annotation getTypeAnnotation() {
-        return new Annotation( new Type( "org.springframework.stereotype", "Component" ) );
+        return new Annotation( getTypeFactory().getType( "org.springframework.stereotype.Component" ) );
     }
 
     @Override
     protected Annotation getMapperReferenceAnnotation() {
-        return new Annotation( new Type( "org.springframework.beans.factory.annotation", "Autowired" ) );
+        return new Annotation( getTypeFactory().getType( "org.springframework.beans.factory.annotation.Autowired" ) );
     }
 }

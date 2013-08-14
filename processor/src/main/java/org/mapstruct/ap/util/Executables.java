@@ -38,10 +38,10 @@ import org.mapstruct.ap.model.Type;
  */
 public class Executables {
 
-    private final TypeUtil typeUtil;
+    private final TypeFactory typeFactory;
 
-    public Executables(TypeUtil typeUtil) {
-        this.typeUtil = typeUtil;
+    public Executables(TypeFactory typeFactory) {
+        this.typeFactory = typeFactory;
     }
 
     public boolean isGetterMethod(ExecutableElement method) {
@@ -119,7 +119,7 @@ public class Executables {
 
         return new Parameter(
             parameter.getSimpleName().toString(),
-            typeUtil.retrieveType( parameter.asType() ),
+            typeFactory.getType( parameter.asType() ),
             false
         );
     }
@@ -133,7 +133,7 @@ public class Executables {
                 .add(
                     new Parameter(
                         parameter.getSimpleName().toString(),
-                        typeUtil.retrieveType( parameter.asType() ),
+                        typeFactory.getType( parameter.asType() ),
                         MappingTargetPrism.getInstanceOn( parameter ) != null
                     )
                 );
@@ -143,6 +143,6 @@ public class Executables {
     }
 
     public Type retrieveReturnType(ExecutableElement method) {
-        return typeUtil.retrieveType( method.getReturnType() );
+        return typeFactory.getType( method.getReturnType() );
     }
 }
