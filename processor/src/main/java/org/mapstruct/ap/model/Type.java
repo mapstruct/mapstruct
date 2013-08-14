@@ -148,6 +148,21 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
             Collections.<Type>emptySet();
     }
 
+    /**
+     * Whether this type is assignable to the given other type.
+     *
+     * @param other The other type.
+     *
+     * @return {@code true} if and only if this type is assignable to the given other type.
+     */
+    public boolean isAssignableTo(Type other) {
+        if ( equals( other ) ) {
+            return true;
+        }
+
+        return typeUtils.isAssignable( typeMirror, other.typeMirror );
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

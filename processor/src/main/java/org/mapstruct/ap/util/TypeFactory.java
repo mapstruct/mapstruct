@@ -173,20 +173,4 @@ public class TypeFactory {
 
         return null;
     }
-
-    /**
-     * @param type1 first type
-     * @param type2 second type
-     *
-     * @return {@code true} if and only if the first type is assignable to the second
-     */
-    public boolean isAssignable(Type type1, Type type2) {
-        if ( type1.equals( type2 ) ) {
-            return true;
-        }
-
-        TypeMirror mirror1 = type1.getTypeMirror();
-        TypeMirror mirror2 = type2.getTypeMirror();
-        return null != mirror1 && null != mirror2 && typeUtils.isAssignable( mirror1, mirror2 );
-    }
 }
