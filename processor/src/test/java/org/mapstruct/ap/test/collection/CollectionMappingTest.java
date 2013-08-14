@@ -21,7 +21,9 @@ package org.mapstruct.ap.test.collection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
@@ -257,5 +259,20 @@ public class CollectionMappingTest extends MapperTestBase {
 
         assertThat( source ).isNotNull();
         assertThat( source.getColours() ).containsOnly( Colour.GREEN, Colour.BLUE );
+    }
+
+    @Test
+    public void shouldMapMapAsCopy() {
+        Source source = new Source();
+
+        Map<String, Long> map = new HashMap<String, Long>();
+        map.put( "Bob", 123L );
+        map.put( "Alice", 456L );
+        source.setStringLongMap( map );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        target.getStringLongMap().put( "Bill", 789L );
+
+        assertThat( source.getStringLongMap() ).hasSize( 2 );
     }
 }
