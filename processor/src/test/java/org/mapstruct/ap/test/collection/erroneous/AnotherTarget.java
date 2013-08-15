@@ -16,17 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.erroneous.attributereference;
+package org.mapstruct.ap.test.collection.erroneous;
+
+import java.util.Map;
 
 public class AnotherTarget {
 
-    private int bar;
+    private Map<String, String> barMap;
 
-    public int getBar() {
-        return bar;
+    public Map<String, String> getBarMap() {
+        return barMap;
     }
 
-    public void setBar(int bar) {
-        this.bar = bar;
+    public void setBarMap(Map<String, String> barMap) {
+        this.barMap = barMap;
     }
 }

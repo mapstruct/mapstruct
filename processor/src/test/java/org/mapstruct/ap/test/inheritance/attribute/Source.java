@@ -16,17 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.erroneous.attributereference;
+package org.mapstruct.ap.test.inheritance.attribute;
 
-public class AnotherTarget {
+public class Source {
 
-    private int bar;
+    private String foo;
 
-    public int getBar() {
-        return bar;
+    public String getFoo() {
+        return foo;
     }
 
-    public void setBar(int bar) {
-        this.bar = bar;
+    public void setFoo(String foo) {
+        this.foo = foo;
     }
 }

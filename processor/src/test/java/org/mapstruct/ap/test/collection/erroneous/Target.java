@@ -16,17 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.erroneous.attributereference;
+package org.mapstruct.ap.test.collection.erroneous;
 
-public class AnotherTarget {
+import java.util.Set;
 
-    private int bar;
+public class Target {
 
-    public int getBar() {
-        return bar;
+    private Set<Long> fooSet;
+
+    public Set<Long> getFooSet() {
+        return fooSet;
     }
 
-    public void setBar(int bar) {
-        this.bar = bar;
+    public void setFooSet(Set<Long> fooSet) {
+        this.fooSet = fooSet;
     }
 }

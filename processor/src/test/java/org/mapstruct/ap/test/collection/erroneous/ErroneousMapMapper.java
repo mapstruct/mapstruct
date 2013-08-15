@@ -16,17 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.erroneous.attributereference;
+package org.mapstruct.ap.test.collection.erroneous;
 
-public class AnotherTarget {
+import org.mapstruct.Mapper;
 
-    private int bar;
+@Mapper
+public interface ErroneousMapMapper {
 
-    public int getBar() {
-        return bar;
-    }
-
-    public void setBar(int bar) {
-        this.bar = bar;
-    }
+    AnotherTarget sourceToTarget(Source source);
 }

@@ -27,6 +27,7 @@ import org.mapstruct.ap.model.AnnotationMapperReference;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.util.OptionsHelper;
+import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * An {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -38,8 +39,12 @@ import org.mapstruct.ap.util.OptionsHelper;
  */
 public abstract class AnnotationBasedComponentModelProcessor implements ModelElementProcessor<Mapper, Mapper> {
 
+    private TypeFactory typeFactory;
+
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
+        this.typeFactory = context.getTypeFactory();
+
         String componentModel = MapperPrism.getInstanceOn( mapperTypeElement ).componentModel();
         String effectiveComponentModel = OptionsHelper.getEffectiveComponentModel(
             context.getOptions(),
@@ -68,7 +73,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
      * @return the mapper reference replacing the original one
      */
     protected MapperReference replacementMapperReference(MapperReference originalReference) {
-        return new AnnotationMapperReference( getMapperReferenceAnnotation(), originalReference.getMapperType() );
+        return new AnnotationMapperReference(
+            getMapperReferenceAnnotation(),
+            originalReference.getMapperType()
+        );
     }
 
     /**
@@ -89,5 +97,9 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     @Override
     public int getPriority() {
         return 1100;
+    }
+
+    protected TypeFactory getTypeFactory() {
+        return typeFactory;
     }
 }

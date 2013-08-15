@@ -37,14 +37,12 @@ public abstract class MappingMethod extends AbstractModelElement {
     private final String name;
     private final List<Parameter> parameters;
     private final Type returnType;
-    private final Parameter singleSourceParameter;
     private final Parameter targetParameter;
 
     public MappingMethod(Method method) {
         this.name = method.getName();
         this.parameters = method.getParameters();
         this.returnType = method.getReturnType();
-        this.singleSourceParameter = method.getSingleSourceParameter();
         this.targetParameter = method.getTargetParameter();
     }
 
@@ -56,8 +54,16 @@ public abstract class MappingMethod extends AbstractModelElement {
         return parameters;
     }
 
-    public Parameter getSingleSourceParameter() {
-        return singleSourceParameter;
+    public List<Parameter> getSourceParameters() {
+        List<Parameter> sourceParameters = new ArrayList<Parameter>();
+
+        for ( Parameter parameter : parameters ) {
+            if ( !parameter.isMappingTarget() ) {
+                sourceParameters.add( parameter );
+            }
+        }
+
+        return sourceParameters;
     }
 
     public Type getResultType() {
@@ -86,6 +92,7 @@ public abstract class MappingMethod extends AbstractModelElement {
         }
 
         types.add( getReturnType() );
+        types.addAll( getReturnType().getImportTypes() );
 
         return types;
     }

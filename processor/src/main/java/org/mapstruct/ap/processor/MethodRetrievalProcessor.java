@@ -26,8 +26,8 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.IterableMappingPrism;
@@ -42,7 +42,7 @@ import org.mapstruct.ap.model.source.MapMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Executables;
-import org.mapstruct.ap.util.TypeUtil;
+import org.mapstruct.ap.util.TypeFactory;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 
@@ -57,16 +57,14 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
 public class MethodRetrievalProcessor implements ModelElementProcessor<Void, List<Method>> {
 
     private Messager messager;
-    private Types typeUtils;
-    private TypeUtil typeUtil;
+    private TypeFactory typeFactory;
     private Executables executables;
 
     @Override
     public List<Method> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
         this.messager = context.getMessager();
-        this.typeUtils = context.getTypeUtils();
-        this.typeUtil = new TypeUtil( context.getElementUtils(), typeUtils );
-        this.executables = new Executables( typeUtil );
+        this.typeFactory = context.getTypeFactory();
+        this.executables = new Executables( typeFactory );
 
         return retrieveMethods( mapperTypeElement, true );
     }
@@ -146,7 +144,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         else if ( parameters.size() == 1 ) {
             return
                 Method.forReferencedMethod(
-                    typeUtil.getType( typeUtils.getDeclaredType( element ) ),
+                    typeFactory.getType( element ),
                     method,
                     parameters,
                     returnType
@@ -194,15 +192,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( sourceParameters.size() > 1 ) {
-            messager.printMessage(
-                Kind.ERROR,
-                "Mappings from more than one source objects are not yet supported.",
-                method
-            );
-            return false;
-        }
-
         if ( targetParameter != null && ( sourceParameters.size() + 1 != method.getParameters().size() ) ) {
             messager.printMessage(
                 Kind.ERROR,
@@ -212,12 +201,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( resultType == Type.VOID ) {
+        if ( resultType.getTypeMirror().getKind() == TypeKind.VOID ) {
             messager.printMessage( Kind.ERROR, "Can't generate mapping method with return type void.", method );
             return false;
         }
 
-        if ( returnType != Type.VOID && !typeUtil.isAssignable( resultType, returnType ) ) {
+        if ( returnType.getTypeMirror().getKind() != TypeKind.VOID &&
+            !resultType.isAssignableTo( returnType ) ) {
             messager.printMessage(
                 Kind.ERROR,
                 "The result type is not assignable to the the return type.",
@@ -274,11 +264,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
 
         if ( mappingAnnotation != null ) {
-            mappings.put( mappingAnnotation.source(), Mapping.fromMappingPrism( mappingAnnotation ) );
+            mappings.put( mappingAnnotation.source(), Mapping.fromMappingPrism( mappingAnnotation, method ) );
         }
 
         if ( mappingsAnnotation != null ) {
-            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation ) );
+            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation, method ) );
         }
 
         return mappings;

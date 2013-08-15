@@ -16,11 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erroneous;
+package org.mapstruct.ap.test.inheritance.attribute;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -29,28 +30,33 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 import org.testng.annotations.Test;
 
 /**
- * Test for illegal mappings between iterable and non-iterable types.
+ * Test for setting an attribute where the target attribute of a super-type.
  *
  * @author Gunnar Morling
  */
-@WithClasses({ ErronuousMapper.class })
-public class ErronuousCollectionMappingTest extends MapperTestBase {
+public class AttributeInheritanceTest extends MapperTestBase {
 
     @Test
-    @IssueKey("6")
+    @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
+    public void shouldMapAttributeFromSuperType() {
+        Source source = new Source();
+        source.setFoo( "Bob" );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        assertThat( target.getFoo() ).isNotNull();
+        assertThat( target.getFoo().toString() ).isEqualTo( "Bob" );
+    }
+
+    @Test
+    @WithClasses({ Source.class, Target.class, TargetSourceMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErronuousMapper.class,
-                kind = Kind.ERROR,
-                line = 28,
-                messageRegExp = "Can't generate mapping method from iterable type to non-iterable type\\."),
-            @Diagnostic(type = ErronuousMapper.class,
-                kind = Kind.ERROR,
-                line = 30,
-                messageRegExp = "Can't generate mapping method from non-iterable type to iterable type\\.")
-        }
-    )
-    public void shouldFailToGenerateMappingFromListToString() {
+        diagnostics = @Diagnostic(
+            type = TargetSourceMapper.class,
+            kind = Kind.ERROR,
+            line = 29,
+            messageRegExp = "Can't map property \"java.lang.CharSequence foo\" to \"java.lang.String foo\""
+        ))
+    public void shouldReportErrorDueToUnmappableAttribute() {
     }
 }

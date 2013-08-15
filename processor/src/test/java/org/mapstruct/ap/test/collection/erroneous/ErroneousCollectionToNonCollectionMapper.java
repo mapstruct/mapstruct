@@ -16,17 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.erroneous.attributereference;
+package org.mapstruct.ap.test.collection.erroneous;
 
-public class AnotherTarget {
+import java.util.Set;
 
-    private int bar;
+import org.mapstruct.Mapper;
 
-    public int getBar() {
-        return bar;
-    }
+@Mapper
+public interface ErroneousCollectionToNonCollectionMapper {
 
-    public void setBar(int bar) {
-        this.bar = bar;
-    }
+    Integer stringSetToInteger(Set<String> strings);
+
+    Set<String> integerToStringSet(Integer integer);
 }

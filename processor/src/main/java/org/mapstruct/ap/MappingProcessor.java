@@ -36,6 +36,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementKindVisitor6;
+import javax.tools.Diagnostic.Kind;
 
 import net.java.dev.hickory.prism.GeneratePrism;
 import net.java.dev.hickory.prism.GeneratePrisms;
@@ -152,7 +153,20 @@ public class MappingProcessor extends AbstractProcessor {
         Object model = null;
 
         for ( ModelElementProcessor<?, ?> processor : getProcessors() ) {
-            model = process( context, processor, mapperTypeElement, model );
+            try {
+                model = process( context, processor, mapperTypeElement, model );
+            }
+            catch ( AnnotationProcessingException e ) {
+                processingEnv.getMessager()
+                    .printMessage(
+                        Kind.ERROR,
+                        e.getMessage(),
+                        e.getElement(),
+                        e.getAnnotationMirror(),
+                        e.getAnnotationValue()
+                    );
+                break;
+            }
         }
     }
 

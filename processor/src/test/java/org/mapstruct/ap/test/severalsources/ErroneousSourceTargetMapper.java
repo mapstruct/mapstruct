@@ -16,16 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erroneous;
-
-import java.util.Set;
+package org.mapstruct.ap.test.severalsources;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mappers;
 
 @Mapper
-public interface ErronuousMapper {
+public interface ErroneousSourceTargetMapper {
 
-    Integer stringSetToInteger(Set<String> strings);
+    ErroneousSourceTargetMapper INSTANCE = Mappers.getMapper( ErroneousSourceTargetMapper.class );
 
-    Set<String> integerToStringSet(Integer integer);
+    DeliveryAddress addressAndAddressToDeliveryAddress(Address address1, Address address2);
 }

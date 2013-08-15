@@ -42,6 +42,16 @@ public class IterableMappingMethod extends MappingMethod {
         this.conversion = conversion;
     }
 
+    public Parameter getSourceParameter() {
+        for ( Parameter parameter : getParameters() ) {
+            if ( !parameter.isMappingTarget() ) {
+                return parameter;
+            }
+        }
+
+        throw new IllegalStateException( "Method " + this + " has no source parameter." );
+    }
+
     public MappingMethodReference getElementMappingMethod() {
         return elementMappingMethod;
     }
@@ -64,7 +74,7 @@ public class IterableMappingMethod extends MappingMethod {
     public String getLoopVariableName() {
         return Strings.getSaveVariableName(
             Introspector.decapitalize(
-                getSingleSourceParameter().getType()
+                getSourceParameter().getType()
                     .getTypeParameters()
                     .get( 0 )
                     .getName()

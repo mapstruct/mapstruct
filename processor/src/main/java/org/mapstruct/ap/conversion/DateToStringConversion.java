@@ -39,7 +39,7 @@ public class DateToStringConversion implements ConversionProvider {
     @Override
     public TypeConversion to(String sourceReference, Context conversionContext) {
         return new TypeConversion(
-            asSet( Type.forClass( SimpleDateFormat.class ) ),
+            asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
             Collections.<Type>emptyList(),
             getConversionString( sourceReference, conversionContext, "format" )
         );
@@ -48,8 +48,8 @@ public class DateToStringConversion implements ConversionProvider {
     @Override
     public TypeConversion from(String targetReference, Context conversionContext) {
         return new TypeConversion(
-            asSet( Type.forClass( SimpleDateFormat.class ) ),
-            Arrays.asList( Type.forClass( ParseException.class ) ),
+            asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
+            Arrays.asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
             getConversionString( targetReference, conversionContext, "parse" )
         );
     }

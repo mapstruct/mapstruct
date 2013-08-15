@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Source {
@@ -41,6 +42,8 @@ public class Source {
     private Set<Integer> anotherIntegerSet;
 
     private Set<Colour> colours;
+
+    private Map<String, Long> stringLongMap;
 
     public List<String> getStringList() {
         return stringList;
@@ -112,5 +115,13 @@ public class Source {
 
     public void setColours(Set<Colour> colours) {
         this.colours = colours;
+    }
+
+    public Map<String, Long> getStringLongMap() {
+        return stringLongMap;
+    }
+
+    public void setStringLongMap(Map<String, Long> stringLongMap) {
+        this.stringLongMap = stringLongMap;
     }
 }

@@ -30,7 +30,11 @@ import java.util.Set;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
@@ -58,7 +62,7 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.Strings;
-import org.mapstruct.ap.util.TypeUtil;
+import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -75,9 +79,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     private Messager messager;
     private Options options;
 
-    private TypeUtil typeUtil;
+    private TypeFactory typeFactory;
     private Conversions conversions;
     private Executables executables;
+    private Filters filters;
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<Method> sourceModel) {
@@ -86,9 +91,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         this.messager = context.getMessager();
         this.options = context.getOptions();
 
-        this.typeUtil = new TypeUtil( context.getElementUtils(), context.getTypeUtils() );
-        this.conversions = new Conversions( elementUtils, typeUtils, typeUtil );
-        this.executables = new Executables( typeUtil );
+        this.typeFactory = context.getTypeFactory();
+        this.conversions = new Conversions( elementUtils, typeFactory );
+        this.executables = new Executables( typeFactory );
+        this.filters = new Filters( executables );
 
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -104,6 +110,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         List<MapperReference> mapperReferences = getReferencedMappers( element );
 
         return new Mapper(
+            typeFactory,
             elementUtils.getPackageOf( element ).getQualifiedName().toString(),
             element.getSimpleName().toString(),
             element.getSimpleName() + IMPLEMENTATION_SUFFIX,
@@ -143,7 +150,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
 
         for ( TypeMirror usedMapper : mapperPrism.uses() ) {
-            mapperReferences.add( new DefaultMapperReference( typeUtil.retrieveType( usedMapper ) ) );
+            mapperReferences.add( new DefaultMapperReference( typeFactory.getType( usedMapper ) ) );
         }
 
         return mapperReferences;
@@ -181,14 +188,18 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                         method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
                     }
                 }
-                mappingMethods.add( getBeanMappingMethod( methods, method, unmappedTargetPolicy ) );
+                MappingMethod beanMappingMethod = getBeanMappingMethod( methods, method, unmappedTargetPolicy );
+                if ( beanMappingMethod != null ) {
+                    mappingMethods.add( beanMappingMethod );
+                }
             }
         }
         return mappingMethods;
     }
 
     private void reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType(Method method) {
-        if ( method.getReturnType() != Type.VOID && method.getReturnType().isInterface() &&
+        if ( method.getReturnType().getTypeMirror().getKind() != TypeKind.VOID &&
+            method.getReturnType().isInterface() &&
             method.getReturnType().getImplementationType() == null ) {
             messager.printMessage(
                 Kind.ERROR,
@@ -210,59 +221,90 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return reversed;
     }
 
+    private PropertyMapping getPropertyMapping(List<Method> methods, Method method, ExecutableElement setterMethod,
+                                               Parameter parameter) {
+        String targetPropertyName = executables.getPropertyName( setterMethod );
+        Mapping mapping = method.getMapping( targetPropertyName );
+        String dateFormat = mapping != null ? mapping.getDateFormat() : null;
+        String sourcePropertyName = mapping != null ? mapping.getSourcePropertyName() : targetPropertyName;
+        TypeElement parameterElement = parameter.getType().getTypeElement();
+        List<ExecutableElement> sourceGetters = filters.getterMethodsIn(
+            elementUtils.getAllMembers( parameterElement )
+        );
+
+        for ( ExecutableElement getter : sourceGetters ) {
+            Mapping sourceMapping = method.getMappings().get( sourcePropertyName );
+            boolean mapsToOtherTarget =
+                sourceMapping != null && !sourceMapping.getTargetName().equals( targetPropertyName );
+            if ( executables.getPropertyName( getter ).equals( sourcePropertyName ) && !mapsToOtherTarget ) {
+                return getPropertyMapping(
+                    methods,
+                    method,
+                    parameter,
+                    getter,
+                    setterMethod,
+                    dateFormat
+                );
+            }
+        }
+
+        return null;
+    }
+
     private MappingMethod getBeanMappingMethod(List<Method> methods, Method method,
                                                ReportingPolicy unmappedTargetPolicy) {
         List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         Set<String> mappedTargetProperties = new HashSet<String>();
 
-        Map<String, Mapping> mappings = method.getMappings();
+        if ( !reportErrorIfMappedPropertiesDontExist( method ) ) {
+            return null;
+        }
 
-        TypeElement resultTypeElement = elementUtils.getTypeElement( method.getResultType().getCanonicalName() );
-        TypeElement parameterElement = elementUtils.getTypeElement(
-            method.getSingleSourceParameter()
-                .getType()
-                .getCanonicalName()
-        );
-
-        List<ExecutableElement> sourceGetters = Filters.getterMethodsIn(
-            elementUtils.getAllMembers( parameterElement )
-        );
-        List<ExecutableElement> targetSetters = Filters.setterMethodsIn(
+        TypeElement resultTypeElement = method.getResultType().getTypeElement();
+        List<ExecutableElement> targetSetters = filters.setterMethodsIn(
             elementUtils.getAllMembers( resultTypeElement )
         );
 
-        Set<String> sourceProperties = executables.getPropertyNames(
-            Filters.getterMethodsIn( sourceGetters )
-        );
-        Set<String> targetProperties = executables.getPropertyNames(
-            Filters.setterMethodsIn( targetSetters )
-        );
+        for ( ExecutableElement setterMethod : targetSetters ) {
+            String targetPropertyName = executables.getPropertyName( setterMethod );
 
-        reportErrorIfMappedPropertiesDontExist( method, sourceProperties, targetProperties );
+            Mapping mapping = method.getMapping( targetPropertyName );
 
-        for ( ExecutableElement getterMethod : sourceGetters ) {
-            String sourcePropertyName = executables.getPropertyName( getterMethod );
-            Mapping mapping = mappings.get( sourcePropertyName );
-            String dateFormat = mapping != null ? mapping.getDateFormat() : null;
+            PropertyMapping propertyMapping = null;
+            if ( mapping != null && mapping.getSourceParameterName() != null ) {
+                Parameter parameter = method.getSourceParameter( mapping.getSourceParameterName() );
+                propertyMapping = getPropertyMapping( methods, method, setterMethod, parameter );
+            }
 
-            for ( ExecutableElement setterMethod : targetSetters ) {
-                String targetPropertyName = executables.getPropertyName( setterMethod );
-
-                if ( targetPropertyName.equals( mapping != null ? mapping.getTargetName() : sourcePropertyName ) ) {
-                    PropertyMapping property = getPropertyMapping(
+            if ( propertyMapping == null ) {
+                for ( Parameter sourceParameter : method.getSourceParameters() ) {
+                    PropertyMapping newPropertyMapping = getPropertyMapping(
                         methods,
                         method,
-                        getterMethod,
                         setterMethod,
-                        dateFormat
+                        sourceParameter
                     );
-
-                    propertyMappings.add( property );
-
-                    mappedTargetProperties.add( targetPropertyName );
+                    if ( propertyMapping != null && newPropertyMapping != null ) {
+                        messager.printMessage(
+                            Kind.ERROR,
+                            "Several possible source properties for target property \"" + targetPropertyName + "\".",
+                            method.getExecutable()
+                        );
+                        break;
+                    }
+                    else if ( newPropertyMapping != null ) {
+                        propertyMapping = newPropertyMapping;
+                    }
                 }
             }
+
+            if ( propertyMapping != null ) {
+                propertyMappings.add( propertyMapping );
+                mappedTargetProperties.add( targetPropertyName );
+            }
         }
+
+        Set<String> targetProperties = executables.getPropertyNames( targetSetters );
 
         reportErrorForUnmappedTargetPropertiesIfRequired(
             method,
@@ -303,21 +345,85 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return null;
     }
 
-    private void reportErrorIfMappedPropertiesDontExist(Method method, Set<String> sourceProperties,
-                                                        Set<String> targetProperties) {
+    private boolean hasSourceProperty(Method method, String propertyName) {
+        for ( Parameter parameter : method.getSourceParameters() ) {
+            if ( hasProperty( parameter, propertyName ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean hasProperty(Parameter parameter, String propertyName) {
+        TypeElement parameterTypeElement = parameter.getType().getTypeElement();
+        List<ExecutableElement> getters = filters.setterMethodsIn(
+            elementUtils.getAllMembers( parameterTypeElement )
+        );
+
+        return executables.getPropertyNames( getters ).contains( propertyName );
+    }
+
+    private boolean reportErrorIfMappedPropertiesDontExist(Method method) {
+        TypeElement resultTypeElement = method.getResultType().getTypeElement();
+        List<ExecutableElement> targetSetters = filters.setterMethodsIn(
+            elementUtils.getAllMembers( resultTypeElement )
+        );
+
+        Set<String> targetProperties = executables.getPropertyNames( targetSetters );
+
+        boolean foundUnmappedProperty = false;
+
         for ( Mapping mappedProperty : method.getMappings().values() ) {
-            if ( !sourceProperties.contains( mappedProperty.getSourceName() ) ) {
+            if ( mappedProperty.getSourceParameterName() != null ) {
+                Parameter sourceParameter = method.getSourceParameter( mappedProperty.getSourceParameterName() );
+
+                if ( sourceParameter == null ) {
+                    messager.printMessage(
+                        Kind.ERROR,
+                        String.format(
+                            "Method has no parameter named \"%s\".",
+                            mappedProperty.getSourceParameterName()
+                        ),
+                        method.getExecutable(),
+                        mappedProperty.getMirror(),
+                        mappedProperty.getSourceAnnotationValue()
+                    );
+                    foundUnmappedProperty = true;
+                }
+                else {
+                    if ( !hasProperty( sourceParameter, mappedProperty.getSourcePropertyName() ) ) {
+                        messager.printMessage(
+                            Kind.ERROR,
+                            String.format(
+                                "The type of parameter \"%s\" has no property named \"%s\".",
+                                mappedProperty.getSourceParameterName(),
+                                mappedProperty.getSourcePropertyName()
+                            ),
+                            method.getExecutable(),
+                            mappedProperty.getMirror(),
+                            mappedProperty.getSourceAnnotationValue()
+                        );
+                        foundUnmappedProperty = true;
+                    }
+                }
+
+            }
+            else if ( !hasSourceProperty(
+                method,
+                mappedProperty.getSourcePropertyName()
+            ) ) {
                 messager.printMessage(
                     Kind.ERROR,
                     String.format(
-                        "Unknown property \"%s\" in parameter type %s.",
-                        mappedProperty.getSourceName(),
-                        method.getSingleSourceParameter().getType()
+                        "No property named \"%s\" exists in source parameter(s).",
+                        mappedProperty.getSourceName()
                     ),
                     method.getExecutable(),
                     mappedProperty.getMirror(),
                     mappedProperty.getSourceAnnotationValue()
                 );
+                foundUnmappedProperty = true;
             }
             if ( !targetProperties.contains( mappedProperty.getTargetName() ) ) {
                 messager.printMessage(
@@ -331,12 +437,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                     mappedProperty.getMirror(),
                     mappedProperty.getTargetAnnotationValue()
                 );
+                foundUnmappedProperty = true;
             }
         }
+
+        return !foundUnmappedProperty;
     }
 
-    private PropertyMapping getPropertyMapping(List<Method> methods, Method method, ExecutableElement getterMethod,
-                                               ExecutableElement setterMethod, String dateFormat) {
+    private PropertyMapping getPropertyMapping(List<Method> methods, Method method, Parameter parameter,
+                                               ExecutableElement getterMethod, ExecutableElement setterMethod,
+                                               String dateFormat) {
         Type sourceType = executables.retrieveReturnType( getterMethod );
         Type targetType = executables.retrieveSingleParameter( setterMethod ).getType();
 
@@ -345,11 +455,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             sourceType,
             targetType,
             dateFormat,
-            method.getSingleSourceParameter().getName() + "."
-                + getterMethod.getSimpleName().toString() + "()"
+            parameter.getName() + "." + getterMethod.getSimpleName().toString() + "()"
         );
 
         PropertyMapping property = new PropertyMapping(
+            parameter.getName(),
             executables.getPropertyName( getterMethod ),
             getterMethod.getSimpleName().toString(),
             sourceType,
@@ -369,7 +479,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private MappingMethod getIterableMappingMethod(List<Method> methods, Method method) {
-        Type sourceElementType = method.getSingleSourceParameter().getType().getTypeParameters().get( 0 );
+        Type sourceElementType = method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
         Type targetElementType = method.getResultType().getTypeParameters().get( 0 );
 
         TypeConversion conversion = getConversion(
@@ -390,7 +500,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private MappingMethod getMapMappingMethod(List<Method> methods, Method method) {
-        List<Type> sourceTypeParams = method.getSingleSourceParameter().getType().getTypeParameters();
+        List<Type> sourceTypeParams = method.getSourceParameters().iterator().next().getType().getTypeParameters();
         Type sourceKeyType = sourceTypeParams.get( 0 );
         Type sourceValueType = sourceTypeParams.get( 1 );
 
@@ -426,17 +536,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             return null;
         }
 
-        return conversionProvider.to( sourceReference, new DefaultConversionContext( targetType, dateFormat ) );
+        return conversionProvider.to(
+            sourceReference,
+            new DefaultConversionContext( typeFactory, targetType, dateFormat )
+        );
     }
 
     private MappingMethodReference getMappingMethodReference(Iterable<Method> methods, Type parameterType,
                                                              Type returnType) {
-        for ( Method oneMethod : methods ) {
-            Parameter singleSourceParam = oneMethod.getSingleSourceParameter();
+        for ( Method method : methods ) {
+            if ( method.getSourceParameters().size() > 1 ) {
+                continue;
+            }
 
-            if ( singleSourceParam.getType().equals( parameterType ) &&
-                oneMethod.getResultType().equals( returnType ) ) {
-                return new MappingMethodReference( oneMethod );
+            Parameter singleSourceParam = method.getSourceParameters().iterator().next();
+
+            if ( singleSourceParam.getType().equals( parameterType ) && method.getResultType().equals( returnType ) ) {
+                return new MappingMethodReference( method );
             }
         }
 
@@ -444,19 +560,42 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     /**
-     * Reports an error if source and target type of the property are different
-     * and neither a mapping method nor a conversion exists nor the property is
-     * of a collection type with default implementation
+     * Reports an error if source the property can't be mapped from source to target. A mapping if possible if one of
+     * the following conditions is true:
+     * <ul>
+     * <li>the source type is assignable to the target type</li>
+     * <li>a mapping method exists</li>
+     * <li>a built-in conversion exists</li>
+     * <li>the property is of a collection or map type and the constructor of the target type (either itself or its
+     * implementation type) accepts the source type.</li>
+     * </ul>
      *
      * @param method The mapping method owning the property mapping.
      * @param property The property mapping to check.
      */
     private void reportErrorIfPropertyCanNotBeMapped(Method method, PropertyMapping property) {
-        if ( property.getSourceType().equals( property.getTargetType() ) ||
+        boolean collectionOrMapTargetTypeHasCompatibleConstructor = false;
+
+        if ( property.getTargetType().isCollectionType() || property.getTargetType().isMapType() ) {
+            if ( property.getTargetType().getImplementationType() != null ) {
+                collectionOrMapTargetTypeHasCompatibleConstructor = hasCompatibleConstructor(
+                    property.getSourceType(),
+                    property.getTargetType().getImplementationType()
+                );
+            }
+            else {
+                collectionOrMapTargetTypeHasCompatibleConstructor = hasCompatibleConstructor(
+                    property.getSourceType(),
+                    property.getTargetType()
+                );
+            }
+        }
+
+        if ( property.getSourceType().isAssignableTo( property.getTargetType() ) ||
             property.getMappingMethod() != null ||
             property.getConversion() != null ||
-            ( property.getTargetType().isCollectionType() &&
-                property.getTargetType().getCollectionImplementationType() != null ) ) {
+            ( ( property.getTargetType().isCollectionType() || property.getTargetType().isMapType() ) &&
+                collectionOrMapTargetTypeHasCompatibleConstructor ) ) {
             return;
         }
 
@@ -464,12 +603,47 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             Kind.ERROR,
             String.format(
                 "Can't map property \"%s %s\" to \"%s %s\".",
-                property.getSourceType().getName(),
+                property.getSourceType(),
                 property.getSourceName(),
-                property.getTargetType().getName(),
+                property.getTargetType(),
                 property.getTargetName()
             ),
             method.getExecutable()
         );
+    }
+
+    /**
+     * Whether the given target type has a single-argument constructor which accepts the given source type.
+     *
+     * @param sourceType the source type
+     * @param targetType the target type
+     * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
+     *         otherwise.
+     */
+    private boolean hasCompatibleConstructor(Type sourceType, Type targetType) {
+        List<ExecutableElement> targetTypeConstructors = ElementFilter.constructorsIn(
+            targetType.getTypeElement()
+                .getEnclosedElements()
+        );
+
+        for ( ExecutableElement constructor : targetTypeConstructors ) {
+            if ( constructor.getParameters().size() != 1 ) {
+                continue;
+            }
+
+            //get the constructor resolved against the type arguments of specific target type
+            ExecutableType typedConstructor = (ExecutableType) typeUtils.asMemberOf(
+                (DeclaredType) targetType.getTypeMirror(), constructor
+            );
+
+            if ( typeUtils.isAssignable(
+                sourceType.getTypeMirror(),
+                typedConstructor.getParameterTypes().iterator().next()
+            ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

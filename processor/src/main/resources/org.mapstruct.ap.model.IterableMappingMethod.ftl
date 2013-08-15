@@ -20,7 +20,7 @@
 -->
     @Override
     public <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
-        if ( ${singleSourceParameter.name} == null ) {
+        if ( ${sourceParameter.name} == null ) {
             return<#if returnType.name != "void"> null</#if>;
         }
 
@@ -28,10 +28,10 @@
         ${resultName}.clear();
         <#else>
         <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
-        <#if resultType.name == "Iterable" && resultType.packageName == "java.lang">${resultType.iterableImplementationType.name}<#else>${resultType.name}</#if><<@includeModel object=resultType.typeParameters[0]/>> ${resultName} = new <#if resultType.iterableImplementationType??>${resultType.iterableImplementationType.name}<#else>${resultType.name}</#if><<@includeModel object=resultType.typeParameters[0]/>>();
+        <#if resultType.fullyQualifiedName == "java.lang.Iterable"><@includeModel object=resultType.implementationType/><#else><@includeModel object=resultType/></#if> ${resultName} = new <#if resultType.implementationType??><@includeModel object=resultType.implementationType/><#else><@includeModel object=resultType/></#if>();
        </#if>
 
-        for ( <@includeModel object=singleSourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${singleSourceParameter.name} ) {
+        for ( <@includeModel object=sourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${sourceParameter.name} ) {
             <#if elementMappingMethod??>
             ${resultName}.add( <@includeModel object=elementMappingMethod input="${loopVariableName}"/> );
             <#else>

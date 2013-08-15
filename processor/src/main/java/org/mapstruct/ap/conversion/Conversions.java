@@ -22,12 +22,10 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.model.Type;
-import org.mapstruct.ap.util.TypeUtil;
+import org.mapstruct.ap.util.TypeFactory;
 
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 
@@ -38,16 +36,16 @@ import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
  */
 public class Conversions {
 
-    private TypeUtil typeUtil;
     private final Map<Key, ConversionProvider> conversions = new HashMap<Conversions.Key, ConversionProvider>();
-    private final DeclaredType enumType;
-    private final DeclaredType stringType;
+    private final Type enumType;
+    private final Type stringType;
+    private final TypeFactory typeFactory;
 
-    public Conversions(Elements elementUtils, Types typeUtils, TypeUtil typeUtil) {
-        this.typeUtil = typeUtil;
+    public Conversions(Elements elementUtils, TypeFactory typeFactory) {
+        this.typeFactory = typeFactory;
 
-        this.enumType = typeUtils.getDeclaredType( elementUtils.getTypeElement( Enum.class.getCanonicalName() ) );
-        this.stringType = typeUtils.getDeclaredType( elementUtils.getTypeElement( String.class.getCanonicalName() ) );
+        this.enumType = typeFactory.getType( Enum.class );
+        this.stringType = typeFactory.getType( String.class );
 
         //native types <> native types, including wrappers
         registerNativeTypeConversion( byte.class, Byte.class );
@@ -202,28 +200,32 @@ public class Conversions {
     }
 
     private void register(Class<?> sourceType, Class<?> targetType, ConversionProvider conversion) {
-        conversions.put( Key.forClasses( sourceType, targetType ), conversion );
-        conversions.put( Key.forClasses( targetType, sourceType ), reverse( conversion ) );
+        conversions.put( forClasses( sourceType, targetType ), conversion );
+        conversions.put( forClasses( targetType, sourceType ), reverse( conversion ) );
     }
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
-        if ( sourceType.isEnumType() && targetType.equals( typeUtil.getType( stringType ) ) ) {
-            sourceType = typeUtil.getType( enumType );
+        if ( sourceType.isEnumType() && targetType.equals( stringType ) ) {
+            sourceType = enumType;
         }
-        else if ( targetType.isEnumType() && sourceType.equals( typeUtil.getType( stringType ) ) ) {
-            targetType = typeUtil.getType( enumType );
+        else if ( targetType.isEnumType() && sourceType.equals( stringType ) ) {
+            targetType = enumType;
         }
 
         return conversions.get( new Key( sourceType, targetType ) );
+    }
+
+    private Key forClasses(Class<?> sourceClass, Class<?> targetClass) {
+        Type sourceType = typeFactory.getType( sourceClass );
+        Type targetType = typeFactory.getType( targetClass );
+
+        return new Key( sourceType, targetType );
     }
 
     private static class Key {
         private final Type sourceType;
         private final Type targetType;
 
-        private static Key forClasses(Class<?> sourceType, Class<?> targetType) {
-            return new Key( Type.forClass( sourceType ), Type.forClass( targetType ) );
-        }
 
         private Key(Type sourceType, Type targetType) {
             this.sourceType = sourceType;
@@ -240,10 +242,8 @@ public class Conversions {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result
-                + ( ( sourceType == null ) ? 0 : sourceType.hashCode() );
-            result = prime * result
-                + ( ( targetType == null ) ? 0 : targetType.hashCode() );
+            result = prime * result + ( ( sourceType == null ) ? 0 : sourceType.hashCode() );
+            result = prime * result + ( ( targetType == null ) ? 0 : targetType.hashCode() );
             return result;
         }
 
