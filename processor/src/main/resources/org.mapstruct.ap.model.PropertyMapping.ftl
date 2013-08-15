@@ -34,7 +34,7 @@
         <#else>
             <#if targetType.implementationType??>
         if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-            ${ext.targetBeanName}.${targetAccessorName}( new <#if targetType.implementationType??>${targetType.implementationType.name}<#else>${targetType.name}</#if><#if targetType.elementType??><${targetType.elementType.name}></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
+            ${ext.targetBeanName}.${targetAccessorName}( new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
         }
             <#else>
         ${ext.targetBeanName}.${targetAccessorName}( ${sourceBeanName}.${sourceAccessorName}() );
