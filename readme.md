@@ -47,7 +47,7 @@ public interface CarMapper {
 }
 ```
 
-1. The `@Mapper` annotation marks the interface as mapping interface and let's the MapStruct processor kick in during compilation
+1. The `@Mapper` annotation marks the interface as mapping interface and lets the MapStruct processor kick in during compilation
 1. The actual mapping method expects the source object as parameter and returns the target object. Its name can be freely chosen. For attributes with different names in source and target object, the `@Mapping` annotation can be used to configure the names. Of course there can be multiple mapping methods in one interface.
 1. An instance of the interface implementation can be retrieved from the `Mappers` class. By convention, the interface declares a member `INSTANCE`, providing access to the mapper implementation for clients
 
