@@ -562,7 +562,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
      * @param property The property mapping to check.
      */
     private void reportErrorIfPropertyCanNotBeMapped(Method method, PropertyMapping property) {
-        if ( property.getSourceType().equals( property.getTargetType() ) ||
+        if ( property.getSourceType().isAssignableTo( property.getTargetType() ) ||
             property.getMappingMethod() != null ||
             property.getConversion() != null ||
             property.getTargetType().getImplementationType() != null ) {
@@ -573,9 +573,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             Kind.ERROR,
             String.format(
                 "Can't map property \"%s %s\" to \"%s %s\".",
-                property.getSourceType().getName(),
+                property.getSourceType(),
                 property.getSourceName(),
-                property.getTargetType().getName(),
+                property.getTargetType(),
                 property.getTargetName()
             ),
             method.getExecutable()
