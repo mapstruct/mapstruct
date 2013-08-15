@@ -32,7 +32,7 @@
             </#if>
         <#-- c) simply set -->
         <#else>
-            <#if targetType.implementationType??>
+            <#if targetType.collectionType || targetType.mapType>
         if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
             ${ext.targetBeanName}.${targetAccessorName}( new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
         }

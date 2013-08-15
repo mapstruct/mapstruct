@@ -167,6 +167,18 @@ public class CollectionMappingTest extends MapperTestBase {
 
     @Test
     @IssueKey("6")
+    public void shouldMapHashSetAsCopy() {
+        Source source = new Source();
+        source.setStringHashSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        target.getStringHashSet().add( "Bill" );
+
+        assertThat( source.getStringHashSet() ).containsOnly( "Bob", "Alice" );
+    }
+
+    @Test
+    @IssueKey("6")
     public void shouldReverseMapSetAsCopy() {
         Target target = new Target();
         target.setStringSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ) );
