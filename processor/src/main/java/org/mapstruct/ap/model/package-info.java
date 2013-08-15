@@ -18,9 +18,8 @@
  */
 /**
  * <p>
- * This package and it sub-packages contain the implementation of the MapStruct annotation processor. Application code
- * using MapStruct should never work with these types directly. Refer to the documentation of
- * {@link org.mapstruct.ap.MappingProcessor} to learn more about the internal architecture of the processor.
+ * Meta-model of mapper types, their methods, mappings between properties etc. Model elements can serialize themselves
+ * using FreeMarker templates.
  * </p>
  */
-package org.mapstruct.ap;
+package org.mapstruct.ap.model;

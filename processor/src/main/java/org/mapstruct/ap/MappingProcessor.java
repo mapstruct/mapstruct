@@ -53,22 +53,33 @@ import org.mapstruct.ap.processor.ModelElementProcessor;
 import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
 
 /**
- * A {@link Processor} which generates the implementations for mapper interfaces
- * (interfaces annotated with {@code @Mapper}.
- * </p>
+ * A JSR 269 annotation {@link Processor} which generates the implementations for mapper interfaces (interfaces
+ * annotated with {@code @Mapper}.
+ * <p>
  * Implementation notes:
- * </p>
- * The generation happens by incrementally building up a model representation of
- * each mapper to be generated (a {@link Mapper} object), which is then written
- * into the resulting Java source file using the FreeMarker template engine.
- * </p>
- * The model instantiation and processing happens in several phases/passes by applying
- * a sequence of {@link ModelElementProcessor}s.
- * </p>
+ * <p>
+ * The generation happens by incrementally building up a model representation of each mapper to be generated (a
+ * {@link Mapper} object), which is then written into the resulting Java source file.
+ * <p>
+ * The model instantiation and processing happens in several phases/passes by applying a sequence of
+ * {@link ModelElementProcessor}s. The processors to apply are retrieved using the Java service loader mechanism and are
+ * processed in order of their priority. The general processing flow is this:
+ * <ul>
+ * <li>retrieve mapping methods</li>
+ * <li>create the {@code Mapper} model</li>
+ * <li>perform enrichments and modifications (e.g. add annotations for dependency injection)</li>
+ * <li>if no error ocurred, write out the model into Java source files</li>
+ * </ul>
+ * <p>
  * For reading annotation attributes, prisms as generated with help of the <a
- * href="https://java.net/projects/hickory">Hickory</a> tool are used. These
- * prisms allow a comfortable access to annotations and their attributes without
- * depending on their class objects.
+ * href="https://java.net/projects/hickory">Hickory</a> tool are used. These prisms allow a comfortable access to
+ * annotations and their attributes without depending on their class objects.
+ * <p>
+ * The creation of Java source files is done using the <a href="http://freemarker.org/"> FreeMarker</a> template engine.
+ * Each node of the mapper model has a corresponding FreeMarker template file which provides the Java representation of
+ * that element and can include sub-elements via a custom FreeMarker directive. That way writing out a root node of the
+ * model ({@code Mapper}) will recursively include all contained sub-elements (such as its methods, their property
+ * mappings etc.).
  *
  * @author Gunnar Morling
  */

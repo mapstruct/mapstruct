@@ -133,7 +133,7 @@ public class TypeFactory {
         }
 
         DeclaredType declaredType = (DeclaredType) mirror;
-        ArrayList<Type> typeParameters = new ArrayList<Type>( declaredType.getTypeArguments().size() );
+        List<Type> typeParameters = new ArrayList<Type>( declaredType.getTypeArguments().size() );
 
         for ( TypeMirror typeParameter : declaredType.getTypeArguments() ) {
             typeParameters.add( getType( typeParameter ) );
@@ -151,7 +151,7 @@ public class TypeFactory {
                             primitiveType == double.class ? typeUtils.getPrimitiveType( TypeKind.DOUBLE ) :
                                 primitiveType == boolean.class ? typeUtils.getPrimitiveType( TypeKind.BOOLEAN ) :
                                     primitiveType == char.class ? typeUtils.getPrimitiveType( TypeKind.CHAR ) :
-                                        typeUtils.getPrimitiveType( TypeKind.BYTE );
+                                        typeUtils.getPrimitiveType( TypeKind.VOID );
     }
 
     private Type getImplementationType(TypeMirror mirror) {

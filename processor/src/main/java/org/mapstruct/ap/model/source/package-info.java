@@ -18,9 +18,8 @@
  */
 /**
  * <p>
- * This package and it sub-packages contain the implementation of the MapStruct annotation processor. Application code
- * using MapStruct should never work with these types directly. Refer to the documentation of
- * {@link org.mapstruct.ap.MappingProcessor} to learn more about the internal architecture of the processor.
+ * Intermediary representation of mapping methods as retrieved from via the annotation processing API. The intermediary
+ * representation is then processed into the mapper model representation.
  * </p>
  */
-package org.mapstruct.ap;
+package org.mapstruct.ap.model.source;

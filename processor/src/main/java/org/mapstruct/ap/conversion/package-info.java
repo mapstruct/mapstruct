@@ -18,9 +18,9 @@
  */
 /**
  * <p>
- * This package and it sub-packages contain the implementation of the MapStruct annotation processor. Application code
- * using MapStruct should never work with these types directly. Refer to the documentation of
- * {@link org.mapstruct.ap.MappingProcessor} to learn more about the internal architecture of the processor.
+ * Provides built-in conversions between primitive and wrapper types, strings, dates etc. Conversions are effectively
+ * short String snippets such as {@code (int)} or {@code .toString()} which are added inline to the generated mapping
+ * code.
  * </p>
  */
-package org.mapstruct.ap;
+package org.mapstruct.ap.conversion;

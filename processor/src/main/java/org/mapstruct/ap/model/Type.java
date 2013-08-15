@@ -127,6 +127,14 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         return isEnumType;
     }
 
+    /**
+     * Returns the implementation type to be instantiated in case this type is an interface iterable, collection or map
+     * type. The type will have the correct type arguments, so if this type e.g. represents {@code Set<String>}, the
+     * implementation type is {@code HashSet<String>}.
+     *
+     * @return The implementation type to be instantiated in case this type is an interface iterable, collection or map
+     *         type, {@code null} otherwise.
+     */
     public Type getImplementationType() {
         return implementationType;
     }
