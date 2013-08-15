@@ -30,9 +30,13 @@ import java.util.Set;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.MapperPrism;
@@ -71,6 +75,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     private static final String IMPLEMENTATION_SUFFIX = "Impl";
 
     private Elements elementUtils;
+    private Types typeUtils;
     private Messager messager;
     private Options options;
 
@@ -82,6 +87,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<Method> sourceModel) {
         this.elementUtils = context.getElementUtils();
+        this.typeUtils = context.getTypeUtils();
         this.messager = context.getMessager();
         this.options = context.getOptions();
 
@@ -554,18 +560,42 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     /**
-     * Reports an error if source and target type of the property are different
-     * and neither a mapping method nor a conversion exists nor the property is
-     * of a collection type with default implementation
+     * Reports an error if source the property can't be mapped from source to target. A mapping if possible if one of
+     * the following conditions is true:
+     * <ul>
+     * <li>the source type is assignable to the target type</li>
+     * <li>a mapping method exists</li>
+     * <li>a built-in conversion exists</li>
+     * <li>the property is of a collection or map type and the constructor of the target type (either itself or its
+     * implementation type) accepts the source type.</li>
+     * </ul>
      *
      * @param method The mapping method owning the property mapping.
      * @param property The property mapping to check.
      */
     private void reportErrorIfPropertyCanNotBeMapped(Method method, PropertyMapping property) {
+        boolean collectionOrMapTargetTypeHasCompatibleConstructor = false;
+
+        if ( property.getTargetType().isCollectionType() || property.getTargetType().isMapType() ) {
+            if ( property.getTargetType().getImplementationType() != null ) {
+                collectionOrMapTargetTypeHasCompatibleConstructor = hasCompatibleConstructor(
+                    property.getSourceType(),
+                    property.getTargetType().getImplementationType()
+                );
+            }
+            else {
+                collectionOrMapTargetTypeHasCompatibleConstructor = hasCompatibleConstructor(
+                    property.getSourceType(),
+                    property.getTargetType()
+                );
+            }
+        }
+
         if ( property.getSourceType().isAssignableTo( property.getTargetType() ) ||
             property.getMappingMethod() != null ||
             property.getConversion() != null ||
-            property.getTargetType().getImplementationType() != null ) {
+            ( ( property.getTargetType().isCollectionType() || property.getTargetType().isMapType() ) &&
+                collectionOrMapTargetTypeHasCompatibleConstructor ) ) {
             return;
         }
 
@@ -580,5 +610,40 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             ),
             method.getExecutable()
         );
+    }
+
+    /**
+     * Whether the given target type has a single-argument constructor which accepts the given source type.
+     *
+     * @param sourceType the source type
+     * @param targetType the target type
+     * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
+     *         otherwise.
+     */
+    private boolean hasCompatibleConstructor(Type sourceType, Type targetType) {
+        List<ExecutableElement> targetTypeConstructors = ElementFilter.constructorsIn(
+            targetType.getTypeElement()
+                .getEnclosedElements()
+        );
+
+        for ( ExecutableElement constructor : targetTypeConstructors ) {
+            if ( constructor.getParameters().size() != 1 ) {
+                continue;
+            }
+
+            //get the constructor resolved against the type arguments of specific target type
+            ExecutableType typedConstructor = (ExecutableType) typeUtils.asMemberOf(
+                (DeclaredType) targetType.getTypeMirror(), constructor
+            );
+
+            if ( typeUtils.isAssignable(
+                sourceType.getTypeMirror(),
+                typedConstructor.getParameterTypes().iterator().next()
+            ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

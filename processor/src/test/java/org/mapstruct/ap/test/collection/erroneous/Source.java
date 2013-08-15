@@ -18,14 +18,28 @@
  */
 package org.mapstruct.ap.test.collection.erroneous;
 
+import java.util.Map;
 import java.util.Set;
 
-import org.mapstruct.Mapper;
+public class Source {
 
-@Mapper
-public interface ErronuousMapper {
+    private Set<String> fooSet;
 
-    Integer stringSetToInteger(Set<String> strings);
+    private Map<String, Long> barMap;
 
-    Set<String> integerToStringSet(Integer integer);
+    public Set<String> getFooSet() {
+        return fooSet;
+    }
+
+    public void setFooSet(Set<String> fooSet) {
+        this.fooSet = fooSet;
+    }
+
+    public Map<String, Long> getBarMap() {
+        return barMap;
+    }
+
+    public void setBarMap(Map<String, Long> barMap) {
+        this.barMap = barMap;
+    }
 }
