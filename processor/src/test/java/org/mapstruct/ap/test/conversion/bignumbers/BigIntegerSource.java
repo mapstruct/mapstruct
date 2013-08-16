@@ -20,7 +20,7 @@ package org.mapstruct.ap.test.conversion.bignumbers;
 
 import java.math.BigInteger;
 
-public class Source {
+public class BigIntegerSource {
 
     private BigInteger b;
     private BigInteger bb;

@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
@@ -142,6 +143,20 @@ public class Conversions {
         registerBigIntegerConversion( double.class );
         registerBigIntegerConversion( Double.class );
 
+        //BigDecimal <> native types
+        registerBigDecimalConversion( byte.class );
+        registerBigDecimalConversion( Byte.class );
+        registerBigDecimalConversion( short.class );
+        registerBigDecimalConversion( Short.class );
+        registerBigDecimalConversion( int.class );
+        registerBigDecimalConversion( Integer.class );
+        registerBigDecimalConversion( long.class );
+        registerBigDecimalConversion( Long.class );
+        registerBigDecimalConversion( float.class );
+        registerBigDecimalConversion( Float.class );
+        registerBigDecimalConversion( double.class );
+        registerBigDecimalConversion( Double.class );
+
         //native types <> String
         registerToStringConversion( byte.class );
         registerToStringConversion( Byte.class );
@@ -160,10 +175,12 @@ public class Conversions {
         register( char.class, String.class, new CharToStringConversion() );
         register( Character.class, String.class, new CharWrapperToStringConversion() );
         register( BigInteger.class, String.class, new BigIntegerToStringConversion() );
+        register( BigDecimal.class, String.class, new BigDecimalToStringConversion() );
 
         //misc.
         register( Enum.class, String.class, new EnumStringConversion() );
         register( Date.class, String.class, new DateToStringConversion() );
+        register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
     }
 
     private void registerNativeTypeConversion(Class<?> sourceType, Class<?> targetType) {
@@ -196,6 +213,15 @@ public class Conversions {
         }
         else {
             register( BigInteger.class, targetType, new BigIntegerToWrapperConversion( targetType ) );
+        }
+    }
+
+    private void registerBigDecimalConversion(Class<?> targetType) {
+        if ( targetType.isPrimitive() ) {
+            register( BigDecimal.class, targetType, new BigDecimalToPrimitiveConversion( targetType ) );
+        }
+        else {
+            register( BigDecimal.class, targetType, new BigDecimalToWrapperConversion( targetType ) );
         }
     }
 
