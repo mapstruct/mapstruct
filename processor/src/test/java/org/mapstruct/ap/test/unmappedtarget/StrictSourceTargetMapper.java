@@ -19,8 +19,8 @@
 package org.mapstruct.ap.test.unmappedtarget;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
 import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface StrictSourceTargetMapper {

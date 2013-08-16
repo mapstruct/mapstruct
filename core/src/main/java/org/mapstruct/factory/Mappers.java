@@ -16,10 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
+package org.mapstruct.factory;
+
+import org.mapstruct.Mapper;
 
 /**
- * Factory for getting mapper instances.
+ * Factory for obtaining mapper instances if no explicit component model such as CDI is configured via
+ * {@link Mapper#componentModel()}.
+ * <p>
+ * Mapper implementation types are expected to have the same fully qualified name as their interface type, with the
+ * suffix {@code Impl} appended. When using this factory, mapper types - and any mappers they use - are instantiated by
+ * invoking their public no-args constructor.
+ * <p>
+ * By convention, a single instance of each mapper is retrieved from the factory and exposed on the mapper interface
+ * type by declaring a member named {@code INSTANCE} like this:
+ *
+ * <pre>
+ * &#064;Mapper
+ * public interface CustomerMapper {
+ *
+ *     CustomerMapper INSTANCE = Mappers.getMapper( CustomerMapper.class );
+ *
+ *     // mapping methods...
+ * }
+ * </pre>
  *
  * @author Gunnar Morling
  */

@@ -19,8 +19,8 @@
 package org.mapstruct.ap.test.inheritance;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface SourceTargetMapper {

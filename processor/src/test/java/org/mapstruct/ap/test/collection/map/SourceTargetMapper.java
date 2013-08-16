@@ -23,8 +23,8 @@ import java.util.Map;
 
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = CustomNumberMapper.class)
 public interface SourceTargetMapper {

@@ -19,7 +19,7 @@
 package org.mapstruct.ap.test.unmappedtarget;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
+import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface SourceTargetMapper {

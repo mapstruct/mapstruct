@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.conversion;
 
+import java.util.Date;
+
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.TypeConversion;
 import org.mapstruct.ap.util.TypeFactory;

@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = While.class)
 public interface SourceTargetMapper {

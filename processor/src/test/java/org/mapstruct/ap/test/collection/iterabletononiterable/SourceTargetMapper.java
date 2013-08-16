@@ -19,7 +19,7 @@
 package org.mapstruct.ap.test.collection.iterabletononiterable;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = StringListMapper.class)
 public interface SourceTargetMapper {

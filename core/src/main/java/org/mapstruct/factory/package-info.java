@@ -16,25 +16,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
-
-import org.mapstruct.factory.Mappers;
-import org.mapstruct.test.model.Foo;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
-
 /**
- * Unit test for {@link Mappers}.
+ * <p>
+ * Provides the {@link org.mapstruct.factory.Mappers} factory class for the retrieval of mapper instances if no
+ * explicit component model such as CDI is configured via {@link org.mapstruct.Mapper#componentModel()}.
+ * </p>
  *
- * @author Gunnar Morling
  */
-public class MappersTest {
-
-    @Test
-    public void shouldReturnImplementationInstance() {
-
-        Foo mapper = Mappers.getMapper( Foo.class );
-        assertThat( mapper ).isNotNull();
-    }
-}
+package org.mapstruct.factory;

@@ -19,7 +19,7 @@
 package org.mapstruct.ap.test.conversion.precedence;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = IntegerStringMapper.class)
 public interface SourceTargetMapper {

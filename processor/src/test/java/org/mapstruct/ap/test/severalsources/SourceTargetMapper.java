@@ -19,10 +19,10 @@
 package org.mapstruct.ap.test.severalsources;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface SourceTargetMapper {

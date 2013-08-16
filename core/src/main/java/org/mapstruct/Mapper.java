@@ -23,6 +23,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.mapstruct.factory.Mappers;
+
 /**
  * Marks an interface as mapper interface and activates the generation of a
  * mapper implementation for that interface.

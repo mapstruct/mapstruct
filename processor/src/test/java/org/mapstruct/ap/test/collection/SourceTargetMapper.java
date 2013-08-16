@@ -21,9 +21,9 @@ package org.mapstruct.ap.test.collection;
 import java.util.Set;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mappers;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface SourceTargetMapper {
