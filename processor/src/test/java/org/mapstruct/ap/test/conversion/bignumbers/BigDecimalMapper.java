@@ -22,11 +22,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface SourceTargetMapper {
+public interface BigDecimalMapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    BigDecimalMapper INSTANCE = Mappers.getMapper( BigDecimalMapper.class );
 
-    Target sourceToTarget(Source source);
+    BigDecimalTarget sourceToTarget(BigDecimalSource source);
 
-    Source targetToSource(Target target);
+    BigDecimalSource targetToSource(BigDecimalTarget target);
 }

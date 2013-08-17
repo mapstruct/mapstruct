@@ -101,7 +101,7 @@ public class PropertyMapping extends AbstractModelElement {
         Set<Type> importTypes = new HashSet<Type>();
         importTypes.add( sourceType );
         importTypes.add( targetType );
-        if ( conversion != null ) {
+        if ( conversion != null && mappingMethod == null ) {
             importTypes.addAll( conversion.getImportTypes() );
         }
 

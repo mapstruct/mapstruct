@@ -62,7 +62,7 @@ public class ModelWriter {
 
     public void writeModel(JavaFileObject sourceFile, ModelElement model) {
         try {
-            BufferedWriter writer = new BufferedWriter( sourceFile.openWriter() );
+            BufferedWriter writer = new BufferedWriter( new IndentationCorrectingWriter( sourceFile.openWriter() ) );
 
             Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
             values.put( Configuration.class, CONFIGURATION );
@@ -87,7 +87,7 @@ public class ModelWriter {
      */
     static class DefaultModelElementWriterContext implements Context {
 
-        private Map<Class<?>, Object> values;
+        private final Map<Class<?>, Object> values;
 
         DefaultModelElementWriterContext(Map<Class<?>, Object> values) {
             this.values = new HashMap<Class<?>, Object>( values );

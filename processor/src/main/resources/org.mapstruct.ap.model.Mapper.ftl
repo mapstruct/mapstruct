@@ -36,11 +36,10 @@ public class ${implementationName} implements ${interfaceName} {
 
     <@includeModel object=mapper/>
 </#list>
-
 <#list mappingMethods as mappingMethod>
-<@includeModel object=mappingMethod/>
-<#if mappingMethod_has_next>
 
-</#if>
+
+<@includeModel object=mappingMethod/>
 </#list>
+
 }

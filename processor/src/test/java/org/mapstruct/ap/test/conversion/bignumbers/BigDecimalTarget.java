@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.test.conversion.bignumbers;
 
-public class Target {
+import java.math.BigInteger;
+
+public class BigDecimalTarget {
 
     private byte b;
     private Byte bb;
@@ -33,6 +35,7 @@ public class Target {
     private double d;
     private Double dd;
     private String string;
+    private BigInteger bigInteger;
 
     public byte getB() {
         return b;
@@ -136,5 +139,13 @@ public class Target {
 
     public void setString(String string) {
         this.string = string;
+    }
+
+    public BigInteger getBigInteger() {
+        return bigInteger;
+    }
+
+    public void setBigInteger(BigInteger bigInteger) {
+        this.bigInteger = bigInteger;
     }
 }
