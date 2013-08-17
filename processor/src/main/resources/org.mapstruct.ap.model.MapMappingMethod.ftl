@@ -18,65 +18,65 @@
      limitations under the License.
 
 -->
-    @Override
-    public <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
-        if ( ${sourceParameter.name} == null ) {
-            return<#if returnType.name != "void"> null</#if>;
-        }
-
-        <#if existingInstanceMapping>
-        ${resultName}.clear();
-        <#else>
-        <@includeModel object=resultType /> ${resultName} = new <#if resultType.implementationType??><@includeModel object=resultType.implementationType /><#else><@includeModel object=resultType /></#if>();
-        </#if>
-
-        for ( Map.Entry<<#list sourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
-
-        <#-- key -->
-        <#if keyMappingMethod??>
-            <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyMappingMethod input="entry.getKey()"/>;
-        <#elseif keyConversion??>
-            <#if (keyConversion.exceptionTypes?size == 0) >
-            <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyConversion/>;
-            <#else>
-            <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName};
-            try {
-                ${keyVariableName} = <@includeModel object=keyConversion/>;
-            }
-                <#list keyConversion.exceptionTypes as exceptionType>
-            catch( ${exceptionType.name} e ) {
-                throw new RuntimeException( e );
-            }
-                </#list>
-            </#if>
-        <#else>
-            <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = entry.getKey();
-        </#if>
-        <#-- value -->
-        <#if valueMappingMethod??>
-            <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueMappingMethod input="entry.getValue()"/>;
-        <#elseif valueConversion??>
-            <#if (valueConversion.exceptionTypes?size == 0) >
-            <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueConversion/>;
-            <#else>
-            <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName};
-            try {
-                ${valueVariableName} = <@includeModel object=valueConversion/>;
-            }
-                <#list valueConversion.exceptionTypes as exceptionType>
-            catch( ${exceptionType.name} e ) {
-                throw new RuntimeException( e );
-            }
-                </#list>
-            </#if>
-        <#else>
-            <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = entry.getValue();
-        </#if>
-
-            ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
-        }
-        <#if returnType.name != "void">
-
-        return ${resultName};
-        </#if>
+@Override
+public <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
+    if ( ${sourceParameter.name} == null ) {
+        return<#if returnType.name != "void"> null</#if>;
     }
+
+    <#if existingInstanceMapping>
+    ${resultName}.clear();
+    <#else>
+    <@includeModel object=resultType /> ${resultName} = new <#if resultType.implementationType??><@includeModel object=resultType.implementationType /><#else><@includeModel object=resultType /></#if>();
+    </#if>
+
+    for ( Map.Entry<<#list sourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
+
+    <#-- key -->
+    <#if keyMappingMethod??>
+        <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyMappingMethod input="entry.getKey()"/>;
+    <#elseif keyConversion??>
+        <#if (keyConversion.exceptionTypes?size == 0) >
+        <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyConversion/>;
+        <#else>
+        <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName};
+        try {
+            ${keyVariableName} = <@includeModel object=keyConversion/>;
+        }
+            <#list keyConversion.exceptionTypes as exceptionType>
+        catch( ${exceptionType.name} e ) {
+            throw new RuntimeException( e );
+        }
+            </#list>
+        </#if>
+    <#else>
+        <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = entry.getKey();
+    </#if>
+    <#-- value -->
+    <#if valueMappingMethod??>
+        <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueMappingMethod input="entry.getValue()"/>;
+    <#elseif valueConversion??>
+        <#if (valueConversion.exceptionTypes?size == 0) >
+        <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueConversion/>;
+        <#else>
+        <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName};
+        try {
+            ${valueVariableName} = <@includeModel object=valueConversion/>;
+        }
+            <#list valueConversion.exceptionTypes as exceptionType>
+        catch( ${exceptionType.name} e ) {
+            throw new RuntimeException( e );
+        }
+            </#list>
+        </#if>
+    <#else>
+        <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = entry.getValue();
+    </#if>
+
+        ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
+    }
+    <#if returnType.name != "void">
+
+    return ${resultName};
+    </#if>
+}

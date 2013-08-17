@@ -18,28 +18,28 @@
      limitations under the License.
 
 -->
-        <#-- a) invoke mapping method -->
-        <#if mappingMethod??>
-        ${ext.targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()"/> );
-        <#-- b) simple conversion -->
-        <#elseif conversion??>
-            <#if sourceType.primitive == false>
-        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-             <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
-        }
-            <#else>
-        <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
-            </#if>
-        <#-- c) simply set -->
-        <#else>
-            <#if targetType.collectionType || targetType.mapType>
-        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-            ${ext.targetBeanName}.${targetAccessorName}( new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
-        }
-            <#else>
-        ${ext.targetBeanName}.${targetAccessorName}( ${sourceBeanName}.${sourceAccessorName}() );
-            </#if>
-        </#if>
+<#-- a) invoke mapping method -->
+<#if mappingMethod??>
+${ext.targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()"/> );
+<#-- b) simple conversion -->
+<#elseif conversion??>
+    <#if sourceType.primitive == false>
+if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+     <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
+}
+    <#else>
+<@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
+    </#if>
+<#-- c) simply set -->
+<#else>
+    <#if targetType.collectionType || targetType.mapType>
+if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+    ${ext.targetBeanName}.${targetAccessorName}( new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
+}
+    <#else>
+${ext.targetBeanName}.${targetAccessorName}( ${sourceBeanName}.${sourceAccessorName}() );
+    </#if>
+</#if>
 <#macro applyConversion targetBeanName targetAccessorName conversion>
     <#if (conversion.exceptionTypes?size == 0) >
         ${targetBeanName}.${targetAccessorName}( <@includeModel object=conversion/> );
