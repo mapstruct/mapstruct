@@ -28,7 +28,6 @@
         ${resultType.name} ${resultName} = new ${resultType.name}();
 
         </#if>
-
         <#if (sourceParameters?size > 1)>
             <#list sourceParameters as sourceParam>
         if ( ${sourceParam.name} != null ) {
@@ -42,7 +41,6 @@
                 <@includeModel object=propertyMapping targetBeanName=resultName/>
             </#list>
         </#if>
-
         <#if returnType.name != "void">
 
         return ${resultName};
