@@ -60,7 +60,7 @@ public class ErroneousMappingsTest extends MapperTestBase {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.WARNING,
                 line = 36,
-                messageRegExp = "Unmapped target property: \"bar\""),
+                messageRegExp = "Unmapped target property: \"bar\"")
         }
     )
     public void shouldFailToGenerateMappings() {

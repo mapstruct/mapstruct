@@ -63,7 +63,7 @@ public class ErroneousCollectionMappingTest extends MapperTestBase {
                 kind = Kind.ERROR,
                 line = 26,
                 messageRegExp = "Can't map property \"java\\.util\\.Set<java\\.lang\\.String> fooSet\" to" +
-                        " \"java\\.util\\.Set<java\\.lang\\.Long> fooSet\""),
+                        " \"java\\.util\\.Set<java\\.lang\\.Long> fooSet\"" )
         }
     )
     public void shouldFailToGenerateImplementationDueToDifferentlyParameterizedCollections() {
