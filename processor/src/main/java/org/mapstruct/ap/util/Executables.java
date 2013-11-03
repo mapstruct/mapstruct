@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 
@@ -45,7 +46,7 @@ public class Executables {
     }
 
     public boolean isGetterMethod(ExecutableElement method) {
-        return isNonBooleanGetterMethod( method ) || isBooleanGetterMethod( method );
+        return isPublic( method ) && ( isNonBooleanGetterMethod( method ) || isBooleanGetterMethod( method ) );
     }
 
     private boolean isNonBooleanGetterMethod(ExecutableElement method) {
@@ -69,12 +70,16 @@ public class Executables {
     public boolean isSetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
-        if ( name.startsWith( "set" ) && name.length() > 3 && method.getParameters()
+        if ( isPublic( method ) && name.startsWith( "set" ) && name.length() > 3 && method.getParameters()
             .size() == 1 && method.getReturnType().getKind() == TypeKind.VOID ) {
             return true;
         }
 
         return false;
+    }
+
+    private boolean isPublic(ExecutableElement method) {
+        return method.getModifiers().contains( Modifier.PUBLIC );
     }
 
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
