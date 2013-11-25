@@ -54,7 +54,7 @@ import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
 
 /**
  * A JSR 269 annotation {@link Processor} which generates the implementations for mapper interfaces (interfaces
- * annotated with {@code @Mapper}.
+ * annotated with {@code @Mapper}).
  * <p>
  * Implementation notes:
  * <p>
@@ -63,12 +63,13 @@ import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
  * <p>
  * The model instantiation and processing happens in several phases/passes by applying a sequence of
  * {@link ModelElementProcessor}s. The processors to apply are retrieved using the Java service loader mechanism and are
- * processed in order of their priority. The general processing flow is this:
+ * processed in order of their {@link ModelElementProcessor#getPriority() priority}. The general processing flow is
+ * this:
  * <ul>
  * <li>retrieve mapping methods</li>
  * <li>create the {@code Mapper} model</li>
  * <li>perform enrichments and modifications (e.g. add annotations for dependency injection)</li>
- * <li>if no error ocurred, write out the model into Java source files</li>
+ * <li>if no error occurred, write out the model into Java source files</li>
  * </ul>
  * <p>
  * For reading annotation attributes, prisms as generated with help of the <a
