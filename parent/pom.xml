@@ -385,6 +385,9 @@
                         <exclude>**/mapstruct.xml</exclude>
                         <exclude>**/eclipse-formatter-config.xml</exclude>
                         <exclude>maven-settings.xml</exclude>
+                        <exclude>readme.md</exclude>
+                        <exclude>CONTRIBUTING.md</exclude>
+                        <exclude>.gitattributes</exclude>
                     </excludes>
                 </configuration>
                 <executions>
