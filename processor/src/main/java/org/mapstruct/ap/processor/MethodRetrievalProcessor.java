@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -78,27 +79,26 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * Retrieves the mapping methods declared by the given mapper type.
      *
      * @param element The type of interest
-     * @param implementationRequired Whether an implementation of this type must be generated or
-     * not. {@code true} if the type is the currently processed
-     * mapper interface, {@code false} if the given type is one
+     * @param mapperRequiresImplementation Whether an implementation of this type must be generated or not. {@code true}
+     * if the type is the currently processed mapper interface, {@code false} if the given type is one
      * referred to via {@code Mapper#uses()}.
      *
      * @return All mapping methods declared by the given type
      */
-    private List<Method> retrieveMethods(TypeElement element, boolean implementationRequired) {
+    private List<Method> retrieveMethods(TypeElement element, boolean mapperRequiresImplementation) {
         List<Method> methods = new ArrayList<Method>();
 
-        MapperPrism mapperPrism = implementationRequired ? MapperPrism.getInstanceOn( element ) : null;
+        MapperPrism mapperPrism = mapperRequiresImplementation ? MapperPrism.getInstanceOn( element ) : null;
 
         for ( ExecutableElement executable : methodsIn( element.getEnclosedElements() ) ) {
-            Method method = getMethod( element, executable, implementationRequired );
+            Method method = getMethod( element, executable, mapperRequiresImplementation );
             if ( method != null ) {
                 methods.add( method );
             }
         }
 
         //Add all methods of used mappers in order to reference them in the aggregated model
-        if ( implementationRequired ) {
+        if ( mapperRequiresImplementation ) {
             for ( TypeMirror usedMapper : mapperPrism.uses() ) {
                 methods.addAll(
                     retrieveMethods(
@@ -112,12 +112,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return methods;
     }
 
-    private Method getMethod(TypeElement element, ExecutableElement method, boolean implementationRequired) {
+    private Method getMethod(TypeElement element, ExecutableElement method, boolean mapperRequiresImplementation) {
         List<Parameter> parameters = executables.retrieveParameters( method );
         Type returnType = executables.retrieveReturnType( method );
 
         //add method with property mappings if an implementation needs to be generated
-        if ( implementationRequired ) {
+        boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
+
+        if ( mapperRequiresImplementation && methodRequiresImplementation ) {
             List<Parameter> sourceParameters = extractSourceParameters( parameters );
             Parameter targetParameter = extractTargetParameter( parameters );
             Type resultType = selectResultType( returnType, targetParameter );
@@ -144,7 +146,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         else if ( parameters.size() == 1 ) {
             return
                 Method.forReferencedMethod(
-                    typeFactory.getType( element ),
+                    mapperRequiresImplementation ? null : typeFactory.getType( element ),
                     method,
                     parameters,
                     returnType

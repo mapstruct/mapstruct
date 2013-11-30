@@ -224,6 +224,11 @@ public class MappingProcessor extends AbstractProcessor {
                     return e;
                 }
 
+                @Override
+                public TypeElement visitTypeAsClass(TypeElement e, Void p) {
+                    return e;
+                }
+
             }, null
         );
     }

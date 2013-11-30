@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.Generated;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.util.TypeFactory;
 
@@ -35,8 +38,11 @@ import org.mapstruct.ap.util.TypeFactory;
  */
 public class Mapper extends AbstractModelElement {
 
+    private static final String IMPLEMENTATION_SUFFIX = "Impl";
+
     private final TypeFactory typeFactory;
     private final String packageName;
+    private final boolean superTypeIsInterface;
     private final String interfaceName;
     private final String implementationName;
     private final List<Annotation> annotations;
@@ -44,9 +50,11 @@ public class Mapper extends AbstractModelElement {
     private final List<MapperReference> referencedMappers;
     private final Options options;
 
-    public Mapper(TypeFactory typeFactory, String packageName, String interfaceName, String implementationName,
-                  List<MappingMethod> mappingMethods, List<MapperReference> referencedMappers, Options options) {
+    private Mapper(TypeFactory typeFactory, String packageName, boolean superTypeIsInterface, String interfaceName,
+                   String implementationName, List<MappingMethod> mappingMethods,
+                   List<MapperReference> referencedMappers, Options options) {
         this.packageName = packageName;
+        this.superTypeIsInterface = superTypeIsInterface;
         this.interfaceName = interfaceName;
         this.implementationName = implementationName;
         this.annotations = new ArrayList<Annotation>();
@@ -54,6 +62,59 @@ public class Mapper extends AbstractModelElement {
         this.referencedMappers = referencedMappers;
         this.options = options;
         this.typeFactory = typeFactory;
+    }
+
+    public static class Builder {
+
+        private TypeFactory typeFactory;
+        private TypeElement element;
+        private List<MappingMethod> mappingMethods;
+        private List<MapperReference> mapperReferences;
+        private Options options;
+        private Elements elementUtils;
+
+        public Builder element(TypeElement element) {
+            this.element = element;
+            return this;
+        }
+
+        public Builder mappingMethods(List<MappingMethod> mappingMethods) {
+            this.mappingMethods = mappingMethods;
+            return this;
+        }
+
+        public Builder mapperReferences(List<MapperReference> mapperReferences) {
+            this.mapperReferences = mapperReferences;
+            return this;
+        }
+
+        public Builder options(Options options) {
+            this.options = options;
+            return this;
+        }
+
+        public Builder typeFactory(TypeFactory typeFactory) {
+            this.typeFactory = typeFactory;
+            return this;
+        }
+
+        public Builder elementUtils(Elements elementUtils) {
+            this.elementUtils = elementUtils;
+            return this;
+        }
+
+        public Mapper build() {
+            return new Mapper(
+                typeFactory,
+                elementUtils.getPackageOf( element ).getQualifiedName().toString(),
+                element.getKind() == ElementKind.INTERFACE ? true : false,
+                element.getSimpleName().toString(),
+                element.getSimpleName() + IMPLEMENTATION_SUFFIX,
+                mappingMethods,
+                mapperReferences,
+                options
+            );
+        }
     }
 
     @Override
@@ -119,6 +180,16 @@ public class Mapper extends AbstractModelElement {
 
     public String getPackageName() {
         return packageName;
+    }
+
+    /**
+     * Whether the mapper super-type is an interface or not.
+     *
+     * @return {@code true} if the mapper is generated from an interface, {@code false} when generated from an abstract
+     *         class.
+     */
+    public boolean isSuperTypeInterface() {
+        return superTypeIsInterface;
     }
 
     public String getInterfaceName() {
