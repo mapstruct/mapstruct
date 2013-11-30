@@ -4,6 +4,7 @@
 .project
 .settings
 .factorypath
+.checkstyle
 
 # IntelliJ
 *.iml

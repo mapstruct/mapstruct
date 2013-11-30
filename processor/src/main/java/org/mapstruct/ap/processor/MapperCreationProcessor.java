@@ -72,8 +72,6 @@ import org.mapstruct.ap.util.TypeFactory;
  */
 public class MapperCreationProcessor implements ModelElementProcessor<List<Method>, Mapper> {
 
-    private static final String IMPLEMENTATION_SUFFIX = "Impl";
-
     private Elements elementUtils;
     private Types typeUtils;
     private Messager messager;
@@ -109,15 +107,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         List<MappingMethod> mappingMethods = getMappingMethods( methods, unmappedTargetPolicy );
         List<MapperReference> mapperReferences = getReferencedMappers( element );
 
-        return new Mapper(
-            typeFactory,
-            elementUtils.getPackageOf( element ).getQualifiedName().toString(),
-            element.getSimpleName().toString(),
-            element.getSimpleName() + IMPLEMENTATION_SUFFIX,
-            mappingMethods,
-            mapperReferences,
-            options
-        );
+        return new Mapper.Builder()
+            .element( element )
+            .mappingMethods( mappingMethods )
+            .mapperReferences( mapperReferences )
+            .options( options )
+            .typeFactory( typeFactory )
+            .elementUtils( elementUtils )
+            .build();
     }
 
     /**
@@ -160,7 +157,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>();
 
         for ( Method method : methods ) {
-            if ( method.getDeclaringMapper() != null ) {
+            if ( !method.requiresImplementation() ) {
                 continue;
             }
 
@@ -617,6 +614,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
      *
      * @param sourceType the source type
      * @param targetType the target type
+     *
      * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
      *         otherwise.
      */
