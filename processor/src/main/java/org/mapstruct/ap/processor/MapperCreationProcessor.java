@@ -61,6 +61,7 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
+import org.mapstruct.ap.util.MethodMatcher;
 import org.mapstruct.ap.util.Strings;
 import org.mapstruct.ap.util.TypeFactory;
 
@@ -546,13 +547,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 continue;
             }
 
-            Parameter singleSourceParam = method.getSourceParameters().iterator().next();
-
-            if ( singleSourceParam.getType().equals( parameterType ) && method.getResultType().equals( returnType ) ) {
-                return new MappingMethodReference( method );
+            MethodMatcher m = new MethodMatcher(typeUtils, method, returnType, parameterType);
+            if (m.matches()) {
+                return new MappingMethodReference(method);
             }
         }
-
         return null;
     }
 
