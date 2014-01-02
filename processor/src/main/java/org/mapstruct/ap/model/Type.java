@@ -30,6 +30,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.Mapper;
 import org.mapstruct.ap.util.TypeFactory;
 
 /**
@@ -159,6 +160,10 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
     public Set<Type> getImportTypes() {
         return implementationType != null ? org.mapstruct.ap.util.Collections.<Type>asSet( implementationType ) :
             Collections.<Type>emptySet();
+    }
+
+    public boolean isAnnotatedMapper() {
+        return null != typeElement.getAnnotation( Mapper.class );
     }
 
     /**
