@@ -21,7 +21,10 @@ package org.mapstruct.ap.model;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -30,7 +33,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.Mapper;
 import org.mapstruct.ap.util.TypeFactory;
 
 /**
@@ -162,8 +164,21 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
             Collections.<Type>emptySet();
     }
 
-    public boolean isAnnotatedMapper() {
-        return null != typeElement.getAnnotation( Mapper.class );
+    /**
+     * @param annotationTypeName the fully qualified name of the annotation type
+     * @return true, if the type is annotated with an annotation of the specified type (super-types are not inspected)
+     */
+    public boolean isAnnotatedWith(String annotationTypeName) {
+        List<? extends AnnotationMirror> annotationMirrors = typeElement.getAnnotationMirrors();
+
+        for ( AnnotationMirror mirror : annotationMirrors ) {
+            Name mirrorAnnotationName = ( (TypeElement) mirror.getAnnotationType().asElement() ).getQualifiedName();
+            if ( mirrorAnnotationName.contentEquals( annotationTypeName ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

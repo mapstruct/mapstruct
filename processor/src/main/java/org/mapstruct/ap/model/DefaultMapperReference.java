@@ -24,7 +24,6 @@ import java.util.Set;
 import org.mapstruct.ap.util.Collections;
 import org.mapstruct.ap.util.Strings;
 import org.mapstruct.ap.util.TypeFactory;
-import org.mapstruct.factory.Mappers;
 
 /**
  * Mapper reference which is retrieved via the {@code Mappers#getMapper()} method. Used by default if no other component
@@ -41,11 +40,11 @@ public class DefaultMapperReference extends AbstractModelElement implements Mapp
     public DefaultMapperReference(Type type, TypeFactory typeFactory) {
         this.type = type;
 
-        isAnnotatedMapper = type.isAnnotatedMapper();
+        isAnnotatedMapper = type.isAnnotatedWith( "org.mapstruct.ap.model.Mapper" );
         importTypes = Collections.asSet( type );
 
         if ( isAnnotatedMapper() ) {
-            importTypes.add( typeFactory.getType( Mappers.class ) );
+            importTypes.add( typeFactory.getType( "org.mapstruct.factory.Mappers" ) );
         }
     }
 
