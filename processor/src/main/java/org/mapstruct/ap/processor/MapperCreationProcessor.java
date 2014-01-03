@@ -147,7 +147,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
 
         for ( TypeMirror usedMapper : mapperPrism.uses() ) {
-            mapperReferences.add( new DefaultMapperReference( typeFactory.getType( usedMapper ) ) );
+            mapperReferences.add( new DefaultMapperReference( typeFactory.getType( usedMapper ), typeFactory ) );
         }
 
         return mapperReferences;
