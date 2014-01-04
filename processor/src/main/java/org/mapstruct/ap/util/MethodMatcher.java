@@ -138,8 +138,7 @@ public class MethodMatcher {
         public Boolean visitArray(ArrayType t, TypeMirror p) {
 
             if ( p.getKind().equals( TypeKind.ARRAY) ) {
-                t.getComponentType().accept( this, ( (ArrayType) p ).getComponentType() );
-                return Boolean.TRUE;
+                return t.getComponentType().accept( this, ( (ArrayType) p ).getComponentType() );
             }
             else {
                 return Boolean.FALSE;
