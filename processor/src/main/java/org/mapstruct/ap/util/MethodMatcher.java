@@ -25,17 +25,13 @@ import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ErrorType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.NoType;
-import javax.lang.model.type.NullType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import static javax.lang.model.type.TypeKind.DECLARED;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.AbstractTypeVisitor6;
+import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.source.Method;
@@ -93,7 +89,8 @@ public class MethodMatcher {
         if ( candidateParameters.size() == parameters.length ) {
             for ( int i = 0; i < parameters.length; i++ ) {
                 TypeMatcher parameterMatcher = new TypeMatcher();
-                parameterMatcher.visit( candidateParameters.get( i ).asType(), parameters[i].getTypeMirror() );
+                typesMatch = parameterMatcher.visit( candidateParameters.get( i ).asType(),
+                        parameters[i].getTypeMirror() );
                 if ( !typesMatch ) {
                     break;
                 }
@@ -107,7 +104,7 @@ public class MethodMatcher {
         if ( typesMatch ) {
             TypeMirror candidateReturnType = candidateMethod.getExecutable().getReturnType();
             TypeMatcher returnTypeMatcher = new TypeMatcher();
-            returnTypeMatcher.visit( candidateReturnType, returnType.getTypeMirror() );
+            typesMatch = returnTypeMatcher.visit( candidateReturnType, returnType.getTypeMirror() );
         }
 
         // check if all type parameters are indeed mapped
@@ -126,85 +123,75 @@ public class MethodMatcher {
         return typesMatch;
     }
 
-    public class TypeMatcher extends AbstractTypeVisitor6<TypeMirror, TypeMirror> {
+    public class TypeMatcher extends SimpleTypeVisitor6<Boolean, TypeMirror> {
 
-        @Override
-        public TypeMirror visitPrimitive(PrimitiveType t, TypeMirror p) {
-            if ( !typeUtils.isSameType( t, p ) ) {
-                typesMatch = false;
-            }
-            return null;
+        public TypeMatcher() {
+            super( Boolean.TRUE ); // default value
         }
 
         @Override
-        public TypeMirror visitNull(NullType t, TypeMirror p) {
-            // not interesting
-            return null;
+        public Boolean visitPrimitive(PrimitiveType t, TypeMirror p) {
+            return typeUtils.isSameType( t, p );
         }
 
         @Override
-        public TypeMirror visitArray(ArrayType t, TypeMirror p) {
+        public Boolean visitArray(ArrayType t, TypeMirror p) {
 
-            if ( p instanceof ArrayType ) {
+            if ( p.getKind().equals( TypeKind.ARRAY) ) {
                 t.getComponentType().accept( this, ( (ArrayType) p ).getComponentType() );
+                return Boolean.TRUE;
             }
             else {
-                typesMatch = false;
+                return Boolean.FALSE;
             }
-            return null;
         }
 
         @Override
-        public TypeMirror visitDeclared(DeclaredType t, TypeMirror p) {
+        public Boolean visitDeclared(DeclaredType t, TypeMirror p) {
             // its a match when: 1) same kind of type, name is equals, nr of type args are the same
             // (type args are checked later).
-            if ( p instanceof DeclaredType ) {
+            if ( p.getKind().equals( TypeKind.DECLARED ) ) {
                 DeclaredType t1 = (DeclaredType) p;
                 if ( t.asElement().getSimpleName().equals( t1.asElement().getSimpleName() )
                     && t.getTypeArguments().size() == t1.getTypeArguments().size() ) {
                     for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
-                        t.getTypeArguments().get( i ).accept( this, t1.getTypeArguments().get( i ) );
+                        if (!t.getTypeArguments().get( i ).accept( this, t1.getTypeArguments().get( i ) ))
+                        {
+                            return Boolean.FALSE;
+                        }
                     }
+                    return Boolean.TRUE;
                 }
                 else {
-                    typesMatch = false;
+                    return Boolean.FALSE;
                 }
             }
             else {
-                typesMatch = false;
+               return Boolean.FALSE;
             }
-            return null;
         }
 
         @Override
-        public TypeMirror visitError(ErrorType t, TypeMirror p) {
-            // not interesting
-            return null;
-        }
-
-        @Override
-        public TypeMirror visitTypeVariable(TypeVariable t, TypeMirror p) {
+        public Boolean visitTypeVariable(TypeVariable t, TypeMirror p) {
             if ( genericTypesMap.containsKey( t ) ) {
                 // when already found, the same mapping should apply
                 TypeMirror p1 = genericTypesMap.get( t );
-                if ( !typeUtils.isSameType( p, p1 ) ) {
-                    typesMatch = false;
-                }
+                return typeUtils.isSameType( p, p1 );
             }
             else {
                 // check if types are in bound
                 if ( typeUtils.isSubtype( t.getLowerBound(), p ) && typeUtils.isSubtype( p, t.getUpperBound() ) ) {
                     genericTypesMap.put( t, p );
+                    return Boolean.TRUE;
                 }
                 else {
-                    typesMatch = false;
+                    return Boolean.FALSE;
                 }
             }
-            return null;
         }
 
         @Override
-        public TypeMirror visitWildcard(WildcardType t, TypeMirror p) {
+        public Boolean visitWildcard(WildcardType t, TypeMirror p) {
 
             // check extends bound
             TypeMirror extendsBound = t.getExtendsBound();
@@ -212,24 +199,18 @@ public class MethodMatcher {
                 switch ( extendsBound.getKind() ) {
                     case DECLARED:
                         // for example method: String method(? extends String)
-                        if ( !typeUtils.isSubtype( p, extendsBound ) ) {
-                            // isSubType checks range [subtype, type], e.g. isSubtype [Object, String]==true
-                            typesMatch = false;
-                        }
-                        break;
+                        // isSubType checks range [subtype, type], e.g. isSubtype [Object, String]==true
+                        return typeUtils.isSubtype( p, extendsBound );
 
                     case TYPEVAR:
                         // for exampe method: <T extends String & Serializable> T method(? extends T)
                         // this can be done the directly by checking: ? extends String & Serializable
-                        if ( !isWithinBounds( p, getTypeParamFromCandite( extendsBound ) ) ) {
-                            // this checks the part? <T extends String & Serializable>
-                            typesMatch = false;
-                        }
-                        break;
+                        // this checks the part? <T extends String & Serializable>
+                        return isWithinBounds( p, getTypeParamFromCandite( extendsBound ) );
 
                     default:
                         // does this situation occur?
-                        typesMatch = false;
+                        return Boolean.FALSE;
                 }
             }
 
@@ -239,12 +220,9 @@ public class MethodMatcher {
                 switch ( superBound.getKind() ) {
                     case DECLARED:
                         // for example method: String method(? super String)
-                        if ( !( typeUtils.isSubtype( superBound, p ) || typeUtils.isSameType( p, superBound ) ) ) {
-                            // to check super type, we can simply reverse the argument, but that would initially yield
-                            // a result: <type, superType] (so type not included) so we need to check sameType also.
-                            typesMatch = false;
-                        }
-                        break;
+                        // to check super type, we can simply reverse the argument, but that would initially yield
+                        // a result: <type, superType] (so type not included) so we need to check sameType also.
+                        return ( typeUtils.isSubtype( superBound, p ) || typeUtils.isSameType( p, superBound ) );
 
                     case TYPEVAR:
 
@@ -252,40 +230,27 @@ public class MethodMatcher {
                         // for exampe method: <T extends String & Serializable> T method(? super T)
                         if ( !isWithinBounds( p, typeParameter ) ) {
                             // this checks the part? <T extends String & Serializable>
-                            typesMatch = false;
+                            return Boolean.FALSE;
                         }
                         // now, it becoms a bit more hairy. We have the relation (? super T). From T we know that
                         // it is a subclass of String & Serializable. However, The Java Language Secification,
                         // Chapter 4.4, states that a bound is either: 'A type variable-', 'A class-' or 'An
                         // interface-' type followed by further interface types. So we must compare with the first
                         // argument in the Expression String & Serializable & ..., so, in this case String.
+                        // to check super type, we can simply reverse the argument, but that would initially yield
+                        // a result: <type, superType] (so type not included) so we need to check sameType also.
                         TypeMirror superBoundAsDeclared = typeParameter.getBounds().get( 0 );
-                        if ( !( typeUtils.isSubtype( superBoundAsDeclared, p ) ||
-                                typeUtils.isSameType( p, superBoundAsDeclared ) ) ) {
-                            // to check super type, we can simply reverse the argument, but that would initially yield
-                            // a result: <type, superType] (so type not included) so we need to check sameType also.
-                            typesMatch = false;
-                        }
-                        break;
+                        return ( typeUtils.isSubtype( superBoundAsDeclared, p ) ||
+                                typeUtils.isSameType( p, superBoundAsDeclared ) );
+
                     default:
                         // does this situation occur?
-                        typesMatch = false;
+                        return Boolean.FALSE;
                 }
             }
-            return null;
+            return Boolean.TRUE;
         }
 
-        @Override
-        public TypeMirror visitExecutable(ExecutableType t, TypeMirror p) {
-            // not interesting
-            return null;
-        }
-
-        @Override
-        public TypeMirror visitNoType(NoType t, TypeMirror p) {
-            // not interesting
-            return null;
-        }
     }
 
     /**
