@@ -305,7 +305,10 @@ public abstract class MapperTestBase {
 
         @Override
         public int compare(DiagnosticDescriptor o1, DiagnosticDescriptor o2) {
-            int result = o1.getSourceFileName().compareTo( o2.getSourceFileName() );
+            String sourceFileName1 = o1.getSourceFileName() != null ? o1.getSourceFileName() : "";
+            String sourceFileName2 = o2.getSourceFileName() != null ? o2.getSourceFileName() : "";
+
+            int result = sourceFileName1.compareTo( sourceFileName2 );
 
             if ( result != 0 ) {
                 return result;
