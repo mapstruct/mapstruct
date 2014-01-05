@@ -547,9 +547,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 continue;
             }
 
-            MethodMatcher m = new MethodMatcher(typeUtils, method, returnType, parameterType);
-            if (m.matches()) {
-                return new MappingMethodReference(method);
+            MethodMatcher m = new MethodMatcher( typeUtils, method, returnType, parameterType );
+            if ( m.matches() ) {
+                return new MappingMethodReference( method );
             }
         }
         return null;

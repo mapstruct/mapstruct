@@ -21,7 +21,6 @@ package org.mapstruct.ap.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
@@ -111,8 +110,8 @@ public class MethodMatcher {
         }
         else {
             // check if all entries are in the bounds
-            for (Map.Entry<TypeVariable, TypeMirror> entry : genericTypesMap.entrySet()) {
-                if (!isWithinBounds( entry.getValue(), getTypeParamFromCandidate( entry.getKey() ) ) ) {
+            for ( Map.Entry<TypeVariable, TypeMirror> entry : genericTypesMap.entrySet() ) {
+                if ( !isWithinBounds( entry.getValue(), getTypeParamFromCandidate( entry.getKey() ) ) ) {
                     // checks if the found Type is in bounds of the TypeParameters bounds.
                     typesMatch = false;
                 }
@@ -135,7 +134,7 @@ public class MethodMatcher {
         @Override
         public Boolean visitArray(ArrayType t, TypeMirror p) {
 
-            if ( p.getKind().equals( TypeKind.ARRAY) ) {
+            if ( p.getKind().equals( TypeKind.ARRAY ) ) {
                 return t.getComponentType().accept( this, ( (ArrayType) p ).getComponentType() );
             }
             else {
@@ -152,8 +151,7 @@ public class MethodMatcher {
                 if ( t.asElement().getSimpleName().equals( t1.asElement().getSimpleName() )
                     && t.getTypeArguments().size() == t1.getTypeArguments().size() ) {
                     for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
-                        if (!t.getTypeArguments().get( i ).accept( this, t1.getTypeArguments().get( i ) ))
-                        {
+                        if ( !t.getTypeArguments().get( i ).accept( this, t1.getTypeArguments().get( i ) ) ) {
                             return Boolean.FALSE;
                         }
                     }
@@ -164,7 +162,7 @@ public class MethodMatcher {
                 }
             }
             else {
-               return Boolean.FALSE;
+                return Boolean.FALSE;
             }
         }
 
@@ -238,7 +236,7 @@ public class MethodMatcher {
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
                         TypeMirror superBoundAsDeclared = typeParameter.getBounds().get( 0 );
                         return ( typeUtils.isSubtype( superBoundAsDeclared, p ) ||
-                                typeUtils.isSameType( p, superBoundAsDeclared ) );
+                            typeUtils.isSameType( p, superBoundAsDeclared ) );
 
                     default:
                         // does this situation occur?
@@ -254,6 +252,7 @@ public class MethodMatcher {
      * Looks through the list of type parameters of the candidate method for a match
      *
      * @param t type parameter to match
+     *
      * @return matching type parameter
      */
     private TypeParameterElement getTypeParamFromCandidate(TypeMirror t) {
@@ -270,6 +269,7 @@ public class MethodMatcher {
      *
      * @param t
      * @param tpe
+     *
      * @return true if within bounds
      */
     private boolean isWithinBounds(TypeMirror t, TypeParameterElement tpe) {
@@ -277,7 +277,7 @@ public class MethodMatcher {
         if ( t != null && bounds != null ) {
             for ( TypeMirror bound : bounds ) {
                 if ( !( bound.getKind().equals( TypeKind.DECLARED ) &&
-                        typeUtils.isSubtype( t, bound ) ) ) {
+                    typeUtils.isSubtype( t, bound ) ) ) {
                     return false;
                 }
             }
