@@ -42,6 +42,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.AnnotationProcessingException;
 import org.mapstruct.ap.model.Type;
 
 /**
@@ -100,6 +101,10 @@ public class TypeFactory {
     }
 
     public Type getType(TypeMirror mirror) {
+        if ( mirror.getKind() == TypeKind.ERROR ) {
+            throw new AnnotationProcessingException( "Encountered erroneous type " + mirror );
+        }
+
         Type implementationType = getImplementationType( mirror );
 
         boolean isIterableType = typeUtils.isSubtype(

@@ -25,10 +25,13 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
@@ -110,7 +113,7 @@ public abstract class MapperTestBase {
     @BeforeMethod
     public void generateMapperImplementation(Method testMethod) {
         diagnostics = new DiagnosticCollector<JavaFileObject>();
-        List<File> sourceFiles = getSourceFiles( getTestClasses( testMethod ) );
+        Set<File> sourceFiles = getSourceFiles( getTestClasses( testMethod ) );
         List<String> processorOptions = getProcessorOptions( testMethod );
 
         boolean compilationSuccessful = compile( diagnostics, sourceFiles, processorOptions );
@@ -182,22 +185,28 @@ public abstract class MapperTestBase {
      *
      * @param testMethod The test method of interest
      *
-     * @return A list containing the classes to be compiled for this test
+     * @return A set containing the classes to be compiled for this test
      */
-    private List<Class<?>> getTestClasses(Method testMethod) {
-        WithClasses withClasses = testMethod.getAnnotation( WithClasses.class );
+    private Set<Class<?>> getTestClasses(Method testMethod) {
+        Set<Class<?>> testClasses = new HashSet<Class<?>>();
 
-        if ( withClasses == null ) {
-            withClasses = this.getClass().getAnnotation( WithClasses.class );
+        WithClasses withClasses = testMethod.getAnnotation( WithClasses.class );
+        if ( withClasses != null ) {
+            testClasses.addAll( Arrays.asList( withClasses.value() ) );
         }
 
-        if ( withClasses == null || withClasses.value().length == 0 ) {
+        withClasses = this.getClass().getAnnotation( WithClasses.class );
+        if ( withClasses != null ) {
+            testClasses.addAll( Arrays.asList( withClasses.value() ) );
+        }
+
+        if ( testClasses.isEmpty() ) {
             throw new IllegalStateException(
                 "The classes to be compiled during the test must be specified via @WithClasses."
             );
         }
 
-        return Arrays.asList( withClasses.value() );
+        return testClasses;
     }
 
     /**
@@ -222,8 +231,8 @@ public abstract class MapperTestBase {
         return String.format( "-A%s=%s", processorOption.name(), processorOption.value() );
     }
 
-    private List<File> getSourceFiles(List<Class<?>> classes) {
-        List<File> sourceFiles = new ArrayList<File>( classes.size() );
+    private Set<File> getSourceFiles(Collection<Class<?>> classes) {
+        Set<File> sourceFiles = new HashSet<File>( classes.size() );
 
         for ( Class<?> clazz : classes ) {
             sourceFiles.add(
@@ -305,7 +314,10 @@ public abstract class MapperTestBase {
 
         @Override
         public int compare(DiagnosticDescriptor o1, DiagnosticDescriptor o2) {
-            int result = o1.getSourceFileName().compareTo( o2.getSourceFileName() );
+            String sourceFileName1 = o1.getSourceFileName() != null ? o1.getSourceFileName() : "";
+            String sourceFileName2 = o2.getSourceFileName() != null ? o2.getSourceFileName() : "";
+
+            int result = sourceFileName1.compareTo( sourceFileName2 );
 
             if ( result != 0 ) {
                 return result;

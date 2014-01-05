@@ -45,19 +45,20 @@
         </dependency>
 
         <!-- Compile-only; Using "provided" scope as there is no such scope in Maven;
-             these dependencies are not required at runtime, only for prism generation -->
+             these dependencies are not required at runtime, only for prism generation
+             and tests -->
         <dependency>
             <groupId>com.jolira</groupId>
             <artifactId>hickory</artifactId>
             <scope>provided</scope>
         </dependency>
-
-        <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mapstruct</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Test -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>

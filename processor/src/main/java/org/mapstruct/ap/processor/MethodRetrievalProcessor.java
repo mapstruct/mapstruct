@@ -18,10 +18,13 @@
  */
 package org.mapstruct.ap.processor;
 
+import static javax.lang.model.util.ElementFilter.methodsIn;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -31,6 +34,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic.Kind;
 
+import org.mapstruct.ap.AnnotationProcessingException;
 import org.mapstruct.ap.IterableMappingPrism;
 import org.mapstruct.ap.MapMappingPrism;
 import org.mapstruct.ap.MapperPrism;
@@ -44,8 +48,6 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.TypeFactory;
-
-import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link Method}s
@@ -88,8 +90,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private List<Method> retrieveMethods(TypeElement element, boolean mapperRequiresImplementation) {
         List<Method> methods = new ArrayList<Method>();
 
-        MapperPrism mapperPrism = mapperRequiresImplementation ? MapperPrism.getInstanceOn( element ) : null;
-
         for ( ExecutableElement executable : methodsIn( element.getEnclosedElements() ) ) {
             Method method = getMethod( element, executable, mapperRequiresImplementation );
             if ( method != null ) {
@@ -99,6 +99,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         //Add all methods of used mappers in order to reference them in the aggregated model
         if ( mapperRequiresImplementation ) {
+            MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
+            if ( !mapperPrism.isValid ) {
+                throw new AnnotationProcessingException(
+                    "Couldn't retrieve @Mapper annotation", element, mapperPrism.mirror
+                );
+            }
+
             for ( TypeMirror usedMapper : mapperPrism.uses() ) {
                 methods.addAll(
                     retrieveMethods(
