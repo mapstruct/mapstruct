@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -490,9 +491,25 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             )
         );
 
+        MappingMethodReference elementMappingMethod =
+            getMappingMethodReference( methods, sourceElementType, targetElementType );
+
+        if ( !sourceElementType.isAssignableTo( targetElementType ) && conversion == null &&
+            elementMappingMethod == null ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
+                    + "source element type into target element type.",
+                    method
+                ),
+                method.getExecutable()
+            );
+        }
+
         return new IterableMappingMethod(
             method,
-            getMappingMethodReference( methods, sourceElementType, targetElementType ),
+            elementMappingMethod,
             conversion
         );
     }
@@ -523,6 +540,31 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             sourceValueType,
             targetValueType
         );
+
+        if ( !sourceKeyType.isAssignableTo( targetKeyType ) && keyConversion == null && keyMappingMethod == null ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
+                    + "source key type to target key type.",
+                    method
+                ),
+                method.getExecutable()
+            );
+        }
+
+        if ( !sourceValueType.isAssignableTo( targetValueType ) && valueConversion == null &&
+            valueMappingMethod == null ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
+                    + "source value type to target value type.",
+                    method
+                ),
+                method.getExecutable()
+            );
+        }
 
         return new MapMappingMethod( method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion );
     }

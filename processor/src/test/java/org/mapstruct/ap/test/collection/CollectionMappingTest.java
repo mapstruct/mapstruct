@@ -24,6 +24,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
@@ -286,5 +287,15 @@ public class CollectionMappingTest extends MapperTestBase {
         target.getStringLongMap().put( "Bill", 789L );
 
         assertThat( source.getStringLongMap() ).hasSize( 2 );
+    }
+
+    @Test
+    @IssueKey("87")
+    public void shouldMapIntegerSetToNumberSet() {
+        Set<Number> numbers = SourceTargetMapper.INSTANCE
+            .integerSetToNumberSet( new HashSet<Integer>( Arrays.asList( 123, 456 ) ) );
+
+        assertThat( numbers ).isNotNull();
+        assertThat( numbers ).containsOnly( 123, 456 );
     }
 }

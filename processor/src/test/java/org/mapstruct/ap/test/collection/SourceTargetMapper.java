@@ -46,4 +46,6 @@ public interface SourceTargetMapper {
     Set<String> colourSetToStringSet(Set<Colour> colours);
 
     Set<Colour> stringSetToColourSet(Set<String> colours);
+
+    Set<Number> integerSetToNumberSet(Set<Integer> integers);
 }
