@@ -18,19 +18,27 @@
  */
 package org.mapstruct.ap.test.conversion.generics;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.math.BigDecimal;
+
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.testng.annotations.Test;
 
+/**
+ * Tests for the invocation of generic methods for mapping bean properties.
+ *
+ * @author Sjaak Derksen
+ */
 @WithClasses( { GenericTypeMapper.class, Wrapper.class, ArrayWrapper.class, TwoArgHolder.class, TwoArgWrapper.class,
     UpperBoundWrapper.class, WildCardExtendsWrapper.class, WildCardSuperWrapper.class, WildCardExtendsMBWrapper.class,
     TypeA.class, TypeB.class, TypeC.class } )
+@IssueKey( value = "79" )
 public class ConversionTest extends MapperTestBase {
 
     @Test

@@ -21,18 +21,19 @@ package org.mapstruct.ap.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
-import static javax.lang.model.type.TypeKind.DECLARED;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
+
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.source.Method;
 
@@ -68,36 +69,33 @@ import org.mapstruct.ap.model.source.Method;
  */
 public class MethodMatcher {
 
-    private final Type[] parameters;
+    private final Type parameter;
     private final Type returnType;
     private final Method candidateMethod;
     private final Types typeUtils;
     private boolean typesMatch = true;
-    private Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<TypeVariable, TypeMirror>();
+    private final Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<TypeVariable, TypeMirror>();
 
-    public MethodMatcher(Types typeUtils, Method candidateMethod, Type returnType, Type... arguments) {
+    public MethodMatcher(Types typeUtils, Method candidateMethod, Type returnType, Type parameter) {
         this.typeUtils = typeUtils;
         this.candidateMethod = candidateMethod;
-        this.parameters = arguments;
+        this.parameter = parameter;
         this.returnType = returnType;
     }
 
     public boolean matches() {
-
         // check & collect generic types.
         List<? extends VariableElement> candidateParameters = candidateMethod.getExecutable().getParameters();
-        if ( candidateParameters.size() == parameters.length ) {
-            for ( int i = 0; i < parameters.length; i++ ) {
-                TypeMatcher parameterMatcher = new TypeMatcher();
-                typesMatch = parameterMatcher.visit( candidateParameters.get( i ).asType(),
-                        parameters[i].getTypeMirror() );
-                if ( !typesMatch ) {
-                    break;
-                }
-            }
+
+        if ( candidateParameters.size() != 1 ) {
+            typesMatch = false;
         }
         else {
-            typesMatch = false;
+            TypeMatcher parameterMatcher = new TypeMatcher();
+            typesMatch = parameterMatcher.visit(
+                candidateParameters.iterator().next().asType(),
+                parameter.getTypeMirror()
+            );
         }
 
         // check return type
@@ -114,7 +112,7 @@ public class MethodMatcher {
         else {
             // check if all entries are in the bounds
             for (Map.Entry<TypeVariable, TypeMirror> entry : genericTypesMap.entrySet()) {
-                if (!isWithinBounds( entry.getValue(), getTypeParamFromCandite( entry.getKey() ) ) ) {
+                if (!isWithinBounds( entry.getValue(), getTypeParamFromCandidate( entry.getKey() ) ) ) {
                     // checks if the found Type is in bounds of the TypeParameters bounds.
                     typesMatch = false;
                 }
@@ -202,10 +200,10 @@ public class MethodMatcher {
                         return typeUtils.isSubtype( p, extendsBound );
 
                     case TYPEVAR:
-                        // for exampe method: <T extends String & Serializable> T method(? extends T)
+                        // for example method: <T extends String & Serializable> T method(? extends T)
                         // this can be done the directly by checking: ? extends String & Serializable
                         // this checks the part? <T extends String & Serializable>
-                        return isWithinBounds( p, getTypeParamFromCandite( extendsBound ) );
+                        return isWithinBounds( p, getTypeParamFromCandidate( extendsBound ) );
 
                     default:
                         // does this situation occur?
@@ -225,13 +223,13 @@ public class MethodMatcher {
 
                     case TYPEVAR:
 
-                        TypeParameterElement typeParameter = getTypeParamFromCandite( superBound );
-                        // for exampe method: <T extends String & Serializable> T method(? super T)
+                        TypeParameterElement typeParameter = getTypeParamFromCandidate( superBound );
+                        // for example method: <T extends String & Serializable> T method(? super T)
                         if ( !isWithinBounds( p, typeParameter ) ) {
                             // this checks the part? <T extends String & Serializable>
                             return Boolean.FALSE;
                         }
-                        // now, it becoms a bit more hairy. We have the relation (? super T). From T we know that
+                        // now, it becomes a bit more hairy. We have the relation (? super T). From T we know that
                         // it is a subclass of String & Serializable. However, The Java Language Secification,
                         // Chapter 4.4, states that a bound is either: 'A type variable-', 'A class-' or 'An
                         // interface-' type followed by further interface types. So we must compare with the first
@@ -258,7 +256,7 @@ public class MethodMatcher {
      * @param t type parameter to match
      * @return matching type parameter
      */
-    private TypeParameterElement getTypeParamFromCandite(TypeMirror t) {
+    private TypeParameterElement getTypeParamFromCandidate(TypeMirror t) {
         for ( TypeParameterElement candidateTypeParam : candidateMethod.getExecutable().getTypeParameters() ) {
             if ( candidateTypeParam.asType().equals( t ) ) {
                 return candidateTypeParam;
@@ -279,7 +277,7 @@ public class MethodMatcher {
         if ( t != null && bounds != null ) {
             for ( TypeMirror bound : bounds ) {
                 if ( !( bound.getKind().equals( TypeKind.DECLARED ) &&
-                        typeUtils.isSubtype( t, (DeclaredType) bound ) ) ) {
+                        typeUtils.isSubtype( t, bound ) ) ) {
                     return false;
                 }
             }
