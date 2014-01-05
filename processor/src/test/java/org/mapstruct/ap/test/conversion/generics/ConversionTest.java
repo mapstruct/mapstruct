@@ -28,16 +28,13 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
+@WithClasses( { GenericTypeMapper.class, Wrapper.class, ArrayWrapper.class, TwoArgHolder.class, TwoArgWrapper.class,
+    UpperBoundWrapper.class, WildCardExtendsWrapper.class, WildCardSuperWrapper.class, WildCardExtendsMBWrapper.class,
+    TypeA.class, TypeB.class, TypeC.class } )
 public class ConversionTest extends MapperTestBase {
 
     @Test
-    @WithClasses( { ErroneousSource1.class, ErroneousTarget1.class, ErroneousSource2.class, ErroneousTarget2.class,
-        ErroneousSource3.class, ErroneousTarget3.class,  ErroneousSource4.class, ErroneousTarget4.class,
-        ErroneousSource5.class, ErroneousTarget5.class,
-        GenericTypeMapper.class, Wrapper.class, ArrayWrapper.class, TwoArgHolder.class, TwoArgWrapper.class,
-        TypeA.class, TypeB.class, TypeC.class, UpperBoundWrapper.class, Source.class, Target.class,
-        WildCardExtendsWrapper.class, WildCardSuperWrapper.class, WildCardExtendsMBWrapper.class,
-        SourceTargetMapper.class } )
+    @WithClasses( { Source.class, Target.class, SourceTargetMapper.class } )
     public void shouldApplyGenericTypeMapper() {
 
         // setup used types
@@ -83,13 +80,7 @@ public class ConversionTest extends MapperTestBase {
     }
 
     @Test
-    @WithClasses({ErroneousSource1.class, ErroneousTarget1.class, ErroneousSource2.class, ErroneousTarget2.class,
-        ErroneousSource3.class, ErroneousTarget3.class,  ErroneousSource4.class, ErroneousTarget4.class,
-        ErroneousSource5.class, ErroneousTarget5.class,
-        GenericTypeMapper.class, Wrapper.class, ArrayWrapper.class, TwoArgHolder.class, TwoArgWrapper.class,
-        TypeA.class, TypeB.class, TypeC.class, UpperBoundWrapper.class, Source.class, Target.class,
-        WildCardExtendsWrapper.class, WildCardSuperWrapper.class, WildCardExtendsMBWrapper.class,
-        ErroneousSourceTargetMapper1.class } )
+    @WithClasses({ ErroneousSource1.class, ErroneousTarget1.class, ErroneousSourceTargetMapper1.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
             diagnostics = {
         @Diagnostic(type = ErroneousSourceTargetMapper1.class,
@@ -101,13 +92,7 @@ public class ConversionTest extends MapperTestBase {
     }
 
     @Test
-    @WithClasses({ErroneousSource1.class, ErroneousTarget1.class, ErroneousSource2.class, ErroneousTarget2.class,
-        ErroneousSource3.class, ErroneousTarget3.class,  ErroneousSource4.class, ErroneousTarget4.class,
-        ErroneousSource5.class, ErroneousTarget5.class,
-        GenericTypeMapper.class, Wrapper.class, ArrayWrapper.class, TwoArgHolder.class, TwoArgWrapper.class,
-        TypeA.class, TypeB.class, TypeC.class, UpperBoundWrapper.class, Source.class, Target.class,
-        WildCardExtendsWrapper.class, WildCardSuperWrapper.class,  WildCardExtendsMBWrapper.class,
-        ErroneousSourceTargetMapper2.class } )
+    @WithClasses({ ErroneousSource2.class, ErroneousTarget2.class, ErroneousSourceTargetMapper2.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
             diagnostics = {
         @Diagnostic(type = ErroneousSourceTargetMapper2.class,
@@ -120,13 +105,7 @@ public class ConversionTest extends MapperTestBase {
     }
 
     @Test
-    @WithClasses({ErroneousSource1.class, ErroneousTarget1.class, ErroneousSource2.class, ErroneousTarget2.class,
-        ErroneousSource3.class, ErroneousTarget3.class,  ErroneousSource4.class, ErroneousTarget4.class,
-        ErroneousSource5.class, ErroneousTarget5.class,
-        GenericTypeMapper.class, Wrapper.class, ArrayWrapper.class, TwoArgHolder.class, TwoArgWrapper.class,
-        TypeA.class, TypeB.class, TypeC.class, UpperBoundWrapper.class, Source.class, Target.class,
-        WildCardExtendsWrapper.class, WildCardSuperWrapper.class,  WildCardExtendsMBWrapper.class,
-        ErroneousSourceTargetMapper3.class } )
+    @WithClasses({ ErroneousSource3.class, ErroneousTarget3.class, ErroneousSourceTargetMapper3.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
             diagnostics = {
         @Diagnostic(type = ErroneousSourceTargetMapper3.class,
@@ -140,13 +119,7 @@ public class ConversionTest extends MapperTestBase {
     }
 
     @Test
-    @WithClasses({ErroneousSource1.class, ErroneousTarget1.class, ErroneousSource2.class, ErroneousTarget2.class,
-        ErroneousSource3.class, ErroneousTarget3.class,  ErroneousSource4.class, ErroneousTarget4.class,
-        ErroneousSource5.class, ErroneousTarget5.class,
-        GenericTypeMapper.class, Wrapper.class, ArrayWrapper.class, TwoArgHolder.class, TwoArgWrapper.class,
-        TypeA.class, TypeB.class, TypeC.class, UpperBoundWrapper.class, Source.class, Target.class,
-        WildCardExtendsWrapper.class, WildCardSuperWrapper.class,  WildCardExtendsMBWrapper.class,
-        ErroneousSourceTargetMapper4.class } )
+    @WithClasses({ ErroneousSource4.class, ErroneousTarget4.class, ErroneousSourceTargetMapper4.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
             diagnostics = {
         @Diagnostic(type = ErroneousSourceTargetMapper4.class,
@@ -159,13 +132,7 @@ public class ConversionTest extends MapperTestBase {
     }
 
     @Test
-    @WithClasses({ErroneousSource1.class, ErroneousTarget1.class, ErroneousSource2.class, ErroneousTarget2.class,
-        ErroneousSource3.class, ErroneousTarget3.class,  ErroneousSource4.class, ErroneousTarget4.class,
-        ErroneousSource5.class, ErroneousTarget5.class,
-        GenericTypeMapper.class, Wrapper.class, ArrayWrapper.class, TwoArgHolder.class, TwoArgWrapper.class,
-        TypeA.class, TypeB.class, TypeC.class, UpperBoundWrapper.class, Source.class, Target.class,
-        WildCardExtendsWrapper.class, WildCardSuperWrapper.class,  WildCardExtendsMBWrapper.class,
-        ErroneousSourceTargetMapper5.class } )
+    @WithClasses({ ErroneousSource5.class, ErroneousTarget5.class, ErroneousSourceTargetMapper5.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
             diagnostics = {
         @Diagnostic(type = ErroneousSourceTargetMapper5.class,
