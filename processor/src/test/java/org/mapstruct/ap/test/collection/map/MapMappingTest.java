@@ -147,4 +147,19 @@ public class MapMappingTest extends MapperTestBase {
             entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
         );
     }
+
+    @Test
+    @IssueKey("87")
+    public void shouldCreateMapMethodImplementationWithoutConversionOrElementMappingMethod() {
+        Map<String, String> values = createStringStringMap();
+
+        Map<Object, Object> target = SourceTargetMapper.INSTANCE.stringStringMapToObjectObjectMap( values );
+
+        assertThat( target ).isNotNull();
+        assertThat( target ).hasSize( 2 );
+        assertThat( target ).includes(
+            entry( "42", "01.01.1980" ),
+            entry( "121", "20.07.2013" )
+        );
+    }
 }

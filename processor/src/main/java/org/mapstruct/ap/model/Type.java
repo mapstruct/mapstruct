@@ -188,6 +188,8 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
      *
      * @return {@code true} if and only if this type is assignable to the given other type.
      */
+    // TODO This doesn't yet take wild card types into account; e.g. ? extends Integer wouldn't be assignable to Number
+    // atm.
     public boolean isAssignableTo(Type other) {
         if ( equals( other ) ) {
             return true;
