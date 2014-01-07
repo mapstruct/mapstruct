@@ -48,5 +48,5 @@ public interface SourceTargetMapper {
 
     Source targetToSource(Target target);
 
-    Map<Object, Object> stringStringMapToObjectObjectMap(Map<String, String> source);
+    Map<Number, Number> intIntToNumberNumberMap(Map<Integer, Integer> source);
 }

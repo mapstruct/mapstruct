@@ -21,6 +21,8 @@ package org.mapstruct.ap.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
@@ -37,31 +39,24 @@ import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.source.Method;
 
 /**
- * MethodMatcher
+ * MethodMatcher $8.4 of the JavaLanguage specification describes a method body as such:
  *
- * $8.4 of the JavaLanguage specification describes a method body as such:
+ * <pre>
+ * MethodDeclaration: MethodHeader MethodBody
+ * MethodHeader: MethodModifiers TypeParameters Result MethodDeclarator Throws
+ * MethodDeclarator: Identifier ( FormalParameterList )
  *
- * MethodDeclaration:
- *  MethodHeader MethodBody
+ * example &lt;T extends String & Serializable&gt;  T   getResult(? extends T) throws Exception
+ *         \-------------------------------/ \-/            \---------/
+ *               TypeParameters             Result        ParameterList
+ * </pre>
  *
- *  MethodHeader:
- *   MethodModifiers TypeParameters Result MethodDeclarator Throws
- *
- * MethodDeclarator:
- *  Identifier ( FormalParameterList )
- *
- * example <T extends String & Serializable>  T  getResult(? extends T) throws Exception
- *         \-------------------------------/ \-/           \---------/
- *                    TypeParameters        Result        ParameterList
- *
- * Matches a given method with given ParameterList and Result type obeying the
- * constraints in the TypeParameters block.
- *
- * For more info on java-generics:
- * http://www.javacodegeeks.com/2011/04/java-generics-quick-tutorial.html
+ * Matches a given method with given ParameterList and Result type obeying the constraints in the TypeParameters block.
+ * <p>
+ * For more info on java-generics: http://www.javacodegeeks.com/2011/04/java-generics-quick-tutorial.html
  * http://www.angelikalanger.com/GenericsFAQ/FAQSections/ParameterizedTypes.html
- *
- * The following situations is not supported / tested:
+ * <p>
+ * The following situations is not supported / tested: <br/>
  * 1) Multiple bounds were the bound itself is again a generic type.
  *
  * @author Sjaak Derksen
@@ -72,7 +67,6 @@ public class MethodMatcher {
     private final Type returnType;
     private final Method candidateMethod;
     private final Types typeUtils;
-    private boolean typesMatch = true;
     private final Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<TypeVariable, TypeMirror>();
 
     public MethodMatcher(Types typeUtils, Method candidateMethod, Type returnType, Type parameter) {
@@ -87,43 +81,45 @@ public class MethodMatcher {
         List<? extends VariableElement> candidateParameters = candidateMethod.getExecutable().getParameters();
 
         if ( candidateParameters.size() != 1 ) {
-            typesMatch = false;
+            return false;
         }
-        else {
-            TypeMatcher parameterMatcher = new TypeMatcher();
-            typesMatch = parameterMatcher.visit(
-                candidateParameters.iterator().next().asType(),
-                parameter.getTypeMirror()
-            );
+
+        TypeMatcher parameterMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_FROM );
+        if ( !parameterMatcher.visit( candidateParameters.iterator().next().asType(), parameter.getTypeMirror() ) ) {
+            return false;
         }
 
         // check return type
-        if ( typesMatch ) {
-            TypeMirror candidateReturnType = candidateMethod.getExecutable().getReturnType();
-            TypeMatcher returnTypeMatcher = new TypeMatcher();
-            typesMatch = returnTypeMatcher.visit( candidateReturnType, returnType.getTypeMirror() );
+        TypeMirror candidateReturnType = candidateMethod.getExecutable().getReturnType();
+        TypeMatcher returnTypeMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_TO );
+        if ( !returnTypeMatcher.visit( candidateReturnType, returnType.getTypeMirror() ) ) {
+            return false;
         }
 
         // check if all type parameters are indeed mapped
         if ( candidateMethod.getExecutable().getTypeParameters().size() != this.genericTypesMap.size() ) {
-            typesMatch = false;
+            return false;
         }
-        else {
-            // check if all entries are in the bounds
-            for ( Map.Entry<TypeVariable, TypeMirror> entry : genericTypesMap.entrySet() ) {
-                if ( !isWithinBounds( entry.getValue(), getTypeParamFromCandidate( entry.getKey() ) ) ) {
-                    // checks if the found Type is in bounds of the TypeParameters bounds.
-                    typesMatch = false;
-                }
+        // check if all entries are in the bounds
+        for ( Map.Entry<TypeVariable, TypeMirror> entry : genericTypesMap.entrySet() ) {
+            if ( !isWithinBounds( entry.getValue(), getTypeParamFromCandidate( entry.getKey() ) ) ) {
+                // checks if the found Type is in bounds of the TypeParameters bounds.
+                return false;
             }
         }
-        return typesMatch;
+        return true;
     }
 
-    public class TypeMatcher extends SimpleTypeVisitor6<Boolean, TypeMirror> {
+    private enum Assignability {
+        VISITED_ASSIGNABLE_FROM, VISITED_ASSIGNABLE_TO
+    }
 
-        public TypeMatcher() {
-            super( Boolean.TRUE ); // default value
+    private class TypeMatcher extends SimpleTypeVisitor6<Boolean, TypeMirror> {
+        private final Assignability assignability;
+
+        public TypeMatcher(Assignability assignability) {
+            super( Boolean.FALSE ); // default value
+            this.assignability = assignability;
         }
 
         @Override
@@ -146,9 +142,9 @@ public class MethodMatcher {
         public Boolean visitDeclared(DeclaredType t, TypeMirror p) {
             // its a match when: 1) same kind of type, name is equals, nr of type args are the same
             // (type args are checked later).
-            if ( p.getKind().equals( TypeKind.DECLARED ) ) {
+            if ( p.getKind() == TypeKind.DECLARED ) {
                 DeclaredType t1 = (DeclaredType) p;
-                if ( t.asElement().getSimpleName().equals( t1.asElement().getSimpleName() )
+                if ( assignabilityMatches( t, t1 )
                     && t.getTypeArguments().size() == t1.getTypeArguments().size() ) {
                     for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
                         if ( !t.getTypeArguments().get( i ).accept( this, t1.getTypeArguments().get( i ) ) ) {
@@ -164,6 +160,19 @@ public class MethodMatcher {
             else {
                 return Boolean.FALSE;
             }
+        }
+
+        private boolean assignabilityMatches(DeclaredType visited, DeclaredType param) {
+            if ( assignability == Assignability.VISITED_ASSIGNABLE_TO ) {
+                return typeUtils.isAssignable( toRawType( visited ), toRawType( param ) );
+            }
+            else {
+                return typeUtils.isAssignable( toRawType( param ), toRawType( visited ) );
+            }
+        }
+
+        private DeclaredType toRawType(DeclaredType t) {
+            return typeUtils.getDeclaredType( (TypeElement) t.asElement() );
         }
 
         @Override
@@ -235,8 +244,9 @@ public class MethodMatcher {
                         // to check super type, we can simply reverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
                         TypeMirror superBoundAsDeclared = typeParameter.getBounds().get( 0 );
-                        return ( typeUtils.isSubtype( superBoundAsDeclared, p ) ||
-                            typeUtils.isSameType( p, superBoundAsDeclared ) );
+                        return ( typeUtils.isSubtype( superBoundAsDeclared, p ) || typeUtils.isSameType(
+                            p,
+                            superBoundAsDeclared ) );
 
                     default:
                         // does this situation occur?
@@ -252,7 +262,6 @@ public class MethodMatcher {
      * Looks through the list of type parameters of the candidate method for a match
      *
      * @param t type parameter to match
-     *
      * @return matching type parameter
      */
     private TypeParameterElement getTypeParamFromCandidate(TypeMirror t) {
@@ -269,15 +278,13 @@ public class MethodMatcher {
      *
      * @param t
      * @param tpe
-     *
      * @return true if within bounds
      */
     private boolean isWithinBounds(TypeMirror t, TypeParameterElement tpe) {
         List<? extends TypeMirror> bounds = tpe.getBounds();
         if ( t != null && bounds != null ) {
             for ( TypeMirror bound : bounds ) {
-                if ( !( bound.getKind().equals( TypeKind.DECLARED ) &&
-                    typeUtils.isSubtype( t, bound ) ) ) {
+                if ( !( bound.getKind().equals( TypeKind.DECLARED ) && typeUtils.isSubtype( t, bound ) ) ) {
                     return false;
                 }
             }
@@ -286,3 +293,4 @@ public class MethodMatcher {
         return false;
     }
 }
+

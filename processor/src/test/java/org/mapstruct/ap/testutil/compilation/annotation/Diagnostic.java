@@ -32,7 +32,7 @@ public @interface Diagnostic {
      *
      * @return The type for which the diagnostic was created.
      */
-    Class<?> type();
+    Class<?> type() default Diagnostic.class;
 
     /**
      * The expected kind of diagnostic.
@@ -46,7 +46,7 @@ public @interface Diagnostic {
      *
      * @return The expected line number of the diagnostic.
      */
-    int line();
+    int line() default -1;
 
     /**
      * A regular expression matching the expected message of the diagnostic.

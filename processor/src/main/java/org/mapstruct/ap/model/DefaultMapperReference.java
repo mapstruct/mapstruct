@@ -40,7 +40,7 @@ public class DefaultMapperReference extends AbstractModelElement implements Mapp
     public DefaultMapperReference(Type type, TypeFactory typeFactory) {
         this.type = type;
 
-        isAnnotatedMapper = type.isAnnotatedWith( "org.mapstruct.ap.model.Mapper" );
+        isAnnotatedMapper = type.isAnnotatedMapper();
         importTypes = Collections.asSet( type );
 
         if ( isAnnotatedMapper() ) {

@@ -33,6 +33,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.util.TypeFactory;
 
 /**
@@ -182,6 +183,13 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
     }
 
     /**
+     * @return true, if the type is annotated with {@code @Mapper}
+     */
+    public boolean isAnnotatedMapper() {
+        return null != MapperPrism.getInstanceOn( typeElement );
+    }
+
+    /**
      * Whether this type is assignable to the given other type.
      *
      * @param other The other type.
@@ -196,6 +204,39 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         }
 
         return typeUtils.isAssignable( typeMirror, other.typeMirror );
+    }
+
+    /**
+     * Returns the length of the shortest path in the type hierarchy between this type and the specified other type.
+     * Returns {@code -1} if this type is not assignable to the other type. Returns {@code 0} if this type is equal to
+     * the other type. Returns {@code 1}, if the other type is a direct super type of this type, and so on.
+     *
+     * @param assignableOther the other type
+     * @return the length of the shortest path in the type hierarchy between this type and the specified other type
+     */
+    public int distanceTo(Type assignableOther) {
+        return distanceTo( typeMirror, assignableOther.typeMirror );
+    }
+
+    private int distanceTo(TypeMirror base, TypeMirror targetType) {
+        if ( typeUtils.isSameType( base, targetType ) ) {
+            return 0;
+        }
+
+        if ( !typeUtils.isAssignable( base, targetType ) ) {
+            return -1;
+        }
+
+        List<? extends TypeMirror> directSupertypes = typeUtils.directSupertypes( base );
+        int minDistanceOfSuperToTargetType = Integer.MAX_VALUE;
+        for ( TypeMirror type : directSupertypes ) {
+            int distanceToTargetType = distanceTo( type, targetType );
+            if ( distanceToTargetType >= 0 ) {
+                minDistanceOfSuperToTargetType = Math.min( minDistanceOfSuperToTargetType, distanceToTargetType );
+            }
+        }
+
+        return 1 + minDistanceOfSuperToTargetType;
     }
 
     @Override

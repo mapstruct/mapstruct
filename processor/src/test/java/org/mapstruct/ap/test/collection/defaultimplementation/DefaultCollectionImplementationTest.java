@@ -18,70 +18,64 @@
  */
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 @WithClasses({
-    Source.class,
     SourceFoo.class,
-    Target.class,
     TargetFoo.class,
-    SourceTargetMapper.class
+ SourceTargetMapper.class
 })
 public class DefaultCollectionImplementationTest extends MapperTestBase {
 
     @Test
     @IssueKey("6")
     public void shouldUseDefaultImplementationForList() {
-        Source source = new Source();
-        source.setFooList( createSourceFooList() );
-        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        List<TargetFoo> target = SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( createSourceFooList() );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getFooList() ).containsExactly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+        assertThat( target ).containsExactly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
     }
 
     @Test
     @IssueKey("6")
     public void shouldUseDefaultImplementationForSet() {
-        Source source = new Source();
-        source.setFooSet( new HashSet<SourceFoo>( createSourceFooList() ) );
-        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        Set<TargetFoo> target =
+            SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( new HashSet<SourceFoo>( createSourceFooList() ) );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getFooSet() ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+        assertThat( target ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
     }
 
     @Test
     @IssueKey("6")
     public void shouldUseDefaultImplementationForCollection() {
-        Source source = new Source();
-        source.setFooCollection( createSourceFooList() );
-        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        Collection<TargetFoo> target =
+            SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( (Collection<SourceFoo>) createSourceFooList() );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getFooCollection() ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+        assertThat( target ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
     }
 
     @Test
     @IssueKey("6")
     public void shouldUseDefaultImplementationForIterable() {
-        Source source = new Source();
-        source.setFooIterable( createSourceFooList() );
-        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        Iterable<TargetFoo> target =
+            SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( (Iterable<SourceFoo>) createSourceFooList() );
 
         assertThat( target ).isNotNull();
-        Iterable<TargetFoo> fooIterable = target.getFooIterable();
-        assertResultList( fooIterable );
+        assertResultList( target );
     }
 
     private void assertResultList(Iterable<TargetFoo> fooIterable) {
@@ -97,7 +91,9 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     @IssueKey("19")
     public void shouldUseTargetParameterForMapping() {
         List<TargetFoo> target = new ArrayList<TargetFoo>();
-        SourceTargetMapper.INSTANCE.sourceFoosToTargetFoosUsingTargetParameter( target, createSourceFooList() );
+        SourceTargetMapper.INSTANCE.sourceFoosToTargetFoosUsingTargetParameter(
+            target,
+            createSourceFooList() );
 
         assertResultList( target );
     }

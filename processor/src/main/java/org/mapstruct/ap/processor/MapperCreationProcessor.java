@@ -584,17 +584,63 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private MappingMethodReference getMappingMethodReference(Iterable<Method> methods, Type parameterType,
                                                              Type returnType) {
+        List<Method> candidatesWithMathingTargetType = new ArrayList<Method>();
+
         for ( Method method : methods ) {
-            if ( method.getSourceParameters().size() > 1 ) {
+            if ( method.getSourceParameters().size() != 1 ) {
                 continue;
             }
 
             MethodMatcher m = new MethodMatcher( typeUtils, method, returnType, parameterType );
             if ( m.matches() ) {
-                return new MappingMethodReference( method );
+                candidatesWithMathingTargetType.add( method );
             }
         }
-        return null;
+
+        List<Method> candidatesWithBestMatchingSourceType = new ArrayList<Method>();
+        int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;
+
+        // find the methods with the minimum distance regarding source parameter type
+        for ( Method method : candidatesWithMathingTargetType ) {
+            Parameter singleSourceParam = method.getSourceParameters().iterator().next();
+
+            int sourceTypeDistance = parameterType.distanceTo( singleSourceParam.getType() );
+            bestMatchingSourceTypeDistance =
+                addToCandidateListIfMinimal(
+                    candidatesWithBestMatchingSourceType,
+                    bestMatchingSourceTypeDistance,
+                    method,
+                    sourceTypeDistance );
+        }
+
+        if ( candidatesWithBestMatchingSourceType.isEmpty() ) {
+            return null;
+        }
+
+        // print a warning if we find more than one method with minimum source type distance
+        if ( candidatesWithBestMatchingSourceType.size() > 1 ) {
+            messager.printMessage( Kind.ERROR, String.format(
+                "Ambiguous mapping methods found for mapping from %s to %s: %s.",
+                parameterType,
+                returnType,
+                candidatesWithBestMatchingSourceType ) );
+        }
+
+        return new MappingMethodReference( candidatesWithBestMatchingSourceType.get( 0 ) );
+    }
+
+    private int addToCandidateListIfMinimal(List<Method> candidatesWithBestMathingType, int bestMatchingTypeDistance,
+                                            Method method, int currentTypeDistance) {
+        if ( currentTypeDistance == bestMatchingTypeDistance ) {
+            candidatesWithBestMathingType.add( method );
+        }
+        else if ( currentTypeDistance < bestMatchingTypeDistance ) {
+            bestMatchingTypeDistance = currentTypeDistance;
+
+            candidatesWithBestMathingType.clear();
+            candidatesWithBestMathingType.add( method );
+        }
+        return bestMatchingTypeDistance;
     }
 
     /**
