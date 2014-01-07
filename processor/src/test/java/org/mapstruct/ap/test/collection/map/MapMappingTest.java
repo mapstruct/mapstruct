@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.test.collection.map;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -27,9 +30,6 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
 
 /**
  * Test for implementation of {@code Map} mapping methods.
@@ -148,18 +148,22 @@ public class MapMappingTest extends MapperTestBase {
         );
     }
 
+    private Map<Integer, Integer> createIntIntMap() {
+        Map<Integer, Integer> values = new HashMap<Integer, Integer>();
+        values.put( 42, 47 );
+        values.put( 121, 123 );
+        return values;
+    }
+
     @Test
     @IssueKey("87")
     public void shouldCreateMapMethodImplementationWithoutConversionOrElementMappingMethod() {
-        Map<String, String> values = createStringStringMap();
+        Map<Integer, Integer> values = createIntIntMap();
 
-        Map<Object, Object> target = SourceTargetMapper.INSTANCE.stringStringMapToObjectObjectMap( values );
+        Map<Number, Number> target = SourceTargetMapper.INSTANCE.intIntToNumberNumberMap( values );
 
         assertThat( target ).isNotNull();
         assertThat( target ).hasSize( 2 );
-        assertThat( target ).includes(
-            entry( "42", "01.01.1980" ),
-            entry( "121", "20.07.2013" )
-        );
+        assertThat( target ).isEqualTo( values );
     }
 }

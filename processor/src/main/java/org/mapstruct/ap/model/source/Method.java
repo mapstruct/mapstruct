@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
@@ -205,7 +206,7 @@ public class Method {
 
     @Override
     public String toString() {
-        return returnType + " " + getName() + "(" + Strings.join( parameters, ", " ) + ")";
+        return returnType + " " + declaringMapper + "." + getName() + "(" + Strings.join( parameters, ", " ) + ")";
     }
 
     public Mapping getMapping(String targetPropertyName) {

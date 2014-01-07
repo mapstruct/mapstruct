@@ -38,8 +38,6 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    Target sourceToTarget(Source source);
-
     TargetFoo sourceFooToTargetFoo(SourceFoo sourceFoo);
 
     List<TargetFoo> sourceFoosToTargetFoos(List<SourceFoo> foos);

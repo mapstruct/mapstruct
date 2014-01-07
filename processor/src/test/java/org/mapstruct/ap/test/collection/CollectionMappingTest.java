@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.collection;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -30,8 +32,6 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 @WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class })
 public class CollectionMappingTest extends MapperTestBase {
