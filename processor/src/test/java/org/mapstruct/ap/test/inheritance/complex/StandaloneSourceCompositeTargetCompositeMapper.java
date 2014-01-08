@@ -25,6 +25,7 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface StandaloneSourceCompositeTargetCompositeMapper {
+
     StandaloneSourceCompositeTargetCompositeMapper INSTANCE =
         Mappers.getMapper( StandaloneSourceCompositeTargetCompositeMapper.class );
 

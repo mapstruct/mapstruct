@@ -21,10 +21,10 @@ package org.mapstruct.ap.test.inheritance.complex;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper( uses = { SourceBaseMappingHelper.class } )
+@Mapper(uses = { SourceBaseMappingHelper.class })
 public interface SourceCompositeTargetCompositeMapper {
+
     SourceCompositeTargetCompositeMapper INSTANCE = Mappers.getMapper( SourceCompositeTargetCompositeMapper.class );
 
     TargetComposite sourceToTarget(SourceComposite source);
-
 }

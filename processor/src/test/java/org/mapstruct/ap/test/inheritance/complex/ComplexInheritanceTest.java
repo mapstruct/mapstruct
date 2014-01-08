@@ -37,14 +37,16 @@ import org.testng.annotations.Test;
  *
  * @author Andreas Gudian
  */
-@WithClasses( { Reference.class, SourceBase.class, SourceComposite.class,
- SourceExt.class, SourceExt2.class,
-    TargetComposite.class, AdditionalFooSource.class } )
+@WithClasses({
+    Reference.class, SourceBase.class, SourceComposite.class,
+    SourceExt.class, SourceExt2.class,
+    TargetComposite.class, AdditionalFooSource.class
+})
 public class ComplexInheritanceTest extends MapperTestBase {
 
     @Test
     @IssueKey("34")
-    @WithClasses( { StandaloneSourceCompositeTargetCompositeMapper.class } )
+    @WithClasses({ StandaloneSourceCompositeTargetCompositeMapper.class })
     public void shouldMapAttributesWithSuperTypeInStandaloneMapper() {
         SourceComposite source = createComposite();
 
@@ -57,8 +59,8 @@ public class ComplexInheritanceTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey( "34" )
-    @WithClasses( { SourceCompositeTargetCompositeMapper.class, SourceBaseMappingHelper.class } )
+    @IssueKey("34")
+    @WithClasses({ SourceCompositeTargetCompositeMapper.class, SourceBaseMappingHelper.class })
     public void shouldMapAttributesWithSuperTypeUsingOtherMapper() {
         SourceComposite source = createComposite();
 
@@ -71,16 +73,15 @@ public class ComplexInheritanceTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey( "34" )
-    @WithClasses( { ErrornousSourceCompositeTargetCompositeMapper.class, AdditionalMappingHelper.class } )
-    @ExpectedCompilationOutcome( value = CompilationResult.FAILED,
-    diagnostics = @Diagnostic(
-        kind = Kind.ERROR,
-        messageRegExp = "Ambiguous mapping methods found for mapping from .*SourceExt to .*Reference: \\["
-            + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*SourceBase source\\), "
-            + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*AdditionalFooSource source\\)\\]" ) )
+    @IssueKey("34")
+    @WithClasses({ ErroneousSourceCompositeTargetCompositeMapper.class, AdditionalMappingHelper.class })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = @Diagnostic(
+            kind = Kind.ERROR,
+            messageRegExp = "Ambiguous mapping methods found for mapping from .*SourceExt to .*Reference: \\["
+                + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*SourceBase source\\), "
+                + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*AdditionalFooSource source\\)\\]"))
     public void ambiguousMappingMethodsReportError() {
-
     }
 
     private void assertResult(TargetComposite target) {

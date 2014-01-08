@@ -21,7 +21,6 @@ package org.mapstruct.ap.model;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
@@ -33,7 +32,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.util.TypeFactory;
 
 /**
@@ -167,6 +165,7 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
 
     /**
      * @param annotationTypeName the fully qualified name of the annotation type
+     *
      * @return true, if the type is annotated with an annotation of the specified type (super-types are not inspected)
      */
     public boolean isAnnotatedWith(String annotationTypeName) {
@@ -180,13 +179,6 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
         }
 
         return false;
-    }
-
-    /**
-     * @return true, if the type is annotated with {@code @Mapper}
-     */
-    public boolean isAnnotatedMapper() {
-        return null != MapperPrism.getInstanceOn( typeElement );
     }
 
     /**
@@ -212,6 +204,7 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
      * the other type. Returns {@code 1}, if the other type is a direct super type of this type, and so on.
      *
      * @param assignableOther the other type
+     *
      * @return the length of the shortest path in the type hierarchy between this type and the specified other type
      */
     public int distanceTo(Type assignableOther) {

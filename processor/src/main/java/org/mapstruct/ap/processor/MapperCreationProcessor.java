@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -500,7 +499,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 Kind.ERROR,
                 String.format(
                     "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
-                    + "source element type into target element type.",
+                        + "source element type into target element type.",
                     method
                 ),
                 method.getExecutable()
@@ -546,7 +545,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 Kind.ERROR,
                 String.format(
                     "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
-                    + "source key type to target key type.",
+                        + "source key type to target key type.",
                     method
                 ),
                 method.getExecutable()
@@ -559,7 +558,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 Kind.ERROR,
                 String.format(
                     "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
-                    + "source value type to target value type.",
+                        + "source value type to target value type.",
                     method
                 ),
                 method.getExecutable()
@@ -610,7 +609,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                     candidatesWithBestMatchingSourceType,
                     bestMatchingSourceTypeDistance,
                     method,
-                    sourceTypeDistance );
+                    sourceTypeDistance
+                );
         }
 
         if ( candidatesWithBestMatchingSourceType.isEmpty() ) {
@@ -619,11 +619,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
         // print a warning if we find more than one method with minimum source type distance
         if ( candidatesWithBestMatchingSourceType.size() > 1 ) {
-            messager.printMessage( Kind.ERROR, String.format(
-                "Ambiguous mapping methods found for mapping from %s to %s: %s.",
-                parameterType,
-                returnType,
-                candidatesWithBestMatchingSourceType ) );
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "Ambiguous mapping methods found for mapping from %s to %s: %s.",
+                    parameterType,
+                    returnType,
+                    candidatesWithBestMatchingSourceType
+                )
+            );
         }
 
         return new MappingMethodReference( candidatesWithBestMatchingSourceType.get( 0 ) );

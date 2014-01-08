@@ -206,7 +206,16 @@ public class Method {
 
     @Override
     public String toString() {
-        return returnType + " " + declaringMapper + "." + getName() + "(" + Strings.join( parameters, ", " ) + ")";
+        StringBuilder sb = new StringBuilder( returnType.toString() );
+        sb.append( " " );
+
+        if ( declaringMapper != null ) {
+            sb.append( declaringMapper ).append( "." );
+        }
+
+        sb.append( getName() ).append( "(" ).append( Strings.join( parameters, ", " ) ).append( ")" );
+
+        return sb.toString();
     }
 
     public Mapping getMapping(String targetPropertyName) {

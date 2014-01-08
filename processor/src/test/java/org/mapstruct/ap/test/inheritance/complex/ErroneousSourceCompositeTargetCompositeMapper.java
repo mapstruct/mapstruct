@@ -23,10 +23,11 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper( uses = { AdditionalMappingHelper.class } )
-public interface ErrornousSourceCompositeTargetCompositeMapper {
-    ErrornousSourceCompositeTargetCompositeMapper INSTANCE =
-        Mappers.getMapper( ErrornousSourceCompositeTargetCompositeMapper.class );
+@Mapper(uses = { AdditionalMappingHelper.class })
+public interface ErroneousSourceCompositeTargetCompositeMapper {
+
+    ErroneousSourceCompositeTargetCompositeMapper INSTANCE =
+        Mappers.getMapper( ErroneousSourceCompositeTargetCompositeMapper.class );
 
     TargetComposite sourceToTarget(SourceComposite source);
 

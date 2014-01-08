@@ -21,7 +21,6 @@ package org.mapstruct.ap.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
@@ -246,7 +245,8 @@ public class MethodMatcher {
                         TypeMirror superBoundAsDeclared = typeParameter.getBounds().get( 0 );
                         return ( typeUtils.isSubtype( superBoundAsDeclared, p ) || typeUtils.isSameType(
                             p,
-                            superBoundAsDeclared ) );
+                            superBoundAsDeclared
+                        ) );
 
                     default:
                         // does this situation occur?
@@ -262,6 +262,7 @@ public class MethodMatcher {
      * Looks through the list of type parameters of the candidate method for a match
      *
      * @param t type parameter to match
+     *
      * @return matching type parameter
      */
     private TypeParameterElement getTypeParamFromCandidate(TypeMirror t) {
@@ -278,6 +279,7 @@ public class MethodMatcher {
      *
      * @param t
      * @param tpe
+     *
      * @return true if within bounds
      */
     private boolean isWithinBounds(TypeMirror t, TypeParameterElement tpe) {
