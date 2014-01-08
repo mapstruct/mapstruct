@@ -216,11 +216,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         }
     }
 
-    private Map<String, Mapping> reverse(Map<String, Mapping> mappings) {
-        Map<String, Mapping> reversed = new HashMap<String, Mapping>();
+    private Map<String, List<Mapping>> reverse(Map<String, List<Mapping>> mappings) {
+        Map<String, List<Mapping>> reversed = new HashMap<String, List<Mapping>>();
 
-        for ( Mapping mapping : mappings.values() ) {
-            reversed.put( mapping.getTargetName(), mapping.reverse() );
+        for ( List<Mapping> mappingList : mappings.values() ) {
+            for (Mapping mapping : mappingList) {
+                if (!reversed.containsKey( mapping.getTargetName())) {
+                    reversed.put( mapping.getTargetName(), new ArrayList<Mapping>());
+                }
+                reversed.get( mapping.getTargetName() ).add( mapping.reverse() );
+            }
         }
         return reversed;
     }
@@ -237,10 +242,25 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
 
         for ( ExecutableElement getter : sourceGetters ) {
-            Mapping sourceMapping = method.getMappings().get( sourcePropertyName );
-            boolean mapsToOtherTarget =
-                sourceMapping != null && !sourceMapping.getTargetName().equals( targetPropertyName );
-            if ( executables.getPropertyName( getter ).equals( sourcePropertyName ) && !mapsToOtherTarget ) {
+
+            List<Mapping> sourceMappings = method.getMappings().get( sourcePropertyName );
+            if (method.getMappings().containsKey( sourcePropertyName ) ) {
+                for (Mapping sourceMapping : sourceMappings) {
+                    boolean mapsToOtherTarget = !sourceMapping.getTargetName().equals( targetPropertyName );
+                    if ( executables.getPropertyName( getter ).equals( sourcePropertyName ) && !mapsToOtherTarget ) {
+                        return getPropertyMapping(
+                            methods,
+                            method,
+                            parameter,
+                            getter,
+                            setterMethod,
+                            dateFormat
+                        );
+                    }
+                }
+            }
+            else if (executables.getPropertyName( getter ).equals( sourcePropertyName ))
+            {
                 return getPropertyMapping(
                     methods,
                     method,
@@ -378,31 +398,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
         boolean foundUnmappedProperty = false;
 
-        for ( Mapping mappedProperty : method.getMappings().values() ) {
-            if ( mappedProperty.getSourceParameterName() != null ) {
-                Parameter sourceParameter = method.getSourceParameter( mappedProperty.getSourceParameterName() );
+        for ( List<Mapping> mappedProperties : method.getMappings().values() ) {
+            for (Mapping mappedProperty :  mappedProperties) {
+                if ( mappedProperty.getSourceParameterName() != null ) {
+                    Parameter sourceParameter = method.getSourceParameter( mappedProperty.getSourceParameterName() );
 
-                if ( sourceParameter == null ) {
-                    messager.printMessage(
-                        Kind.ERROR,
-                        String.format(
-                            "Method has no parameter named \"%s\".",
-                            mappedProperty.getSourceParameterName()
-                        ),
-                        method.getExecutable(),
-                        mappedProperty.getMirror(),
-                        mappedProperty.getSourceAnnotationValue()
-                    );
-                    foundUnmappedProperty = true;
-                }
-                else {
-                    if ( !hasProperty( sourceParameter, mappedProperty.getSourcePropertyName() ) ) {
+                    if ( sourceParameter == null ) {
                         messager.printMessage(
                             Kind.ERROR,
                             String.format(
-                                "The type of parameter \"%s\" has no property named \"%s\".",
-                                mappedProperty.getSourceParameterName(),
-                                mappedProperty.getSourcePropertyName()
+                                "Method has no parameter named \"%s\".",
+                                mappedProperty.getSourceParameterName()
                             ),
                             method.getExecutable(),
                             mappedProperty.getMirror(),
@@ -410,41 +416,56 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                         );
                         foundUnmappedProperty = true;
                     }
-                }
+                    else {
+                        if ( !hasProperty( sourceParameter, mappedProperty.getSourcePropertyName() ) ) {
+                            messager.printMessage(
+                                Kind.ERROR,
+                                String.format(
+                                    "The type of parameter \"%s\" has no property named \"%s\".",
+                                    mappedProperty.getSourceParameterName(),
+                                    mappedProperty.getSourcePropertyName()
+                                ),
+                                method.getExecutable(),
+                                mappedProperty.getMirror(),
+                                mappedProperty.getSourceAnnotationValue()
+                            );
+                            foundUnmappedProperty = true;
+                        }
+                    }
 
-            }
-            else if ( !hasSourceProperty(
-                method,
-                mappedProperty.getSourcePropertyName()
-            ) ) {
-                messager.printMessage(
-                    Kind.ERROR,
-                    String.format(
-                        "No property named \"%s\" exists in source parameter(s).",
-                        mappedProperty.getSourceName()
-                    ),
-                    method.getExecutable(),
-                    mappedProperty.getMirror(),
-                    mappedProperty.getSourceAnnotationValue()
-                );
-                foundUnmappedProperty = true;
-            }
-            if ( !targetProperties.contains( mappedProperty.getTargetName() ) ) {
-                messager.printMessage(
-                    Kind.ERROR,
-                    String.format(
-                        "Unknown property \"%s\" in return type %s.",
-                        mappedProperty.getTargetName(),
-                        method.getResultType()
-                    ),
-                    method.getExecutable(),
-                    mappedProperty.getMirror(),
-                    mappedProperty.getTargetAnnotationValue()
-                );
-                foundUnmappedProperty = true;
+                }
+                else if ( !hasSourceProperty(
+                    method,
+                    mappedProperty.getSourcePropertyName()
+                ) ) {
+                    messager.printMessage(
+                        Kind.ERROR,
+                        String.format(
+                            "No property named \"%s\" exists in source parameter(s).",
+                            mappedProperty.getSourceName()
+                        ),
+                        method.getExecutable(),
+                        mappedProperty.getMirror(),
+                        mappedProperty.getSourceAnnotationValue()
+                    );
+                    foundUnmappedProperty = true;
+                }
+                if ( !targetProperties.contains( mappedProperty.getTargetName() ) ) {
+                    messager.printMessage(
+                        Kind.ERROR,
+                        String.format(
+                            "Unknown property \"%s\" in return type %s.",
+                            mappedProperty.getTargetName(),
+                            method.getResultType()
+                        ),
+                        method.getExecutable(),
+                        mappedProperty.getMirror(),
+                        mappedProperty.getTargetAnnotationValue()
+                    );
+                    foundUnmappedProperty = true;
+                }
             }
         }
-
         return !foundUnmappedProperty;
     }
 
