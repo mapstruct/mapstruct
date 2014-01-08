@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.model.source;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -44,17 +46,22 @@ public class Mapping {
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
 
-    public static Map<String, Mapping> fromMappingsPrism(MappingsPrism mappingsAnnotation, Element element) {
-        Map<String, Mapping> mappings = new HashMap<String, Mapping>();
+    public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation, Element element) {
+        Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         for ( MappingPrism mapping : mappingsAnnotation.value() ) {
-            mappings.put( mapping.source(), fromMappingPrism( mapping, element ) );
+            if (!mappings.containsKey( mapping.source())) {
+                mappings.put( mapping.source(), fromMappingPrism( mapping, element ) );
+            }
+            else {
+                mappings.get( mapping.source() ).addAll( fromMappingPrism( mapping, element ) );
+            }
         }
 
         return mappings;
     }
 
-    public static Mapping fromMappingPrism(MappingPrism mapping, Element element) {
+    public static List<Mapping> fromMappingPrism(MappingPrism mapping, Element element) {
         String[] sourceNameParts = getSourceNameParts(
             mapping.source(),
             element,
@@ -62,7 +69,7 @@ public class Mapping {
             mapping.values.source()
         );
 
-        return new Mapping(
+        Mapping result =  new Mapping(
             mapping.source(),
             sourceNameParts != null ? sourceNameParts[0] : null,
             sourceNameParts != null ? sourceNameParts[1] : mapping.source(),
@@ -72,6 +79,8 @@ public class Mapping {
             mapping.values.source(),
             mapping.values.target()
         );
+
+        return Arrays.asList( new Mapping[] {result } );
     }
 
     private static String[] getSourceNameParts(String sourceName, Element element, AnnotationMirror annotationMirror,

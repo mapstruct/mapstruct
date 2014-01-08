@@ -266,8 +266,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      *
      * @return The mappings for the given method, keyed by source property name
      */
-    private Map<String, Mapping> getMappings(ExecutableElement method) {
-        Map<String, Mapping> mappings = new HashMap<String, Mapping>();
+    private Map<String, List<Mapping>> getMappings(ExecutableElement method) {
+        Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( method );
         MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );

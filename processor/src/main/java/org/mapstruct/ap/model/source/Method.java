@@ -42,25 +42,17 @@ public class Method {
     private final List<Parameter> parameters;
     private final Type returnType;
 
-    private Map<String, Mapping> mappings;
+    private Map<String, List<Mapping>> mappings;
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
 
     private final Parameter targetParameter;
 
     public static Method forMethodRequiringImplementation(ExecutableElement executable, List<Parameter> parameters,
-                                                          Type returnType, Map<String, Mapping> mappings,
+                                                          Type returnType, Map<String, List<Mapping>> mappings,
                                                           IterableMapping iterableMapping, MapMapping mapMapping) {
 
-        return new Method(
-            null,
-            executable,
-            parameters,
-            returnType,
-            mappings,
-            iterableMapping,
-            mapMapping
-        );
+        return new Method( null, executable, parameters, returnType, mappings, iterableMapping, mapMapping );
     }
 
     public static Method forReferencedMethod(Type declaringMapper, ExecutableElement executable,
@@ -71,14 +63,13 @@ public class Method {
             executable,
             parameters,
             returnType,
-            Collections.<String, Mapping>emptyMap(),
+            Collections.<String, List<Mapping>> emptyMap(),
             null,
-            null
-        );
+            null );
     }
 
     private Method(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters, Type returnType,
-                   Map<String, Mapping> mappings, IterableMapping iterableMapping, MapMapping mapMapping) {
+                   Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
@@ -101,9 +92,8 @@ public class Method {
     }
 
     /**
-     * Returns the mapper type declaring this method if it is not declared by
-     * the mapper interface currently processed but by another mapper imported
-     * via {@code Mapper#users()}.
+     * Returns the mapper type declaring this method if it is not declared by the mapper interface currently processed
+     * but by another mapper imported via {@code Mapper#users()}.
      *
      * @return The declaring mapper type
      */
@@ -153,11 +143,11 @@ public class Method {
         return returnType;
     }
 
-    public Map<String, Mapping> getMappings() {
+    public Map<String, List<Mapping>> getMappings() {
         return mappings;
     }
 
-    public void setMappings(Map<String, Mapping> mappings) {
+    public void setMappings(Map<String, List<Mapping>> mappings) {
         this.mappings = mappings;
     }
 
@@ -178,11 +168,9 @@ public class Method {
     }
 
     public boolean reverses(Method method) {
-        return
-            getSourceParameters().size() == 1 &&
-                method.getSourceParameters().size() == 1 &&
-                equals( getSourceParameters().iterator().next().getType(), method.getResultType() ) &&
-                equals( getResultType(), method.getSourceParameters().iterator().next().getType() );
+        return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
+            && equals( getSourceParameters().iterator().next().getType(), method.getResultType() )
+            && equals( getResultType(), method.getSourceParameters().iterator().next().getType() );
     }
 
     public Parameter getTargetParameter() {
@@ -190,13 +178,13 @@ public class Method {
     }
 
     public boolean isIterableMapping() {
-        return getSourceParameters().size() == 1 &&
-            getSourceParameters().iterator().next().getType().isIterableType() && getResultType().isIterableType();
+        return getSourceParameters().size() == 1 && getSourceParameters().iterator().next().getType().isIterableType()
+            && getResultType().isIterableType();
     }
 
     public boolean isMapMapping() {
-        return getSourceParameters().size() == 1 && getSourceParameters().iterator().next().getType().isMapType() &&
-            getResultType().isMapType();
+        return getSourceParameters().size() == 1 && getSourceParameters().iterator().next().getType().isMapType()
+            && getResultType().isMapType();
     }
 
     private boolean equals(Object o1, Object o2) {
@@ -209,12 +197,13 @@ public class Method {
     }
 
     public Mapping getMapping(String targetPropertyName) {
-        for ( Mapping mapping : mappings.values() ) {
-            if ( mapping.getTargetName().equals( targetPropertyName ) ) {
-                return mapping;
+        for (   Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
+            for ( Mapping mapping : entry.getValue()) {
+                if ( mapping.getTargetName().equals( targetPropertyName ) ) {
+                    return mapping;
+                }
             }
         }
-
         return null;
     }
 
