@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
-public class TargetFoo {
+public class TargetFoo implements Comparable<TargetFoo> {
 
     private String name;
 
@@ -66,5 +66,10 @@ public class TargetFoo {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(TargetFoo o) {
+        return getName().compareTo( o.getName() );
     }
 }

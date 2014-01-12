@@ -19,13 +19,22 @@
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentNavigableMap;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
@@ -35,27 +44,61 @@ import org.testng.annotations.Test;
 @WithClasses({
     SourceFoo.class,
     TargetFoo.class,
- SourceTargetMapper.class
+    SourceTargetMapper.class
 })
 public class DefaultCollectionImplementationTest extends MapperTestBase {
 
     @Test
-    @IssueKey("6")
-    public void shouldUseDefaultImplementationForList() {
-        List<TargetFoo> target = SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( createSourceFooList() );
+    @IssueKey( "6" )
+    public void shouldUseDefaultImplementationForConcurrentMap() {
+        ConcurrentMap<String, TargetFoo> target =
+            SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooConcurrentMap( createSourceFooMap() );
 
-        assertThat( target ).isNotNull();
-        assertThat( target ).containsExactly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+        assertResultMap( target );
     }
 
     @Test
-    @IssueKey("6")
-    public void shouldUseDefaultImplementationForSet() {
-        Set<TargetFoo> target =
-            SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( new HashSet<SourceFoo>( createSourceFooList() ) );
+    @IssueKey( "6" )
+    public void shouldUseDefaultImplementationForConcurrentNavigableMap() {
+        ConcurrentNavigableMap<String, TargetFoo> target =
+            SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooConcurrentNavigableMap( createSourceFooMap() );
 
-        assertThat( target ).isNotNull();
-        assertThat( target ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+        assertResultMap( target );
+    }
+
+    @Test
+    @IssueKey( "6" )
+    public void shouldUseDefaultImplementationForMap() {
+        Map<String, TargetFoo> target = SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooMap( createSourceFooMap() );
+
+        assertResultMap( target );
+    }
+
+    @Test
+    @IssueKey( "6" )
+    public void shouldUseDefaultImplementationForNavigableMap() {
+        NavigableMap<String, TargetFoo> target =
+            SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooNavigableMap( createSourceFooMap() );
+
+        assertResultMap( target );
+    }
+
+    @Test
+    @IssueKey( "6" )
+    public void shouldUseDefaultImplementationForSortedMap() {
+        SortedMap<String, TargetFoo> target =
+            SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooSortedMap( createSourceFooMap() );
+
+        assertResultMap( target );
+    }
+
+    @Test
+    @IssueKey( "6" )
+    public void shouldUseDefaultImplementationForNaviableSet() {
+        NavigableSet<TargetFoo> target =
+            SourceTargetMapper.INSTANCE.sourceFoosToTargetFooNavigableSet( createSourceFooList() );
+
+        assertResultList( target );
     }
 
     @Test
@@ -64,8 +107,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
         Collection<TargetFoo> target =
             SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( (Collection<SourceFoo>) createSourceFooList() );
 
-        assertThat( target ).isNotNull();
-        assertThat( target ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+        assertResultList( target );
     }
 
     @Test
@@ -74,17 +116,33 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
         Iterable<TargetFoo> target =
             SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( (Iterable<SourceFoo>) createSourceFooList() );
 
-        assertThat( target ).isNotNull();
         assertResultList( target );
     }
 
-    private void assertResultList(Iterable<TargetFoo> fooIterable) {
-        assertThat( fooIterable ).isNotNull();
-        assertThat( fooIterable ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+    @Test
+    @IssueKey("6")
+    public void shouldUseDefaultImplementationForList() {
+        List<TargetFoo> target = SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( createSourceFooList() );
+
+        assertResultList( target );
     }
 
-    private List<SourceFoo> createSourceFooList() {
-        return Arrays.asList( new SourceFoo( "Bob" ), new SourceFoo( "Alice" ) );
+    @Test
+    @IssueKey("6")
+    public void shouldUseDefaultImplementationForSet() {
+        Set<TargetFoo> target =
+            SourceTargetMapper.INSTANCE.sourceFoosToTargetFoos( new HashSet<SourceFoo>( createSourceFooList() ) );
+
+        assertResultList( target );
+    }
+
+    @Test
+    @IssueKey( "6" )
+    public void shouldUseDefaultImplementationForSortedSet() {
+        SortedSet<TargetFoo> target =
+            SourceTargetMapper.INSTANCE.sourceFoosToTargetFooSortedSet( createSourceFooList() );
+
+        assertResultList( target );
     }
 
     @Test
@@ -108,5 +166,28 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
 
         assertThat( target == result ).isTrue();
         assertResultList( target );
+    }
+
+    private void assertResultList(Iterable<TargetFoo> fooIterable) {
+        assertThat( fooIterable ).isNotNull();
+        assertThat( fooIterable ).containsOnly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+    }
+
+    private void assertResultMap(Map<String, TargetFoo> result) {
+        assertThat( result ).isNotNull();
+        assertThat( result ).hasSize( 2 );
+        assertThat( result ).includes( entry( "1", new TargetFoo( "Bob" ) ), entry( "2", new TargetFoo( "Alice" ) ) );
+    }
+
+    private Map<Long, SourceFoo> createSourceFooMap() {
+        Map<Long, SourceFoo> map = new HashMap<Long, SourceFoo>();
+        map.put( 1L, new SourceFoo( "Bob" ) );
+        map.put( 2L, new SourceFoo( "Alice" ) );
+
+        return map;
+    }
+
+    private List<SourceFoo> createSourceFooList() {
+        return Arrays.asList( new SourceFoo( "Bob" ), new SourceFoo( "Alice" ) );
     }
 }
