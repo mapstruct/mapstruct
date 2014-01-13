@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
@@ -37,6 +38,9 @@ import org.mapstruct.factory.Mappers;
 public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(source = "fooList", target = "fooListNoSetter")
+    Target sourceToTarget(Source source);
 
     TargetFoo sourceFooToTargetFoo(SourceFoo sourceFoo);
 
