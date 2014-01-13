@@ -472,14 +472,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                                                ExecutableElement getterMethod, ExecutableElement setterMethod,
                                                String dateFormat) {
         Type sourceType = executables.retrieveReturnType( getterMethod );
-        Type targetType = executables.retrieveSingleParameter( setterMethod ).getType();
+        Type targetType = null;
+        String conversionStr = null;
+        if (executables.isSetterMethod( setterMethod ) ) {
+            targetType = executables.retrieveSingleParameter( setterMethod ).getType();
+            conversionStr = parameter.getName() + "." + getterMethod.getSimpleName().toString() + "()";
+        }
+        else if ( executables.isGetterMethod( setterMethod ) ) {
+            targetType = executables.retrieveReturnType( setterMethod );
+            conversionStr = parameter.getName() + "." + getterMethod.getSimpleName().toString() + "()";
+        }
 
         MappingMethodReference propertyMappingMethod = getMappingMethodReference( methods, sourceType, targetType );
         TypeConversion conversion = getConversion(
             sourceType,
             targetType,
             dateFormat,
-            parameter.getName() + "." + getterMethod.getSimpleName().toString() + "()"
+            conversionStr
         );
 
         PropertyMapping property = new PropertyMapping(

@@ -43,6 +43,8 @@ public class Target {
 
     private Map<String, Long> stringLongMap;
 
+    private List<String> stringListNoSetter;
+
     @SuppressWarnings("rawtypes")
     private Set set;
 
@@ -127,4 +129,12 @@ public class Target {
     public void setStringLongMap(Map<String, Long> stringLongMap) {
         this.stringLongMap = stringLongMap;
     }
+
+    public List<String> getStringListNoSetter() {
+        if ( stringListNoSetter == null ) {
+            stringListNoSetter = new ArrayList<String>();
+        }
+        return stringListNoSetter;
+    }
+
 }

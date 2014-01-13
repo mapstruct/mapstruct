@@ -33,7 +33,8 @@ public interface SourceTargetMapper {
     @Mappings({
         @Mapping(source = "integerList", target = "integerCollection"),
         @Mapping(source = "integerSet", target = "set"),
-        @Mapping(source = "anotherIntegerSet", target = "anotherStringSet")
+        @Mapping(source = "anotherIntegerSet", target = "anotherStringSet"),
+        @Mapping(source = "stringList2", target = "stringListNoSetter")
     })
     Target sourceToTarget(Source source);
 

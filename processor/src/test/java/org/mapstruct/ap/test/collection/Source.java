@@ -45,6 +45,8 @@ public class Source {
 
     private Map<String, Long> stringLongMap;
 
+    private List<String> stringList2;
+
     public List<String> getStringList() {
         return stringList;
     }
@@ -124,4 +126,13 @@ public class Source {
     public void setStringLongMap(Map<String, Long> stringLongMap) {
         this.stringLongMap = stringLongMap;
     }
+
+    public List<String> getStringList2() {
+        return stringList2;
+    }
+
+    public void setStringList2( List<String> stringList2 ) {
+        this.stringList2 = stringList2;
+    }
+
 }

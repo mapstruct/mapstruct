@@ -42,6 +42,8 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
 @WithClasses({
+    Source.class,
+    Target.class,
     SourceFoo.class,
     TargetFoo.class,
     SourceTargetMapper.class
@@ -166,6 +168,17 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
 
         assertThat( target == result ).isTrue();
         assertResultList( target );
+    }
+
+    @Test
+    @IssueKey("6")
+    public void shouldUseDefaultImplementationForListWithoutSetter() {
+        Source source = new Source();
+        source.setFooList( createSourceFooList() );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getFooListNoSetter()).containsExactly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
     }
 
     private void assertResultList(Iterable<TargetFoo> fooIterable) {

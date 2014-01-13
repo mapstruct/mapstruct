@@ -52,10 +52,34 @@ public class Filters {
 
     public List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
         List<ExecutableElement> setterMethods = new LinkedList<ExecutableElement>();
+        List<ExecutableElement> getterMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : methodsIn( elements ) ) {
             if ( executables.isSetterMethod( method ) ) {
                 setterMethods.add( method );
+            }
+            else if ( executables.isGetterMethod( method ) ) {
+                getterMethods.add( method );
+            }
+        }
+
+        if (getterMethods.size() > setterMethods.size()) {
+            // there could be a getter method for a list that is not present as setter.
+            // a getter could substitue the setter in that case and act as setter.
+            // (asuming its intitialized)
+            for ( ExecutableElement getterMethod : getterMethods ) {
+                boolean matchFound = false;
+                String getterPropertyName = executables.getPropertyName( getterMethod );
+                for ( ExecutableElement setterMethod : setterMethods ) {
+                    String setterPropertyName = executables.getPropertyName( setterMethod );
+                    if ( getterPropertyName.equals( setterPropertyName ) ) {
+                        matchFound = true;
+                        break;
+                    }
+                }
+                if ( !matchFound && executables.retrieveReturnType( getterMethod ).isListType() ) {
+                    setterMethods.add( getterMethod );
+                }
             }
         }
 

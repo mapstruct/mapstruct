@@ -20,7 +20,13 @@
 -->
 <#-- a) invoke mapping method -->
 <#if mappingMethod??>
+<#if hasTargetSetter>
 ${ext.targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()"/> );
+<#else>
+if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+${ext.targetBeanName}.${targetAccessorName}().addAll( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()"/> );
+}
+</#if>
 <#-- b) simple conversion -->
 <#elseif conversion??>
     <#if sourceType.primitive == false>
@@ -34,7 +40,11 @@ if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
 <#else>
     <#if targetType.collectionType || targetType.mapType>
 if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+<#if hasTargetSetter>
     ${ext.targetBeanName}.${targetAccessorName}( new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
+<#else>
+    ${ext.targetBeanName}.${targetAccessorName}().addAll( new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
+</#if>
 }
     <#else>
 ${ext.targetBeanName}.${targetAccessorName}( ${sourceBeanName}.${sourceAccessorName}() );

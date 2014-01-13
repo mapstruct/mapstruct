@@ -57,6 +57,7 @@ public class TypeFactory {
 
     private final TypeMirror iterableType;
     private final TypeMirror collectionType;
+    private final TypeMirror listType;
     private final TypeMirror mapType;
 
     private final Map<String, Type> implementationTypes = new HashMap<String, Type>();
@@ -70,6 +71,7 @@ public class TypeFactory {
             elementUtils.getTypeElement( Collection.class.getCanonicalName() )
                 .asType()
         );
+        listType = typeUtils.erasure( elementUtils.getTypeElement( List.class.getCanonicalName() ).asType() );
         mapType = typeUtils.erasure( elementUtils.getTypeElement( Map.class.getCanonicalName() ).asType() );
 
         implementationTypes.put( Iterable.class.getName(), getType( ArrayList.class ) );
@@ -115,6 +117,10 @@ public class TypeFactory {
             mirror,
             collectionType
         );
+        boolean isListType = typeUtils.isSubtype(
+            mirror,
+            listType
+        );
         boolean isMapType = typeUtils.isSubtype(
             mirror,
             mapType
@@ -126,6 +132,7 @@ public class TypeFactory {
             implementationType,
             isIterableType,
             isCollectionType,
+            isListType,
             isMapType,
             typeUtils,
             elementUtils
@@ -181,6 +188,7 @@ public class TypeFactory {
                 null,
                 implementationType.isIterableType(),
                 implementationType.isCollectionType(),
+                implementationType.isListType(),
                 implementationType.isMapType(),
                 typeUtils,
                 elementUtils
