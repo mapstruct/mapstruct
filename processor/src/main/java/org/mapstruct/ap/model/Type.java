@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -21,7 +21,6 @@ package org.mapstruct.ap.model;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
@@ -166,6 +165,7 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
 
     /**
      * @param annotationTypeName the fully qualified name of the annotation type
+     *
      * @return true, if the type is annotated with an annotation of the specified type (super-types are not inspected)
      */
     public boolean isAnnotatedWith(String annotationTypeName) {
@@ -188,12 +188,48 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
      *
      * @return {@code true} if and only if this type is assignable to the given other type.
      */
+    // TODO This doesn't yet take wild card types into account; e.g. ? extends Integer wouldn't be assignable to Number
+    // atm.
     public boolean isAssignableTo(Type other) {
         if ( equals( other ) ) {
             return true;
         }
 
         return typeUtils.isAssignable( typeMirror, other.typeMirror );
+    }
+
+    /**
+     * Returns the length of the shortest path in the type hierarchy between this type and the specified other type.
+     * Returns {@code -1} if this type is not assignable to the other type. Returns {@code 0} if this type is equal to
+     * the other type. Returns {@code 1}, if the other type is a direct super type of this type, and so on.
+     *
+     * @param assignableOther the other type
+     *
+     * @return the length of the shortest path in the type hierarchy between this type and the specified other type
+     */
+    public int distanceTo(Type assignableOther) {
+        return distanceTo( typeMirror, assignableOther.typeMirror );
+    }
+
+    private int distanceTo(TypeMirror base, TypeMirror targetType) {
+        if ( typeUtils.isSameType( base, targetType ) ) {
+            return 0;
+        }
+
+        if ( !typeUtils.isAssignable( base, targetType ) ) {
+            return -1;
+        }
+
+        List<? extends TypeMirror> directSupertypes = typeUtils.directSupertypes( base );
+        int minDistanceOfSuperToTargetType = Integer.MAX_VALUE;
+        for ( TypeMirror type : directSupertypes ) {
+            int distanceToTargetType = distanceTo( type, targetType );
+            if ( distanceToTargetType >= 0 ) {
+                minDistanceOfSuperToTargetType = Math.min( minDistanceOfSuperToTargetType, distanceToTargetType );
+            }
+        }
+
+        return 1 + minDistanceOfSuperToTargetType;
     }
 
     @Override

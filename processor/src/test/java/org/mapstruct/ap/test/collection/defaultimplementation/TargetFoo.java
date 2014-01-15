@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
-public class TargetFoo {
+public class TargetFoo implements Comparable<TargetFoo> {
 
     private String name;
 
@@ -66,5 +66,10 @@ public class TargetFoo {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(TargetFoo o) {
+        return getName().compareTo( o.getName() );
     }
 }

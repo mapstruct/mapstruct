@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,23 +18,33 @@
  */
 package org.mapstruct.ap.test.conversion.generics;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.math.BigDecimal;
+
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.testng.annotations.Test;
 
-@WithClasses( { GenericTypeMapper.class, Wrapper.class, ArrayWrapper.class, TwoArgHolder.class, TwoArgWrapper.class,
+/**
+ * Tests for the invocation of generic methods for mapping bean properties.
+ *
+ * @author Sjaak Derksen
+ */
+@WithClasses({
+    GenericTypeMapper.class, Wrapper.class, ArrayWrapper.class, TwoArgHolder.class, TwoArgWrapper.class,
     UpperBoundWrapper.class, WildCardExtendsWrapper.class, WildCardSuperWrapper.class, WildCardExtendsMBWrapper.class,
-    TypeA.class, TypeB.class, TypeC.class } )
+    TypeA.class, TypeB.class, TypeC.class
+})
+@IssueKey(value = "79")
 public class ConversionTest extends MapperTestBase {
 
     @Test
-    @WithClasses( { Source.class, Target.class, SourceTargetMapper.class } )
+    @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
     public void shouldApplyGenericTypeMapper() {
 
         // setup used types
@@ -80,67 +90,72 @@ public class ConversionTest extends MapperTestBase {
     }
 
     @Test
-    @WithClasses({ ErroneousSource1.class, ErroneousTarget1.class, ErroneousSourceTargetMapper1.class } )
+    @WithClasses({ ErroneousSource1.class, ErroneousTarget1.class, ErroneousSourceTargetMapper1.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-            diagnostics = {
-        @Diagnostic(type = ErroneousSourceTargetMapper1.class,
+        diagnostics = {
+            @Diagnostic(type = ErroneousSourceTargetMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR, line = 29,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.conversion.generics.UpperBoundWrapper"
-                + "<org.mapstruct.ap.test.conversion.generics.TypeA> fooUpperBoundFailure\" to "
-                + "\"org.mapstruct.ap.test.conversion.generics.TypeA fooUpperBoundFailure\"") } )
+                    + "<org.mapstruct.ap.test.conversion.generics.TypeA> fooUpperBoundFailure\" to "
+                    + "\"org.mapstruct.ap.test.conversion.generics.TypeA fooUpperBoundFailure\"")
+        })
     public void shouldFailOnUpperBound() {
     }
 
     @Test
-    @WithClasses({ ErroneousSource2.class, ErroneousTarget2.class, ErroneousSourceTargetMapper2.class } )
+    @WithClasses({ ErroneousSource2.class, ErroneousTarget2.class, ErroneousSourceTargetMapper2.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-            diagnostics = {
-        @Diagnostic(type = ErroneousSourceTargetMapper2.class,
+        diagnostics = {
+            @Diagnostic(type = ErroneousSourceTargetMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.conversion.generics.WildCardExtendsWrapper"
-                + "<org.mapstruct.ap.test.conversion.generics.TypeA> fooWildCardExtendsTypeAFailure\" to"
-                + " \"org.mapstruct.ap.test.conversion.generics.TypeA fooWildCardExtendsTypeAFailure\"" ) } )
+                    + "<org.mapstruct.ap.test.conversion.generics.TypeA> fooWildCardExtendsTypeAFailure\" to"
+                    + " \"org.mapstruct.ap.test.conversion.generics.TypeA fooWildCardExtendsTypeAFailure\"")
+        })
     public void shouldFailOnWildCardBound() {
     }
 
     @Test
-    @WithClasses({ ErroneousSource3.class, ErroneousTarget3.class, ErroneousSourceTargetMapper3.class } )
+    @WithClasses({ ErroneousSource3.class, ErroneousTarget3.class, ErroneousSourceTargetMapper3.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-            diagnostics = {
-        @Diagnostic(type = ErroneousSourceTargetMapper3.class,
+        diagnostics = {
+            @Diagnostic(type = ErroneousSourceTargetMapper3.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.conversion.generics."
-            + "WildCardExtendsMBWrapper<org.mapstruct.ap.test.conversion.generics.TypeB> "
-            + "fooWildCardExtendsMBTypeBFailure\" to \"org.mapstruct.ap.test.conversion.generics.TypeB "
-            + "fooWildCardExtendsMBTypeBFailure\"" ) } )
+                    + "WildCardExtendsMBWrapper<org.mapstruct.ap.test.conversion.generics.TypeB> "
+                    + "fooWildCardExtendsMBTypeBFailure\" to \"org.mapstruct.ap.test.conversion.generics.TypeB "
+                    + "fooWildCardExtendsMBTypeBFailure\"")
+        })
     public void shouldFailOnWildCardMultipleBounds() {
     }
 
     @Test
-    @WithClasses({ ErroneousSource4.class, ErroneousTarget4.class, ErroneousSourceTargetMapper4.class } )
+    @WithClasses({ ErroneousSource4.class, ErroneousTarget4.class, ErroneousSourceTargetMapper4.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-            diagnostics = {
-        @Diagnostic(type = ErroneousSourceTargetMapper4.class,
+        diagnostics = {
+            @Diagnostic(type = ErroneousSourceTargetMapper4.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.conversion.generics.WildCardSuperWrapper"
-                + "<org.mapstruct.ap.test.conversion.generics.TypeA> fooWildCardSuperTypeAFailure\" to"
-                + " \"org.mapstruct.ap.test.conversion.generics.TypeA fooWildCardSuperTypeAFailure\"" ) } )
+                    + "<org.mapstruct.ap.test.conversion.generics.TypeA> fooWildCardSuperTypeAFailure\" to"
+                    + " \"org.mapstruct.ap.test.conversion.generics.TypeA fooWildCardSuperTypeAFailure\"")
+        })
     public void shouldFailOnSuperBounds1() {
     }
 
     @Test
-    @WithClasses({ ErroneousSource5.class, ErroneousTarget5.class, ErroneousSourceTargetMapper5.class } )
+    @WithClasses({ ErroneousSource5.class, ErroneousTarget5.class, ErroneousSourceTargetMapper5.class })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-            diagnostics = {
-        @Diagnostic(type = ErroneousSourceTargetMapper5.class,
+        diagnostics = {
+            @Diagnostic(type = ErroneousSourceTargetMapper5.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.conversion.generics.WildCardSuperWrapper"
-                + "<org.mapstruct.ap.test.conversion.generics.TypeC> fooWildCardSuperTypeCFailure\" to"
-                + " \"org.mapstruct.ap.test.conversion.generics.TypeC fooWildCardSuperTypeCFailure\"" ) } )
+                    + "<org.mapstruct.ap.test.conversion.generics.TypeC> fooWildCardSuperTypeCFailure\" to"
+                    + " \"org.mapstruct.ap.test.conversion.generics.TypeC fooWildCardSuperTypeCFailure\"")
+        })
     public void shouldFailOnSuperBounds2() {
     }
 }

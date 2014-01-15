@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -37,10 +37,10 @@ public class DefaultMapperReference extends AbstractModelElement implements Mapp
     private final boolean isAnnotatedMapper;
     private final Set<Type> importTypes;
 
-    public DefaultMapperReference(Type type, TypeFactory typeFactory) {
+    public DefaultMapperReference(Type type, boolean isAnnotatedMapper, TypeFactory typeFactory) {
         this.type = type;
 
-        isAnnotatedMapper = type.isAnnotatedWith( "org.mapstruct.ap.model.Mapper" );
+        this.isAnnotatedMapper = isAnnotatedMapper;
         importTypes = Collections.asSet( type );
 
         if ( isAnnotatedMapper() ) {

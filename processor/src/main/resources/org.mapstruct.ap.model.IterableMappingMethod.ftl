@@ -1,6 +1,6 @@
 <#--
 
-     Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+     Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
      and/or other contributors as indicated by the @authors tag. See the
      copyright.txt file in the distribution for a full listing of all
      contributors.
@@ -34,7 +34,7 @@ public <@includeModel object=returnType/> ${name}(<#list parameters as param><@i
     for ( <@includeModel object=sourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${sourceParameter.name} ) {
         <#if elementMappingMethod??>
         ${resultName}.add( <@includeModel object=elementMappingMethod input="${loopVariableName}"/> );
-        <#else>
+        <#elseif conversion??>
             <#if (conversion.exceptionTypes?size == 0) >
         ${resultName}.add( <@includeModel object=conversion/> );
             <#else>
@@ -47,6 +47,8 @@ public <@includeModel object=returnType/> ${name}(<#list parameters as param><@i
         }
                 </#list>
             </#if>
+        <#else>
+            ${resultName}.add( ${loopVariableName} );
         </#if>
     }
     <#if returnType.name != "void">

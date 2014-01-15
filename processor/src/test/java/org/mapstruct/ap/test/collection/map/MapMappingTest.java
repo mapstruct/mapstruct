@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.test.collection.map;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -27,9 +30,6 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
 
 /**
  * Test for implementation of {@code Map} mapping methods.
@@ -146,5 +146,24 @@ public class MapMappingTest extends MapperTestBase {
             entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
             entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
         );
+    }
+
+    private Map<Integer, Integer> createIntIntMap() {
+        Map<Integer, Integer> values = new HashMap<Integer, Integer>();
+        values.put( 42, 47 );
+        values.put( 121, 123 );
+        return values;
+    }
+
+    @Test
+    @IssueKey("87")
+    public void shouldCreateMapMethodImplementationWithoutConversionOrElementMappingMethod() {
+        Map<Integer, Integer> values = createIntIntMap();
+
+        Map<Number, Number> target = SourceTargetMapper.INSTANCE.intIntToNumberNumberMap( values );
+
+        assertThat( target ).isNotNull();
+        assertThat( target ).hasSize( 2 );
+        assertThat( target ).isEqualTo( values );
     }
 }

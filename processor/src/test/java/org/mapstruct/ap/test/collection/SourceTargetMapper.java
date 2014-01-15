@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -46,4 +46,6 @@ public interface SourceTargetMapper {
     Set<String> colourSetToStringSet(Set<Colour> colours);
 
     Set<Colour> stringSetToColourSet(Set<String> colours);
+
+    Set<Number> integerSetToNumberSet(Set<Integer> integers);
 }

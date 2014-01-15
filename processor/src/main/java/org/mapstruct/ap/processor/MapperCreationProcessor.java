@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -148,7 +148,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
 
         for ( TypeMirror usedMapper : mapperPrism.uses() ) {
-            mapperReferences.add( new DefaultMapperReference( typeFactory.getType( usedMapper ), typeFactory ) );
+            mapperReferences.add(
+                new DefaultMapperReference(
+                    typeFactory.getType( usedMapper ),
+                    MapperPrism.getInstanceOn( typeUtils.asElement( usedMapper ) ) != null,
+                    typeFactory
+                )
+            );
         }
 
         return mapperReferences;
@@ -490,9 +496,25 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             )
         );
 
+        MappingMethodReference elementMappingMethod =
+            getMappingMethodReference( methods, sourceElementType, targetElementType );
+
+        if ( !sourceElementType.isAssignableTo( targetElementType ) && conversion == null &&
+            elementMappingMethod == null ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
+                        + "source element type into target element type.",
+                    method
+                ),
+                method.getExecutable()
+            );
+        }
+
         return new IterableMappingMethod(
             method,
-            getMappingMethodReference( methods, sourceElementType, targetElementType ),
+            elementMappingMethod,
             conversion
         );
     }
@@ -524,6 +546,31 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             targetValueType
         );
 
+        if ( !sourceKeyType.isAssignableTo( targetKeyType ) && keyConversion == null && keyMappingMethod == null ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
+                        + "source key type to target key type.",
+                    method
+                ),
+                method.getExecutable()
+            );
+        }
+
+        if ( !sourceValueType.isAssignableTo( targetValueType ) && valueConversion == null &&
+            valueMappingMethod == null ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
+                        + "source value type to target value type.",
+                    method
+                ),
+                method.getExecutable()
+            );
+        }
+
         return new MapMappingMethod( method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion );
     }
 
@@ -542,17 +589,68 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private MappingMethodReference getMappingMethodReference(Iterable<Method> methods, Type parameterType,
                                                              Type returnType) {
+        List<Method> candidatesWithMathingTargetType = new ArrayList<Method>();
+
         for ( Method method : methods ) {
-            if ( method.getSourceParameters().size() > 1 ) {
+            if ( method.getSourceParameters().size() != 1 ) {
                 continue;
             }
 
-            MethodMatcher m = new MethodMatcher(typeUtils, method, returnType, parameterType);
-            if (m.matches()) {
-                return new MappingMethodReference(method);
+            MethodMatcher m = new MethodMatcher( typeUtils, method, returnType, parameterType );
+            if ( m.matches() ) {
+                candidatesWithMathingTargetType.add( method );
             }
         }
-        return null;
+
+        List<Method> candidatesWithBestMatchingSourceType = new ArrayList<Method>();
+        int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;
+
+        // find the methods with the minimum distance regarding source parameter type
+        for ( Method method : candidatesWithMathingTargetType ) {
+            Parameter singleSourceParam = method.getSourceParameters().iterator().next();
+
+            int sourceTypeDistance = parameterType.distanceTo( singleSourceParam.getType() );
+            bestMatchingSourceTypeDistance =
+                addToCandidateListIfMinimal(
+                    candidatesWithBestMatchingSourceType,
+                    bestMatchingSourceTypeDistance,
+                    method,
+                    sourceTypeDistance
+                );
+        }
+
+        if ( candidatesWithBestMatchingSourceType.isEmpty() ) {
+            return null;
+        }
+
+        // print a warning if we find more than one method with minimum source type distance
+        if ( candidatesWithBestMatchingSourceType.size() > 1 ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "Ambiguous mapping methods found for mapping from %s to %s: %s.",
+                    parameterType,
+                    returnType,
+                    candidatesWithBestMatchingSourceType
+                )
+            );
+        }
+
+        return new MappingMethodReference( candidatesWithBestMatchingSourceType.get( 0 ) );
+    }
+
+    private int addToCandidateListIfMinimal(List<Method> candidatesWithBestMathingType, int bestMatchingTypeDistance,
+                                            Method method, int currentTypeDistance) {
+        if ( currentTypeDistance == bestMatchingTypeDistance ) {
+            candidatesWithBestMathingType.add( method );
+        }
+        else if ( currentTypeDistance < bestMatchingTypeDistance ) {
+            bestMatchingTypeDistance = currentTypeDistance;
+
+            candidatesWithBestMathingType.clear();
+            candidatesWithBestMathingType.add( method );
+        }
+        return bestMatchingTypeDistance;
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -32,7 +32,7 @@ public @interface Diagnostic {
      *
      * @return The type for which the diagnostic was created.
      */
-    Class<?> type();
+    Class<?> type() default Diagnostic.class;
 
     /**
      * The expected kind of diagnostic.
@@ -46,7 +46,7 @@ public @interface Diagnostic {
      *
      * @return The expected line number of the diagnostic.
      */
-    int line();
+    int line() default -1;
 
     /**
      * A regular expression matching the expected message of the diagnostic.

@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
@@ -205,7 +206,16 @@ public class Method {
 
     @Override
     public String toString() {
-        return returnType + " " + getName() + "(" + Strings.join( parameters, ", " ) + ")";
+        StringBuilder sb = new StringBuilder( returnType.toString() );
+        sb.append( " " );
+
+        if ( declaringMapper != null ) {
+            sb.append( declaringMapper ).append( "." );
+        }
+
+        sb.append( getName() ).append( "(" ).append( Strings.join( parameters, ", " ) ).append( ")" );
+
+        return sb.toString();
     }
 
     public Mapping getMapping(String targetPropertyName) {

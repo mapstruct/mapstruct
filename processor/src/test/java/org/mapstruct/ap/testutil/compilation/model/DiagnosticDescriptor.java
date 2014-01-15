@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
@@ -47,7 +48,9 @@ public class DiagnosticDescriptor {
     }
 
     public static DiagnosticDescriptor forDiagnostic(Diagnostic diagnostic) {
-        String soureFileName = diagnostic.type().getName().replace( ".", File.separator ) + ".java";
+        String soureFileName = diagnostic.type() != Diagnostic.class
+                            ? diagnostic.type().getName().replace( ".", File.separator ) + ".java"
+                            : null;
         return new DiagnosticDescriptor(
             soureFileName,
             diagnostic.kind(),

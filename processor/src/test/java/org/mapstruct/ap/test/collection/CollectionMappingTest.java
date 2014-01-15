@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -24,6 +24,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
@@ -286,5 +287,15 @@ public class CollectionMappingTest extends MapperTestBase {
         target.getStringLongMap().put( "Bill", 789L );
 
         assertThat( source.getStringLongMap() ).hasSize( 2 );
+    }
+
+    @Test
+    @IssueKey("87")
+    public void shouldMapIntegerSetToNumberSet() {
+        Set<Number> numbers = SourceTargetMapper.INSTANCE
+            .integerSetToNumberSet( new HashSet<Integer>( Arrays.asList( 123, 456 ) ) );
+
+        assertThat( numbers ).isNotNull();
+        assertThat( numbers ).containsOnly( 123, 456 );
     }
 }

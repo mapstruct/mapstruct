@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -24,14 +24,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Specifies the classes to compile during an annotation processor test. If
- * given both on the class-level and the method-level for a given test, the
- * settings on the method take precedence.
+ * Specifies the classes to compile during an annotation processor test. If given both on the class-level and the
+ * method-level for a given test, all the given classes will be compiled.
  *
  * @author Gunnar Morling
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface WithClasses {
+
+    /**
+     * The classes to be compiled for the annotated test class or method.
+     *
+     * @return the classes to be compiled for the annotated test class or method
+     */
     Class<?>[] value();
 }

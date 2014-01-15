@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <!DOCTYPE module PUBLIC
     "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
     "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
@@ -22,10 +23,6 @@
     </module>
     -->
 
-    <!-- Checks whether files end with a new line.                        -->
-    <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
-    <module name="NewlineAtEndOfFile"/>
-
     <!-- Checks that property files contain the same keys.         -->
     <!-- See http://checkstyle.sf.net/config_misc.html#Translation -->
     <module name="Translation"/>
@@ -39,10 +36,20 @@
         <property name="eachLine" value="true"/>
     </module>
 
+    <!-- Not using NewLineAtEndOfFile as it doesn't work across all platforms
+    in conjunction with git's automatic handling of line endings. This rule fails
+    if there is a non-whitespace character at the end of the file; Together with
+    the next rule which forbids trailing whitespace characters this enforces a
+    new line at the end of the file -->
+    <module name="RegexpMultiline">
+        <property name="format" value="\S\z" />
+        <property name="message" value="There is no new line at the end of file" />
+    </module>
+
     <module name="RegexpSingleline">
         <!-- \s matches whitespace character, $ matches end of line. -->
         <property name="format" value="\s+$"/>
-        <property name="message" value="Line has trailing spaces."/>
+        <property name="message" value="Line has trailing spaces"/>
     </module>
 
     <module name="TreeWalker">
