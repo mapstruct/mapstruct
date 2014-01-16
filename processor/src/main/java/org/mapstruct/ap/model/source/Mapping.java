@@ -51,11 +51,9 @@ public class Mapping {
 
         for ( MappingPrism mapping : mappingsAnnotation.value() ) {
             if (!mappings.containsKey( mapping.source())) {
-                mappings.put( mapping.source(), fromMappingPrism( mapping, element ) );
+                mappings.put( mapping.source(), new ArrayList<Mapping>() );
             }
-            else {
-                mappings.get( mapping.source() ).addAll( fromMappingPrism( mapping, element ) );
-            }
+            mappings.get( mapping.source() ).add( fromMappingPrism( mapping, element ) );
         }
 
         return mappings;
