@@ -71,7 +71,7 @@ public class CollectionMappingTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey("6")
+    @IssueKey("92")
     public void shouldMapListWithoutSetter() {
         Source source = new Source();
         source.setStringList2( Arrays.asList( "Bob", "Alice" ) );
