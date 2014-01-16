@@ -117,10 +117,6 @@ public class TypeFactory {
             mirror,
             collectionType
         );
-        boolean isListType = typeUtils.isSubtype(
-            mirror,
-            listType
-        );
         boolean isMapType = typeUtils.isSubtype(
             mirror,
             mapType
@@ -132,7 +128,6 @@ public class TypeFactory {
             implementationType,
             isIterableType,
             isCollectionType,
-            isListType,
             isMapType,
             typeUtils,
             elementUtils
@@ -188,7 +183,6 @@ public class TypeFactory {
                 null,
                 implementationType.isIterableType(),
                 implementationType.isCollectionType(),
-                implementationType.isListType(),
                 implementationType.isMapType(),
                 typeUtils,
                 elementUtils

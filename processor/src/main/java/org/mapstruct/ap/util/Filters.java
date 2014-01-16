@@ -52,16 +52,28 @@ public class Filters {
 
     public List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
         List<ExecutableElement> setterMethods = new LinkedList<ExecutableElement>();
-        List<ExecutableElement> getterMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : methodsIn( elements ) ) {
             if ( executables.isSetterMethod( method ) ) {
                 setterMethods.add( method );
             }
-            else if ( executables.isGetterMethod( method ) ) {
-                getterMethods.add( method );
-            }
         }
+        return setterMethods;
+    }
+
+    /**
+     * A getter could be an alternative target-accessor if a setter is not available, and the
+     * target is a collection.
+     *
+     * Provided such a getter is initialized lazy by the target class, e.g. in generated JAXB beans.
+     *
+     * @param elements
+     * @return
+     */
+    public List<ExecutableElement> alternativeTargetAccessorMethodsIn(Iterable<? extends Element> elements) {
+        List<ExecutableElement> setterMethods = setterMethodsIn( elements );
+        List<ExecutableElement> getterMethods = getterMethodsIn( elements );
+        List<ExecutableElement> alternativeTargetAccessorsMethods = new LinkedList<ExecutableElement>();
 
         if (getterMethods.size() > setterMethods.size()) {
             // there could be a getter method for a list that is not present as setter.
@@ -77,12 +89,12 @@ public class Filters {
                         break;
                     }
                 }
-                if ( !matchFound && executables.retrieveReturnType( getterMethod ).isListType() ) {
-                    setterMethods.add( getterMethod );
+                if ( !matchFound && executables.retrieveReturnType( getterMethod ).isCollectionType() ) {
+                    alternativeTargetAccessorsMethods.add( getterMethod );
                 }
             }
         }
 
-        return setterMethods;
+        return alternativeTargetAccessorsMethods;
     }
 }

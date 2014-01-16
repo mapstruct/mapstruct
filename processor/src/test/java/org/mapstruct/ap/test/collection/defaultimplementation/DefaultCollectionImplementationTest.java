@@ -171,7 +171,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey("6")
+    @IssueKey("92")
     public void shouldUseDefaultImplementationForListWithoutSetter() {
         Source source = new Source();
         source.setFooList( createSourceFooList() );
