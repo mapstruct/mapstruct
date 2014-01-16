@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.model.source;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +59,7 @@ public class Mapping {
         return mappings;
     }
 
-    public static List<Mapping> fromMappingPrism(MappingPrism mapping, Element element) {
+    public static Mapping fromMappingPrism(MappingPrism mapping, Element element) {
         String[] sourceNameParts = getSourceNameParts(
             mapping.source(),
             element,
@@ -67,7 +67,7 @@ public class Mapping {
             mapping.values.source()
         );
 
-        Mapping result =  new Mapping(
+        return new Mapping(
             mapping.source(),
             sourceNameParts != null ? sourceNameParts[0] : null,
             sourceNameParts != null ? sourceNameParts[1] : mapping.source(),
@@ -77,8 +77,6 @@ public class Mapping {
             mapping.values.source(),
             mapping.values.target()
         );
-
-        return Arrays.asList( new Mapping[] {result } );
     }
 
     private static String[] getSourceNameParts(String sourceName, Element element, AnnotationMirror annotationMirror,

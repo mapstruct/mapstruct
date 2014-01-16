@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -26,6 +26,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.IssueKey;
 
 /**
  * Test for the generation of implementation of abstract base classes.
@@ -37,6 +38,7 @@ import static org.fest.assertions.Assertions.assertThat;
 public class MultipleSourcesTest extends MapperTestBase {
 
     @Test
+    @IssueKey("94")
     public void shouldMapMultipleSources() throws ParseException {
         Source source = new Source();
         String sourceFormat = "dd-MM-yyyy";

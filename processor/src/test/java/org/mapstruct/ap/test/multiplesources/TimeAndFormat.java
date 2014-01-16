@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2013 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -22,7 +22,7 @@ import java.util.Date;
 
 /**
  *
- * @author derksenjpam
+ * @author Sjaak Derksen
  */
 public class TimeAndFormat {
     private Date tfTime;
