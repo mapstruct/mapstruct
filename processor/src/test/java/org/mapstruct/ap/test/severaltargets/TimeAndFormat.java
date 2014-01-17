@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.multiplesources;
+package org.mapstruct.ap.test.severaltargets;
 
 import java.util.Date;
 

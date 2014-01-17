@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.multiplesources;
+package org.mapstruct.ap.test.severaltargets;
 
 import java.util.Date;
 
@@ -24,24 +24,13 @@ import java.util.Date;
  *
  * @author Sjaak Derksen
  */
-public class Target {
+public class TimeAndFormatMapper {
 
-    private String format;
-    private Date time;
-
-    public String getFormat() {
-        return format;
+    public String getFormat(TimeAndFormat t) {
+        return t.getTfFormat();
     }
 
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
+    public Date getTime(TimeAndFormat t) {
+        return t.getTfTime();
     }
 }
