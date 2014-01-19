@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.model.source;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -44,11 +46,14 @@ public class Mapping {
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
 
-    public static Map<String, Mapping> fromMappingsPrism(MappingsPrism mappingsAnnotation, Element element) {
-        Map<String, Mapping> mappings = new HashMap<String, Mapping>();
+    public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation, Element element) {
+        Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         for ( MappingPrism mapping : mappingsAnnotation.value() ) {
-            mappings.put( mapping.source(), fromMappingPrism( mapping, element ) );
+            if (!mappings.containsKey( mapping.source())) {
+                mappings.put( mapping.source(), new ArrayList<Mapping>() );
+            }
+            mappings.get( mapping.source() ).add( fromMappingPrism( mapping, element ) );
         }
 
         return mappings;
