@@ -26,10 +26,10 @@ import java.util.Date;
 public class TimeAndFormatMapper {
 
     public String getFormat(TimeAndFormat t) {
-        return t.getTfFormat();
+        return t != null ? t.getTfFormat() : null;
     }
 
     public Date getTime(TimeAndFormat t) {
-        return t.getTfTime();
+        return t != null ? t.getTfTime() : null;
     }
 }

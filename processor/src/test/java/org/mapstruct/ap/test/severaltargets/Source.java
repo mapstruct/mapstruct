@@ -25,11 +25,21 @@ public class Source {
 
     private TimeAndFormat timeAndFormat;
 
+    private String name;
+
     public TimeAndFormat getTimeAndFormat() {
         return timeAndFormat;
     }
 
     public void setTimeAndFormat(TimeAndFormat timeAndFormat) {
         this.timeAndFormat = timeAndFormat;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

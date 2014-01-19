@@ -42,7 +42,20 @@ public class SourcePropertyMapSeveralTimesTest extends MapperTestBase {
 
     @Test
     @IssueKey("94")
-    public void shouldMapSameSourcePropertyToSeveralTargetProperties() throws ParseException {
+    public void shouldMapSameSourcePropertyToSeveralTargetProperties() {
+        Source source = new Source();
+        source.setName( "Bob" );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getName1() ).isEqualTo( "Bob" );
+        assertThat( target.getName2() ).isEqualTo( "Bob" );
+    }
+
+    @Test
+    @IssueKey("94")
+    public void shouldMapSameSourcePropertyToSeveralTargetPropertiesInvokingOtherMapper() throws ParseException {
         Source source = new Source();
         String sourceFormat = "dd-MM-yyyy";
         SimpleDateFormat dateFormat = new SimpleDateFormat( sourceFormat );

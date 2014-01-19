@@ -32,6 +32,8 @@ public interface SourceTargetMapper {
 
     @Mappings(
         {
+            @Mapping(source = "name", target = "name1"),
+            @Mapping(source = "name", target = "name2"),
             @Mapping(source = "timeAndFormat", target = "time"),
             @Mapping(source = "timeAndFormat", target = "format")
         })
