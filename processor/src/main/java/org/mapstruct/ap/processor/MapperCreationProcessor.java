@@ -220,9 +220,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         Map<String, List<Mapping>> reversed = new HashMap<String, List<Mapping>>();
 
         for ( List<Mapping> mappingList : mappings.values() ) {
-            for (Mapping mapping : mappingList) {
-                if (!reversed.containsKey( mapping.getTargetName())) {
-                    reversed.put( mapping.getTargetName(), new ArrayList<Mapping>());
+            for ( Mapping mapping : mappingList ) {
+                if ( !reversed.containsKey( mapping.getTargetName() ) ) {
+                    reversed.put( mapping.getTargetName(), new ArrayList<Mapping>() );
                 }
                 reversed.get( mapping.getTargetName() ).add( mapping.reverse() );
             }
@@ -244,8 +244,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         for ( ExecutableElement getter : sourceGetters ) {
 
             List<Mapping> sourceMappings = method.getMappings().get( sourcePropertyName );
-            if (method.getMappings().containsKey( sourcePropertyName ) ) {
-                for (Mapping sourceMapping : sourceMappings) {
+            if ( method.getMappings().containsKey( sourcePropertyName ) ) {
+                for ( Mapping sourceMapping : sourceMappings ) {
                     boolean mapsToOtherTarget = !sourceMapping.getTargetName().equals( targetPropertyName );
                     if ( executables.getPropertyName( getter ).equals( sourcePropertyName ) && !mapsToOtherTarget ) {
                         return getPropertyMapping(
@@ -259,8 +259,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                     }
                 }
             }
-            else if (executables.getPropertyName( getter ).equals( sourcePropertyName ))
-            {
+            else if ( executables.getPropertyName( getter ).equals( sourcePropertyName ) ) {
                 return getPropertyMapping(
                     methods,
                     method,
@@ -399,7 +398,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         boolean foundUnmappedProperty = false;
 
         for ( List<Mapping> mappedProperties : method.getMappings().values() ) {
-            for (Mapping mappedProperty :  mappedProperties) {
+            for ( Mapping mappedProperty : mappedProperties ) {
                 if ( mappedProperty.getSourceParameterName() != null ) {
                     Parameter sourceParameter = method.getSourceParameter( mappedProperty.getSourceParameterName() );
 

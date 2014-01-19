@@ -18,28 +18,31 @@
  */
 package org.mapstruct.ap.test.severaltargets;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
-import org.mapstruct.ap.testutil.IssueKey;
 
 /**
  * Test for the generation of implementation of abstract base classes.
  *
  * @author Sjaak Derksen
  */
-@WithClasses({ Source.class, Target.class, SourceTargetMapper.class, TimeAndFormat.class,
-               TimeAndFormatMapper.class })
-public class MultipleSourcesTest extends MapperTestBase {
+@WithClasses({
+    Source.class, Target.class, SourceTargetMapper.class, TimeAndFormat.class,
+    TimeAndFormatMapper.class
+})
+public class SourcePropertyMapSeveralTimesTest extends MapperTestBase {
 
     @Test
     @IssueKey("94")
-    public void shouldMapMultipleSources() throws ParseException {
+    public void shouldMapSameSourcePropertyToSeveralTargetProperties() throws ParseException {
         Source source = new Source();
         String sourceFormat = "dd-MM-yyyy";
         SimpleDateFormat dateFormat = new SimpleDateFormat( sourceFormat );

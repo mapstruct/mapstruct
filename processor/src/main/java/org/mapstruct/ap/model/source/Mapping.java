@@ -50,7 +50,7 @@ public class Mapping {
         Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         for ( MappingPrism mapping : mappingsAnnotation.value() ) {
-            if (!mappings.containsKey( mapping.source())) {
+            if ( !mappings.containsKey( mapping.source() ) ) {
                 mappings.put( mapping.source(), new ArrayList<Mapping>() );
             }
             mappings.get( mapping.source() ).add( fromMappingPrism( mapping, element ) );

@@ -24,7 +24,6 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
 @Mapper(uses = TimeAndFormatMapper.class)
@@ -32,9 +31,9 @@ public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings(
-    {
-        @Mapping(source = "timeAndFormat", target = "time"),
-        @Mapping(source = "timeAndFormat", target = "format")
-    })
-    Target sourceToTarget( Source s );
+        {
+            @Mapping(source = "timeAndFormat", target = "time"),
+            @Mapping(source = "timeAndFormat", target = "format")
+        })
+    Target sourceToTarget(Source s);
 }

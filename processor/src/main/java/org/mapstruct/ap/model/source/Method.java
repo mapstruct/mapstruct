@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
@@ -64,9 +63,10 @@ public class Method {
             executable,
             parameters,
             returnType,
-            Collections.<String, List<Mapping>> emptyMap(),
+            Collections.<String, List<Mapping>>emptyMap(),
             null,
-            null );
+            null
+        );
     }
 
     private Method(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters, Type returnType,
@@ -207,8 +207,8 @@ public class Method {
     }
 
     public Mapping getMapping(String targetPropertyName) {
-        for (   Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
-            for ( Mapping mapping : entry.getValue()) {
+        for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
+            for ( Mapping mapping : entry.getValue() ) {
                 if ( mapping.getTargetName().equals( targetPropertyName ) ) {
                     return mapping;
                 }

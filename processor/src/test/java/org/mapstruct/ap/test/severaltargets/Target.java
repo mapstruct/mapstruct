@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.severaltargets;
 import java.util.Date;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class Target {

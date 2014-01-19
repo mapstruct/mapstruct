@@ -19,7 +19,6 @@
 package org.mapstruct.ap.test.severaltargets;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class Source {
