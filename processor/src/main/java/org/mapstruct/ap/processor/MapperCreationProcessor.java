@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -230,9 +231,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return reversed;
     }
 
-    private PropertyMapping getPropertyMapping(List<Method> methods, Method method, ExecutableElement setterMethod,
+    private PropertyMapping getPropertyMapping(List<Method> methods, Method method, ExecutableElement targetAcessor,
                                                Parameter parameter) {
-        String targetPropertyName = executables.getPropertyName( setterMethod );
+        String targetPropertyName = executables.getPropertyName( targetAcessor );
         Mapping mapping = method.getMapping( targetPropertyName );
         String dateFormat = mapping != null ? mapping.getDateFormat() : null;
         String sourcePropertyName = mapping != null ? mapping.getSourcePropertyName() : targetPropertyName;
@@ -241,31 +242,32 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             elementUtils.getAllMembers( parameterElement )
         );
 
-        for ( ExecutableElement getter : sourceGetters ) {
+        for ( ExecutableElement sourceAccessor : sourceGetters ) {
 
             List<Mapping> sourceMappings = method.getMappings().get( sourcePropertyName );
             if ( method.getMappings().containsKey( sourcePropertyName ) ) {
                 for ( Mapping sourceMapping : sourceMappings ) {
                     boolean mapsToOtherTarget = !sourceMapping.getTargetName().equals( targetPropertyName );
-                    if ( executables.getPropertyName( getter ).equals( sourcePropertyName ) && !mapsToOtherTarget ) {
+                    if ( executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) &&
+                        !mapsToOtherTarget ) {
                         return getPropertyMapping(
                             methods,
                             method,
                             parameter,
-                            getter,
-                            setterMethod,
+                            sourceAccessor,
+                            targetAcessor,
                             dateFormat
                         );
                     }
                 }
             }
-            else if ( executables.getPropertyName( getter ).equals( sourcePropertyName ) ) {
+            else if ( executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) ) {
                 return getPropertyMapping(
                     methods,
                     method,
                     parameter,
-                    getter,
-                    setterMethod,
+                    sourceAccessor,
+                    targetAcessor,
                     dateFormat
                 );
             }
@@ -482,18 +484,18 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private PropertyMapping getPropertyMapping(List<Method> methods, Method method, Parameter parameter,
-                                               ExecutableElement getterMethod, ExecutableElement setterMethod,
+                                               ExecutableElement sourceAccessor, ExecutableElement targetAcessor,
                                                String dateFormat) {
-        Type sourceType = executables.retrieveReturnType( getterMethod );
+        Type sourceType = executables.retrieveReturnType( sourceAccessor );
         Type targetType = null;
-        String conversionStr = null;
-        if ( executables.isSetterMethod( setterMethod ) ) {
-            targetType = executables.retrieveSingleParameter( setterMethod ).getType();
-            conversionStr = parameter.getName() + "." + getterMethod.getSimpleName().toString() + "()";
+        String conversionString = null;
+        conversionString = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
+
+        if ( executables.isSetterMethod( targetAcessor ) ) {
+            targetType = executables.retrieveSingleParameter( targetAcessor ).getType();
         }
-        else if ( executables.isGetterMethod( setterMethod ) ) {
-            targetType = executables.retrieveReturnType( setterMethod );
-            conversionStr = parameter.getName() + "." + getterMethod.getSimpleName().toString() + "()";
+        else if ( executables.isGetterMethod( targetAcessor ) ) {
+            targetType = executables.retrieveReturnType( targetAcessor );
         }
 
         MappingMethodReference propertyMappingMethod = getMappingMethodReference( methods, sourceType, targetType );
@@ -501,16 +503,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             sourceType,
             targetType,
             dateFormat,
-            conversionStr
+            conversionString
         );
 
         PropertyMapping property = new PropertyMapping(
             parameter.getName(),
-            executables.getPropertyName( getterMethod ),
-            getterMethod.getSimpleName().toString(),
+            executables.getPropertyName( sourceAccessor ),
+            sourceAccessor.getSimpleName().toString(),
             sourceType,
-            executables.getPropertyName( setterMethod ),
-            setterMethod.getSimpleName().toString(),
+            executables.getPropertyName( targetAcessor ),
+            targetAcessor.getSimpleName().toString(),
             targetType,
             propertyMappingMethod,
             conversion
