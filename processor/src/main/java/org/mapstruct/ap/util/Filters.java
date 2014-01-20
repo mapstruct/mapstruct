@@ -68,6 +68,7 @@ public class Filters {
      * Provided such a getter is initialized lazy by the target class, e.g. in generated JAXB beans.
      *
      * @param elements
+     *
      * @return
      */
     public List<ExecutableElement> alternativeTargetAccessorMethodsIn(Iterable<? extends Element> elements) {
@@ -75,10 +76,10 @@ public class Filters {
         List<ExecutableElement> getterMethods = getterMethodsIn( elements );
         List<ExecutableElement> alternativeTargetAccessorsMethods = new LinkedList<ExecutableElement>();
 
-        if (getterMethods.size() > setterMethods.size()) {
+        if ( getterMethods.size() > setterMethods.size() ) {
             // there could be a getter method for a list that is not present as setter.
-            // a getter could substitue the setter in that case and act as setter.
-            // (asuming its intitialized)
+            // a getter could substitute the setter in that case and act as setter.
+            // (assuming it is initialized)
             for ( ExecutableElement getterMethod : getterMethods ) {
                 boolean matchFound = false;
                 String getterPropertyName = executables.getPropertyName( getterMethod );

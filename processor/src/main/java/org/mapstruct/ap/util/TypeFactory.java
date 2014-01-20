@@ -57,7 +57,6 @@ public class TypeFactory {
 
     private final TypeMirror iterableType;
     private final TypeMirror collectionType;
-    private final TypeMirror listType;
     private final TypeMirror mapType;
 
     private final Map<String, Type> implementationTypes = new HashMap<String, Type>();
@@ -71,7 +70,6 @@ public class TypeFactory {
             elementUtils.getTypeElement( Collection.class.getCanonicalName() )
                 .asType()
         );
-        listType = typeUtils.erasure( elementUtils.getTypeElement( List.class.getCanonicalName() ).asType() );
         mapType = typeUtils.erasure( elementUtils.getTypeElement( Map.class.getCanonicalName() ).asType() );
 
         implementationTypes.put( Iterable.class.getName(), getType( ArrayList.class ) );

@@ -287,8 +287,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         List<ExecutableElement> targetAccessors = filters.setterMethodsIn(
             elementUtils.getAllMembers( resultTypeElement )
         );
-        targetAccessors.addAll( filters.alternativeTargetAccessorMethodsIn(
-            elementUtils.getAllMembers( resultTypeElement ) )
+        targetAccessors.addAll(
+            filters.alternativeTargetAccessorMethodsIn(
+                elementUtils.getAllMembers( resultTypeElement )
+            )
         );
 
         for ( ExecutableElement targetAccessor : targetAccessors ) {
@@ -386,8 +388,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         List<ExecutableElement> targetAccessors = filters.setterMethodsIn(
             elementUtils.getAllMembers( parameterTypeElement )
         );
-        targetAccessors.addAll( filters.alternativeTargetAccessorMethodsIn(
-            elementUtils.getAllMembers( parameterTypeElement ) )
+        targetAccessors.addAll(
+            filters.alternativeTargetAccessorMethodsIn(
+                elementUtils.getAllMembers( parameterTypeElement )
+            )
         );
         return executables.getPropertyNames( targetAccessors ).contains( propertyName );
     }
@@ -397,8 +401,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         List<ExecutableElement> targetAccessors = filters.setterMethodsIn(
             elementUtils.getAllMembers( resultTypeElement )
         );
-        targetAccessors.addAll( filters.alternativeTargetAccessorMethodsIn(
-            elementUtils.getAllMembers( resultTypeElement ) )
+        targetAccessors.addAll(
+            filters.alternativeTargetAccessorMethodsIn(
+                elementUtils.getAllMembers( resultTypeElement )
+            )
         );
         Set<String> targetProperties = executables.getPropertyNames( targetAccessors );
 
@@ -481,7 +487,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         Type sourceType = executables.retrieveReturnType( getterMethod );
         Type targetType = null;
         String conversionStr = null;
-        if (executables.isSetterMethod( setterMethod ) ) {
+        if ( executables.isSetterMethod( setterMethod ) ) {
             targetType = executables.retrieveSingleParameter( setterMethod ).getType();
             conversionStr = parameter.getName() + "." + getterMethod.getSimpleName().toString() + "()";
         }

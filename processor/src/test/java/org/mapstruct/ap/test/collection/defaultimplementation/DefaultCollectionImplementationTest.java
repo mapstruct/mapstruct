@@ -18,9 +18,6 @@
  */
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +38,9 @@ import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+
 @WithClasses({
     Source.class,
     Target.class,
@@ -51,7 +51,7 @@ import org.testng.annotations.Test;
 public class DefaultCollectionImplementationTest extends MapperTestBase {
 
     @Test
-    @IssueKey( "6" )
+    @IssueKey("6")
     public void shouldUseDefaultImplementationForConcurrentMap() {
         ConcurrentMap<String, TargetFoo> target =
             SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooConcurrentMap( createSourceFooMap() );
@@ -60,7 +60,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey( "6" )
+    @IssueKey("6")
     public void shouldUseDefaultImplementationForConcurrentNavigableMap() {
         ConcurrentNavigableMap<String, TargetFoo> target =
             SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooConcurrentNavigableMap( createSourceFooMap() );
@@ -69,7 +69,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey( "6" )
+    @IssueKey("6")
     public void shouldUseDefaultImplementationForMap() {
         Map<String, TargetFoo> target = SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooMap( createSourceFooMap() );
 
@@ -77,7 +77,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey( "6" )
+    @IssueKey("6")
     public void shouldUseDefaultImplementationForNavigableMap() {
         NavigableMap<String, TargetFoo> target =
             SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooNavigableMap( createSourceFooMap() );
@@ -86,7 +86,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey( "6" )
+    @IssueKey("6")
     public void shouldUseDefaultImplementationForSortedMap() {
         SortedMap<String, TargetFoo> target =
             SourceTargetMapper.INSTANCE.sourceFooMapToTargetFooSortedMap( createSourceFooMap() );
@@ -95,7 +95,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey( "6" )
+    @IssueKey("6")
     public void shouldUseDefaultImplementationForNaviableSet() {
         NavigableSet<TargetFoo> target =
             SourceTargetMapper.INSTANCE.sourceFoosToTargetFooNavigableSet( createSourceFooList() );
@@ -139,7 +139,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey( "6" )
+    @IssueKey("6")
     public void shouldUseDefaultImplementationForSortedSet() {
         SortedSet<TargetFoo> target =
             SourceTargetMapper.INSTANCE.sourceFoosToTargetFooSortedSet( createSourceFooList() );
@@ -153,7 +153,8 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
         List<TargetFoo> target = new ArrayList<TargetFoo>();
         SourceTargetMapper.INSTANCE.sourceFoosToTargetFoosUsingTargetParameter(
             target,
-            createSourceFooList() );
+            createSourceFooList()
+        );
 
         assertResultList( target );
     }
@@ -178,7 +179,7 @@ public class DefaultCollectionImplementationTest extends MapperTestBase {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getFooListNoSetter()).containsExactly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
+        assertThat( target.getFooListNoSetter() ).containsExactly( new TargetFoo( "Bob" ), new TargetFoo( "Alice" ) );
     }
 
     private void assertResultList(Iterable<TargetFoo> fooIterable) {

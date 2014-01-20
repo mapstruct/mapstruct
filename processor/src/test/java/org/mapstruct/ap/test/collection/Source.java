@@ -131,7 +131,7 @@ public class Source {
         return stringList2;
     }
 
-    public void setStringList2( List<String> stringList2 ) {
+    public void setStringList2(List<String> stringList2) {
         this.stringList2 = stringList2;
     }
 

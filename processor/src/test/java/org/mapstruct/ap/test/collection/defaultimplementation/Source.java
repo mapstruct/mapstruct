@@ -28,7 +28,7 @@ public class Source {
         return fooList;
     }
 
-    public void setFooList( List<SourceFoo> fooList ) {
+    public void setFooList(List<SourceFoo> fooList) {
         this.fooList = fooList;
     }
 
