@@ -156,6 +156,15 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     returnType
                 );
         }
+        //create factory method
+        else if ( parameters.isEmpty() ) {
+            return
+                Method.forFactoryMethod(
+                    mapperRequiresImplementation ? null : typeFactory.getType( element ),
+                    method,
+                    returnType
+                );
+        }
         else {
             return null;
         }

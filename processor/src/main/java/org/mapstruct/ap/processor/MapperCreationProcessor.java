@@ -45,6 +45,7 @@ import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.conversion.DefaultConversionContext;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.DefaultMapperReference;
+import org.mapstruct.ap.model.FactoryMethod;
 import org.mapstruct.ap.model.IterableMappingMethod;
 import org.mapstruct.ap.model.MapMappingMethod;
 import org.mapstruct.ap.model.Mapper;
@@ -208,6 +209,32 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return mappingMethods;
     }
 
+    private FactoryMethod getFactoryMethod(List<Method> methods, Type returnType) {
+        FactoryMethod result = null;
+        for ( Method method : methods ) {
+            if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
+                && method.getMappings().isEmpty() && method.getParameters().isEmpty() ) {
+                    if ( method.getReturnType().equals( returnType ) ) {
+                        if ( result == null ) {
+                            result = new FactoryMethod(method);
+                        }
+                        else {
+                          messager.printMessage(
+                               Kind.ERROR,
+                               String.format(
+                                   "Ambigious factory method: \"%s\" conflicts with \"%s\".",
+                                   result.getName(),
+                                   method.getName()
+                               ),
+                           method.getExecutable()
+                          );
+                     }
+                 }
+             }
+        }
+        return result;
+    }
+
     private void reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType(Method method) {
         if ( method.getReturnType().getTypeMirror().getKind() != TypeKind.VOID &&
             method.getReturnType().isInterface() &&
@@ -352,7 +379,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             mappedTargetProperties
         );
 
-        return new BeanMappingMethod( method, propertyMappings );
+        FactoryMethod factoryMethod = getFactoryMethod( methods, method.getReturnType() );
+        return new BeanMappingMethod( method, propertyMappings, factoryMethod );
     }
 
     private void reportErrorForUnmappedTargetPropertiesIfRequired(Method method,
