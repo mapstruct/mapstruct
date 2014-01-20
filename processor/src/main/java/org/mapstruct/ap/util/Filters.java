@@ -58,7 +58,43 @@ public class Filters {
                 setterMethods.add( method );
             }
         }
-
         return setterMethods;
+    }
+
+    /**
+     * A getter could be an alternative target-accessor if a setter is not available, and the
+     * target is a collection.
+     *
+     * Provided such a getter is initialized lazy by the target class, e.g. in generated JAXB beans.
+     *
+     * @param elements
+     * @return
+     */
+    public List<ExecutableElement> alternativeTargetAccessorMethodsIn(Iterable<? extends Element> elements) {
+        List<ExecutableElement> setterMethods = setterMethodsIn( elements );
+        List<ExecutableElement> getterMethods = getterMethodsIn( elements );
+        List<ExecutableElement> alternativeTargetAccessorsMethods = new LinkedList<ExecutableElement>();
+
+        if (getterMethods.size() > setterMethods.size()) {
+            // there could be a getter method for a list that is not present as setter.
+            // a getter could substitue the setter in that case and act as setter.
+            // (asuming its intitialized)
+            for ( ExecutableElement getterMethod : getterMethods ) {
+                boolean matchFound = false;
+                String getterPropertyName = executables.getPropertyName( getterMethod );
+                for ( ExecutableElement setterMethod : setterMethods ) {
+                    String setterPropertyName = executables.getPropertyName( setterMethod );
+                    if ( getterPropertyName.equals( setterPropertyName ) ) {
+                        matchFound = true;
+                        break;
+                    }
+                }
+                if ( !matchFound && executables.retrieveReturnType( getterMethod ).isCollectionType() ) {
+                    alternativeTargetAccessorsMethods.add( getterMethod );
+                }
+            }
+        }
+
+        return alternativeTargetAccessorsMethods;
     }
 }

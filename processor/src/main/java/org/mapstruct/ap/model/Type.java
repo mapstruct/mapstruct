@@ -60,7 +60,8 @@ public class Type extends AbstractModelElement implements Comparable<Type> {
     private final TypeElement typeElement;
 
     public Type(TypeMirror typeMirror, List<Type> typeParameters, Type implementationType, boolean isIterableType,
-                boolean isCollectionType, boolean isMapType, Types typeUtils, Elements elementUtils) {
+                boolean isCollectionType, boolean isMapType, Types typeUtils,
+                Elements elementUtils) {
         this.typeMirror = typeMirror;
         this.implementationType = implementationType;
         this.typeParameters = typeParameters;

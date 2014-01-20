@@ -284,19 +284,22 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         }
 
         TypeElement resultTypeElement = method.getResultType().getTypeElement();
-        List<ExecutableElement> targetSetters = filters.setterMethodsIn(
+        List<ExecutableElement> targetAccessors = filters.setterMethodsIn(
             elementUtils.getAllMembers( resultTypeElement )
         );
+        targetAccessors.addAll( filters.alternativeTargetAccessorMethodsIn(
+            elementUtils.getAllMembers( resultTypeElement ) )
+        );
 
-        for ( ExecutableElement setterMethod : targetSetters ) {
-            String targetPropertyName = executables.getPropertyName( setterMethod );
+        for ( ExecutableElement targetAccessor : targetAccessors ) {
+            String targetPropertyName = executables.getPropertyName( targetAccessor );
 
             Mapping mapping = method.getMapping( targetPropertyName );
 
             PropertyMapping propertyMapping = null;
             if ( mapping != null && mapping.getSourceParameterName() != null ) {
                 Parameter parameter = method.getSourceParameter( mapping.getSourceParameterName() );
-                propertyMapping = getPropertyMapping( methods, method, setterMethod, parameter );
+                propertyMapping = getPropertyMapping( methods, method, targetAccessor, parameter );
             }
 
             if ( propertyMapping == null ) {
@@ -304,7 +307,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                     PropertyMapping newPropertyMapping = getPropertyMapping(
                         methods,
                         method,
-                        setterMethod,
+                        targetAccessor,
                         sourceParameter
                     );
                     if ( propertyMapping != null && newPropertyMapping != null ) {
@@ -327,7 +330,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             }
         }
 
-        Set<String> targetProperties = executables.getPropertyNames( targetSetters );
+        Set<String> targetProperties = executables.getPropertyNames( targetAccessors );
 
         reportErrorForUnmappedTargetPropertiesIfRequired(
             method,
@@ -380,20 +383,24 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private boolean hasProperty(Parameter parameter, String propertyName) {
         TypeElement parameterTypeElement = parameter.getType().getTypeElement();
-        List<ExecutableElement> getters = filters.setterMethodsIn(
+        List<ExecutableElement> targetAccessors = filters.setterMethodsIn(
             elementUtils.getAllMembers( parameterTypeElement )
         );
-
-        return executables.getPropertyNames( getters ).contains( propertyName );
+        targetAccessors.addAll( filters.alternativeTargetAccessorMethodsIn(
+            elementUtils.getAllMembers( parameterTypeElement ) )
+        );
+        return executables.getPropertyNames( targetAccessors ).contains( propertyName );
     }
 
     private boolean reportErrorIfMappedPropertiesDontExist(Method method) {
         TypeElement resultTypeElement = method.getResultType().getTypeElement();
-        List<ExecutableElement> targetSetters = filters.setterMethodsIn(
+        List<ExecutableElement> targetAccessors = filters.setterMethodsIn(
             elementUtils.getAllMembers( resultTypeElement )
         );
-
-        Set<String> targetProperties = executables.getPropertyNames( targetSetters );
+        targetAccessors.addAll( filters.alternativeTargetAccessorMethodsIn(
+            elementUtils.getAllMembers( resultTypeElement ) )
+        );
+        Set<String> targetProperties = executables.getPropertyNames( targetAccessors );
 
         boolean foundUnmappedProperty = false;
 
@@ -472,14 +479,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                                                ExecutableElement getterMethod, ExecutableElement setterMethod,
                                                String dateFormat) {
         Type sourceType = executables.retrieveReturnType( getterMethod );
-        Type targetType = executables.retrieveSingleParameter( setterMethod ).getType();
+        Type targetType = null;
+        String conversionStr = null;
+        if (executables.isSetterMethod( setterMethod ) ) {
+            targetType = executables.retrieveSingleParameter( setterMethod ).getType();
+            conversionStr = parameter.getName() + "." + getterMethod.getSimpleName().toString() + "()";
+        }
+        else if ( executables.isGetterMethod( setterMethod ) ) {
+            targetType = executables.retrieveReturnType( setterMethod );
+            conversionStr = parameter.getName() + "." + getterMethod.getSimpleName().toString() + "()";
+        }
 
         MappingMethodReference propertyMappingMethod = getMappingMethodReference( methods, sourceType, targetType );
         TypeConversion conversion = getConversion(
             sourceType,
             targetType,
             dateFormat,
-            parameter.getName() + "." + getterMethod.getSimpleName().toString() + "()"
+            conversionStr
         );
 
         PropertyMapping property = new PropertyMapping(

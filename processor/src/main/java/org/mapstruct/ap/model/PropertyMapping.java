@@ -39,6 +39,7 @@ public class PropertyMapping extends AbstractModelElement {
     private final String targetName;
     private final String targetAccessorName;
     private final Type targetType;
+    private final boolean isHasTargetSetter;
 
     private final MappingMethodReference mappingMethod;
     private final TypeConversion conversion;
@@ -55,6 +56,7 @@ public class PropertyMapping extends AbstractModelElement {
         this.targetName = targetName;
         this.targetAccessorName = targetAccessorName;
         this.targetType = targetType;
+        this.isHasTargetSetter =  targetAccessorName.startsWith( "set" );
 
         this.mappingMethod = mappingMethod;
         this.conversion = conversion;
@@ -94,6 +96,10 @@ public class PropertyMapping extends AbstractModelElement {
 
     public TypeConversion getConversion() {
         return conversion;
+    }
+
+    public boolean isHasTargetSetter() {
+        return isHasTargetSetter;
     }
 
     @Override

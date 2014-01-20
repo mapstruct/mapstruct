@@ -71,6 +71,18 @@ public class CollectionMappingTest extends MapperTestBase {
     }
 
     @Test
+    @IssueKey("92")
+    public void shouldMapListWithoutSetter() {
+        Source source = new Source();
+        source.setStringList2( Arrays.asList( "Bob", "Alice" ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getStringListNoSetter() ).containsExactly( "Bob", "Alice" );
+    }
+
+    @Test
     @IssueKey("6")
     public void shouldReverseMapList() {
         Target target = new Target();
