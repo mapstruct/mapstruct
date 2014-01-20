@@ -18,13 +18,10 @@
  */
 package org.mapstruct.ap.processor;
 
-import static javax.lang.model.util.ElementFilter.methodsIn;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -48,6 +45,8 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.TypeFactory;
+
+import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link Method}s
@@ -266,14 +265,17 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      *
      * @return The mappings for the given method, keyed by source property name
      */
-    private Map<String, Mapping> getMappings(ExecutableElement method) {
-        Map<String, Mapping> mappings = new HashMap<String, Mapping>();
+    private Map<String, List<Mapping>> getMappings(ExecutableElement method) {
+        Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( method );
         MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
 
         if ( mappingAnnotation != null ) {
-            mappings.put( mappingAnnotation.source(), Mapping.fromMappingPrism( mappingAnnotation, method ) );
+            if ( !mappings.containsKey( mappingAnnotation.source() ) ) {
+                mappings.put( mappingAnnotation.source(), new ArrayList<Mapping>() );
+            }
+            mappings.get( mappingAnnotation.source() ).add( Mapping.fromMappingPrism( mappingAnnotation, method ) );
         }
 
         if ( mappingsAnnotation != null ) {
