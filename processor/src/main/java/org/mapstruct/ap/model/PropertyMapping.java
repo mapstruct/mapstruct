@@ -39,7 +39,7 @@ public class PropertyMapping extends AbstractModelElement {
     private final String targetName;
     private final String targetAccessorName;
     private final Type targetType;
-    private final boolean isHasTargetSetter;
+    private final boolean isTargetAccessorSetter;
 
     private final MappingMethodReference mappingMethod;
     private final TypeConversion conversion;
@@ -56,7 +56,7 @@ public class PropertyMapping extends AbstractModelElement {
         this.targetName = targetName;
         this.targetAccessorName = targetAccessorName;
         this.targetType = targetType;
-        this.isHasTargetSetter = targetAccessorName.startsWith( "set" );
+        this.isTargetAccessorSetter = targetAccessorName.startsWith( "set" );
 
         this.mappingMethod = mappingMethod;
         this.conversion = conversion;
@@ -98,8 +98,15 @@ public class PropertyMapping extends AbstractModelElement {
         return conversion;
     }
 
-    public boolean isHasTargetSetter() {
-        return isHasTargetSetter;
+    /**
+     * Whether the target accessor is a setter method or not. The only case where it is not a setter but a getter is a
+     * collection-typed property without a getter, to which elements are set by adding the source elements to the
+     * collection retrieved via the getter.
+     *
+     * @return {@code true} if the target accessor is a setter, {@code false} otherwise
+     */
+    public boolean isTargetAccessorSetter() {
+        return isTargetAccessorSetter;
     }
 
     @Override
