@@ -32,6 +32,10 @@ import org.mapstruct.ap.util.Strings;
 /**
  * Represents a mapping method with source and target type and the mappings between the properties of source and target
  * type.
+ * <p>
+ * A method can either be configured by itself or by another method for the inverse mapping direction (one of
+ * {@link #setMappings(Map)}, {@link #setIterableMapping(IterableMapping)} or {@link #setMapMapping(MapMapping)} will be
+ * called in this case).
  *
  * @author Gunnar Morling
  */
@@ -40,13 +44,14 @@ public class Method {
     private final Type declaringMapper;
     private final ExecutableElement executable;
     private final List<Parameter> parameters;
+    private final Parameter targetParameter;
     private final Type returnType;
 
     private Map<String, List<Mapping>> mappings;
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
 
-    private final Parameter targetParameter;
+    private boolean configuredByReverseMappingMethod = false;
 
     public static Method forMethodRequiringImplementation(ExecutableElement executable, List<Parameter> parameters,
                                                           Type returnType, Map<String, List<Mapping>> mappings,
@@ -150,6 +155,7 @@ public class Method {
 
     public void setMappings(Map<String, List<Mapping>> mappings) {
         this.mappings = mappings;
+        this.configuredByReverseMappingMethod = true;
     }
 
     public IterableMapping getIterableMapping() {
@@ -158,6 +164,7 @@ public class Method {
 
     public void setIterableMapping(IterableMapping iterableMapping) {
         this.iterableMapping = iterableMapping;
+        this.configuredByReverseMappingMethod = true;
     }
 
     public MapMapping getMapMapping() {
@@ -166,6 +173,7 @@ public class Method {
 
     public void setMapMapping(MapMapping mapMapping) {
         this.mapMapping = mapMapping;
+        this.configuredByReverseMappingMethod = true;
     }
 
     public boolean reverses(Method method) {
@@ -186,6 +194,15 @@ public class Method {
     public boolean isMapMapping() {
         return getSourceParameters().size() == 1 && getSourceParameters().iterator().next().getType().isMapType()
             && getResultType().isMapType();
+    }
+
+    /**
+     * Whether this method is configured by itself or by the corresponding reverse mapping method.
+     *
+     * @return {@code true} if this method is configured by itself, {@code false} otherwise.
+     */
+    public boolean isConfiguredByReverseMappingMethod() {
+        return configuredByReverseMappingMethod;
     }
 
     private boolean equals(Object o1, Object o2) {
