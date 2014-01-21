@@ -20,8 +20,9 @@ package org.mapstruct.ap.test.oneway;
 
 public class Source {
 
-    private int foo = 42;
+    private final int foo = 42;
     private int bar;
+    private final long qax = 23L;
 
     public int getFoo() {
         return foo;
@@ -33,5 +34,9 @@ public class Source {
 
     public int retrieveBar() {
         return bar;
+    }
+
+    public long getQax() {
+        return qax;
     }
 }
