@@ -55,4 +55,15 @@ public class OnewayTest extends MapperTestBase {
         assertThat( source ).isNotNull();
         assertThat( source.retrieveBar() ).isEqualTo( 23 );
     }
+
+    @Test
+    @IssueKey("104")
+    public void shouldMapMappedAttributeWithoutSetterInSourceType() {
+        Source source = new Source();
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getQux() ).isEqualTo( 23L );
+    }
 }

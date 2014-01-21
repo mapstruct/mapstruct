@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -377,7 +376,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private boolean hasSourceProperty(Method method, String propertyName) {
         for ( Parameter parameter : method.getSourceParameters() ) {
-            if ( hasProperty( parameter, propertyName ) ) {
+            if ( hasSourceProperty( parameter, propertyName ) ) {
                 return true;
             }
         }
@@ -385,20 +384,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return false;
     }
 
-    private boolean hasProperty(Parameter parameter, String propertyName) {
+    private boolean hasSourceProperty(Parameter parameter, String propertyName) {
         TypeElement parameterTypeElement = parameter.getType().getTypeElement();
-        List<ExecutableElement> targetAccessors = filters.setterMethodsIn(
+        List<ExecutableElement> getters = filters.getterMethodsIn(
             elementUtils.getAllMembers( parameterTypeElement )
         );
-        targetAccessors.addAll(
-            filters.alternativeTargetAccessorMethodsIn(
-                elementUtils.getAllMembers( parameterTypeElement )
-            )
-        );
-        return executables.getPropertyNames( targetAccessors ).contains( propertyName );
+
+        return executables.getPropertyNames( getters ).contains( propertyName );
     }
 
     private boolean reportErrorIfMappedPropertiesDontExist(Method method) {
+        // only report errors if this method itself is configured
+        if ( method.isConfiguredByReverseMappingMethod() ) {
+            return true;
+        }
+
         TypeElement resultTypeElement = method.getResultType().getTypeElement();
         List<ExecutableElement> targetAccessors = filters.setterMethodsIn(
             elementUtils.getAllMembers( resultTypeElement )
@@ -431,7 +431,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                         foundUnmappedProperty = true;
                     }
                     else {
-                        if ( !hasProperty( sourceParameter, mappedProperty.getSourcePropertyName() ) ) {
+                        if ( !hasSourceProperty( sourceParameter, mappedProperty.getSourcePropertyName() ) ) {
                             messager.printMessage(
                                 Kind.ERROR,
                                 String.format(
