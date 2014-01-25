@@ -58,11 +58,11 @@ import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.TypeConversion;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.MethodMatcher;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
-import org.mapstruct.ap.util.MethodMatcher;
 import org.mapstruct.ap.util.Strings;
 import org.mapstruct.ap.util.TypeFactory;
 
