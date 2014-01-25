@@ -29,7 +29,7 @@ import java.util.Set;
  *
  * @author Gunnar Morling
  */
-public class PropertyMapping extends AbstractModelElement {
+public class PropertyMapping extends ModelElement {
 
     private final String sourceBeanName;
     private final String sourceName;

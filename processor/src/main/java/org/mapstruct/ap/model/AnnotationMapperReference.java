@@ -30,7 +30,7 @@ import org.mapstruct.ap.util.Strings;
  * @author Gunnar Morling
  * @author Andreas Gudian
  */
-public class AnnotationMapperReference extends AbstractModelElement implements MapperReference {
+public class AnnotationMapperReference extends MapperReference {
 
     private final Annotation annotation;
     private final Type type;

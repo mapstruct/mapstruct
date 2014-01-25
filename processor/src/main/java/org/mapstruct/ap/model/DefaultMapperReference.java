@@ -31,7 +31,7 @@ import org.mapstruct.ap.util.TypeFactory;
  *
  * @author Gunnar Morling
  */
-public class DefaultMapperReference extends AbstractModelElement implements MapperReference {
+public class DefaultMapperReference extends MapperReference {
 
     private final Type type;
     private final boolean isAnnotatedMapper;

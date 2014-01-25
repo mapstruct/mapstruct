@@ -28,7 +28,7 @@ import java.util.Set;
  *
  * @author Gunnar Morling
  */
-public class TypeConversion extends AbstractModelElement {
+public class TypeConversion extends ModelElement {
 
     private final Set<Type> importTypes;
     private final List<Type> exceptionTypes;

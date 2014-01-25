@@ -21,47 +21,30 @@ package org.mapstruct.ap.model;
 import java.io.Writer;
 import java.util.Set;
 
+import org.mapstruct.ap.writer.FreeMarkerModelElementWriter;
+import org.mapstruct.ap.writer.Writable;
+
 /**
- * A model element with the ability to write itself into a given {@link Writer}.
+ * Base class of all model elements.
+ * <p>
+ * Implements the {@link Writable} contract to write model elements into source code files using FreeMarker templates.
+ * By default, the fully-qualified class name of the given model element type, appended with the extension {@code *.ftl}
+ * is used as template file name.
  *
  * @author Gunnar Morling
  */
-public interface ModelElement {
+public abstract class ModelElement implements Writable {
 
-    /**
-     * Passed to {@link ModelElement}, providing access to additional data
-     * specific to a given implementation of the model serialization mechanism.
-     *
-     * @author Gunnar Morling
-     */
-    interface Context {
-
-        /**
-         * Retrieves the object with the given type from this context.
-         *
-         * @param type The type of the object to retrieve from this context.
-         *
-         * @return The object with the given type from this context.
-         */
-        <T> T get(Class<T> type);
+    @Override
+    public void write(Context context, Writer writer) throws Exception {
+        new FreeMarkerModelElementWriter().write( this, context, writer );
     }
 
     /**
-     * Writes this model element to the given writer.
+     * Returns a set containing those {@link Type}s referenced by this model element for which an import statement needs
+     * to be declared.
      *
-     * @param context Provides additional data specific to the used implementation
-     * of the model serialization mechanism.
-     * @param writer The writer to write this model to. Must not be closed by
-     * implementations.
+     * @return A set with type referenced by this model element. Must not be {@code null}.
      */
-    void write(Context context, Writer writer) throws Exception;
-
-    /**
-     * Returns a set containing those {@link Type}s referenced by this model
-     * element for which an import statement needs to be declared.
-     *
-     * @return A set with type referenced by this model element. Must not be
-     *         {@code null.}
-     */
-    Set<Type> getImportTypes();
+    public abstract Set<Type> getImportTypes();
 }

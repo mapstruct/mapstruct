@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.annotation.Generated;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -37,7 +36,7 @@ import org.mapstruct.ap.util.TypeFactory;
  *
  * @author Gunnar Morling
  */
-public class Mapper extends AbstractModelElement {
+public class Mapper extends ModelElement {
 
     private static final String IMPLEMENTATION_SUFFIX = "Impl";
 

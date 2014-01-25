@@ -32,7 +32,7 @@ import org.mapstruct.ap.util.Strings;
  *
  * @author Gunnar Morling
  */
-public abstract class MappingMethod extends AbstractModelElement {
+public abstract class MappingMethod extends ModelElement {
 
     private final String name;
     private final List<Parameter> parameters;

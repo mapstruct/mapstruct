@@ -19,12 +19,16 @@
 package org.mapstruct.ap.model;
 
 /**
- * A reference to another mapper class, which itself may be generated or
- * hand-written.
+ * A reference to another mapper class, which itself may be generated or hand-written.
  *
  * @author Gunnar Morling
  */
-public interface MapperReference extends ModelElement {
+public abstract class MapperReference extends ModelElement {
 
-    Type getMapperType();
+    /**
+     * Returns the type of the referenced mapper
+     *
+     * @return the type of the referenced mapper
+     */
+    public abstract Type getMapperType();
 }

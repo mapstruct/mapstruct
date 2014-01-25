@@ -43,7 +43,7 @@ import org.mapstruct.ap.util.TypeFactory;
  *
  * @author Gunnar Morling
  */
-public class Type extends AbstractModelElement implements Comparable<Type> {
+public class Type extends ModelElement implements Comparable<Type> {
 
     private final String packageName;
     private final String name;

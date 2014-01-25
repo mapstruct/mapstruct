@@ -18,13 +18,17 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.Collections;
 import java.util.Set;
 
-import org.mapstruct.ap.util.Collections;
+/**
+ * Represents a Java 5 annotation.
+ *
+ * @author Gunnar Morling
+ */
+public class Annotation extends ModelElement {
 
-public class Annotation extends AbstractModelElement {
-
-    private Type type;
+    private final Type type;
 
     public Annotation(Type type) {
         this.type = type;
@@ -36,6 +40,6 @@ public class Annotation extends AbstractModelElement {
 
     @Override
     public Set<Type> getImportTypes() {
-        return Collections.asSet( type );
+        return Collections.singleton( type );
     }
 }

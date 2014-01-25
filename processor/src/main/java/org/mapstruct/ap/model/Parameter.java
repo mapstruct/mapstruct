@@ -27,7 +27,7 @@ import org.mapstruct.ap.util.Collections;
  *
  * @author Gunnar Morling
  */
-public class Parameter extends AbstractModelElement {
+public class Parameter extends ModelElement {
 
     private final String name;
     private final Type type;
