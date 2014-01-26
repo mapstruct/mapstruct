@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
@@ -40,14 +41,15 @@ import javax.tools.Diagnostic.Kind;
 
 import net.java.dev.hickory.prism.GeneratePrism;
 import net.java.dev.hickory.prism.GeneratePrisms;
+
 import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-import org.mapstruct.ap.model.Options;
-import org.mapstruct.ap.model.ReportingPolicy;
+import org.mapstruct.ap.option.Options;
+import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.processor.DefaultModelElementProcessorContext;
 import org.mapstruct.ap.processor.ModelElementProcessor;
 import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;

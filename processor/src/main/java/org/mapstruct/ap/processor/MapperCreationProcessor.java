@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -51,14 +52,14 @@ import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.MappingMethodReference;
-import org.mapstruct.ap.model.Options;
 import org.mapstruct.ap.model.Parameter;
 import org.mapstruct.ap.model.PropertyMapping;
-import org.mapstruct.ap.model.ReportingPolicy;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.TypeConversion;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.option.Options;
+import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.MethodMatcher;
@@ -112,7 +113,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             .element( element )
             .mappingMethods( mappingMethods )
             .mapperReferences( mapperReferences )
-            .options( options )
+            .suppressGeneratorTimestamp( options.isSuppressGeneratorTimestamp() )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
             .build();

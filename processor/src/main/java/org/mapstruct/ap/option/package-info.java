@@ -16,31 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.util;
-
-import org.mapstruct.ap.model.Options;
-
 /**
- * Helper class for dealing with {@link Options}.
- *
- * @author Andreas Gudian
+ * <p>
+ * Provides access to the options passed to the annotation processor.
+ * </p>
  */
-public class OptionsHelper {
-
-    private OptionsHelper() {
-    }
-
-    /**
-     * @param options the options
-     * @param locallyDeclaredComponentModel the locally declared component model
-     *
-     * @return the effective component model to be used
-     */
-    public static String getEffectiveComponentModel(Options options, String locallyDeclaredComponentModel) {
-        if ( "default".equals( locallyDeclaredComponentModel ) ) {
-            return options.getDefaultComponentModel();
-        }
-
-        return locallyDeclaredComponentModel;
-    }
-}
+package org.mapstruct.ap.option;

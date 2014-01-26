@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
 import javax.annotation.Generated;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -48,11 +49,11 @@ public class Mapper extends ModelElement {
     private final List<Annotation> annotations;
     private final List<MappingMethod> mappingMethods;
     private final List<MapperReference> referencedMappers;
-    private final Options options;
+    private final boolean suppressGeneratorTimestamp;
 
     private Mapper(TypeFactory typeFactory, String packageName, boolean superTypeIsInterface, String interfaceName,
                    String implementationName, List<MappingMethod> mappingMethods,
-                   List<MapperReference> referencedMappers, Options options) {
+                   List<MapperReference> referencedMappers, boolean suppressGeneratorTimestamp) {
         this.packageName = packageName;
         this.superTypeIsInterface = superTypeIsInterface;
         this.interfaceName = interfaceName;
@@ -60,7 +61,7 @@ public class Mapper extends ModelElement {
         this.annotations = new ArrayList<Annotation>();
         this.mappingMethods = mappingMethods;
         this.referencedMappers = referencedMappers;
-        this.options = options;
+        this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.typeFactory = typeFactory;
     }
 
@@ -70,8 +71,8 @@ public class Mapper extends ModelElement {
         private TypeElement element;
         private List<MappingMethod> mappingMethods;
         private List<MapperReference> mapperReferences;
-        private Options options;
         private Elements elementUtils;
+        private boolean suppressGeneratorTimestamp;
 
         public Builder element(TypeElement element) {
             this.element = element;
@@ -88,8 +89,8 @@ public class Mapper extends ModelElement {
             return this;
         }
 
-        public Builder options(Options options) {
-            this.options = options;
+        public Builder suppressGeneratorTimestamp(boolean suppressGeneratorTimestamp) {
+            this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
             return this;
         }
 
@@ -112,7 +113,7 @@ public class Mapper extends ModelElement {
                 element.getSimpleName() + IMPLEMENTATION_SUFFIX,
                 mappingMethods,
                 mapperReferences,
-                options
+                suppressGeneratorTimestamp
             );
         }
     }
@@ -208,8 +209,8 @@ public class Mapper extends ModelElement {
         return referencedMappers;
     }
 
-    public Options getOptions() {
-        return options;
+    public boolean isSuppressGeneratorTimestamp() {
+        return suppressGeneratorTimestamp;
     }
 
     public void addAnnotation(Annotation annotation) {
