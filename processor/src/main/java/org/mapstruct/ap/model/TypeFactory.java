@@ -45,8 +45,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.AnnotationProcessingException;
 import org.mapstruct.ap.MappingTargetPrism;
+import org.mapstruct.ap.util.AnnotationProcessingException;
 
 /**
  * Factory creating {@link Type} instances.

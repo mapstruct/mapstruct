@@ -34,7 +34,6 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.AnnotationProcessingException;
 import org.mapstruct.ap.IterableMappingPrism;
 import org.mapstruct.ap.MapMappingPrism;
 import org.mapstruct.ap.MapperPrism;
@@ -47,6 +46,7 @@ import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.MapMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.util.AnnotationProcessingException;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link Method}s

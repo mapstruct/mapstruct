@@ -53,6 +53,7 @@ import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.processor.DefaultModelElementProcessorContext;
 import org.mapstruct.ap.processor.ModelElementProcessor;
 import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
+import org.mapstruct.ap.util.AnnotationProcessingException;
 
 /**
  * A JSR 269 annotation {@link Processor} which generates the implementations for mapper interfaces (interfaces

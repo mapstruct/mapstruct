@@ -22,13 +22,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 
-import org.mapstruct.ap.AnnotationProcessingException;
 import org.mapstruct.ap.MappingPrism;
 import org.mapstruct.ap.MappingsPrism;
+import org.mapstruct.ap.util.AnnotationProcessingException;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.
