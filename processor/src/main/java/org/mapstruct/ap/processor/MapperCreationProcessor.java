@@ -41,7 +41,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.conversion.DefaultConversionContext;
@@ -63,6 +62,7 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.MethodMatcher;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
+import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.Strings;

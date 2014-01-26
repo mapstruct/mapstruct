@@ -39,15 +39,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic.Kind;
 
-import net.java.dev.hickory.prism.GeneratePrism;
-import net.java.dev.hickory.prism.GeneratePrisms;
-
-import org.mapstruct.IterableMapping;
-import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.processor.DefaultModelElementProcessorContext;
@@ -88,14 +80,6 @@ import org.mapstruct.ap.util.AnnotationProcessingException;
  * @author Gunnar Morling
  */
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
-@GeneratePrisms({
-    @GeneratePrism(value = Mapper.class, publicAccess = true),
-    @GeneratePrism(value = Mapping.class, publicAccess = true),
-    @GeneratePrism(value = Mappings.class, publicAccess = true),
-    @GeneratePrism(value = IterableMapping.class, publicAccess = true),
-    @GeneratePrism(value = MapMapping.class, publicAccess = true),
-    @GeneratePrism(value = MappingTarget.class, publicAccess = true)
-})
 @SupportedOptions({
     MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,
     MappingProcessor.UNMAPPED_TARGET_POLICY,

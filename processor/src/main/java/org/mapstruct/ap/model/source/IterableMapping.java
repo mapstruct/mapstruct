@@ -21,7 +21,7 @@ package org.mapstruct.ap.model.source;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 
-import org.mapstruct.ap.IterableMappingPrism;
+import org.mapstruct.ap.prism.IterableMappingPrism;
 
 /**
  * Represents an iterable mapping as configured via {@code @IterableMapping}.

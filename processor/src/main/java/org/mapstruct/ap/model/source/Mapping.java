@@ -27,8 +27,8 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 
-import org.mapstruct.ap.MappingPrism;
-import org.mapstruct.ap.MappingsPrism;
+import org.mapstruct.ap.prism.MappingPrism;
+import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 
 /**
