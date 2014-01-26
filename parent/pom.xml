@@ -253,18 +253,13 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>${org.apache.maven.plugins.enforcer.version}</version>
-                    <configuration>
-                        <rules>
-                            <requireJavaVersion>
-                                <version>[1.6,)</version>
-                            </requireJavaVersion>
-                            <DependencyConvergence />
-                            <requirePluginVersions />
-                            <requireMavenVersion>
-                                <version>[3.0.3,)</version>
-                            </requireMavenVersion>
-                        </rules>
-                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>de.andrena.tools.nopackagecycles</groupId>
+                            <artifactId>no-package-cycles-enforcer-rule</artifactId>
+                            <version>1.0.5</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
 
                 <plugin>
@@ -430,6 +425,30 @@
                         <goals>
                             <goal>enforce</goal>
                         </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[1.6,)</version>
+                                </requireJavaVersion>
+                                <DependencyConvergence />
+                                <requirePluginVersions />
+                                <requireMavenVersion>
+                                    <version>[3.0.3,)</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-no-package-cycles</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <rules>
+                                <NoPackageCyclesRule implementation="de.andrena.tools.nopackagecycles.NoPackageCyclesRule" />
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
