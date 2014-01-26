@@ -19,15 +19,16 @@
 package org.mapstruct.ap.processor;
 
 import java.util.ListIterator;
+
 import javax.lang.model.element.TypeElement;
 
-import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.model.Annotation;
 import org.mapstruct.ap.model.AnnotationMapperReference;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
-import org.mapstruct.ap.util.OptionsHelper;
-import org.mapstruct.ap.util.TypeFactory;
+import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.option.OptionsHelper;
+import org.mapstruct.ap.prism.MapperPrism;
 
 /**
  * An {@link ModelElementProcessor} which converts the given {@link Mapper}

@@ -18,10 +18,13 @@
  */
 package org.mapstruct.ap.processor;
 
+import static javax.lang.model.util.ElementFilter.methodsIn;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -31,22 +34,19 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.AnnotationProcessingException;
-import org.mapstruct.ap.IterableMappingPrism;
-import org.mapstruct.ap.MapMappingPrism;
-import org.mapstruct.ap.MapperPrism;
-import org.mapstruct.ap.MappingPrism;
-import org.mapstruct.ap.MappingsPrism;
-import org.mapstruct.ap.model.Parameter;
-import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.model.common.Parameter;
+import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.MapMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.util.Executables;
-import org.mapstruct.ap.util.TypeFactory;
-
-import static javax.lang.model.util.ElementFilter.methodsIn;
+import org.mapstruct.ap.prism.IterableMappingPrism;
+import org.mapstruct.ap.prism.MapMappingPrism;
+import org.mapstruct.ap.prism.MapperPrism;
+import org.mapstruct.ap.prism.MappingPrism;
+import org.mapstruct.ap.prism.MappingsPrism;
+import org.mapstruct.ap.util.AnnotationProcessingException;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link Method}s
@@ -60,13 +60,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private Messager messager;
     private TypeFactory typeFactory;
-    private Executables executables;
 
     @Override
     public List<Method> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
         this.messager = context.getMessager();
         this.typeFactory = context.getTypeFactory();
-        this.executables = new Executables( typeFactory );
 
         return retrieveMethods( mapperTypeElement, true );
     }
@@ -119,8 +117,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private Method getMethod(TypeElement element, ExecutableElement method, boolean mapperRequiresImplementation) {
-        List<Parameter> parameters = executables.retrieveParameters( method );
-        Type returnType = executables.retrieveReturnType( method );
+        List<Parameter> parameters = typeFactory.getParameters( method );
+        Type returnType = typeFactory.getReturnType( method );
 
         //add method with property mappings if an implementation needs to be generated
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );

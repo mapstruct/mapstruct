@@ -25,7 +25,7 @@ import ${importedType.fullyQualifiedName};
 </#list>
 
 @Generated(
-    value = "org.mapstruct.ap.MappingProcessor"<#if options.suppressGeneratorTimestamp == false>,
+    value = "org.mapstruct.ap.MappingProcessor"<#if suppressGeneratorTimestamp == false>,
     date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
 )
 <#list annotations as annotation>

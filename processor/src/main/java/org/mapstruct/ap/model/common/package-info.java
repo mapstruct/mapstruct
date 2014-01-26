@@ -16,22 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
-
-import org.mapstruct.ap.model.common.ModelElement;
-import org.mapstruct.ap.model.common.Type;
-
 /**
- * A reference to another mapper class, which itself may be generated or hand-written.
- *
- * @author Gunnar Morling
+ * <p>
+ * Contains types which are shared between the intermediary mapping method model ("source model") and the mapper model.
+ * </p>
  */
-public abstract class MapperReference extends ModelElement {
-
-    /**
-     * Returns the type of the referenced mapper
-     *
-     * @return the type of the referenced mapper
-     */
-    public abstract Type getMapperType();
-}
+package org.mapstruct.ap.model.common;

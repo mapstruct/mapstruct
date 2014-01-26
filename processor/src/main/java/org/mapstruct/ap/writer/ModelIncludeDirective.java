@@ -29,12 +29,11 @@ import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
-import org.mapstruct.ap.model.ModelElement;
 import org.mapstruct.ap.writer.ModelWriter.DefaultModelElementWriterContext;
 
 /**
  * A {@link TemplateDirectiveModel} which allows to recursively write a graph of
- * {@link ModelElement}s, with each element using its own template. Elements are
+ * {@link Writable}s, with each element using its own template. Elements are
  * imported into the parent template by using this directive like so:
  * {@code <@includeModel object=myProperty/>}.
  *
@@ -53,7 +52,7 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
                         TemplateDirectiveBody body)
         throws TemplateException, IOException {
 
-        ModelElement modelElement = getModelElement( params );
+        Writable modelElement = getModelElement( params );
         DefaultModelElementWriterContext context = createContext( params );
 
         try {
@@ -74,7 +73,7 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
     }
 
     @SuppressWarnings("rawtypes")
-    private ModelElement getModelElement(Map params) {
+    private Writable getModelElement(Map params) {
         if ( !params.containsKey( "object" ) ) {
             throw new IllegalArgumentException(
                 "Object to be included must be passed to this directive via the 'object' parameter"
@@ -89,11 +88,11 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
             );
         }
 
-        if ( !( objectModel.getWrappedObject() instanceof ModelElement ) ) {
+        if ( !( objectModel.getWrappedObject() instanceof Writable ) ) {
             throw new IllegalArgumentException( "Given object isn't a ModelElement:" + objectModel.getWrappedObject() );
         }
 
-        return (ModelElement) objectModel.getWrappedObject();
+        return (Writable) objectModel.getWrappedObject();
     }
 
     /**

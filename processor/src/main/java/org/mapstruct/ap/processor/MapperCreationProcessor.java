@@ -27,7 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -39,7 +41,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.MapperPrism;
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.conversion.DefaultConversionContext;
@@ -51,19 +52,20 @@ import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.MappingMethodReference;
-import org.mapstruct.ap.model.Options;
-import org.mapstruct.ap.model.Parameter;
 import org.mapstruct.ap.model.PropertyMapping;
-import org.mapstruct.ap.model.ReportingPolicy;
-import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.common.Parameter;
+import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.MethodMatcher;
+import org.mapstruct.ap.option.Options;
+import org.mapstruct.ap.option.ReportingPolicy;
+import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
-import org.mapstruct.ap.util.MethodMatcher;
 import org.mapstruct.ap.util.Strings;
-import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -80,8 +82,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private TypeFactory typeFactory;
     private Conversions conversions;
-    private Executables executables;
-    private Filters filters;
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<Method> sourceModel) {
@@ -92,8 +92,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
         this.typeFactory = context.getTypeFactory();
         this.conversions = new Conversions( elementUtils, typeFactory );
-        this.executables = new Executables( typeFactory );
-        this.filters = new Filters( executables );
 
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -112,7 +110,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             .element( element )
             .mappingMethods( mappingMethods )
             .mapperReferences( mapperReferences )
-            .options( options )
+            .suppressGeneratorTimestamp( options.isSuppressGeneratorTimestamp() )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
             .build();
@@ -232,12 +230,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private PropertyMapping getPropertyMapping(List<Method> methods, Method method, ExecutableElement targetAcessor,
                                                Parameter parameter) {
-        String targetPropertyName = executables.getPropertyName( targetAcessor );
+        String targetPropertyName = Executables.getPropertyName( targetAcessor );
         Mapping mapping = method.getMapping( targetPropertyName );
         String dateFormat = mapping != null ? mapping.getDateFormat() : null;
         String sourcePropertyName = mapping != null ? mapping.getSourcePropertyName() : targetPropertyName;
         TypeElement parameterElement = parameter.getType().getTypeElement();
-        List<ExecutableElement> sourceGetters = filters.getterMethodsIn(
+        List<ExecutableElement> sourceGetters = Filters.getterMethodsIn(
             elementUtils.getAllMembers( parameterElement )
         );
 
@@ -247,7 +245,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             if ( method.getMappings().containsKey( sourcePropertyName ) ) {
                 for ( Mapping sourceMapping : sourceMappings ) {
                     boolean mapsToOtherTarget = !sourceMapping.getTargetName().equals( targetPropertyName );
-                    if ( executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) &&
+                    if ( Executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) &&
                         !mapsToOtherTarget ) {
                         return getPropertyMapping(
                             methods,
@@ -260,7 +258,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                     }
                 }
             }
-            else if ( executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) ) {
+            else if ( Executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) ) {
                 return getPropertyMapping(
                     methods,
                     method,
@@ -285,17 +283,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         }
 
         TypeElement resultTypeElement = method.getResultType().getTypeElement();
-        List<ExecutableElement> targetAccessors = filters.setterMethodsIn(
+        List<ExecutableElement> targetAccessors = Filters.setterMethodsIn(
             elementUtils.getAllMembers( resultTypeElement )
         );
         targetAccessors.addAll(
-            filters.alternativeTargetAccessorMethodsIn(
+            alternativeTargetAccessorMethodsIn(
                 elementUtils.getAllMembers( resultTypeElement )
             )
         );
 
         for ( ExecutableElement targetAccessor : targetAccessors ) {
-            String targetPropertyName = executables.getPropertyName( targetAccessor );
+            String targetPropertyName = Executables.getPropertyName( targetAccessor );
 
             Mapping mapping = method.getMapping( targetPropertyName );
 
@@ -333,7 +331,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             }
         }
 
-        Set<String> targetProperties = executables.getPropertyNames( targetAccessors );
+        Set<String> targetProperties = Executables.getPropertyNames( targetAccessors );
 
         reportErrorForUnmappedTargetPropertiesIfRequired(
             method,
@@ -386,11 +384,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private boolean hasSourceProperty(Parameter parameter, String propertyName) {
         TypeElement parameterTypeElement = parameter.getType().getTypeElement();
-        List<ExecutableElement> getters = filters.getterMethodsIn(
+        List<ExecutableElement> getters = Filters.getterMethodsIn(
             elementUtils.getAllMembers( parameterTypeElement )
         );
 
-        return executables.getPropertyNames( getters ).contains( propertyName );
+        return Executables.getPropertyNames( getters ).contains( propertyName );
     }
 
     private boolean reportErrorIfMappedPropertiesDontExist(Method method) {
@@ -400,15 +398,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         }
 
         TypeElement resultTypeElement = method.getResultType().getTypeElement();
-        List<ExecutableElement> targetAccessors = filters.setterMethodsIn(
+        List<ExecutableElement> targetAccessors = Filters.setterMethodsIn(
             elementUtils.getAllMembers( resultTypeElement )
         );
         targetAccessors.addAll(
-            filters.alternativeTargetAccessorMethodsIn(
+            alternativeTargetAccessorMethodsIn(
                 elementUtils.getAllMembers( resultTypeElement )
             )
         );
-        Set<String> targetProperties = executables.getPropertyNames( targetAccessors );
+        Set<String> targetProperties = Executables.getPropertyNames( targetAccessors );
 
         boolean foundUnmappedProperty = false;
 
@@ -486,16 +484,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     private PropertyMapping getPropertyMapping(List<Method> methods, Method method, Parameter parameter,
                                                ExecutableElement sourceAccessor, ExecutableElement targetAcessor,
                                                String dateFormat) {
-        Type sourceType = executables.retrieveReturnType( sourceAccessor );
+        Type sourceType = typeFactory.getReturnType( sourceAccessor );
         Type targetType = null;
         String conversionString = null;
         conversionString = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
 
-        if ( executables.isSetterMethod( targetAcessor ) ) {
-            targetType = executables.retrieveSingleParameter( targetAcessor ).getType();
+        if ( Executables.isSetterMethod( targetAcessor ) ) {
+            targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
         }
-        else if ( executables.isGetterMethod( targetAcessor ) ) {
-            targetType = executables.retrieveReturnType( targetAcessor );
+        else if ( Executables.isGetterMethod( targetAcessor ) ) {
+            targetType = typeFactory.getReturnType( targetAcessor );
         }
 
         MappingMethodReference propertyMappingMethod = getMappingMethodReference( methods, sourceType, targetType );
@@ -508,10 +506,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
         PropertyMapping property = new PropertyMapping(
             parameter.getName(),
-            executables.getPropertyName( sourceAccessor ),
+            Executables.getPropertyName( sourceAccessor ),
             sourceAccessor.getSimpleName().toString(),
             sourceType,
-            executables.getPropertyName( targetAcessor ),
+            Executables.getPropertyName( targetAcessor ),
             targetAcessor.getSimpleName().toString(),
             targetType,
             propertyMappingMethod,
@@ -784,5 +782,43 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         }
 
         return false;
+    }
+
+    /**
+     * A getter could be an alternative target-accessor if a setter is not available, and the
+     * target is a collection.
+     *
+     * Provided such a getter is initialized lazy by the target class, e.g. in generated JAXB beans.
+     *
+     * @param elements
+     *
+     * @return
+     */
+    private List<ExecutableElement> alternativeTargetAccessorMethodsIn(Iterable<? extends Element> elements) {
+        List<ExecutableElement> setterMethods = Filters.setterMethodsIn( elements );
+        List<ExecutableElement> getterMethods = Filters.getterMethodsIn( elements );
+        List<ExecutableElement> alternativeTargetAccessorsMethods = new LinkedList<ExecutableElement>();
+
+        if ( getterMethods.size() > setterMethods.size() ) {
+            // there could be a getter method for a list that is not present as setter.
+            // a getter could substitute the setter in that case and act as setter.
+            // (assuming it is initialized)
+            for ( ExecutableElement getterMethod : getterMethods ) {
+                boolean matchFound = false;
+                String getterPropertyName = Executables.getPropertyName( getterMethod );
+                for ( ExecutableElement setterMethod : setterMethods ) {
+                    String setterPropertyName = Executables.getPropertyName( setterMethod );
+                    if ( getterPropertyName.equals( setterPropertyName ) ) {
+                        matchFound = true;
+                        break;
+                    }
+                }
+                if ( !matchFound && typeFactory.getReturnType( getterMethod ).isCollectionType() ) {
+                    alternativeTargetAccessorsMethods.add( getterMethod );
+                }
+            }
+        }
+
+        return alternativeTargetAccessorsMethods;
     }
 }

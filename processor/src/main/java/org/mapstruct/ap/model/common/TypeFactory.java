@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.util;
+package org.mapstruct.ap.model.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,15 +35,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.AnnotationProcessingException;
-import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.prism.MappingTargetPrism;
+import org.mapstruct.ap.util.AnnotationProcessingException;
 
 /**
  * Factory creating {@link Type} instances.
@@ -130,6 +133,45 @@ public class TypeFactory {
             typeUtils,
             elementUtils
         );
+    }
+
+    public Parameter getSingleParameter(ExecutableElement method) {
+        List<? extends VariableElement> parameters = method.getParameters();
+
+        if ( parameters.size() != 1 ) {
+            //TODO: Log error
+            return null;
+        }
+
+        VariableElement parameter = parameters.get( 0 );
+
+        return new Parameter(
+            parameter.getSimpleName().toString(),
+            getType( parameter.asType() ),
+            false
+        );
+    }
+
+    public List<Parameter> getParameters(ExecutableElement method) {
+        List<? extends VariableElement> parameters = method.getParameters();
+        List<Parameter> result = new ArrayList<Parameter>( parameters.size() );
+
+        for ( VariableElement parameter : parameters ) {
+            result
+                .add(
+                    new Parameter(
+                        parameter.getSimpleName().toString(),
+                        getType( parameter.asType() ),
+                        MappingTargetPrism.getInstanceOn( parameter ) != null
+                    )
+                );
+        }
+
+        return result;
+    }
+
+    public Type getReturnType(ExecutableElement method) {
+        return getType( method.getReturnType() );
     }
 
     private List<Type> getTypeParameters(TypeMirror mirror) {

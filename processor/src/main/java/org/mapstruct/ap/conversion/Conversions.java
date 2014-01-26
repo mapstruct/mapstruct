@@ -23,10 +23,11 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.lang.model.util.Elements;
 
-import org.mapstruct.ap.model.Type;
-import org.mapstruct.ap.util.TypeFactory;
+import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
 
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 

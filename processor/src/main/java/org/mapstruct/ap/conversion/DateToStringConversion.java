@@ -24,8 +24,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
-import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.common.Type;
 
 import static org.mapstruct.ap.util.Collections.asSet;
 

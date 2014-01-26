@@ -21,6 +21,7 @@ package org.mapstruct.ap.model;
 import java.beans.Introspector;
 import java.util.Set;
 
+import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.util.Collections;
 import org.mapstruct.ap.util.Strings;
 
@@ -30,7 +31,7 @@ import org.mapstruct.ap.util.Strings;
  * @author Gunnar Morling
  * @author Andreas Gudian
  */
-public class AnnotationMapperReference extends AbstractModelElement implements MapperReference {
+public class AnnotationMapperReference extends MapperReference {
 
     private final Annotation annotation;
     private final Type type;

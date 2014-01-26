@@ -16,11 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.model.common;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
@@ -32,8 +33,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.util.TypeFactory;
-
 /**
  * Represents the type of a bean property, parameter etc. Each type corresponds to a {@link TypeMirror}, i.e. there are
  * different instances for e.g. {@code Set<String>} and {@code Set<Integer>}.
@@ -43,7 +42,7 @@ import org.mapstruct.ap.util.TypeFactory;
  *
  * @author Gunnar Morling
  */
-public class Type extends AbstractModelElement implements Comparable<Type> {
+public class Type extends ModelElement implements Comparable<Type> {
 
     private final String packageName;
     private final String name;

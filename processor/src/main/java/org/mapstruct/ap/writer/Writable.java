@@ -16,21 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.writer;
 
 import java.io.Writer;
-import java.util.Set;
 
 /**
- * A model element with the ability to write itself into a given {@link Writer}.
+ * An element with the ability to write itself into a given {@link Writer}.
  *
  * @author Gunnar Morling
  */
-public interface ModelElement {
+public interface Writable {
 
     /**
-     * Passed to {@link ModelElement}, providing access to additional data
-     * specific to a given implementation of the model serialization mechanism.
+     * Passed to {@link Writable}, providing access to additional data specific to a given implementation of the model
+     * serialization mechanism.
      *
      * @author Gunnar Morling
      */
@@ -47,21 +46,10 @@ public interface ModelElement {
     }
 
     /**
-     * Writes this model element to the given writer.
+     * Writes this element to the given writer.
      *
-     * @param context Provides additional data specific to the used implementation
-     * of the model serialization mechanism.
-     * @param writer The writer to write this model to. Must not be closed by
-     * implementations.
+     * @param context Provides additional data specific to the used implementation of the serialization mechanism.
+     * @param writer The writer to write this element to. Must not be closed by implementations.
      */
     void write(Context context, Writer writer) throws Exception;
-
-    /**
-     * Returns a set containing those {@link Type}s referenced by this model
-     * element for which an import statement needs to be declared.
-     *
-     * @return A set with type referenced by this model element. Must not be
-     *         {@code null.}
-     */
-    Set<Type> getImportTypes();
 }

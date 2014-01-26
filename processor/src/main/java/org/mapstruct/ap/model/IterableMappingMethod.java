@@ -21,6 +21,8 @@ package org.mapstruct.ap.model;
 import java.beans.Introspector;
 import java.util.Set;
 
+import org.mapstruct.ap.model.common.Parameter;
+import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Strings;
 

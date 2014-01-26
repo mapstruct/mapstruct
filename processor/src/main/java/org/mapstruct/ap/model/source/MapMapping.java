@@ -20,7 +20,7 @@ package org.mapstruct.ap.model.source;
 
 import javax.lang.model.element.AnnotationMirror;
 
-import org.mapstruct.ap.MapMappingPrism;
+import org.mapstruct.ap.prism.MapMappingPrism;
 
 /**
  * Represents a map mapping as configured via {@code @MapMapping}.

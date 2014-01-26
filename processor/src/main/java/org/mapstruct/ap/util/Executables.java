@@ -19,18 +19,13 @@
 package org.mapstruct.ap.util;
 
 import java.beans.Introspector;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
-
-import org.mapstruct.ap.MappingTargetPrism;
-import org.mapstruct.ap.model.Parameter;
-import org.mapstruct.ap.model.Type;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.
@@ -39,17 +34,14 @@ import org.mapstruct.ap.model.Type;
  */
 public class Executables {
 
-    private final TypeFactory typeFactory;
-
-    public Executables(TypeFactory typeFactory) {
-        this.typeFactory = typeFactory;
+    private Executables() {
     }
 
-    public boolean isGetterMethod(ExecutableElement method) {
+    public static boolean isGetterMethod(ExecutableElement method) {
         return isPublic( method ) && ( isNonBooleanGetterMethod( method ) || isBooleanGetterMethod( method ) );
     }
 
-    private boolean isNonBooleanGetterMethod(ExecutableElement method) {
+    private static boolean isNonBooleanGetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
         return method.getParameters().isEmpty() &&
@@ -58,7 +50,7 @@ public class Executables {
             method.getReturnType().getKind() != TypeKind.VOID;
     }
 
-    private boolean isBooleanGetterMethod(ExecutableElement method) {
+    private static boolean isBooleanGetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
         return method.getParameters().isEmpty() &&
@@ -67,7 +59,7 @@ public class Executables {
             method.getReturnType().getKind() == TypeKind.BOOLEAN;
     }
 
-    public boolean isSetterMethod(ExecutableElement method) {
+    public static boolean isSetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
         if ( isPublic( method ) && name.startsWith( "set" ) && name.length() > 3 && method.getParameters()
@@ -78,11 +70,11 @@ public class Executables {
         return false;
     }
 
-    private boolean isPublic(ExecutableElement method) {
+    private static boolean isPublic(ExecutableElement method) {
         return method.getModifiers().contains( Modifier.PUBLIC );
     }
 
-    public String getPropertyName(ExecutableElement getterOrSetterMethod) {
+    public static String getPropertyName(ExecutableElement getterOrSetterMethod) {
         if ( isNonBooleanGetterMethod( getterOrSetterMethod ) ) {
             return Introspector.decapitalize(
                 getterOrSetterMethod.getSimpleName().toString().substring( 3 )
@@ -102,7 +94,7 @@ public class Executables {
         throw new IllegalArgumentException( "Executable " + getterOrSetterMethod + " is not getter or setter method." );
     }
 
-    public Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
+    public static Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
         Set<String> propertyNames = new HashSet<String>();
 
         for ( ExecutableElement executableElement : propertyAccessors ) {
@@ -111,44 +103,4 @@ public class Executables {
 
         return propertyNames;
     }
-
-    public Parameter retrieveSingleParameter(ExecutableElement method) {
-        List<? extends VariableElement> parameters = method.getParameters();
-
-        if ( parameters.size() != 1 ) {
-            //TODO: Log error
-            return null;
-        }
-
-        VariableElement parameter = parameters.get( 0 );
-
-        return new Parameter(
-            parameter.getSimpleName().toString(),
-            typeFactory.getType( parameter.asType() ),
-            false
-        );
-    }
-
-    public List<Parameter> retrieveParameters(ExecutableElement method) {
-        List<? extends VariableElement> parameters = method.getParameters();
-        List<Parameter> result = new ArrayList<Parameter>( parameters.size() );
-
-        for ( VariableElement parameter : parameters ) {
-            result
-                .add(
-                    new Parameter(
-                        parameter.getSimpleName().toString(),
-                        typeFactory.getType( parameter.asType() ),
-                        MappingTargetPrism.getInstanceOn( parameter ) != null
-                    )
-                );
-        }
-
-        return result;
-    }
-
-    public Type retrieveReturnType(ExecutableElement method) {
-        return typeFactory.getType( method.getReturnType() );
-    }
-
 }

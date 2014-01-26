@@ -25,8 +25,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.model.Options;
-import org.mapstruct.ap.util.TypeFactory;
+import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.option.Options;
 
 /**
  * A processor which performs one task of the mapper generation, e.g. retrieving

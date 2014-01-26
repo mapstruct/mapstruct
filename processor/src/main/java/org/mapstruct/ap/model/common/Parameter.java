@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.model.common;
 
 import java.util.Set;
 
@@ -27,7 +27,7 @@ import org.mapstruct.ap.util.Collections;
  *
  * @author Gunnar Morling
  */
-public class Parameter extends AbstractModelElement {
+public class Parameter extends ModelElement {
 
     private final String name;
     private final Type type;

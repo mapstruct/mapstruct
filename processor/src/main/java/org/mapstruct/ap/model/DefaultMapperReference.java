@@ -21,9 +21,10 @@ package org.mapstruct.ap.model;
 import java.beans.Introspector;
 import java.util.Set;
 
+import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.util.Collections;
 import org.mapstruct.ap.util.Strings;
-import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * Mapper reference which is retrieved via the {@code Mappers#getMapper()} method. Used by default if no other component
@@ -31,7 +32,7 @@ import org.mapstruct.ap.util.TypeFactory;
  *
  * @author Gunnar Morling
  */
-public class DefaultMapperReference extends AbstractModelElement implements MapperReference {
+public class DefaultMapperReference extends MapperReference {
 
     private final Type type;
     private final boolean isAnnotatedMapper;

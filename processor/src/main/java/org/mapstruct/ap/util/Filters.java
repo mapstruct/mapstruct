@@ -18,12 +18,13 @@
  */
 package org.mapstruct.ap.util;
 
+import static javax.lang.model.util.ElementFilter.methodsIn;
+
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-
-import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
  * Filter methods for working with {@link Element} collections.
@@ -32,17 +33,14 @@ import static javax.lang.model.util.ElementFilter.methodsIn;
  */
 public class Filters {
 
-    private final Executables executables;
-
-    public Filters(Executables executables) {
-        this.executables = executables;
+    private Filters() {
     }
 
-    public List<ExecutableElement> getterMethodsIn(Iterable<? extends Element> elements) {
+    public static List<ExecutableElement> getterMethodsIn(Iterable<? extends Element> elements) {
         List<ExecutableElement> getterMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : methodsIn( elements ) ) {
-            if ( executables.isGetterMethod( method ) ) {
+            if ( Executables.isGetterMethod( method ) ) {
                 getterMethods.add( method );
             }
         }
@@ -50,52 +48,14 @@ public class Filters {
         return getterMethods;
     }
 
-    public List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
+    public static List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
         List<ExecutableElement> setterMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : methodsIn( elements ) ) {
-            if ( executables.isSetterMethod( method ) ) {
+            if ( Executables.isSetterMethod( method ) ) {
                 setterMethods.add( method );
             }
         }
         return setterMethods;
-    }
-
-    /**
-     * A getter could be an alternative target-accessor if a setter is not available, and the
-     * target is a collection.
-     *
-     * Provided such a getter is initialized lazy by the target class, e.g. in generated JAXB beans.
-     *
-     * @param elements
-     *
-     * @return
-     */
-    public List<ExecutableElement> alternativeTargetAccessorMethodsIn(Iterable<? extends Element> elements) {
-        List<ExecutableElement> setterMethods = setterMethodsIn( elements );
-        List<ExecutableElement> getterMethods = getterMethodsIn( elements );
-        List<ExecutableElement> alternativeTargetAccessorsMethods = new LinkedList<ExecutableElement>();
-
-        if ( getterMethods.size() > setterMethods.size() ) {
-            // there could be a getter method for a list that is not present as setter.
-            // a getter could substitute the setter in that case and act as setter.
-            // (assuming it is initialized)
-            for ( ExecutableElement getterMethod : getterMethods ) {
-                boolean matchFound = false;
-                String getterPropertyName = executables.getPropertyName( getterMethod );
-                for ( ExecutableElement setterMethod : setterMethods ) {
-                    String setterPropertyName = executables.getPropertyName( setterMethod );
-                    if ( getterPropertyName.equals( setterPropertyName ) ) {
-                        matchFound = true;
-                        break;
-                    }
-                }
-                if ( !matchFound && executables.retrieveReturnType( getterMethod ).isCollectionType() ) {
-                    alternativeTargetAccessorsMethods.add( getterMethod );
-                }
-            }
-        }
-
-        return alternativeTargetAccessorsMethods;
     }
 }

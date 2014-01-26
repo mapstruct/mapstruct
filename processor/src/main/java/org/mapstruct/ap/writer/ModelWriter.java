@@ -26,8 +26,7 @@ import javax.tools.JavaFileObject;
 import freemarker.log.Logger;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
-import org.mapstruct.ap.model.ModelElement;
-import org.mapstruct.ap.model.ModelElement.Context;
+import org.mapstruct.ap.writer.Writable.Context;
 
 /**
  * Writes Java source files based on given mapper models, using a FreeMarker
@@ -60,7 +59,7 @@ public class ModelWriter {
         );
     }
 
-    public void writeModel(JavaFileObject sourceFile, ModelElement model) {
+    public void writeModel(JavaFileObject sourceFile, Writable model) {
         try {
             BufferedWriter writer = new BufferedWriter( new IndentationCorrectingWriter( sourceFile.openWriter() ) );
 

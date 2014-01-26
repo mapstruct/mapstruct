@@ -16,11 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.util;
+package org.mapstruct.ap.model.source;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
@@ -34,8 +35,7 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.model.Type;
-import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.common.Type;
 
 /**
  * MethodMatcher $8.4 of the JavaLanguage specification describes a method body as such:

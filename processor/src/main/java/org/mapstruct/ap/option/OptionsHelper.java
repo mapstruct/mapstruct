@@ -16,22 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.option;
 
-import org.mapstruct.ap.model.common.ModelElement;
-import org.mapstruct.ap.model.common.Type;
 
 /**
- * A reference to another mapper class, which itself may be generated or hand-written.
+ * Helper class for dealing with {@link Options}.
  *
- * @author Gunnar Morling
+ * @author Andreas Gudian
  */
-public abstract class MapperReference extends ModelElement {
+public class OptionsHelper {
+
+    private OptionsHelper() {
+    }
 
     /**
-     * Returns the type of the referenced mapper
+     * @param options the options
+     * @param locallyDeclaredComponentModel the locally declared component model
      *
-     * @return the type of the referenced mapper
+     * @return the effective component model to be used
      */
-    public abstract Type getMapperType();
+    public static String getEffectiveComponentModel(Options options, String locallyDeclaredComponentModel) {
+        if ( "default".equals( locallyDeclaredComponentModel ) ) {
+            return options.getDefaultComponentModel();
+        }
+
+        return locallyDeclaredComponentModel;
+    }
 }
