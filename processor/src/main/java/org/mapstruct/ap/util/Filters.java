@@ -33,17 +33,14 @@ import javax.lang.model.element.ExecutableElement;
  */
 public class Filters {
 
-    private final Executables executables;
-
-    public Filters(Executables executables) {
-        this.executables = executables;
+    private Filters() {
     }
 
-    public List<ExecutableElement> getterMethodsIn(Iterable<? extends Element> elements) {
+    public static List<ExecutableElement> getterMethodsIn(Iterable<? extends Element> elements) {
         List<ExecutableElement> getterMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : methodsIn( elements ) ) {
-            if ( executables.isGetterMethod( method ) ) {
+            if ( Executables.isGetterMethod( method ) ) {
                 getterMethods.add( method );
             }
         }
@@ -51,11 +48,11 @@ public class Filters {
         return getterMethods;
     }
 
-    public List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
+    public static List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
         List<ExecutableElement> setterMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : methodsIn( elements ) ) {
-            if ( executables.isSetterMethod( method ) ) {
+            if ( Executables.isSetterMethod( method ) ) {
                 setterMethods.add( method );
             }
         }

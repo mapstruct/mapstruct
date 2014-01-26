@@ -47,7 +47,6 @@ import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.MapMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.util.Executables;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link Method}s
@@ -61,13 +60,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private Messager messager;
     private TypeFactory typeFactory;
-    private Executables executables;
 
     @Override
     public List<Method> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
         this.messager = context.getMessager();
         this.typeFactory = context.getTypeFactory();
-        this.executables = new Executables();
 
         return retrieveMethods( mapperTypeElement, true );
     }

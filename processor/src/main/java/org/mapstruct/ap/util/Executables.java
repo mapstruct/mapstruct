@@ -34,14 +34,14 @@ import javax.lang.model.type.TypeKind;
  */
 public class Executables {
 
-    public Executables() {
+    private Executables() {
     }
 
-    public boolean isGetterMethod(ExecutableElement method) {
+    public static boolean isGetterMethod(ExecutableElement method) {
         return isPublic( method ) && ( isNonBooleanGetterMethod( method ) || isBooleanGetterMethod( method ) );
     }
 
-    private boolean isNonBooleanGetterMethod(ExecutableElement method) {
+    private static boolean isNonBooleanGetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
         return method.getParameters().isEmpty() &&
@@ -50,7 +50,7 @@ public class Executables {
             method.getReturnType().getKind() != TypeKind.VOID;
     }
 
-    private boolean isBooleanGetterMethod(ExecutableElement method) {
+    private static boolean isBooleanGetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
         return method.getParameters().isEmpty() &&
@@ -59,7 +59,7 @@ public class Executables {
             method.getReturnType().getKind() == TypeKind.BOOLEAN;
     }
 
-    public boolean isSetterMethod(ExecutableElement method) {
+    public static boolean isSetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
         if ( isPublic( method ) && name.startsWith( "set" ) && name.length() > 3 && method.getParameters()
@@ -70,11 +70,11 @@ public class Executables {
         return false;
     }
 
-    private boolean isPublic(ExecutableElement method) {
+    private static boolean isPublic(ExecutableElement method) {
         return method.getModifiers().contains( Modifier.PUBLIC );
     }
 
-    public String getPropertyName(ExecutableElement getterOrSetterMethod) {
+    public static String getPropertyName(ExecutableElement getterOrSetterMethod) {
         if ( isNonBooleanGetterMethod( getterOrSetterMethod ) ) {
             return Introspector.decapitalize(
                 getterOrSetterMethod.getSimpleName().toString().substring( 3 )
@@ -94,7 +94,7 @@ public class Executables {
         throw new IllegalArgumentException( "Executable " + getterOrSetterMethod + " is not getter or setter method." );
     }
 
-    public Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
+    public static Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
         Set<String> propertyNames = new HashSet<String>();
 
         for ( ExecutableElement executableElement : propertyAccessors ) {
