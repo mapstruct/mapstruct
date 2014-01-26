@@ -20,7 +20,7 @@ package org.mapstruct.ap.conversion;
 
 import org.mapstruct.ap.conversion.ConversionProvider.Context;
 import org.mapstruct.ap.model.Type;
-import org.mapstruct.ap.util.TypeFactory;
+import org.mapstruct.ap.model.TypeFactory;
 
 /**
  * Default implementation of the {@link Context} passed to conversion providers.

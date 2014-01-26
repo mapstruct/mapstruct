@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -56,6 +57,7 @@ import org.mapstruct.ap.model.Parameter;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.TypeFactory;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.MethodMatcher;
@@ -64,7 +66,6 @@ import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.Strings;
-import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -93,7 +94,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
         this.typeFactory = context.getTypeFactory();
         this.conversions = new Conversions( elementUtils, typeFactory );
-        this.executables = new Executables( typeFactory );
+        this.executables = new Executables();
         this.filters = new Filters( executables );
 
         return getMapper( mapperTypeElement, sourceModel );
@@ -290,7 +291,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             elementUtils.getAllMembers( resultTypeElement )
         );
         targetAccessors.addAll(
-            filters.alternativeTargetAccessorMethodsIn(
+            alternativeTargetAccessorMethodsIn(
                 elementUtils.getAllMembers( resultTypeElement )
             )
         );
@@ -405,7 +406,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             elementUtils.getAllMembers( resultTypeElement )
         );
         targetAccessors.addAll(
-            filters.alternativeTargetAccessorMethodsIn(
+            alternativeTargetAccessorMethodsIn(
                 elementUtils.getAllMembers( resultTypeElement )
             )
         );
@@ -487,16 +488,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     private PropertyMapping getPropertyMapping(List<Method> methods, Method method, Parameter parameter,
                                                ExecutableElement sourceAccessor, ExecutableElement targetAcessor,
                                                String dateFormat) {
-        Type sourceType = executables.retrieveReturnType( sourceAccessor );
+        Type sourceType = typeFactory.getReturnType( sourceAccessor );
         Type targetType = null;
         String conversionString = null;
         conversionString = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
 
         if ( executables.isSetterMethod( targetAcessor ) ) {
-            targetType = executables.retrieveSingleParameter( targetAcessor ).getType();
+            targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
         }
         else if ( executables.isGetterMethod( targetAcessor ) ) {
-            targetType = executables.retrieveReturnType( targetAcessor );
+            targetType = typeFactory.getReturnType( targetAcessor );
         }
 
         MappingMethodReference propertyMappingMethod = getMappingMethodReference( methods, sourceType, targetType );
@@ -785,5 +786,43 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         }
 
         return false;
+    }
+
+    /**
+     * A getter could be an alternative target-accessor if a setter is not available, and the
+     * target is a collection.
+     *
+     * Provided such a getter is initialized lazy by the target class, e.g. in generated JAXB beans.
+     *
+     * @param elements
+     *
+     * @return
+     */
+    private List<ExecutableElement> alternativeTargetAccessorMethodsIn(Iterable<? extends Element> elements) {
+        List<ExecutableElement> setterMethods = filters.setterMethodsIn( elements );
+        List<ExecutableElement> getterMethods = filters.getterMethodsIn( elements );
+        List<ExecutableElement> alternativeTargetAccessorsMethods = new LinkedList<ExecutableElement>();
+
+        if ( getterMethods.size() > setterMethods.size() ) {
+            // there could be a getter method for a list that is not present as setter.
+            // a getter could substitute the setter in that case and act as setter.
+            // (assuming it is initialized)
+            for ( ExecutableElement getterMethod : getterMethods ) {
+                boolean matchFound = false;
+                String getterPropertyName = executables.getPropertyName( getterMethod );
+                for ( ExecutableElement setterMethod : setterMethods ) {
+                    String setterPropertyName = executables.getPropertyName( setterMethod );
+                    if ( getterPropertyName.equals( setterPropertyName ) ) {
+                        matchFound = true;
+                        break;
+                    }
+                }
+                if ( !matchFound && typeFactory.getReturnType( getterMethod ).isCollectionType() ) {
+                    alternativeTargetAccessorsMethods.add( getterMethod );
+                }
+            }
+        }
+
+        return alternativeTargetAccessorsMethods;
     }
 }

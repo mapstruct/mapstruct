@@ -29,8 +29,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
-import org.mapstruct.ap.util.TypeFactory;
-
 /**
  * Represents a type implementing a mapper interface (annotated with {@code @Mapper}). This is the root object of the
  * mapper model.

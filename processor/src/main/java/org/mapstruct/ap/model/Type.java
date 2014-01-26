@@ -21,6 +21,7 @@ package org.mapstruct.ap.model;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
@@ -31,8 +32,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.Types;
-
-import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * Represents the type of a bean property, parameter etc. Each type corresponds to a {@link TypeMirror}, i.e. there are

@@ -27,8 +27,8 @@ import org.mapstruct.ap.model.Annotation;
 import org.mapstruct.ap.model.AnnotationMapperReference;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
+import org.mapstruct.ap.model.TypeFactory;
 import org.mapstruct.ap.option.OptionsHelper;
-import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * An {@link ModelElementProcessor} which converts the given {@link Mapper}

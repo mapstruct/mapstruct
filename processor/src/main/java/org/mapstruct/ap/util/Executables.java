@@ -19,18 +19,13 @@
 package org.mapstruct.ap.util;
 
 import java.beans.Introspector;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
-
-import org.mapstruct.ap.MappingTargetPrism;
-import org.mapstruct.ap.model.Parameter;
-import org.mapstruct.ap.model.Type;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.
@@ -39,10 +34,7 @@ import org.mapstruct.ap.model.Type;
  */
 public class Executables {
 
-    private final TypeFactory typeFactory;
-
-    public Executables(TypeFactory typeFactory) {
-        this.typeFactory = typeFactory;
+    public Executables() {
     }
 
     public boolean isGetterMethod(ExecutableElement method) {
@@ -111,44 +103,4 @@ public class Executables {
 
         return propertyNames;
     }
-
-    public Parameter retrieveSingleParameter(ExecutableElement method) {
-        List<? extends VariableElement> parameters = method.getParameters();
-
-        if ( parameters.size() != 1 ) {
-            //TODO: Log error
-            return null;
-        }
-
-        VariableElement parameter = parameters.get( 0 );
-
-        return new Parameter(
-            parameter.getSimpleName().toString(),
-            typeFactory.getType( parameter.asType() ),
-            false
-        );
-    }
-
-    public List<Parameter> retrieveParameters(ExecutableElement method) {
-        List<? extends VariableElement> parameters = method.getParameters();
-        List<Parameter> result = new ArrayList<Parameter>( parameters.size() );
-
-        for ( VariableElement parameter : parameters ) {
-            result
-                .add(
-                    new Parameter(
-                        parameter.getSimpleName().toString(),
-                        typeFactory.getType( parameter.asType() ),
-                        MappingTargetPrism.getInstanceOn( parameter ) != null
-                    )
-                );
-        }
-
-        return result;
-    }
-
-    public Type retrieveReturnType(ExecutableElement method) {
-        return typeFactory.getType( method.getReturnType() );
-    }
-
 }

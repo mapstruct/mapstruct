@@ -22,7 +22,7 @@ import java.util.Date;
 
 import org.mapstruct.ap.model.Type;
 import org.mapstruct.ap.model.TypeConversion;
-import org.mapstruct.ap.util.TypeFactory;
+import org.mapstruct.ap.model.TypeFactory;
 
 /**
  * Implementations create inline {@link TypeConversion}s such as

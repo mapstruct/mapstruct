@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.mapstruct.ap.util.Collections;
 import org.mapstruct.ap.util.Strings;
-import org.mapstruct.ap.util.TypeFactory;
 
 /**
  * Mapper reference which is retrieved via the {@code Mappers#getMapper()} method. Used by default if no other component
