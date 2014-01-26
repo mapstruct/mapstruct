@@ -23,6 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.model.common.ModelElement;
+import org.mapstruct.ap.model.common.Type;
+
 /**
  * An inline conversion between source and target type of a mapping.
  *

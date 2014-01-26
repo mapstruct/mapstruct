@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mapstruct.ap.model.common.Parameter;
+import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 
 /**

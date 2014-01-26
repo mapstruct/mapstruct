@@ -26,8 +26,8 @@ import java.util.Map;
 
 import javax.lang.model.util.Elements;
 
-import org.mapstruct.ap.model.Type;
-import org.mapstruct.ap.model.TypeFactory;
+import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
 
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 

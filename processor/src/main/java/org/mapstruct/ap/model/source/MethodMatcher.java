@@ -35,7 +35,7 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.model.common.Type;
 
 /**
  * MethodMatcher $8.4 of the JavaLanguage specification describes a method body as such:

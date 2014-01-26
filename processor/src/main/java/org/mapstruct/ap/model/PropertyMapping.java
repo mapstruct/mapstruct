@@ -21,6 +21,9 @@ package org.mapstruct.ap.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mapstruct.ap.model.common.ModelElement;
+import org.mapstruct.ap.model.common.Type;
+
 /**
  * Represents the mapping between a source and target property, e.g. from
  * {@code String Source#foo} to {@code int Target#bar}. Name and type of source

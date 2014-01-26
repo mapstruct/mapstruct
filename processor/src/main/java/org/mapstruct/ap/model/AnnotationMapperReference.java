@@ -21,6 +21,7 @@ package org.mapstruct.ap.model;
 import java.beans.Introspector;
 import java.util.Set;
 
+import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.util.Collections;
 import org.mapstruct.ap.util.Strings;
 

@@ -21,6 +21,9 @@ package org.mapstruct.ap.model;
 import java.util.Collections;
 import java.util.Set;
 
+import org.mapstruct.ap.model.common.ModelElement;
+import org.mapstruct.ap.model.common.Type;
+
 /**
  * Represents a Java 5 annotation.
  *

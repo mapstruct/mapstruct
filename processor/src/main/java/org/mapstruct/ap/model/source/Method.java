@@ -22,11 +22,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
-import org.mapstruct.ap.model.Parameter;
-import org.mapstruct.ap.model.Type;
+import org.mapstruct.ap.model.common.Parameter;
+import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.util.Strings;
 
 /**
