@@ -16,37 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.test.references.samename;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.references.samename.a.CustomMapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Represents a reference to {@link MappingMethod}.
- *
  * @author Gunnar Morling
  */
-public class MappingMethodReference extends MappingMethod {
+@Mapper(
+    componentModel = "jsr330",
+    uses = {
+        CustomMapper.class,
+        org.mapstruct.ap.test.references.samename.b.CustomMapper.class
+    })
+public interface Jsr330SourceTargetMapper {
 
-    private final MapperReference declaringMapper;
+    Jsr330SourceTargetMapper INSTANCE = Mappers.getMapper( Jsr330SourceTargetMapper.class );
 
-    public MappingMethodReference(Method method, MapperReference declaringMapper) {
-        super( method );
-        this.declaringMapper = declaringMapper;
-    }
-
-    public MapperReference getDeclaringMapper() {
-        return declaringMapper;
-    }
-
-    public String getMapperVariableName() {
-        return declaringMapper.getVariableName();
-    }
-
-    public Set<Type> getReferencedTypes() {
-        return new HashSet<Type>();
-    }
+    Target sourceToTarget(Source source);
 }
