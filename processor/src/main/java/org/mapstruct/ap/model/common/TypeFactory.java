@@ -35,7 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -96,6 +95,13 @@ public class TypeFactory {
 
     public Type getType(String canonicalName) {
         TypeElement typeElement = elementUtils.getTypeElement( canonicalName );
+
+        if ( typeElement == null ) {
+            throw new AnnotationProcessingException(
+                "Couldn't find type " + canonicalName + ". Are you missing a dependency on your classpath?"
+            );
+        }
+
         return getType( typeElement );
     }
 
