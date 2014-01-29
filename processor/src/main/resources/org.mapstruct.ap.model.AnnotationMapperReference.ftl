@@ -18,5 +18,5 @@
      limitations under the License.
 
 -->
-    <#nt><@includeModel object=annotation/>
-    private ${mapperType.name} ${variableName};
+<#nt><@includeModel object=annotation/>
+private <@includeModel object=mapperType/> ${variableName};

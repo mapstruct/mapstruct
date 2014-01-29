@@ -28,10 +28,29 @@ import org.mapstruct.ap.model.common.Type;
  */
 public abstract class MapperReference extends ModelElement {
 
+    private final Type type;
+    private final String variableName;
+
+    public MapperReference(Type type, String variableName) {
+        this.type = type;
+        this.variableName = variableName;
+    }
+
     /**
      * Returns the type of the referenced mapper
      *
      * @return the type of the referenced mapper
      */
-    public abstract Type getMapperType();
+    public Type getMapperType() {
+        return type;
+    }
+
+    /**
+     * Returns the variable name of this reference.
+     *
+     * @return the variable name of this reference
+     */
+    public String getVariableName() {
+        return variableName;
+    }
 }

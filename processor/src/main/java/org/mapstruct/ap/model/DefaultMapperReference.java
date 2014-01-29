@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model;
 
 import java.beans.Introspector;
+import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.model.common.Type;
@@ -34,33 +35,33 @@ import org.mapstruct.ap.util.Strings;
  */
 public class DefaultMapperReference extends MapperReference {
 
-    private final Type type;
     private final boolean isAnnotatedMapper;
     private final Set<Type> importTypes;
 
-    public DefaultMapperReference(Type type, boolean isAnnotatedMapper, TypeFactory typeFactory) {
-        this.type = type;
-
+    private DefaultMapperReference(Type type, boolean isAnnotatedMapper, Set<Type> importTypes, String variableName) {
+        super( type, variableName );
         this.isAnnotatedMapper = isAnnotatedMapper;
-        importTypes = Collections.asSet( type );
-
-        if ( isAnnotatedMapper() ) {
-            importTypes.add( typeFactory.getType( "org.mapstruct.factory.Mappers" ) );
-        }
+        this.importTypes = importTypes;
     }
 
-    @Override
-    public Type getMapperType() {
-        return type;
+    public static DefaultMapperReference getInstance(Type type, boolean isAnnotatedMapper, TypeFactory typeFactory,
+                                                     List<String> otherMapperReferences) {
+        Set<Type> importTypes = Collections.asSet( type );
+        if ( isAnnotatedMapper ) {
+            importTypes.add( typeFactory.getType( "org.mapstruct.factory.Mappers" ) );
+        }
+
+        String variableName = Strings.getSaveVariableName(
+            Introspector.decapitalize( type.getName() ),
+            otherMapperReferences
+        );
+
+        return new DefaultMapperReference( type, isAnnotatedMapper, importTypes, variableName );
     }
 
     @Override
     public Set<Type> getImportTypes() {
         return importTypes;
-    }
-
-    public String getVariableName() {
-        return Strings.getSaveVariableName( Introspector.decapitalize( type.getName() ) );
     }
 
     public boolean isAnnotatedMapper() {

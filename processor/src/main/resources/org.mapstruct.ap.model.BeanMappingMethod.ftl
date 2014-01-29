@@ -19,13 +19,13 @@
 
 -->
 @Override
-public ${returnType.name} ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
+public <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
     if ( <#list sourceParameters as sourceParam>${sourceParam.name} == null<#if sourceParam_has_next> && </#if></#list> ) {
         return<#if returnType.name != "void"> null</#if>;
     }
 
     <#if !existingInstanceMapping>
-    ${resultType.name} ${resultName} = new ${resultType.name}();
+    <@includeModel object=resultType/> ${resultName} = new <@includeModel object=resultType/>();
 
     </#if>
     <#if (sourceParameters?size > 1)>

@@ -16,37 +16,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.test.references.samename.a;
 
-import java.util.HashSet;
-import java.util.Set;
+public class CustomMapper {
 
-import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.Method;
-
-/**
- * Represents a reference to {@link MappingMethod}.
- *
- * @author Gunnar Morling
- */
-public class MappingMethodReference extends MappingMethod {
-
-    private final MapperReference declaringMapper;
-
-    public MappingMethodReference(Method method, MapperReference declaringMapper) {
-        super( method );
-        this.declaringMapper = declaringMapper;
-    }
-
-    public MapperReference getDeclaringMapper() {
-        return declaringMapper;
-    }
-
-    public String getMapperVariableName() {
-        return declaringMapper.getVariableName();
-    }
-
-    public Set<Type> getReferencedTypes() {
-        return new HashSet<Type>();
+    public String intToString(int i) {
+        return String.valueOf( i * 2 );
     }
 }

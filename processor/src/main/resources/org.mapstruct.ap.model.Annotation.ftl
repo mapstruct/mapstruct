@@ -18,4 +18,4 @@
      limitations under the License.
 
 -->
-@${type.name}
+@<@includeModel object=type/>

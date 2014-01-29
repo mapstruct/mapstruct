@@ -16,37 +16,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.test.imports;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
 
-import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.Method;
+public class ParseException {
 
-/**
- * Represents a reference to {@link MappingMethod}.
- *
- * @author Gunnar Morling
- */
-public class MappingMethodReference extends MappingMethod {
+    private String foo;
+    private String bar;
+    private Date qax;
 
-    private final MapperReference declaringMapper;
-
-    public MappingMethodReference(Method method, MapperReference declaringMapper) {
-        super( method );
-        this.declaringMapper = declaringMapper;
+    public String getFoo() {
+        return foo;
     }
 
-    public MapperReference getDeclaringMapper() {
-        return declaringMapper;
+    public void setFoo(String foo) {
+        this.foo = foo;
     }
 
-    public String getMapperVariableName() {
-        return declaringMapper.getVariableName();
+    public String getBar() {
+        return bar;
     }
 
-    public Set<Type> getReferencedTypes() {
-        return new HashSet<Type>();
+    public void setBar(String bar) {
+        this.bar = bar;
+    }
+
+    public Date getQax() {
+        return qax;
+    }
+
+    public void setQax(Date qax) {
+        this.qax = qax;
     }
 }

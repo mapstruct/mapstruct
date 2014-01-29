@@ -16,34 +16,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.test.imports;
 
-import java.util.Set;
+public class Map {
 
-import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.util.Collections;
-
-/**
- * Mapper reference which is retrieved via Annotation-based dependency injection.
- *
- * @author Gunnar Morling
- * @author Andreas Gudian
- */
-public class AnnotationMapperReference extends MapperReference {
-
-    private final Annotation annotation;
-
-    public AnnotationMapperReference(Type type, String variableName, Annotation annotation) {
-        super( type, variableName );
-        this.annotation = annotation;
-    }
-
-    public Annotation getAnnotation() {
-        return annotation;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        return Collections.asSet( annotation.getImportTypes(), super.getMapperType() );
-    }
 }

@@ -80,7 +80,7 @@ public abstract class MapperTestBase {
     private DiagnosticCollector<JavaFileObject> diagnostics;
 
     public MapperTestBase() {
-        this.libraries = Arrays.asList( "mapstruct.jar", "guava.jar" );
+        this.libraries = Arrays.asList( "mapstruct.jar", "guava.jar", "javax.inject.jar" );
     }
 
     @BeforeClass

@@ -39,7 +39,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.Mapper;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.processor.DefaultModelElementProcessorContext;
@@ -122,7 +121,6 @@ public class MappingProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnvironment) {
-        ProcessorContext context = new DefaultModelElementProcessorContext( processingEnv, options );
 
         for ( TypeElement annotation : annotations ) {
 
@@ -134,6 +132,13 @@ public class MappingProcessor extends AbstractProcessor {
 
             for ( Element mapperElement : roundEnvironment.getElementsAnnotatedWith( annotation ) ) {
                 TypeElement mapperTypeElement = asTypeElement( mapperElement );
+
+                // create a new context for each generated mapper in order to have imports of referenced types
+                // correctly managed;
+                // note that this assumes that a new source file is created for each mapper which must not
+                // necessarily be the case, e.g. in case of several mapper interfaces declared as inner types
+                // of one outer interface
+                ProcessorContext context = new DefaultModelElementProcessorContext( processingEnv, options );
                 processMapperTypeElement( context, mapperTypeElement );
             }
         }

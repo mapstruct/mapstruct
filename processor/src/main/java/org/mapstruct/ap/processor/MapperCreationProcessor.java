@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -103,8 +102,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private Mapper getMapper(TypeElement element, List<Method> methods) {
         ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy( element );
-        List<MappingMethod> mappingMethods = getMappingMethods( methods, unmappedTargetPolicy );
         List<MapperReference> mapperReferences = getReferencedMappers( element );
+        List<MappingMethod> mappingMethods = getMappingMethods( mapperReferences, methods, unmappedTargetPolicy );
 
         return new Mapper.Builder()
             .element( element )
@@ -143,22 +142,27 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private List<MapperReference> getReferencedMappers(TypeElement element) {
         List<MapperReference> mapperReferences = new LinkedList<MapperReference>();
+        List<String> variableNames = new LinkedList<String>();
+
         MapperPrism mapperPrism = MapperPrism.getInstanceOn( element );
 
         for ( TypeMirror usedMapper : mapperPrism.uses() ) {
-            mapperReferences.add(
-                new DefaultMapperReference(
-                    typeFactory.getType( usedMapper ),
-                    MapperPrism.getInstanceOn( typeUtils.asElement( usedMapper ) ) != null,
-                    typeFactory
-                )
+            DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
+                typeFactory.getType( usedMapper ),
+                MapperPrism.getInstanceOn( typeUtils.asElement( usedMapper ) ) != null,
+                typeFactory,
+                variableNames
             );
+
+            mapperReferences.add( mapperReference );
+            variableNames.add( mapperReference.getVariableName() );
         }
 
         return mapperReferences;
     }
 
-    private List<MappingMethod> getMappingMethods(List<Method> methods, ReportingPolicy unmappedTargetPolicy) {
+    private List<MappingMethod> getMappingMethods(List<MapperReference> mapperReferences, List<Method> methods,
+                                                  ReportingPolicy unmappedTargetPolicy) {
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>();
 
         for ( Method method : methods ) {
@@ -175,14 +179,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                     reverseMappingMethod.getIterableMapping() != null ) {
                     method.setIterableMapping( reverseMappingMethod.getIterableMapping() );
                 }
-                mappingMethods.add( getIterableMappingMethod( methods, method ) );
+                mappingMethods.add( getIterableMappingMethod( mapperReferences, methods, method ) );
             }
             else if ( method.isMapMapping() ) {
                 if ( method.getMapMapping() == null && reverseMappingMethod != null &&
                     reverseMappingMethod.getMapMapping() != null ) {
                     method.setMapMapping( reverseMappingMethod.getMapMapping() );
                 }
-                mappingMethods.add( getMapMappingMethod( methods, method ) );
+                mappingMethods.add( getMapMappingMethod( mapperReferences, methods, method ) );
             }
             else {
                 if ( method.getMappings().isEmpty() ) {
@@ -190,7 +194,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                         method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
                     }
                 }
-                MappingMethod beanMappingMethod = getBeanMappingMethod( methods, method, unmappedTargetPolicy );
+                MappingMethod beanMappingMethod = getBeanMappingMethod(
+                    mapperReferences,
+                    methods,
+                    method,
+                    unmappedTargetPolicy
+                );
                 if ( beanMappingMethod != null ) {
                     mappingMethods.add( beanMappingMethod );
                 }
@@ -228,8 +237,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return reversed;
     }
 
-    private PropertyMapping getPropertyMapping(List<Method> methods, Method method, ExecutableElement targetAcessor,
-                                               Parameter parameter) {
+    private PropertyMapping getPropertyMapping(List<MapperReference> mapperReferences, List<Method> methods,
+                                               Method method, ExecutableElement targetAcessor, Parameter parameter) {
         String targetPropertyName = Executables.getPropertyName( targetAcessor );
         Mapping mapping = method.getMapping( targetPropertyName );
         String dateFormat = mapping != null ? mapping.getDateFormat() : null;
@@ -248,6 +257,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                     if ( Executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) &&
                         !mapsToOtherTarget ) {
                         return getPropertyMapping(
+                            mapperReferences,
                             methods,
                             method,
                             parameter,
@@ -260,6 +270,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             }
             else if ( Executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) ) {
                 return getPropertyMapping(
+                    mapperReferences,
                     methods,
                     method,
                     parameter,
@@ -273,8 +284,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return null;
     }
 
-    private MappingMethod getBeanMappingMethod(List<Method> methods, Method method,
-                                               ReportingPolicy unmappedTargetPolicy) {
+    private MappingMethod getBeanMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
+                                               Method method, ReportingPolicy unmappedTargetPolicy) {
         List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         Set<String> mappedTargetProperties = new HashSet<String>();
 
@@ -300,12 +311,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             PropertyMapping propertyMapping = null;
             if ( mapping != null && mapping.getSourceParameterName() != null ) {
                 Parameter parameter = method.getSourceParameter( mapping.getSourceParameterName() );
-                propertyMapping = getPropertyMapping( methods, method, targetAccessor, parameter );
+                propertyMapping = getPropertyMapping( mapperReferences, methods, method, targetAccessor, parameter );
             }
 
             if ( propertyMapping == null ) {
                 for ( Parameter sourceParameter : method.getSourceParameters() ) {
                     PropertyMapping newPropertyMapping = getPropertyMapping(
+                        mapperReferences,
                         methods,
                         method,
                         targetAccessor,
@@ -481,9 +493,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return !foundUnmappedProperty;
     }
 
-    private PropertyMapping getPropertyMapping(List<Method> methods, Method method, Parameter parameter,
-                                               ExecutableElement sourceAccessor, ExecutableElement targetAcessor,
-                                               String dateFormat) {
+    private PropertyMapping getPropertyMapping(List<MapperReference> mapperReferences, List<Method> methods,
+                                               Method method, Parameter parameter, ExecutableElement sourceAccessor,
+                                               ExecutableElement targetAcessor, String dateFormat) {
         Type sourceType = typeFactory.getReturnType( sourceAccessor );
         Type targetType = null;
         String conversionString = null;
@@ -496,7 +508,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             targetType = typeFactory.getReturnType( targetAcessor );
         }
 
-        MappingMethodReference propertyMappingMethod = getMappingMethodReference( methods, sourceType, targetType );
+        MappingMethodReference propertyMappingMethod = getMappingMethodReference(
+            mapperReferences,
+            methods,
+            sourceType,
+            targetType
+        );
         TypeConversion conversion = getConversion(
             sourceType,
             targetType,
@@ -524,7 +541,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return property;
     }
 
-    private MappingMethod getIterableMappingMethod(List<Method> methods, Method method) {
+    private MappingMethod getIterableMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
+                                                   Method method) {
         Type sourceElementType = method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
         Type targetElementType = method.getResultType().getTypeParameters().get( 0 );
 
@@ -539,7 +557,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
 
         MappingMethodReference elementMappingMethod =
-            getMappingMethodReference( methods, sourceElementType, targetElementType );
+            getMappingMethodReference( mapperReferences, methods, sourceElementType, targetElementType );
 
         if ( !sourceElementType.isAssignableTo( targetElementType ) && conversion == null &&
             elementMappingMethod == null ) {
@@ -561,7 +579,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
     }
 
-    private MappingMethod getMapMappingMethod(List<Method> methods, Method method) {
+    private MappingMethod getMapMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
+                                              Method method) {
         List<Type> sourceTypeParams = method.getSourceParameters().iterator().next().getType().getTypeParameters();
         Type sourceKeyType = sourceTypeParams.get( 0 );
         Type sourceValueType = sourceTypeParams.get( 1 );
@@ -581,8 +600,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             "entry.getValue()"
         );
 
-        MappingMethodReference keyMappingMethod = getMappingMethodReference( methods, sourceKeyType, targetKeyType );
+        MappingMethodReference keyMappingMethod = getMappingMethodReference(
+            mapperReferences,
+            methods,
+            sourceKeyType,
+            targetKeyType
+        );
         MappingMethodReference valueMappingMethod = getMappingMethodReference(
+            mapperReferences,
             methods,
             sourceValueType,
             targetValueType
@@ -629,7 +654,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
     }
 
-    private MappingMethodReference getMappingMethodReference(Iterable<Method> methods, Type parameterType,
+    private MappingMethodReference getMappingMethodReference(List<MapperReference> mapperReferences,
+                                                             Iterable<Method> methods, Type parameterType,
                                                              Type returnType) {
         List<Method> candidatesWithMathingTargetType = new ArrayList<Method>();
 
@@ -678,7 +704,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             );
         }
 
-        return new MappingMethodReference( candidatesWithBestMatchingSourceType.get( 0 ) );
+        Method method = candidatesWithBestMatchingSourceType.get( 0 );
+        MapperReference mapperReference = null;
+
+        for ( MapperReference ref : mapperReferences ) {
+            if ( ref.getMapperType().equals( method.getDeclaringMapper() ) ) {
+                mapperReference = ref;
+                break;
+            }
+        }
+
+        return new MappingMethodReference( method, mapperReference );
     }
 
     private int addToCandidateListIfMinimal(List<Method> candidatesWithBestMathingType, int bestMatchingTypeDistance,

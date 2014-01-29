@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.annotation.Generated;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -149,7 +148,8 @@ public class Mapper extends ModelElement {
             return;
         }
 
-        if ( typeToAdd.getPackageName() != null &&
+        if ( typeToAdd.isImported() &&
+            typeToAdd.getPackageName() != null &&
             !typeToAdd.getPackageName().equals( packageName ) &&
             !typeToAdd.getPackageName().startsWith( "java.lang" ) ) {
             collection.add( typeToAdd );

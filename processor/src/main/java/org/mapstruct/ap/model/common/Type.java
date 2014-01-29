@@ -21,21 +21,16 @@ package org.mapstruct.ap.model.common;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.Types;
 
 /**
- * Represents the type of a bean property, parameter etc. Each type corresponds to a {@link TypeMirror}, i.e. there are
- * different instances for e.g. {@code Set<String>} and {@code Set<Integer>}.
+ * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
+ * Each type corresponds to a {@link TypeMirror}, i.e. there are different instances for e.g. {@code Set<String>} and
+ * {@code Set<Integer>}.
  * <p>
  * Allows for a unified handling of declared and primitive types and usage within templates. Instances are obtained
  * through {@link TypeFactory}.
@@ -44,58 +39,46 @@ import javax.lang.model.util.Types;
  */
 public class Type extends ModelElement implements Comparable<Type> {
 
+    private final Types typeUtils;
+
+    private final TypeMirror typeMirror;
+    private final TypeElement typeElement;
+    private final List<Type> typeParameters;
+
+    private final Type implementationType;
+
     private final String packageName;
     private final String name;
     private final String qualifiedName;
-    private final List<Type> typeParameters;
+
     private final boolean isInterface;
     private final boolean isEnumType;
     private final boolean isIterableType;
     private final boolean isCollectionType;
     private final boolean isMapType;
-    private final Type implementationType;
-    private final TypeMirror typeMirror;
-    private final Types typeUtils;
-    private final TypeElement typeElement;
+    private final boolean isImported;
 
-    public Type(TypeMirror typeMirror, List<Type> typeParameters, Type implementationType, boolean isIterableType,
-                boolean isCollectionType, boolean isMapType, Types typeUtils,
-                Elements elementUtils) {
+    //CHECKSTYLE:OFF
+    public Type(Types typeUtils, TypeMirror typeMirror, TypeElement typeElement, List<Type> typeParameters,
+                Type implementationType, String packageName, String name, String qualifiedName, boolean isInterface,
+                boolean isEnumType, boolean isIterableType, boolean isCollectionType, boolean isMapType,
+                boolean isImported) {
+        this.typeUtils = typeUtils;
         this.typeMirror = typeMirror;
-        this.implementationType = implementationType;
+        this.typeElement = typeElement;
         this.typeParameters = typeParameters;
+        this.implementationType = implementationType;
+        this.packageName = packageName;
+        this.name = name;
+        this.qualifiedName = qualifiedName;
+        this.isInterface = isInterface;
+        this.isEnumType = isEnumType;
         this.isIterableType = isIterableType;
         this.isCollectionType = isCollectionType;
         this.isMapType = isMapType;
-        this.typeUtils = typeUtils;
-
-        DeclaredType declaredType = typeMirror.getKind() == TypeKind.DECLARED ? (DeclaredType) typeMirror : null;
-
-        if ( declaredType != null ) {
-            isEnumType = declaredType.asElement().getKind() == ElementKind.ENUM;
-            isInterface = declaredType.asElement().getKind() == ElementKind.INTERFACE;
-            name = declaredType.asElement().getSimpleName().toString();
-
-            typeElement = declaredType.asElement().accept( new TypeElementRetrievalVisitor(), null );
-
-            if ( typeElement != null ) {
-                packageName = elementUtils.getPackageOf( typeElement ).getQualifiedName().toString();
-                qualifiedName = typeElement.getQualifiedName().toString();
-            }
-            else {
-                packageName = null;
-                qualifiedName = name;
-            }
-        }
-        else {
-            isEnumType = false;
-            isInterface = false;
-            typeElement = null;
-            name = typeMirror.toString();
-            packageName = null;
-            qualifiedName = name;
-        }
+        this.isImported = isImported;
     }
+    //CHECKSTYLE:ON
 
     public TypeMirror getTypeMirror() {
         return typeMirror;
@@ -159,8 +142,18 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     @Override
     public Set<Type> getImportTypes() {
-        return implementationType != null ? org.mapstruct.ap.util.Collections.<Type>asSet( implementationType ) :
-            Collections.<Type>emptySet();
+        return implementationType != null ? Collections.singleton( implementationType ) : Collections.<Type>emptySet();
+    }
+
+    /**
+     * Whether this type is imported by means of an import statement in the currently generated source file (meaning it
+     * can be referenced in the generated source using its simple name) or not (meaning it has to be referenced using
+     * the fully-qualified name).
+     *
+     * @return {@code true} if the type is imported, {@code false} otherwise.
+     */
+    public boolean isImported() {
+        return isImported;
     }
 
     /**
@@ -265,12 +258,5 @@ public class Type extends ModelElement implements Comparable<Type> {
     @Override
     public String toString() {
         return typeMirror.toString();
-    }
-
-    private static class TypeElementRetrievalVisitor extends SimpleElementVisitor6<TypeElement, Void> {
-        @Override
-        public TypeElement visitType(TypeElement e, Void p) {
-            return e;
-        }
     }
 }

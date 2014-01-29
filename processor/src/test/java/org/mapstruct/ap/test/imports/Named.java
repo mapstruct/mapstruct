@@ -16,37 +16,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.test.imports;
 
-import java.util.HashSet;
-import java.util.Set;
+public class Named {
 
-import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.Method;
+    private int foo;
+    private long bar;
+    private String qax;
 
-/**
- * Represents a reference to {@link MappingMethod}.
- *
- * @author Gunnar Morling
- */
-public class MappingMethodReference extends MappingMethod {
-
-    private final MapperReference declaringMapper;
-
-    public MappingMethodReference(Method method, MapperReference declaringMapper) {
-        super( method );
-        this.declaringMapper = declaringMapper;
+    public int getFoo() {
+        return foo;
     }
 
-    public MapperReference getDeclaringMapper() {
-        return declaringMapper;
+    public void setFoo(int foo) {
+        this.foo = foo;
     }
 
-    public String getMapperVariableName() {
-        return declaringMapper.getVariableName();
+    public long getBar() {
+        return bar;
     }
 
-    public Set<Type> getReferencedTypes() {
-        return new HashSet<Type>();
+    public void setBar(long bar) {
+        this.bar = bar;
+    }
+
+    public String getQax() {
+        return qax;
+    }
+
+    public void setQax(String qax) {
+        this.qax = qax;
     }
 }

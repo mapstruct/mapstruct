@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -43,6 +43,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.prism.MappingTargetPrism;
@@ -63,6 +64,7 @@ public class TypeFactory {
     private final TypeMirror mapType;
 
     private final Map<String, Type> implementationTypes = new HashMap<String, Type>();
+    private final Map<String, String> importedQualifiedTypesBySimpleName = new HashMap<String, String>();
 
     public TypeFactory(Elements elementUtils, Types typeUtils) {
         this.elementUtils = elementUtils;
@@ -96,6 +98,13 @@ public class TypeFactory {
 
     public Type getType(String canonicalName) {
         TypeElement typeElement = elementUtils.getTypeElement( canonicalName );
+
+        if ( typeElement == null ) {
+            throw new AnnotationProcessingException(
+                "Couldn't find type " + canonicalName + ". Are you missing a dependency on your classpath?"
+            );
+        }
+
         return getType( typeElement );
     }
 
@@ -123,15 +132,55 @@ public class TypeFactory {
             mapType
         );
 
+        boolean isEnumType;
+        boolean isInterface;
+        String name;
+        String packageName;
+        TypeElement typeElement;
+        String qualifiedName;
+
+        DeclaredType declaredType = mirror.getKind() == TypeKind.DECLARED ? (DeclaredType) mirror : null;
+
+        if ( declaredType != null ) {
+            isEnumType = declaredType.asElement().getKind() == ElementKind.ENUM;
+            isInterface = declaredType.asElement().getKind() == ElementKind.INTERFACE;
+            name = declaredType.asElement().getSimpleName().toString();
+
+            typeElement = declaredType.asElement().accept( new TypeElementRetrievalVisitor(), null );
+
+            if ( typeElement != null ) {
+                packageName = elementUtils.getPackageOf( typeElement ).getQualifiedName().toString();
+                qualifiedName = typeElement.getQualifiedName().toString();
+            }
+            else {
+                packageName = null;
+                qualifiedName = name;
+            }
+        }
+        else {
+            isEnumType = false;
+            isInterface = false;
+            typeElement = null;
+            name = mirror.toString();
+            packageName = null;
+            qualifiedName = name;
+        }
+
         return new Type(
+            typeUtils,
             mirror,
+            typeElement,
             getTypeParameters( mirror ),
             implementationType,
+            packageName,
+            name,
+            qualifiedName,
+            isInterface,
+            isEnumType,
             isIterableType,
             isCollectionType,
             isMapType,
-            typeUtils,
-            elementUtils
+            isImported( name, qualifiedName )
         );
     }
 
@@ -215,20 +264,49 @@ public class TypeFactory {
 
         if ( implementationType != null ) {
             return new Type(
+                typeUtils,
                 typeUtils.getDeclaredType(
                     implementationType.getTypeElement(),
                     declaredType.getTypeArguments().toArray( new TypeMirror[] { } )
                 ),
+                implementationType.getTypeElement(),
                 getTypeParameters( mirror ),
                 null,
+                implementationType.getPackageName(),
+                implementationType.getName(),
+                implementationType.getFullyQualifiedName(),
+                implementationType.isInterface(),
+                implementationType.isEnumType(),
                 implementationType.isIterableType(),
                 implementationType.isCollectionType(),
                 implementationType.isMapType(),
-                typeUtils,
-                elementUtils
+                isImported( implementationType.getName(), implementationType.getFullyQualifiedName() )
             );
         }
 
         return null;
+    }
+
+    private boolean isImported(String name, String qualifiedName) {
+        String importedType = importedQualifiedTypesBySimpleName.get( name );
+
+        boolean imported = false;
+        if ( importedType != null ) {
+            if ( importedType.equals( qualifiedName ) ) {
+                imported = true;
+            }
+        }
+        else {
+            importedQualifiedTypesBySimpleName.put( name, qualifiedName );
+            imported = true;
+        }
+        return imported;
+    }
+
+    private static class TypeElementRetrievalVisitor extends SimpleElementVisitor6<TypeElement, Void> {
+        @Override
+        public TypeElement visitType(TypeElement e, Void p) {
+            return e;
+        }
     }
 }
