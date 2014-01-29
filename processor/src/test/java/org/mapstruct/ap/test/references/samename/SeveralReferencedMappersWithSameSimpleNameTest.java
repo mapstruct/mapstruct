@@ -18,7 +18,10 @@
  */
 package org.mapstruct.ap.test.references.samename;
 
+import org.mapstruct.ap.test.references.samename.a.AnotherSourceTargetMapper;
 import org.mapstruct.ap.test.references.samename.a.CustomMapper;
+import org.mapstruct.ap.test.references.samename.model.Source;
+import org.mapstruct.ap.test.references.samename.model.Target;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -33,8 +36,13 @@ import static org.fest.assertions.Assertions.assertThat;
  */
 @IssueKey("112")
 @WithClasses({
-    Source.class, Target.class, SourceTargetMapper.class, CustomMapper.class,
-    org.mapstruct.ap.test.references.samename.b.CustomMapper.class, Jsr330SourceTargetMapper.class
+    Source.class,
+    Target.class,
+    SourceTargetMapper.class,
+    CustomMapper.class,
+    org.mapstruct.ap.test.references.samename.b.CustomMapper.class,
+    Jsr330SourceTargetMapper.class,
+    AnotherSourceTargetMapper.class
 })
 public class SeveralReferencedMappersWithSameSimpleNameTest extends MapperTestBase {
 
@@ -45,6 +53,19 @@ public class SeveralReferencedMappersWithSameSimpleNameTest extends MapperTestBa
         source.setBar( 456L );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getFoo() ).isEqualTo( "246" );
+        assertThat( target.getBar() ).isEqualTo( "912" );
+    }
+
+    @Test
+    public void mapperInSamePackageAndAnotherMapperWithSameNameInAnotherPackageCanBeReferenced() {
+        Source source = new Source();
+        source.setFoo( 123 );
+        source.setBar( 456L );
+
+        Target target = AnotherSourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
         assertThat( target.getFoo() ).isEqualTo( "246" );

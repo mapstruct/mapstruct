@@ -16,12 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.references.samename;
+package org.mapstruct.ap.test.imports;
 
-public class Target {
+import java.util.Date;
+
+public class ParseException {
 
     private String foo;
     private String bar;
+    private Date qax;
 
     public String getFoo() {
         return foo;
@@ -37,5 +40,13 @@ public class Target {
 
     public void setBar(String bar) {
         this.bar = bar;
+    }
+
+    public Date getQax() {
+        return qax;
+    }
+
+    public void setQax(Date qax) {
+        this.qax = qax;
     }
 }

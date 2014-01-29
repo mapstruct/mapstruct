@@ -20,6 +20,8 @@ package org.mapstruct.ap.test.references.samename;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.references.samename.a.CustomMapper;
+import org.mapstruct.ap.test.references.samename.model.Source;
+import org.mapstruct.ap.test.references.samename.model.Target;
 import org.mapstruct.factory.Mappers;
 
 /**

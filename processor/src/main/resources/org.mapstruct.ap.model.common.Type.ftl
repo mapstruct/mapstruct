@@ -18,4 +18,4 @@
      limitations under the License.
 
 -->
-${name}<#if (typeParameters?size > 0) ><<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>></#if>
+<#if imported>${name}<#else>${fullyQualifiedName}</#if><#if (typeParameters?size > 0) ><<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>></#if>

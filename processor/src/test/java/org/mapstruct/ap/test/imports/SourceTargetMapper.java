@@ -16,26 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.references.samename;
+package org.mapstruct.ap.test.imports;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.references.samename.a.CustomMapper;
-import org.mapstruct.ap.test.references.samename.model.Source;
-import org.mapstruct.ap.test.references.samename.model.Target;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Gunnar Morling
  */
-@Mapper(
-    componentModel = "jsr330",
-    uses = {
-        CustomMapper.class,
-        org.mapstruct.ap.test.references.samename.b.CustomMapper.class
-    })
-public interface Jsr330SourceTargetMapper {
+@Mapper(componentModel = "jsr330")
+public interface SourceTargetMapper {
 
-    Jsr330SourceTargetMapper INSTANCE = Mappers.getMapper( Jsr330SourceTargetMapper.class );
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    Target sourceToTarget(Source source);
+    ParseException sourceToTarget(Named source);
+
+    //custom types
+    Map listToMap(List list);
+
+    java.util.List<ParseException> namedsToExceptions(java.util.List<Named> source);
 }

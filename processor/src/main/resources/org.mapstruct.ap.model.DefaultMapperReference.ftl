@@ -18,4 +18,4 @@
      limitations under the License.
 
 -->
-private final ${mapperType.name} ${variableName} = <#if annotatedMapper>Mappers.getMapper( ${mapperType.name}.class );<#else>new ${mapperType.name}();</#if>
+private final <@includeModel object=mapperType/> ${variableName} = <#if annotatedMapper>Mappers.getMapper( <@includeModel object=mapperType/>.class );<#else>new <@includeModel object=mapperType/>();</#if>

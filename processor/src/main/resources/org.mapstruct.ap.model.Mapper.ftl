@@ -34,12 +34,10 @@ import ${importedType.fullyQualifiedName};
 public class ${implementationName} <#if superTypeInterface>implements<#else>extends</#if> ${interfaceName} {
 <#list referencedMappers as mapper>
 
-    <@includeModel object=mapper/>
+<#nt>    <@includeModel object=mapper/>
 </#list>
 <#list mappingMethods as mappingMethod>
 
-
-<@includeModel object=mappingMethod/>
+<#nt>    <@includeModel object=mappingMethod/>
 </#list>
-
 }
