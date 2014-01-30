@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.testutil;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -32,6 +34,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
@@ -48,8 +51,6 @@ import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Base class for all mapper tests.
@@ -69,6 +70,7 @@ import static org.fest.assertions.Assertions.assertThat;
  */
 public abstract class MapperTestBase {
 
+    private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     private static final DiagnosticDescriptorComparator COMPARATOR = new DiagnosticDescriptorComparator();
 
     private JavaCompiler compiler;
@@ -153,11 +155,11 @@ public abstract class MapperTestBase {
         assertThat( actualDiagnostics ).describedAs(
             String.format(
                 "Numbers of expected and actual diagnostics are diffent. Actual:%s%s%sExpected:%s%s.",
-                System.lineSeparator(),
-                actualDiagnostics.toString().replace( ", ", System.lineSeparator() ),
-                System.lineSeparator(),
-                System.lineSeparator(),
-                expectedDiagnostics.toString().replace( ", ", System.lineSeparator() )
+                LINE_SEPARATOR,
+                actualDiagnostics.toString().replace( ", ", LINE_SEPARATOR ),
+                LINE_SEPARATOR,
+                LINE_SEPARATOR,
+                expectedDiagnostics.toString().replace( ", ", LINE_SEPARATOR )
             )
         ).hasSize( expectedDiagnostics.size() );
 
