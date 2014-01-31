@@ -25,7 +25,7 @@ public <@includeModel object=returnType/> ${name}(<#list parameters as param><@i
     }
 
     <#if !existingInstanceMapping>
-    ${resultType.name} ${resultName} = <#if hasFactoryMethod><#if factoryMethod.hasDeclaringMapper>${factoryMethod.mapperVariableName}.</#if>${factoryMethod.name}()<#else>new ${resultType.name}()</#if>;
+    ${resultType.name} ${resultName} = <#if hasFactoryMethod><@includeModel object=factoryMethod/><#else>new ${resultType.name}()</#if>;
     </#if>
     <#if (sourceParameters?size > 1)>
         <#list sourceParameters as sourceParam>
