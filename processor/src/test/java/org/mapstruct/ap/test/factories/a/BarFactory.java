@@ -16,13 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.factories;
+package org.mapstruct.ap.test.factories.a;
+
+import org.mapstruct.ap.test.factories.Bar1;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class Bar1Factory {
+public class BarFactory {
 
     public Bar1 createBar1() {
         return new Bar1("BAR1");

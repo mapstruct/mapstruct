@@ -26,6 +26,7 @@ public class Source {
 
     private Foo1 prop1;
     private Foo2 prop2;
+    private Foo3 prop3;
 
     public Foo1 getProp1() {
         return prop1;
@@ -43,4 +44,11 @@ public class Source {
         this.prop2 = prop2;
     }
 
+    public Foo3 getProp3() {
+        return prop3;
+    }
+
+    public void setProp3( Foo3 prop3 ) {
+        this.prop3 = prop3;
+    }
 }

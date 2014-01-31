@@ -18,28 +18,28 @@
  */
 package org.mapstruct.ap.test.factories;
 
-import org.mapstruct.ap.test.factories.a.BarFactory;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
-
 /**
  * @author Sjaak Derksen
  *
  */
-@Mapper( uses = { BarFactory.class, org.mapstruct.ap.test.factories.b.BarFactory.class } )
-public abstract class SourceTargetMapperAndBar2Factory {
-    public static final SourceTargetMapperAndBar2Factory INSTANCE =
-            Mappers.getMapper( SourceTargetMapperAndBar2Factory.class );
+public class Bar3 {
+    private String prop;
 
-    public abstract Target sourceToTarget(Source source);
+    private final String someTypeProp;
 
-    public abstract Bar1 foo1ToBar1(Foo1 foo1);
+    public Bar3( String someTypeProp ) {
+        this.someTypeProp = someTypeProp;
+    }
 
-    public abstract Bar2 foo2ToBar2(Foo2 foo2);
+    public String getProp() {
+        return prop;
+    }
 
-    public abstract Bar3 foo3ToBar3(Foo3 foo3);
+    public void setProp(String prop) {
+        this.prop = prop;
+    }
 
-    public Bar2 createBar2() {
-        return new Bar2("BAR2");
+    public String getSomeTypeProp() {
+        return someTypeProp;
     }
 }

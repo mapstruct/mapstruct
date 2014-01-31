@@ -209,14 +209,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return mappingMethods;
     }
 
-    private FactoryMethod getFactoryMethod(List<Method> methods, Type returnType) {
+    private FactoryMethod getFactoryMethod(List<MapperReference> mapperReferences, List<Method> methods,
+            Type returnType) {
         FactoryMethod result = null;
         for ( Method method : methods ) {
             if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
                 && method.getMappings().isEmpty() && method.getParameters().isEmpty() ) {
                     if ( method.getReturnType().equals( returnType ) ) {
                         if ( result == null ) {
-                            result = new FactoryMethod(method);
+                            MapperReference mapperReference = null;
+                            for ( MapperReference ref : mapperReferences ) {
+                                if ( ref.getMapperType().equals( method.getDeclaringMapper() ) ) {
+                                    mapperReference = ref;
+                                    break;
+                                }
+                            }
+
+                            result = new FactoryMethod(method, mapperReference);
                         }
                         else {
                           messager.printMessage(
@@ -379,7 +388,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             mappedTargetProperties
         );
 
-        FactoryMethod factoryMethod = getFactoryMethod( methods, method.getReturnType() );
+        FactoryMethod factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
         return new BeanMappingMethod( method, propertyMappings, factoryMethod );
     }
 

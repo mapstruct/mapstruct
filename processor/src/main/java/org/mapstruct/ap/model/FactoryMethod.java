@@ -18,12 +18,10 @@
  */
 package org.mapstruct.ap.model;
 
-import java.beans.Introspector;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.util.Strings;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.ModelElement;
 
@@ -36,13 +34,13 @@ public class FactoryMethod extends ModelElement {
 
     private final String name;
     private final boolean hasDeclaringMapper;
-    private final Type declaringMapper;
+    private final MapperReference declaringMapper;
     private final Type returnType;
 
-    public FactoryMethod(Method method) {
+    public FactoryMethod( Method method, MapperReference declaringMapper ) {
         this.name = method.getName();
         this.hasDeclaringMapper = method.getDeclaringMapper() != null;
-        this.declaringMapper = method.getDeclaringMapper();
+        this.declaringMapper = declaringMapper;
         this.returnType = method.getReturnType();
     }
 
@@ -51,11 +49,11 @@ public class FactoryMethod extends ModelElement {
     }
 
     public Type getDeclaringMapper() {
-        return declaringMapper;
+        return declaringMapper.getMapperType();
     }
 
     public String getMapperVariableName() {
-        return Strings.getSaveVariableName( Introspector.decapitalize( declaringMapper.getName() ) );
+        return declaringMapper.getVariableName();
     }
 
     @Override

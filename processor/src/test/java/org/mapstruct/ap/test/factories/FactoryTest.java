@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.factories;
 
+import org.mapstruct.ap.test.factories.a.BarFactory;
 import static org.fest.assertions.Assertions.assertThat;
 
 import org.mapstruct.ap.testutil.IssueKey;
@@ -30,8 +31,9 @@ import org.testng.annotations.Test;
  *
  */
 @IssueKey( "81" )
-@WithClasses( { Bar1.class, Foo1.class, Bar2.class, Foo2.class, Bar1Factory.class, Source.class,
-    SourceTargetMapperAndBar2Factory.class, Target.class } )
+@WithClasses( { Bar1.class, Foo1.class, Bar2.class, Foo2.class, Bar3.class, Foo3.class, BarFactory.class,
+    org.mapstruct.ap.test.factories.b.BarFactory.class, Source.class, SourceTargetMapperAndBar2Factory.class,
+    Target.class } )
 public class FactoryTest extends MapperTestBase {
     @Test
     public void shouldUseTwoFactoryMethods() {
@@ -44,6 +46,9 @@ public class FactoryTest extends MapperTestBase {
         assertThat( target.getProp2() ).isNotNull();
         assertThat( target.getProp2().getProp() ).isEqualTo( "foo2" );
         assertThat( target.getProp2().getSomeTypeProp()).isEqualTo( "BAR2" );
+        assertThat( target.getProp3() ).isNotNull();
+        assertThat( target.getProp3().getProp() ).isEqualTo( "foo3" );
+        assertThat( target.getProp3().getSomeTypeProp()).isEqualTo( "BAR3" );
     }
 
     private Source createSource() {
@@ -56,6 +61,10 @@ public class FactoryTest extends MapperTestBase {
         Foo2 foo2 = new Foo2();
         foo2.setProp( "foo2" );
         source.setProp2( foo2 );
+
+        Foo3 foo3 = new Foo3();
+        foo3.setProp( "foo3" );
+        source.setProp3( foo3 );
 
         return source;
     }

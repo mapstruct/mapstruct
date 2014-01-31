@@ -27,6 +27,7 @@ public class Target {
 
     private Bar1 prop1;
     private Bar2 prop2;
+    private Bar3 prop3;
 
 
     public Bar1 getProp1() {
@@ -45,5 +46,11 @@ public class Target {
         this.prop2 = prop2;
     }
 
+    public Bar3 getProp3() {
+        return prop3;
+    }
 
+    public void setProp3( Bar3 prop3 ) {
+        this.prop3 = prop3;
+    }
 }
