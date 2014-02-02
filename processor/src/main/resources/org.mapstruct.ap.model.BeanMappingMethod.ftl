@@ -24,9 +24,7 @@ public <@includeModel object=returnType/> ${name}(<#list parameters as param><@i
         return<#if returnType.name != "void"> null</#if>;
     }
 
-    <#if !existingInstanceMapping>
-    ${resultType.name} ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod/><#else>new ${resultType.name}()</#if>;
-    </#if>
+    <#if !existingInstanceMapping>${resultType.name} ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod/><#else>new ${resultType.name}()</#if>;</#if>
     <#if (sourceParameters?size > 1)>
         <#list sourceParameters as sourceParam>
     if ( ${sourceParam.name} != null ) {
