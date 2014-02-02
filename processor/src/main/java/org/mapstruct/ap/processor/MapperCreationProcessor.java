@@ -33,7 +33,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
@@ -170,7 +169,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 continue;
             }
 
-            reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType( method );
+           // TODO: Either find a good check for this or remove?
+           // reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType( method );
 
             Method reverseMappingMethod = getReverseMappingMethod( methods, method );
 
@@ -243,20 +243,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return result;
     }
 
-    private void reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType(Method method) {
-        if ( method.getReturnType().getTypeMirror().getKind() != TypeKind.VOID &&
-            method.getReturnType().isInterface() &&
-            method.getReturnType().getImplementationType() == null ) {
-            messager.printMessage(
-                Kind.ERROR,
-                String.format(
-                    "No implementation type is registered for return type %s.",
-                    method.getReturnType()
-                ),
-                method.getExecutable()
-            );
-        }
-    }
+//    TODO: Either find a good check for this or remove?
+//    private void reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType(Method method) {
+//        if ( method.getReturnType().getTypeMirror().getKind() != TypeKind.VOID &&
+//            method.getReturnType().isInterface() &&
+//            method.getReturnType().getImplementationType() == null ) {
+//            messager.printMessage(
+//                Kind.ERROR,
+//                String.format(
+//                    "No implementation type is registered for return type %s.",
+//                    method.getReturnType()
+//                ),
+//                method.getExecutable()
+//            );
+//        }
+//    }
 
     private Map<String, List<Mapping>> reverse(Map<String, List<Mapping>> mappings) {
         Map<String, List<Mapping>> reversed = new HashMap<String, List<Mapping>>();
@@ -608,10 +609,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             );
         }
 
+        MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
         return new IterableMappingMethod(
             method,
             elementMappingMethod,
-            conversion
+            conversion,
+            factoryMethod
         );
     }
 
@@ -674,7 +677,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             );
         }
 
-        return new MapMappingMethod( method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion );
+         MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+        return new MapMappingMethod( method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion,
+                factoryMethod );
     }
 
     private TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {

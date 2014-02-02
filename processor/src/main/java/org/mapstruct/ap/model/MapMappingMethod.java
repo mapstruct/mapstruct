@@ -37,15 +37,18 @@ public class MapMappingMethod extends MappingMethod {
     private final MethodReference valueMappingMethod;
     private final TypeConversion keyConversion;
     private final TypeConversion valueConversion;
+    private final MethodReference factoryMethod;
 
     public MapMappingMethod(Method method, MethodReference keyMappingMethod, TypeConversion keyConversion,
-                            MethodReference valueMappingMethod, TypeConversion valueConversion) {
+                            MethodReference valueMappingMethod, TypeConversion valueConversion,
+                            MethodReference factoryMethod) {
         super( method );
 
         this.keyMappingMethod = keyMappingMethod;
         this.keyConversion = keyConversion;
         this.valueMappingMethod = valueMappingMethod;
         this.valueConversion = valueConversion;
+        this.factoryMethod = factoryMethod;
     }
 
     public Parameter getSourceParameter() {
@@ -107,5 +110,9 @@ public class MapMappingMethod extends MappingMethod {
             "entry",
             getParameterNames()
         );
+    }
+
+    public MethodReference getFactoryMethod() {
+        return this.factoryMethod;
     }
 }

@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.test.factories;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Sjaak Derksen
  *
@@ -27,6 +30,8 @@ public class Source {
     private Foo1 prop1;
     private Foo2 prop2;
     private Foo3 prop3;
+    private List<String> propList;
+    private Map<String, String> propMap;
 
     public Foo1 getProp1() {
         return prop1;
@@ -51,4 +56,21 @@ public class Source {
     public void setProp3( Foo3 prop3 ) {
         this.prop3 = prop3;
     }
+
+    public List<String> getPropList() {
+        return propList;
+    }
+
+    public void setPropList( List<String> propList ) {
+        this.propList = propList;
+    }
+
+    public Map<String, String> getPropMap() {
+        return propMap;
+    }
+
+    public void setPropMap( Map<String, String> propMap ) {
+        this.propMap = propMap;
+    }
+
 }

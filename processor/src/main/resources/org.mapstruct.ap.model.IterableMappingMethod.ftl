@@ -28,7 +28,7 @@ public <@includeModel object=returnType/> ${name}(<#list parameters as param><@i
     ${resultName}.clear();
     <#else>
     <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
-    <#if resultType.fullyQualifiedName == "java.lang.Iterable"><@includeModel object=resultType.implementationType/><#else><@includeModel object=resultType/></#if> ${resultName} = new <#if resultType.implementationType??><@includeModel object=resultType.implementationType/><#else><@includeModel object=resultType/></#if>();
+    <#if resultType.fullyQualifiedName == "java.lang.Iterable"><@includeModel object=resultType.implementationType/><#else><@includeModel object=resultType/></#if> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod/><#else>new <#if resultType.implementationType??><@includeModel object=resultType.implementationType/><#else><@includeModel object=resultType/></#if>()</#if>;
    </#if>
 
     for ( <@includeModel object=sourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${sourceParameter.name} ) {

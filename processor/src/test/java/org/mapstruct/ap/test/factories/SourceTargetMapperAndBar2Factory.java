@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.factories;
 
+import java.util.List;
+import java.util.Map;
 import org.mapstruct.ap.test.factories.a.BarFactory;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -39,7 +41,19 @@ public abstract class SourceTargetMapperAndBar2Factory {
 
     public abstract Bar3 foo3ToBar3(Foo3 foo3);
 
+    public abstract CustomList<String> customListToList(List<String> list);
+
+    public abstract CustomMap<String, String> customMapToMap(Map<String, String> list);
+
     public Bar2 createBar2() {
         return new Bar2("BAR2");
+    }
+
+    public CustomList<String> createCustomList() {
+        return new CustomListImpl<String>("CUSTOMLIST");
+    }
+
+    public CustomMap<String, String> createCustomMap() {
+        return new CustomMapImpl<String, String>("CUSTOMMAP");
     }
 }
