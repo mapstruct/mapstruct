@@ -51,7 +51,7 @@ import org.mapstruct.ap.model.MapMappingMethod;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
-import org.mapstruct.ap.model.MappingMethodReference;
+import org.mapstruct.ap.model.MethodReference;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.TypeConversion;
 import org.mapstruct.ap.model.common.Parameter;
@@ -545,7 +545,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             targetType = typeFactory.getReturnType( targetAcessor );
         }
 
-        MappingMethodReference propertyMappingMethod = getMappingMethodReference(
+        MethodReference propertyMappingMethod = getMappingMethodReference(
             mapperReferences,
             methods,
             sourceType,
@@ -593,7 +593,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             )
         );
 
-        MappingMethodReference elementMappingMethod =
+        MethodReference elementMappingMethod =
             getMappingMethodReference( mapperReferences, methods, sourceElementType, targetElementType );
 
         if ( !sourceElementType.isAssignableTo( targetElementType ) && conversion == null &&
@@ -637,13 +637,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             "entry.getValue()"
         );
 
-        MappingMethodReference keyMappingMethod = getMappingMethodReference(
+        MethodReference keyMappingMethod = getMappingMethodReference(
             mapperReferences,
             methods,
             sourceKeyType,
             targetKeyType
         );
-        MappingMethodReference valueMappingMethod = getMappingMethodReference(
+        MethodReference valueMappingMethod = getMappingMethodReference(
             mapperReferences,
             methods,
             sourceValueType,
@@ -691,7 +691,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
     }
 
-    private MappingMethodReference getMappingMethodReference(List<MapperReference> mapperReferences,
+    private MethodReference getMappingMethodReference(List<MapperReference> mapperReferences,
                                                              Iterable<Method> methods, Type parameterType,
                                                              Type returnType) {
         List<Method> candidatesWithMathingTargetType = new ArrayList<Method>();
@@ -751,7 +751,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             }
         }
 
-        return new MappingMethodReference( method, mapperReference );
+        return new MethodReference( method, mapperReference );
     }
 
     private int addToCandidateListIfMinimal(List<Method> candidatesWithBestMathingType, int bestMatchingTypeDistance,

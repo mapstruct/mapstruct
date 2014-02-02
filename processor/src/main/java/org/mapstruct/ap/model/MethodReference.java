@@ -29,11 +29,11 @@ import org.mapstruct.ap.model.source.Method;
  *
  * @author Gunnar Morling
  */
-public class MappingMethodReference extends MappingMethod {
+public class MethodReference extends MappingMethod {
 
     private final MapperReference declaringMapper;
 
-    public MappingMethodReference(Method method, MapperReference declaringMapper) {
+    public MethodReference(Method method, MapperReference declaringMapper) {
         super( method );
         this.declaringMapper = declaringMapper;
     }
