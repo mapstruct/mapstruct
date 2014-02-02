@@ -231,8 +231,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                                Kind.ERROR,
                                String.format(
                                    "Ambigious factory method: \"%s\" conflicts with \"%s\".",
-                                   result.getName(),
-                                   method.getName()
+                                   result,
+                                   method
                                ),
                            method.getExecutable()
                           );
