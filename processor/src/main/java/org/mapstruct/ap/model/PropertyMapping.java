@@ -44,12 +44,12 @@ public class PropertyMapping extends ModelElement {
     private final Type targetType;
     private final boolean isTargetAccessorSetter;
 
-    private final MappingMethodReference mappingMethod;
+    private final MethodReference mappingMethod;
     private final TypeConversion conversion;
 
     public PropertyMapping(String sourceBeanName, String sourceName, String sourceAccessorName, Type sourceType,
                            String targetName, String targetAccessorName, Type targetType,
-                           MappingMethodReference mappingMethod, TypeConversion conversion) {
+                           MethodReference mappingMethod, TypeConversion conversion) {
 
         this.sourceBeanName = sourceBeanName;
         this.sourceName = sourceName;
@@ -93,7 +93,7 @@ public class PropertyMapping extends ModelElement {
         return targetType;
     }
 
-    public MappingMethodReference getMappingMethod() {
+    public MethodReference getMappingMethod() {
         return mappingMethod;
     }
 

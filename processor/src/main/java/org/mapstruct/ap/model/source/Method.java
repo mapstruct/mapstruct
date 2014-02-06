@@ -75,6 +75,22 @@ public class Method {
         );
     }
 
+    public static Method forFactoryMethod(Type declaringMapper, ExecutableElement executable,
+                                          Type returnType ) {
+
+        return new Method(
+            declaringMapper,
+            executable,
+            Collections.<Parameter>emptyList(),
+            returnType,
+            Collections.<String, List<Mapping>>emptyMap(),
+            null,
+            null
+        );
+    }
+
+
+
     private Method(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters, Type returnType,
                    Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping) {
         this.declaringMapper = declaringMapper;

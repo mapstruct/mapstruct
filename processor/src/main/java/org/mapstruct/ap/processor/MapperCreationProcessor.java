@@ -50,7 +50,7 @@ import org.mapstruct.ap.model.MapMappingMethod;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
-import org.mapstruct.ap.model.MappingMethodReference;
+import org.mapstruct.ap.model.MethodReference;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.TypeConversion;
 import org.mapstruct.ap.model.common.Parameter;
@@ -170,23 +170,28 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 continue;
             }
 
-            reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType( method );
 
             Method reverseMappingMethod = getReverseMappingMethod( methods, method );
 
+            boolean hasFactoryMethod = false;
             if ( method.isIterableMapping() ) {
                 if ( method.getIterableMapping() == null && reverseMappingMethod != null &&
                     reverseMappingMethod.getIterableMapping() != null ) {
                     method.setIterableMapping( reverseMappingMethod.getIterableMapping() );
                 }
-                mappingMethods.add( getIterableMappingMethod( mapperReferences, methods, method ) );
+                IterableMappingMethod iterableMappingMethod
+                        = getIterableMappingMethod( mapperReferences, methods, method );
+                hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;
+                mappingMethods.add( iterableMappingMethod );
             }
             else if ( method.isMapMapping() ) {
                 if ( method.getMapMapping() == null && reverseMappingMethod != null &&
                     reverseMappingMethod.getMapMapping() != null ) {
                     method.setMapMapping( reverseMappingMethod.getMapMapping() );
                 }
-                mappingMethods.add( getMapMappingMethod( mapperReferences, methods, method ) );
+                MapMappingMethod mapMappingMethod = getMapMappingMethod( mapperReferences, methods, method );
+                hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
+                mappingMethods.add( mapMappingMethod );
             }
             else {
                 if ( method.getMappings().isEmpty() ) {
@@ -194,18 +199,61 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                         method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
                     }
                 }
-                MappingMethod beanMappingMethod = getBeanMappingMethod(
+                BeanMappingMethod beanMappingMethod = getBeanMappingMethod(
                     mapperReferences,
                     methods,
                     method,
                     unmappedTargetPolicy
                 );
                 if ( beanMappingMethod != null ) {
+                    hasFactoryMethod = beanMappingMethod.getFactoryMethod() != null;
                     mappingMethods.add( beanMappingMethod );
                 }
             }
+
+            if ( !hasFactoryMethod ) {
+                // A factory method  is allowed to return an interface type and hence, the generated
+                // implementation as well. The check below must only be executed if there's no factory
+                // method that could be responsible.
+                reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType( method );
+            }
         }
         return mappingMethods;
+    }
+
+    private MethodReference getFactoryMethod(List<MapperReference> mapperReferences, List<Method> methods,
+            Type returnType) {
+        MethodReference result = null;
+        for ( Method method : methods ) {
+            if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
+                && method.getMappings().isEmpty() && method.getParameters().isEmpty() ) {
+                    if ( method.getReturnType().equals( returnType ) ) {
+                        if ( result == null ) {
+                            MapperReference mapperReference = null;
+                            for ( MapperReference ref : mapperReferences ) {
+                                if ( ref.getMapperType().equals( method.getDeclaringMapper() ) ) {
+                                    mapperReference = ref;
+                                    break;
+                                }
+                            }
+
+                            result = new MethodReference(method, mapperReference);
+                        }
+                        else {
+                          messager.printMessage(
+                               Kind.ERROR,
+                               String.format(
+                                   "Ambigious factory method: \"%s\" conflicts with \"%s\".",
+                                   result,
+                                   method
+                               ),
+                           method.getExecutable()
+                          );
+                     }
+                 }
+             }
+        }
+        return result;
     }
 
     private void reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType(Method method) {
@@ -284,7 +332,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return null;
     }
 
-    private MappingMethod getBeanMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
+    private BeanMappingMethod getBeanMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
                                                Method method, ReportingPolicy unmappedTargetPolicy) {
         List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         Set<String> mappedTargetProperties = new HashSet<String>();
@@ -352,7 +400,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             mappedTargetProperties
         );
 
-        return new BeanMappingMethod( method, propertyMappings );
+        MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+        return new BeanMappingMethod( method, propertyMappings, factoryMethod );
     }
 
     private void reportErrorForUnmappedTargetPropertiesIfRequired(Method method,
@@ -508,7 +557,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             targetType = typeFactory.getReturnType( targetAcessor );
         }
 
-        MappingMethodReference propertyMappingMethod = getMappingMethodReference(
+        MethodReference propertyMappingMethod = getMappingMethodReference(
             mapperReferences,
             methods,
             sourceType,
@@ -541,7 +590,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         return property;
     }
 
-    private MappingMethod getIterableMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
+    private IterableMappingMethod getIterableMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
                                                    Method method) {
         Type sourceElementType = method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
         Type targetElementType = method.getResultType().getTypeParameters().get( 0 );
@@ -556,7 +605,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             )
         );
 
-        MappingMethodReference elementMappingMethod =
+        MethodReference elementMappingMethod =
             getMappingMethodReference( mapperReferences, methods, sourceElementType, targetElementType );
 
         if ( !sourceElementType.isAssignableTo( targetElementType ) && conversion == null &&
@@ -572,14 +621,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             );
         }
 
+        MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
         return new IterableMappingMethod(
             method,
             elementMappingMethod,
-            conversion
+            conversion,
+            factoryMethod
         );
     }
 
-    private MappingMethod getMapMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
+    private MapMappingMethod getMapMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
                                               Method method) {
         List<Type> sourceTypeParams = method.getSourceParameters().iterator().next().getType().getTypeParameters();
         Type sourceKeyType = sourceTypeParams.get( 0 );
@@ -600,13 +651,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             "entry.getValue()"
         );
 
-        MappingMethodReference keyMappingMethod = getMappingMethodReference(
+        MethodReference keyMappingMethod = getMappingMethodReference(
             mapperReferences,
             methods,
             sourceKeyType,
             targetKeyType
         );
-        MappingMethodReference valueMappingMethod = getMappingMethodReference(
+        MethodReference valueMappingMethod = getMappingMethodReference(
             mapperReferences,
             methods,
             sourceValueType,
@@ -638,7 +689,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             );
         }
 
-        return new MapMappingMethod( method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion );
+         MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+        return new MapMappingMethod( method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion,
+                factoryMethod );
     }
 
     private TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {
@@ -654,7 +707,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
     }
 
-    private MappingMethodReference getMappingMethodReference(List<MapperReference> mapperReferences,
+    private MethodReference getMappingMethodReference(List<MapperReference> mapperReferences,
                                                              Iterable<Method> methods, Type parameterType,
                                                              Type returnType) {
         List<Method> candidatesWithMathingTargetType = new ArrayList<Method>();
@@ -714,7 +767,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             }
         }
 
-        return new MappingMethodReference( method, mapperReference );
+        return new MethodReference( method, mapperReference );
     }
 
     private int addToCandidateListIfMinimal(List<Method> candidatesWithBestMathingType, int bestMatchingTypeDistance,

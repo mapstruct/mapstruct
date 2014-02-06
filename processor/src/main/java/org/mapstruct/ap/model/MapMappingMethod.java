@@ -33,19 +33,22 @@ import org.mapstruct.ap.util.Strings;
  */
 public class MapMappingMethod extends MappingMethod {
 
-    private final MappingMethodReference keyMappingMethod;
-    private final MappingMethodReference valueMappingMethod;
+    private final MethodReference keyMappingMethod;
+    private final MethodReference valueMappingMethod;
     private final TypeConversion keyConversion;
     private final TypeConversion valueConversion;
+    private final MethodReference factoryMethod;
 
-    public MapMappingMethod(Method method, MappingMethodReference keyMappingMethod, TypeConversion keyConversion,
-                            MappingMethodReference valueMappingMethod, TypeConversion valueConversion) {
+    public MapMappingMethod(Method method, MethodReference keyMappingMethod, TypeConversion keyConversion,
+                            MethodReference valueMappingMethod, TypeConversion valueConversion,
+                            MethodReference factoryMethod) {
         super( method );
 
         this.keyMappingMethod = keyMappingMethod;
         this.keyConversion = keyConversion;
         this.valueMappingMethod = valueMappingMethod;
         this.valueConversion = valueConversion;
+        this.factoryMethod = factoryMethod;
     }
 
     public Parameter getSourceParameter() {
@@ -58,7 +61,7 @@ public class MapMappingMethod extends MappingMethod {
         throw new IllegalStateException( "Method " + this + " has no source parameter." );
     }
 
-    public MappingMethodReference getKeyMappingMethod() {
+    public MethodReference getKeyMappingMethod() {
         return keyMappingMethod;
     }
 
@@ -66,7 +69,7 @@ public class MapMappingMethod extends MappingMethod {
         return keyConversion;
     }
 
-    public MappingMethodReference getValueMappingMethod() {
+    public MethodReference getValueMappingMethod() {
         return valueMappingMethod;
     }
 
@@ -107,5 +110,9 @@ public class MapMappingMethod extends MappingMethod {
             "entry",
             getParameterNames()
         );
+    }
+
+    public MethodReference getFactoryMethod() {
+        return this.factoryMethod;
     }
 }

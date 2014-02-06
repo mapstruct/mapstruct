@@ -16,37 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.test.factories;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.Method;
+import java.util.HashMap;
 
 /**
- * Represents a reference to {@link MappingMethod}.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class MappingMethodReference extends MappingMethod {
+public class CustomMapImpl<K, V> extends HashMap<K, V> implements CustomMap<K, V> {
 
-    private final MapperReference declaringMapper;
+    private final String typeProp;
 
-    public MappingMethodReference(Method method, MapperReference declaringMapper) {
-        super( method );
-        this.declaringMapper = declaringMapper;
+    public CustomMapImpl( String typeProp ) {
+        this.typeProp = typeProp;
     }
 
-    public MapperReference getDeclaringMapper() {
-        return declaringMapper;
-    }
-
-    public String getMapperVariableName() {
-        return declaringMapper.getVariableName();
-    }
-
-    public Set<Type> getReferencedTypes() {
-        return new HashSet<Type>();
+    @Override
+    public String getTypeProp() {
+        return typeProp;
     }
 }

@@ -27,7 +27,7 @@ public <@includeModel object=returnType /> ${name}(<#list parameters as param><@
     <#if existingInstanceMapping>
     ${resultName}.clear();
     <#else>
-    <@includeModel object=resultType /> ${resultName} = new <#if resultType.implementationType??><@includeModel object=resultType.implementationType /><#else><@includeModel object=resultType /></#if>();
+    <@includeModel object=resultType /> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod/><#else>new <#if resultType.implementationType??><@includeModel object=resultType.implementationType /><#else><@includeModel object=resultType /></#if>()</#if>;
     </#if>
 
     for ( Map.Entry<<#list sourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {

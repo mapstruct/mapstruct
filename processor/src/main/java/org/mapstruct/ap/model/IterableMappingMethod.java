@@ -34,14 +34,16 @@ import org.mapstruct.ap.util.Strings;
  */
 public class IterableMappingMethod extends MappingMethod {
 
-    private final MappingMethodReference elementMappingMethod;
+    private final MethodReference elementMappingMethod;
     private final TypeConversion conversion;
+    private final MethodReference factoryMethod;
 
-    public IterableMappingMethod(Method method, MappingMethodReference elementMappingMethod,
-                                 TypeConversion conversion) {
+    public IterableMappingMethod(Method method, MethodReference elementMappingMethod,
+                                 TypeConversion conversion, MethodReference factoryMethod) {
         super( method );
         this.elementMappingMethod = elementMappingMethod;
         this.conversion = conversion;
+        this.factoryMethod = factoryMethod;
     }
 
     public Parameter getSourceParameter() {
@@ -54,7 +56,7 @@ public class IterableMappingMethod extends MappingMethod {
         throw new IllegalStateException( "Method " + this + " has no source parameter." );
     }
 
-    public MappingMethodReference getElementMappingMethod() {
+    public MethodReference getElementMappingMethod() {
         return elementMappingMethod;
     }
 
@@ -82,5 +84,9 @@ public class IterableMappingMethod extends MappingMethod {
                     .getName()
             ), getParameterNames()
         );
+    }
+
+    public MethodReference getFactoryMethod() {
+        return this.factoryMethod;
     }
 }
