@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -180,7 +181,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                     method.setIterableMapping( reverseMappingMethod.getIterableMapping() );
                 }
                 IterableMappingMethod iterableMappingMethod
-                        = getIterableMappingMethod( mapperReferences, methods, method );
+                    = getIterableMappingMethod( mapperReferences, methods, method );
                 hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( iterableMappingMethod );
             }
@@ -222,36 +223,36 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private MethodReference getFactoryMethod(List<MapperReference> mapperReferences, List<Method> methods,
-            Type returnType) {
+                                             Type returnType) {
         MethodReference result = null;
         for ( Method method : methods ) {
             if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
                 && method.getMappings().isEmpty() && method.getParameters().isEmpty() ) {
-                    if ( method.getReturnType().equals( returnType ) ) {
-                        if ( result == null ) {
-                            MapperReference mapperReference = null;
-                            for ( MapperReference ref : mapperReferences ) {
-                                if ( ref.getMapperType().equals( method.getDeclaringMapper() ) ) {
-                                    mapperReference = ref;
-                                    break;
-                                }
+                if ( method.getReturnType().equals( returnType ) ) {
+                    if ( result == null ) {
+                        MapperReference mapperReference = null;
+                        for ( MapperReference ref : mapperReferences ) {
+                            if ( ref.getMapperType().equals( method.getDeclaringMapper() ) ) {
+                                mapperReference = ref;
+                                break;
                             }
-
-                            result = new MethodReference(method, mapperReference);
                         }
-                        else {
-                          messager.printMessage(
-                               Kind.ERROR,
-                               String.format(
-                                   "Ambigious factory method: \"%s\" conflicts with \"%s\".",
-                                   result,
-                                   method
-                               ),
-                           method.getExecutable()
-                          );
-                     }
-                 }
-             }
+
+                        result = new MethodReference( method, mapperReference );
+                    }
+                    else {
+                        messager.printMessage(
+                            Kind.ERROR,
+                            String.format(
+                                "Ambigious factory methods: \"%s\" conflicts with \"%s\".",
+                                result,
+                                method
+                            ),
+                            method.getExecutable()
+                        );
+                    }
+                }
+            }
         }
         return result;
     }
@@ -333,7 +334,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private BeanMappingMethod getBeanMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
-                                               Method method, ReportingPolicy unmappedTargetPolicy) {
+                                                   Method method, ReportingPolicy unmappedTargetPolicy) {
         List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         Set<String> mappedTargetProperties = new HashSet<String>();
 
@@ -591,7 +592,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private IterableMappingMethod getIterableMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
-                                                   Method method) {
+                                                           Method method) {
         Type sourceElementType = method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
         Type targetElementType = method.getResultType().getTypeParameters().get( 0 );
 
@@ -631,7 +632,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private MapMappingMethod getMapMappingMethod(List<MapperReference> mapperReferences, List<Method> methods,
-                                              Method method) {
+                                                 Method method) {
         List<Type> sourceTypeParams = method.getSourceParameters().iterator().next().getType().getTypeParameters();
         Type sourceKeyType = sourceTypeParams.get( 0 );
         Type sourceValueType = sourceTypeParams.get( 1 );
@@ -689,9 +690,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             );
         }
 
-         MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
-        return new MapMappingMethod( method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion,
-                factoryMethod );
+        MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+        return new MapMappingMethod(
+            method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion,
+            factoryMethod
+        );
     }
 
     private TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {
@@ -708,8 +711,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
     }
 
     private MethodReference getMappingMethodReference(List<MapperReference> mapperReferences,
-                                                             Iterable<Method> methods, Type parameterType,
-                                                             Type returnType) {
+                                                      Iterable<Method> methods, Type parameterType,
+                                                      Type returnType) {
         List<Method> candidatesWithMathingTargetType = new ArrayList<Method>();
 
         for ( Method method : methods ) {

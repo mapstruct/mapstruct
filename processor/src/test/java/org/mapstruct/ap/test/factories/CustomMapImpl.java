@@ -21,14 +21,13 @@ package org.mapstruct.ap.test.factories;
 import java.util.HashMap;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class CustomMapImpl<K, V> extends HashMap<K, V> implements CustomMap<K, V> {
 
     private final String typeProp;
 
-    public CustomMapImpl( String typeProp ) {
+    public CustomMapImpl(String typeProp) {
         this.typeProp = typeProp;
     }
 

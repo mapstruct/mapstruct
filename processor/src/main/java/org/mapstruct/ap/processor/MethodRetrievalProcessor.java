@@ -18,13 +18,10 @@
  */
 package org.mapstruct.ap.processor;
 
-import static javax.lang.model.util.ElementFilter.methodsIn;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -47,6 +44,8 @@ import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
+
+import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link Method}s

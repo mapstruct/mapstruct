@@ -21,7 +21,6 @@ package org.mapstruct.ap.model.source;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;

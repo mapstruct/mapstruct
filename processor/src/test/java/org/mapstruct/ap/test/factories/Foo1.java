@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.factories;
 
 /**
  * @author Sjaak Derksen
- *
  */
 public class Foo1 {
     private String prop;

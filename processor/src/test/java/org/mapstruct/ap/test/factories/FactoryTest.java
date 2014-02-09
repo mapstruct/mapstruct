@@ -22,22 +22,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.mapstruct.ap.test.factories.a.BarFactory;
-import static org.fest.assertions.Assertions.assertThat;
 
+import org.mapstruct.ap.test.factories.a.BarFactory;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 /**
  * @author Sjaak Derksen
- *
  */
-@IssueKey( "81" )
-@WithClasses( { Bar1.class, Foo1.class, Bar2.class, Foo2.class, Bar3.class, Foo3.class, BarFactory.class,
+@IssueKey("81")
+@WithClasses({
+    Bar1.class, Foo1.class, Bar2.class, Foo2.class, Bar3.class, Foo3.class, BarFactory.class,
     org.mapstruct.ap.test.factories.b.BarFactory.class, Source.class, SourceTargetMapperAndBar2Factory.class,
-    Target.class, CustomList.class, CustomListImpl.class, CustomMap.class, CustomMapImpl.class } )
+    Target.class, CustomList.class, CustomListImpl.class, CustomMap.class, CustomMapImpl.class
+})
 public class FactoryTest extends MapperTestBase {
     @Test
     public void shouldUseTwoFactoryMethods() {
@@ -46,19 +48,19 @@ public class FactoryTest extends MapperTestBase {
         assertThat( target ).isNotNull();
         assertThat( target.getProp1() ).isNotNull();
         assertThat( target.getProp1().getProp() ).isEqualTo( "foo1" );
-        assertThat( target.getProp1().getSomeTypeProp()).isEqualTo( "BAR1" );
+        assertThat( target.getProp1().getSomeTypeProp() ).isEqualTo( "BAR1" );
         assertThat( target.getProp2() ).isNotNull();
         assertThat( target.getProp2().getProp() ).isEqualTo( "foo2" );
-        assertThat( target.getProp2().getSomeTypeProp()).isEqualTo( "BAR2" );
+        assertThat( target.getProp2().getSomeTypeProp() ).isEqualTo( "BAR2" );
         assertThat( target.getProp3() ).isNotNull();
         assertThat( target.getProp3().getProp() ).isEqualTo( "foo3" );
-        assertThat( target.getProp3().getSomeTypeProp()).isEqualTo( "BAR3" );
+        assertThat( target.getProp3().getSomeTypeProp() ).isEqualTo( "BAR3" );
         assertThat( target.getPropList() ).isNotNull();
         assertThat( target.getPropList().get( 0 ) ).isEqualTo( "fooListEntry" );
-        assertThat( target.getPropList().getTypeProp()).isEqualTo( "CUSTOMLIST" );
+        assertThat( target.getPropList().getTypeProp() ).isEqualTo( "CUSTOMLIST" );
         assertThat( target.getPropMap() ).isNotNull();
         assertThat( target.getPropMap().get( "key" ) ).isEqualTo( "fooValue" );
-        assertThat( target.getPropMap().getTypeProp()).isEqualTo( "CUSTOMMAP" );
+        assertThat( target.getPropMap().getTypeProp() ).isEqualTo( "CUSTOMMAP" );
     }
 
     private Source createSource() {
@@ -81,7 +83,7 @@ public class FactoryTest extends MapperTestBase {
         source.setPropList( fooList );
 
         Map<String, String> fooMap = new HashMap<String, String>();
-        fooMap.put( "key", "fooValue");
+        fooMap.put( "key", "fooValue" );
         source.setPropMap( fooMap );
         return source;
     }

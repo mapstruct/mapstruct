@@ -20,14 +20,13 @@ package org.mapstruct.ap.test.erroneous.ambiguousfactorymethod;
 
 /**
  * @author Sjaak Derksen
- *
  */
 public class Bar {
     private String prop;
 
     private final String someTypeProp;
 
-    public Bar( String someTypeProp ) {
+    public Bar(String someTypeProp) {
         this.someTypeProp = someTypeProp;
     }
 

@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.factories;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public interface CustomList<T> extends List<T> {

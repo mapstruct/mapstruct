@@ -22,13 +22,12 @@ import org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar;
 
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class BarFactory {
 
     public Bar createBar() {
-        return new Bar("BAR");
+        return new Bar( "BAR" );
     }
 
 }

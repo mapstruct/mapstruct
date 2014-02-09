@@ -20,18 +20,18 @@ package org.mapstruct.ap.test.factories;
 
 import java.util.List;
 import java.util.Map;
-import org.mapstruct.ap.test.factories.a.BarFactory;
+
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.factories.a.BarFactory;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Sjaak Derksen
- *
  */
-@Mapper( uses = { BarFactory.class, org.mapstruct.ap.test.factories.b.BarFactory.class } )
+@Mapper(uses = { BarFactory.class, org.mapstruct.ap.test.factories.b.BarFactory.class })
 public abstract class SourceTargetMapperAndBar2Factory {
     public static final SourceTargetMapperAndBar2Factory INSTANCE =
-            Mappers.getMapper( SourceTargetMapperAndBar2Factory.class );
+        Mappers.getMapper( SourceTargetMapperAndBar2Factory.class );
 
     public abstract Target sourceToTarget(Source source);
 
@@ -46,14 +46,14 @@ public abstract class SourceTargetMapperAndBar2Factory {
     public abstract CustomMap<String, String> customMapToMap(Map<String, String> list);
 
     public Bar2 createBar2() {
-        return new Bar2("BAR2");
+        return new Bar2( "BAR2" );
     }
 
     public CustomList<String> createCustomList() {
-        return new CustomListImpl<String>("CUSTOMLIST");
+        return new CustomListImpl<String>( "CUSTOMLIST" );
     }
 
     public CustomMap<String, String> createCustomMap() {
-        return new CustomMapImpl<String, String>("CUSTOMMAP");
+        return new CustomMapImpl<String, String>( "CUSTOMMAP" );
     }
 }

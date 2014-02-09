@@ -20,14 +20,13 @@ package org.mapstruct.ap.test.factories;
 
 /**
  * @author Sjaak Derksen
- *
  */
 public class Bar3 {
     private String prop;
 
     private final String someTypeProp;
 
-    public Bar3( String someTypeProp ) {
+    public Bar3(String someTypeProp) {
         this.someTypeProp = someTypeProp;
     }
 

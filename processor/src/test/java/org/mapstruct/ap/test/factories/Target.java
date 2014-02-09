@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.factories;
 
 /**
  * @author Sjaak Derksen
- *
  */
 public class Target {
 
@@ -42,7 +41,7 @@ public class Target {
         return prop2;
     }
 
-    public void setProp2( Bar2 prop2 ) {
+    public void setProp2(Bar2 prop2) {
         this.prop2 = prop2;
     }
 
@@ -50,7 +49,7 @@ public class Target {
         return prop3;
     }
 
-    public void setProp3( Bar3 prop3 ) {
+    public void setProp3(Bar3 prop3) {
         this.prop3 = prop3;
     }
 
@@ -58,7 +57,7 @@ public class Target {
         return propList;
     }
 
-    public void setPropList( CustomList<String> propList ) {
+    public void setPropList(CustomList<String> propList) {
         this.propList = propList;
     }
 
@@ -66,7 +65,7 @@ public class Target {
         return propMap;
     }
 
-    public void setPropMap( CustomMap<String, String> propMap ) {
+    public void setPropMap(CustomMap<String, String> propMap) {
         this.propMap = propMap;
     }
 

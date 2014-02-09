@@ -23,7 +23,6 @@ import java.util.Map;
 
 /**
  * @author Sjaak Derksen
- *
  */
 public class Source {
 
@@ -37,7 +36,7 @@ public class Source {
         return prop1;
     }
 
-    public void setProp1( Foo1 prop1 ) {
+    public void setProp1(Foo1 prop1) {
         this.prop1 = prop1;
     }
 
@@ -45,7 +44,7 @@ public class Source {
         return prop2;
     }
 
-    public void setProp2( Foo2 prop2 ) {
+    public void setProp2(Foo2 prop2) {
         this.prop2 = prop2;
     }
 
@@ -53,7 +52,7 @@ public class Source {
         return prop3;
     }
 
-    public void setProp3( Foo3 prop3 ) {
+    public void setProp3(Foo3 prop3) {
         this.prop3 = prop3;
     }
 
@@ -61,7 +60,7 @@ public class Source {
         return propList;
     }
 
-    public void setPropList( List<String> propList ) {
+    public void setPropList(List<String> propList) {
         this.propList = propList;
     }
 
@@ -69,7 +68,7 @@ public class Source {
         return propMap;
     }
 
-    public void setPropMap( Map<String, String> propMap ) {
+    public void setPropMap(Map<String, String> propMap) {
         this.propMap = propMap;
     }
 

@@ -19,7 +19,6 @@
 package org.mapstruct.ap.processor;
 
 import java.util.ListIterator;
-
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.model.Annotation;

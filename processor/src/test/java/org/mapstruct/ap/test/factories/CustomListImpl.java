@@ -21,14 +21,13 @@ package org.mapstruct.ap.test.factories;
 import java.util.LinkedList;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class CustomListImpl<T> extends LinkedList<T> implements CustomList<T> {
 
     private final String typeProp;
 
-    public CustomListImpl( String typeProp ) {
+    public CustomListImpl(String typeProp) {
         this.typeProp = typeProp;
     }
 

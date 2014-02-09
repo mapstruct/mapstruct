@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.factories;
 import java.util.Map;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public interface CustomMap<K, V> extends Map<K, V> {

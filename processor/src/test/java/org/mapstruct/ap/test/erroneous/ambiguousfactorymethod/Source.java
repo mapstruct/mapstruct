@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.erroneous.ambiguousfactorymethod;
 
 /**
  * @author Sjaak Derksen
- *
  */
 public class Source {
 
@@ -31,7 +30,7 @@ public class Source {
         return prop;
     }
 
-    public void setProp( Foo prop ) {
+    public void setProp(Foo prop) {
         this.prop = prop;
     }
 }

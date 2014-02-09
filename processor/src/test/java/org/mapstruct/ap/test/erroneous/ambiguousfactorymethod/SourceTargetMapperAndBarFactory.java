@@ -24,18 +24,17 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * @author Sjaak Derksen
- *
  */
-@Mapper( uses = BarFactory.class )
+@Mapper(uses = BarFactory.class)
 public abstract class SourceTargetMapperAndBarFactory {
     public static final SourceTargetMapperAndBarFactory INSTANCE =
-            Mappers.getMapper( SourceTargetMapperAndBarFactory.class );
+        Mappers.getMapper( SourceTargetMapperAndBarFactory.class );
 
     public abstract Target sourceToTarget(Source source);
 
     public abstract Bar fooToBar(Foo foo);
 
     public Bar createBar() {
-        return new Bar("BAR");
+        return new Bar( "BAR" );
     }
 }

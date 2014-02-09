@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
@@ -76,7 +75,7 @@ public class Method {
     }
 
     public static Method forFactoryMethod(Type declaringMapper, ExecutableElement executable,
-                                          Type returnType ) {
+                                          Type returnType) {
 
         return new Method(
             declaringMapper,
@@ -88,8 +87,6 @@ public class Method {
             null
         );
     }
-
-
 
     private Method(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters, Type returnType,
                    Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping) {

@@ -19,7 +19,6 @@
 package org.mapstruct.ap.test.erroneous.ambiguousfactorymethod;
 
 import org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.a.BarFactory;
-
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -30,11 +29,12 @@ import org.testng.annotations.Test;
 
 /**
  * @author Sjaak Derksen
- *
  */
-@IssueKey( "81" )
-@WithClasses( { Bar.class, Foo.class, BarFactory.class, Source.class, SourceTargetMapperAndBarFactory.class,
-    Target.class } )
+@IssueKey("81")
+@WithClasses({
+    Bar.class, Foo.class, BarFactory.class, Source.class, SourceTargetMapperAndBarFactory.class,
+    Target.class
+})
 public class FactoryTest extends MapperTestBase {
 
 
@@ -45,12 +45,12 @@ public class FactoryTest extends MapperTestBase {
         diagnostics = {
             @Diagnostic(type = BarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 30,
-                messageRegExp = "^Ambigious factory method: \"org\\.mapstruct\\.ap\\.test\\.erroneous\\."
-                        + "ambiguousfactorymethod\\.Bar createBar\\(\\)\" conflicts with "
-                        + "\"org\\.mapstruct\\.ap\\.test\\.erroneous\\.ambiguousfactorymethod\\.Bar "
-                        + "org\\.mapstruct\\.ap\\.test\\.erroneous\\.ambiguousfactorymethod"
-                        + "\\.a\\.BarFactory\\.createBar\\(\\)\"\\.$")
+                line = 29,
+                messageRegExp = "^Ambigious factory methods: \"org\\.mapstruct\\.ap\\.test\\.erroneous\\."
+                    + "ambiguousfactorymethod\\.Bar createBar\\(\\)\" conflicts with "
+                    + "\"org\\.mapstruct\\.ap\\.test\\.erroneous\\.ambiguousfactorymethod\\.Bar "
+                    + "org\\.mapstruct\\.ap\\.test\\.erroneous\\.ambiguousfactorymethod"
+                    + "\\.a\\.BarFactory\\.createBar\\(\\)\"\\.$")
         }
     )
     public void shouldUseTwoFactoryMethods() {
