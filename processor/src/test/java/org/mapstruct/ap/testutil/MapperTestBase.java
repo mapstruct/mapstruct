@@ -168,8 +168,12 @@ public abstract class MapperTestBase {
             DiagnosticDescriptor actual = actualIterator.next();
             DiagnosticDescriptor expected = expectedIterator.next();
 
-            assertThat( actual.getSourceFileName() ).isEqualTo( expected.getSourceFileName() );
-            assertThat( actual.getLine() ).isEqualTo( expected.getLine() );
+            if ( expected.getSourceFileName() != null ) {
+                assertThat( actual.getSourceFileName() ).isEqualTo( expected.getSourceFileName() );
+            }
+            if ( expected.getLine() != null ) {
+                assertThat( actual.getLine() ).isEqualTo( expected.getLine() );
+            }
             assertThat( actual.getKind() ).isEqualTo( expected.getKind() );
             assertThat( actual.getMessage() ).describedAs(
                 String.format(

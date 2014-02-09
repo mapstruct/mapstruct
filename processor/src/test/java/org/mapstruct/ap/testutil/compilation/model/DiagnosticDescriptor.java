@@ -37,10 +37,10 @@ public class DiagnosticDescriptor {
 
     private final String sourceFileName;
     private final Kind kind;
-    private final long line;
+    private final Long line;
     private final String message;
 
-    private DiagnosticDescriptor(String sourceFileName, Kind kind, long line, String message) {
+    private DiagnosticDescriptor(String sourceFileName, Kind kind, Long line, String message) {
         this.sourceFileName = sourceFileName;
         this.kind = kind;
         this.line = line;
@@ -48,13 +48,13 @@ public class DiagnosticDescriptor {
     }
 
     public static DiagnosticDescriptor forDiagnostic(Diagnostic diagnostic) {
-        String soureFileName = diagnostic.type() != Diagnostic.class
+        String soureFileName = diagnostic.type() != void.class
                             ? diagnostic.type().getName().replace( ".", File.separator ) + ".java"
                             : null;
         return new DiagnosticDescriptor(
             soureFileName,
             diagnostic.kind(),
-            diagnostic.line(),
+            diagnostic.line() != -1 ? diagnostic.line() : null,
             diagnostic.messageRegExp()
         );
     }
@@ -111,7 +111,7 @@ public class DiagnosticDescriptor {
         return kind;
     }
 
-    public long getLine() {
+    public Long getLine() {
         return line;
     }
 
