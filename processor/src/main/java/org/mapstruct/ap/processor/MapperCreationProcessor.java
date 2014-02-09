@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -242,7 +243,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                         messager.printMessage(
                             Kind.ERROR,
                             String.format(
-                                "Ambigious factory methods: \"%s\" conflicts with \"%s\".",
+                                "Ambiguous factory methods: \"%s\" conflicts with \"%s\".",
                                 result,
                                 method
                             ),
@@ -557,6 +558,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         }
 
         MethodReference propertyMappingMethod = getMappingMethodReference(
+            method,
+            "property '" + Executables.getPropertyName( sourceAccessor ) + "'",
             mapperReferences,
             methods,
             sourceType,
@@ -605,7 +608,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
 
         MethodReference elementMappingMethod =
-            getMappingMethodReference( mapperReferences, methods, sourceElementType, targetElementType );
+            getMappingMethodReference(
+                method,
+                "collection element",
+                mapperReferences,
+                methods,
+                sourceElementType,
+                targetElementType
+            );
 
         if ( !sourceElementType.isAssignableTo( targetElementType ) && conversion == null &&
             elementMappingMethod == null ) {
@@ -651,12 +661,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
 
         MethodReference keyMappingMethod = getMappingMethodReference(
+            method,
+            "map key",
             mapperReferences,
             methods,
             sourceKeyType,
             targetKeyType
         );
         MethodReference valueMappingMethod = getMappingMethodReference(
+            method,
+            "map value",
             mapperReferences,
             methods,
             sourceValueType,
@@ -708,7 +722,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
     }
 
-    private MethodReference getMappingMethodReference(List<MapperReference> mapperReferences,
+    private MethodReference getMappingMethodReference(Method mappingMethod, String mappedElement,
+                                                      List<MapperReference> mapperReferences,
                                                       Iterable<Method> methods, Type parameterType,
                                                       Type returnType) {
         List<Method> candidatesWithMathingTargetType = new ArrayList<Method>();
@@ -750,11 +765,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             messager.printMessage(
                 Kind.ERROR,
                 String.format(
-                    "Ambiguous mapping methods found for mapping from %s to %s: %s.",
+                    "Ambiguous mapping methods found for mapping " + mappedElement + " from %s to %s: %s.",
                     parameterType,
                     returnType,
-                    candidatesWithBestMatchingSourceType
-                )
+                    Strings.join( candidatesWithBestMatchingSourceType, ", " )
+                ),
+                mappingMethod.getExecutable()
             );
         }
 

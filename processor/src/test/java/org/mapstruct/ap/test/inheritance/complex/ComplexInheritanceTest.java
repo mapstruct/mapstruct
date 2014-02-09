@@ -18,10 +18,7 @@
  */
 package org.mapstruct.ap.test.inheritance.complex;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import java.util.Arrays;
-
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.testutil.IssueKey;
@@ -31,6 +28,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.testng.annotations.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for propagation of attributes inherited from super types.
@@ -78,9 +77,12 @@ public class ComplexInheritanceTest extends MapperTestBase {
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = @Diagnostic(
             kind = Kind.ERROR,
-            messageRegExp = "Ambiguous mapping methods found for mapping from .*SourceExt to .*Reference: \\["
-                + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*SourceBase source\\), "
-                + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*AdditionalFooSource source\\)\\]"))
+            type = ErroneousSourceCompositeTargetCompositeMapper.class,
+            line = 32,
+            messageRegExp =
+                "Ambiguous mapping methods found for mapping property 'prop1' from .*SourceExt to .*Reference: "
+                    + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*SourceBase source\\), "
+                    + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*AdditionalFooSource source\\)"))
     public void ambiguousMappingMethodsReportError() {
     }
 
