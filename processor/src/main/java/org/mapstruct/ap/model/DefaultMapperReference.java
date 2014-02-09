@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.model;
 
-import java.beans.Introspector;
 import java.util.List;
 import java.util.Set;
 
@@ -52,7 +51,7 @@ public class DefaultMapperReference extends MapperReference {
         }
 
         String variableName = Strings.getSaveVariableName(
-            Introspector.decapitalize( type.getName() ),
+            type.getName(),
             otherMapperReferences
         );
 

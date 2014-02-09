@@ -88,8 +88,12 @@ public class Strings {
     private Strings() {
     }
 
-    public static String capitalize(String name) {
-        return name == null ? null : name.substring( 0, 1 ).toUpperCase() + name.substring( 1 );
+    public static String capitalize(String string) {
+        return string == null ? null : string.substring( 0, 1 ).toUpperCase() + string.substring( 1 );
+    }
+
+    public static String decapitalize(String string) {
+        return string == null ? null : string.substring( 0, 1 ).toLowerCase() + string.substring( 1 );
     }
 
     public static String join(Iterable<?> iterable, String separator) {
@@ -118,7 +122,19 @@ public class Strings {
         return getSaveVariableName( name, Arrays.asList( existingVariableNames ) );
     }
 
+    /**
+     * Returns a variable name which doesn't conflict with the given variable names existing in the same scope and the
+     * Java keywords.
+     *
+     * @param name the name to get a safe version for
+     * @param existingVariableNames the names of other variables existing in the same scope
+     *
+     * @return a variable name based on the given original name, not conflicting with any of the given other names or
+     *         any Java keyword; starting with a lower-case letter
+     */
     public static String getSaveVariableName(String name, Collection<String> existingVariableNames) {
+        name = decapitalize( name );
+
         Set<String> conflictingNames = new HashSet<String>( KEYWORDS );
         conflictingNames.addAll( existingVariableNames );
 
