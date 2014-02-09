@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.model;
 
-import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -75,7 +74,7 @@ public abstract class MappingMethod extends ModelElement {
 
     public String getResultName() {
         return targetParameter != null ? targetParameter.getName() :
-            Strings.getSaveVariableName( Introspector.decapitalize( getResultType().getName() ), getParameterNames() );
+            Strings.getSaveVariableName( getResultType().getName(), getParameterNames() );
     }
 
     public Type getReturnType() {

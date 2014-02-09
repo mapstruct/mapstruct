@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.model;
 
-import java.beans.Introspector;
 import java.util.Set;
 
 import org.mapstruct.ap.model.common.Parameter;
@@ -77,12 +76,8 @@ public class IterableMappingMethod extends MappingMethod {
 
     public String getLoopVariableName() {
         return Strings.getSaveVariableName(
-            Introspector.decapitalize(
-                getSourceParameter().getType()
-                    .getTypeParameters()
-                    .get( 0 )
-                    .getName()
-            ), getParameterNames()
+            getSourceParameter().getType().getTypeParameters().get( 0 ).getName(),
+            getParameterNames()
         );
     }
 

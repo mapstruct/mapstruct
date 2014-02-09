@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.processor;
 
-import java.beans.Introspector;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -601,7 +599,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             targetElementType,
             method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null,
             Strings.getSaveVariableName(
-                Introspector.decapitalize( sourceElementType.getName() ),
+                sourceElementType.getName(),
                 method.getParameterNames()
             )
         );
