@@ -18,31 +18,4 @@
      limitations under the License.
 
 -->
-package ${packageName};
-
-<#list importTypes as importedType>
-import ${importedType.fullyQualifiedName};
-</#list>
-
-@Generated(
-    value = "org.mapstruct.ap.MappingProcessor"<#if suppressGeneratorTimestamp == false>,
-    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
-)
-<#list annotations as annotation>
-<#nt><@includeModel object=annotation/>
-</#list>
-<#lt>${accessibility.keyword} class ${implementationName} <#if superTypeInterface>implements<#else>extends</#if> ${interfaceName} {
-<#list referencedMappers as mapper>
-
-<#nt>    <@includeModel object=mapper/>
-</#list>
-<#list mappingMethods as mappingMethod>
-
-<#nt>    <@includeModel object=mappingMethod/>
-</#list>
-
-<#list buildInMethods as buildInMethod>
-
-<#nt>    <@includeModel object=buildInMethod/>
-</#list>
-}
+${name}<#if ext.input??>( ${ext.input} )<#else>()</#if>

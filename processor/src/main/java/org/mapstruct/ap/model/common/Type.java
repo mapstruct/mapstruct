@@ -174,6 +174,25 @@ public class Type extends ModelElement implements Comparable<Type> {
         return false;
     }
 
+    public Type erasure() {
+        return new Type(
+            typeUtils,
+            typeUtils.erasure( typeMirror ),
+            typeElement,
+            typeParameters,
+            implementationType,
+            packageName,
+            name,
+            qualifiedName,
+            isInterface,
+            isEnumType,
+            isIterableType,
+            isCollectionType,
+            isMapType,
+            isImported
+        );
+    }
+
     /**
      * Whether this type is assignable to the given other type.
      *

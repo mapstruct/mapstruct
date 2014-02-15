@@ -21,13 +21,16 @@ package org.mapstruct.ap.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
 import javax.annotation.Generated;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
+import org.mapstruct.ap.conversion.methods.BuildInMethod;
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
@@ -51,13 +54,14 @@ public class Mapper extends ModelElement {
     private final List<Annotation> annotations;
     private final List<MappingMethod> mappingMethods;
     private final List<MapperReference> referencedMappers;
+    private final Set<BuildInMethod> buildInMethods;
     private final boolean suppressGeneratorTimestamp;
     private final Accessibility accessibility;
 
     private Mapper(TypeFactory typeFactory, String packageName, boolean superTypeIsInterface, String interfaceName,
                    String implementationName, List<MappingMethod> mappingMethods,
                    List<MapperReference> referencedMappers, boolean suppressGeneratorTimestamp,
-                   Accessibility accessibility) {
+                   Set<BuildInMethod> buildInMethods, Accessibility accessibility) {
         this.packageName = packageName;
         this.superTypeIsInterface = superTypeIsInterface;
         this.interfaceName = interfaceName;
@@ -65,6 +69,7 @@ public class Mapper extends ModelElement {
         this.annotations = new ArrayList<Annotation>();
         this.mappingMethods = mappingMethods;
         this.referencedMappers = referencedMappers;
+        this.buildInMethods = buildInMethods;
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.typeFactory = typeFactory;
         this.accessibility = accessibility;
@@ -76,6 +81,8 @@ public class Mapper extends ModelElement {
         private TypeElement element;
         private List<MappingMethod> mappingMethods;
         private List<MapperReference> mapperReferences;
+        private Set<BuildInMethod> buildInMethods;
+
         private Elements elementUtils;
         private boolean suppressGeneratorTimestamp;
 
@@ -91,6 +98,11 @@ public class Mapper extends ModelElement {
 
         public Builder mapperReferences(List<MapperReference> mapperReferences) {
             this.mapperReferences = mapperReferences;
+            return this;
+        }
+
+        public Builder buildInMethods(Set<BuildInMethod> buildInMethods) {
+            this.buildInMethods = buildInMethods;
             return this;
         }
 
@@ -119,6 +131,7 @@ public class Mapper extends ModelElement {
                 mappingMethods,
                 mapperReferences,
                 suppressGeneratorTimestamp,
+                buildInMethods,
                 Accessibility.fromModifiers( element.getModifiers() )
             );
         }
@@ -230,5 +243,9 @@ public class Mapper extends ModelElement {
 
     public Accessibility getAccessibility() {
         return accessibility;
+    }
+
+    public Set<BuildInMethod> getBuildInMethods() {
+        return buildInMethods;
     }
 }

@@ -40,6 +40,8 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.conversion.DefaultConversionContext;
+import org.mapstruct.ap.conversion.methods.BuildInMethod;
+import org.mapstruct.ap.conversion.methods.BuildInMethods;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.DefaultMapperReference;
 import org.mapstruct.ap.model.IterableMappingMethod;
@@ -78,6 +80,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private TypeFactory typeFactory;
     private Conversions conversions;
+    private BuildInMethods buildInMethods;
+
+    private Set<BuildInMethod> usedBuildInMethods;
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<Method> sourceModel) {
@@ -88,6 +93,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
         this.typeFactory = context.getTypeFactory();
         this.conversions = new Conversions( elementUtils, typeFactory );
+
+        this.buildInMethods = new BuildInMethods(messager, typeFactory );
+        this.usedBuildInMethods = new HashSet<BuildInMethod>();
+
+        this.buildInMethods = new BuildInMethods(messager, typeFactory );
+        this.usedBuildInMethods = new HashSet<BuildInMethod>();
 
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -109,6 +120,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             .suppressGeneratorTimestamp( options.isSuppressGeneratorTimestamp() )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
+            .buildInMethods( usedBuildInMethods )
             .build();
     }
 
@@ -560,7 +572,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             mapperReferences,
             methods,
             sourceType,
-            targetType
+            targetType,
+            conversionString
         );
         TypeConversion conversion = getConversion(
             sourceType,
@@ -593,11 +606,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                                                            Method method) {
         Type sourceElementType = method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
         Type targetElementType = method.getResultType().getTypeParameters().get( 0 );
+        String dateFormat = method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null;
 
         TypeConversion conversion = getConversion(
             sourceElementType,
             targetElementType,
-            method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null,
+            dateFormat,
             Strings.getSaveVariableName(
                 sourceElementType.getName(),
                 method.getParameterNames()
@@ -611,7 +625,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 mapperReferences,
                 methods,
                 sourceElementType,
-                targetElementType
+                targetElementType,
+                dateFormat
             );
 
         if ( !sourceElementType.isAssignableTo( targetElementType ) && conversion == null &&
@@ -663,7 +678,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             mapperReferences,
             methods,
             sourceKeyType,
-            targetKeyType
+            targetKeyType,
+            keyDateFormat
         );
         MethodReference valueMappingMethod = getMappingMethodReference(
             method,
@@ -671,7 +687,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             mapperReferences,
             methods,
             sourceValueType,
-            targetValueType
+            targetValueType,
+            valueDateFormat
         );
 
         if ( !sourceKeyType.isAssignableTo( targetKeyType ) && keyConversion == null && keyMappingMethod == null ) {
@@ -719,10 +736,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         );
     }
 
+
+
     private MethodReference getMappingMethodReference(Method mappingMethod, String mappedElement,
                                                       List<MapperReference> mapperReferences,
                                                       Iterable<Method> methods, Type parameterType,
-                                                      Type returnType) {
+                                                      Type returnType, String dateFormat) {
         List<Method> candidatesWithMathingTargetType = new ArrayList<Method>();
 
         for ( Method method : methods ) {
@@ -753,10 +772,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
                 );
         }
 
-        if ( candidatesWithBestMatchingSourceType.isEmpty() ) {
-            return null;
-        }
-
         // print a warning if we find more than one method with minimum source type distance
         if ( candidatesWithBestMatchingSourceType.size() > 1 ) {
             messager.printMessage(
@@ -771,17 +786,29 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             );
         }
 
-        Method method = candidatesWithBestMatchingSourceType.get( 0 );
-        MapperReference mapperReference = null;
+        if ( !candidatesWithBestMatchingSourceType.isEmpty() ) {
+            Method method = candidatesWithBestMatchingSourceType.get( 0 );
+            MapperReference mapperReference = null;
 
-        for ( MapperReference ref : mapperReferences ) {
-            if ( ref.getMapperType().equals( method.getDeclaringMapper() ) ) {
-                mapperReference = ref;
-                break;
+            for ( MapperReference ref : mapperReferences ) {
+                if ( ref.getMapperType().equals( method.getDeclaringMapper() ) ) {
+                    mapperReference = ref;
+                    break;
+                }
+            }
+            return new MethodReference( method, mapperReference );
+        }
+        else {
+            BuildInMethod buildInMehtod = buildInMethods.getConversion( parameterType, returnType );
+            if (buildInMehtod != null ) {
+                ConversionProvider.Context context =
+                        new DefaultConversionContext( typeFactory, returnType, dateFormat );
+                buildInMehtod.setConversionContext( context );
+                usedBuildInMethods.add( buildInMehtod );
+                return buildInMehtod.createMethodReference();
             }
         }
-
-        return new MethodReference( method, mapperReference );
+        return null;
     }
 
     private int addToCandidateListIfMinimal(List<Method> candidatesWithBestMathingType, int bestMatchingTypeDistance,
