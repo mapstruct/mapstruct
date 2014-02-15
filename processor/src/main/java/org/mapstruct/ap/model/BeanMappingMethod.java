@@ -79,4 +79,5 @@ public class BeanMappingMethod extends MappingMethod {
     public MethodReference getFactoryMethod() {
         return this.factoryMethod;
     }
+
 }

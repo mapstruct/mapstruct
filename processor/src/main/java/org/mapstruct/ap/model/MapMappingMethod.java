@@ -115,4 +115,5 @@ public class MapMappingMethod extends MappingMethod {
     public MethodReference getFactoryMethod() {
         return this.factoryMethod;
     }
+
 }

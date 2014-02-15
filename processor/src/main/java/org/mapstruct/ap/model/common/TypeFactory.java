@@ -201,6 +201,15 @@ public class TypeFactory {
         );
     }
 
+    public Parameter createParameter(String name, Class<?> type) {
+
+        return new Parameter(
+            name,
+            getType( type )
+        );
+    }
+
+
     public List<Parameter> getParameters(ExecutableElement method) {
         List<? extends VariableElement> parameters = method.getParameters();
         List<Parameter> result = new ArrayList<Parameter>( parameters.size() );

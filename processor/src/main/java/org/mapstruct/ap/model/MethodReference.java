@@ -19,7 +19,9 @@
 package org.mapstruct.ap.model;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import org.mapstruct.ap.model.common.Parameter;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
@@ -36,6 +38,11 @@ public class MethodReference extends MappingMethod {
     public MethodReference(Method method, MapperReference declaringMapper) {
         super( method );
         this.declaringMapper = declaringMapper;
+    }
+
+    public MethodReference(String name, List<Parameter> parameters, Type returnType ) {
+        super( name, parameters, returnType, null );
+        this.declaringMapper = null;
     }
 
     public MapperReference getDeclaringMapper() {
