@@ -21,6 +21,7 @@ package org.mapstruct.ap.conversion.methods;
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.model.MethodReference;
 import org.mapstruct.ap.model.common.ModelElement;
+import org.mapstruct.ap.model.common.Type;
 
 /**
  * Implementations create:
@@ -72,6 +73,10 @@ public abstract class BuildInMethod extends ModelElement {
             return false;
         }
         return ( getClass() == obj.getClass() );
+    }
+
+    boolean doGenericsMatch( Type sourceType, Type targetType ) {
+        return true;
     }
 
 

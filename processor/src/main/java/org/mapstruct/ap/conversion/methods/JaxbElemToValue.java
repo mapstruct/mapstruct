@@ -61,4 +61,12 @@ public class JaxbElemToValue extends BuildInMethod {
          return asSet( typeFactory.getType( JAXB_TYPE ) );
     }
 
+    @Override
+    public boolean doGenericsMatch(Type sourceType, Type targetType) {
+        boolean match = false;
+        if (sourceType.getTypeParameters().size() == 1) {
+            match = sourceType.getTypeParameters().get( 0 ).equals( targetType );
+        }
+        return match;
+    }
 }

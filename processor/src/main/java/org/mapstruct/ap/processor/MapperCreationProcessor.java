@@ -113,15 +113,18 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         List<MapperReference> mapperReferences = getReferencedMappers( element );
         List<MappingMethod> mappingMethods = getMappingMethods( mapperReferences, methods, unmappedTargetPolicy );
 
-        return new Mapper.Builder()
+        Mapper mapper = new Mapper.Builder()
             .element( element )
             .mappingMethods( mappingMethods )
             .mapperReferences( mapperReferences )
             .suppressGeneratorTimestamp( options.isSuppressGeneratorTimestamp() )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
-            .buildInMethods( usedBuildInMethods )
+            .buildInMethods( new HashSet<BuildInMethod>( usedBuildInMethods ) )
             .build();
+
+        usedBuildInMethods.clear();
+        return mapper;
     }
 
     /**

@@ -61,15 +61,18 @@ public class BuildInMethods {
         int bestMatchingTargetTypeDistance = Integer.MAX_VALUE;
         for ( Map.Entry<Key, BuildInMethod> entry : conversionMethods.entrySet() ) {
 
-            if ( targetType.isAssignableTo( entry.getKey().targetType )
-                    && sourceType.erasure().equals( entry.getKey().sourceType.erasure() ) ) {
-                int sourceTypeDistance = targetType.distanceTo( entry.getKey().targetType );
-                bestMatchingTargetTypeDistance
-                        = addToCandidateListIfMinimal(
-                                candidateKeys,
-                                bestMatchingTargetTypeDistance,
-                                entry.getKey(),
-                                sourceTypeDistance );
+            if ( targetType.erasure().isAssignableTo( entry.getKey().targetType.erasure() )
+                    && sourceType.erasure().isAssignableTo( entry.getKey().sourceType.erasure() ) ) {
+
+                if ( entry.getValue().doGenericsMatch( sourceType, targetType ) ) {
+                    int sourceTypeDistance = targetType.distanceTo( entry.getKey().targetType );
+                    bestMatchingTargetTypeDistance
+                            = addToCandidateListIfMinimal(
+                                    candidateKeys,
+                                    bestMatchingTargetTypeDistance,
+                                    entry.getKey(),
+                                    sourceTypeDistance);
+                }
             }
         }
 
