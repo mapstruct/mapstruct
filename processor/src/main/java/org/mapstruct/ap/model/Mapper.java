@@ -23,11 +23,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
 import javax.annotation.Generated;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
+import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -51,10 +53,12 @@ public class Mapper extends ModelElement {
     private final List<MappingMethod> mappingMethods;
     private final List<MapperReference> referencedMappers;
     private final boolean suppressGeneratorTimestamp;
+    private final Accessibility accessibility;
 
     private Mapper(TypeFactory typeFactory, String packageName, boolean superTypeIsInterface, String interfaceName,
                    String implementationName, List<MappingMethod> mappingMethods,
-                   List<MapperReference> referencedMappers, boolean suppressGeneratorTimestamp) {
+                   List<MapperReference> referencedMappers, boolean suppressGeneratorTimestamp,
+                   Accessibility accessibility) {
         this.packageName = packageName;
         this.superTypeIsInterface = superTypeIsInterface;
         this.interfaceName = interfaceName;
@@ -64,6 +68,7 @@ public class Mapper extends ModelElement {
         this.referencedMappers = referencedMappers;
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.typeFactory = typeFactory;
+        this.accessibility = accessibility;
     }
 
     public static class Builder {
@@ -114,7 +119,8 @@ public class Mapper extends ModelElement {
                 element.getSimpleName() + IMPLEMENTATION_SUFFIX,
                 mappingMethods,
                 mapperReferences,
-                suppressGeneratorTimestamp
+                suppressGeneratorTimestamp,
+                Accessibility.fromModifiers( element.getModifiers() )
             );
         }
     }
@@ -221,5 +227,9 @@ public class Mapper extends ModelElement {
 
     public List<Annotation> getAnnotations() {
         return annotations;
+    }
+
+    public Accessibility getAccessibility() {
+        return accessibility;
     }
 }

@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -40,12 +41,14 @@ public abstract class MappingMethod extends ModelElement {
     private final List<Parameter> parameters;
     private final Type returnType;
     private final Parameter targetParameter;
+    private final Accessibility accessibility;
 
     public MappingMethod(Method method) {
         this.name = method.getName();
         this.parameters = method.getParameters();
         this.returnType = method.getReturnType();
         this.targetParameter = method.getTargetParameter();
+        this.accessibility = method.getAccessibility();
     }
 
     public String getName() {
@@ -79,6 +82,10 @@ public abstract class MappingMethod extends ModelElement {
 
     public Type getReturnType() {
         return returnType;
+    }
+
+    public Accessibility getAccessibility() {
+        return accessibility;
     }
 
     public boolean isExistingInstanceMapping() {
