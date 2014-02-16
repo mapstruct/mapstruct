@@ -72,6 +72,7 @@ public abstract class MapperTestBase {
 
     private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     private static final DiagnosticDescriptorComparator COMPARATOR = new DiagnosticDescriptorComparator();
+    private static volatile boolean enhancedClassloader = false;
 
     private JavaCompiler compiler;
     private String sourceDir;
@@ -104,12 +105,16 @@ public abstract class MapperTestBase {
 
         createOutputDirs();
 
-        Thread.currentThread().setContextClassLoader(
-            new URLClassLoader(
-                new URL[] { new File( classOutputDir ).toURI().toURL() },
-                Thread.currentThread().getContextClassLoader()
-            )
-        );
+        if ( !enhancedClassloader ) {
+            // we need to make sure that the the generated classes are loaded by the same classloader as the test has
+            // been loaded already. Otherwise some tests won't work.
+            URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+            Class<?> clazz = URLClassLoader.class;
+            Method method = clazz.getDeclaredMethod( "addURL", new Class[] { URL.class } );
+            method.setAccessible( true );
+            method.invoke( classLoader, new File( classOutputDir ).toURI().toURL() );
+            enhancedClassloader = true;
+        }
     }
 
     @BeforeMethod
