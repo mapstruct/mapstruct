@@ -31,7 +31,7 @@ import ${importedType.fullyQualifiedName};
 <#list annotations as annotation>
 <#nt><@includeModel object=annotation/>
 </#list>
-public class ${implementationName} <#if superTypeInterface>implements<#else>extends</#if> ${interfaceName} {
+<#lt>${accessibility.keyword} class ${implementationName} <#if superTypeInterface>implements<#else>extends</#if> ${interfaceName} {
 <#list referencedMappers as mapper>
 
 <#nt>    <@includeModel object=mapper/>

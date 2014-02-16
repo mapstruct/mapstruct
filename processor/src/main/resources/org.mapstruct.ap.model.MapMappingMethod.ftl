@@ -19,7 +19,7 @@
 
 -->
 @Override
-public <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
+<#lt>${accessibility.keyword} <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
     if ( ${sourceParameter.name} == null ) {
         return<#if returnType.name != "void"> null</#if>;
     }
