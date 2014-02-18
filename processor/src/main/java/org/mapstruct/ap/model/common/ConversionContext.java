@@ -16,18 +16,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.conversion.methods;
+package org.mapstruct.ap.model.common;
 
-public class Target {
+/**
+ * ConversionContext object passed to conversion providers.
+ *
+ * @author Gunnar Morling
+ */
+public interface ConversionContext {
 
-    private String foo;
+    /**
+     * Returns the target type of this conversion.
+     *
+     * @return The target type of this conversion.
+     */
+    Type getTargetType();
 
-    public String getFoo() {
-        return foo;
-    }
+    /**
+     * Returns the date format if this conversion is from String to
+     * {@link Date} or vice versa. Returns {@code null} for other types or
+     * if not given.
+     *
+     * @return The date format if this conversion.
+     */
+    String getDateFormat();
 
-    public void setFoo( String foo ) {
-        this.foo = foo;
-    }
+    TypeFactory getTypeFactory();
 
 }

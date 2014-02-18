@@ -18,6 +18,13 @@
      limitations under the License.
 
 -->
-    private <T> T  convertJAXBElementToValue( JAXBElement <T> element ) {
-        return element.isNil() ? null : element.getValue();
+private XMLGregorianCalendar ${name}( Date date ) {
+    try {
+        GregorianCalendar c = new GregorianCalendar();
+        c.setTime( date );
+        return DatatypeFactory.newInstance().newXMLGregorianCalendar( c );
     }
+    catch ( DatatypeConfigurationException ex ) {
+        throw new RuntimeException( ex );
+    }
+}

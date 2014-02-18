@@ -34,14 +34,17 @@ import org.mapstruct.ap.model.source.Method;
 public class MethodReference extends MappingMethod {
 
     private final MapperReference declaringMapper;
+    private final String contextParam;
 
     public MethodReference(Method method, MapperReference declaringMapper) {
         super( method );
         this.declaringMapper = declaringMapper;
+        this.contextParam = null;
     }
 
-    public MethodReference(String name, List<Parameter> parameters, Type returnType ) {
+    public MethodReference(String name, List<Parameter> parameters, Type returnType, String contextParam ) {
         super( name, parameters, returnType, null );
+        this.contextParam = contextParam;
         this.declaringMapper = null;
     }
 
@@ -55,5 +58,9 @@ public class MethodReference extends MappingMethod {
 
     public Set<Type> getReferencedTypes() {
         return new HashSet<Type>();
+    }
+
+    public String getContextParam() {
+        return contextParam;
     }
 }

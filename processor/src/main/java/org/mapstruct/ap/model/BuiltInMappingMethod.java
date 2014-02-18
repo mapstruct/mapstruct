@@ -16,12 +16,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion.methods;
+package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.conversion.ConversionProvider;
-import org.mapstruct.ap.model.MethodReference;
+import java.util.Collections;
+import java.util.Set;
+import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.util.Strings;
 
 /**
  * Implementations create:
@@ -31,8 +33,7 @@ import org.mapstruct.ap.model.common.Type;
  *
  * @author Sjaak Derksen
  */
-public abstract class BuildInMethod extends ModelElement {
-
+public abstract class BuiltInMappingMethod extends ModelElement {
 
     /**
      * Creates a reference to the conversion method
@@ -46,10 +47,10 @@ public abstract class BuildInMethod extends ModelElement {
      * Sets the conversion context which is used to add context information such as date / time
      * conversion  pattern, etc.
      *
-     * @param conversionContext Context providing optional information required for creating
-     * the conversion.
+     * @param conversionContext ConversionContext providing optional information required for creating
+ the conversion.
      */
-    public void setConversionContext(ConversionProvider.Context conversionContext) { }
+    public void setConversionContext(ConversionContext conversionContext) { }
 
     /**
      * hashCode
@@ -75,9 +76,37 @@ public abstract class BuildInMethod extends ModelElement {
         return ( getClass() == obj.getClass() );
     }
 
-    boolean doGenericsMatch( Type sourceType, Type targetType ) {
+    /**
+     * tests whether generics do match. Default true.
+     *
+     * @param sourceType
+     * @param targetType
+     * @return
+     */
+    public boolean doGenericsMatch( Type sourceType, Type targetType ) {
         return true;
     }
 
+    /**
+     * method name
+     * @return default method name is equal to class name of conversionmethod
+     */
+    public String getName() {
+        return Strings.decapitalize( this.getClass().getSimpleName() );
+    }
 
+    /**
+     * imported types default. Only used types should be added. Source and Target types are coming via
+     * the MethodReference
+     *
+     * @return set of used types.
+     */
+    @Override
+    public Set<Type> getImportTypes() {
+        return Collections.<Type>emptySet();
+    }
+
+    public abstract Type source();
+
+    public abstract Type target();
 }

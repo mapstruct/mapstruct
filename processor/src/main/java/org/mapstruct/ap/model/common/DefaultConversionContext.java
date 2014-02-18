@@ -16,15 +16,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.conversion.methods;
+package org.mapstruct.ap.model.common;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+/**
+ * Default implementation of the {@link ConversionContext} passed to conversion providers.
+ *
+ * @author Gunnar Morling
+ */
+public class DefaultConversionContext implements ConversionContext {
 
-@Mapper
-public interface SourceTargetMapper {
+    private final Type targetType;
+    private final String format;
+    private final TypeFactory typeFactory;
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    public DefaultConversionContext(TypeFactory typeFactory, Type targetType, String format) {
+        this.typeFactory = typeFactory;
+        this.targetType = targetType;
+        this.format = format;
+    }
 
-    Target sourceToTarget(Source source);
+    @Override
+    public Type getTargetType() {
+        return targetType;
+    }
+
+    @Override
+    public String getDateFormat() {
+        return format;
+    }
+
+    @Override
+    public TypeFactory getTypeFactory() {
+        return typeFactory;
+    }
 }

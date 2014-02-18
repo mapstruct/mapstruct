@@ -18,31 +18,12 @@
      limitations under the License.
 
 -->
-package ${packageName};
-
-<#list importTypes as importedType>
-import ${importedType.fullyQualifiedName};
-</#list>
-
-@Generated(
-    value = "org.mapstruct.ap.MappingProcessor"<#if suppressGeneratorTimestamp == false>,
-    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
-)
-<#list annotations as annotation>
-<#nt><@includeModel object=annotation/>
-</#list>
-<#lt>${accessibility.keyword} class ${implementationName} <#if superTypeInterface>implements<#else>extends</#if> ${interfaceName} {
-<#list referencedMappers as mapper>
-
-<#nt>    <@includeModel object=mapper/>
-</#list>
-<#list mappingMethods as mappingMethod>
-
-<#nt>    <@includeModel object=mappingMethod/>
-</#list>
-
-<#list builtInMethods as builtInMethod>
-
-<#nt>    <@includeModel object=builtInMethod/>
-</#list>
+private String ${name}( XMLGregorianCalendar xcal, String dateFormat ) {
+    if (dateFormat == null ) {
+        return xcal.toString();
+    } else {
+        Date d = xcal.toGregorianCalendar().getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat( dateFormat );
+        return sdf.format( d );
+    }
 }
