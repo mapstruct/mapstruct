@@ -56,7 +56,7 @@ import org.mapstruct.ap.model.TypeConversion;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
-import org.mapstruct.ap.model.source.BasicMethod;
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.option.Options;
@@ -760,7 +760,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
 
 
-    private <T extends BasicMethod> T getBestMatch(SourceMethod mappingMethod, String mappedElement,
+    private <T extends Method> T getBestMatch(SourceMethod mappingMethod, String mappedElement,
                                                       Iterable<T> methods, Type parameterType,
                                                       Type returnType) {
         List<T> candidatesWithMathingTargetType = new ArrayList<T>();
@@ -814,7 +814,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
 
-    private <T extends BasicMethod> int addToCandidateListIfMinimal(List<T> candidatesWithBestMathingType,
+    private <T extends Method> int addToCandidateListIfMinimal(List<T> candidatesWithBestMathingType,
                                             int bestMatchingTypeDistance, T method, int currentTypeDistance) {
         if ( currentTypeDistance == bestMatchingTypeDistance ) {
             candidatesWithBestMathingType.add( method );
