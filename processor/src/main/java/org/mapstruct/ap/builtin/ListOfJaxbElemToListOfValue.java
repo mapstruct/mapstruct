@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.builtin;
 
-import org.mapstruct.ap.model.BuiltInMethod;
+import org.mapstruct.ap.model.source.BuiltInMethod;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.mapstruct.ap.model.common.Parameter;

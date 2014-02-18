@@ -21,7 +21,7 @@ package org.mapstruct.ap.builtin;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import org.mapstruct.ap.model.BuiltInMethod;
+import org.mapstruct.ap.model.source.BuiltInMethod;
 import java.util.GregorianCalendar;
 import java.util.Set;
 import javax.xml.datatype.DatatypeConfigurationException;

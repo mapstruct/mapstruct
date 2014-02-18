@@ -41,7 +41,7 @@ import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.common.DefaultConversionContext;
-import org.mapstruct.ap.model.BuiltInMethod;
+import org.mapstruct.ap.model.source.BuiltInMethod;
 import org.mapstruct.ap.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.DefaultMapperReference;

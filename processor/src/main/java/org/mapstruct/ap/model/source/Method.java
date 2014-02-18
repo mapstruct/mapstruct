@@ -129,11 +129,9 @@ public class Method implements BasicMethod {
     }
 
     /**
-     * Returns the mapper type declaring this method if it is not declared by the mapper interface currently processed
-     * but by another mapper imported via {@code Mapper#users()}.
-     *
-     * @return The declaring mapper type
+     * {@inheritDoc} {@link BasicMethod}
      */
+    @Override
     public Type getDeclaringMapper() {
         return declaringMapper;
     }
@@ -142,14 +140,26 @@ public class Method implements BasicMethod {
         return executable;
     }
 
+    /**
+     * {@inheritDoc} {@link BasicMethod}
+     */
+    @Override
     public String getName() {
         return executable.getSimpleName().toString();
     }
 
+    /**
+     * {@inheritDoc} {@link BasicMethod}
+     */
+    @Override
     public List<Parameter> getParameters() {
         return parameters;
     }
 
+    /**
+     * {@inheritDoc} {@link BasicMethod}
+     */
+    @Override
     public List<Parameter> getSourceParameters() {
         List<Parameter> sourceParameters = new ArrayList<Parameter>();
 
@@ -176,6 +186,10 @@ public class Method implements BasicMethod {
         return targetParameter != null ? targetParameter.getType() : returnType;
     }
 
+    /**
+     * {@inheritDoc} {@link BasicMethod}
+     */
+    @Override
     public Type getReturnType() {
         return returnType;
     }
@@ -213,6 +227,10 @@ public class Method implements BasicMethod {
             && equals( getResultType(), method.getSourceParameters().iterator().next().getType() );
     }
 
+    /**
+     * {@inheritDoc} {@link BasicMethod}
+     */
+    @Override
     public Parameter getTargetParameter() {
         return targetParameter;
     }
@@ -285,10 +303,7 @@ public class Method implements BasicMethod {
     }
 
     /**
-     *
-     * @param sourceType
-     * @param targetType
-     * @return
+     * {@inheritDoc} {@link BasicMethod}
      */
     @Override
     public boolean matches( Type sourceType, Type targetType ) {
