@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
+import org.mapstruct.ap.model.common.ConversionContext;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -37,7 +38,7 @@ import static org.mapstruct.ap.util.Collections.asSet;
 public class DateToStringConversion implements ConversionProvider {
 
     @Override
-    public TypeConversion to(String sourceReference, Context conversionContext) {
+    public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
         return new TypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
             Collections.<Type>emptyList(),
@@ -46,7 +47,7 @@ public class DateToStringConversion implements ConversionProvider {
     }
 
     @Override
-    public TypeConversion from(String targetReference, Context conversionContext) {
+    public TypeConversion from(String targetReference, ConversionContext conversionContext) {
         return new TypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
             Arrays.asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
@@ -54,7 +55,7 @@ public class DateToStringConversion implements ConversionProvider {
         );
     }
 
-    private String getConversionString(String targetReference, Context conversionContext, String method) {
+    private String getConversionString(String targetReference, ConversionContext conversionContext, String method) {
         StringBuilder conversionString = new StringBuilder( "new SimpleDateFormat(" );
 
         if ( conversionContext.getDateFormat() != null ) {

@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
+import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.TypeConversion;
 
 /**
@@ -29,14 +30,14 @@ import org.mapstruct.ap.model.TypeConversion;
 public abstract class SimpleConversion implements ConversionProvider {
 
     @Override
-    public TypeConversion to(String sourceReference, Context conversionContext) {
+    public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
         return new TypeConversion(
             getToConversionString( sourceReference, conversionContext )
         );
     }
 
     @Override
-    public TypeConversion from(String targetReference, Context conversionContext) {
+    public TypeConversion from(String targetReference, ConversionContext conversionContext) {
         return new TypeConversion(
             getFromConversionString( targetReference, conversionContext )
         );
@@ -47,22 +48,22 @@ public abstract class SimpleConversion implements ConversionProvider {
      *
      * @param sourceReference A reference to the source object, e.g.
      * {@code beanName.getFoo()}.
-     * @param conversionContext Context providing optional information required for creating
-     * the conversion.
+     * @param conversionContext ConversionContext providing optional information required for creating
+ the conversion.
      *
      * @return The conversion string from source to target.
      */
-    protected abstract String getToConversionString(String sourceReference, Context conversionContext);
+    protected abstract String getToConversionString(String sourceReference, ConversionContext conversionContext);
 
     /**
      * Creates the conversion string from target to source.
      *
      * @param targetReference A reference to the targetReference object, e.g.
      * {@code beanName.getFoo()}.
-     * @param conversionContext Context providing optional information required for creating
-     * the conversion.
+     * @param conversionContext ConversionContext providing optional information required for creating
+ the conversion.
      *
      * @return The conversion string from target to source.
      */
-    protected abstract String getFromConversionString(String targetReference, Context conversionContext);
+    protected abstract String getFromConversionString(String targetReference, ConversionContext conversionContext);
 }

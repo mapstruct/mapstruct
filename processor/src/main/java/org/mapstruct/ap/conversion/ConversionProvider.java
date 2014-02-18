@@ -18,11 +18,9 @@
  */
 package org.mapstruct.ap.conversion;
 
-import java.util.Date;
+import org.mapstruct.ap.model.common.ConversionContext;
 
 import org.mapstruct.ap.model.TypeConversion;
-import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.common.TypeFactory;
 
 /**
  * Implementations create inline {@link TypeConversion}s such as
@@ -42,48 +40,20 @@ public interface ConversionProvider {
      *
      * @param sourceReference A reference to the source object, e.g.
      * {@code beanName.getFoo()}.
-     * @param conversionContext Context providing optional information required for creating
-     * the conversion.
+     * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      *
      * @return A conversion from source to target.
      */
-    TypeConversion to(String sourceReference, Context conversionContext);
+    TypeConversion to(String sourceReference, ConversionContext conversionContext);
 
     /**
      * Creates the conversion from target to source of a property mapping.
      *
      * @param targetReference A reference to the targetReference object, e.g.
      * {@code beanName.getFoo()}.
-     * @param conversionContext Context providing optional information required for creating
-     * the conversion.
+     * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      *
      * @return A conversion from target to source.
      */
-    TypeConversion from(String targetReference, Context conversionContext);
-
-    /**
-     * Context object passed to conversion providers.
-     *
-     * @author Gunnar Morling
-     */
-    public interface Context {
-
-        /**
-         * Returns the target type of this conversion.
-         *
-         * @return The target type of this conversion.
-         */
-        Type getTargetType();
-
-        /**
-         * Returns the date format if this conversion is from String to
-         * {@link Date} or vice versa. Returns {@code null} for other types or
-         * if not given.
-         *
-         * @return The date format if this conversion.
-         */
-        String getDateFormat();
-
-        TypeFactory getTypeFactory();
-    }
+    TypeConversion from(String targetReference, ConversionContext conversionContext);
 }

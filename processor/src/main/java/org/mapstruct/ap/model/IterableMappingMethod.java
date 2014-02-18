@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -37,7 +37,7 @@ public class IterableMappingMethod extends MappingMethod {
     private final TypeConversion conversion;
     private final MethodReference factoryMethod;
 
-    public IterableMappingMethod(Method method, MethodReference elementMappingMethod,
+    public IterableMappingMethod(SourceMethod method, MethodReference elementMappingMethod,
                                  TypeConversion conversion, MethodReference factoryMethod) {
         super( method );
         this.elementMappingMethod = elementMappingMethod;

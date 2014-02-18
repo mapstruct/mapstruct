@@ -16,24 +16,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
-
-import org.mapstruct.ap.model.common.ConversionContext;
+package org.mapstruct.ap.model.common;
 
 /**
- * Conversion between {@link Character} and {@link String}.
+ * Default implementation of the {@link ConversionContext} passed to conversion providers.
  *
  * @author Gunnar Morling
  */
-public class CharWrapperToStringConversion extends SimpleConversion {
+public class DefaultConversionContext implements ConversionContext {
 
-    @Override
-    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
-        return sourceReference + ".toString()";
+    private final Type targetType;
+    private final String format;
+    private final TypeFactory typeFactory;
+
+    public DefaultConversionContext(TypeFactory typeFactory, Type targetType, String format) {
+        this.typeFactory = typeFactory;
+        this.targetType = targetType;
+        this.format = format;
     }
 
     @Override
-    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
-        return targetReference + ".charAt( 0 )";
+    public Type getTargetType() {
+        return targetType;
+    }
+
+    @Override
+    public String getDateFormat() {
+        return format;
+    }
+
+    @Override
+    public TypeFactory getTypeFactory() {
+        return typeFactory;
     }
 }

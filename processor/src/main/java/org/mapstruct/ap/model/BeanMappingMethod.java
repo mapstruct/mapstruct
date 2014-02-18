@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one
@@ -40,7 +40,9 @@ public class BeanMappingMethod extends MappingMethod {
     private final List<PropertyMapping> propertyMappings;
     private final MethodReference factoryMethod;
 
-    public BeanMappingMethod(Method method, List<PropertyMapping> propertyMappings, MethodReference factoryMethod) {
+    public BeanMappingMethod(SourceMethod method,
+                             List<PropertyMapping> propertyMappings,
+                             MethodReference factoryMethod) {
         super( method );
         this.propertyMappings = propertyMappings;
         this.factoryMethod = factoryMethod;
@@ -79,4 +81,5 @@ public class BeanMappingMethod extends MappingMethod {
     public MethodReference getFactoryMethod() {
         return this.factoryMethod;
     }
+
 }

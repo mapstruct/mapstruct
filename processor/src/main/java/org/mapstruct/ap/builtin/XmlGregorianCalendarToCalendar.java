@@ -16,24 +16,36 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.builtin;
 
-import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.source.BuiltInMethod;
+import java.util.Calendar;
+import javax.xml.datatype.XMLGregorianCalendar;
+import org.mapstruct.ap.model.common.Parameter;
+import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
 
 /**
- * Conversion between {@link Character} and {@link String}.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class CharWrapperToStringConversion extends SimpleConversion {
+public class XmlGregorianCalendarToCalendar extends BuiltInMethod {
 
-    @Override
-    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
-        return sourceReference + ".toString()";
+    private final Parameter parameter;
+    private final Type returnType;
+
+    public XmlGregorianCalendarToCalendar( TypeFactory typeFactory ) {
+        this.parameter = typeFactory.createParameter( "xcal", XMLGregorianCalendar.class );
+        this.returnType = typeFactory.getType( Calendar.class );
     }
 
     @Override
-    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
-        return targetReference + ".charAt( 0 )";
+    public Parameter getParameter() {
+        return parameter;
+    }
+
+    @Override
+    public Type getReturnType() {
+        return returnType;
     }
 }

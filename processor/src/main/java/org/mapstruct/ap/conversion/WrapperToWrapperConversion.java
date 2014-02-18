@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
+import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.util.NativeTypes;
 
 /**
@@ -43,7 +44,7 @@ public class WrapperToWrapperConversion extends SimpleConversion {
     }
 
     @Override
-    public String getToConversionString(String sourceReference, Context conversionContext) {
+    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
         if ( sourceType == targetType ) {
             return sourceReference;
         }
@@ -53,7 +54,7 @@ public class WrapperToWrapperConversion extends SimpleConversion {
     }
 
     @Override
-    public String getFromConversionString(String targetReference, Context conversionContext) {
+    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
         if ( sourceType == targetType ) {
             return targetReference;
         }

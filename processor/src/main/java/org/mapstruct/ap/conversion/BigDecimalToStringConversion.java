@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
+import org.mapstruct.ap.model.common.ConversionContext;
 import java.math.BigDecimal;
 
 /**
@@ -28,12 +29,12 @@ import java.math.BigDecimal;
 public class BigDecimalToStringConversion extends SimpleConversion {
 
     @Override
-    public String getToConversionString(String sourceReference, Context conversionContext) {
+    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
         return sourceReference + ".toString()";
     }
 
     @Override
-    public String getFromConversionString(String targetReference, Context conversionContext) {
+    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
         return "new BigDecimal( " + targetReference + " )";
     }
 }

@@ -16,24 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.test.builtin;
 
-import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 
-/**
- * Conversion between {@link Character} and {@link String}.
- *
- * @author Gunnar Morling
- */
-public class CharWrapperToStringConversion extends SimpleConversion {
+@Mapper
+public interface SourceTargetMapper {
 
-    @Override
-    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
-        return sourceReference + ".toString()";
-    }
-
-    @Override
-    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
-        return targetReference + ".charAt( 0 )";
-    }
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    @Mappings({
+        @Mapping(source = "prop5", dateFormat = "dd.MM.yyyy"),
+        @Mapping(source = "prop6", dateFormat = "dd.MM.yyyy")
+    })
+    Target sourceToTarget(Source source);
 }

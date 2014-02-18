@@ -37,7 +37,7 @@ import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.MapMapping;
 import org.mapstruct.ap.model.source.Mapping;
-import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.prism.IterableMappingPrism;
 import org.mapstruct.ap.prism.MapMappingPrism;
 import org.mapstruct.ap.prism.MapperPrism;
@@ -46,25 +46,27 @@ import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
+import javax.lang.model.util.Types;
 
 /**
- * A {@link ModelElementProcessor} which retrieves a list of {@link Method}s
+ * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
  * representing all the mapping methods of the given bean mapper type as well as
  * all referenced mapper methods declared by other mappers referenced by the
  * current mapper.
  *
  * @author Gunnar Morling
  */
-public class MethodRetrievalProcessor implements ModelElementProcessor<Void, List<Method>> {
+public class MethodRetrievalProcessor implements ModelElementProcessor<Void, List<SourceMethod>> {
 
     private Messager messager;
     private TypeFactory typeFactory;
+    private Types typeUtils;
 
     @Override
-    public List<Method> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
+    public List<SourceMethod> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
         this.messager = context.getMessager();
         this.typeFactory = context.getTypeFactory();
-
+        this.typeUtils = context.getTypeUtils();
         return retrieveMethods( mapperTypeElement, true );
     }
 
@@ -83,11 +85,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      *
      * @return All mapping methods declared by the given type
      */
-    private List<Method> retrieveMethods(TypeElement element, boolean mapperRequiresImplementation) {
-        List<Method> methods = new ArrayList<Method>();
+    private List<SourceMethod> retrieveMethods(TypeElement element, boolean mapperRequiresImplementation) {
+        List<SourceMethod> methods = new ArrayList<SourceMethod>();
 
         for ( ExecutableElement executable : methodsIn( element.getEnclosedElements() ) ) {
-            Method method = getMethod( element, executable, mapperRequiresImplementation );
+            SourceMethod method = getMethod( element, executable, mapperRequiresImplementation );
             if ( method != null ) {
                 methods.add( method );
             }
@@ -115,7 +117,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return methods;
     }
 
-    private Method getMethod(TypeElement element, ExecutableElement method, boolean mapperRequiresImplementation) {
+    private SourceMethod getMethod(TypeElement element,
+                                   ExecutableElement method,
+                                   boolean mapperRequiresImplementation) {
         List<Parameter> parameters = typeFactory.getParameters( method );
         Type returnType = typeFactory.getReturnType( method );
 
@@ -132,13 +136,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
             if ( isValid ) {
                 return
-                    Method.forMethodRequiringImplementation(
+                    SourceMethod.forMethodRequiringImplementation(
                         method,
                         parameters,
                         returnType,
                         getMappings( method ),
                         IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ) ),
-                        MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ) )
+                        MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ) ),
+                        typeUtils
                     );
             }
             else {
@@ -148,20 +153,22 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         //otherwise add reference to existing mapper method
         else if ( parameters.size() == 1 ) {
             return
-                Method.forReferencedMethod(
+                SourceMethod.forReferencedMethod(
                     mapperRequiresImplementation ? null : typeFactory.getType( element ),
                     method,
                     parameters,
-                    returnType
+                    returnType,
+                    typeUtils
                 );
         }
         //create factory method
         else if ( parameters.isEmpty() ) {
             return
-                Method.forFactoryMethod(
+                SourceMethod.forFactoryMethod(
                     mapperRequiresImplementation ? null : typeFactory.getType( element ),
                     method,
-                    returnType
+                    returnType,
+                    typeUtils
                 );
         }
         else {

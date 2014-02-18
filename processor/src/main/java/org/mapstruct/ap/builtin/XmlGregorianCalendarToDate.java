@@ -16,41 +16,36 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.builtin;
 
-import org.mapstruct.ap.conversion.ConversionProvider.Context;
+import org.mapstruct.ap.model.source.BuiltInMethod;
+import java.util.Date;
+import javax.xml.datatype.XMLGregorianCalendar;
+import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 
 /**
- * Default implementation of the {@link Context} passed to conversion providers.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class DefaultConversionContext implements ConversionProvider.Context {
+public class XmlGregorianCalendarToDate extends BuiltInMethod {
 
-    private final Type targetType;
-    private final String format;
-    private final TypeFactory typeFactory;
+    private final Parameter parameter;
+    private final Type returnType;
 
-    public DefaultConversionContext(TypeFactory typeFactory, Type targetType, String format) {
-        this.typeFactory = typeFactory;
-        this.targetType = targetType;
-        this.format = format;
+    public XmlGregorianCalendarToDate( TypeFactory typeFactory ) {
+        this.parameter = typeFactory.createParameter( "xcal", XMLGregorianCalendar.class );
+        this.returnType = typeFactory.getType( Date.class );
     }
 
     @Override
-    public Type getTargetType() {
-        return targetType;
+    public Parameter getParameter() {
+        return parameter;
     }
 
     @Override
-    public String getDateFormat() {
-        return format;
-    }
-
-    @Override
-    public TypeFactory getTypeFactory() {
-        return typeFactory;
+    public Type getReturnType() {
+        return returnType;
     }
 }
