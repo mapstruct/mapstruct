@@ -42,7 +42,7 @@ import org.mapstruct.ap.util.Strings;
  *
  * @author Gunnar Morling
  */
-public class Method implements BasicMethod {
+public class SourceMethod implements BasicMethod {
 
     private final Type declaringMapper;
     private final ExecutableElement executable;
@@ -58,12 +58,15 @@ public class Method implements BasicMethod {
 
     private boolean configuredByReverseMappingMethod = false;
 
-    public static Method forMethodRequiringImplementation(ExecutableElement executable, List<Parameter> parameters,
-                                                          Type returnType, Map<String, List<Mapping>> mappings,
-                                                          IterableMapping iterableMapping, MapMapping mapMapping,
-                                                          Types typeUtils ) {
+    public static SourceMethod forMethodRequiringImplementation(ExecutableElement executable,
+                                                                List<Parameter> parameters,
+                                                                Type returnType, Map<String,
+                                                                List<Mapping>> mappings,
+                                                                IterableMapping iterableMapping,
+                                                                MapMapping mapMapping,
+                                                                Types typeUtils ) {
 
-        return new Method(
+        return new SourceMethod(
                 null,
                 executable,
                 parameters,
@@ -74,10 +77,13 @@ public class Method implements BasicMethod {
                 typeUtils );
     }
 
-    public static Method forReferencedMethod(Type declaringMapper, ExecutableElement executable,
-                                             List<Parameter> parameters, Type returnType, Types typeUtils ) {
+    public static SourceMethod forReferencedMethod(Type declaringMapper,
+                                                   ExecutableElement executable,
+                                                   List<Parameter> parameters,
+                                                   Type returnType,
+                                                   Types typeUtils ) {
 
-        return new Method(
+        return new SourceMethod(
             declaringMapper,
             executable,
             parameters,
@@ -89,10 +95,10 @@ public class Method implements BasicMethod {
         );
     }
 
-    public static Method forFactoryMethod(Type declaringMapper, ExecutableElement executable,
+    public static SourceMethod forFactoryMethod(Type declaringMapper, ExecutableElement executable,
                                           Type returnType, Types typeUtils) {
 
-        return new Method(
+        return new SourceMethod(
             declaringMapper,
             executable,
             Collections.<Parameter>emptyList(),
@@ -104,9 +110,14 @@ public class Method implements BasicMethod {
         );
     }
 
-    private Method(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters, Type returnType,
-                   Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
-                   Types typeUtils ) {
+    private SourceMethod(Type declaringMapper,
+                         ExecutableElement executable,
+                         List<Parameter> parameters,
+                         Type returnType,
+                         Map<String, List<Mapping>> mappings,
+                         IterableMapping iterableMapping,
+                         MapMapping mapMapping,
+                         Types typeUtils ) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
@@ -229,7 +240,7 @@ public class Method implements BasicMethod {
         this.configuredByReverseMappingMethod = true;
     }
 
-    public boolean reverses(Method method) {
+    public boolean reverses(SourceMethod method) {
         return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
             && equals( getSourceParameters().iterator().next().getType(), method.getResultType() )
             && equals( getResultType(), method.getSourceParameters().iterator().next().getType() );

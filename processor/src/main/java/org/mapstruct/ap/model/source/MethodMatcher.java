@@ -37,14 +37,14 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.model.common.Type;
 
 /**
- * MethodMatcher $8.4 of the JavaLanguage specification describes a method body as such:
+ * SourceMethodMatcher $8.4 of the JavaLanguage specification describes a method body as such:
  *
  * <pre>
- * MethodDeclaration: MethodHeader MethodBody
- * MethodHeader: MethodModifiers TypeParameters Result MethodDeclarator Throws
- * MethodDeclarator: Identifier ( FormalParameterList )
- *
- * example &lt;T extends String & Serializable&gt;  T   getResult(? extends T) throws Exception
+ SourceMethodDeclaration: SourceMethodHeader SourceMethodBody
+ SourceMethodHeader: SourceMethodModifiers TypeParameters Result SourceMethodDeclarator Throws
+ SourceMethodDeclarator: Identifier ( FormalParameterList )
+
+ example &lt;T extends String & Serializable&gt;  T   getResult(? extends T) throws Exception
  *         \-------------------------------/ \-/            \---------/
  *               TypeParameters             Result        ParameterList
  * </pre>
@@ -62,7 +62,7 @@ import org.mapstruct.ap.model.common.Type;
 public class MethodMatcher {
 
 
-    private final Method candidateMethod;
+    private final SourceMethod candidateMethod;
     private final Types typeUtils;
     private final Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<TypeVariable, TypeMirror>();
 
@@ -72,7 +72,7 @@ public class MethodMatcher {
      * @param typeUtils
      * @param candidateMethod
      */
-    MethodMatcher(Types typeUtils, Method candidateMethod) {
+    MethodMatcher(Types typeUtils, SourceMethod candidateMethod) {
         this.typeUtils = typeUtils;
         this.candidateMethod = candidateMethod;
     }

@@ -24,7 +24,7 @@ import java.util.Set;
 import org.mapstruct.ap.model.common.ConversionContext;
 
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
  * Represents a reference to {@link MappingMethod}.
@@ -37,7 +37,7 @@ public class MethodReference extends MappingMethod {
     private final String contextParam;
 
 
-    public MethodReference(Method method, MapperReference declaringMapper ) {
+    public MethodReference(SourceMethod method, MapperReference declaringMapper ) {
         super( method );
         this.declaringMapper = declaringMapper;
         this.contextParam =  null;
