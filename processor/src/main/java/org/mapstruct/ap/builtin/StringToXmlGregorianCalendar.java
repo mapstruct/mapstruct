@@ -21,14 +21,12 @@ package org.mapstruct.ap.builtin;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import org.mapstruct.ap.model.BuiltInMappingMethod;
-import static java.util.Arrays.asList;
+import org.mapstruct.ap.model.BuiltInMethod;
 import java.util.GregorianCalendar;
 import java.util.Set;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.mapstruct.ap.model.MethodReference;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -39,26 +37,18 @@ import static org.mapstruct.ap.util.Collections.asSet;
  *
  * @author Sjaak Derksen
  */
-public class StringToXmlGregorianCalendar extends BuiltInMappingMethod {
+public class StringToXmlGregorianCalendar extends BuiltInMethod {
 
-    private static final Class SOURCE = String.class;
-    private static final Class TARGET = XMLGregorianCalendar.class;
+    private final Parameter parameter;
+    private final Type returnType;
 
     private final TypeFactory typeFactory;
-    private ConversionContext conversionContext;
 
     public StringToXmlGregorianCalendar( TypeFactory typeFactory ) {
         this.typeFactory = typeFactory;
-    }
+        this.parameter = typeFactory.createParameter( "date" , String.class );
+        this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
 
-    @Override
-    public MethodReference createMethodReference() {
-        return new MethodReference(
-            getName(),
-            asList( new Parameter[] { typeFactory.createParameter( "date" , SOURCE ) } ),
-            typeFactory.getType( TARGET ),
-            getContextParm()
-        );
     }
 
     @Override
@@ -72,21 +62,17 @@ public class StringToXmlGregorianCalendar extends BuiltInMappingMethod {
     }
 
     @Override
-    public Type source() {
-        return typeFactory.getType( SOURCE ).erasure();
+    public Parameter getParameter() {
+        return parameter;
     }
 
     @Override
-    public Type target() {
-        return typeFactory.getType( TARGET ).erasure();
+    public Type getReturnType() {
+        return returnType;
     }
 
     @Override
-    public void setConversionContext(ConversionContext conversionContext) {
-        this.conversionContext = conversionContext;
-    }
-
-    private String getContextParm() {
+    public String getContextParameter(ConversionContext conversionContext) {
         return conversionContext.getDateFormat() != null ? "\"" + conversionContext.getDateFormat() + "\"" : "null";
     }
 }

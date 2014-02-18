@@ -18,11 +18,9 @@
  */
 package org.mapstruct.ap.builtin;
 
-import org.mapstruct.ap.model.BuiltInMappingMethod;
-import static java.util.Arrays.asList;
+import org.mapstruct.ap.model.BuiltInMethod;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.mapstruct.ap.model.MethodReference;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -31,36 +29,24 @@ import org.mapstruct.ap.model.common.TypeFactory;
  *
  * @author Sjaak Derksen
  */
-public class ListOfJaxbElemToListOfValue extends BuiltInMappingMethod {
+public class ListOfJaxbElemToListOfValue extends BuiltInMethod {
 
-    private static final Class SOURCE = List.class;
-    private static final Class TARGET = List.class;
-    private static final Class TARGET_PARAM = JAXBElement.class;
-
-    private final TypeFactory typeFactory;
+    private final Parameter parameter;
+    private final Type returnType;
+    private final Type genericParam;
 
     public ListOfJaxbElemToListOfValue( TypeFactory typeFactory ) {
-        this.typeFactory = typeFactory;
+        this.parameter = typeFactory.createParameter( "elementList", List.class );
+        this.returnType = typeFactory.getType( List.class );
+        this.genericParam = typeFactory.getType( JAXBElement.class ).erasure();
     }
 
     @Override
-    public MethodReference createMethodReference() {
-        return new MethodReference(
-            getName(),
-            asList( new Parameter[] { typeFactory.createParameter( "elementList", SOURCE ) } ),
-            typeFactory.getType( TARGET ),
-            null
-        );
-    }
-
-    @Override
-    public boolean doGenericsMatch(Type sourceType, Type targetType) {
+    public boolean doTypeVarsMatch(Type sourceType, Type targetType) {
         boolean match = false;
-        if ( ( sourceType.getTypeParameters().size() == 1 )
-                && ( targetType.getTypeParameters().size() == 1 ) ) {
+        if ( ( sourceType.getTypeParameters().size() == 1 ) && ( targetType.getTypeParameters().size() == 1 ) ) {
             Type typeParam = sourceType.getTypeParameters().get( 0 );
-            if (  typeParam.erasure().equals( typeFactory.getType( TARGET_PARAM ).erasure() ) &&
-                  ( typeParam.getTypeParameters().size() == 1 ) )  {
+            if (  typeParam.erasure().equals( genericParam ) && ( typeParam.getTypeParameters().size() == 1 ) )  {
                 match = typeParam.getTypeParameters().get( 0 ).equals( targetType.getTypeParameters().get( 0 ) );
             }
         }
@@ -68,12 +54,12 @@ public class ListOfJaxbElemToListOfValue extends BuiltInMappingMethod {
     }
 
     @Override
-    public Type source() {
-        return typeFactory.getType( SOURCE ).erasure();
+    public Parameter getParameter() {
+        return parameter;
     }
 
     @Override
-    public Type target() {
-        return typeFactory.getType( TARGET ).erasure();
+    public Type getReturnType() {
+        return returnType;
     }
 }

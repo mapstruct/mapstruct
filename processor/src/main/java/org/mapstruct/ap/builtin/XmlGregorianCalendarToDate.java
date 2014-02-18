@@ -18,11 +18,9 @@
  */
 package org.mapstruct.ap.builtin;
 
-import org.mapstruct.ap.model.BuiltInMappingMethod;
-import static java.util.Arrays.asList;
+import org.mapstruct.ap.model.BuiltInMethod;
 import java.util.Date;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.mapstruct.ap.model.MethodReference;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -31,34 +29,23 @@ import org.mapstruct.ap.model.common.TypeFactory;
  *
  * @author Sjaak Derksen
  */
-public class XmlGregorianCalendarToDate extends BuiltInMappingMethod {
+public class XmlGregorianCalendarToDate extends BuiltInMethod {
 
-    private static final Class SOURCE = XMLGregorianCalendar.class;
-    private static final Class TARGET = Date.class;
-
-    private final TypeFactory typeFactory;
+    private final Parameter parameter;
+    private final Type returnType;
 
     public XmlGregorianCalendarToDate( TypeFactory typeFactory ) {
-        this.typeFactory = typeFactory;
+        this.parameter = typeFactory.createParameter( "xcal", XMLGregorianCalendar.class );
+        this.returnType = typeFactory.getType( Date.class );
     }
 
     @Override
-    public MethodReference createMethodReference() {
-        return new MethodReference(
-            getName(),
-            asList( new Parameter[] { typeFactory.createParameter( "xcal", SOURCE ) } ),
-            typeFactory.getType( TARGET ),
-            null
-        );
+    public Parameter getParameter() {
+        return parameter;
     }
 
     @Override
-    public Type source() {
-        return typeFactory.getType( SOURCE ).erasure();
-    }
-
-    @Override
-    public Type target() {
-        return typeFactory.getType( TARGET ).erasure();
+    public Type getReturnType() {
+        return returnType;
     }
 }

@@ -16,36 +16,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.builtin;
 
-import org.mapstruct.ap.model.BuiltInMethod;
-import java.util.Calendar;
-import javax.xml.datatype.XMLGregorianCalendar;
+package org.mapstruct.ap.model.source;
+
+import java.util.List;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.common.TypeFactory;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class XmlGregorianCalendarToCalendar extends BuiltInMethod {
+public interface BasicMethod {
 
-    private final Parameter parameter;
-    private final Type returnType;
+  /**
+     *
+     * @param sourceType
+     * @param targetType
+     * @return
+     */
+    boolean matches( Type sourceType, Type targetType );
 
-    public XmlGregorianCalendarToCalendar( TypeFactory typeFactory ) {
-        this.parameter = typeFactory.createParameter( "xcal", XMLGregorianCalendar.class );
-        this.returnType = typeFactory.getType( Calendar.class );
-    }
+    List<Parameter> getSourceParameters();
 
-    @Override
-    public Parameter getParameter() {
-        return parameter;
-    }
+    Type getDeclaringMapper();
 
-    @Override
-    public Type getReturnType() {
-        return returnType;
-    }
+    String getName();
+
+    List<Parameter> getParameters();
+
+    Type getReturnType();
+
+    Parameter getTargetParameter();
+
 }
