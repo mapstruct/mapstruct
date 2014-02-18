@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -39,7 +39,7 @@ public class MapMappingMethod extends MappingMethod {
     private final TypeConversion valueConversion;
     private final MethodReference factoryMethod;
 
-    public MapMappingMethod(Method method, MethodReference keyMappingMethod, TypeConversion keyConversion,
+    public MapMappingMethod(SourceMethod method, MethodReference keyMappingMethod, TypeConversion keyConversion,
                             MethodReference valueMappingMethod, TypeConversion valueConversion,
                             MethodReference factoryMethod) {
         super( method );

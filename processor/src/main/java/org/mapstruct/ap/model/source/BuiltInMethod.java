@@ -51,7 +51,7 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
 
     /**
      * {@inheritDoc} {@link ModelElement}
-     * 
+     *
      * This method acts as a template. It should be overridden by implementors if deviation is required.
      *
      * @return set of used types. Default an empty set.
