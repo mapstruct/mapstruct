@@ -61,20 +61,31 @@ import org.mapstruct.ap.model.common.Type;
  */
 public class MethodMatcher {
 
-    private final Type parameter;
-    private final Type returnType;
+
     private final Method candidateMethod;
     private final Types typeUtils;
     private final Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<TypeVariable, TypeMirror>();
 
-    public MethodMatcher(Types typeUtils, Method candidateMethod, Type returnType, Type parameter) {
+    /**
+     * package scope constructor
+     *
+     * @param typeUtils
+     * @param candidateMethod
+     */
+    MethodMatcher(Types typeUtils, Method candidateMethod) {
         this.typeUtils = typeUtils;
         this.candidateMethod = candidateMethod;
-        this.parameter = parameter;
-        this.returnType = returnType;
     }
 
-    public boolean matches() {
+    /**
+     * package scoped method
+     *
+     * @param sourceType
+     * @param targetType
+     *
+     * @return true when both, sourceType and targetType matches the signature.
+     */
+     boolean matches( Type sourceType, Type targetType ) {
         // check & collect generic types.
         List<? extends VariableElement> candidateParameters = candidateMethod.getExecutable().getParameters();
 
@@ -83,14 +94,14 @@ public class MethodMatcher {
         }
 
         TypeMatcher parameterMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_FROM );
-        if ( !parameterMatcher.visit( candidateParameters.iterator().next().asType(), parameter.getTypeMirror() ) ) {
+        if ( !parameterMatcher.visit( candidateParameters.iterator().next().asType(), sourceType.getTypeMirror() ) ) {
             return false;
         }
 
         // check return type
         TypeMirror candidateReturnType = candidateMethod.getExecutable().getReturnType();
         TypeMatcher returnTypeMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_TO );
-        if ( !returnTypeMatcher.visit( candidateReturnType, returnType.getTypeMirror() ) ) {
+        if ( !returnTypeMatcher.visit( candidateReturnType, targetType.getTypeMirror() ) ) {
             return false;
         }
 

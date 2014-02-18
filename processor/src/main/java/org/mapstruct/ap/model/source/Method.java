@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Parameter;
@@ -40,7 +42,7 @@ import org.mapstruct.ap.util.Strings;
  *
  * @author Gunnar Morling
  */
-public class Method {
+public class Method implements BasicMethod {
 
     private final Type declaringMapper;
     private final ExecutableElement executable;
@@ -48,6 +50,7 @@ public class Method {
     private final Parameter targetParameter;
     private final Type returnType;
     private final Accessibility accessibility;
+    private final Types typeUtils;
 
     private Map<String, List<Mapping>> mappings;
     private IterableMapping iterableMapping;
@@ -57,13 +60,22 @@ public class Method {
 
     public static Method forMethodRequiringImplementation(ExecutableElement executable, List<Parameter> parameters,
                                                           Type returnType, Map<String, List<Mapping>> mappings,
-                                                          IterableMapping iterableMapping, MapMapping mapMapping) {
+                                                          IterableMapping iterableMapping, MapMapping mapMapping,
+                                                          Types typeUtils ) {
 
-        return new Method( null, executable, parameters, returnType, mappings, iterableMapping, mapMapping );
+        return new Method(
+                null,
+                executable,
+                parameters,
+                returnType,
+                mappings,
+                iterableMapping,
+                mapMapping,
+                typeUtils );
     }
 
     public static Method forReferencedMethod(Type declaringMapper, ExecutableElement executable,
-                                             List<Parameter> parameters, Type returnType) {
+                                             List<Parameter> parameters, Type returnType, Types typeUtils ) {
 
         return new Method(
             declaringMapper,
@@ -72,12 +84,13 @@ public class Method {
             returnType,
             Collections.<String, List<Mapping>>emptyMap(),
             null,
-            null
+            null,
+            typeUtils
         );
     }
 
     public static Method forFactoryMethod(Type declaringMapper, ExecutableElement executable,
-                                          Type returnType) {
+                                          Type returnType, Types typeUtils) {
 
         return new Method(
             declaringMapper,
@@ -86,12 +99,14 @@ public class Method {
             returnType,
             Collections.<String, List<Mapping>>emptyMap(),
             null,
-            null
+            null,
+            typeUtils
         );
     }
 
     private Method(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters, Type returnType,
-                   Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping) {
+                   Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
+                   Types typeUtils ) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
@@ -102,6 +117,8 @@ public class Method {
         this.accessibility = Accessibility.fromModifiers( executable.getModifiers() );
 
         this.targetParameter = determineTargetParameter( parameters );
+
+        this.typeUtils = typeUtils;
     }
 
     private Parameter determineTargetParameter(Iterable<Parameter> parameters) {
@@ -120,6 +137,7 @@ public class Method {
      *
      * @return The declaring mapper type
      */
+    @Override
     public Type getDeclaringMapper() {
         return declaringMapper;
     }
@@ -128,14 +146,17 @@ public class Method {
         return executable;
     }
 
+    @Override
     public String getName() {
         return executable.getSimpleName().toString();
     }
 
+    @Override
     public List<Parameter> getParameters() {
         return parameters;
     }
 
+    @Override
     public List<Parameter> getSourceParameters() {
         List<Parameter> sourceParameters = new ArrayList<Parameter>();
 
@@ -162,6 +183,7 @@ public class Method {
         return targetParameter != null ? targetParameter.getType() : returnType;
     }
 
+    @Override
     public Type getReturnType() {
         return returnType;
     }
@@ -203,6 +225,7 @@ public class Method {
             && equals( getResultType(), method.getSourceParameters().iterator().next().getType() );
     }
 
+    @Override
     public Parameter getTargetParameter() {
         return targetParameter;
     }
@@ -267,8 +290,23 @@ public class Method {
 
     /**
      * Whether an implementation of this method must be generated or not.
+     *
+     * @return true when an implementation is required
      */
     public boolean requiresImplementation() {
         return declaringMapper == null && executable.getModifiers().contains( Modifier.ABSTRACT );
     }
+
+    /**
+     *
+     * @param sourceType
+     * @param targetType
+     * @return
+     */
+    @Override
+    public boolean matches( Type sourceType, Type targetType ) {
+        MethodMatcher matcher = new MethodMatcher(typeUtils, this );
+        return matcher.matches( sourceType, targetType );
+    }
+
 }

@@ -40,8 +40,7 @@ public interface ConversionProvider {
      *
      * @param sourceReference A reference to the source object, e.g.
      * {@code beanName.getFoo()}.
-     * @param conversionContext ConversionContext providing optional information required for creating
- the conversion.
+     * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      *
      * @return A conversion from source to target.
      */
@@ -52,8 +51,7 @@ public interface ConversionProvider {
      *
      * @param targetReference A reference to the targetReference object, e.g.
      * {@code beanName.getFoo()}.
-     * @param conversionContext ConversionContext providing optional information required for creating
- the conversion.
+     * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      *
      * @return A conversion from target to source.
      */

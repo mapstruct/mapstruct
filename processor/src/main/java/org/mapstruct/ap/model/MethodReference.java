@@ -19,9 +19,8 @@
 package org.mapstruct.ap.model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import org.mapstruct.ap.model.common.Parameter;
+import org.mapstruct.ap.model.common.ConversionContext;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
@@ -36,16 +35,17 @@ public class MethodReference extends MappingMethod {
     private final MapperReference declaringMapper;
     private final String contextParam;
 
-    public MethodReference(Method method, MapperReference declaringMapper) {
+
+    public MethodReference(Method method, MapperReference declaringMapper ) {
         super( method );
         this.declaringMapper = declaringMapper;
-        this.contextParam = null;
+        this.contextParam =  null;
     }
 
-    public MethodReference(String name, List<Parameter> parameters, Type returnType, String contextParam ) {
-        super( name, parameters, returnType, null );
-        this.contextParam = contextParam;
+    public MethodReference(BuiltInMethod method, ConversionContext contextParam ) {
+        super( method );
         this.declaringMapper = null;
+        this.contextParam =  method.getContextParameter( contextParam );
     }
 
     public MapperReference getDeclaringMapper() {
@@ -62,5 +62,12 @@ public class MethodReference extends MappingMethod {
 
     public String getContextParam() {
         return contextParam;
+    }
+
+    private String quoteParamWhenNotNull(String param) {
+        if (param != null ) {
+            return param != null ? "\"" + param + "\"" : "null";
+        }
+        return null;
     }
 }

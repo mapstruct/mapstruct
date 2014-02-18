@@ -46,6 +46,7 @@ import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
+import javax.lang.model.util.Types;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link Method}s
@@ -59,12 +60,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private Messager messager;
     private TypeFactory typeFactory;
+    private Types typeUtils;
 
     @Override
     public List<Method> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
         this.messager = context.getMessager();
         this.typeFactory = context.getTypeFactory();
-
+        this.typeUtils = context.getTypeUtils();
         return retrieveMethods( mapperTypeElement, true );
     }
 
@@ -138,7 +140,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                         returnType,
                         getMappings( method ),
                         IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ) ),
-                        MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ) )
+                        MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ) ),
+                        typeUtils
                     );
             }
             else {
@@ -152,7 +155,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     mapperRequiresImplementation ? null : typeFactory.getType( element ),
                     method,
                     parameters,
-                    returnType
+                    returnType,
+                    typeUtils
                 );
         }
         //create factory method
@@ -161,7 +165,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 Method.forFactoryMethod(
                     mapperRequiresImplementation ? null : typeFactory.getType( element ),
                     method,
-                    returnType
+                    returnType,
+                    typeUtils
                 );
         }
         else {

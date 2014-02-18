@@ -18,10 +18,8 @@
  */
 package org.mapstruct.ap.builtin;
 
-import org.mapstruct.ap.model.BuiltInMappingMethod;
-import static java.util.Arrays.asList;
+import org.mapstruct.ap.model.BuiltInMethod;
 import javax.xml.bind.JAXBElement;
-import org.mapstruct.ap.model.MethodReference;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -30,29 +28,18 @@ import org.mapstruct.ap.model.common.TypeFactory;
  *
  * @author Sjaak Derksen
  */
-public class JaxbElemToValue extends BuiltInMappingMethod {
+public class JaxbElemToValue extends BuiltInMethod {
 
-    private static final Class SOURCE = JAXBElement.class;
-    private static final Class TARGET = Object.class;
-
-    private final TypeFactory typeFactory;
+    private final Parameter parameter;
+    private final Type returnType;
 
     public JaxbElemToValue( TypeFactory typeFactory ) {
-        this.typeFactory = typeFactory;
+        this.parameter =  typeFactory.createParameter( "element", JAXBElement.class );
+        this.returnType = typeFactory.getType( Object.class );
     }
 
     @Override
-    public MethodReference createMethodReference() {
-        return new MethodReference(
-            getName(),
-            asList( new Parameter[] { typeFactory.createParameter( "element", SOURCE ) } ),
-            typeFactory.getType( TARGET ),
-            null
-        );
-    }
-
-    @Override
-    public boolean doGenericsMatch(Type sourceType, Type targetType) {
+    public boolean doTypeVarsMatch(Type sourceType, Type targetType) {
         boolean match = false;
         if (sourceType.getTypeParameters().size() == 1) {
             match = sourceType.getTypeParameters().get( 0 ).equals( targetType );
@@ -61,12 +48,12 @@ public class JaxbElemToValue extends BuiltInMappingMethod {
     }
 
     @Override
-    public Type source() {
-        return typeFactory.getType( SOURCE ).erasure();
+    public Parameter getParameter() {
+        return parameter;
     }
 
     @Override
-    public Type target() {
-        return typeFactory.getType( TARGET ).erasure();
+    public Type getReturnType() {
+        return returnType;
     }
 }

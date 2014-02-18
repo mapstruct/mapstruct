@@ -53,14 +53,14 @@ public class Mapper extends ModelElement {
     private final List<Annotation> annotations;
     private final List<MappingMethod> mappingMethods;
     private final List<MapperReference> referencedMappers;
-    private final Set<BuiltInMappingMethod> builtInMethods;
+    private final Set<BuiltInMethod> builtInMethods;
     private final boolean suppressGeneratorTimestamp;
     private final Accessibility accessibility;
 
     private Mapper(TypeFactory typeFactory, String packageName, boolean superTypeIsInterface, String interfaceName,
                    String implementationName, List<MappingMethod> mappingMethods,
                    List<MapperReference> referencedMappers, boolean suppressGeneratorTimestamp,
-                   Set<BuiltInMappingMethod> builtInMethods, Accessibility accessibility) {
+                   Set<BuiltInMethod> builtInMethods, Accessibility accessibility) {
         this.packageName = packageName;
         this.superTypeIsInterface = superTypeIsInterface;
         this.interfaceName = interfaceName;
@@ -80,7 +80,7 @@ public class Mapper extends ModelElement {
         private TypeElement element;
         private List<MappingMethod> mappingMethods;
         private List<MapperReference> mapperReferences;
-        private Set<BuiltInMappingMethod> builtInMethods;
+        private Set<BuiltInMethod> builtInMethods;
 
         private Elements elementUtils;
         private boolean suppressGeneratorTimestamp;
@@ -100,7 +100,7 @@ public class Mapper extends ModelElement {
             return this;
         }
 
-        public Builder builtInMethods(Set<BuiltInMappingMethod> builtInMethods) {
+        public Builder builtInMethods(Set<BuiltInMethod> builtInMethods) {
             this.builtInMethods = builtInMethods;
             return this;
         }
@@ -157,7 +157,7 @@ public class Mapper extends ModelElement {
             addWithDependents( importedTypes, annotation.getType() );
         }
 
-        for ( BuiltInMappingMethod builtInMethod : builtInMethods ) {
+        for ( BuiltInMethod builtInMethod : builtInMethods ) {
             for ( Type type : builtInMethod.getImportTypes() ) {
                 addWithDependents( importedTypes, type );
             }
@@ -250,7 +250,7 @@ public class Mapper extends ModelElement {
         return accessibility;
     }
 
-    public Set<BuiltInMappingMethod> getBuiltInMethods() {
+    public Set<BuiltInMethod> getBuiltInMethods() {
         return builtInMethods;
     }
 }

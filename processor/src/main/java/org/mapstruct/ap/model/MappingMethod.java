@@ -27,7 +27,7 @@ import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.BasicMethod;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -43,7 +43,7 @@ public abstract class MappingMethod extends ModelElement {
     private final Parameter targetParameter;
     private final Accessibility accessibility;
 
-    protected MappingMethod(Method method) {
+    protected MappingMethod(BasicMethod method) {
         this.name = method.getName();
         this.parameters = method.getParameters();
         this.returnType = method.getReturnType();
