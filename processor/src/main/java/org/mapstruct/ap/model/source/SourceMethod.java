@@ -42,7 +42,7 @@ import org.mapstruct.ap.util.Strings;
  *
  * @author Gunnar Morling
  */
-public class SourceMethod implements BasicMethod {
+public class SourceMethod implements Method {
 
     private final Type declaringMapper;
     private final ExecutableElement executable;
@@ -143,7 +143,7 @@ public class SourceMethod implements BasicMethod {
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      */
     @Override
     public Type getDeclaringMapper() {
@@ -155,7 +155,7 @@ public class SourceMethod implements BasicMethod {
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      */
     @Override
     public String getName() {
@@ -163,7 +163,7 @@ public class SourceMethod implements BasicMethod {
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      */
     @Override
     public List<Parameter> getParameters() {
@@ -171,7 +171,7 @@ public class SourceMethod implements BasicMethod {
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      */
     @Override
     public List<Parameter> getSourceParameters() {
@@ -201,7 +201,7 @@ public class SourceMethod implements BasicMethod {
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      */
     @Override
     public Type getReturnType() {
@@ -247,7 +247,7 @@ public class SourceMethod implements BasicMethod {
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      */
     @Override
     public Parameter getTargetParameter() {
@@ -322,7 +322,7 @@ public class SourceMethod implements BasicMethod {
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      */
     @Override
     public boolean matches( Type sourceType, Type targetType ) {

@@ -31,7 +31,7 @@ import org.mapstruct.ap.model.common.Type;
  * There are 2 known implementors: {@link BuiltInMethod} and {@link Method}
  * @author Sjaak Derksen
  */
-public interface BasicMethod {
+public interface Method {
 
     /**
      * Checks whether the provided sourceType and provided targetType match with the parameter respectively

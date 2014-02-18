@@ -38,7 +38,7 @@ import org.mapstruct.ap.util.Strings;
  *
  * @author Sjaak Derksen
  */
-public abstract class BuiltInMethod extends ModelElement implements BasicMethod {
+public abstract class BuiltInMethod extends ModelElement implements Method {
 
 
     /**
@@ -64,7 +64,7 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      *
      * Default the targetType should be assignable to the returnType and the sourceType to the parameter,
      * excluding generic type variables. When the implementor sees a need for this, this method can be overridden.
@@ -79,7 +79,7 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      *
      * @return all parameters are source parameters for build-in methods.
      */
@@ -89,7 +89,7 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      *
      * declaring mapper is always null, being the MapperImpl itself. This method should not be overridden by
      * implementors
@@ -101,7 +101,7 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
     }
 
     /**
-     * {@inheritDoc} {@link BasicMethod}
+     * {@inheritDoc} {@link Method}
      */
     @Override
     public List<Parameter> getParameters() {
