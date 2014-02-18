@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.model.source;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +28,6 @@ import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.BasicMethod;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -43,8 +42,9 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
 
 
     /**
-     * method name
-     * @return default method name is equal to class name of build in mehtod
+     * {@inheritDoc }
+     *
+     * @return default method name is equal to class name of build in method name
      */
     @Override
     public String getName() {
@@ -52,16 +52,23 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
     }
 
     /**
-     * imported types default. Only used types should be added. Source and Target types are coming via
-     * the MethodReference
+     * {@inheritDoc} {@link ModelElement}
      *
-     * @return set of used types.
+     * This method acts as a template. It should be overridden by implementors if deviation is required.
+     *
+     * @return set of used types. Default an empty set.
      */
     @Override
     public Set<Type> getImportTypes() {
         return Collections.<Type>emptySet();
     }
 
+    /**
+     * {@inheritDoc} {@link BasicMethod}
+     *
+     * Default the targetType should be assignable to the returnType and the sourceType to the parameter,
+     * excluding generic type variables. When the implementor sees a need for this, this method can be overridden.
+     */
     @Override
     public boolean matches( Type sourceType, Type targetType ) {
         if ( targetType.erasure().isAssignableTo( getReturnType().erasure() )
@@ -72,6 +79,7 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
     }
 
     /**
+     * {@inheritDoc} {@link BasicMethod}
      *
      * @return all parameters are source parameters for build-in methods.
      */
@@ -81,7 +89,10 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
     }
 
     /**
-     * declaring mapper is always null, being the MapperImpl
+     * {@inheritDoc} {@link BasicMethod}
+     *
+     * declaring mapper is always null, being the MapperImpl itself. This method should not be overridden by
+     * implementors
      * @return null
      */
     @Override
@@ -89,6 +100,9 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
         return null;
     }
 
+    /**
+     * {@inheritDoc} {@link BasicMethod}
+     */
     @Override
     public List<Parameter> getParameters() {
         return Arrays.asList( new Parameter[] { getParameter() } );
@@ -117,7 +131,7 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
     }
 
     /**
-     * hashCode
+     * hashCode based on class
      *
      * @return hashCode
      */
@@ -141,7 +155,7 @@ public abstract class BuiltInMethod extends ModelElement implements BasicMethod 
     }
 
     /**
-     * Analyzes the Java Generics type variables in the parameter do match the type variables in the build in method
+     * Analyzes the Java Generic type variables in the parameter do match the type variables in the build in method
      * same goes for the returnType.
      *
      * @param parameter source

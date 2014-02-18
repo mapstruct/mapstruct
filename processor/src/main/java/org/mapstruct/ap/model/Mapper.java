@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model;
 
+import org.mapstruct.ap.model.source.BuiltInMethod;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

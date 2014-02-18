@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.builtin;
 
-import org.mapstruct.ap.model.BuiltInMethod;
+import org.mapstruct.ap.model.source.BuiltInMethod;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Set;
