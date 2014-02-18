@@ -16,57 +16,59 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion.methods;
+package org.mapstruct.ap.builtin;
 
+import org.mapstruct.ap.model.BuiltInMappingMethod;
 import static java.util.Arrays.asList;
-import java.util.Set;
-import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.mapstruct.ap.model.MethodReference;
+import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
-import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class JaxbElemToValue extends BuildInMethod {
+public class XmlGregorianCalendarToString extends BuiltInMappingMethod {
 
-    private static final String METHOD_NAME = "convertJAXBElementToValue";
-    private static final Class JAXB_TYPE = JAXBElement.class;
+    private static final Class SOURCE = XMLGregorianCalendar.class;
+    private static final Class TARGET = String.class;
 
     private final TypeFactory typeFactory;
+    private ConversionContext conversionContext;
 
-    public JaxbElemToValue( TypeFactory typeFactory ) {
+    public XmlGregorianCalendarToString( TypeFactory typeFactory ) {
         this.typeFactory = typeFactory;
     }
 
     @Override
     public MethodReference createMethodReference() {
         return new MethodReference(
-            METHOD_NAME,
-            asList( new Parameter[] { typeFactory.createParameter( "element", JAXB_TYPE ) } ),
-            typeFactory.getType( Object.class )
+            getName(),
+            asList( new Parameter[] { typeFactory.createParameter( "xcal" , SOURCE ) } ),
+            typeFactory.getType( TARGET ),
+            getContextParm()
         );
     }
 
     @Override
-    public String toString() {
-        return METHOD_NAME;
+    public Type source() {
+        return typeFactory.getType( SOURCE ).erasure();
     }
 
     @Override
-    public Set<Type> getImportTypes() {
-         return asSet( typeFactory.getType( JAXB_TYPE ) );
+    public Type target() {
+        return typeFactory.getType( TARGET ).erasure();
     }
 
-    @Override
-    public boolean doGenericsMatch(Type sourceType, Type targetType) {
-        boolean match = false;
-        if (sourceType.getTypeParameters().size() == 1) {
-            match = sourceType.getTypeParameters().get( 0 ).equals( targetType );
-        }
-        return match;
+     @Override
+    public void setConversionContext(ConversionContext conversionContext) {
+        this.conversionContext = conversionContext;
+    }
+
+    private String getContextParm() {
+        return conversionContext.getDateFormat() != null ? "\"" + conversionContext.getDateFormat() + "\"" : "null";
     }
 }

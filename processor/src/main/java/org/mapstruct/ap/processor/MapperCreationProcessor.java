@@ -36,12 +36,13 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
+import org.mapstruct.ap.model.common.ConversionContext;
 
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
-import org.mapstruct.ap.conversion.DefaultConversionContext;
-import org.mapstruct.ap.conversion.methods.BuildInMethod;
-import org.mapstruct.ap.conversion.methods.BuildInMethods;
+import org.mapstruct.ap.model.common.DefaultConversionContext;
+import org.mapstruct.ap.model.BuiltInMappingMethod;
+import org.mapstruct.ap.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.DefaultMapperReference;
 import org.mapstruct.ap.model.IterableMappingMethod;
@@ -80,9 +81,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
 
     private TypeFactory typeFactory;
     private Conversions conversions;
-    private BuildInMethods buildInMethods;
+    private BuiltInMappingMethods builtInMethods;
 
-    private Set<BuildInMethod> usedBuildInMethods;
+    private Set<BuiltInMappingMethod> usedBuiltInMethods;
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<Method> sourceModel) {
@@ -94,11 +95,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
         this.typeFactory = context.getTypeFactory();
         this.conversions = new Conversions( elementUtils, typeFactory );
 
-        this.buildInMethods = new BuildInMethods(messager, typeFactory );
-        this.usedBuildInMethods = new HashSet<BuildInMethod>();
+        this.builtInMethods = new BuiltInMappingMethods(messager, typeFactory );
+        this.usedBuiltInMethods = new HashSet<BuiltInMappingMethod>();
 
-        this.buildInMethods = new BuildInMethods(messager, typeFactory );
-        this.usedBuildInMethods = new HashSet<BuildInMethod>();
+        this.builtInMethods = new BuiltInMappingMethods(messager, typeFactory );
+        this.usedBuiltInMethods = new HashSet<BuiltInMappingMethod>();
 
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -120,10 +121,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             .suppressGeneratorTimestamp( options.isSuppressGeneratorTimestamp() )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
-            .buildInMethods( new HashSet<BuildInMethod>( usedBuildInMethods ) )
+            .builtInMethods( new HashSet<BuiltInMappingMethod>( usedBuiltInMethods ) )
             .build();
 
-        usedBuildInMethods.clear();
+        usedBuiltInMethods.clear();
         return mapper;
     }
 
@@ -576,7 +577,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             methods,
             sourceType,
             targetType,
-            conversionString
+            dateFormat
         );
         TypeConversion conversion = getConversion(
             sourceType,
@@ -802,13 +803,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Metho
             return new MethodReference( method, mapperReference );
         }
         else {
-            BuildInMethod buildInMehtod = buildInMethods.getConversion( parameterType, returnType );
-            if (buildInMehtod != null ) {
-                ConversionProvider.Context context =
+            BuiltInMappingMethod builtInMehtod = builtInMethods.getConversion( parameterType, returnType );
+            if (builtInMehtod != null ) {
+                ConversionContext context =
                         new DefaultConversionContext( typeFactory, returnType, dateFormat );
-                buildInMehtod.setConversionContext( context );
-                usedBuildInMethods.add( buildInMehtod );
-                return buildInMehtod.createMethodReference();
+                builtInMehtod.setConversionContext( context );
+                usedBuiltInMethods.add( builtInMehtod );
+                return builtInMehtod.createMethodReference();
             }
         }
         return null;

@@ -16,20 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.conversion.methods;
+package org.mapstruct.ap.test.builtin;
 
-import javax.xml.bind.JAXBElement;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 
-public class Source {
+@Mapper
+public interface SourceTargetMapper {
 
-    private JAXBElement<String> foo;
-
-    public JAXBElement<String> getFoo() {
-        return foo;
-    }
-
-    public void setFoo( JAXBElement<String> foo ) {
-        this.foo = foo;
-    }
-
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    @Mappings({
+        @Mapping(source = "prop5", dateFormat = "dd.MM.yyyy"),
+        @Mapping(source = "prop6", dateFormat = "dd.MM.yyyy")
+    })
+    Target sourceToTarget(Source source);
 }

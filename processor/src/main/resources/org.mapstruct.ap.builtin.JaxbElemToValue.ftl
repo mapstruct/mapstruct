@@ -18,31 +18,6 @@
      limitations under the License.
 
 -->
-package ${packageName};
-
-<#list importTypes as importedType>
-import ${importedType.fullyQualifiedName};
-</#list>
-
-@Generated(
-    value = "org.mapstruct.ap.MappingProcessor"<#if suppressGeneratorTimestamp == false>,
-    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
-)
-<#list annotations as annotation>
-<#nt><@includeModel object=annotation/>
-</#list>
-public class ${implementationName} <#if superTypeInterface>implements<#else>extends</#if> ${interfaceName} {
-<#list referencedMappers as mapper>
-
-<#nt>    <@includeModel object=mapper/>
-</#list>
-<#list mappingMethods as mappingMethod>
-
-<#nt>    <@includeModel object=mappingMethod/>
-</#list>
-
-<#list builtInMethods as builtInMethod>
-
-<#nt>    <@includeModel object=builtInMethod/>
-</#list>
+private <T> T ${name}( JAXBElement <T> element ) {
+    return element.isNil() ? null : element.getValue();
 }

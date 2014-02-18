@@ -16,41 +16,49 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.builtin;
 
-import org.mapstruct.ap.conversion.ConversionProvider.Context;
+import org.mapstruct.ap.model.BuiltInMappingMethod;
+import static java.util.Arrays.asList;
+import java.util.Calendar;
+import javax.xml.datatype.XMLGregorianCalendar;
+import org.mapstruct.ap.model.MethodReference;
+import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 
 /**
- * Default implementation of the {@link Context} passed to conversion providers.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class DefaultConversionContext implements ConversionProvider.Context {
+public class XmlGregorianCalendarToCalendar extends BuiltInMappingMethod {
 
-    private final Type targetType;
-    private final String format;
+    private static final Class SOURCE = XMLGregorianCalendar.class;
+    private static final Class TARGET = Calendar.class;
+
     private final TypeFactory typeFactory;
 
-    public DefaultConversionContext(TypeFactory typeFactory, Type targetType, String format) {
+    public XmlGregorianCalendarToCalendar( TypeFactory typeFactory ) {
         this.typeFactory = typeFactory;
-        this.targetType = targetType;
-        this.format = format;
     }
 
     @Override
-    public Type getTargetType() {
-        return targetType;
+    public MethodReference createMethodReference() {
+        return new MethodReference(
+            getName(),
+            asList( new Parameter[] { typeFactory.createParameter( "xcal", SOURCE ) } ),
+            typeFactory.getType( TARGET ),
+            null
+        );
     }
 
     @Override
-    public String getDateFormat() {
-        return format;
+    public Type source() {
+        return typeFactory.getType( SOURCE ).erasure();
     }
 
     @Override
-    public TypeFactory getTypeFactory() {
-        return typeFactory;
+    public Type target() {
+        return typeFactory.getType( TARGET ).erasure();
     }
 }
