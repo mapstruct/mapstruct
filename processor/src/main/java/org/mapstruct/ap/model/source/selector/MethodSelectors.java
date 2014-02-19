@@ -24,7 +24,9 @@ import java.util.List;
 
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 
@@ -37,10 +39,10 @@ public class MethodSelectors implements MethodSelector {
 
     private final List<MethodSelector> selectors;
 
-    public MethodSelectors(Types typeUtils) {
+    public MethodSelectors(Types typeUtils, TypeFactory typeFactory) {
         selectors =
             Arrays.<MethodSelector>asList(
-                new TypeSelector(),
+                new TypeSelector( typeFactory ),
                 new InheritanceSelector(),
                 new XmlElementDeclSelector( typeUtils )
             );
@@ -63,5 +65,27 @@ public class MethodSelectors implements MethodSelector {
             );
         }
         return candidates;
+    }
+
+    /**
+     * @param typeFactory the type factory to use
+     * @param parameters the parameters to map the types for
+     * @param sourceType the source type
+     * @param returnType the return type
+     * @return the list of actual parameter types
+     */
+    public static List<Type> getParameterTypes(TypeFactory typeFactory, List<Parameter> parameters, Type sourceType,
+                                              Type returnType) {
+        List<Type> result = new ArrayList<Type>( parameters.size() );
+        for ( Parameter param : parameters ) {
+            if ( param.isTargetType() ) {
+                result.add( typeFactory.classTypeOf( returnType ) );
+            }
+            else {
+                result.add( sourceType );
+            }
+        }
+
+        return result;
     }
 }

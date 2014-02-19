@@ -25,9 +25,6 @@ import java.lang.annotation.Target;
  * Declares a parameter of a mapping method to be the target of the mapping.
  * <p>
  * Not more than one parameter can be declared as {@code MappingTarget}.
- * <p>
- * For methods with return type {@code void}, the last parameter of the method is regarded as {@code MappingTarget},
- * unless another parameter carries this annotation.
  *
  * @author Andreas Gudian
  */

@@ -21,7 +21,9 @@ package org.mapstruct.ap.model;
 import java.util.Set;
 
 import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 
@@ -33,6 +35,7 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 public class MethodReference extends MappingMethod {
 
     private final MapperReference declaringMapper;
+    private final Type importType;
 
     /**
      * A reference to another mapping method in case this is a two-step mapping, e.g. from {@code JAXBElement<Bar>} to
@@ -52,12 +55,21 @@ public class MethodReference extends MappingMethod {
         super( method );
         this.declaringMapper = declaringMapper;
         this.contextParam = null;
+        this.importType = null;
     }
 
     public MethodReference(BuiltInMethod method, ConversionContext contextParam) {
         super( method );
         this.declaringMapper = null;
         this.contextParam = method.getContextParameter( contextParam );
+        this.importType = null;
+    }
+
+    public MethodReference(Method method, MapperReference declaringMapper, Type importType) {
+        super( method );
+        this.declaringMapper = declaringMapper;
+        this.contextParam = null;
+        this.importType = importType;
     }
 
     public MapperReference getDeclaringMapper() {
@@ -72,6 +84,18 @@ public class MethodReference extends MappingMethod {
         return contextParam;
     }
 
+    /**
+     * @return the type of the single source parameter that is not the {@code @TargetType} parameter
+     */
+    public Type getSingleSourceParameterType() {
+        for ( Parameter parameter : getSourceParameters() ) {
+            if ( !parameter.isTargetType() ) {
+                return parameter.getType();
+            }
+        }
+        return null;
+    }
+
     public void setMethodRefChild(MethodReference methodRefChild) {
         this.methodRefChild = methodRefChild;
     }
@@ -83,6 +107,9 @@ public class MethodReference extends MappingMethod {
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = super.getImportTypes();
+        if ( importType != null ) {
+            imported.add( importType );
+        }
         if ( methodRefChild != null ) {
             imported.addAll( methodRefChild.getImportTypes() );
         }

@@ -21,6 +21,7 @@ package org.mapstruct.ap.model.source;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
@@ -61,10 +62,8 @@ import org.mapstruct.ap.model.common.Type;
  */
 public class MethodMatcher {
 
-
     private final SourceMethod candidateMethod;
     private final Types typeUtils;
-    private final Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<TypeVariable, TypeMirror>();
 
     MethodMatcher(Types typeUtils, SourceMethod candidateMethod) {
         this.typeUtils = typeUtils;
@@ -72,38 +71,56 @@ public class MethodMatcher {
     }
 
     /**
-     * Whether the given source and target type are matched by this matcher's candidate method.
+     * Whether the given source and target types are matched by this matcher's candidate method.
      *
-     * @param sourceType the source type
+     * @param sourceTypes the source types
      * @param targetType the target type
      *
-     * @return {@code true} when both, source type and target type match the signature of this matcher's method;
+     * @return {@code true} when both, source type and target types match the signature of this matcher's method;
      *         {@code false} otherwise.
      */
-    boolean matches(Type sourceType, Type targetType) {
+    boolean matches(List<Type> sourceTypes, Type targetType) {
         // check & collect generic types.
         List<? extends VariableElement> candidateParameters = candidateMethod.getExecutable().getParameters();
 
-        if ( candidateParameters.size() != 1 ) {
+        if ( candidateParameters.size() != sourceTypes.size() ) {
             return false;
         }
 
-        TypeMatcher parameterMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_FROM );
-        if ( !parameterMatcher.visit( candidateParameters.iterator().next().asType(), sourceType.getTypeMirror() ) ) {
-            return false;
+        Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<TypeVariable, TypeMirror>();
+
+        int i = 0;
+        for ( VariableElement candidateParameter : candidateParameters ) {
+            TypeMatcher parameterMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_FROM, genericTypesMap );
+            if ( !parameterMatcher.visit( candidateParameter.asType(), sourceTypes.get( i++ ).getTypeMirror() ) ) {
+                return false;
+            }
         }
 
         // check return type
         TypeMirror candidateReturnType = candidateMethod.getExecutable().getReturnType();
-        TypeMatcher returnTypeMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_TO );
+        TypeMatcher returnTypeMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_TO, genericTypesMap );
+
         if ( !returnTypeMatcher.visit( candidateReturnType, targetType.getTypeMirror() ) ) {
-            return false;
+            if ( targetType.isPrimitive() ) {
+                TypeMirror boxedType = typeUtils.boxedClass( (PrimitiveType) targetType.getTypeMirror() ).asType();
+                TypeMatcher boxedReturnTypeMatcher =
+                    new TypeMatcher( Assignability.VISITED_ASSIGNABLE_TO, genericTypesMap );
+
+                if ( !boxedReturnTypeMatcher.visit( candidateReturnType, boxedType ) ) {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
         }
 
         // check if all type parameters are indeed mapped
-        if ( candidateMethod.getExecutable().getTypeParameters().size() != this.genericTypesMap.size() ) {
+        if ( candidateMethod.getExecutable().getTypeParameters().size() != genericTypesMap.size() ) {
             return false;
         }
+
         // check if all entries are in the bounds
         for ( Map.Entry<TypeVariable, TypeMirror> entry : genericTypesMap.entrySet() ) {
             if ( !isWithinBounds( entry.getValue(), getTypeParamFromCandidate( entry.getKey() ) ) ) {
@@ -120,10 +137,12 @@ public class MethodMatcher {
 
     private class TypeMatcher extends SimpleTypeVisitor6<Boolean, TypeMirror> {
         private final Assignability assignability;
+        private final Map<TypeVariable, TypeMirror> genericTypesMap;
 
-        public TypeMatcher(Assignability assignability) {
+        public TypeMatcher(Assignability assignability, Map<TypeVariable, TypeMirror> genericTypesMap) {
             super( Boolean.FALSE ); // default value
             this.assignability = assignability;
+            this.genericTypesMap = genericTypesMap;
         }
 
         @Override

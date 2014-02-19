@@ -16,9 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.references;
-
-import java.util.Map;
+package org.mapstruct.ap.test.factories;
 
 import org.mapstruct.TargetType;
 
@@ -26,28 +24,13 @@ import org.mapstruct.TargetType;
  * @author Andreas Gudian
  *
  */
-public class ReferencedCustomMapper {
-    public long incrementingIntToLong(int source) {
-        return source + 1;
-    }
-
+public class GenericFactory {
     @SuppressWarnings( "unchecked" )
-    public <T extends BaseType> T convert(String string, @TargetType Class<T> clazz) {
-        if ( clazz == SomeType.class ) {
-            return (T) new SomeType( string );
-        }
-        else if ( clazz == SomeOtherType.class ) {
-            return (T) new SomeOtherType( string );
+    public <T extends FactoryCreatable> T createNew(@TargetType Class<T> clazz) {
+        if ( clazz == Bar1.class ) {
+            return (T) new Bar1( "created by GenericFactory" );
         }
 
         return null;
-    }
-
-    /**
-     * This method should not be chosen for the mapping, as our types are never within the bounds of
-     * {@code T extends Map<?,?>}
-     */
-    public <T extends Map<?, ?>> T unused(String string, @TargetType Class<T> clazz) {
-        throw new RuntimeException( "should never be called" );
     }
 }

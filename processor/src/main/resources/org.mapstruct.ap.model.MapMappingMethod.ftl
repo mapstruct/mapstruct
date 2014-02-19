@@ -35,7 +35,7 @@
 
     <#-- key -->
     <#if keyMappingMethod??>
-        <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyMappingMethod input="entry.getKey()"/>;
+        <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyMappingMethod input="entry.getKey()"  targetType="${resultType.typeParameters[0].name}"/>;
     <#elseif keyConversion??>
         <#if (keyConversion.exceptionTypes?size == 0) >
         <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyConversion/>;
@@ -55,7 +55,7 @@
     </#if>
     <#-- value -->
     <#if valueMappingMethod??>
-        <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueMappingMethod input="entry.getValue()"/>;
+        <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueMappingMethod input="entry.getValue()" targetType="${resultType.typeParameters[1].name}"/>;
     <#elseif valueConversion??>
         <#if (valueConversion.exceptionTypes?size == 0) >
         <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueConversion/>;

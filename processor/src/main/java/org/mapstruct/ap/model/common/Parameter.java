@@ -32,15 +32,17 @@ public class Parameter extends ModelElement {
     private final String name;
     private final Type type;
     private final boolean mappingTarget;
+    private final boolean targetType;
 
-    public Parameter(String name, Type type, boolean mappingTarget) {
+    public Parameter(String name, Type type, boolean mappingTarget, boolean targetType) {
         this.name = name;
         this.type = type;
         this.mappingTarget = mappingTarget;
+        this.targetType = targetType;
     }
 
     public Parameter(String name, Type type) {
-        this( name, type, false );
+        this( name, type, false, false );
     }
 
     public String getName() {
@@ -57,11 +59,16 @@ public class Parameter extends ModelElement {
 
     @Override
     public String toString() {
-        return ( mappingTarget ? "@MappingTarget " : "" ) + type.toString() + " " + name;
+        return ( mappingTarget ? "@MappingTarget " : "" ) + ( targetType ? "@TargetType " : "" )
+            + type.toString() + " " + name;
     }
 
     @Override
     public Set<Type> getImportTypes() {
         return Collections.asSet( type );
+    }
+
+    public boolean isTargetType() {
+        return targetType;
     }
 }

@@ -18,36 +18,33 @@
  */
 package org.mapstruct.ap.test.references;
 
-import java.util.Map;
-
+import org.mapstruct.Mapper;
 import org.mapstruct.TargetType;
+import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
  *
  */
-public class ReferencedCustomMapper {
-    public long incrementingIntToLong(int source) {
-        return source + 1;
-    }
+@Mapper
+public abstract class SourceTargetMapperWithPrimitives {
+    public static final SourceTargetMapperWithPrimitives INSTANCE =
+        Mappers.getMapper( SourceTargetMapperWithPrimitives.class );
+
+    public abstract TargetWithPrimitives sourceToTarget(SourceWithWrappers source);
 
     @SuppressWarnings( "unchecked" )
-    public <T extends BaseType> T convert(String string, @TargetType Class<T> clazz) {
-        if ( clazz == SomeType.class ) {
-            return (T) new SomeType( string );
+    public <T> T convert(@TargetType Class<T> clazz, SomeType wrapper) {
+        if ( clazz == int.class ) {
+            return (T) Integer.valueOf( wrapper.getValue() );
         }
-        else if ( clazz == SomeOtherType.class ) {
-            return (T) new SomeOtherType( string );
+        else if ( clazz == long.class ) {
+            return (T) Long.valueOf( wrapper.getValue() );
+        }
+        else if ( clazz == boolean.class ) {
+            return (T) Boolean.valueOf( wrapper.getValue() );
         }
 
         return null;
-    }
-
-    /**
-     * This method should not be chosen for the mapping, as our types are never within the bounds of
-     * {@code T extends Map<?,?>}
-     */
-    public <T extends Map<?, ?>> T unused(String string, @TargetType Class<T> clazz) {
-        throw new RuntimeException( "should never be called" );
     }
 }
