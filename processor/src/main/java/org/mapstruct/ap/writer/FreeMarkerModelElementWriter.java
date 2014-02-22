@@ -41,13 +41,9 @@ import org.mapstruct.ap.writer.Writable.Context;
  */
 public class FreeMarkerModelElementWriter {
 
-    public void write(Writable writable, Context context, Writer writer) throws Exception {
-        write( writable, writable.getClass().getName() + ".ftl", context, writer );
-    }
-
-    public void write(Writable writable, String templateName, Context context, Writer writer) throws Exception {
+    public void write(FreeMarkerWritable writable, Context context, Writer writer) throws Exception {
         Configuration configuration = context.get( Configuration.class );
-        Template template = configuration.getTemplate( templateName );
+        Template template = configuration.getTemplate( writable.getTemplateName() );
         template.process(
             new ExternalParamsTemplateModel(
                 new BeanModel( writable, BeansWrapper.getDefaultInstance() ),

@@ -16,22 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.common;
+package org.mapstruct.ap.writer;
 
 import java.io.Writer;
-import java.util.Set;
-
-import org.mapstruct.ap.writer.FreeMarkerModelElementWriter;
-import org.mapstruct.ap.writer.FreeMarkerWritable;
-import org.mapstruct.ap.writer.Writable;
 
 /**
- * Base class of all model elements. Implements the {@link Writable} contract to write model elements into source code
- * files.
+ * A {@link Writable} which uses the FreeMarker template engine to generate the output.
  *
  * @author Gunnar Morling
  */
-public abstract class ModelElement extends FreeMarkerWritable {
+public abstract class FreeMarkerWritable implements Writable {
 
     @Override
     public void write(Context context, Writer writer) throws Exception {
@@ -39,10 +33,13 @@ public abstract class ModelElement extends FreeMarkerWritable {
     }
 
     /**
-     * Returns a set containing those {@link Type}s referenced by this model element for which an import statement needs
-     * to be declared.
+     * Returns the name of the template to be used for a specific writable type. By default, the fully-qualified class
+     * name of the given model element type, appended with the extension {@code *.ftl} is used as template file name,
+     * but this can be customized by overriding this method if required.
      *
-     * @return A set with type referenced by this model element. Must not be {@code null}.
+     * @return the name of the template. Must not be {@code null}.
      */
-    public abstract Set<Type> getImportTypes();
+    protected String getTemplateName() {
+        return getClass().getName() + ".ftl";
+    }
 }

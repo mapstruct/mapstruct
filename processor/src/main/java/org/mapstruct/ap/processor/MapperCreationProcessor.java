@@ -36,13 +36,10 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
-import org.mapstruct.ap.model.common.ConversionContext;
 
+import org.mapstruct.ap.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
-import org.mapstruct.ap.model.common.DefaultConversionContext;
-import org.mapstruct.ap.model.source.BuiltInMethod;
-import org.mapstruct.ap.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.DefaultMapperReference;
 import org.mapstruct.ap.model.IterableMappingMethod;
@@ -53,11 +50,15 @@ import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.MethodReference;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.VirtualMappingMethod;
+import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.common.DefaultConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
-import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.BuiltInMethod;
 import org.mapstruct.ap.model.source.Mapping;
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
@@ -82,7 +83,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private TypeFactory typeFactory;
     private Conversions conversions;
     private BuiltInMappingMethods builtInMethods;
-    private Set<BuiltInMethod> usedBuiltInMethods;
+
+    /**
+     * Private methods which are not present in the original mapper interface and are added to map certain property
+     * types.
+     */
+    private Set<VirtualMappingMethod> virtualMethods;
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
@@ -95,7 +101,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.conversions = new Conversions( elementUtils, typeFactory );
 
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
-        this.usedBuiltInMethods = new HashSet<BuiltInMethod>();
+        this.virtualMethods = new HashSet<VirtualMappingMethod>();
 
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -109,6 +115,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy( element );
         List<MapperReference> mapperReferences = getReferencedMappers( element );
         List<MappingMethod> mappingMethods = getMappingMethods( mapperReferences, methods, unmappedTargetPolicy );
+        mappingMethods.addAll( virtualMethods );
 
         Mapper mapper = new Mapper.Builder()
             .element( element )
@@ -117,10 +124,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .suppressGeneratorTimestamp( options.isSuppressGeneratorTimestamp() )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
-            .builtInMethods( new HashSet<BuiltInMethod>( usedBuiltInMethods ) )
             .build();
 
-        usedBuiltInMethods.clear();
         return mapper;
     }
 
@@ -582,7 +587,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // then try BuiltInMethods
         if ( propertyMappingMethod == null ) {
             propertyMappingMethod = getMappingMethodReference(
-                    getBestMatch( method, mappedElement, builtInMethods, sourceType, targetType ),
+                    getBestMatch( method, mappedElement, builtInMethods.getBuiltInMethods(), sourceType, targetType ),
                     targetType,
                     dateFormat );
         }
@@ -639,7 +644,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // then try BuiltInMethods
         if ( elementMappingMethod == null ) {
             elementMappingMethod = getMappingMethodReference(
-                    getBestMatch( method, "collection element", builtInMethods, sourceElementType,
+                    getBestMatch( method, "collection element", builtInMethods.getBuiltInMethods(), sourceElementType,
                             targetElementType ),
                     targetElementType,
                     dateFormat );
@@ -695,7 +700,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // then try BuiltInMethods
         if ( keyMappingMethod == null ) {
             keyMappingMethod = getMappingMethodReference(
-                    getBestMatch( method, "map key", builtInMethods, sourceKeyType, targetKeyType ),
+                    getBestMatch( method, "map key", builtInMethods.getBuiltInMethods(), sourceKeyType, targetKeyType ),
                     targetKeyType,
                     keyDateFormat );
         }
@@ -708,7 +713,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // then try BuiltInMethods
         if ( valueMappingMethod == null ) {
             valueMappingMethod = getMappingMethodReference(
-                    getBestMatch( method, "map value", builtInMethods, sourceValueType, targetValueType ),
+                    getBestMatch( method, "map value", builtInMethods.getBuiltInMethods(), sourceValueType, targetValueType ),
                     targetValueType,
                     valueDateFormat );
         }
@@ -844,7 +849,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private MethodReference getMappingMethodReference( BuiltInMethod method, Type returnType, String dateFormat ) {
         if ( method != null ) {
-            usedBuiltInMethods.add( method );
+            virtualMethods.add( new VirtualMappingMethod( method ) );
             ConversionContext ctx = new DefaultConversionContext( typeFactory, returnType, dateFormat );
             return new MethodReference( method, ctx );
         }

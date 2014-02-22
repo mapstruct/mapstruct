@@ -40,9 +40,4 @@ import ${importedType.fullyQualifiedName};
 
 <#nt>    <@includeModel object=mappingMethod/>
 </#list>
-
-<#list builtInMethods as builtInMethod>
-
-<#nt>    <@includeModel object=builtInMethod/>
-</#list>
 }

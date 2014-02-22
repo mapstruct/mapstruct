@@ -18,27 +18,35 @@
  */
 package org.mapstruct.ap.builtin;
 
-import org.mapstruct.ap.model.source.BuiltInMethod;
-import java.util.HashSet;
-import org.mapstruct.ap.model.common.TypeFactory;
+import java.util.Arrays;
+import java.util.List;
 
+import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.model.source.BuiltInMethod;
 
 /**
- * Registry for all build in methods.
+ * Registry for all built-in methods.
  *
  * @author Sjaak Derksen
  */
-public class BuiltInMappingMethods extends HashSet<BuiltInMethod> {
+public class BuiltInMappingMethods {
 
-    public BuiltInMappingMethods( TypeFactory typeFactory ) {
+    private final List<BuiltInMethod> builtInMethods;
 
-        add( new JaxbElemToValue( typeFactory ) );
-        add( new ListOfJaxbElemToListOfValue( typeFactory ) );
-        add( new DateToXmlGregorianCalendar( typeFactory ) );
-        add( new XmlGregorianCalendarToDate( typeFactory ) );
-        add( new StringToXmlGregorianCalendar( typeFactory ) );
-        add( new XmlGregorianCalendarToString( typeFactory ) );
-        add( new CalendarToXmlGregorianCalendar( typeFactory ) );
-        add( new XmlGregorianCalendarToCalendar( typeFactory ) );
+    public BuiltInMappingMethods(TypeFactory typeFactory) {
+        builtInMethods = Arrays.asList(
+            new JaxbElemToValue( typeFactory ),
+            new ListOfJaxbElemToListOfValue( typeFactory ),
+            new DateToXmlGregorianCalendar( typeFactory ),
+            new XmlGregorianCalendarToDate( typeFactory ),
+            new StringToXmlGregorianCalendar( typeFactory ),
+            new XmlGregorianCalendarToString( typeFactory ),
+            new CalendarToXmlGregorianCalendar( typeFactory ),
+            new XmlGregorianCalendarToCalendar( typeFactory )
+        );
+    }
+
+    public List<BuiltInMethod> getBuiltInMethods() {
+        return builtInMethods;
     }
 }
