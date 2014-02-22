@@ -51,14 +51,6 @@ public abstract class MappingMethod extends ModelElement {
         this.accessibility = method.getAccessibility();
     }
 
-    protected MappingMethod(String name, List<Parameter> parameters, Type returnType, Parameter targetParameter) {
-        this.name = name;
-        this.parameters = parameters;
-        this.returnType = returnType;
-        this.targetParameter = targetParameter;
-        this.accessibility = Accessibility.PRIVATE;
-    }
-
     public String getName() {
         return name;
     }
