@@ -19,6 +19,10 @@
 
 -->
 private XMLGregorianCalendar ${name}( Date date ) {
+    if ( date == null ) {
+        return null;
+    }
+
     try {
         GregorianCalendar c = new GregorianCalendar();
         c.setTime( date );

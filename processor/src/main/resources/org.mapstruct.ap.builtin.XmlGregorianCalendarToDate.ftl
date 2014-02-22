@@ -19,5 +19,9 @@
 
 -->
 private static Date ${name}( XMLGregorianCalendar xcal ) {
+    if ( xcal == null ) {
+        return null;
+    }
+
     return xcal.toGregorianCalendar().getTime();
 }

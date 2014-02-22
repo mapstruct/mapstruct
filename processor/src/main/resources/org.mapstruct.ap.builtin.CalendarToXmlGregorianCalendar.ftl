@@ -19,6 +19,10 @@
 
 -->
 private XMLGregorianCalendar ${name}( Calendar cal ) {
+    if ( cal == null ) {
+        return null;
+    }
+
     try {
         GregorianCalendar gcal = new GregorianCalendar();
         gcal.setTimeInMillis( cal.getTimeInMillis() );

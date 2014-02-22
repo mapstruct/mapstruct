@@ -19,6 +19,10 @@
 
 -->
 private XMLGregorianCalendar ${name}( String date, String dateFormat ) {
+    if ( date == null ) {
+        return null;
+    }
+
     try {
         DateFormat df = dateFormat != null ? new SimpleDateFormat( dateFormat ) : SimpleDateFormat.getInstance();
         GregorianCalendar c = new GregorianCalendar();

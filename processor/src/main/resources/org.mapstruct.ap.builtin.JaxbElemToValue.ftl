@@ -19,5 +19,9 @@
 
 -->
 private <T> T ${name}( JAXBElement <T> element ) {
+    if ( element == null ) {
+        return null;
+    }
+
     return element.isNil() ? null : element.getValue();
 }

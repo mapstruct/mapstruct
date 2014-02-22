@@ -19,9 +19,14 @@
 
 -->
 private String ${name}( XMLGregorianCalendar xcal, String dateFormat ) {
+    if ( xcal == null ) {
+        return null;
+    }
+
     if (dateFormat == null ) {
         return xcal.toString();
-    } else {
+    }
+    else {
         Date d = xcal.toGregorianCalendar().getTime();
         SimpleDateFormat sdf = new SimpleDateFormat( dateFormat );
         return sdf.format( d );
