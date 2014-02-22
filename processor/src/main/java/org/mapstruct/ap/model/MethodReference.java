@@ -18,12 +18,12 @@
  */
 package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.model.source.BuiltInMethod;
 import java.util.HashSet;
 import java.util.Set;
-import org.mapstruct.ap.model.common.ConversionContext;
 
+import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.source.BuiltInMethod;
 import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
@@ -34,19 +34,24 @@ import org.mapstruct.ap.model.source.SourceMethod;
 public class MethodReference extends MappingMethod {
 
     private final MapperReference declaringMapper;
+
+    /**
+     * In case this reference targets a built-in method, allows to pass specific context information to the invoked
+     * method. Currently this is only used to pass in the configured date format string when invoking a built-in method
+     * which requires that.
+     */
     private final String contextParam;
 
-
-    public MethodReference(SourceMethod method, MapperReference declaringMapper ) {
+    public MethodReference(SourceMethod method, MapperReference declaringMapper) {
         super( method );
         this.declaringMapper = declaringMapper;
-        this.contextParam =  null;
+        this.contextParam = null;
     }
 
-    public MethodReference(BuiltInMethod method, ConversionContext contextParam ) {
+    public MethodReference(BuiltInMethod method, ConversionContext contextParam) {
         super( method );
         this.declaringMapper = null;
-        this.contextParam =  method.getContextParameter( contextParam );
+        this.contextParam = method.getContextParameter( contextParam );
     }
 
     public MapperReference getDeclaringMapper() {
@@ -63,12 +68,5 @@ public class MethodReference extends MappingMethod {
 
     public String getContextParam() {
         return contextParam;
-    }
-
-    private String quoteParamWhenNotNull(String param) {
-        if (param != null ) {
-            return param != null ? "\"" + param + "\"" : "null";
-        }
-        return null;
     }
 }

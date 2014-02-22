@@ -19,7 +19,7 @@
 package org.mapstruct.ap.model.common;
 
 /**
- * ConversionContext object passed to conversion providers.
+ * Context object passed to conversion providers and built-in methods.
  *
  * @author Gunnar Morling
  */
@@ -33,11 +33,11 @@ public interface ConversionContext {
     Type getTargetType();
 
     /**
-     * Returns the date format if this conversion is from String to
-     * {@link Date} or vice versa. Returns {@code null} for other types or
-     * if not given.
+     * Returns the date format if this conversion or built-in method is from String to a date type (e.g. {@link Date})
+     * or vice versa.
      *
-     * @return The date format if this conversion.
+     * @return The date format if this conversion or built-in method is from String to a date type. {@code null} is
+     *         returned for other types or if not given.
      */
     String getDateFormat();
 

@@ -70,9 +70,9 @@ public abstract class BuiltInMethod extends ModelElement implements Method {
      * excluding generic type variables. When the implementor sees a need for this, this method can be overridden.
      */
     @Override
-    public boolean matches( Type sourceType, Type targetType ) {
+    public boolean matches(Type sourceType, Type targetType) {
         if ( targetType.erasure().isAssignableTo( getReturnType().erasure() )
-                && sourceType.erasure().isAssignableTo( getParameter().getType().erasure() ) ) {
+            && sourceType.erasure().isAssignableTo( getParameter().getType().erasure() ) ) {
             return doTypeVarsMatch( sourceType, targetType );
         }
         return false;
@@ -93,6 +93,7 @@ public abstract class BuiltInMethod extends ModelElement implements Method {
      *
      * declaring mapper is always null, being the MapperImpl itself. This method should not be overridden by
      * implementors
+     *
      * @return null
      */
     @Override
@@ -110,6 +111,7 @@ public abstract class BuiltInMethod extends ModelElement implements Method {
 
     /**
      * target parameter mechanism not supported for build-in-method
+     *
      * @return null
      */
     @Override
@@ -122,6 +124,7 @@ public abstract class BuiltInMethod extends ModelElement implements Method {
      * with context specific information such as a date format.
      *
      * @param conversionContext
+     *
      * @return null if no context parameter should be included
      *         "null" if there should be an explicit null call
      *         "'dateFormat'" for instance, to indicate how the build-in method should format the date
@@ -144,10 +147,11 @@ public abstract class BuiltInMethod extends ModelElement implements Method {
      * equals based on class
      *
      * @param obj other class
+     *
      * @return true when classes are the same
      */
     @Override
-    public boolean equals( Object obj ) {
+    public boolean equals(Object obj) {
         if ( obj == null ) {
             return false;
         }
@@ -160,9 +164,10 @@ public abstract class BuiltInMethod extends ModelElement implements Method {
      *
      * @param parameter source
      * @param returnType target
+     *
      * @return
      */
-    public boolean doTypeVarsMatch( Type parameter, Type returnType ) {
+    public boolean doTypeVarsMatch(Type parameter, Type returnType) {
         return true;
     }
 

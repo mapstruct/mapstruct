@@ -578,18 +578,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             targetType = typeFactory.getReturnType( targetAcessor );
         }
 
-        // first try the SourceMethods
+        // first try the source methods
         String mappedElement = "property '" + Executables.getPropertyName( sourceAccessor ) + "'";
         MethodReference propertyMappingMethod = getMappingMethodReference(
-                getBestMatch( method, mappedElement, methods, sourceType, targetType ),
-                mapperReferences );
+            getBestMatch( method, mappedElement, methods, sourceType, targetType ),
+            mapperReferences
+        );
 
-        // then try BuiltInMethods
+        // then try built-in methods
         if ( propertyMappingMethod == null ) {
             propertyMappingMethod = getMappingMethodReference(
-                    getBestMatch( method, mappedElement, builtInMethods.getBuiltInMethods(), sourceType, targetType ),
-                    targetType,
-                    dateFormat );
+                getBestMatch( method, mappedElement, builtInMethods.getBuiltInMethods(), sourceType, targetType ),
+                targetType,
+                dateFormat
+            );
         }
 
         TypeConversion conversion = getConversion(
@@ -636,18 +638,22 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             )
         );
 
-        // first try the SourceMethods
+        // first try the source methods
         MethodReference elementMappingMethod = getMappingMethodReference(
-                getBestMatch( method, "collection element", methods, sourceElementType, targetElementType ),
-                mapperReferences );
+            getBestMatch( method, "collection element", methods, sourceElementType, targetElementType ),
+            mapperReferences
+        );
 
-        // then try BuiltInMethods
+        // then try built-in methods
         if ( elementMappingMethod == null ) {
             elementMappingMethod = getMappingMethodReference(
-                    getBestMatch( method, "collection element", builtInMethods.getBuiltInMethods(), sourceElementType,
-                            targetElementType ),
-                    targetElementType,
-                    dateFormat );
+                getBestMatch(
+                    method, "collection element", builtInMethods.getBuiltInMethods(), sourceElementType,
+                    targetElementType
+                ),
+                targetElementType,
+                dateFormat
+            );
         }
 
         if ( !sourceElementType.isAssignableTo( targetElementType ) && conversion == null &&
@@ -693,29 +699,39 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             "entry.getValue()"
         );
 
-        // first try the SourceMethods
+        // first try the source methods
         MethodReference keyMappingMethod = getMappingMethodReference(
-                getBestMatch( method, "map key", methods, sourceKeyType, targetKeyType ), mapperReferences );
+            getBestMatch( method, "map key", methods, sourceKeyType, targetKeyType ), mapperReferences
+        );
 
-        // then try BuiltInMethods
+        // then try built-in methods
         if ( keyMappingMethod == null ) {
             keyMappingMethod = getMappingMethodReference(
-                    getBestMatch( method, "map key", builtInMethods.getBuiltInMethods(), sourceKeyType, targetKeyType ),
-                    targetKeyType,
-                    keyDateFormat );
+                getBestMatch( method, "map key", builtInMethods.getBuiltInMethods(), sourceKeyType, targetKeyType ),
+                targetKeyType,
+                keyDateFormat
+            );
         }
 
-        // first try the SourceMethods
+        // first try the source methods
         MethodReference valueMappingMethod = getMappingMethodReference(
-                getBestMatch( method, "map value", methods, sourceValueType, targetValueType ),
-                mapperReferences );
+            getBestMatch( method, "map value", methods, sourceValueType, targetValueType ),
+            mapperReferences
+        );
 
-        // then try BuiltInMethods
+        // then try built-in methods
         if ( valueMappingMethod == null ) {
             valueMappingMethod = getMappingMethodReference(
-                    getBestMatch( method, "map value", builtInMethods.getBuiltInMethods(), sourceValueType, targetValueType ),
-                    targetValueType,
-                    valueDateFormat );
+                getBestMatch(
+                    method,
+                    "map value",
+                    builtInMethods.getBuiltInMethods(),
+                    sourceValueType,
+                    targetValueType
+                ),
+                targetValueType,
+                valueDateFormat
+            );
         }
 
         if ( !sourceKeyType.isAssignableTo( targetKeyType ) && keyConversion == null && keyMappingMethod == null ) {
@@ -764,10 +780,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
 
-
     private <T extends Method> T getBestMatch(SourceMethod mappingMethod, String mappedElement,
-                                                      Iterable<T> methods, Type parameterType,
-                                                      Type returnType) {
+                                              Iterable<T> methods, Type parameterType,
+                                              Type returnType) {
         List<T> candidatesWithMathingTargetType = new ArrayList<T>();
 
         for ( T method : methods ) {
@@ -820,7 +835,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
 
     private <T extends Method> int addToCandidateListIfMinimal(List<T> candidatesWithBestMathingType,
-                                            int bestMatchingTypeDistance, T method, int currentTypeDistance) {
+                                                               int bestMatchingTypeDistance, T method,
+                                                               int currentTypeDistance) {
         if ( currentTypeDistance == bestMatchingTypeDistance ) {
             candidatesWithBestMathingType.add( method );
         }
@@ -833,7 +849,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return bestMatchingTypeDistance;
     }
 
-    private MethodReference getMappingMethodReference( SourceMethod method, List<MapperReference> mapperReferences ) {
+    private MethodReference getMappingMethodReference(SourceMethod method, List<MapperReference> mapperReferences) {
         if ( method != null ) {
             MapperReference mapperReference = null;
             for ( MapperReference ref : mapperReferences ) {
@@ -847,7 +863,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return null;
     }
 
-    private MethodReference getMappingMethodReference( BuiltInMethod method, Type returnType, String dateFormat ) {
+    private MethodReference getMappingMethodReference(BuiltInMethod method, Type returnType, String dateFormat) {
         if ( method != null ) {
             virtualMethods.add( new VirtualMappingMethod( method ) );
             ConversionContext ctx = new DefaultConversionContext( typeFactory, returnType, dateFormat );
@@ -980,7 +996,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     /**
      * A getter could be an alternative getReturnType-accessor if a setter is not available, and the
- getReturnType is a collection.
+     * getReturnType is a collection.
      *
      * Provided such a getter is initialized lazy by the getReturnType class, e.g. in generated JAXB beans.
      *
