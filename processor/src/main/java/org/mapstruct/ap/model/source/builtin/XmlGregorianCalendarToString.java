@@ -26,7 +26,6 @@ import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class XmlGregorianCalendarToString extends BuiltInMethod {
@@ -34,8 +33,8 @@ public class XmlGregorianCalendarToString extends BuiltInMethod {
     private final Parameter parameter;
     private final Type returnType;
 
-    public XmlGregorianCalendarToString( TypeFactory typeFactory ) {
-        this.parameter = typeFactory.createParameter( "xcal" , XMLGregorianCalendar.class );
+    public XmlGregorianCalendarToString(TypeFactory typeFactory) {
+        this.parameter = new Parameter( "xcal", typeFactory.getType( XMLGregorianCalendar.class ) );
         this.returnType = typeFactory.getType( String.class );
     }
 

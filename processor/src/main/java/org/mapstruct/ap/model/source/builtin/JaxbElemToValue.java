@@ -25,7 +25,6 @@ import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class JaxbElemToValue extends BuiltInMethod {
@@ -33,15 +32,15 @@ public class JaxbElemToValue extends BuiltInMethod {
     private final Parameter parameter;
     private final Type returnType;
 
-    public JaxbElemToValue( TypeFactory typeFactory ) {
-        this.parameter =  typeFactory.createParameter( "element", JAXBElement.class );
+    public JaxbElemToValue(TypeFactory typeFactory) {
+        this.parameter = new Parameter( "element", typeFactory.getType( JAXBElement.class ) );
         this.returnType = typeFactory.getType( Object.class );
     }
 
     @Override
     public boolean doTypeVarsMatch(Type sourceType, Type targetType) {
         boolean match = false;
-        if (sourceType.getTypeParameters().size() == 1) {
+        if ( sourceType.getTypeParameters().size() == 1 ) {
             match = sourceType.getTypeParameters().get( 0 ).equals( targetType );
         }
         return match;

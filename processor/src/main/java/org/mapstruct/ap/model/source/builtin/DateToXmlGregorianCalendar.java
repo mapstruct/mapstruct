@@ -21,7 +21,6 @@ package org.mapstruct.ap.model.source.builtin;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Set;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -33,27 +32,28 @@ import org.mapstruct.ap.model.common.TypeFactory;
 import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class DateToXmlGregorianCalendar extends BuiltInMethod {
 
     private final Parameter parameter;
     private final Type returnType;
+    private final Set<Type> importTypes;
 
-    private final TypeFactory typeFactory;
-
-    public DateToXmlGregorianCalendar( TypeFactory typeFactory ) {
-        this.typeFactory = typeFactory;
-        this.parameter = typeFactory.createParameter( "date", Date.class );
+    public DateToXmlGregorianCalendar(TypeFactory typeFactory) {
+        this.parameter = new Parameter( "date", typeFactory.getType( Date.class ) );
         this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
+
+        this.importTypes = asSet(
+            typeFactory.getType( GregorianCalendar.class ),
+            typeFactory.getType( DatatypeFactory.class ),
+            typeFactory.getType( DatatypeConfigurationException.class )
+        );
     }
 
     @Override
     public Set<Type> getImportTypes() {
-         return asSet( new Type[]{ typeFactory.getType( GregorianCalendar.class ),
-             typeFactory.getType( DatatypeFactory.class ),
-             typeFactory.getType( DatatypeConfigurationException.class ) });
+        return importTypes;
     }
 
     @Override

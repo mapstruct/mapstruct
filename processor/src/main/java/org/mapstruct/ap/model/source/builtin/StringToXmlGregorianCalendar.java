@@ -23,7 +23,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Set;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -36,31 +35,31 @@ import org.mapstruct.ap.model.common.TypeFactory;
 import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class StringToXmlGregorianCalendar extends BuiltInMethod {
 
     private final Parameter parameter;
     private final Type returnType;
+    private final Set<Type> importTypes;
 
-    private final TypeFactory typeFactory;
 
-    public StringToXmlGregorianCalendar( TypeFactory typeFactory ) {
-        this.typeFactory = typeFactory;
-        this.parameter = typeFactory.createParameter( "date" , String.class );
+    public StringToXmlGregorianCalendar(TypeFactory typeFactory) {
+        this.parameter = new Parameter( "date", typeFactory.getType( String.class ) );
         this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
-
+        this.importTypes = asSet(
+            typeFactory.getType( GregorianCalendar.class ),
+            typeFactory.getType( SimpleDateFormat.class ),
+            typeFactory.getType( DateFormat.class ),
+            typeFactory.getType( ParseException.class ),
+            typeFactory.getType( DatatypeFactory.class ),
+            typeFactory.getType( DatatypeConfigurationException.class )
+        );
     }
 
     @Override
     public Set<Type> getImportTypes() {
-         return asSet( new Type[]{ typeFactory.getType( GregorianCalendar.class ),
-             typeFactory.getType( SimpleDateFormat.class ),
-             typeFactory.getType( DateFormat.class ),
-             typeFactory.getType( ParseException.class ),
-             typeFactory.getType( DatatypeFactory.class ),
-             typeFactory.getType( DatatypeConfigurationException.class ) });
+        return importTypes;
     }
 
     @Override

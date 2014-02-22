@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -200,15 +201,6 @@ public class TypeFactory {
             false
         );
     }
-
-    public Parameter createParameter(String name, Class<?> type) {
-
-        return new Parameter(
-            name,
-            getType( type )
-        );
-    }
-
 
     public List<Parameter> getParameters(ExecutableElement method) {
         List<? extends VariableElement> parameters = method.getParameters();

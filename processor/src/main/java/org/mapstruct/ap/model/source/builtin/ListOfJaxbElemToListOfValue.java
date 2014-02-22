@@ -19,7 +19,6 @@
 package org.mapstruct.ap.model.source.builtin;
 
 import java.util.List;
-
 import javax.xml.bind.JAXBElement;
 
 import org.mapstruct.ap.model.common.Parameter;
@@ -27,7 +26,6 @@ import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class ListOfJaxbElemToListOfValue extends BuiltInMethod {
@@ -36,8 +34,8 @@ public class ListOfJaxbElemToListOfValue extends BuiltInMethod {
     private final Type returnType;
     private final Type genericParam;
 
-    public ListOfJaxbElemToListOfValue( TypeFactory typeFactory ) {
-        this.parameter = typeFactory.createParameter( "elementList", List.class );
+    public ListOfJaxbElemToListOfValue(TypeFactory typeFactory) {
+        this.parameter = new Parameter( "elementList", typeFactory.getType( List.class ) );
         this.returnType = typeFactory.getType( List.class );
         this.genericParam = typeFactory.getType( JAXBElement.class ).erasure();
     }
@@ -47,7 +45,7 @@ public class ListOfJaxbElemToListOfValue extends BuiltInMethod {
         boolean match = false;
         if ( ( sourceType.getTypeParameters().size() == 1 ) && ( targetType.getTypeParameters().size() == 1 ) ) {
             Type typeParam = sourceType.getTypeParameters().get( 0 );
-            if (  typeParam.erasure().equals( genericParam ) && ( typeParam.getTypeParameters().size() == 1 ) )  {
+            if ( typeParam.erasure().equals( genericParam ) && ( typeParam.getTypeParameters().size() == 1 ) ) {
                 match = typeParam.getTypeParameters().get( 0 ).equals( targetType.getTypeParameters().get( 0 ) );
             }
         }
