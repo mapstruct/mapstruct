@@ -16,13 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.builtin;
+package org.mapstruct.ap.model.source.builtin;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.mapstruct.ap.model.common.TypeFactory;
-import org.mapstruct.ap.model.source.BuiltInMethod;
 
 /**
  * Registry for all built-in methods.

@@ -21,7 +21,7 @@ package org.mapstruct.ap.model;
 import java.util.Set;
 
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.BuiltInMethod;
+import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 
 /**
  * A mapping method which is not based on an actual method declared in the original mapper interface but is added as
@@ -31,13 +31,15 @@ import org.mapstruct.ap.model.source.BuiltInMethod;
  */
 public class VirtualMappingMethod extends MappingMethod {
 
+    private static final String BUILTIN_METHOD_TEMPLATE_PREFIX = "org.mapstruct.ap.model.builtin.";
+
     private final String templateName;
     private final Set<Type> importTypes;
 
     public VirtualMappingMethod(BuiltInMethod method) {
         super( method );
         this.importTypes = method.getImportTypes();
-        this.templateName = method.getClass().getName() + ".ftl";
+        this.templateName = BUILTIN_METHOD_TEMPLATE_PREFIX + method.getClass().getSimpleName() + ".ftl";
     }
 
     @Override

@@ -16,11 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.builtin;
+package org.mapstruct.ap.model.source.builtin;
 
-import org.mapstruct.ap.model.source.BuiltInMethod;
 import java.util.Date;
+
 import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;

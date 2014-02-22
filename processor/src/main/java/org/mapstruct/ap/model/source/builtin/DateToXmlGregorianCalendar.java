@@ -16,47 +16,42 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.builtin;
+package org.mapstruct.ap.model.source.builtin;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import org.mapstruct.ap.model.source.BuiltInMethod;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Set;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.mapstruct.ap.model.common.ConversionContext;
+
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+
 import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class StringToXmlGregorianCalendar extends BuiltInMethod {
+public class DateToXmlGregorianCalendar extends BuiltInMethod {
 
     private final Parameter parameter;
     private final Type returnType;
 
     private final TypeFactory typeFactory;
 
-    public StringToXmlGregorianCalendar( TypeFactory typeFactory ) {
+    public DateToXmlGregorianCalendar( TypeFactory typeFactory ) {
         this.typeFactory = typeFactory;
-        this.parameter = typeFactory.createParameter( "date" , String.class );
+        this.parameter = typeFactory.createParameter( "date", Date.class );
         this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
-
     }
 
     @Override
     public Set<Type> getImportTypes() {
          return asSet( new Type[]{ typeFactory.getType( GregorianCalendar.class ),
-             typeFactory.getType( SimpleDateFormat.class ),
-             typeFactory.getType( DateFormat.class ),
-             typeFactory.getType( ParseException.class ),
              typeFactory.getType( DatatypeFactory.class ),
              typeFactory.getType( DatatypeConfigurationException.class ) });
     }
@@ -69,10 +64,5 @@ public class StringToXmlGregorianCalendar extends BuiltInMethod {
     @Override
     public Type getReturnType() {
         return returnType;
-    }
-
-    @Override
-    public String getContextParameter(ConversionContext conversionContext) {
-        return conversionContext.getDateFormat() != null ? "\"" + conversionContext.getDateFormat() + "\"" : "null";
     }
 }

@@ -16,10 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.builtin;
+package org.mapstruct.ap.model.source.builtin;
 
-import org.mapstruct.ap.model.source.BuiltInMethod;
-import javax.xml.bind.JAXBElement;
+import java.util.Calendar;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -28,23 +30,14 @@ import org.mapstruct.ap.model.common.TypeFactory;
  *
  * @author Sjaak Derksen
  */
-public class JaxbElemToValue extends BuiltInMethod {
+public class XmlGregorianCalendarToCalendar extends BuiltInMethod {
 
     private final Parameter parameter;
     private final Type returnType;
 
-    public JaxbElemToValue( TypeFactory typeFactory ) {
-        this.parameter =  typeFactory.createParameter( "element", JAXBElement.class );
-        this.returnType = typeFactory.getType( Object.class );
-    }
-
-    @Override
-    public boolean doTypeVarsMatch(Type sourceType, Type targetType) {
-        boolean match = false;
-        if (sourceType.getTypeParameters().size() == 1) {
-            match = sourceType.getTypeParameters().get( 0 ).equals( targetType );
-        }
-        return match;
+    public XmlGregorianCalendarToCalendar( TypeFactory typeFactory ) {
+        this.parameter = typeFactory.createParameter( "xcal", XMLGregorianCalendar.class );
+        this.returnType = typeFactory.getType( Calendar.class );
     }
 
     @Override

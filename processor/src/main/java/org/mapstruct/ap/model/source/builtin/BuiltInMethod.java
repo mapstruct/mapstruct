@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.source;
+package org.mapstruct.ap.model.source.builtin;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,6 +28,7 @@ import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Strings;
 
 /**

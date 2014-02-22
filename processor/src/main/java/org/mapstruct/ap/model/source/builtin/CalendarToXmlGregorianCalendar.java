@@ -16,41 +16,44 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.builtin;
+package org.mapstruct.ap.model.source.builtin;
 
-import org.mapstruct.ap.model.source.BuiltInMethod;
-import java.util.List;
-import javax.xml.bind.JAXBElement;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Set;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+
+import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class ListOfJaxbElemToListOfValue extends BuiltInMethod {
+public class CalendarToXmlGregorianCalendar extends BuiltInMethod {
 
     private final Parameter parameter;
     private final Type returnType;
-    private final Type genericParam;
 
-    public ListOfJaxbElemToListOfValue( TypeFactory typeFactory ) {
-        this.parameter = typeFactory.createParameter( "elementList", List.class );
-        this.returnType = typeFactory.getType( List.class );
-        this.genericParam = typeFactory.getType( JAXBElement.class ).erasure();
+    private final TypeFactory typeFactory;
+
+    public CalendarToXmlGregorianCalendar( TypeFactory typeFactory ) {
+        this.typeFactory = typeFactory;
+        this.parameter = typeFactory.createParameter( "cal ", Calendar.class );
+        this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
     }
 
     @Override
-    public boolean doTypeVarsMatch(Type sourceType, Type targetType) {
-        boolean match = false;
-        if ( ( sourceType.getTypeParameters().size() == 1 ) && ( targetType.getTypeParameters().size() == 1 ) ) {
-            Type typeParam = sourceType.getTypeParameters().get( 0 );
-            if (  typeParam.erasure().equals( genericParam ) && ( typeParam.getTypeParameters().size() == 1 ) )  {
-                match = typeParam.getTypeParameters().get( 0 ).equals( targetType.getTypeParameters().get( 0 ) );
-            }
-        }
-        return match;
+    public Set<Type> getImportTypes() {
+        return asSet( new Type[]{ typeFactory.getType( DatatypeFactory.class ),
+            typeFactory.getType( GregorianCalendar.class ),
+            typeFactory.getType( DatatypeConfigurationException.class ) } );
     }
 
     @Override

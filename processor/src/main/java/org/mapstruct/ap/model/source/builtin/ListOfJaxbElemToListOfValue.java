@@ -16,11 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.builtin;
+package org.mapstruct.ap.model.source.builtin;
 
-import org.mapstruct.ap.model.source.BuiltInMethod;
-import java.util.Calendar;
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.List;
+
+import javax.xml.bind.JAXBElement;
+
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -29,14 +30,28 @@ import org.mapstruct.ap.model.common.TypeFactory;
  *
  * @author Sjaak Derksen
  */
-public class XmlGregorianCalendarToCalendar extends BuiltInMethod {
+public class ListOfJaxbElemToListOfValue extends BuiltInMethod {
 
     private final Parameter parameter;
     private final Type returnType;
+    private final Type genericParam;
 
-    public XmlGregorianCalendarToCalendar( TypeFactory typeFactory ) {
-        this.parameter = typeFactory.createParameter( "xcal", XMLGregorianCalendar.class );
-        this.returnType = typeFactory.getType( Calendar.class );
+    public ListOfJaxbElemToListOfValue( TypeFactory typeFactory ) {
+        this.parameter = typeFactory.createParameter( "elementList", List.class );
+        this.returnType = typeFactory.getType( List.class );
+        this.genericParam = typeFactory.getType( JAXBElement.class ).erasure();
+    }
+
+    @Override
+    public boolean doTypeVarsMatch(Type sourceType, Type targetType) {
+        boolean match = false;
+        if ( ( sourceType.getTypeParameters().size() == 1 ) && ( targetType.getTypeParameters().size() == 1 ) ) {
+            Type typeParam = sourceType.getTypeParameters().get( 0 );
+            if (  typeParam.erasure().equals( genericParam ) && ( typeParam.getTypeParameters().size() == 1 ) )  {
+                match = typeParam.getTypeParameters().get( 0 ).equals( targetType.getTypeParameters().get( 0 ) );
+            }
+        }
+        return match;
     }
 
     @Override

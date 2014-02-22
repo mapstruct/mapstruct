@@ -23,8 +23,8 @@ import java.util.Set;
 
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.BuiltInMethod;
 import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 
 /**
  * Represents a reference to {@link MappingMethod}.

@@ -24,6 +24,7 @@ import java.util.List;
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 
 /**
  * This interface makes available common method properties and a matching method
