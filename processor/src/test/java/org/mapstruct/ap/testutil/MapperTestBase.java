@@ -105,6 +105,7 @@ public abstract class MapperTestBase {
 
         createOutputDirs();
 
+        // TODO #140 Is there a better way to do this?
         if ( !enhancedClassloader ) {
             // we need to make sure that the the generated classes are loaded by the same classloader as the test has
             // been loaded already. Otherwise some tests won't work.

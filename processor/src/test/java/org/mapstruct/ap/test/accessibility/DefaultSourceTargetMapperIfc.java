@@ -22,7 +22,6 @@ import org.mapstruct.Mapper;
 
 /**
  * @author Andreas Gudian
- *
  */
 @Mapper
 interface DefaultSourceTargetMapperIfc {

@@ -33,10 +33,11 @@ import org.testng.annotations.Test;
  *
  * @author Andreas Gudian
  */
-@WithClasses( { Source.class, Target.class, DefaultSourceTargetMapperAbstr.class, DefaultSourceTargetMapperIfc.class } )
+@WithClasses({ Source.class, Target.class, DefaultSourceTargetMapperAbstr.class, DefaultSourceTargetMapperIfc.class })
 public class AccessibilityTest extends MapperTestBase {
+
     @Test
-    @IssueKey( "103" )
+    @IssueKey("103")
     public void testGeneratedModifiersFromAbstractClassAreCorrect() throws Exception {
         Class<?> defaultFromAbstract = loadForMapper( DefaultSourceTargetMapperAbstr.class );
 
@@ -48,7 +49,7 @@ public class AccessibilityTest extends MapperTestBase {
     }
 
     @Test
-    @IssueKey( "103" )
+    @IssueKey("103")
     public void testGeneratedModifiersFromInterfaceAreCorrect() throws Exception {
         Class<?> defaultFromIfc = loadForMapper( DefaultSourceTargetMapperIfc.class );
 

@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.annotation.Generated;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
