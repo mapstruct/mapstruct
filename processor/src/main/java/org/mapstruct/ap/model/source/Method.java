@@ -30,6 +30,7 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
  * This interface makes available common method properties and a matching method
  *
  * There are 2 known implementors: {@link BuiltInMethod} and {@link Method}
+ *
  * @author Sjaak Derksen
  */
 public interface Method {
@@ -43,7 +44,7 @@ public interface Method {
      *
      * @return true when match
      */
-    boolean matches( Type sourceType, Type targetType );
+    boolean matches(Type sourceType, Type targetType);
 
     /**
      * Returns the mapper type declaring this method if it is not declared by the mapper interface currently processed
@@ -77,6 +78,7 @@ public interface Method {
 
     /**
      * Returns the parameter designated as target parameter (if present) {@link #getSourceParameters() }
+     *
      * @return target parameter (when present) null otherwise.
      */
     Parameter getTargetParameter();

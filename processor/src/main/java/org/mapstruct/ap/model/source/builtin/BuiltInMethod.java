@@ -23,24 +23,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.conversion.SimpleConversion;
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.ConversionContext;
-import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Strings;
 
 /**
- * Implementations create:
- * 1) an implementation of this build in method.
- * 2) a reference to a build in method, to use in property mappings
- * 3) a name for logging purposes.
+ * Represents a "built-in" mapping method which will be added as private method to the generated mapper. Built-in
+ * methods are used in cases where a {@link SimpleConversion} doesn't suffice, e.g. as several lines of source code or a
+ * try/catch block are required.
  *
  * @author Sjaak Derksen
  */
-public abstract class BuiltInMethod extends ModelElement implements Method {
-
+public abstract class BuiltInMethod implements Method {
 
     /**
      * {@inheritDoc }
@@ -53,20 +51,19 @@ public abstract class BuiltInMethod extends ModelElement implements Method {
     }
 
     /**
-     * {@inheritDoc} {@link ModelElement}
+     * Returns the types used by this method for which import statements need to be generated. Defaults to the empty
+     * set. To be overridden by implementations in case they make use of additional types (note that the parameter and
+     * return type don't need to be added).
      *
-     * This method acts as a template. It should be overridden by implementors if deviation is required.
-     *
-     * @return set of used types. Default an empty set.
+     * @return the types used by this method for which import statements need to be generated
      */
-    @Override
     public Set<Type> getImportTypes() {
         return Collections.<Type>emptySet();
     }
 
     /**
-     * {@inheritDoc} {@link Method}
-     *
+     * {@inheritDoc}
+     * <p>
      * Default the targetType should be assignable to the returnType and the sourceType to the parameter,
      * excluding generic type variables. When the implementor sees a need for this, this method can be overridden.
      */
@@ -79,41 +76,33 @@ public abstract class BuiltInMethod extends ModelElement implements Method {
         return false;
     }
 
-    /**
-     * {@inheritDoc} {@link Method}
-     *
-     * @return all parameters are source parameters for build-in methods.
-     */
     @Override
     public List<Parameter> getSourceParameters() {
         return getParameters();
     }
 
     /**
-     * {@inheritDoc} {@link Method}
+     * {@inheritDoc}
+     * <p>
+     * For built-in methods, the declaring mapper is always {@code null} as they will be added as private methods to the
+     * generated mapper.
      *
-     * declaring mapper is always null, being the MapperImpl itself. This method should not be overridden by
-     * implementors
-     *
-     * @return null
+     * @return {@code null}
      */
     @Override
-    public Type getDeclaringMapper() {
+    public final Type getDeclaringMapper() {
         return null;
     }
 
-    /**
-     * {@inheritDoc} {@link Method}
-     */
     @Override
     public List<Parameter> getParameters() {
-        return Arrays.asList( new Parameter[] { getParameter() } );
+        return Arrays.asList( getParameter() );
     }
 
     /**
-     * target parameter mechanism not supported for build-in-method
+     * target parameter mechanism not supported for built-in methods
      *
-     * @return null
+     * @return {@code null}
      */
     @Override
     public Parameter getTargetParameter() {

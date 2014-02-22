@@ -40,11 +40,11 @@ import org.mapstruct.ap.model.common.Type;
  * SourceMethodMatcher $8.4 of the JavaLanguage specification describes a method body as such:
  *
  * <pre>
- SourceMethodDeclaration: SourceMethodHeader SourceMethodBody
- SourceMethodHeader: SourceMethodModifiers TypeParameters Result SourceMethodDeclarator Throws
- SourceMethodDeclarator: Identifier ( FormalParameterList )
-
- example &lt;T extends String & Serializable&gt;  T   getResult(? extends T) throws Exception
+ * SourceMethodDeclaration: SourceMethodHeader SourceMethodBody
+ * SourceMethodHeader: SourceMethodModifiers TypeParameters Result SourceMethodDeclarator Throws
+ * SourceMethodDeclarator: Identifier ( FormalParameterList )
+ *
+ * example &lt;T extends String & Serializable&gt;  T   getResult(? extends T) throws Exception
  *         \-------------------------------/ \-/            \---------/
  *               TypeParameters             Result        ParameterList
  * </pre>
@@ -66,26 +66,21 @@ public class MethodMatcher {
     private final Types typeUtils;
     private final Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<TypeVariable, TypeMirror>();
 
-    /**
-     * package scope constructor
-     *
-     * @param typeUtils
-     * @param candidateMethod
-     */
     MethodMatcher(Types typeUtils, SourceMethod candidateMethod) {
         this.typeUtils = typeUtils;
         this.candidateMethod = candidateMethod;
     }
 
     /**
-     * package scoped method
+     * Whether the given source and target type are matched by this matcher's candidate method.
      *
-     * @param sourceType
-     * @param targetType
+     * @param sourceType the source type
+     * @param targetType the target type
      *
-     * @return true when both, sourceType and targetType matches the signature.
+     * @return {@code true} when both, source type and target type match the signature of this matcher's method;
+     *         {@code false} otherwise.
      */
-     boolean matches( Type sourceType, Type targetType ) {
+    boolean matches(Type sourceType, Type targetType) {
         // check & collect generic types.
         List<? extends VariableElement> candidateParameters = candidateMethod.getExecutable().getParameters();
 
