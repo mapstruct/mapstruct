@@ -41,6 +41,7 @@ import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.DefaultMapperReference;
+import org.mapstruct.ap.model.EnumMappingMethod;
 import org.mapstruct.ap.model.IterableMappingMethod;
 import org.mapstruct.ap.model.MapMappingMethod;
 import org.mapstruct.ap.model.Mapper;
@@ -55,6 +56,7 @@ import org.mapstruct.ap.model.common.DefaultConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.model.source.EnumMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
@@ -184,7 +186,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 continue;
             }
 
-
             SourceMethod reverseMappingMethod = getReverseMappingMethod( methods, method );
 
             boolean hasFactoryMethod = false;
@@ -206,6 +207,19 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 MapMappingMethod mapMappingMethod = getMapMappingMethod( mapperReferences, methods, method );
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( mapMappingMethod );
+            }
+            else if ( method.isEnumMapping() ) {
+                if ( method.getMappings().isEmpty() ) {
+                    if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
+                        method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
+                    }
+                }
+
+                MappingMethod enumMappingMethod = getEnumMappingMethod( method );
+
+                if ( enumMappingMethod != null ) {
+                    mappingMethods.add( enumMappingMethod );
+                }
             }
             else {
                 if ( method.getMappings().isEmpty() ) {
@@ -305,7 +319,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                ExecutableElement targetAcessor,
                                                Parameter parameter) {
         String targetPropertyName = Executables.getPropertyName( targetAcessor );
-        Mapping mapping = method.getMapping( targetPropertyName );
+        Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
         String dateFormat = mapping != null ? mapping.getDateFormat() : null;
         String sourcePropertyName = mapping != null ? mapping.getSourcePropertyName() : targetPropertyName;
         TypeElement parameterElement = parameter.getType().getTypeElement();
@@ -351,6 +365,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private BeanMappingMethod getBeanMappingMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
                                                    SourceMethod method, ReportingPolicy unmappedTargetPolicy) {
+
         List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         Set<String> mappedTargetProperties = new HashSet<String>();
 
@@ -371,7 +386,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         for ( ExecutableElement targetAccessor : targetAccessors ) {
             String targetPropertyName = Executables.getPropertyName( targetAccessor );
 
-            Mapping mapping = method.getMapping( targetPropertyName );
+            Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
 
             PropertyMapping propertyMapping = null;
             if ( mapping != null && mapping.getSourceParameterName() != null ) {
@@ -738,6 +753,142 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion,
             factoryMethod
         );
+    }
+
+    private EnumMappingMethod getEnumMappingMethod(SourceMethod method) {
+        if ( !reportErrorIfMappedEnumConstantsDontExist( method ) ||
+            !reportErrorIfSourceEnumConstantsWithoutCorrespondingTargetConstantAreNotMapped( method ) ) {
+            return null;
+        }
+
+        List<EnumMapping> enumMappings = new ArrayList<EnumMapping>();
+
+        List<String> sourceEnumConstants = method.getSourceParameters().iterator().next().getType().getEnumConstants();
+        Map<String, List<Mapping>> mappings = method.getMappings();
+
+        for ( String enumConstant : sourceEnumConstants ) {
+            List<Mapping> mappedConstants = mappings.get( enumConstant );
+
+            if ( mappedConstants == null ) {
+                enumMappings.add( new EnumMapping( enumConstant, enumConstant ) );
+            }
+            else if ( mappedConstants.size() == 1 ) {
+                enumMappings.add( new EnumMapping( enumConstant, mappedConstants.iterator().next().getTargetName() ) );
+            }
+            else {
+                List<String> targetConstants = new ArrayList<String>( mappedConstants.size() );
+                for ( Mapping mapping : mappedConstants ) {
+                    targetConstants.add( mapping.getTargetName() );
+                }
+                messager.printMessage(
+                    Kind.ERROR,
+                    String.format(
+                        "One enum constant must not be mapped to more than one target constant, but constant %s is " +
+                            "mapped to %s.",
+                        enumConstant,
+                        Strings.join( targetConstants, ", " )
+                    ),
+                    method.getExecutable()
+                );
+            }
+        }
+
+        return new EnumMappingMethod( method, enumMappings );
+    }
+
+    private boolean reportErrorIfMappedEnumConstantsDontExist(SourceMethod method) {
+        // only report errors if this method itself is configured
+        if ( method.isConfiguredByReverseMappingMethod() ) {
+            return true;
+        }
+
+        List<String> sourceEnumConstants = method.getSourceParameters().iterator().next().getType().getEnumConstants();
+        List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
+
+        boolean foundIncorrectMapping = false;
+
+        for ( List<Mapping> mappedConstants : method.getMappings().values() ) {
+            for ( Mapping mappedConstant : mappedConstants ) {
+                if ( mappedConstant.getSourceName() == null ) {
+                    messager.printMessage(
+                        Kind.ERROR,
+                        "A source constant must be specified for mappings of an enum mapping method.",
+                        method.getExecutable(),
+                        mappedConstant.getMirror()
+                    );
+                    foundIncorrectMapping = true;
+                }
+                else if ( !sourceEnumConstants.contains( mappedConstant.getSourceName() ) ) {
+                    messager.printMessage(
+                        Kind.ERROR,
+                        String.format(
+                            "Constant %s doesn't exist in enum type %s.",
+                            mappedConstant.getSourceName(),
+                            method.getSourceParameters().iterator().next().getType()
+                        ),
+                        method.getExecutable(),
+                        mappedConstant.getMirror(),
+                        mappedConstant.getSourceAnnotationValue()
+                    );
+                    foundIncorrectMapping = true;
+                }
+                if ( mappedConstant.getTargetName() == null ) {
+                    messager.printMessage(
+                        Kind.ERROR,
+                        "A target constant must be specified for mappings of an enum mapping method.",
+                        method.getExecutable(),
+                        mappedConstant.getMirror()
+                    );
+                    foundIncorrectMapping = true;
+                }
+                else if ( !targetEnumConstants.contains( mappedConstant.getTargetName() ) ) {
+                    messager.printMessage(
+                        Kind.ERROR,
+                        String.format(
+                            "Constant %s doesn't exist in enum type %s.",
+                            mappedConstant.getTargetName(),
+                            method.getReturnType()
+                        ),
+                        method.getExecutable(),
+                        mappedConstant.getMirror(),
+                        mappedConstant.getTargetAnnotationValue()
+                    );
+                    foundIncorrectMapping = true;
+                }
+            }
+        }
+
+        return !foundIncorrectMapping;
+    }
+
+    private boolean reportErrorIfSourceEnumConstantsWithoutCorrespondingTargetConstantAreNotMapped(
+        SourceMethod method) {
+
+        List<String> sourceEnumConstants = method.getSourceParameters().iterator().next().getType().getEnumConstants();
+        List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
+        Set<String> mappedSourceEnumConstants = method.getMappings().keySet();
+        List<String> unmappedSourceEnumConstants = new ArrayList<String>();
+
+        for ( String sourceEnumConstant : sourceEnumConstants ) {
+            if ( !targetEnumConstants.contains( sourceEnumConstant ) &&
+                !mappedSourceEnumConstants.contains( sourceEnumConstant ) ) {
+                unmappedSourceEnumConstants.add( sourceEnumConstant );
+            }
+        }
+
+        if ( !unmappedSourceEnumConstants.isEmpty() ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "The following constants from the source enum have no corresponding constant in the target enum " +
+                        "and must be be mapped via @Mapping: %s",
+                    Strings.join( unmappedSourceEnumConstants, ", " )
+                ),
+                method.getExecutable()
+            );
+        }
+
+        return unmappedSourceEnumConstants.isEmpty();
     }
 
     private TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {

@@ -22,30 +22,31 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Configures the mapping of one bean attribute.
+ * Configures the mapping of one bean attribute or enum constant.
  *
  * @author Gunnar Morling
  */
 public @interface Mapping {
 
     /**
-     * The source name of the configured property as defined by the JavaBeans specification.
+     * The source name of the configured property as defined by the JavaBeans specification. If used to map an enum
+     * constant, the name of the constant member is to be given.
      *
-     * @return The source name of the configured property.
+     * @return The source name of the configured property or enum constant
      */
     String source();
 
     /**
-     * The target name of the configured property as defined by the JavaBeans specification. Defaults to the
-     * source name if not given.
+     * The target name of the configured property as defined by the JavaBeans specification. Defaults to the source name
+     * if not given. If used to map an enum constant, the name of the constant member is to be given.
      *
-     * @return The target name of the configured property.
+     * @return The target name of the configured property or enum constant
      */
     String target() default "";
 
     /**
      * A format string as processable by {@link SimpleDateFormat} if the attribute is mapped from {@code String} to
-     * {@link Date} or vice-versa. Will be ignored for all other attribute types.
+     * {@link Date} or vice-versa. Will be ignored for all other attribute types and when mapping enum constants.
      *
      * @return A date format string as processable by {@link SimpleDateFormat}.
      */

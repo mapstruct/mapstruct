@@ -18,10 +18,13 @@
  */
 package org.mapstruct.ap.model.common;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
@@ -57,6 +60,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isCollectionType;
     private final boolean isMapType;
     private final boolean isImported;
+    private final List<String> enumConstants;
 
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, TypeMirror typeMirror, TypeElement typeElement, List<Type> typeParameters,
@@ -77,6 +81,19 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isCollectionType = isCollectionType;
         this.isMapType = isMapType;
         this.isImported = isImported;
+
+        if ( isEnumType ) {
+            enumConstants = new ArrayList<String>();
+
+            for ( Element element : typeElement.getEnclosedElements() ) {
+                if ( element.getKind() == ElementKind.ENUM_CONSTANT ) {
+                    enumConstants.add( element.getSimpleName().toString() );
+                }
+            }
+        }
+        else {
+            enumConstants = Collections.emptyList();
+        }
     }
     //CHECKSTYLE:ON
 
@@ -110,6 +127,13 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isEnumType() {
         return isEnumType;
+    }
+
+    /**
+     * Returns this type's enum constants in case it is an enum, an empty list otherwise.
+     */
+    public List<String> getEnumConstants() {
+        return enumConstants;
     }
 
     /**
