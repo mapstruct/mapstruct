@@ -83,6 +83,24 @@ public class EnumMappingTest extends MapperTestBase {
         }
     )
     public void shouldRaiseErrorIfSameSourceEnumConstantIsMappedTwice() {
+    }
 
+    @Test
+    @WithClasses(ErroneousOrderMapperUsingUnknownEnumConstants.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = "Constant FOO doesn't exist in enum type org.mapstruct.ap.test.enums.OrderType\\."),
+            @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
+                kind = Kind.ERROR,
+                line = 36,
+                messageRegExp = "Constant BAR doesn't exist in enum type org.mapstruct.ap.test.enums." +
+                    "ExternalOrderType\\.")
+        }
+    )
+    public void shouldRaiseErrorIfUnknownEnumConstantsAreSpecifiedInMapping() {
     }
 }
