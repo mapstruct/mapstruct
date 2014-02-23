@@ -29,6 +29,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.common.Parameter;
@@ -46,7 +47,6 @@ import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
-import javax.lang.model.util.Types;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -264,6 +264,24 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         if ( resultType.isPrimitive() ) {
             messager.printMessage( Kind.ERROR, "Can't generate mapping method with primitive return type.", method );
+            return false;
+        }
+
+        if ( parameterType.isEnumType() && !resultType.isEnumType() ) {
+            messager.printMessage(
+                Kind.ERROR,
+                "Can't generate mapping method from enum type to non-enum type.",
+                method
+            );
+            return false;
+        }
+
+        if ( !parameterType.isEnumType() && resultType.isEnumType() ) {
+            messager.printMessage(
+                Kind.ERROR,
+                "Can't generate mapping method from non-enum type to enum type.",
+                method
+            );
             return false;
         }
 

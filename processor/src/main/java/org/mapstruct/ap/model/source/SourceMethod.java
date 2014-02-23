@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
@@ -61,27 +60,28 @@ public class SourceMethod implements Method {
     public static SourceMethod forMethodRequiringImplementation(ExecutableElement executable,
                                                                 List<Parameter> parameters,
                                                                 Type returnType, Map<String,
-                                                                List<Mapping>> mappings,
+        List<Mapping>> mappings,
                                                                 IterableMapping iterableMapping,
                                                                 MapMapping mapMapping,
-                                                                Types typeUtils ) {
+                                                                Types typeUtils) {
 
         return new SourceMethod(
-                null,
-                executable,
-                parameters,
-                returnType,
-                mappings,
-                iterableMapping,
-                mapMapping,
-                typeUtils );
+            null,
+            executable,
+            parameters,
+            returnType,
+            mappings,
+            iterableMapping,
+            mapMapping,
+            typeUtils
+        );
     }
 
     public static SourceMethod forReferencedMethod(Type declaringMapper,
                                                    ExecutableElement executable,
                                                    List<Parameter> parameters,
                                                    Type returnType,
-                                                   Types typeUtils ) {
+                                                   Types typeUtils) {
 
         return new SourceMethod(
             declaringMapper,
@@ -96,7 +96,7 @@ public class SourceMethod implements Method {
     }
 
     public static SourceMethod forFactoryMethod(Type declaringMapper, ExecutableElement executable,
-                                          Type returnType, Types typeUtils) {
+                                                Type returnType, Types typeUtils) {
 
         return new SourceMethod(
             declaringMapper,
@@ -117,7 +117,7 @@ public class SourceMethod implements Method {
                          Map<String, List<Mapping>> mappings,
                          IterableMapping iterableMapping,
                          MapMapping mapMapping,
-                         Types typeUtils ) {
+                         Types typeUtils) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
@@ -213,6 +213,9 @@ public class SourceMethod implements Method {
         return accessibility;
     }
 
+    /**
+     * Returns the {@link Mapping}s configured for this method, keyed by source property name.
+     */
     public Map<String, List<Mapping>> getMappings() {
         return mappings;
     }
@@ -264,6 +267,11 @@ public class SourceMethod implements Method {
             && getResultType().isMapType();
     }
 
+    public boolean isEnumMapping() {
+        return getSourceParameters().size() == 1 && getSourceParameters().iterator().next().getType().isEnumType()
+            && getResultType().isEnumType();
+    }
+
     /**
      * Whether this method is configured by itself or by the corresponding reverse mapping method.
      *
@@ -291,7 +299,10 @@ public class SourceMethod implements Method {
         return sb.toString();
     }
 
-    public Mapping getMapping(String targetPropertyName) {
+    /**
+     * Returns the {@link Mapping} for the given target property. May return {@code null}.
+     */
+    public Mapping getMappingByTargetPropertyName(String targetPropertyName) {
         for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
             for ( Mapping mapping : entry.getValue() ) {
                 if ( mapping.getTargetName().equals( targetPropertyName ) ) {
@@ -325,8 +336,8 @@ public class SourceMethod implements Method {
      * {@inheritDoc} {@link Method}
      */
     @Override
-    public boolean matches( Type sourceType, Type targetType ) {
-        MethodMatcher matcher = new MethodMatcher(typeUtils, this );
+    public boolean matches(Type sourceType, Type targetType) {
+        MethodMatcher matcher = new MethodMatcher( typeUtils, this );
         return matcher.matches( sourceType, targetType );
     }
 

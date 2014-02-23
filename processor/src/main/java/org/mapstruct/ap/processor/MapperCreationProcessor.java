@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -41,6 +40,7 @@ import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.DefaultMapperReference;
+import org.mapstruct.ap.model.EnumMappingMethod;
 import org.mapstruct.ap.model.IterableMappingMethod;
 import org.mapstruct.ap.model.MapMappingMethod;
 import org.mapstruct.ap.model.Mapper;
@@ -55,6 +55,7 @@ import org.mapstruct.ap.model.common.DefaultConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.model.source.EnumMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
@@ -184,7 +185,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 continue;
             }
 
-
             SourceMethod reverseMappingMethod = getReverseMappingMethod( methods, method );
 
             boolean hasFactoryMethod = false;
@@ -206,6 +206,19 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 MapMappingMethod mapMappingMethod = getMapMappingMethod( mapperReferences, methods, method );
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( mapMappingMethod );
+            }
+            else if ( method.isEnumMapping() ) {
+                if ( method.getMappings().isEmpty() ) {
+                    if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
+                        method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
+                    }
+                }
+
+                MappingMethod enumMappingMethod = getEnumMappingMethod( method );
+
+                if ( enumMappingMethod != null ) {
+                    mappingMethods.add( enumMappingMethod );
+                }
             }
             else {
                 if ( method.getMappings().isEmpty() ) {
@@ -305,7 +318,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                ExecutableElement targetAcessor,
                                                Parameter parameter) {
         String targetPropertyName = Executables.getPropertyName( targetAcessor );
-        Mapping mapping = method.getMapping( targetPropertyName );
+        Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
         String dateFormat = mapping != null ? mapping.getDateFormat() : null;
         String sourcePropertyName = mapping != null ? mapping.getSourcePropertyName() : targetPropertyName;
         TypeElement parameterElement = parameter.getType().getTypeElement();
@@ -351,6 +364,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private BeanMappingMethod getBeanMappingMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
                                                    SourceMethod method, ReportingPolicy unmappedTargetPolicy) {
+
         List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         Set<String> mappedTargetProperties = new HashSet<String>();
 
@@ -371,7 +385,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         for ( ExecutableElement targetAccessor : targetAccessors ) {
             String targetPropertyName = Executables.getPropertyName( targetAccessor );
 
-            Mapping mapping = method.getMapping( targetPropertyName );
+            Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
 
             PropertyMapping propertyMapping = null;
             if ( mapping != null && mapping.getSourceParameterName() != null ) {
@@ -738,6 +752,30 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             method, keyMappingMethod, keyConversion, valueMappingMethod, valueConversion,
             factoryMethod
         );
+    }
+
+    private EnumMappingMethod getEnumMappingMethod(SourceMethod method) {
+        List<EnumMapping> enumMappings = new ArrayList<EnumMapping>();
+
+        List<String> sourceEnumConstants = method.getSourceParameters().iterator().next().getType().getEnumConstants();
+        Map<String, List<Mapping>> mappings = method.getMappings();
+
+        for ( String enumConstant : sourceEnumConstants ) {
+            List<Mapping> mappedConstants = mappings.get( enumConstant );
+
+            if ( mappedConstants == null ) {
+                enumMappings.add( new EnumMapping( enumConstant, enumConstant ) );
+            }
+            else if ( mappedConstants.size() == 1 ) {
+                enumMappings.add( new EnumMapping( enumConstant, mappedConstants.iterator().next().getTargetName() ) );
+            }
+            else {
+                //TODO Raise error
+            }
+
+        }
+
+        return new EnumMappingMethod( method, enumMappings );
     }
 
     private TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {
