@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -770,7 +771,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 enumMappings.add( new EnumMapping( enumConstant, mappedConstants.iterator().next().getTargetName() ) );
             }
             else {
-                //TODO Raise error
+                List<String> targetConstants = new ArrayList<String>( mappedConstants.size() );
+                for ( Mapping mapping : mappedConstants ) {
+                    targetConstants.add( mapping.getTargetName() );
+                }
+                messager.printMessage(
+                    Kind.ERROR,
+                    String.format(
+                        "One enum constant must not be mapped to more than one target constant, but constant %s is " +
+                                "mapped to %s.",
+                        enumConstant,
+                        Strings.join( targetConstants, ", " )
+                    ),
+                    method.getExecutable()
+                );
             }
 
         }

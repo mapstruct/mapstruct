@@ -18,9 +18,14 @@
  */
 package org.mapstruct.ap.test.enums;
 
+import javax.tools.Diagnostic.Kind;
+
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -63,5 +68,21 @@ public class EnumMappingTest extends MapperTestBase {
         OrderDto orderDto = OrderMapper.INSTANCE.orderEntityToDto( order );
         assertThat( orderDto ).isNotNull();
         assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.SPECIAL );
+    }
+
+    @Test
+    @WithClasses(ErroneousOrderMapperMappingSameConstantTwice.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousOrderMapperMappingSameConstantTwice.class,
+                kind = Kind.ERROR,
+                line = 39,
+                messageRegExp = "One enum constant must not be mapped to more than one target constant, but " +
+                    "constant EXTRA is mapped to SPECIAL, DEFAULT\\.")
+        }
+    )
+    public void shouldRaiseErrorIfSameSourceEnumConstantIsMappedTwice() {
+
     }
 }
