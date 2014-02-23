@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -755,7 +756,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private EnumMappingMethod getEnumMappingMethod(SourceMethod method) {
-        if ( !reportErrorIfMappedEnumConstantsDontExist( method ) ) {
+        if ( !reportErrorIfMappedEnumConstantsDontExist( method ) ||
+            !reportErrorIfSourceEnumConstantsWithoutCorrespondingTargetConstantAreNotMapped( method ) ) {
             return null;
         }
 
@@ -857,6 +859,36 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         return !foundIncorrectMapping;
+    }
+
+    private boolean reportErrorIfSourceEnumConstantsWithoutCorrespondingTargetConstantAreNotMapped(
+        SourceMethod method) {
+
+        List<String> sourceEnumConstants = method.getSourceParameters().iterator().next().getType().getEnumConstants();
+        List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
+        Set<String> mappedSourceEnumConstants = method.getMappings().keySet();
+        List<String> unmappedSourceEnumConstants = new ArrayList<String>();
+
+        for ( String sourceEnumConstant : sourceEnumConstants ) {
+            if ( !targetEnumConstants.contains( sourceEnumConstant ) &&
+                !mappedSourceEnumConstants.contains( sourceEnumConstant ) ) {
+                unmappedSourceEnumConstants.add( sourceEnumConstant );
+            }
+        }
+
+        if ( !unmappedSourceEnumConstants.isEmpty() ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "The following constants from the source enum have no corresponding constant in the target enum " +
+                        "and must be be mapped via @Mapping: %s",
+                    Strings.join( unmappedSourceEnumConstants, ", " )
+                ),
+                method.getExecutable()
+            );
+        }
+
+        return unmappedSourceEnumConstants.isEmpty();
     }
 
     private TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {

@@ -77,7 +77,7 @@ public class EnumMappingTest extends MapperTestBase {
         diagnostics = {
             @Diagnostic(type = ErroneousOrderMapperMappingSameConstantTwice.class,
                 kind = Kind.ERROR,
-                line = 39,
+                line = 42,
                 messageRegExp = "One enum constant must not be mapped to more than one target constant, but " +
                     "constant EXTRA is mapped to SPECIAL, DEFAULT\\.")
         }
@@ -92,15 +92,30 @@ public class EnumMappingTest extends MapperTestBase {
         diagnostics = {
             @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 37,
                 messageRegExp = "Constant FOO doesn't exist in enum type org.mapstruct.ap.test.enums.OrderType\\."),
             @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 38,
                 messageRegExp = "Constant BAR doesn't exist in enum type org.mapstruct.ap.test.enums." +
                     "ExternalOrderType\\.")
         }
     )
     public void shouldRaiseErrorIfUnknownEnumConstantsAreSpecifiedInMapping() {
+    }
+
+    @Test
+    @WithClasses(ErroneousOrderMapperNotMappingConstantWithoutMatchInTargetType.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousOrderMapperNotMappingConstantWithoutMatchInTargetType.class,
+                kind = Kind.ERROR,
+                line = 34,
+                messageRegExp = "The following constants from the source enum have no corresponding constant in the " +
+                    "target enum and must be be mapped via @Mapping: EXTRA, STANDARD, NORMAL"),
+        }
+    )
+    public void shouldRaiseErrorIfSourceConstantWithoutMatchingConstantInTargetTypeIsNotMapped() {
     }
 }
