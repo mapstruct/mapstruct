@@ -65,6 +65,7 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.MapperPrism;
+import org.mapstruct.ap.prism.XmlElementDeclPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.Strings;
@@ -583,15 +584,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                String dateFormat) {
         Type sourceType = typeFactory.getReturnType( sourceAccessor );
         Type targetType = null;
-        String conversionString = null;
-        conversionString = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
-
+        String conversionString = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
         if ( Executables.isSetterMethod( targetAcessor ) ) {
             targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
         }
         else if ( Executables.isGetterMethod( targetAcessor ) ) {
             targetType = typeFactory.getReturnType( targetAcessor );
         }
+
+        String targetPropertyName = Executables.getPropertyName( targetAcessor );
 
         String mappedElement = "property '" + Executables.getPropertyName( sourceAccessor ) + "'";
         MethodReference mappingMethodReference = getMappingMethodReference(
@@ -601,6 +602,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             methods,
             sourceType,
             targetType,
+            targetPropertyName,
             dateFormat
         );
 
@@ -655,6 +657,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             methods,
             sourceElementType,
             targetElementType,
+            null, // there is no targetPropertyName
             dateFormat
         );
 
@@ -697,6 +700,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             methods,
             keySourceType,
             keyTargetType,
+            null, // there is no targetPropertyName
             keyDateFormat
         );
         TypeConversion keyConversion = getConversion( keySourceType, keyTargetType, keyDateFormat, "entry.getKey()" );
@@ -725,6 +729,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             methods,
             valueSourceType,
             valueTargetType,
+            null, // there is no targetPropertyName
             valueDateFormat
         );
         TypeConversion valueConversion = getConversion(
@@ -907,12 +912,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     /**
      * Returns a reference to a method mapping the given source type to the given target type, if such a method exists.
      */
-    private MethodReference getMappingMethodReference(SourceMethod method, String mappedElement,
+    private MethodReference getMappingMethodReference(SourceMethod method,
+                                                      String mappedElement,
                                                       List<MapperReference> mapperReferences,
-                                                      List<SourceMethod> methods, Type sourceType, Type targetType,
+                                                      List<SourceMethod> methods,
+                                                      Type sourceType,
+                                                      Type targetType,
+                                                      String targetPropertyName,
                                                       String dateFormat) {
         // first try to find a matching source method
-        SourceMethod matchingSourceMethod = getBestMatch( method, mappedElement, methods, sourceType, targetType );
+        SourceMethod matchingSourceMethod = getBestMatch(
+                method,
+                mappedElement,
+                methods,
+                sourceType,
+                targetType,
+                targetPropertyName
+        );
 
         if ( matchingSourceMethod != null ) {
             return getMappingMethodReference( matchingSourceMethod, mapperReferences );
@@ -924,16 +940,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             mappedElement,
             builtInMethods.getBuiltInMethods(),
             sourceType,
-            targetType
+            targetType,
+            targetPropertyName
         );
 
         return matchingBuiltInMethod != null ?
             getMappingMethodReference( matchingBuiltInMethod, targetType, dateFormat ) : null;
     }
 
-    private <T extends Method> T getBestMatch(SourceMethod mappingMethod, String mappedElement,
-                                              Iterable<T> methods, Type parameterType,
-                                              Type returnType) {
+    private <T extends Method> T getBestMatch(SourceMethod mappingMethod,
+                                              String mappedElement,
+                                              Iterable<T> methods,
+                                              Type parameterType,
+                                              Type returnType,
+                                              String targetPropertyName) {
         List<T> candidatesWithMathingTargetType = new ArrayList<T>();
 
         for ( T method : methods ) {
@@ -965,6 +985,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // print a warning if we find more than one method with minimum getParameter type distance
         if ( candidatesWithBestMatchingSourceType.size() > 1 ) {
+
+            // OK, we have more candidats. Lets see if we can use additional criteria to determine which is better
+            T result = getBestMatchBasedOnXmlElementDecl(
+                    candidatesWithMathingTargetType,
+                    mappingMethod,
+                    targetPropertyName
+            );
+            if (result != null) {
+                return result;
+            }
+
             messager.printMessage(
                 Kind.ERROR,
                 String.format(
@@ -1177,4 +1208,39 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         return alternativeTargetAccessorsMethods;
     }
+
+
+        /**
+     * This method uses the {@link javax.xml.bind.annotation.XmlElementDecl } annotation to determine if the scope
+     * of the mapping method matches the mapper method
+     * @param <T> can be SourceMethod or BuildInType. Only SourceMethods qualify
+     * @param candidates list with potential matches
+     * @param mapperMethod mapper method for which this is analyzed
+     * @param targetPropertyName the property name of the target
+     * @return a method (always SourceMethod) when there's a scope that matches
+     */
+    private <T extends Method> T getBestMatchBasedOnXmlElementDecl(
+            List<T> candidates,
+            SourceMethod mapperMethod,
+            String targetPropertyName) {
+     for (T candidate : candidates ) {
+            if (candidate instanceof SourceMethod) {
+                SourceMethod candiateMethod = (SourceMethod) candidate;
+                XmlElementDeclPrism xmlElememtDecl =
+                        XmlElementDeclPrism.getInstanceOn( candiateMethod.getExecutable() );
+                if ( xmlElememtDecl != null ) {
+                    String name = xmlElememtDecl.name();
+                    TypeMirror scope = xmlElememtDecl.scope();
+                    TypeMirror target = mapperMethod.getExecutable().getReturnType();
+                    if ( scope != null && typeUtils.isSameType( scope, target ) ) {
+                        if ( ( name != null ) && ( name.equals( targetPropertyName ) ) ) {
+                        return candidate;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 }
