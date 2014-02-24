@@ -62,10 +62,10 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
+import org.mapstruct.ap.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.MapperPrism;
-import org.mapstruct.ap.prism.XmlElementDeclPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.Strings;
@@ -87,6 +87,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private Conversions conversions;
     private BuiltInMappingMethods builtInMethods;
 
+    private MethodSelectors methodSelectors;
+
     /**
      * Private methods which are not present in the original mapper interface and are added to map certain property
      * types.
@@ -105,6 +107,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
         this.virtualMethods = new HashSet<VirtualMappingMethod>();
+        this.methodSelectors = new MethodSelectors( typeUtils );
 
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -954,47 +957,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                               Type parameterType,
                                               Type returnType,
                                               String targetPropertyName) {
-        List<T> candidatesWithMathingTargetType = new ArrayList<T>();
 
-        for ( T method : methods ) {
-            if ( method.getSourceParameters().size() != 1 ) {
-                continue;
-            }
-
-            if ( method.matches( parameterType, returnType ) ) {
-                candidatesWithMathingTargetType.add( method );
-            }
-        }
-
-        List<T> candidatesWithBestMatchingSourceType = new ArrayList<T>();
-        int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;
-
-        // find the methods with the minimum distance regarding getParameter getParameter type
-        for ( T method : candidatesWithMathingTargetType ) {
-            Parameter singleSourceParam = method.getSourceParameters().iterator().next();
-
-            int sourceTypeDistance = parameterType.distanceTo( singleSourceParam.getType() );
-            bestMatchingSourceTypeDistance =
-                addToCandidateListIfMinimal(
-                    candidatesWithBestMatchingSourceType,
-                    bestMatchingSourceTypeDistance,
-                    method,
-                    sourceTypeDistance
-                );
-        }
+        List<T> candidates = methodSelectors.getMatchingMethods(
+                mappingMethod,
+                methods,
+                parameterType,
+                returnType,
+                targetPropertyName );
 
         // print a warning if we find more than one method with minimum getParameter type distance
-        if ( candidatesWithBestMatchingSourceType.size() > 1 ) {
-
-            // OK, we have more candidats. Lets see if we can use additional criteria to determine which is better
-            T result = getBestMatchBasedOnXmlElementDecl(
-                    candidatesWithMathingTargetType,
-                    mappingMethod,
-                    targetPropertyName
-            );
-            if (result != null) {
-                return result;
-            }
+        if ( candidates.size() > 1 ) {
 
             messager.printMessage(
                 Kind.ERROR,
@@ -1002,14 +974,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     "Ambiguous mapping methods found for mapping " + mappedElement + " from %s to %s: %s.",
                     parameterType,
                     returnType,
-                    Strings.join( candidatesWithBestMatchingSourceType, ", " )
+                    Strings.join( candidates, ", " )
                 ),
                 mappingMethod.getExecutable()
             );
         }
 
-        if ( !candidatesWithBestMatchingSourceType.isEmpty() ) {
-            return candidatesWithBestMatchingSourceType.get( 0 );
+        if ( !candidates.isEmpty() ) {
+            return candidates.get( 0 );
         }
 
         return null;
@@ -1208,39 +1180,4 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         return alternativeTargetAccessorsMethods;
     }
-
-
-        /**
-     * This method uses the {@link javax.xml.bind.annotation.XmlElementDecl } annotation to determine if the scope
-     * of the mapping method matches the mapper method
-     * @param <T> can be SourceMethod or BuildInType. Only SourceMethods qualify
-     * @param candidates list with potential matches
-     * @param mapperMethod mapper method for which this is analyzed
-     * @param targetPropertyName the property name of the target
-     * @return a method (always SourceMethod) when there's a scope that matches
-     */
-    private <T extends Method> T getBestMatchBasedOnXmlElementDecl(
-            List<T> candidates,
-            SourceMethod mapperMethod,
-            String targetPropertyName) {
-     for (T candidate : candidates ) {
-            if (candidate instanceof SourceMethod) {
-                SourceMethod candiateMethod = (SourceMethod) candidate;
-                XmlElementDeclPrism xmlElememtDecl =
-                        XmlElementDeclPrism.getInstanceOn( candiateMethod.getExecutable() );
-                if ( xmlElememtDecl != null ) {
-                    String name = xmlElememtDecl.name();
-                    TypeMirror scope = xmlElememtDecl.scope();
-                    TypeMirror target = mapperMethod.getExecutable().getReturnType();
-                    if ( scope != null && typeUtils.isSameType( scope, target ) ) {
-                        if ( ( name != null ) && ( name.equals( targetPropertyName ) ) ) {
-                        return candidate;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
 }
