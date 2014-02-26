@@ -62,6 +62,7 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
+import org.mapstruct.ap.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.MapperPrism;
@@ -86,6 +87,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private Conversions conversions;
     private BuiltInMappingMethods builtInMethods;
 
+    private MethodSelectors methodSelectors;
+
     /**
      * Private methods which are not present in the original mapper interface and are added to map certain property
      * types.
@@ -104,6 +107,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
         this.virtualMethods = new HashSet<VirtualMappingMethod>();
+        this.methodSelectors = new MethodSelectors( typeUtils );
 
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -583,15 +587,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                String dateFormat) {
         Type sourceType = typeFactory.getReturnType( sourceAccessor );
         Type targetType = null;
-        String conversionString = null;
-        conversionString = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
-
+        String conversionString = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
         if ( Executables.isSetterMethod( targetAcessor ) ) {
             targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
         }
         else if ( Executables.isGetterMethod( targetAcessor ) ) {
             targetType = typeFactory.getReturnType( targetAcessor );
         }
+
+        String targetPropertyName = Executables.getPropertyName( targetAcessor );
 
         String mappedElement = "property '" + Executables.getPropertyName( sourceAccessor ) + "'";
         MethodReference mappingMethodReference = getMappingMethodReference(
@@ -601,6 +605,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             methods,
             sourceType,
             targetType,
+            targetPropertyName,
             dateFormat
         );
 
@@ -655,6 +660,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             methods,
             sourceElementType,
             targetElementType,
+            null, // there is no targetPropertyName
             dateFormat
         );
 
@@ -697,6 +703,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             methods,
             keySourceType,
             keyTargetType,
+            null, // there is no targetPropertyName
             keyDateFormat
         );
         TypeConversion keyConversion = getConversion( keySourceType, keyTargetType, keyDateFormat, "entry.getKey()" );
@@ -725,6 +732,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             methods,
             valueSourceType,
             valueTargetType,
+            null, // there is no targetPropertyName
             valueDateFormat
         );
         TypeConversion valueConversion = getConversion(
@@ -907,12 +915,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     /**
      * Returns a reference to a method mapping the given source type to the given target type, if such a method exists.
      */
-    private MethodReference getMappingMethodReference(SourceMethod method, String mappedElement,
+    private MethodReference getMappingMethodReference(SourceMethod method,
+                                                      String mappedElement,
                                                       List<MapperReference> mapperReferences,
-                                                      List<SourceMethod> methods, Type sourceType, Type targetType,
+                                                      List<SourceMethod> methods,
+                                                      Type sourceType,
+                                                      Type targetType,
+                                                      String targetPropertyName,
                                                       String dateFormat) {
         // first try to find a matching source method
-        SourceMethod matchingSourceMethod = getBestMatch( method, mappedElement, methods, sourceType, targetType );
+        SourceMethod matchingSourceMethod = getBestMatch(
+                method,
+                mappedElement,
+                methods,
+                sourceType,
+                targetType,
+                targetPropertyName
+        );
 
         if ( matchingSourceMethod != null ) {
             return getMappingMethodReference( matchingSourceMethod, mapperReferences );
@@ -924,61 +943,45 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             mappedElement,
             builtInMethods.getBuiltInMethods(),
             sourceType,
-            targetType
+            targetType,
+            targetPropertyName
         );
 
         return matchingBuiltInMethod != null ?
             getMappingMethodReference( matchingBuiltInMethod, targetType, dateFormat ) : null;
     }
 
-    private <T extends Method> T getBestMatch(SourceMethod mappingMethod, String mappedElement,
-                                              Iterable<T> methods, Type parameterType,
-                                              Type returnType) {
-        List<T> candidatesWithMathingTargetType = new ArrayList<T>();
+    private <T extends Method> T getBestMatch(SourceMethod mappingMethod,
+                                              String mappedElement,
+                                              Iterable<T> methods,
+                                              Type parameterType,
+                                              Type returnType,
+                                              String targetPropertyName) {
 
-        for ( T method : methods ) {
-            if ( method.getSourceParameters().size() != 1 ) {
-                continue;
-            }
-
-            if ( method.matches( parameterType, returnType ) ) {
-                candidatesWithMathingTargetType.add( method );
-            }
-        }
-
-        List<T> candidatesWithBestMatchingSourceType = new ArrayList<T>();
-        int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;
-
-        // find the methods with the minimum distance regarding getParameter getParameter type
-        for ( T method : candidatesWithMathingTargetType ) {
-            Parameter singleSourceParam = method.getSourceParameters().iterator().next();
-
-            int sourceTypeDistance = parameterType.distanceTo( singleSourceParam.getType() );
-            bestMatchingSourceTypeDistance =
-                addToCandidateListIfMinimal(
-                    candidatesWithBestMatchingSourceType,
-                    bestMatchingSourceTypeDistance,
-                    method,
-                    sourceTypeDistance
-                );
-        }
+        List<T> candidates = methodSelectors.getMatchingMethods(
+                mappingMethod,
+                methods,
+                parameterType,
+                returnType,
+                targetPropertyName );
 
         // print a warning if we find more than one method with minimum getParameter type distance
-        if ( candidatesWithBestMatchingSourceType.size() > 1 ) {
+        if ( candidates.size() > 1 ) {
+
             messager.printMessage(
                 Kind.ERROR,
                 String.format(
                     "Ambiguous mapping methods found for mapping " + mappedElement + " from %s to %s: %s.",
                     parameterType,
                     returnType,
-                    Strings.join( candidatesWithBestMatchingSourceType, ", " )
+                    Strings.join( candidates, ", " )
                 ),
                 mappingMethod.getExecutable()
             );
         }
 
-        if ( !candidatesWithBestMatchingSourceType.isEmpty() ) {
-            return candidatesWithBestMatchingSourceType.get( 0 );
+        if ( !candidates.isEmpty() ) {
+            return candidates.get( 0 );
         }
 
         return null;
