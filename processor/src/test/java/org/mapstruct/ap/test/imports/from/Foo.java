@@ -16,32 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.imports;
-
-import java.util.Date;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.imports.to.Foo;
-import org.mapstruct.factory.Mappers;
+package org.mapstruct.ap.test.imports.from;
 
 /**
  * @author Gunnar Morling
  */
-@Mapper(componentModel = "jsr330")
-public interface SourceTargetMapper {
+public class Foo {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    private String name;
 
-    ParseException sourceToTarget(Named source);
+    public String getName() {
+        return name;
+    }
 
-    //custom types
-    Map listToMap(List list);
-
-    java.util.List<ParseException> namedsToExceptions(java.util.List<Named> source);
-
-    Foo fooToFoo(org.mapstruct.ap.test.imports.from.Foo foo);
-
-    java.util.List<Date> stringsToDates(java.util.List<String> stringDates);
-
-    java.util.Map<Date, Date> stringsToDates(java.util.Map<String, String> stringDates);
+    public void setName(String name) {
+        this.name = name;
+    }
 }
