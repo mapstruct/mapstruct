@@ -18,12 +18,16 @@
  */
 package org.mapstruct.ap.model.source.builtin;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Set;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  * @author Sjaak Derksen
@@ -32,10 +36,19 @@ public class XmlGregorianCalendarToString extends BuiltInMethod {
 
     private final Parameter parameter;
     private final Type returnType;
+    private final Set<Type> importTypes;
 
     public XmlGregorianCalendarToString(TypeFactory typeFactory) {
         this.parameter = new Parameter( "xcal", typeFactory.getType( XMLGregorianCalendar.class ) );
         this.returnType = typeFactory.getType( String.class );
+        this.importTypes = asSet(
+            typeFactory.getType( Date.class ),
+            typeFactory.getType( SimpleDateFormat.class ) );
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        return importTypes;
     }
 
     @Override

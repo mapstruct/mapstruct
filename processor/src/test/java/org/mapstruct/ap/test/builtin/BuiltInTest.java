@@ -22,9 +22,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -37,11 +39,11 @@ import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-@WithClasses( { Source.class, Target.class, SourceTargetMapper.class } )
-public class ConversionTest extends MapperTestBase {
+public class BuiltInTest extends MapperTestBase {
 
     @Test
-    public void shouldApplyConversions() throws ParseException, DatatypeConfigurationException {
+    @WithClasses( { Source.class, Target.class, SourceTargetMapper.class } )
+    public void shouldApplyBuiltIn() throws ParseException, DatatypeConfigurationException {
         Source source = new Source();
         source.setProp1( createJaxb( "TEST" ) );
         source.setProp2( createJaxbList( "TEST2" ) );
@@ -67,6 +69,33 @@ public class ConversionTest extends MapperTestBase {
         assertThat( target.getProp6NoFormat().toString() ).isEqualTo( "1999-03-02+00:01" );
         assertThat( target.getProp7().toString() ).isEqualTo( "1999-03-02T00:00:00.000+01:00" );
         assertThat( target.getProp8().getTimeInMillis() ).isEqualTo( 920329200000L );
+    }
+
+    @Test
+    @WithClasses( { IterableSource.class, IterableTarget.class, IterableSourceTargetMapper.class } )
+    public void shouldApplyBuiltInOnIterable() throws ParseException, DatatypeConfigurationException {
+
+        IterableSource source = new IterableSource();
+        source.setDates( Arrays.asList( new XMLGregorianCalendar[] { createXmlCal( 1999, 3, 2, 1 ) } ) );
+
+        IterableTarget target = IterableSourceTargetMapper.INSTANCE.sourceToTarget( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getDates().size() ).isEqualTo( 1 );
+        assertThat( target.getDates().get( 0 ) ).isEqualTo( "02.03.1999" );
+
+    }
+
+    @Test
+    @WithClasses( { MapSource.class, MapTarget.class, MapSourceTargetMapper.class } )
+    public void shouldApplyBuiltInOnMap() throws ParseException, DatatypeConfigurationException {
+
+        MapSource source = new MapSource();
+        source.setExample( new HashMap<JAXBElement<String>, XMLGregorianCalendar>() );
+        source.getExample().put( createJaxb( "TEST" ), createXmlCal( 1999, 3, 2, 1 ) );
+
+        MapTarget target = MapSourceTargetMapper.INSTANCE.sourceToTarget( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getExample().get( "TEST" ) ).isEqualTo( "1999-03-02+00:01" );
     }
 
     private JAXBElement<String> createJaxb( String test ) {

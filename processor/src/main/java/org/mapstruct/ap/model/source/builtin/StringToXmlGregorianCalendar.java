@@ -21,6 +21,7 @@ package org.mapstruct.ap.model.source.builtin;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Set;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -48,6 +49,7 @@ public class StringToXmlGregorianCalendar extends BuiltInMethod {
         this.parameter = new Parameter( "date", typeFactory.getType( String.class ) );
         this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
         this.importTypes = asSet(
+            typeFactory.getType( Date.class ),
             typeFactory.getType( GregorianCalendar.class ),
             typeFactory.getType( SimpleDateFormat.class ),
             typeFactory.getType( DateFormat.class ),
