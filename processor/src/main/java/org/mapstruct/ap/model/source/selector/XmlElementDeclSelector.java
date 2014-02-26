@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
+
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
@@ -42,7 +43,7 @@ public class XmlElementDeclSelector implements MethodSelector {
 
     private final Types typeUtils;
 
-    public XmlElementDeclSelector( Types typeUtils ) {
+    public XmlElementDeclSelector(Types typeUtils) {
         this.typeUtils = typeUtils;
     }
 
@@ -51,11 +52,11 @@ public class XmlElementDeclSelector implements MethodSelector {
      */
     @Override
     public <T extends Method> List<T> getMatchingMethods(
-            SourceMethod mappingMethod,
-            Iterable<T> methods,
-            Type parameterType,
-            Type returnType,
-            String targetPropertyName
+        SourceMethod mappingMethod,
+        Iterable<T> methods,
+        Type parameterType,
+        Type returnType,
+        String targetPropertyName
     ) {
 
         List<T> noXmlDeclMatch = new ArrayList<T>();
@@ -67,20 +68,20 @@ public class XmlElementDeclSelector implements MethodSelector {
             if ( candidate instanceof SourceMethod ) {
                 SourceMethod candiateMethod = (SourceMethod) candidate;
                 XmlElementDeclPrism xmlElememtDecl
-                        = XmlElementDeclPrism.getInstanceOn( candiateMethod.getExecutable() );
+                    = XmlElementDeclPrism.getInstanceOn( candiateMethod.getExecutable() );
                 if ( xmlElememtDecl != null ) {
                     String name = xmlElememtDecl.name();
                     TypeMirror scope = xmlElememtDecl.scope();
                     TypeMirror target = mappingMethod.getExecutable().getReturnType();
                     if ( ( scope != null ) && ( name != null ) ) {
                         // both scope and name should match when both defined
-                        if ( name.equals(  targetPropertyName ) && typeUtils.isSameType( scope, target ) ) {
+                        if ( name.equals( targetPropertyName ) && typeUtils.isSameType( scope, target ) ) {
                             nameAndScopeMatch.add( candidate );
                         }
                     }
                     else if ( ( scope == null ) && ( name != null ) ) {
                         // name should match when defined
-                        if ( name.equals(  targetPropertyName ) ) {
+                        if ( name.equals( targetPropertyName ) ) {
                             nameMatch.add( candidate );
                         }
                     }

@@ -34,10 +34,10 @@ import javax.xml.bind.annotation.XmlType;
 public class OrderShippingDetailsType {
 
     @XmlElementRef(name = "orderShippedFrom",
-            namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test2", type = JAXBElement.class)
+        namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test2", type = JAXBElement.class)
     private JAXBElement<String> orderShippedFrom;
     @XmlElementRef(name = "orderShippedTo",
-            namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test2", type = JAXBElement.class)
+        namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test2", type = JAXBElement.class)
     private JAXBElement<String> orderShippedTo;
 
     public JAXBElement<String> getOrderShippedFrom() {

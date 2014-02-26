@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -925,12 +924,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                       String dateFormat) {
         // first try to find a matching source method
         SourceMethod matchingSourceMethod = getBestMatch(
-                method,
-                mappedElement,
-                methods,
-                sourceType,
-                targetType,
-                targetPropertyName
+            method,
+            mappedElement,
+            methods,
+            sourceType,
+            targetType,
+            targetPropertyName
         );
 
         if ( matchingSourceMethod != null ) {
@@ -959,11 +958,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                               String targetPropertyName) {
 
         List<T> candidates = methodSelectors.getMatchingMethods(
-                mappingMethod,
-                methods,
-                parameterType,
-                returnType,
-                targetPropertyName );
+            mappingMethod,
+            methods,
+            parameterType,
+            returnType,
+            targetPropertyName
+        );
 
         // print a warning if we find more than one method with minimum getParameter type distance
         if ( candidates.size() > 1 ) {

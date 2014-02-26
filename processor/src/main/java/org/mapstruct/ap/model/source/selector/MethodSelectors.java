@@ -21,19 +21,19 @@ package org.mapstruct.ap.model.source.selector;
 import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.util.Types;
+
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class MethodSelectors implements MethodSelector {
 
     private final List<MethodSelector> selectors = new ArrayList<MethodSelector>();
 
-    public MethodSelectors( Types typeUtils ) {
+    public MethodSelectors(Types typeUtils) {
 
         selectors.add( new InitialSelector() );
         selectors.add( new InheritanceSelector() );
@@ -42,25 +42,25 @@ public class MethodSelectors implements MethodSelector {
 
     @Override
     public <T extends Method> List<T> getMatchingMethods(
-            SourceMethod mappingMethod,
-            Iterable<T> methods,
-            Type parameterType,
-            Type returnType,
-            String targetPropertyName
-        ) {
+        SourceMethod mappingMethod,
+        Iterable<T> methods,
+        Type parameterType,
+        Type returnType,
+        String targetPropertyName
+    ) {
 
         List<T> candidates = new ArrayList<T>();
-        for (T method : methods) {
+        for ( T method : methods ) {
             candidates.add( method );
         }
 
         for ( MethodSelector selector : selectors ) {
             candidates = selector.getMatchingMethods(
-                    mappingMethod,
-                    candidates,
-                    parameterType,
-                    returnType,
-                    targetPropertyName
+                mappingMethod,
+                candidates,
+                parameterType,
+                returnType,
+                targetPropertyName
             );
         }
         return candidates;

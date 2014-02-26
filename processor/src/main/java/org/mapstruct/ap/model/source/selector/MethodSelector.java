@@ -19,12 +19,12 @@
 package org.mapstruct.ap.model.source.selector;
 
 import java.util.List;
+
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public interface MethodSelector {
@@ -38,13 +38,14 @@ public interface MethodSelector {
      * @param parameterType parameter type that should be matched
      * @param returnType return type that should be matched
      * @param targetPropertyName some information can be derived from the target property
+     *
      * @return list of methods that passes the matching process
      */
     <T extends Method> List<T> getMatchingMethods(
-            SourceMethod mappingMethod,
-            Iterable<T> methods,
-            Type parameterType,
-            Type returnType,
-            String targetPropertyName
+        SourceMethod mappingMethod,
+        Iterable<T> methods,
+        Type parameterType,
+        Type returnType,
+        String targetPropertyName
     );
 }

@@ -19,7 +19,6 @@
 package org.mapstruct.ap.test.jaxb.selection;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class OrderShippingDetailsDto {
@@ -31,7 +30,7 @@ public class OrderShippingDetailsDto {
         return orderShippedFrom;
     }
 
-    public void setOrderShippedFrom( String orderShippedFrom ) {
+    public void setOrderShippedFrom(String orderShippedFrom) {
         this.orderShippedFrom = orderShippedFrom;
     }
 
@@ -39,10 +38,9 @@ public class OrderShippingDetailsDto {
         return orderShippedTo;
     }
 
-    public void setOrderShippedTo( String orderShippedTo ) {
+    public void setOrderShippedTo(String orderShippedTo) {
         this.orderShippedTo = orderShippedTo;
     }
-
 
 
 }

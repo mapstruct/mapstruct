@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
+
 import org.mapstruct.ap.test.jaxb.selection.test2.OrderShippingDetailsType;
 
 
@@ -36,13 +37,13 @@ import org.mapstruct.ap.test.jaxb.selection.test2.OrderShippingDetailsType;
 public class OrderType {
 
     @XmlElementRef(name = "orderNumber1", namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test1",
-            type = JAXBElement.class)
+        type = JAXBElement.class)
     private JAXBElement<Long> orderNumber1;
     @XmlElementRef(name = "orderNumber2", namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test1",
-            type = JAXBElement.class)
+        type = JAXBElement.class)
     private JAXBElement<Long> orderNumber2;
     @XmlElementRef(name = "shippingDetails", namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test1",
-            type = JAXBElement.class)
+        type = JAXBElement.class)
     private JAXBElement<OrderShippingDetailsType> shippingDetails;
 
     public JAXBElement<Long> getOrderNumber1() {

@@ -20,24 +20,27 @@
 package org.mapstruct.ap.test.jaxb.selection;
 
 import javax.xml.bind.JAXBElement;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.jaxb.selection.test1.ObjectFactory;
-import org.mapstruct.ap.test.jaxb.selection.test2.OrderShippingDetailsType;
 import org.mapstruct.ap.test.jaxb.selection.test1.OrderType;
+import org.mapstruct.ap.test.jaxb.selection.test2.OrderShippingDetailsType;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
-@Mapper(uses = { ObjectFactory.class,
-                 org.mapstruct.ap.test.jaxb.selection.test2.ObjectFactory.class } )
-public abstract class  SourceTargetMapper {
+@Mapper(uses = {
+    ObjectFactory.class,
+    org.mapstruct.ap.test.jaxb.selection.test2.ObjectFactory.class
+})
+public abstract class SourceTargetMapper {
 
     public static final SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     // target 2 source methods
     public abstract OrderType targetToSource(OrderDto target);
+
     public abstract OrderShippingDetailsType dtoToOrderShippingDetailsType(OrderShippingDetailsDto target);
 
     // TODO, remove this method when #134 is fixed
