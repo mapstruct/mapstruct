@@ -34,9 +34,9 @@ import org.mapstruct.factory.Mappers;
     ObjectFactory.class,
     org.mapstruct.ap.test.jaxb.selection.test2.ObjectFactory.class
 })
-public abstract class SourceTargetMapper {
+public abstract class OrderMapper {
 
-    public static final SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    public static final OrderMapper INSTANCE = Mappers.getMapper( OrderMapper.class );
 
     // target 2 source methods
     public abstract OrderType targetToSource(OrderDto target);

@@ -16,29 +16,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.jaxb.selection;
-
 /**
- * @author Sjaak Derksen
+ * <p>
+ * Provides strategies for selecting a matching mapping or factory method when mapping from one attribute to another
+ * or instantiating the target type of a mapping method, respectively.
+ * </p>
  */
-public class OrderShippingDetailsDto {
-
-    private String orderShippedFrom;
-    private String orderShippedTo;
-
-    public String getOrderShippedFrom() {
-        return orderShippedFrom;
-    }
-
-    public void setOrderShippedFrom(String orderShippedFrom) {
-        this.orderShippedFrom = orderShippedFrom;
-    }
-
-    public String getOrderShippedTo() {
-        return orderShippedTo;
-    }
-
-    public void setOrderShippedTo(String orderShippedTo) {
-        this.orderShippedTo = orderShippedTo;
-    }
-}
+package org.mapstruct.ap.model.source.selector;

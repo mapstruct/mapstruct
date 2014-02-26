@@ -19,6 +19,8 @@
 package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import javax.lang.model.util.Types;
 
@@ -27,32 +29,29 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
+ * Applies all known {@link MethodSelector}s in order.
+ *
  * @author Sjaak Derksen
  */
 public class MethodSelectors implements MethodSelector {
 
-    private final List<MethodSelector> selectors = new ArrayList<MethodSelector>();
+    private final List<MethodSelector> selectors;
 
     public MethodSelectors(Types typeUtils) {
-
-        selectors.add( new InitialSelector() );
-        selectors.add( new InheritanceSelector() );
-        selectors.add( new XmlElementDeclSelector( typeUtils ) );
+        selectors =
+            Arrays.<MethodSelector>asList(
+                new TypeSelector(),
+                new InheritanceSelector(),
+                new XmlElementDeclSelector( typeUtils )
+            );
     }
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(
-        SourceMethod mappingMethod,
-        Iterable<T> methods,
-        Type parameterType,
-        Type returnType,
-        String targetPropertyName
-    ) {
+    public <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, Collection<T> methods,
+                                                         Type parameterType, Type returnType,
+                                                         String targetPropertyName) {
 
-        List<T> candidates = new ArrayList<T>();
-        for ( T method : methods ) {
-            candidates.add( method );
-        }
+        List<T> candidates = new ArrayList<T>( methods );
 
         for ( MethodSelector selector : selectors ) {
             candidates = selector.getMatchingMethods(
@@ -65,5 +64,4 @@ public class MethodSelectors implements MethodSelector {
         }
         return candidates;
     }
-
 }

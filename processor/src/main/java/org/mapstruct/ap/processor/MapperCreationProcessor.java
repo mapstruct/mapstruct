@@ -20,12 +20,14 @@ package org.mapstruct.ap.processor;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -952,7 +954,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private <T extends Method> T getBestMatch(SourceMethod mappingMethod,
                                               String mappedElement,
-                                              Iterable<T> methods,
+                                              Collection<T> methods,
                                               Type parameterType,
                                               Type returnType,
                                               String targetPropertyName) {
@@ -965,7 +967,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             targetPropertyName
         );
 
-        // print a warning if we find more than one method with minimum getParameter type distance
+        // raise an error if more than one mapping method is suitable to map the given source type into the target type
         if ( candidates.size() > 1 ) {
 
             messager.printMessage(
@@ -985,22 +987,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         return null;
-    }
-
-
-    private <T extends Method> int addToCandidateListIfMinimal(List<T> candidatesWithBestMathingType,
-                                                               int bestMatchingTypeDistance, T method,
-                                                               int currentTypeDistance) {
-        if ( currentTypeDistance == bestMatchingTypeDistance ) {
-            candidatesWithBestMathingType.add( method );
-        }
-        else if ( currentTypeDistance < bestMatchingTypeDistance ) {
-            bestMatchingTypeDistance = currentTypeDistance;
-
-            candidatesWithBestMathingType.clear();
-            candidatesWithBestMathingType.add( method );
-        }
-        return bestMatchingTypeDistance;
     }
 
     private MethodReference getMappingMethodReference(SourceMethod method, List<MapperReference> mapperReferences) {

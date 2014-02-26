@@ -18,6 +18,10 @@
  */
 package org.mapstruct.ap.test.jaxb.selection;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import javax.xml.bind.annotation.XmlElementDecl;
+
 import org.mapstruct.ap.test.jaxb.selection.test1.OrderType;
 import org.mapstruct.ap.test.jaxb.selection.test2.ObjectFactory;
 import org.mapstruct.ap.test.jaxb.selection.test2.OrderShippingDetailsType;
@@ -26,22 +30,23 @@ import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 /**
+ * Test for the selection of JAXB mapping and factory methods based on the "name" and "scope" attributes
+ * of the {@link XmlElementDecl} annotation.
+ *
  * @author Sjaak Derksen
  */
 @IssueKey("135")
 @WithClasses({
     org.mapstruct.ap.test.jaxb.selection.test1.ObjectFactory.class, ObjectFactory.class,
     OrderDto.class, OrderShippingDetailsDto.class, OrderType.class, OrderShippingDetailsType.class,
-    SourceTargetMapper.class
+    OrderMapper.class
 })
 public class JaxbFactoryMethodSelectionTest extends MapperTestBase {
 
     @Test
     public void shouldMatchOnNameAndOrScope() {
-        OrderType target = SourceTargetMapper.INSTANCE.targetToSource( createSource() );
+        OrderType target = OrderMapper.INSTANCE.targetToSource( createSource() );
 
         // qname and value should match for orderNumbers (distinct 1, 2)
         assertThat( target.getOrderNumber1().getValue() ).isEqualTo( 15L );

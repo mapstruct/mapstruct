@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model.source.selector;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.mapstruct.ap.model.common.Type;
@@ -25,27 +26,26 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
+ * Implementations select those methods from a given input set which match the given source and target type of a mapping
+ * and optionally other given criteria. An error will be raised if either no or more than one matching method are left
+ * over after applying all selectors.
+ *
  * @author Sjaak Derksen
  */
 public interface MethodSelector {
 
     /**
-     * Selects a method
+     * Selects those methods which match the given types and other criteria
      *
      * @param <T> either SourceMethod or BuiltInMethod
      * @param mappingMethod mapping method, defined in Mapper for which this selection is carried out
-     * @param methods set from available methods
+     * @param methods set of available methods
      * @param parameterType parameter type that should be matched
      * @param returnType return type that should be matched
      * @param targetPropertyName some information can be derived from the target property
      *
      * @return list of methods that passes the matching process
      */
-    <T extends Method> List<T> getMatchingMethods(
-        SourceMethod mappingMethod,
-        Iterable<T> methods,
-        Type parameterType,
-        Type returnType,
-        String targetPropertyName
-    );
+    <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, Collection<T> methods, Type parameterType,
+                                                  Type returnType, String targetPropertyName);
 }

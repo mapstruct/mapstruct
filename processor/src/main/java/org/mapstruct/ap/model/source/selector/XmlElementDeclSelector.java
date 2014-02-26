@@ -19,9 +19,12 @@
 package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
+import javax.xml.bind.annotation.XmlElementDecl;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
@@ -29,13 +32,15 @@ import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.prism.XmlElementDeclPrism;
 
 /**
- * This class matches XmlElmentDecl annotation. Matching happens in the following order.
- * 1) Name and Scope matches
- * 2) Scope matches
- * 3) Name matches
- * 4) No match at all.
- *
- * If there are Name and Scope matches, only those will be returned, otherwise the next in line (scope matches), etc.
+ * Selects those methods with matching {@code name} and {@code scope} attributes of the {@link XmlElementDecl}
+ * annotation, if that is present. Matching happens in the following order:
+ * <ol>
+ * <li>Name and Scope matches</li>
+ * <li>Scope matches</li>
+ * <li>Name matches</li>
+ * </ol>
+ * If there are name and scope matches, only those will be returned, otherwise the next in line (scope matches), etc. If
+ * the given method is not annotated with {@code} XmlElementDecl} it will be considered as matching.
  *
  * @author Sjaak Derksen
  */
@@ -47,17 +52,10 @@ public class XmlElementDeclSelector implements MethodSelector {
         this.typeUtils = typeUtils;
     }
 
-    /**
-     * {@inheritDoc} {@link MethodSelector}
-     */
     @Override
-    public <T extends Method> List<T> getMatchingMethods(
-        SourceMethod mappingMethod,
-        Iterable<T> methods,
-        Type parameterType,
-        Type returnType,
-        String targetPropertyName
-    ) {
+    public <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, Collection<T> methods,
+                                                         Type parameterType, Type returnType,
+                                                         String targetPropertyName) {
 
         List<T> noXmlDeclMatch = new ArrayList<T>();
         List<T> nameMatch = new ArrayList<T>();
@@ -66,9 +64,9 @@ public class XmlElementDeclSelector implements MethodSelector {
 
         for ( T candidate : methods ) {
             if ( candidate instanceof SourceMethod ) {
-                SourceMethod candiateMethod = (SourceMethod) candidate;
+                SourceMethod candidateMethod = (SourceMethod) candidate;
                 XmlElementDeclPrism xmlElememtDecl
-                    = XmlElementDeclPrism.getInstanceOn( candiateMethod.getExecutable() );
+                    = XmlElementDeclPrism.getInstanceOn( candidateMethod.getExecutable() );
                 if ( xmlElememtDecl != null ) {
                     String name = xmlElememtDecl.name();
                     TypeMirror scope = xmlElememtDecl.scope();
@@ -97,12 +95,12 @@ public class XmlElementDeclSelector implements MethodSelector {
                     }
                 }
                 else {
-                    // cannot a verdict on xmldeclannotation, so add
+                    // cannot make a verdict on xmldeclannotation, so add
                     noXmlDeclMatch.add( candidate );
                 }
             }
             else {
-                // cannot a verdict on xmldeclannotation, so add
+                // cannot make a verdict on xmldeclannotation, so add
                 noXmlDeclMatch.add( candidate );
             }
         }

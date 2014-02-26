@@ -19,30 +19,26 @@
 package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.MethodMatcher;
 import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
- * This class provides the initial set of methods {@link MethodMatcher}
+ * Selects those methods from the given input set which match the given source and target types (via
+ * {@link MethodMatcher}).
  *
  * @author Sjaak Derksen
  */
-public class InitialSelector implements MethodSelector {
+public class TypeSelector implements MethodSelector {
 
-    /**
-     * {@inheritDoc} {@link MethodSelector}
-     */
     @Override
-    public <T extends Method> List<T> getMatchingMethods(
-        SourceMethod mappingMethod,
-        Iterable<T> methods,
-        Type parameterType,
-        Type returnType,
-        String targetPropertyName
-    ) {
+    public <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, Collection<T> methods,
+                                                         Type parameterType, Type returnType,
+                                                         String targetPropertyName) {
 
         List<T> result = new ArrayList<T>();
         for ( T method : methods ) {

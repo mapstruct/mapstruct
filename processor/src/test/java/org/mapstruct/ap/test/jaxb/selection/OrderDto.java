@@ -50,6 +50,4 @@ public class OrderDto {
     public void setShippingDetails(OrderShippingDetailsDto shippingDetails) {
         this.shippingDetails = shippingDetails;
     }
-
-
 }

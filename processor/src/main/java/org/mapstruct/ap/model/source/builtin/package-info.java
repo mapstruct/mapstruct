@@ -16,29 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.jaxb.selection;
-
 /**
- * @author Sjaak Derksen
+ * <p>
+ * Contains "built-in methods" which may be added as private methods to a generated mapper. Built-in methods are an
+ * alternative to primitive conversions in cases where those don't suffice, e.g. if several lines of code are required
+ * for a conversion or an exception needs to be handled. Each built-in method has a corresponding template which
+ * contains the source code of the method.
+ * </p>
  */
-public class OrderShippingDetailsDto {
-
-    private String orderShippedFrom;
-    private String orderShippedTo;
-
-    public String getOrderShippedFrom() {
-        return orderShippedFrom;
-    }
-
-    public void setOrderShippedFrom(String orderShippedFrom) {
-        this.orderShippedFrom = orderShippedFrom;
-    }
-
-    public String getOrderShippedTo() {
-        return orderShippedTo;
-    }
-
-    public void setOrderShippedTo(String orderShippedTo) {
-        this.orderShippedTo = orderShippedTo;
-    }
-}
+package org.mapstruct.ap.model.source.builtin;
