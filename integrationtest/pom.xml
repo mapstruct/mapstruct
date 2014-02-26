@@ -115,6 +115,30 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <schemaDirectory>${project.build.resources[0].directory}/schema/</schemaDirectory>
+                    <schemaIncludes>
+                        <include>**/test1.xsd</include>
+                    </schemaIncludes>
+                    <bindingDirectory>${project.build.resources[0].directory}/binding</bindingDirectory>
+                    <bindingIncludes>
+                        <include>**/binding.xjb</include>
+                    </bindingIncludes>
+                    <extension>true</extension>
+                    <verbose>true</verbose>
+                    <specVersion>2.1</specVersion>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
                 <configuration>
