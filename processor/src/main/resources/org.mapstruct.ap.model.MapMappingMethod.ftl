@@ -30,7 +30,8 @@
     <@includeModel object=resultType /> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod/><#else>new <#if resultType.implementationType??><@includeModel object=resultType.implementationType /><#else><@includeModel object=resultType /></#if>()</#if>;
     </#if>
 
-    for ( Map.Entry<<#list sourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
+    <#-- Once #148 has been addressed, the simple name of Map.Entry can be used -->
+    for ( java.util.Map.Entry<<#list sourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
 
     <#-- key -->
     <#if keyMappingMethod??>
@@ -44,7 +45,7 @@
             ${keyVariableName} = <@includeModel object=keyConversion/>;
         }
             <#list keyConversion.exceptionTypes as exceptionType>
-        catch( ${exceptionType.name} e ) {
+        catch( <@includeModel object=exceptionType/> e ) {
             throw new RuntimeException( e );
         }
             </#list>
@@ -64,7 +65,7 @@
             ${valueVariableName} = <@includeModel object=valueConversion/>;
         }
             <#list valueConversion.exceptionTypes as exceptionType>
-        catch( ${exceptionType.name} e ) {
+        catch( <@includeModel object=exceptionType/> e ) {
             throw new RuntimeException( e );
         }
             </#list>

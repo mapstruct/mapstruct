@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.imports;
 
+import org.mapstruct.ap.test.imports.from.Foo;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -31,7 +32,15 @@ import static org.fest.assertions.Assertions.assertThat;
  * @author Gunnar Morling
  */
 @IssueKey("112")
-@WithClasses({ Named.class, ParseException.class, SourceTargetMapper.class, List.class, Map.class })
+@WithClasses({
+    Named.class,
+    ParseException.class,
+    SourceTargetMapper.class,
+    List.class,
+    Map.class,
+    Foo.class,
+    org.mapstruct.ap.test.imports.to.Foo.class
+})
 public class ConflictingTypesNamesTest extends MapperTestBase {
 
     @Test
@@ -43,5 +52,12 @@ public class ConflictingTypesNamesTest extends MapperTestBase {
         ParseException target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
+
+        Foo foo = new Foo();
+        foo.setName( "bar" );
+
+        org.mapstruct.ap.test.imports.to.Foo foo2 = SourceTargetMapper.INSTANCE.fooToFoo( foo );
+        assertThat( foo2 ).isNotNull();
+        assertThat( foo2.getName() ).isEqualTo( "bar" );
     }
 }

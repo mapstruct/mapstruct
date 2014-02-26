@@ -42,7 +42,7 @@
             ${resultName}.add( <@includeModel object=conversion/> );
         }
                 <#list conversion.exceptionTypes as exceptionType>
-        catch( ${exceptionType.name} e ) {
+        catch( <@includeModel object=exceptionType/> e ) {
             throw new RuntimeException( e );
         }
                 </#list>
