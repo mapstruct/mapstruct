@@ -19,7 +19,6 @@
 package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.lang.model.type.TypeMirror;
@@ -53,67 +52,57 @@ public class XmlElementDeclSelector implements MethodSelector {
     }
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, Collection<T> methods,
+    public <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, List<T> methods,
                                                          Type parameterType, Type returnType,
                                                          String targetPropertyName) {
 
-        List<T> noXmlDeclMatch = new ArrayList<T>();
-        List<T> nameMatch = new ArrayList<T>();
-        List<T> scopeMatch = new ArrayList<T>();
-        List<T> nameAndScopeMatch = new ArrayList<T>();
+        List<T> nameMatches = new ArrayList<T>();
+        List<T> scopeMatches = new ArrayList<T>();
+        List<T> nameAndScopeMatches = new ArrayList<T>();
 
         for ( T candidate : methods ) {
-            if ( candidate instanceof SourceMethod ) {
-                SourceMethod candidateMethod = (SourceMethod) candidate;
-                XmlElementDeclPrism xmlElememtDecl
-                    = XmlElementDeclPrism.getInstanceOn( candidateMethod.getExecutable() );
-                if ( xmlElememtDecl != null ) {
-                    String name = xmlElememtDecl.name();
-                    TypeMirror scope = xmlElememtDecl.scope();
-                    TypeMirror target = mappingMethod.getExecutable().getReturnType();
-                    if ( ( scope != null ) && ( name != null ) ) {
-                        // both scope and name should match when both defined
-                        if ( name.equals( targetPropertyName ) && typeUtils.isSameType( scope, target ) ) {
-                            nameAndScopeMatch.add( candidate );
-                        }
-                    }
-                    else if ( ( scope == null ) && ( name != null ) ) {
-                        // name should match when defined
-                        if ( name.equals( targetPropertyName ) ) {
-                            nameMatch.add( candidate );
-                        }
-                    }
-                    else if ( ( scope != null ) && ( name == null ) ) {
-                        // scope should match when defined
-                        if ( typeUtils.isSameType( scope, target ) ) {
-                            scopeMatch.add( candidate );
-                        }
-                    }
-                    else {
-                        // cannot make verdict based on scope or name, so add
-                        noXmlDeclMatch.add( candidate );
-                    }
+            if ( !(candidate instanceof SourceMethod ) ) {
+                continue;
+            }
+
+            SourceMethod candidateMethod = (SourceMethod) candidate;
+            XmlElementDeclPrism xmlElememtDecl = XmlElementDeclPrism.getInstanceOn( candidateMethod.getExecutable() );
+
+            if ( xmlElememtDecl == null ) {
+                continue;
+            }
+
+            String name = xmlElememtDecl.name();
+            TypeMirror scope = xmlElememtDecl.scope();
+            TypeMirror target = mappingMethod.getExecutable().getReturnType();
+
+            boolean nameIsSetAndMatches = name != null && name.equals( targetPropertyName );
+            boolean scopeIsSetAndMatches = scope != null && typeUtils.isSameType( scope, target );
+
+            if ( nameIsSetAndMatches ) {
+                if ( scopeIsSetAndMatches ) {
+                    nameAndScopeMatches.add( candidate );
                 }
                 else {
-                    // cannot make a verdict on xmldeclannotation, so add
-                    noXmlDeclMatch.add( candidate );
+                    nameMatches.add( candidate );
                 }
             }
-            else {
-                // cannot make a verdict on xmldeclannotation, so add
-                noXmlDeclMatch.add( candidate );
+            else if ( scopeIsSetAndMatches ) {
+                scopeMatches.add( candidate );
             }
         }
 
-        if ( nameAndScopeMatch.size() > 0 ) {
-            return nameAndScopeMatch;
+        if ( nameAndScopeMatches.size() > 0 ) {
+            return nameAndScopeMatches;
         }
-        else if ( scopeMatch.size() > 0 ) {
-            return scopeMatch;
+        else if ( scopeMatches.size() > 0 ) {
+            return scopeMatches;
         }
-        else if ( nameMatch.size() > 0 ) {
-            return nameMatch;
+        else if ( nameMatches.size() > 0 ) {
+            return nameMatches;
         }
-        return noXmlDeclMatch;
+        else {
+            return methods;
+        }
     }
 }

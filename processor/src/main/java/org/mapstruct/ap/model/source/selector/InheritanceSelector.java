@@ -19,7 +19,6 @@
 package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.mapstruct.ap.model.common.Parameter;
@@ -37,7 +36,7 @@ public class InheritanceSelector implements MethodSelector {
     @Override
     public <T extends Method> List<T> getMatchingMethods(
         SourceMethod mappingMethod,
-        Collection<T> methods,
+        List<T> methods,
         Type parameterType,
         Type returnType,
         String targetPropertyName

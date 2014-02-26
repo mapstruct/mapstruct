@@ -20,8 +20,8 @@ package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
+
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.model.common.Type;
@@ -47,7 +47,7 @@ public class MethodSelectors implements MethodSelector {
     }
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, Collection<T> methods,
+    public <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, List<T> methods,
                                                          Type parameterType, Type returnType,
                                                          String targetPropertyName) {
 
