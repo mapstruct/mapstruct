@@ -20,7 +20,6 @@ package org.mapstruct.ap.processor;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -954,7 +953,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private <T extends Method> T getBestMatch(SourceMethod mappingMethod,
                                               String mappedElement,
-                                              Collection<T> methods,
+                                              List<T> methods,
                                               Type parameterType,
                                               Type returnType,
                                               String targetPropertyName) {
