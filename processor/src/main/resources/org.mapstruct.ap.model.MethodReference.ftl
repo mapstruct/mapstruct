@@ -18,4 +18,4 @@
      limitations under the License.
 
 -->
-<#if declaringMapper??>${mapperVariableName}.</#if>${name}<#if ext.input??>( ${ext.input}<#if contextParam??>, ${contextParam}</#if> )<#else>()</#if>
+<#if declaringMapper??>${mapperVariableName}.</#if>${name}<#if ext.input??>( <#if methodRefChild??><@includeModel object=methodRefChild input=ext.input/><#if contextParam??>, ${contextParam}</#if><#else>${ext.input}<#if contextParam??>, ${contextParam}</#if></#if> )<#else>()</#if>
