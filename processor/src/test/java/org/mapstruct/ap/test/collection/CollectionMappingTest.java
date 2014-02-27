@@ -18,11 +18,14 @@
  */
 package org.mapstruct.ap.test.collection;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,8 +33,6 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 @WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class })
 public class CollectionMappingTest extends MapperTestBase {
@@ -104,6 +105,26 @@ public class CollectionMappingTest extends MapperTestBase {
         target.getStringList().add( "Bill" );
 
         assertThat( source.getStringList() ).containsExactly( "Bob", "Alice" );
+    }
+
+    @Test
+    @IssueKey( "153" )
+    public void shouldMapListWithClearAndAddAll() {
+        Source source = new Source();
+        source.setOtherStringList( Arrays.asList( "Bob", "Alice" ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        target.getOtherStringList().add( "Bill" );
+
+        assertThat( source.getOtherStringList() ).containsExactly( "Bob", "Alice" );
+
+        source.setOtherStringList( Arrays.asList( "Bob" ) );
+        List<String> originalInstance = target.getOtherStringList();
+
+        SourceTargetMapper.INSTANCE.sourceToTarget( source, target );
+
+        assertThat( target.getOtherStringList() ).isSameAs( originalInstance );
+        assertThat( target.getOtherStringList() ).containsExactly( "Bob" );
     }
 
     @Test
@@ -299,6 +320,32 @@ public class CollectionMappingTest extends MapperTestBase {
         target.getStringLongMap().put( "Bill", 789L );
 
         assertThat( source.getStringLongMap() ).hasSize( 2 );
+        assertThat( target.getStringLongMap() ).hasSize( 3 );
+    }
+
+    @Test
+    @IssueKey( "153" )
+    public void shouldMapMapWithClearAndPutAll() {
+        Source source = new Source();
+
+        Map<String, Long> map = new HashMap<String, Long>();
+        map.put( "Bob", 123L );
+        map.put( "Alice", 456L );
+        source.setOtherStringLongMap( map );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        target.getOtherStringLongMap().put( "Bill", 789L );
+
+        assertThat( source.getOtherStringLongMap() ).hasSize( 2 );
+        assertThat( target.getOtherStringLongMap() ).hasSize( 3 );
+
+        source.getOtherStringLongMap().remove( "Alice" );
+        Map<String, Long> originalInstance = target.getOtherStringLongMap();
+
+        SourceTargetMapper.INSTANCE.sourceToTarget( source, target );
+
+        assertThat( target.getOtherStringLongMap() ).isSameAs( originalInstance );
+        assertThat( target.getOtherStringLongMap() ).hasSize( 1 );
     }
 
     @Test

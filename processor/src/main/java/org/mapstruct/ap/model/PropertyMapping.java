@@ -43,6 +43,7 @@ public class PropertyMapping extends ModelElement {
     private final String targetAccessorName;
     private final Type targetType;
     private final boolean isTargetAccessorSetter;
+    private final String targetReadAccessorName;
 
     private final MethodReference mappingMethod;
     private final TypeConversion conversion;
@@ -60,6 +61,8 @@ public class PropertyMapping extends ModelElement {
         this.targetAccessorName = targetAccessorName;
         this.targetType = targetType;
         this.isTargetAccessorSetter = targetAccessorName.startsWith( "set" );
+        this.targetReadAccessorName =
+            this.isTargetAccessorSetter ? "get" + targetAccessorName.substring( 3 ) : targetAccessorName;
 
         this.mappingMethod = mappingMethod;
         this.conversion = conversion;
@@ -110,6 +113,13 @@ public class PropertyMapping extends ModelElement {
      */
     public boolean isTargetAccessorSetter() {
         return isTargetAccessorSetter;
+    }
+
+    /**
+     * @return the read-accessor for the target property (i.e. the getter method)
+     */
+    public String getTargetReadAccessorName() {
+        return targetReadAccessorName;
     }
 
     @Override

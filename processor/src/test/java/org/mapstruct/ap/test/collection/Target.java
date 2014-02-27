@@ -25,9 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 public class Target {
 
     private List<String> stringList;
+    private List<String> otherStringList;
     private ArrayList<String> stringArrayList;
 
     private Set<String> stringSet;
@@ -42,11 +46,19 @@ public class Target {
     private Set<String> colours;
 
     private Map<String, Long> stringLongMap;
+    private Map<String, Long> otherStringLongMap;
 
     private List<String> stringListNoSetter;
 
     @SuppressWarnings("rawtypes")
     private Set set;
+
+    public Target() {
+        otherStringLongMap = Maps.newHashMap();
+        otherStringLongMap.put( "not-present-after-mapping", 42L );
+
+        otherStringList = Lists.newArrayList( "not-present-after-mapping" );
+    }
 
     public List<String> getStringList() {
         return stringList;
@@ -135,6 +147,22 @@ public class Target {
             stringListNoSetter = new ArrayList<String>();
         }
         return stringListNoSetter;
+    }
+
+    public Map<String, Long> getOtherStringLongMap() {
+        return otherStringLongMap;
+    }
+
+    public void setOtherStringLongMap(Map<String, Long> otherStringLongMap) {
+        this.otherStringLongMap = otherStringLongMap;
+    }
+
+    public List<String> getOtherStringList() {
+        return otherStringList;
+    }
+
+    public void setOtherStringList(List<String> otherStringList) {
+        this.otherStringList = otherStringList;
     }
 
 }
