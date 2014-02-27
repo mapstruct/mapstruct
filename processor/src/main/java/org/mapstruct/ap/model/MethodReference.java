@@ -34,6 +34,7 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 public class MethodReference extends MappingMethod {
 
     private final MapperReference declaringMapper;
+    private MethodReference methodRefChild;
 
     /**
      * In case this reference targets a built-in method, allows to pass specific context information to the invoked
@@ -68,5 +69,22 @@ public class MethodReference extends MappingMethod {
 
     public String getContextParam() {
         return contextParam;
+    }
+
+    public void setMethodRefChild( MethodReference methodRefChild ) {
+        this.methodRefChild = methodRefChild;
+    }
+
+    public MethodReference getMethodRefChild() {
+        return methodRefChild;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> imported = super.getImportTypes();
+        if (methodRefChild != null) {
+            imported.addAll( methodRefChild.getImportTypes() );
+        }
+        return imported;
     }
 }
