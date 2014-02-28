@@ -1075,7 +1075,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     mappedElement,
                     mapperReferences,
                     methods,
-                    methodYCandidate.getParameters().get( 0 ).getType(),
+                    methodYCandidate.getSourceParameters().get( 0 ).getType(),
                     returnType,
                     targetPropertyName,
                     dateFormat

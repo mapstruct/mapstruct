@@ -44,7 +44,14 @@ public abstract class SourceTargetMapperWithPrimitives {
         else if ( clazz == boolean.class ) {
             return (T) Boolean.valueOf( wrapper.getValue() );
         }
+        else if ( clazz == char.class ) {
+            return (T) Character.valueOf( wrapper.getValue().charAt( 0 ) );
+        }
 
         return null;
+    }
+
+    public <T extends BaseType> T unwrapGenericWrapper(GenericWrapper<T> source, @TargetType Class<T> targetType) {
+        return source.getWrapped();
     }
 }

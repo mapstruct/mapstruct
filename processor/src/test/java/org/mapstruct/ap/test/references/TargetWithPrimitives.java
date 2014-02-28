@@ -26,6 +26,7 @@ public class TargetWithPrimitives {
     private int prop1;
     private long prop2;
     private boolean prop3;
+    private char prop4;
 
     public int getProp1() {
         return prop1;
@@ -49,5 +50,13 @@ public class TargetWithPrimitives {
 
     public void setProp3(boolean prop3) {
         this.prop3 = prop3;
+    }
+
+    public char getProp4() {
+        return prop4;
+    }
+
+    public void setProp4(char prop4) {
+        this.prop4 = prop4;
     }
 }

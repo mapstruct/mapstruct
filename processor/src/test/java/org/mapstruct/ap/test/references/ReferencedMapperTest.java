@@ -86,17 +86,20 @@ public class ReferencedMapperTest extends MapperTestBase {
 
     @Test
     @IssueKey( "136" )
-    @WithClasses( { SourceTargetMapperWithPrimitives.class, SourceWithWrappers.class, TargetWithPrimitives.class } )
+    @WithClasses( { SourceTargetMapperWithPrimitives.class, SourceWithWrappers.class, TargetWithPrimitives.class,
+        GenericWrapper.class } )
     public void shouldMapPrimitivesWithCustomMapper() {
         SourceWithWrappers source = new SourceWithWrappers();
         source.setProp1( new SomeType( "42" ) );
         source.setProp2( new SomeType( "1701" ) );
         source.setProp3( new SomeType( "true" ) );
+        source.setProp4( new GenericWrapper<SomeType>( new SomeType( "x" ) ) );
 
         TargetWithPrimitives result = SourceTargetMapperWithPrimitives.INSTANCE.sourceToTarget( source );
 
         assertThat( result.getProp1() ).isEqualTo( 42 );
         assertThat( result.getProp2() ).isEqualTo( 1701 );
         assertThat( result.isProp3() ).isEqualTo( true );
+        assertThat( result.getProp4() ).isEqualTo( 'x' );
     }
 }
