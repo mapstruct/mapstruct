@@ -24,7 +24,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class OrderType {
@@ -54,7 +53,7 @@ public class OrderType {
         return dates;
     }
 
-    public void setDates( List<JAXBElement<XMLGregorianCalendar>> dates ) {
+    public void setDates(List<JAXBElement<XMLGregorianCalendar>> dates) {
         this.dates = dates;
     }
 

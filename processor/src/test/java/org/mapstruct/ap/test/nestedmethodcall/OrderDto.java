@@ -22,7 +22,6 @@ package org.mapstruct.ap.test.nestedmethodcall;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class OrderDto {
@@ -35,7 +34,7 @@ public class OrderDto {
         return orderNumber;
     }
 
-    public void setOrderNumber( Long orderNumber ) {
+    public void setOrderNumber(Long orderNumber) {
         this.orderNumber = orderNumber;
     }
 
@@ -43,7 +42,7 @@ public class OrderDto {
         return orderDetails;
     }
 
-    public void setOrderDetails( OrderDetailsDto orderDetails ) {
+    public void setOrderDetails(OrderDetailsDto orderDetails) {
         this.orderDetails = orderDetails;
     }
 
@@ -51,7 +50,7 @@ public class OrderDto {
         return dates;
     }
 
-    public void setDates( List<String> dates ) {
+    public void setDates(List<String> dates) {
         this.dates = dates;
     }
 

@@ -72,7 +72,7 @@ public class MethodReference extends MappingMethod {
         return contextParam;
     }
 
-    public void setMethodRefChild( MethodReference methodRefChild ) {
+    public void setMethodRefChild(MethodReference methodRefChild) {
         this.methodRefChild = methodRefChild;
     }
 
@@ -83,7 +83,7 @@ public class MethodReference extends MappingMethod {
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = super.getImportTypes();
-        if (methodRefChild != null) {
+        if ( methodRefChild != null ) {
             imported.addAll( methodRefChild.getImportTypes() );
         }
         return imported;

@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -628,43 +627,44 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             conversion
         );
 
-        if (!isPropertyMappable( property ) ) {
+        if ( !isPropertyMappable( property ) ) {
 
             // when not mappable, try again with another property mapping method based on parameter only.
             mappingMethodReference = getMappingMethodReferenceBasedOnParameter(
-                    method,
-                    "property '" + Executables.getPropertyName( sourceAccessor ) + "'",
-                    mapperReferences,
-                    methods,
-                    sourceType,
-                    targetType,
-                    targetPropertyName,
-                    dateFormat );
+                method,
+                "property '" + Executables.getPropertyName( sourceAccessor ) + "'",
+                mapperReferences,
+                methods,
+                sourceType,
+                targetType,
+                targetPropertyName,
+                dateFormat
+            );
 
             property = new PropertyMapping(
-                    parameter.getName(),
-                    Executables.getPropertyName( sourceAccessor ),
-                    sourceAccessor.getSimpleName().toString(),
-                    sourceType,
-                    Executables.getPropertyName( targetAcessor ),
-                    targetAcessor.getSimpleName().toString(),
-                    targetType,
-                    mappingMethodReference,
-                    conversion
+                parameter.getName(),
+                Executables.getPropertyName( sourceAccessor ),
+                sourceAccessor.getSimpleName().toString(),
+                sourceType,
+                Executables.getPropertyName( targetAcessor ),
+                targetAcessor.getSimpleName().toString(),
+                targetType,
+                mappingMethodReference,
+                conversion
             );
         }
 
         if ( !isPropertyMappable( property ) ) {
             messager.printMessage(
-                    Kind.ERROR,
-                    String.format(
-                            "Can't map property \"%s %s\" to \"%s %s\".",
-                            property.getSourceType(),
-                            property.getSourceName(),
-                            property.getTargetType(),
-                            property.getTargetName()
-                    ),
-                    method.getExecutable()
+                Kind.ERROR,
+                String.format(
+                    "Can't map property \"%s %s\" to \"%s %s\".",
+                    property.getSourceType(),
+                    property.getSourceName(),
+                    property.getTargetType(),
+                    property.getTargetName()
+                ),
+                method.getExecutable()
             );
         }
         return property;
@@ -699,17 +699,18 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( !sourceElementType.isAssignableTo( targetElementType ) && conversion == null &&
-                mappingMethodReference == null ) {
+            mappingMethodReference == null ) {
             // when no conversion is found and no mapping method try match based on parameter only
             mappingMethodReference = getMappingMethodReferenceBasedOnParameter(
-                    method,
-                    "collection element",
-                    mapperReferences,
-                    methods,
-                    sourceElementType,
-                    targetElementType,
-                    null, // there is no targetPropertyName
-                    dateFormat );
+                method,
+                "collection element",
+                mapperReferences,
+                methods,
+                sourceElementType,
+                targetElementType,
+                null, // there is no targetPropertyName
+                dateFormat
+            );
         }
 
         if ( !sourceElementType.isAssignableTo( targetElementType ) && conversion == null &&
@@ -759,14 +760,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         if ( !keySourceType.isAssignableTo( keyTargetType ) && keyConversion == null && keyMappingMethod == null ) {
             // when no conversion is found and no mapping method try match based on parameter only
             keyMappingMethod = getMappingMethodReferenceBasedOnParameter(
-                    method,
-                    "map key",
-                    mapperReferences,
-                    methods,
-                    keySourceType,
-                    keyTargetType,
-                    null, // there is no targetPropertyName
-                    keyDateFormat );
+                method,
+                "map key",
+                mapperReferences,
+                methods,
+                keySourceType,
+                keyTargetType,
+                null, // there is no targetPropertyName
+                keyDateFormat
+            );
         }
 
         if ( !keySourceType.isAssignableTo( keyTargetType ) && keyConversion == null && keyMappingMethod == null ) {
@@ -807,14 +809,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             valueMappingMethod == null ) {
             // when no conversion is found and no mapping method try match based on parameter only
             keyMappingMethod = getMappingMethodReferenceBasedOnParameter(
-                    method,
-                    "map value",
-                    mapperReferences,
-                    methods,
-                    valueSourceType,
-                    valueTargetType,
-                    null, // there is no targetPropertyName
-                    valueDateFormat );
+                method,
+                "map value",
+                mapperReferences,
+                methods,
+                valueSourceType,
+                valueTargetType,
+                null, // there is no targetPropertyName
+                valueDateFormat
+            );
         }
 
         if ( !valueSourceType.isAssignableTo( valueTargetType ) && valueConversion == null &&
@@ -991,13 +994,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
      * Returns a reference to a method mapping the given source type to the given target type, if such a method exists.
      */
     private MethodReference getMappingMethodReferenceBasedOnMethod(SourceMethod method,
-                                                      String mappedElement,
-                                                      List<MapperReference> mapperReferences,
-                                                      List<SourceMethod> methods,
-                                                      Type sourceType,
-                                                      Type targetType,
-                                                      String targetPropertyName,
-                                                      String dateFormat) {
+                                                                   String mappedElement,
+                                                                   List<MapperReference> mapperReferences,
+                                                                   List<SourceMethod> methods,
+                                                                   Type sourceType,
+                                                                   Type targetType,
+                                                                   String targetPropertyName,
+                                                                   String dateFormat) {
         // first try to find a matching source method
         SourceMethod matchingSourceMethod = getBestMatch(
             method,
@@ -1043,17 +1046,18 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
      * @param parameterType parameter to match
      * @param returnType return type to match
      * @param dateFormat used for formatting dates in build in methods that need context information
+     *
      * @return a method reference.
      */
     private MethodReference getMappingMethodReferenceBasedOnParameter(SourceMethod mappingMethod,
-                                                      String mappedElement,
-                                                      List<MapperReference>
-                                                      mapperReferences,
-                                                      List<SourceMethod> methods,
-                                                      Type parameterType,
-                                                      Type returnType,
-                                                      String targetPropertyName,
-                                                      String dateFormat) {
+                                                                      String mappedElement,
+                                                                      List<MapperReference>
+                                                                          mapperReferences,
+                                                                      List<SourceMethod> methods,
+                                                                      Type parameterType,
+                                                                      Type returnType,
+                                                                      String targetPropertyName,
+                                                                      String dateFormat) {
 
         List<Method> methodYCandidates = new ArrayList<Method>( methods );
         methodYCandidates.addAll( builtInMethods.getBuiltInMethods() );
@@ -1067,25 +1071,29 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // For each of the candidates, we need to look if there's  a methodY, either
         // sourceMethod or builtIn that fits the signature B to C. Only then there is a match. If we have a match
         // a nested method call can be called. so C = methodY( methodX (A) )
-        for (Method methodYCandidate : methodYCandidates ) {
+        for ( Method methodYCandidate : methodYCandidates ) {
             if ( methodYCandidate.getSourceParameters().size() == 1 ) {
-                methodRefY = getMappingMethodReferenceBasedOnMethod( mappingMethod,
+                methodRefY = getMappingMethodReferenceBasedOnMethod(
+                    mappingMethod,
+                    mappedElement,
+                    mapperReferences,
+                    methods,
+                    methodYCandidate.getParameters().get( 0 ).getType(),
+                    returnType,
+                    targetPropertyName,
+                    dateFormat
+                );
+                if ( methodRefY != null ) {
+                    MethodReference methodRefX = getMappingMethodReferenceBasedOnMethod(
+                        mappingMethod,
                         mappedElement,
                         mapperReferences,
                         methods,
-                        methodYCandidate.getParameters().get( 0 ).getType(),
-                        returnType,
+                        parameterType,
+                        methodYCandidate.getSourceParameters().get( 0 ).getType(),
                         targetPropertyName,
-                        dateFormat );
-                if ( methodRefY != null ) {
-                    MethodReference methodRefX = getMappingMethodReferenceBasedOnMethod( mappingMethod,
-                            mappedElement,
-                            mapperReferences,
-                            methods,
-                            parameterType,
-                            methodYCandidate.getSourceParameters().get( 0 ).getType(),
-                            targetPropertyName,
-                            dateFormat );
+                        dateFormat
+                    );
                     if ( methodRefX != null ) {
                         methodRefY.setMethodRefChild( methodRefX );
                         break;

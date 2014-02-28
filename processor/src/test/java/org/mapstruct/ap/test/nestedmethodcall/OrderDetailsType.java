@@ -23,7 +23,6 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class OrderDetailsType {
@@ -39,7 +38,7 @@ public class OrderDetailsType {
         this.name = value;
     }
 
-    public void setDescription( List<JAXBElement<String>> description ) {
+    public void setDescription(List<JAXBElement<String>> description) {
         this.description = description;
     }
 
