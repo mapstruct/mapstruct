@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.model;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.mapstruct.ap.model.common.ConversionContext;
@@ -34,6 +33,12 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 public class MethodReference extends MappingMethod {
 
     private final MapperReference declaringMapper;
+
+    /**
+     * A reference to another mapping method in case this is a two-step mapping, e.g. from {@code JAXBElement<Bar>} to
+     * {@code Foo} to for which a nested method call will be generated:
+     * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}
+     */
     private MethodReference methodRefChild;
 
     /**
@@ -61,10 +66,6 @@ public class MethodReference extends MappingMethod {
 
     public String getMapperVariableName() {
         return declaringMapper.getVariableName();
-    }
-
-    public Set<Type> getReferencedTypes() {
-        return new HashSet<Type>();
     }
 
     public String getContextParam() {

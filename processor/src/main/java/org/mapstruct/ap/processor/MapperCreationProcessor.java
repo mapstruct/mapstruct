@@ -1029,7 +1029,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     /**
      * Suppose mapping required from A to C and:
      * <ul>
-     * <li>no direct referenced mapping method either BuiltIn or Referenced is avaliable from A to C</li>
+     * <li>no direct referenced mapping method either built-in or referenced is available from A to C</li>
      * <li>no conversion is available</li>
      * <li>there is a method from A to B, methodX</li>
      * <li>there is a method from B to C, methodY</li>
@@ -1154,8 +1154,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return new MethodReference( method, ctx );
     }
 
-     /**
-     * Returns false if source the property can't be mapped from source to target. A mapping if possible if one of
+    /**
+     * Whether the specified property can  be mapped from source to target or not. A mapping if possible if one of
      * the following conditions is true:
      * <ul>
      * <li>the source type is assignable to the target type</li>
@@ -1165,9 +1165,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
      * implementation type) accepts the source type.</li>
      * </ul>
      *
-     * @param method The mapping method owning the property mapping.
      * @param property The property mapping to check.
-     * @return false if property cannot be mapped
+     *
+     * @return {@code true} if the specified property can be mapped, {@code false} otherwise.
      */
     private boolean isPropertyMappable(PropertyMapping property) {
         boolean collectionOrMapTargetTypeHasCompatibleConstructor = false;
