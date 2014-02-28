@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.references;
 
+
 /**
  * @author Andreas Gudian
  *
@@ -25,6 +26,7 @@ package org.mapstruct.ap.test.references;
 public class Target {
     private long prop1;
     private Bar prop2;
+    private SomeType prop3;
 
     public long getProp1() {
         return prop1;
@@ -40,5 +42,13 @@ public class Target {
 
     public void setProp2(Bar prop2) {
         this.prop2 = prop2;
+    }
+
+    public SomeType getProp3() {
+        return prop3;
+    }
+
+    public void setProp3(SomeType prop3) {
+        this.prop3 = prop3;
     }
 }

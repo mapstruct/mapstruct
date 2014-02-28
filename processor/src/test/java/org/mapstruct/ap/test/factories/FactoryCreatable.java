@@ -19,26 +19,9 @@
 package org.mapstruct.ap.test.factories;
 
 /**
- * @author Sjaak Derksen
+ * @author Andreas Gudian
+ *
  */
-public class Bar1 implements FactoryCreatable {
-    private String prop;
-
-    private final String someTypeProp;
-
-    public Bar1(String someTypeProp) {
-        this.someTypeProp = someTypeProp;
-    }
-
-    public String getProp() {
-        return prop;
-    }
-
-    public void setProp(String prop) {
-        this.prop = prop;
-    }
-
-    public String getSomeTypeProp() {
-        return someTypeProp;
-    }
+public interface FactoryCreatable {
+    void setProp(String prop);
 }

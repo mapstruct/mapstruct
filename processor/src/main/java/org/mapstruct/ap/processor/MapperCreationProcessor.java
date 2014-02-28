@@ -106,7 +106,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
         this.virtualMethods = new HashSet<VirtualMappingMethod>();
-        this.methodSelectors = new MethodSelectors( typeUtils );
+        this.methodSelectors = new MethodSelectors( typeUtils, typeFactory );
 
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -257,18 +257,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         MethodReference result = null;
         for ( SourceMethod method : methods ) {
             if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
-                && method.getMappings().isEmpty() && method.getParameters().isEmpty() ) {
-                if ( method.getReturnType().equals( returnType ) ) {
-                    if ( result == null ) {
-                        MapperReference mapperReference = null;
-                        for ( MapperReference ref : mapperReferences ) {
-                            if ( ref.getMapperType().equals( method.getDeclaringMapper() ) ) {
-                                mapperReference = ref;
-                                break;
-                            }
-                        }
+                && method.getSourceParameters().size() == 0 ) {
 
-                        result = new MethodReference( method, mapperReference );
+                List<Type> parameterTypes =
+                    MethodSelectors.getParameterTypes( typeFactory, method.getParameters(), null, returnType );
+
+                if ( method.matches( parameterTypes, returnType ) ) {
+                    if ( result == null ) {
+                        MapperReference mapperReference = findMapperReference( mapperReferences, method );
+                        result = new MethodReference( method, mapperReference, null );
                     }
                     else {
                         messager.printMessage(
@@ -1012,7 +1009,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( matchingSourceMethod != null ) {
-            return getMappingMethodReference( matchingSourceMethod, mapperReferences );
+            return getMappingMethodReference( matchingSourceMethod, mapperReferences, targetType );
         }
 
         // then a matching built-in method
@@ -1078,7 +1075,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     mappedElement,
                     mapperReferences,
                     methods,
-                    methodYCandidate.getParameters().get( 0 ).getType(),
+                    methodYCandidate.getSourceParameters().get( 0 ).getType(),
                     returnType,
                     targetPropertyName,
                     dateFormat
@@ -1111,14 +1108,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private <T extends Method> T getBestMatch(SourceMethod mappingMethod,
                                               String mappedElement,
                                               List<T> methods,
-                                              Type parameterType,
+                                              Type sourceType,
                                               Type returnType,
                                               String targetPropertyName) {
 
         List<T> candidates = methodSelectors.getMatchingMethods(
             mappingMethod,
             methods,
-            parameterType,
+            sourceType,
             returnType,
             targetPropertyName
         );
@@ -1130,7 +1127,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 Kind.ERROR,
                 String.format(
                     "Ambiguous mapping methods found for mapping " + mappedElement + " from %s to %s: %s.",
-                    parameterType,
+                    sourceType,
                     returnType,
                     Strings.join( candidates, ", " )
                 ),
@@ -1145,15 +1142,24 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return null;
     }
 
-    private MethodReference getMappingMethodReference(SourceMethod method, List<MapperReference> mapperReferences) {
-        MapperReference mapperReference = null;
+    private MethodReference getMappingMethodReference(SourceMethod method, List<MapperReference> mapperReferences,
+                                                      Type targetType) {
+        MapperReference mapperReference = findMapperReference( mapperReferences, method );
+
+        return new MethodReference(
+            method,
+            mapperReference,
+            SourceMethod.containsTargetTypeParameter( method.getParameters() ) ? targetType : null
+        );
+    }
+
+    private MapperReference findMapperReference(List<MapperReference> mapperReferences, SourceMethod method) {
         for ( MapperReference ref : mapperReferences ) {
             if ( ref.getMapperType().equals( method.getDeclaringMapper() ) ) {
-                mapperReference = ref;
-                break;
+                return ref;
             }
         }
-        return new MethodReference( method, mapperReference );
+        return null;
     }
 
     private MethodReference getMappingMethodReference(BuiltInMethod method, Type returnType, String dateFormat) {

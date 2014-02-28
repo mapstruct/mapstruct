@@ -25,6 +25,7 @@ package org.mapstruct.ap.test.references;
 public class Source {
     private int prop1;
     private Foo prop2;
+    private String prop3;
 
     public int getProp1() {
         return prop1;
@@ -40,5 +41,13 @@ public class Source {
 
     public void setProp2(Foo prop2) {
         this.prop2 = prop2;
+    }
+
+    public String getProp3() {
+        return prop3;
+    }
+
+    public void setProp3(String prop3) {
+        this.prop3 = prop3;
     }
 }

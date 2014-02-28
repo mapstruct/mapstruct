@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.erroneous.typemismatch;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.TargetType;
 
 @Mapper
 public interface ErroneousMapper {
@@ -30,4 +31,6 @@ public interface ErroneousMapper {
     long sourceToLong(Source source);
 
     Source longToSource(long id);
+
+    Target sourceToTargetWithMappingTargetType(Source source, @TargetType Class<?> clazz);
 }

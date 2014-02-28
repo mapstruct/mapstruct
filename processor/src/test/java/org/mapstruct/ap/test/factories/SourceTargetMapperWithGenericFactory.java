@@ -18,27 +18,16 @@
  */
 package org.mapstruct.ap.test.factories;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+
 /**
- * @author Sjaak Derksen
+ * @author Andreas Gudian
+ *
  */
-public class Bar1 implements FactoryCreatable {
-    private String prop;
+@Mapper( uses = { GenericFactory.class } )
+public interface SourceTargetMapperWithGenericFactory {
+    SourceTargetMapperWithGenericFactory INSTANCE = Mappers.getMapper( SourceTargetMapperWithGenericFactory.class );
 
-    private final String someTypeProp;
-
-    public Bar1(String someTypeProp) {
-        this.someTypeProp = someTypeProp;
-    }
-
-    public String getProp() {
-        return prop;
-    }
-
-    public void setProp(String prop) {
-        this.prop = prop;
-    }
-
-    public String getSomeTypeProp() {
-        return someTypeProp;
-    }
+    Bar1 fromFoo1(Foo1 foo1);
 }

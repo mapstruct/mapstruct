@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.MethodMatcher;
 import org.mapstruct.ap.model.source.SourceMethod;
@@ -34,6 +35,12 @@ import org.mapstruct.ap.model.source.SourceMethod;
  */
 public class TypeSelector implements MethodSelector {
 
+    private final TypeFactory typeFactory;
+
+    public TypeSelector(TypeFactory typeFactory) {
+        this.typeFactory = typeFactory;
+    }
+
     @Override
     public <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, List<T> methods,
                                                          Type parameterType, Type returnType,
@@ -45,7 +52,9 @@ public class TypeSelector implements MethodSelector {
                 continue;
             }
 
-            if ( method.matches( parameterType, returnType ) ) {
+            List<Type> parameterTypes =
+                MethodSelectors.getParameterTypes( typeFactory, method.getParameters(), parameterType, returnType );
+            if ( method.matches( parameterTypes, returnType ) ) {
                 result.add( method );
             }
         }

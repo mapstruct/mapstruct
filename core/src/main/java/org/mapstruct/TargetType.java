@@ -16,29 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.factories;
+package org.mapstruct;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 /**
- * @author Sjaak Derksen
+ * Declares a parameter of a custom mapping method to be populated with the target type of the mapping.
+ * <p>
+ * Not more than one parameter can be declared as {@code TargetType} and that parameter needs to be of type
+ * {@link Class} (may be parameterized), or a super-type of it.
+ *
+ * @author Andreas Gudian
  */
-public class Bar1 implements FactoryCreatable {
-    private String prop;
-
-    private final String someTypeProp;
-
-    public Bar1(String someTypeProp) {
-        this.someTypeProp = someTypeProp;
-    }
-
-    public String getProp() {
-        return prop;
-    }
-
-    public void setProp(String prop) {
-        this.prop = prop;
-    }
-
-    public String getSomeTypeProp() {
-        return someTypeProp;
-    }
+@Target( ElementType.PARAMETER )
+public @interface TargetType {
 }

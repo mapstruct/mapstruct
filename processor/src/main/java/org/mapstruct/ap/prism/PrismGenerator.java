@@ -27,6 +27,7 @@ import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.TargetType;
 import org.mapstruct.Mappings;
 
 /**
@@ -40,6 +41,7 @@ import org.mapstruct.Mappings;
     @GeneratePrism(value = Mappings.class, publicAccess = true),
     @GeneratePrism(value = IterableMapping.class, publicAccess = true),
     @GeneratePrism(value = MapMapping.class, publicAccess = true),
+    @GeneratePrism(value = TargetType.class, publicAccess = true),
     @GeneratePrism(value = MappingTarget.class, publicAccess = true),
 
     // external types

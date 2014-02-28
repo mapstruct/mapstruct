@@ -68,7 +68,12 @@ public abstract class BuiltInMethod implements Method {
      * excluding generic type variables. When the implementor sees a need for this, this method can be overridden.
      */
     @Override
-    public boolean matches(Type sourceType, Type targetType) {
+    public boolean matches(List<Type> sourceTypes, Type targetType) {
+        if ( sourceTypes.size() > 1 ) {
+            return false;
+        }
+        Type sourceType = sourceTypes.iterator().next();
+
         if ( targetType.erasure().isAssignableTo( getReturnType().erasure() )
             && sourceType.erasure().isAssignableTo( getParameter().getType().erasure() ) ) {
             return doTypeVarsMatch( sourceType, targetType );

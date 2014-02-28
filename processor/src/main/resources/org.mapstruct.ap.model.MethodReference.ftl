@@ -18,4 +18,8 @@
      limitations under the License.
 
 -->
-<#if declaringMapper??>${mapperVariableName}.</#if>${name}<#if ext.input??>( <#if methodRefChild??><@includeModel object=methodRefChild input=ext.input/><#if contextParam??>, ${contextParam}</#if><#else>${ext.input}<#if contextParam??>, ${contextParam}</#if></#if> )<#else>()</#if>
+<#if methodRefChild??>
+    <#if declaringMapper??>${mapperVariableName}.</#if>${name}(<#list parameters as param> <#if param.targetType>${ext.targetType}.class<#else><@includeModel object=methodRefChild input=ext.input targetType=singleSourceParameterType.name/></#if><#if param_has_next>,<#else> </#if></#list><#if contextParam??>, ${contextParam}</#if>)<#t>
+<#else>
+    <#if declaringMapper??>${mapperVariableName}.</#if>${name}(<#list parameters as param> <#if param.targetType>${ext.targetType}.class<#else>${ext.input}</#if><#if param_has_next>,<#else> </#if></#list><#if contextParam??>, ${contextParam}</#if>)<#t>
+</#if>

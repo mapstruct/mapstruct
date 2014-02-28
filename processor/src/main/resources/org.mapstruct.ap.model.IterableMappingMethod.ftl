@@ -33,7 +33,7 @@
 
     for ( <@includeModel object=sourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${sourceParameter.name} ) {
         <#if elementMappingMethod??>
-        ${resultName}.add( <@includeModel object=elementMappingMethod input="${loopVariableName}"/> );
+        ${resultName}.add( <@includeModel object=elementMappingMethod input="${loopVariableName}" targetType="${resultType.typeParameters[0].name}"/> );
         <#elseif conversion??>
             <#if (conversion.exceptionTypes?size == 0) >
         ${resultName}.add( <@includeModel object=conversion/> );

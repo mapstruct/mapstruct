@@ -18,10 +18,13 @@
  */
 package org.mapstruct.ap.processor;
 
+import static javax.lang.model.util.ElementFilter.methodsIn;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -45,8 +48,6 @@ import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
-
-import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -125,6 +126,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         //add method with property mappings if an implementation needs to be generated
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
+        boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
 
         if ( mapperRequiresImplementation && methodRequiresImplementation ) {
             List<Parameter> sourceParameters = extractSourceParameters( parameters );
@@ -132,7 +134,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             Type resultType = selectResultType( returnType, targetParameter );
 
             boolean isValid =
-                checkParameterAndReturnType( method, sourceParameters, targetParameter, resultType, returnType );
+                checkParameterAndReturnType(
+                    method,
+                    sourceParameters,
+                    targetParameter,
+                    resultType,
+                    returnType,
+                    containsTargetTypeParameter );
 
             if ( isValid ) {
                 return
@@ -151,7 +159,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             }
         }
         //otherwise add reference to existing mapper method
-        else if ( parameters.size() == 1 ) {
+        else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( parameters ) ) {
             return
                 SourceMethod.forReferencedMethod(
                     mapperRequiresImplementation ? null : typeFactory.getType( element ),
@@ -161,19 +169,39 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     typeUtils
                 );
         }
-        //create factory method
-        else if ( parameters.isEmpty() ) {
-            return
-                SourceMethod.forFactoryMethod(
-                    mapperRequiresImplementation ? null : typeFactory.getType( element ),
-                    method,
-                    returnType,
-                    typeUtils
-                );
-        }
         else {
             return null;
         }
+    }
+
+    private boolean isValidReferencedMethod(List<Parameter> parameters) {
+        return isValidReferencedOrFactoryMethod( 1, parameters );
+    }
+
+    private boolean isValidFactoryMethod(List<Parameter> parameters) {
+        return isValidReferencedOrFactoryMethod( 0, parameters );
+    }
+
+    private boolean isValidReferencedOrFactoryMethod(int sourceParamCount, List<Parameter> parameters) {
+        int validSourceParameters = 0;
+        int targetParameters = 0;
+        int targetTypeParameters = 0;
+
+        for ( Parameter param : parameters ) {
+            if ( param.isMappingTarget() ) {
+                targetParameters++;
+            }
+
+            if ( param.isTargetType() ) {
+                targetTypeParameters++;
+            }
+
+            if ( !param.isMappingTarget() && !param.isTargetType() ) {
+                validSourceParameters++;
+            }
+        }
+        return validSourceParameters == sourceParamCount && targetParameters == 0 && targetTypeParameters <= 1
+            && parameters.size() == validSourceParameters + targetParameters + targetTypeParameters;
     }
 
     private Parameter extractTargetParameter(List<Parameter> parameters) {
@@ -207,7 +235,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private boolean checkParameterAndReturnType(ExecutableElement method, List<Parameter> sourceParameters,
-                                                Parameter targetParameter, Type resultType, Type returnType) {
+                                                Parameter targetParameter, Type resultType, Type returnType,
+                                                boolean containsTargetTypeParameter) {
         if ( sourceParameters.isEmpty() ) {
             messager.printMessage( Kind.ERROR, "Can't generate mapping method with no input arguments.", method );
             return false;
@@ -245,6 +274,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 "Can't generate mapping method from iterable type to non-iterable type.",
                 method
             );
+            return false;
+        }
+
+        if ( containsTargetTypeParameter ) {
+            messager.printMessage(
+                Kind.ERROR,
+                "Can't generate mapping method that has a parameter annotated with @TargetType.",
+                method );
             return false;
         }
 

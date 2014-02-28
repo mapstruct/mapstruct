@@ -41,6 +41,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -48,6 +49,7 @@ import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.prism.MappingTargetPrism;
+import org.mapstruct.ap.prism.TargetTypePrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 
 /**
@@ -185,6 +187,29 @@ public class TypeFactory {
         );
     }
 
+    /**
+     * Returns the Type that represents the declared Class type of the given type. For primitive types, the boxed class
+     * will be used. <br />
+     * Examples: <br />
+     * If type represents {@code java.lang.Integer}, it will return the type that represents {@code Class<Integer>}.
+     * <br />
+     * If type represents {@code int}, it will return the type that represents {@code Class<Integer>}.
+     *
+     * @param type the type to return the declared class type for
+     * @return the type representing {@code Class<type>}.
+     */
+    public Type classTypeOf(Type type) {
+        TypeMirror typeToUse;
+        if ( type.isPrimitive() ) {
+            typeToUse = typeUtils.boxedClass( (PrimitiveType) type.getTypeMirror() ).asType();
+        }
+        else {
+            typeToUse = type.getTypeMirror();
+        }
+
+        return getType( typeUtils.getDeclaredType( elementUtils.getTypeElement( "java.lang.Class" ), typeToUse ) );
+    }
+
     public Parameter getSingleParameter(ExecutableElement method) {
         List<? extends VariableElement> parameters = method.getParameters();
 
@@ -197,8 +222,7 @@ public class TypeFactory {
 
         return new Parameter(
             parameter.getSimpleName().toString(),
-            getType( parameter.asType() ),
-            false
+            getType( parameter.asType() )
         );
     }
 
@@ -212,7 +236,8 @@ public class TypeFactory {
                     new Parameter(
                         parameter.getSimpleName().toString(),
                         getType( parameter.asType() ),
-                        MappingTargetPrism.getInstanceOn( parameter ) != null
+                        MappingTargetPrism.getInstanceOn( parameter ) != null,
+                        TargetTypePrism.getInstanceOn( parameter ) != null
                     )
                 );
         }

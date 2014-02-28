@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.factories;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +31,6 @@ import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 /**
  * @author Sjaak Derksen
  */
@@ -38,7 +38,7 @@ import static org.fest.assertions.Assertions.assertThat;
 @WithClasses({
     Bar1.class, Foo1.class, Bar2.class, Foo2.class, Bar3.class, Foo3.class, BarFactory.class,
     org.mapstruct.ap.test.factories.b.BarFactory.class, Source.class, SourceTargetMapperAndBar2Factory.class,
-    Target.class, CustomList.class, CustomListImpl.class, CustomMap.class, CustomMapImpl.class
+    Target.class, CustomList.class, CustomListImpl.class, CustomMap.class, CustomMapImpl.class, FactoryCreatable.class
 })
 public class FactoryTest extends MapperTestBase {
     @Test
@@ -86,5 +86,20 @@ public class FactoryTest extends MapperTestBase {
         fooMap.put( "key", "fooValue" );
         source.setPropMap( fooMap );
         return source;
+    }
+
+    @Test
+    @IssueKey( "136" )
+    @WithClasses( { GenericFactory.class, SourceTargetMapperWithGenericFactory.class } )
+    public void shouldUseGenericFactory() {
+        SourceTargetMapperWithGenericFactory mapper = SourceTargetMapperWithGenericFactory.INSTANCE;
+
+        Foo1 foo1 = new Foo1();
+        foo1.setProp( "foo1" );
+        Bar1 bar1 = mapper.fromFoo1( foo1 );
+
+        assertThat( bar1 ).isNotNull();
+        assertThat( bar1.getSomeTypeProp() ).isEqualTo( "created by GenericFactory" );
+        assertThat( bar1.getProp() ).isEqualTo( "foo1" );
     }
 }

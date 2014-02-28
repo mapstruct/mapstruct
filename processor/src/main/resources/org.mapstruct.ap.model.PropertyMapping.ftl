@@ -21,10 +21,10 @@
 <#-- a) invoke mapping method -->
 <#if mappingMethod??>
 <#if targetAccessorSetter>
-${ext.targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()"/> );
+${ext.targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()" targetType="${targetType.name}"/> );
 <#elseif targetType.collectionType>
 if ( ${sourceBeanName}.${sourceAccessorName}() != null && ${ext.targetBeanName}.${targetAccessorName}() != null ) {
-    ${ext.targetBeanName}.${targetAccessorName}().addAll( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()"/> );
+    ${ext.targetBeanName}.${targetAccessorName}().addAll( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()" targetType="${targetType.name}"/> );
 }
 </#if>
 <#-- b) simple conversion -->

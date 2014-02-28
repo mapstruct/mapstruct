@@ -19,6 +19,12 @@
 package org.mapstruct.ap.test.references;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
@@ -31,7 +37,7 @@ import org.testng.annotations.Test;
  */
 @IssueKey( "82" )
 @WithClasses( { Bar.class, Foo.class, FooMapper.class, ReferencedCustomMapper.class, Source.class,
-    SourceTargetMapper.class, Target.class } )
+    SourceTargetMapper.class, Target.class, BaseType.class, SomeType.class, SomeOtherType.class } )
 public class ReferencedMapperTest extends MapperTestBase {
     @Test
     public void referencedMappersAreInstatiatedCorrectly() {
@@ -41,6 +47,7 @@ public class ReferencedMapperTest extends MapperTestBase {
         assertThat( target.getProp1() ).isEqualTo( 43 );
         assertThat( target.getProp2() ).isNotNull();
         assertThat( target.getProp2().getProp1() ).isEqualTo( "foo" );
+        assertThat( target.getProp3().getValue() ).isEqualTo( "prop3" );
     }
 
     private Source createSource() {
@@ -50,7 +57,49 @@ public class ReferencedMapperTest extends MapperTestBase {
         Foo prop2 = new Foo();
         prop2.setProp1( "foo" );
         source.setProp2( prop2 );
+        source.setProp3( "prop3" );
 
         return source;
+    }
+
+    @Test
+    @IssueKey( "136" )
+    public void shouldUseGenericFactoryForIterable() {
+        List<SomeType> result = SourceTargetMapper.INSTANCE.fromStringList( Arrays.asList( "foo1", "foo2" ) );
+
+        assertThat( result ).onProperty( "value" ).containsExactly( "foo1", "foo2" );
+    }
+
+    @Test
+    @IssueKey( "136" )
+    public void shouldUseGenericFactoryForMap() {
+        Map<String, String> source = new HashMap<String, String>();
+        source.put( "foo1", "bar1" );
+        source.put( "foo2", "bar2" );
+        Map<SomeType, SomeOtherType> result = SourceTargetMapper.INSTANCE.fromStringMap( source );
+
+        assertThat( result ).hasSize( 2 );
+        assertThat( result ).includes(
+            entry( new SomeType( "foo1" ), new SomeOtherType( "bar1" ) ),
+            entry( new SomeType( "foo2" ), new SomeOtherType( "bar2" ) ) );
+    }
+
+    @Test
+    @IssueKey( "136" )
+    @WithClasses( { SourceTargetMapperWithPrimitives.class, SourceWithWrappers.class, TargetWithPrimitives.class,
+        GenericWrapper.class } )
+    public void shouldMapPrimitivesWithCustomMapper() {
+        SourceWithWrappers source = new SourceWithWrappers();
+        source.setProp1( new SomeType( "42" ) );
+        source.setProp2( new SomeType( "1701" ) );
+        source.setProp3( new SomeType( "true" ) );
+        source.setProp4( new GenericWrapper<SomeType>( new SomeType( "x" ) ) );
+
+        TargetWithPrimitives result = SourceTargetMapperWithPrimitives.INSTANCE.sourceToTarget( source );
+
+        assertThat( result.getProp1() ).isEqualTo( 42 );
+        assertThat( result.getProp2() ).isEqualTo( 1701 );
+        assertThat( result.isProp3() ).isEqualTo( true );
+        assertThat( result.getProp4() ).isEqualTo( 'x' );
     }
 }
