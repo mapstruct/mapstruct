@@ -259,19 +259,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
                 && method.getSourceParameters().size() == 0 ) {
 
-                List<Type> paramterTypes =
+                List<Type> parameterTypes =
                     MethodSelectors.getParameterTypes( typeFactory, method.getParameters(), null, returnType );
 
-                if ( method.matches( paramterTypes, returnType ) ) {
+                if ( method.matches( parameterTypes, returnType ) ) {
                     if ( result == null ) {
                         MapperReference mapperReference = findMapperReference( mapperReferences, method );
-
-                        result =
-                            new MethodReference(
-                                method,
-                                mapperReference,
-                                SourceMethod.containsTargetTypeParameter( method.getParameters() )
-                                    ? returnType : null );
+                        result = new MethodReference( method, mapperReference, null );
                     }
                     else {
                         messager.printMessage(
@@ -1155,7 +1149,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return new MethodReference(
             method,
             mapperReference,
-            SourceMethod.containsTargetTypeParameter( method.getParameters() ) ? targetType : null );
+            SourceMethod.containsTargetTypeParameter( method.getParameters() ) ? targetType : null
+        );
     }
 
     private MapperReference findMapperReference(List<MapperReference> mapperReferences, SourceMethod method) {
