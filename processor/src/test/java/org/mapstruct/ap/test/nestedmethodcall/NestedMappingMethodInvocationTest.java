@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
@@ -70,14 +71,14 @@ public class NestedMappingMethodInvocationTest extends MapperTestBase {
             new JAXBElement<XMLGregorianCalendar>(
                 QNAME,
                 XMLGregorianCalendar.class,
-                createXmlCal( 1999, 3, 2, 1 )
+                createXmlCal( 1999, 3, 2 )
             )
         );
         dates.add(
             new JAXBElement<XMLGregorianCalendar>(
                 QNAME,
                 XMLGregorianCalendar.class,
-                createXmlCal( 2004, 7, 29, 3 )
+                createXmlCal( 2004, 7, 28 )
             )
         );
 
@@ -101,9 +102,9 @@ public class NestedMappingMethodInvocationTest extends MapperTestBase {
         return orderType;
     }
 
-    private XMLGregorianCalendar createXmlCal(int year, int month, int day, int tz)
+    private XMLGregorianCalendar createXmlCal(int year, int month, int day)
         throws DatatypeConfigurationException {
-        return DatatypeFactory.newInstance().newXMLGregorianCalendarDate( year, month, day, tz );
+        return DatatypeFactory.newInstance()
+            .newXMLGregorianCalendarDate( year, month, day, DatatypeConstants.FIELD_UNDEFINED );
     }
-
 }
