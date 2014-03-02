@@ -20,38 +20,72 @@
 -->
 <#-- a) invoke mapping method -->
 <#if mappingMethod??>
-<#if targetAccessorSetter>
-${ext.targetBeanName}.${targetAccessorName}( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()" targetType="${targetType.name}"/> );
-<#elseif targetType.collectionType>
-if ( ${sourceBeanName}.${sourceAccessorName}() != null && ${ext.targetBeanName}.${targetAccessorName}() != null ) {
-    ${ext.targetBeanName}.${targetAccessorName}().addAll( <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()" targetType="${targetType.name}"/> );
-}
-</#if>
+    <@assignResult
+        existingInstanceMapping=ext.existingInstanceMapping
+        targetAccessorSetter=targetAccessorSetter
+        targetType=targetType
+        targetBeanName=ext.targetBeanName
+        targetReadAccessorName=targetReadAccessorName
+        targetAccessorName=targetAccessorName
+        sourceBeanName=sourceBeanName
+        sourceAccessorName=sourceAccessorName><#compress>
+            <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()" targetType=targetType.name/>
+    </#compress></@assignResult>
 <#-- b) simple conversion -->
 <#elseif conversion??>
     <#if sourceType.primitive == false>
-if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-     <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
-}
+        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+             <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
+        }
     <#else>
-<@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
+        <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
     </#if>
 <#-- c) simply set -->
 <#else>
-    <#if targetType.collectionType || targetType.mapType>
-        <#if targetAccessorSetter>
-if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-    ${ext.targetBeanName}.${targetAccessorName}( new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${sourceBeanName}.${sourceAccessorName}() ) );
-}
+    <@assignResult
+        existingInstanceMapping=ext.existingInstanceMapping
+        targetAccessorSetter=targetAccessorSetter
+        targetType=targetType
+        targetBeanName=ext.targetBeanName
+        targetReadAccessorName=targetReadAccessorName
+        targetAccessorName=targetAccessorName
+        sourceBeanName=sourceBeanName
+        sourceAccessorName=sourceAccessorName
+        ; use_plain><#compress>
+        <#if use_plain>
+            ${sourceBeanName}.${sourceAccessorName}()
         <#else>
-if ( ${sourceBeanName}.${sourceAccessorName}() != null && ${ext.targetBeanName}.${targetAccessorName}() != null ) {
-    ${ext.targetBeanName}.${targetAccessorName}().addAll( ${sourceBeanName}.${sourceAccessorName}() );
-}
+            new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${sourceBeanName}.${sourceAccessorName}() )
         </#if>
-    <#else>
-${ext.targetBeanName}.${targetAccessorName}( ${sourceBeanName}.${sourceAccessorName}() );
-    </#if>
+    </#compress></@assignResult>
 </#if>
+<#macro assignResult existingInstanceMapping targetAccessorSetter targetType targetBeanName targetReadAccessorName targetAccessorName sourceBeanName sourceAccessorName>
+    <#if ( existingInstanceMapping || !targetAccessorSetter ) && ( targetType.collectionType || targetType.mapType ) >
+        if ( ${targetBeanName}.${targetReadAccessorName}() != null ) {
+            <#if existingInstanceMapping>
+                ${targetBeanName}.${targetReadAccessorName}().clear();
+            </#if><#t>
+            if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+                <#if targetType.collectionType>
+                    ${targetBeanName}.${targetReadAccessorName}().addAll( <#nested true> );
+                <#else>
+                    ${targetBeanName}.${targetReadAccessorName}().putAll( <#nested true> );
+                </#if>
+            }
+        }<#if targetAccessorSetter> else if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+            ${targetBeanName}.${targetAccessorName}( <#nested false> );
+        }
+        </#if>
+    <#elseif targetAccessorSetter>
+        <#if targetType.collectionType || targetType.mapType>
+        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+            ${targetBeanName}.${targetAccessorName}( <#nested false> );
+        }
+        <#else>
+            ${targetBeanName}.${targetAccessorName}( <#nested true> );
+        </#if>
+    </#if>
+</#macro>
 <#macro applyConversion targetBeanName targetAccessorName conversion>
     <#if (conversion.exceptionTypes?size == 0) >
         ${targetBeanName}.${targetAccessorName}( <@includeModel object=conversion/> );

@@ -28,6 +28,7 @@ import java.util.Set;
 public class Source {
 
     private List<String> stringList;
+    private List<String> otherStringList;
     private ArrayList<String> stringArrayList;
 
     private Set<String> stringSet;
@@ -44,6 +45,8 @@ public class Source {
     private Set<Colour> colours;
 
     private Map<String, Long> stringLongMap;
+
+    private Map<String, Long> otherStringLongMap;
 
     private List<String> stringList2;
 
@@ -133,6 +136,22 @@ public class Source {
 
     public void setStringList2(List<String> stringList2) {
         this.stringList2 = stringList2;
+    }
+
+    public List<String> getOtherStringList() {
+        return otherStringList;
+    }
+
+    public void setOtherStringList(List<String> otherStringList) {
+        this.otherStringList = otherStringList;
+    }
+
+    public Map<String, Long> getOtherStringLongMap() {
+        return otherStringLongMap;
+    }
+
+    public void setOtherStringLongMap(Map<String, Long> otherStringLongMap) {
+        this.otherStringLongMap = otherStringLongMap;
     }
 
 }

@@ -29,13 +29,13 @@
         <#list sourceParameters as sourceParam>
     if ( ${sourceParam.name} != null ) {
             <#list propertyMappingsByParameter[sourceParam.name] as propertyMapping>
-                <@includeModel object=propertyMapping targetBeanName=resultName/>
+                <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
             </#list>
     }
         </#list>
     <#else>
         <#list propertyMappingsByParameter[sourceParameters[0].name] as propertyMapping>
-            <@includeModel object=propertyMapping targetBeanName=resultName/>
+            <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
         </#list>
     </#if>
     <#if returnType.name != "void">

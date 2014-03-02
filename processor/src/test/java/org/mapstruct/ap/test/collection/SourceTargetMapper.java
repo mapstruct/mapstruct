@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
@@ -39,6 +40,8 @@ public interface SourceTargetMapper {
     Target sourceToTarget(Source source);
 
     Source targetToSource(Target target);
+
+    Target sourceToTarget(Source source, @MappingTarget Target target);
 
     Set<String> integerSetToStringSet(Set<Integer> integers);
 
