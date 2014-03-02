@@ -38,8 +38,23 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 
 public class BuiltInTest extends MapperTestBase {
+
+    private String savedTZ;
+
+    @BeforeClass
+    public void beforeClass() {
+        savedTZ = System.getProperty( "user.timezone" );
+        System.setProperty( "user.timezone", "CET" );
+    }
+
+    @AfterClass
+    public void afterClass() {
+        System.setProperty( "user.timezone", savedTZ );
+    }
 
     @Test
     @WithClasses( { Source.class, Target.class, SourceTargetMapper.class } )
