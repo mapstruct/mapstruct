@@ -72,7 +72,9 @@
                     ${targetBeanName}.${targetReadAccessorName}().putAll( <#nested true> );
                 </#if>
             }
-        }<#if targetAccessorSetter> else if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+        }
+        <#if targetAccessorSetter>
+        else if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
             ${targetBeanName}.${targetAccessorName}( <#nested false> );
         }
         </#if>
