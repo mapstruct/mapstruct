@@ -142,7 +142,7 @@
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
                 <configuration>
-                    <defaultOutputDirectory>${project.build.directory}/generated-sources</defaultOutputDirectory>
+                    <defaultOutputDirectory>${project.build.directory}/generated-sources/mapstruct</defaultOutputDirectory>
                     <processors>
                         <processor>org.mapstruct.ap.MappingProcessor</processor>
                     </processors>

@@ -32,11 +32,11 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory;
+import org.mapstruct.itest.jaxb.xsd.test1.OrderType;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory;
-import org.mapstruct.itest.jaxb.xsd.test1.OrderType;
 
 /**
  * Test for generation of JAXB based mapper implementations.
@@ -48,9 +48,9 @@ public class JaxbBasedMapperTest extends Arquillian {
     @Deployment
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create( JavaArchive.class )
-                .addPackage( SourceTargetMapper.class.getPackage() )
-                .addPackage( org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory.class.getPackage() )
-                .addPackage( org.mapstruct.itest.jaxb.xsd.test2.ObjectFactory.class.getPackage() );
+            .addPackage( SourceTargetMapper.class.getPackage() )
+            .addPackage( org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory.class.getPackage() )
+            .addPackage( org.mapstruct.itest.jaxb.xsd.test2.ObjectFactory.class.getPackage() );
     }
 
     @Test
@@ -67,7 +67,7 @@ public class JaxbBasedMapperTest extends Arquillian {
         source1.getShippingAddress().setHouseNumber( "11a" );
         source1.getShippingAddress().setStreet( "Awesome rd" );
         source1.getShippingAddress().setCountry( "USA" );
-        source1.getOrderDetails().setDescription( new ArrayList() );
+        source1.getOrderDetails().setDescription( new ArrayList<String>() );
         source1.getOrderDetails().setName( "Shopping list for a Mapper" );
         source1.getOrderDetails().getDescription().add( "1 MapStruct" );
         source1.getOrderDetails().getDescription().add( "3 Lines of Code" );
@@ -88,23 +88,27 @@ public class JaxbBasedMapperTest extends Arquillian {
         assertThat( source2.getOrderNumber() ).isEqualTo( source1.getOrderNumber() );
         assertThat( source2.getOrderDate() ).isEqualTo( source1.getOrderDate() );
         assertThat( source2.getOrderDetails().getDescription().size() ).isEqualTo(
-                source1.getOrderDetails().getDescription().size() );
+            source1.getOrderDetails().getDescription().size()
+        );
         assertThat( source2.getOrderDetails().getDescription().get( 0 ) ).isEqualTo(
-                source1.getOrderDetails().getDescription().get( 0 ) );
+            source1.getOrderDetails().getDescription().get( 0 )
+        );
         assertThat( source2.getOrderDetails().getDescription().get( 1 ) ).isEqualTo(
-                source1.getOrderDetails().getDescription().get( 1 ) );
+            source1.getOrderDetails().getDescription().get( 1 )
+        );
         assertThat( source2.getOrderDetails().getDescription().get( 2 ) ).isEqualTo(
-                source1.getOrderDetails().getDescription().get( 2 ) );
+            source1.getOrderDetails().getDescription().get( 2 )
+        );
         assertThat( source2.getOrderDetails().getName() ).isEqualTo( source1.getOrderDetails().getName() );
         assertThat( source2.getOrderDetails().getStatus() ).isEqualTo( source1.getOrderDetails().getStatus() );
     }
 
-    private Date createDate( String date ) throws ParseException {
+    private Date createDate(String date) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat( "dd-M-yyyy hh:mm:ss" );
         return sdf.parse( date );
     }
 
-    private String toXml( JAXBElement element ) throws JAXBException {
+    private String toXml(JAXBElement<?> element) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance( element.getValue().getClass() );
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );

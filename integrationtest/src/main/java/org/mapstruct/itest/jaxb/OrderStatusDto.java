@@ -19,14 +19,13 @@
 package org.mapstruct.itest.jaxb;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public enum OrderStatusDto {
 
-    ORDERED("small"),
-    PROCESSED("medium"),
-    DELIVERED("large");
+    ORDERED( "small" ),
+    PROCESSED( "medium" ),
+    DELIVERED( "large" );
     private final String value;
 
     OrderStatusDto(String v) {
@@ -38,12 +37,12 @@ public enum OrderStatusDto {
     }
 
     public static OrderStatusDto fromValue(String v) {
-        for (OrderStatusDto c: OrderStatusDto.values()) {
+        for ( OrderStatusDto c : OrderStatusDto.values() ) {
             if ( c.value.equals( v ) ) {
                 return c;
             }
         }
-        throw new IllegalArgumentException(v);
+        throw new IllegalArgumentException( v );
     }
 
 }

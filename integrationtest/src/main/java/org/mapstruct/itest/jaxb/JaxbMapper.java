@@ -21,6 +21,7 @@ package org.mapstruct.itest.jaxb;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
+
 import org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory;
 
 /**
@@ -37,12 +38,13 @@ public class JaxbMapper {
      * the proper factory method for Lists
      *
      * @param orderDetailsDescriptions
+     *
      * @return
      */
-    List<JAXBElement<String>> toJaxbList( List<String> orderDetailsDescriptions ) {
+    List<JAXBElement<String>> toJaxbList(List<String> orderDetailsDescriptions) {
 
         List<JAXBElement<String>> result = new ArrayList<JAXBElement<String>>();
-        for (String orderDetailDescription : orderDetailsDescriptions) {
+        for ( String orderDetailDescription : orderDetailsDescriptions ) {
             result.add( of.createOrderDetailsTypeDescription( orderDetailDescription ) );
         }
         return result;

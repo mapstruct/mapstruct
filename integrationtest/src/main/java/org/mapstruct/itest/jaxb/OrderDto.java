@@ -22,7 +22,6 @@ package org.mapstruct.itest.jaxb;
 import java.util.Date;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class OrderDto {
@@ -37,7 +36,7 @@ public class OrderDto {
         return orderNumber;
     }
 
-    public void setOrderNumber( Long orderNumber ) {
+    public void setOrderNumber(Long orderNumber) {
         this.orderNumber = orderNumber;
     }
 
@@ -45,7 +44,7 @@ public class OrderDto {
         return orderDate;
     }
 
-    public void setOrderDate( Date orderDate ) {
+    public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
     }
 
@@ -53,7 +52,7 @@ public class OrderDto {
         return orderDetails;
     }
 
-    public void setOrderDetails( OrderDetailsDto orderDetails ) {
+    public void setOrderDetails(OrderDetailsDto orderDetails) {
         this.orderDetails = orderDetails;
     }
 
@@ -61,7 +60,7 @@ public class OrderDto {
         return shippingAddress;
     }
 
-    public void setShippingAddress( ShippingAddressDto shippingAddress ) {
+    public void setShippingAddress(ShippingAddressDto shippingAddress) {
         this.shippingAddress = shippingAddress;
     }
 

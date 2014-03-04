@@ -21,7 +21,6 @@ package org.mapstruct.itest.jaxb;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class OrderDetailsDto {
@@ -34,7 +33,7 @@ public class OrderDetailsDto {
         return name;
     }
 
-    public void setName( String name ) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -42,7 +41,7 @@ public class OrderDetailsDto {
         return description;
     }
 
-    public void setDescription( List<String> description ) {
+    public void setDescription(List<String> description) {
         this.description = description;
     }
 
@@ -50,7 +49,7 @@ public class OrderDetailsDto {
         return status;
     }
 
-    public void setStatus( OrderStatusDto status ) {
+    public void setStatus(OrderStatusDto status) {
         this.status = status;
     }
 }

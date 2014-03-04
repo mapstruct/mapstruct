@@ -28,25 +28,32 @@ import org.mapstruct.itest.jaxb.xsd.test2.ShippingAddressType;
 
 
 /**
- *
  * @author Sjaak Derksen
  */
-@Mapper(uses = { org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory.class,
-                 org.mapstruct.itest.jaxb.xsd.test2.ObjectFactory.class,
-                 JaxbMapper.class })
-public interface  SourceTargetMapper {
+@Mapper(uses = {
+    org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory.class,
+    org.mapstruct.itest.jaxb.xsd.test2.ObjectFactory.class,
+    JaxbMapper.class
+})
+public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     // source 2 target methods
     OrderDto sourceToTarget(OrderType source);
+
     OrderDetailsDto detailsToDto(OrderDetailsType source);
+
     OrderStatusDto statusToDto(OrderStatusType source);
+
     ShippingAddressDto shippingAddressToDto(ShippingAddressType source);
 
     // target 2 source methods
     OrderType targetToSource(OrderDto target);
+
     OrderDetailsType dtoToDetails(OrderDetailsDto target);
+
     OrderStatusType dtoToStatus(OrderStatusDto target);
+
     ShippingAddressType dtoToShippingAddress(ShippingAddressDto source);
 }

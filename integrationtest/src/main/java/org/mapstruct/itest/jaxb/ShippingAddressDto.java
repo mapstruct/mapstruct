@@ -19,7 +19,6 @@
 package org.mapstruct.itest.jaxb;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class ShippingAddressDto {
@@ -33,7 +32,7 @@ public class ShippingAddressDto {
         return street;
     }
 
-    public void setStreet( String street ) {
+    public void setStreet(String street) {
         this.street = street;
     }
 
@@ -41,7 +40,7 @@ public class ShippingAddressDto {
         return houseNumber;
     }
 
-    public void setHouseNumber( String houseNumber ) {
+    public void setHouseNumber(String houseNumber) {
         this.houseNumber = houseNumber;
     }
 
@@ -49,7 +48,7 @@ public class ShippingAddressDto {
         return city;
     }
 
-    public void setCity( String city ) {
+    public void setCity(String city) {
         this.city = city;
     }
 
@@ -57,7 +56,7 @@ public class ShippingAddressDto {
         return country;
     }
 
-    public void setCountry( String country ) {
+    public void setCountry(String country) {
         this.country = country;
     }
 
