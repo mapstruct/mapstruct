@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
@@ -87,7 +88,10 @@ public class Type extends ModelElement implements Comparable<Type> {
             enumConstants = new ArrayList<String>();
 
             for ( Element element : typeElement.getEnclosedElements() ) {
-                if ( element.getKind() == ElementKind.ENUM_CONSTANT ) {
+                // #162: The check for visibility shouldn't be required, but the Eclipse compiler implementation
+                // exposes non-enum members otherwise
+                if ( element.getKind() == ElementKind.ENUM_CONSTANT &&
+                    element.getModifiers().contains( Modifier.PUBLIC ) ) {
                     enumConstants.add( element.getSimpleName().toString() );
                 }
             }
