@@ -362,6 +362,11 @@
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>0.6.3.201306030806</version>
                 </plugin>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.8.3</version>
+            </plugin>
             </plugins>
         </pluginManagement>
 

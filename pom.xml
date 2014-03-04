@@ -56,6 +56,9 @@
                 <artifactId>maven-license-plugin</artifactId>
                 <configuration>
                     <header>etc/license.txt</header>
+                    <mapping>
+                        <xjb>XML_STYLE</xjb>
+                    </mapping>
                 </configuration>
             </plugin>
         </plugins>
@@ -66,8 +69,8 @@
         <connection>scm:git:git://github.com/mapstruct/mapstruct.git</connection>
         <developerConnection>scm:git:git@github.com:mapstruct/mapstruct.git</developerConnection>
         <url>https://github.com/mapstruct/mapstruct/</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <profiles>
         <profile>
