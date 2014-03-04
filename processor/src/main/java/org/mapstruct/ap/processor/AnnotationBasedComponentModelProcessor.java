@@ -74,7 +74,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
      */
     protected MapperReference replacementMapperReference(MapperReference originalReference) {
         return new AnnotationMapperReference(
-            originalReference.getMapperType(),
+            originalReference.getType(),
             originalReference.getVariableName(),
             getMapperReferenceAnnotation()
         );

@@ -18,16 +18,47 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.Collections;
+import java.util.Set;
+
+import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 
 /**
- * A reference to another mapper class, which itself may be generated or hand-written.
+ * A field of a mapper type, e.g. a reference to another mapper.
  *
  * @author Gunnar Morling
  */
-public abstract class MapperReference extends Field {
+public class Field extends ModelElement {
 
-    public MapperReference(Type type, String variableName) {
-        super( type, variableName );
+    private final Type type;
+    private final String variableName;
+
+    public Field(Type type, String variableName) {
+        this.type = type;
+        this.variableName = variableName;
+    }
+
+    /**
+     * Returns the type of this field.
+     *
+     * @return the type of this field
+     */
+    public Type getType() {
+        return type;
+    }
+
+    /**
+     * Returns the variable name of this field.
+     *
+     * @return the variable name of this referfieldence
+     */
+    public String getVariableName() {
+        return variableName;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        return Collections.emptySet();
     }
 }

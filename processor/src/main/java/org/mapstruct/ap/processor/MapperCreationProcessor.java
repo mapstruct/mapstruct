@@ -1155,7 +1155,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private MapperReference findMapperReference(List<MapperReference> mapperReferences, SourceMethod method) {
         for ( MapperReference ref : mapperReferences ) {
-            if ( ref.getMapperType().equals( method.getDeclaringMapper() ) ) {
+            if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
                 return ref;
             }
         }
