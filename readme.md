@@ -1,4 +1,8 @@
-# What is MapStruct?
+# MapStruct - Java bean mappings, the easy way!
+
+_Version: 1.0.0.Beta1, March 5th 2014_
+
+## What is MapStruct?
 
 MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe bean mapping classes.
 
@@ -10,186 +14,28 @@ Compared to dynamic mapping frameworks, MapStruct offers the following advantage
 
 * Fast execution by using plain method invocations instead of reflection
 * Compile-time type safety: Only objects and attributes mapping to each other can be mapped, no accidental mapping of an order entity into a customer DTO etc.
+* Self-contained code, no runtime dependencies
 * Clear error-reports at build time, if entities or attributes can't be mapped
 
-# Hello World
+## Documentation and getting help
 
-The following shows a simple example for using MapStruct. Let's assume there is class representing cars (e.g. a JPA entity) and an accompanying data transfer object (DTO):
+To learn more about MapStruct in two minutes, refer to the [project homepage](http://mapstruct.org). The [reference documentation](http://mapstruct.org/documentation) covers all provided functionality in detail. If you need help, come and join the [mapstruct-users](https://groups.google.com/forum/?hl=en#!forum/mapstruct-users) group.
 
-```java
-public class Car {
+## Requirements
 
-	private String make;
-	private int numberOfSeats;
-	
-	//constructor, getters, setters etc.
-}
+MapStruct requires Java 1.6 or later.
 
-public class CarDto {
-
-	private String make;
-	private int seatCount;
-
-	//constructor, getters, setters etc.
-}
-```
-
-Both types are rather similar, only the seat count attributes have different names. To generate a mapper for creating a `CarDto` object out of a `Car` object, a mapper interface needs to be defined:
-
-```java
-@Mapper (1)
-public interface CarMapper {
-
-	CarMapper INSTANCE = Mappers.getMapper( CarMapper.class ); (3)
-
-	@Mapping(source = "numberOfSeats", target = "seatCount")
-	CarDto carToCarDto(Car car); (2)
-}
-```
-
-1. The `@Mapper` annotation marks the interface as mapping interface and lets the MapStruct processor kick in during compilation
-1. The actual mapping method expects the source object as parameter and returns the target object. Its name can be freely chosen. For attributes with different names in source and target object, the `@Mapping` annotation can be used to configure the names. Of course there can be multiple mapping methods in one interface.
-1. An instance of the interface implementation can be retrieved from the `Mappers` class. By convention, the interface declares a member `INSTANCE`, providing access to the mapper implementation for clients
-
-Based on the mapper interface, clients can perform object mappings in a very easy and type-safe manner:
-
-```java
-@Test
-public void shouldMapCarToDto() {
-	//given
-	Car car = new Car( "Morris", 2 );
-
-	//when
-	CarDto carDto = CarMapper.INSTANCE.carToCarDto( car );
-
-	//then
-	assertThat( carDto ).isNotNull();
-	assertThat( carDto.getMake() ).isEqualTo( car.getMake() );
-	assertThat( carDto.getSeatCount() ).isEqualTo( car.getNumberOfSeats() );
-}
-```
-
-# Advanced mappings
-
-## Reverse mappings
-
-Often bi-directional mappings are required, e.g. from entity to DTO and from DTO to entity. For this purpose, simply declare a method with the required parameter and return type on the mapping interface which also declares the forward mapping method:
-
-```java
-@Mapper
-public interface CarMapper {
-
-    CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
-
-	@Mapping(source = "numberOfSeats", target = "seatCount")
-	CarDto carToCarDto(Car car);
-    
-    Car carDtoToCar(CarDto carDto); (1)
-}
-```
-
-1. The `carDtoToCar()` method is the reverse mapping method for `carToCarDto()`. Note that the attribute mappings only have to be specified at one of the two methods and will be applied to the corresponding reverse mapping method as well.
-
-## Mapping referenced objects and collections
-
-Typically an object has not only primitive attributes but also references other objects. E.g. the `Car` class could contain a reference to a `Person` object (representing the car's driver) which should be mapped to a `PersonDto` object referenced by the `CarDto` class.
-
-In this case just define a mapping method for the referenced object types as well:
-
-```java
-@Mapper
-public interface CarMapper {
-
-    CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
-
-	CarDto carToCarDto(Car car);
-    
-    PersonDto personToPersonDto(Person person);
-    
-    //reverse mapping methods
-}
-```
-
-The generated code for the `carToCarDto()` method will invoke the `personToPersonDto()` method for mapping the `driver` attribute.
-
-The same works for collections. E.g. the `Car` class could reference the list of all passengers:
-
-```java
-public class Car {
-
-    private List<Person> passengers;
-	
-	//...
-}
-```
-
-To map this attribute, define a method accepting a list of persons and returning a list of person DTOs:
-
-```java
-@Mapper
-public interface CarMapper {
-
-    //other members
-    
-    List<PersonDto> personsToPersonDtos(List<Person> prsons);
-}
-```
-
-This method will be invoked by the generated implementation when mapping the `passengers` attribute.
-
-NOTE: Collection mapping methods may be generated without declaration in the future (see issues [#3](https://github.com/gunnarmorling/mapstruct/issues/3) and [#4](https://github.com/gunnarmorling/mapstruct/issues/4)).
-
-## Type mappings
-
-Not always a mapped attribute has the same type in the source and target objects. MapStruct generates appropriate conversion code where possible (e.g. to map an `int` attribute to a String and vice versa by calling `toString()` and `parseInt()`, respectively.
-
-Where this is not automatically possible, you can implement mapping methods yourself and make these known to MapStruct. E.g. the `Car` class might contain an attribute `manufacturingDate` while the corresponding DTO attribute is of type String.
-
-In order to map this attribute, you could implement a mapper class like this:
-
-```java
-public class DateMapper {
-
-    public String asString(Date date) {
-        return date != null ? new SimpleDateFormat( "yyyy-MM-dd" ).format( date ) : null;
-    }
-
-    public Date asDate(String date) {
-        try {
-            return date != null ? new SimpleDateFormat( "yyyy-MM-dd" ).parse( date ) : null;
-        }
-        catch ( ParseException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-}
-```
-
-In the `@Mapper` annotation at the `CarMapper` interface reference this mapper class:
-
-```java
-@Mapper(uses=DateMapper.class)
-public class CarMapperMapper {
-
-    CarDto carToCarDto(Car car);
-    
-    //other mapping methods
-}
-```
-
-When generating code for the implementation of the `carToCarDto()` method, MapStruct will look for a method which maps a `Date` object into a String, find it on the `DateMapper` class and generate an invocation of `asString()` for mapping the `manufacturingDate` attribute.
-
-# Using MapStruct
+## Using MapStruct
 
 MapStruct is a Java annotation processor based on [JSR 269](jcp.org/en/jsr/detail?id=269) and as such can be used within command line builds (javac, Ant, Maven etc.) as well as from within your IDE.
 
-For Maven based projects add the following to your POM file in order to use MapStruct:
+For Maven based projects add the following to your POM file in order to use MapStruct (the dependencies can be obtained from Maven Central):
 
 ```xml
+
 ...
 <properties>
     <org.mapstruct.version>[current MapStruct version]</org.mapstruct.version>
-    
 </properties>
 ...
 <dependencies>
@@ -205,9 +51,11 @@ For Maven based projects add the following to your POM file in order to use MapS
         <plugin>
             <groupId>org.bsc.maven</groupId>
             <artifactId>maven-processor-plugin</artifactId>
-            <version>2.0.2</version>
+            <version>2.2.4</version>
             <configuration>
-                <defaultOutputDirectory>${project.build.directory}/generated-sources</defaultOutputDirectory>
+                <defaultOutputDirectory>
+                    ${project.build.directory}/generated-sources
+                </defaultOutputDirectory>
                 <processors>
                     <processor>org.mapstruct.ap.MappingProcessor</processor>
                 </processors>
@@ -231,20 +79,33 @@ For Maven based projects add the following to your POM file in order to use MapS
         </plugin>
     </plugins>
 </build>
+...
 ```
 
-NOTE: In order to use MapStruct, you currently have to check out its sources and build it yourself as it is not yet available in any public Maven repository.
+Alternatively, a distribution bundle is available from SourceForge.
 
-# What's next
+## Licensing
 
-MapStruct is just in its very beginnings. Some ideas for further features:
+MapStruct is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
 
-* Support EL expressions to create derived attributes
-* Support mapping of collections of objects (lists, arrays, maps etc.)
-* Remove runtime dependencies to MapStruct by e.g. using the JDK service loader or dependency injection via CDI to retrieve mapper implementations
-* etc.
+## Building from Source
 
-Check out the [issue list](https://github.com/mapstruct/mapstruct/issues?state=open) for more details.
+MapStruct uses Maven for its build. To build the complete project run
+
+    mvn clean install
+
+from the root of the project directory. To skip the distribution module, run 
+
+    mvn clean install -DskipDistribution=true
+
+## Links
+
+* [Homepage](http://mapstruct.org)
+* [Source code](https://github.com/mapstruct/mapstruct/)
+* [Downloads](https://sourceforge.net/projects/mapstruct/files/)
+* [Issue tracker](https://github.com/mapstruct/mapstruct/issues)
+* [User group](https://groups.google.com/forum/?hl=en#!forum/mapstruct-users)
+* [CI build](https://github.com/mapstruct/mapstruct/)
 
 <div style="float: right">
     <a href="https://mapstruct.ci.cloudbees.com/"><img src="http://www.cloudbees.com/sites/default/files/Button-Built-on-CB-1.png"/></a>
