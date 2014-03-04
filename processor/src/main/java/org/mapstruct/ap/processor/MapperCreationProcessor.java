@@ -173,6 +173,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         TypeElement decoratorElement = (TypeElement) typeUtils.asElement( decoratorPrism.value() );
 
+        if ( !typeUtils.isAssignable( decoratorElement.asType(), element.asType() ) ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format( "Specified decorator type is no subtype of the annotated mapper type." ),
+                element,
+                decoratorPrism.mirror
+            );
+        }
+
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>( methods.size() );
 
         for ( SourceMethod mappingMethod : methods ) {

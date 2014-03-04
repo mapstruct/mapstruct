@@ -19,10 +19,14 @@
 package org.mapstruct.ap.test.decorator;
 
 import java.util.Calendar;
+import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -119,5 +123,23 @@ public class DecoratorTest extends MapperTestBase {
         assertThat( personDto.getName() ).isEqualTo( "Gary Crant" );
         assertThat( personDto.getAddress() ).isNotNull();
         assertThat( personDto.getAddress().getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
+    }
+
+    @Test
+    @WithClasses({
+        ErroneousPersonMapper.class,
+        ErroneousPersonMapperDecorator.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousPersonMapper.class,
+                kind = Kind.ERROR,
+                line = 27,
+                messageRegExp = "Specified decorator type is no subtype of the annotated mapper type")
+        }
+    )
+    public void shouldRaiseErrorInCaseWrongDecoratorTypeIsGiven() {
+
     }
 }
