@@ -18,10 +18,15 @@
  */
 package org.mapstruct.itest.jaxb;
 
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
@@ -30,6 +35,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory;
 import org.mapstruct.itest.jaxb.xsd.test1.OrderType;
 
 /**
@@ -39,17 +45,16 @@ import org.mapstruct.itest.jaxb.xsd.test1.OrderType;
  */
 public class JaxbBasedMapperTest extends Arquillian {
 
-
     @Deployment
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create( JavaArchive.class )
-            .addPackage( SourceTargetMapper.class.getPackage() )
-            .addPackage( org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory.class.getPackage() )
-            .addPackage( org.mapstruct.itest.jaxb.xsd.test2.ObjectFactory.class.getPackage() );
+                .addPackage( SourceTargetMapper.class.getPackage() )
+                .addPackage( org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory.class.getPackage() )
+                .addPackage( org.mapstruct.itest.jaxb.xsd.test2.ObjectFactory.class.getPackage() );
     }
 
     @Test
-    public void shouldMapJaxb() throws ParseException {
+    public void shouldMapJaxb() throws ParseException, JAXBException {
 
         SourceTargetMapper mapper = SourceTargetMapper.INSTANCE;
 
@@ -57,8 +62,13 @@ public class JaxbBasedMapperTest extends Arquillian {
         source1.setOrderDetails( new OrderDetailsDto() );
         source1.setOrderNumber( 11L );
         source1.setOrderDate( createDate( "31-08-1982 10:20:56" ) );
+        source1.setShippingAddress( new ShippingAddressDto() );
+        source1.getShippingAddress().setCity( "SmallTown" );
+        source1.getShippingAddress().setHouseNumber( "11a" );
+        source1.getShippingAddress().setStreet( "Awesome rd" );
+        source1.getShippingAddress().setCountry( "USA" );
         source1.getOrderDetails().setDescription( new ArrayList() );
-        source1.getOrderDetails().setName( "Shopping list for a Mapper");
+        source1.getOrderDetails().setName( "Shopping list for a Mapper" );
         source1.getOrderDetails().getDescription().add( "1 MapStruct" );
         source1.getOrderDetails().getDescription().add( "3 Lines of Code" );
         source1.getOrderDetails().getDescription().add( "1 Dose of Luck" );
@@ -66,6 +76,11 @@ public class JaxbBasedMapperTest extends Arquillian {
 
         // map to JAXB
         OrderType target = mapper.targetToSource( source1 );
+
+        // do a pretty print
+        ObjectFactory of = new ObjectFactory();
+        System.out.println( toXml( of.createOrder( target ) ) );
+
         // map back from JAXB
         OrderDto source2 = mapper.sourceToTarget( target );
 
@@ -87,5 +102,15 @@ public class JaxbBasedMapperTest extends Arquillian {
     private Date createDate( String date ) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat( "dd-M-yyyy hh:mm:ss" );
         return sdf.parse( date );
+    }
+
+    private String toXml( JAXBElement element ) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance( element.getValue().getClass() );
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        marshaller.marshal( element, baos );
+        return baos.toString();
     }
 }

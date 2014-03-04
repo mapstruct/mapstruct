@@ -33,6 +33,7 @@
 	    <element name="orderNumber" type="long"/>
         <element name="orderDate" type="dateTime"/>
 	    <element name="orderDetails" type="test1:OrderDetailsType"/>
+        <element name="shippingAddress" type="test2:ShippingAddressType"/>
 	</sequence>
     </complexType>
 

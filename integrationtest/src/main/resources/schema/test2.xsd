@@ -33,4 +33,14 @@
 	</restriction>
     </simpleType>
 
+    <element name="ShippingAddress" type="test2:ShippingAddressType" />
+    <complexType name="ShippingAddressType">
+	<sequence>
+	    <element name="street" type="string"/>
+	    <element name="houseNumber" type="string"/>
+	    <element name="city" type="string"/>
+	    <element name="country" type="string"/>
+	</sequence>
+    </complexType>
+
 </schema>

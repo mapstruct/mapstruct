@@ -16,53 +16,49 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package org.mapstruct.itest.jaxb;
-
-import java.util.Date;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class OrderDto {
+public class ShippingAddressDto {
 
-    private Long orderNumber;
-    private Date orderDate;
-    private OrderDetailsDto orderDetails;
-    private ShippingAddressDto shippingAddress;
+    private String street;
+    private String houseNumber;
+    private String city;
+    private String country;
 
-
-    public Long getOrderNumber() {
-        return orderNumber;
+    public String getStreet() {
+        return street;
     }
 
-    public void setOrderNumber( Long orderNumber ) {
-        this.orderNumber = orderNumber;
+    public void setStreet( String street ) {
+        this.street = street;
     }
 
-    public Date getOrderDate() {
-        return orderDate;
+    public String getHouseNumber() {
+        return houseNumber;
     }
 
-    public void setOrderDate( Date orderDate ) {
-        this.orderDate = orderDate;
+    public void setHouseNumber( String houseNumber ) {
+        this.houseNumber = houseNumber;
     }
 
-    public OrderDetailsDto getOrderDetails() {
-        return orderDetails;
+    public String getCity() {
+        return city;
     }
 
-    public void setOrderDetails( OrderDetailsDto orderDetails ) {
-        this.orderDetails = orderDetails;
+    public void setCity( String city ) {
+        this.city = city;
     }
 
-    public ShippingAddressDto getShippingAddress() {
-        return shippingAddress;
+    public String getCountry() {
+        return country;
     }
 
-    public void setShippingAddress( ShippingAddressDto shippingAddress ) {
-        this.shippingAddress = shippingAddress;
+    public void setCountry( String country ) {
+        this.country = country;
     }
 
 }
