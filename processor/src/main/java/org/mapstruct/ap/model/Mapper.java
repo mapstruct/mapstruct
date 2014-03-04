@@ -35,13 +35,15 @@ import org.mapstruct.ap.model.common.TypeFactory;
 public class Mapper extends GeneratedType {
 
     private static final String IMPLEMENTATION_SUFFIX = "Impl";
+    private static final String DECORATED_IMPLEMENTATION_SUFFIX = "Impl_";
 
     private final List<MapperReference> referencedMappers;
+    private final Decorator decorator;
 
     private Mapper(TypeFactory typeFactory, String packageName, String name, String superClassName,
                    String interfaceName,
                    List<MappingMethod> methods, boolean suppressGeneratorTimestamp, Accessibility accessibility,
-                   List<MapperReference> referencedMappers) {
+                   List<MapperReference> referencedMappers, Decorator decorator) {
 
         super(
             typeFactory,
@@ -56,6 +58,7 @@ public class Mapper extends GeneratedType {
         );
 
         this.referencedMappers = referencedMappers;
+        this.decorator = decorator;
     }
 
     public static class Builder {
@@ -67,6 +70,7 @@ public class Mapper extends GeneratedType {
 
         private Elements elementUtils;
         private boolean suppressGeneratorTimestamp;
+        private Decorator decorator;
 
         public Builder element(TypeElement element) {
             this.element = element;
@@ -98,8 +102,14 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
+        public Builder decorator(Decorator decorator) {
+            this.decorator = decorator;
+            return this;
+        }
+
         public Mapper build() {
-            String implementationName = element.getSimpleName() + IMPLEMENTATION_SUFFIX;
+            String implementationName = element.getSimpleName()
+                + ( decorator == null ? IMPLEMENTATION_SUFFIX : DECORATED_IMPLEMENTATION_SUFFIX );
 
             return new Mapper(
                 typeFactory,
@@ -110,13 +120,18 @@ public class Mapper extends GeneratedType {
                 mappingMethods,
                 suppressGeneratorTimestamp,
                 Accessibility.fromModifiers( element.getModifiers() ),
-                mapperReferences
+                mapperReferences,
+                decorator
             );
         }
     }
 
     public List<MapperReference> getReferencedMappers() {
         return referencedMappers;
+    }
+
+    public Decorator getDecorator() {
+        return decorator;
     }
 
     @Override

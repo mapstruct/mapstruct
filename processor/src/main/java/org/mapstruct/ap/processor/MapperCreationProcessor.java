@@ -32,6 +32,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
@@ -39,7 +40,9 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.BeanMappingMethod;
+import org.mapstruct.ap.model.Decorator;
 import org.mapstruct.ap.model.DefaultMapperReference;
+import org.mapstruct.ap.model.DelegatingMethod;
 import org.mapstruct.ap.model.EnumMappingMethod;
 import org.mapstruct.ap.model.IterableMappingMethod;
 import org.mapstruct.ap.model.MapMappingMethod;
@@ -64,6 +67,7 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
+import org.mapstruct.ap.prism.DecoratedWithPrism;
 import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
@@ -127,6 +131,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .mappingMethods( mappingMethods )
             .mapperReferences( mapperReferences )
             .suppressGeneratorTimestamp( options.isSuppressGeneratorTimestamp() )
+            .decorator( getDecorator( element, methods ) )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
             .build();
@@ -157,6 +162,70 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         else {
             return options.getUnmappedTargetPolicy();
         }
+    }
+
+    private Decorator getDecorator(TypeElement element, List<SourceMethod> methods) {
+        DecoratedWithPrism decoratorPrism = DecoratedWithPrism.getInstanceOn( element );
+
+        if ( decoratorPrism == null ) {
+            return null;
+        }
+
+        TypeElement decoratorElement = (TypeElement) typeUtils.asElement( decoratorPrism.value() );
+
+        List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>( methods.size() );
+
+        for ( SourceMethod mappingMethod : methods ) {
+            boolean implementationRequired = true;
+            for ( ExecutableElement method : ElementFilter.methodsIn( decoratorElement.getEnclosedElements() ) ) {
+                if ( elementUtils.overrides( method, mappingMethod.getExecutable(), decoratorElement ) ) {
+                    implementationRequired = false;
+                    break;
+                }
+            }
+
+            if ( implementationRequired ) {
+                mappingMethods.add( new DelegatingMethod( mappingMethod ) );
+            }
+        }
+
+        boolean hasDelegateConstructor = false;
+        boolean hasDefaultConstructor = false;
+        for ( ExecutableElement constructor : ElementFilter.constructorsIn( decoratorElement.getEnclosedElements() ) ) {
+            if ( constructor.getParameters().isEmpty() ) {
+                hasDefaultConstructor = true;
+            }
+            else if ( constructor.getParameters().size() == 1 ) {
+                if ( typeUtils.isAssignable(
+                    element.asType(),
+                    constructor.getParameters().iterator().next().asType()
+                ) ) {
+                    hasDelegateConstructor = true;
+                }
+            }
+        }
+
+        if ( !hasDelegateConstructor && !hasDefaultConstructor ) {
+            messager.printMessage(
+                Kind.ERROR,
+                String.format(
+                    "Specified decorator type has no default constructor nor a constructor with a single " +
+                        "parameter accepting the decorated mapper type."
+                ),
+                element,
+                decoratorPrism.mirror
+            );
+        }
+
+        return Decorator.getInstance(
+            elementUtils,
+            typeFactory,
+            element,
+            decoratorPrism,
+            mappingMethods,
+            hasDelegateConstructor,
+            options.isSuppressGeneratorTimestamp()
+        );
     }
 
     private List<MapperReference> getReferencedMappers(TypeElement element) {

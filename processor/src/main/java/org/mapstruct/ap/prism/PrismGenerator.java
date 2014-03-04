@@ -19,16 +19,17 @@
 package org.mapstruct.ap.prism;
 
 import javax.xml.bind.annotation.XmlElementDecl;
+
 import net.java.dev.hickory.prism.GeneratePrism;
 import net.java.dev.hickory.prism.GeneratePrisms;
-
+import org.mapstruct.DecoratedWith;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.TargetType;
 import org.mapstruct.Mappings;
+import org.mapstruct.TargetType;
 
 /**
  * Triggers the generation of prism types using <a href="https://java.net/projects/hickory">Hickory</a>.
@@ -43,6 +44,7 @@ import org.mapstruct.Mappings;
     @GeneratePrism(value = MapMapping.class, publicAccess = true),
     @GeneratePrism(value = TargetType.class, publicAccess = true),
     @GeneratePrism(value = MappingTarget.class, publicAccess = true),
+    @GeneratePrism(value = DecoratedWith.class, publicAccess = true),
 
     // external types
     @GeneratePrism(value = XmlElementDecl.class, publicAccess = true)

@@ -48,6 +48,10 @@ public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, V
         ModelWriter modelWriter = new ModelWriter();
 
         createSourceFile( model, modelWriter, filer );
+
+        if ( model.getDecorator() != null ) {
+            createSourceFile( model.getDecorator(), modelWriter, filer );
+        }
     }
 
     private void createSourceFile(GeneratedType model, ModelWriter modelWriter, Filer filer) {
