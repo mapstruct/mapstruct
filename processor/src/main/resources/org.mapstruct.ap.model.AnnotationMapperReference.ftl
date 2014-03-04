@@ -19,4 +19,4 @@
 
 -->
 <#nt><@includeModel object=annotation/>
-private <@includeModel object=mapperType/> ${variableName};
+private <@includeModel object=type/> ${variableName};

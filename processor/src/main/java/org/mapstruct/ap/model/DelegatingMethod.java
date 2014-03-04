@@ -18,16 +18,16 @@
  */
 package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.source.Method;
 
 /**
- * A reference to another mapper class, which itself may be generated or hand-written.
+ * A method of a decorator which delegates to the corresponding method of the generated mapper implementation.
  *
  * @author Gunnar Morling
  */
-public abstract class MapperReference extends Field {
+public class DelegatingMethod extends MappingMethod {
 
-    public MapperReference(Type type, String variableName) {
-        super( type, variableName );
+    public DelegatingMethod(Method method) {
+        super( method );
     }
 }

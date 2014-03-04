@@ -18,4 +18,26 @@
      limitations under the License.
 
 -->
-private final <@includeModel object=type/> ${variableName} = <#if annotatedMapper>Mappers.getMapper( <@includeModel object=type/>.class );<#else>new <@includeModel object=type/>();</#if>
+package ${packageName};
+
+<#list importTypes as importedType>
+import ${importedType.fullyQualifiedName};
+</#list>
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor"<#if suppressGeneratorTimestamp == false>,
+    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
+)
+<#list annotations as annotation>
+<#nt><@includeModel object=annotation/>
+</#list>
+<#lt>${accessibility.keyword} class ${name}<#if superClassName??> extends ${superClassName}</#if><#if interfaceName??> implements ${interfaceName}</#if> {
+<#list fields as field>
+
+<#nt>    <@includeModel object=field/>
+</#list>
+<#list methods as method>
+
+<#nt>    <@includeModel object=method/>
+</#list>
+}

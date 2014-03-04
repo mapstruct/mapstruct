@@ -44,6 +44,6 @@ public class AnnotationMapperReference extends MapperReference {
 
     @Override
     public Set<Type> getImportTypes() {
-        return Collections.asSet( annotation.getImportTypes(), super.getMapperType() );
+        return Collections.asSet( annotation.getImportTypes(), super.getType() );
     }
 }

@@ -16,18 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.test.decorator;
 
-import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.DecoratedWith;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
-/**
- * A reference to another mapper class, which itself may be generated or hand-written.
- *
- * @author Gunnar Morling
- */
-public abstract class MapperReference extends Field {
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@DecoratedWith(YetAnotherPersonMapperDecorator.class)
+public abstract class YetAnotherPersonMapper {
 
-    public MapperReference(Type type, String variableName) {
-        super( type, variableName );
-    }
+    public static final YetAnotherPersonMapper INSTANCE = Mappers.getMapper( YetAnotherPersonMapper.class );
+
+    public abstract PersonDto personToPersonDto(Person person);
+
+    public abstract AddressDto addressToAddressDto(Address address);
 }

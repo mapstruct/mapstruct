@@ -18,16 +18,43 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.Collections;
+import java.util.Set;
+
+import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 
 /**
- * A reference to another mapper class, which itself may be generated or hand-written.
+ * Represents the constructor of a decorator.
  *
  * @author Gunnar Morling
  */
-public abstract class MapperReference extends Field {
+public class DecoratorConstructor extends ModelElement {
 
-    public MapperReference(Type type, String variableName) {
-        super( type, variableName );
+    private final String name;
+    private final String delegateName;
+    private final boolean invokeSuperConstructor;
+
+    public DecoratorConstructor(String name, String delegateName, boolean invokeSuperConstructor) {
+        this.name = name;
+        this.delegateName = delegateName;
+        this.invokeSuperConstructor = invokeSuperConstructor;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        return Collections.emptySet();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDelegateName() {
+        return delegateName;
+    }
+
+    public boolean isInvokeSuperConstructor() {
+        return invokeSuperConstructor;
     }
 }

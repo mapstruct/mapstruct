@@ -16,18 +16,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.test.decorator;
 
-import org.mapstruct.ap.model.common.Type;
+import java.util.Date;
 
-/**
- * A reference to another mapper class, which itself may be generated or hand-written.
- *
- * @author Gunnar Morling
- */
-public abstract class MapperReference extends Field {
+public class PersonDto {
 
-    public MapperReference(Type type, String variableName) {
-        super( type, variableName );
+    private String name;
+    private Date dateOfBirth;
+    private AddressDto address;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public AddressDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDto address) {
+        this.address = address;
     }
 }

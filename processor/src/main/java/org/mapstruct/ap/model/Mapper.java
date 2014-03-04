@@ -18,20 +18,12 @@
  */
 package org.mapstruct.ap.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.annotation.Generated;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.model.common.Accessibility;
-import org.mapstruct.ap.model.common.ModelElement;
-import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 
 /**
@@ -40,35 +32,33 @@ import org.mapstruct.ap.model.common.TypeFactory;
  *
  * @author Gunnar Morling
  */
-public class Mapper extends ModelElement {
+public class Mapper extends GeneratedType {
 
     private static final String IMPLEMENTATION_SUFFIX = "Impl";
+    private static final String DECORATED_IMPLEMENTATION_SUFFIX = "Impl_";
 
-    private final TypeFactory typeFactory;
-    private final String packageName;
-    private final boolean superTypeIsInterface;
-    private final String interfaceName;
-    private final String implementationName;
-    private final List<Annotation> annotations;
-    private final List<MappingMethod> mappingMethods;
     private final List<MapperReference> referencedMappers;
-    private final boolean suppressGeneratorTimestamp;
-    private final Accessibility accessibility;
+    private final Decorator decorator;
 
-    private Mapper(TypeFactory typeFactory, String packageName, boolean superTypeIsInterface, String interfaceName,
-                   String implementationName, List<MappingMethod> mappingMethods,
-                   List<MapperReference> referencedMappers, boolean suppressGeneratorTimestamp,
-                   Accessibility accessibility) {
-        this.packageName = packageName;
-        this.superTypeIsInterface = superTypeIsInterface;
-        this.interfaceName = interfaceName;
-        this.implementationName = implementationName;
-        this.annotations = new ArrayList<Annotation>();
-        this.mappingMethods = mappingMethods;
+    private Mapper(TypeFactory typeFactory, String packageName, String name, String superClassName,
+                   String interfaceName,
+                   List<MappingMethod> methods, boolean suppressGeneratorTimestamp, Accessibility accessibility,
+                   List<MapperReference> referencedMappers, Decorator decorator) {
+
+        super(
+            typeFactory,
+            packageName,
+            name,
+            superClassName,
+            interfaceName,
+            methods,
+            referencedMappers,
+            suppressGeneratorTimestamp,
+            accessibility
+        );
+
         this.referencedMappers = referencedMappers;
-        this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
-        this.typeFactory = typeFactory;
-        this.accessibility = accessibility;
+        this.decorator = decorator;
     }
 
     public static class Builder {
@@ -80,6 +70,7 @@ public class Mapper extends ModelElement {
 
         private Elements elementUtils;
         private boolean suppressGeneratorTimestamp;
+        private Decorator decorator;
 
         public Builder element(TypeElement element) {
             this.element = element;
@@ -111,126 +102,40 @@ public class Mapper extends ModelElement {
             return this;
         }
 
+        public Builder decorator(Decorator decorator) {
+            this.decorator = decorator;
+            return this;
+        }
+
         public Mapper build() {
+            String implementationName = element.getSimpleName()
+                + ( decorator == null ? IMPLEMENTATION_SUFFIX : DECORATED_IMPLEMENTATION_SUFFIX );
+
             return new Mapper(
                 typeFactory,
                 elementUtils.getPackageOf( element ).getQualifiedName().toString(),
-                element.getKind() == ElementKind.INTERFACE ? true : false,
-                element.getSimpleName().toString(),
-                element.getSimpleName() + IMPLEMENTATION_SUFFIX,
+                implementationName,
+                element.getKind() != ElementKind.INTERFACE ? element.getSimpleName().toString() : null,
+                element.getKind() == ElementKind.INTERFACE ? element.getSimpleName().toString() : null,
                 mappingMethods,
-                mapperReferences,
                 suppressGeneratorTimestamp,
-                Accessibility.fromModifiers( element.getModifiers() )
+                Accessibility.fromModifiers( element.getModifiers() ),
+                mapperReferences,
+                decorator
             );
         }
-    }
-
-    @Override
-    public SortedSet<Type> getImportTypes() {
-        SortedSet<Type> importedTypes = new TreeSet<Type>();
-        importedTypes.add( typeFactory.getType( Generated.class ) );
-
-        for ( MappingMethod mappingMethod : mappingMethods ) {
-            for ( Type type : mappingMethod.getImportTypes() ) {
-                addWithDependents( importedTypes, type );
-            }
-        }
-
-        for ( MapperReference mapperReference : referencedMappers ) {
-            for ( Type type : mapperReference.getImportTypes() ) {
-                addWithDependents( importedTypes, type );
-            }
-        }
-
-        for ( Annotation annotation : annotations ) {
-            addWithDependents( importedTypes, annotation.getType() );
-        }
-
-        return importedTypes;
-    }
-
-    private void addWithDependents(Collection<Type> collection, Type typeToAdd) {
-        if ( typeToAdd == null ) {
-            return;
-        }
-
-        if ( typeToAdd.isImported() &&
-            typeToAdd.getPackageName() != null &&
-            !typeToAdd.getPackageName().equals( packageName ) &&
-            !typeToAdd.getPackageName().startsWith( "java.lang" ) ) {
-            collection.add( typeToAdd );
-        }
-
-        addWithDependents( collection, typeToAdd.getImplementationType() );
-
-        for ( Type type : typeToAdd.getTypeParameters() ) {
-            addWithDependents( collection, type );
-        }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder( "Mapper {" );
-
-        sb.append( "\n    packageName='" + packageName + "\'," );
-        sb.append( "\n    interfaceName='" + interfaceName + "\'," );
-        sb.append( "\n    implementationName='" + implementationName + "\'," );
-        sb.append( "\n    beanMappings=[" );
-
-        for ( MappingMethod beanMapping : mappingMethods ) {
-            sb.append( "\n        " + beanMapping.toString().replaceAll( "\n", "\n        " ) );
-        }
-        sb.append( "\n    ]" );
-        sb.append( "\n    referencedMappers=" + referencedMappers );
-        sb.append( "\n}," );
-
-        return sb.toString();
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    /**
-     * Whether the mapper super-type is an interface or not.
-     *
-     * @return {@code true} if the mapper is generated from an interface, {@code false} when generated from an abstract
-     *         class.
-     */
-    public boolean isSuperTypeInterface() {
-        return superTypeIsInterface;
-    }
-
-    public String getInterfaceName() {
-        return interfaceName;
-    }
-
-    public String getImplementationName() {
-        return implementationName;
-    }
-
-    public List<MappingMethod> getMappingMethods() {
-        return mappingMethods;
     }
 
     public List<MapperReference> getReferencedMappers() {
         return referencedMappers;
     }
 
-    public boolean isSuppressGeneratorTimestamp() {
-        return suppressGeneratorTimestamp;
+    public Decorator getDecorator() {
+        return decorator;
     }
 
-    public void addAnnotation(Annotation annotation) {
-        annotations.add( annotation );
-    }
-
-    public List<Annotation> getAnnotations() {
-        return annotations;
-    }
-
-    public Accessibility getAccessibility() {
-        return accessibility;
+    @Override
+    protected String getTemplateName() {
+        return GeneratedType.class.getName() + ".ftl";
     }
 }

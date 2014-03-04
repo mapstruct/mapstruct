@@ -18,4 +18,7 @@
      limitations under the License.
 
 -->
-private final <@includeModel object=type/> ${variableName} = <#if annotatedMapper>Mappers.getMapper( <@includeModel object=type/>.class );<#else>new <@includeModel object=type/>();</#if>
+@Override
+public <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
+    return delegate.${name}( <#list parameters as param>${param.name}<#if param_has_next>, </#if></#list> );
+}

@@ -16,18 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.test.decorator;
 
-import org.mapstruct.ap.model.common.Type;
-
-/**
- * A reference to another mapper class, which itself may be generated or hand-written.
- *
- * @author Gunnar Morling
- */
-public abstract class MapperReference extends Field {
-
-    public MapperReference(Type type, String variableName) {
-        super( type, variableName );
-    }
+public abstract class ErroneousPersonMapperDecorator {
 }
