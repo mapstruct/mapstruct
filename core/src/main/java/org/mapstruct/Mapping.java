@@ -18,6 +18,10 @@
  */
 package org.mapstruct;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,6 +30,8 @@ import java.util.Date;
  *
  * @author Gunnar Morling
  */
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.METHOD)
 public @interface Mapping {
 
     /**

@@ -18,11 +18,18 @@
  */
 package org.mapstruct;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * Configures the mappings of several bean attributes.
  *
  * @author Gunnar Morling
  */
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.METHOD)
 public @interface Mappings {
 
     /**

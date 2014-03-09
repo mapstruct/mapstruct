@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
  * @author Gunnar Morling
  */
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 public @interface DecoratedWith {
 
     /**
