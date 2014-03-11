@@ -19,6 +19,8 @@
 package org.mapstruct;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
@@ -28,6 +30,7 @@ import java.lang.annotation.Target;
  *
  * @author Andreas Gudian
  */
-@Target( ElementType.PARAMETER )
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.CLASS)
 public @interface MappingTarget {
 }
