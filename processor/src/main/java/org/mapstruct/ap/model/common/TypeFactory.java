@@ -123,16 +123,16 @@ public class TypeFactory {
         Type implementationType = getImplementationType( mirror );
 
         boolean isIterableType = typeUtils.isSubtype(
-            mirror,
-            iterableType
+            typeUtils.erasure( mirror ),
+            typeUtils.erasure( iterableType )
         );
         boolean isCollectionType = typeUtils.isSubtype(
-            mirror,
-            collectionType
+            typeUtils.erasure( mirror ),
+            typeUtils.erasure( collectionType )
         );
         boolean isMapType = typeUtils.isSubtype(
-            mirror,
-            mapType
+            typeUtils.erasure( mirror ),
+            typeUtils.erasure( mapType )
         );
 
         boolean isEnumType;

@@ -45,11 +45,11 @@ public class FactoryTest extends MapperTestBase {
             @Diagnostic(type = BarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
-                messageRegExp = "^Ambiguous factory methods: \"org\\.mapstruct\\.ap\\.test\\.erroneous\\."
+                messageRegExp = "Ambiguous factory methods: \"org\\.mapstruct\\.ap\\.test\\.erroneous\\."
                     + "ambiguousfactorymethod\\.Bar createBar\\(\\)\" conflicts with "
                     + "\"org\\.mapstruct\\.ap\\.test\\.erroneous\\.ambiguousfactorymethod\\.Bar "
                     + "org\\.mapstruct\\.ap\\.test\\.erroneous\\.ambiguousfactorymethod"
-                    + "\\.a\\.BarFactory\\.createBar\\(\\)\"\\.$")
+                    + "\\.a\\.BarFactory\\.createBar\\(\\)\"\\")
         }
     )
     public void shouldUseTwoFactoryMethods() {

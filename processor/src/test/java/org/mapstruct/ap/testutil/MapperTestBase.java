@@ -132,7 +132,7 @@ public abstract class MapperTestBase {
             diagnostics.getDiagnostics()
         );
         CompilationOutcomeDescriptor expectedResult = CompilationOutcomeDescriptor.forExpectedCompilationResult(
-            testMethod.getAnnotation( ExpectedCompilationOutcome.class )
+                testMethod.getAnnotation( ExpectedCompilationOutcome.class )
         );
 
         if ( expectedResult.getCompilationResult() == CompilationResult.SUCCEEDED ) {
@@ -343,5 +343,9 @@ public abstract class MapperTestBase {
             // but it's better than nothing
             return o1.getMessage().compareTo( o2.getMessage() );
         }
+    }
+
+    private boolean isJdk6() {
+        return ( Integer.parseInt( System.getProperty( "java.version" ).split( "\\." )[1]) == 6 );
     }
 }

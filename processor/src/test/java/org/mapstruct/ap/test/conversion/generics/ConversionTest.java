@@ -158,4 +158,18 @@ public class ConversionTest extends MapperTestBase {
         })
     public void shouldFailOnSuperBounds2() {
     }
+
+    @Test
+    @WithClasses({ ErroneousSource6.class, ErroneousTarget6.class, ErroneousSourceTargetMapper6.class })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousSourceTargetMapper6.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 29,
+                messageRegExp = "Can't map property \"org.mapstruct.ap.test.conversion.generics.WildCardSuperWrapper"
+                    + "<java.lang.String> foo\" to"
+                    + " \"org.mapstruct.ap.test.conversion.generics.WildCardSuperWrapper<java.lang.Integer> foo\"")
+        })
+    public void shouldFailOnNonMatchingWildCards() {
+    }
 }

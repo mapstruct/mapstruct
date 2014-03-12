@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.severalsources;
 
+import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.testutil.IssueKey;
@@ -104,9 +105,19 @@ public class SeveralSourceParametersTest extends MapperTestBase {
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 29,
+                messageRegExp = "Several possible source properties for target property \"description\".",
+                javaVersions = { SourceVersion.RELEASE_6 } ),
+            @Diagnostic(type = ErroneousSourceTargetMapper.class,
+                kind = Kind.ERROR,
+                line = 29,
+                messageRegExp = "Several possible source properties for target property \"zipCode\".",
+                javaVersions = { SourceVersion.RELEASE_6 } ),
+            @Diagnostic(type = ErroneousSourceTargetMapper.class,
+                kind = Kind.ERROR,
+                line = 29,
                 messageRegExp = "Several possible source properties for target property \"street\".")
-        }
-    )
+    })
+
     public void shouldFailToGenerateMappingsForAmbigiousSourceProperty() {
     }
 }

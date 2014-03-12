@@ -21,6 +21,7 @@ package org.mapstruct.ap.testutil.compilation.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
@@ -56,11 +57,25 @@ public class CompilationOutcomeDescriptor {
             List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
             for ( org.mapstruct.ap.testutil.compilation.annotation.Diagnostic diagnostic :
                 expectedCompilationResult.diagnostics() ) {
-                diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( diagnostic ) );
+                if ( requiresEvaluation( diagnostic.javaVersions() ) ) {
+                    diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( diagnostic ) );
+                }
             }
 
             return new CompilationOutcomeDescriptor( expectedCompilationResult.value(), diagnosticDescriptors );
         }
+    }
+
+    private static boolean requiresEvaluation(SourceVersion[] sourceVersions) {
+        if ( sourceVersions.length == 0 ) {
+            return true;
+        }
+        for (SourceVersion sourceVersion : sourceVersions) {
+            if (SourceVersion.latestSupported().equals( sourceVersion ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static CompilationOutcomeDescriptor forResult(String sourceDir, boolean compilationSuccessful,
