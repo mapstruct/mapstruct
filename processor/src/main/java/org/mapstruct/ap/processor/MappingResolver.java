@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.processor;
 
+import org.mapstruct.ap.model.ParameterAssignment;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -64,7 +65,7 @@ import org.mapstruct.ap.util.Strings;
  *
  * @author Sjaak Derksen
  */
-public class MappingMethodResolver {
+public class MappingResolver {
 
     private final Messager messager;
     private final TypeFactory typeFactory;
@@ -78,7 +79,8 @@ public class MappingMethodResolver {
      */
     private final Set<VirtualMappingMethod> virtualMethods;
 
-    public MappingMethodResolver(Messager messager, TypeFactory typeFactory, Elements elementUtils, Types typeUtils) {
+
+    public MappingResolver(Messager messager, TypeFactory typeFactory, Elements elementUtils, Types typeUtils) {
         this.messager = messager;
         this.typeFactory = typeFactory;
         this.conversions = new Conversions( elementUtils, typeFactory );
@@ -88,7 +90,82 @@ public class MappingMethodResolver {
     }
 
 
-    public TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {
+    /**
+     * returns a parameter assignment
+     *
+     * @param mappingMethod target mapping method
+     * @param mappedElement used for error messages
+     * @param mapperReferences list of references to mapper
+     * @param methods list of candidate methods
+     * @param sourceType parameter to match
+     * @param targetType return type to match
+     * @param targetPropertyName name of the target property
+     * @param dateFormat used for formatting dates in build in methods that need context information
+     * @param sourceReference call to source type as string
+     *
+     * @return an assignment to a method parameter, which can either be:
+     * <ol>
+     * <li>MethodReference</li>
+     * <li>TypeConversion</li>
+     * <li>Simple Assignment (empty ParameterAssignment)</li>
+     * <li>null, no assignment found</li>
+     * </ol>
+     */
+     public ParameterAssignment getParameterAssignment( SourceMethod mappingMethod,
+            String mappedElement,
+            List<MapperReference> mapperReferences,
+            List<SourceMethod> methods,
+            Type sourceType,
+            Type targetType,
+            String targetPropertyName,
+            String dateFormat,
+            String sourceReference ) {
+
+        MethodReference mappingMethodReference = getMappingMethodReferenceBasedOnMethod(
+                mappingMethod,
+                mappedElement,
+                mapperReferences,
+                methods,
+                sourceType,
+                targetType,
+                targetPropertyName,
+                dateFormat
+        );
+
+        ParameterAssignment parameterAssignment = null;
+
+        if (mappingMethodReference != null ) {
+            parameterAssignment = new ParameterAssignment(mappingMethodReference );
+        }
+        else if (sourceType.isAssignableTo( targetType ) ) {
+            parameterAssignment = new ParameterAssignment();
+        }
+        else {
+            TypeConversion conversion = getConversion( sourceType, targetType, dateFormat, sourceReference );
+            if ( conversion != null ) {
+                parameterAssignment = new ParameterAssignment(conversion );
+            }
+            else {
+                mappingMethodReference = getMappingMethodReferenceBasedOnParameter(
+                        mappingMethod,
+                        mappedElement,
+                        mapperReferences,
+                        methods,
+                        sourceType,
+                        targetType,
+                        targetPropertyName,
+                        dateFormat
+                );
+                if ( mappingMethodReference != null ) {
+                    parameterAssignment = new ParameterAssignment( mappingMethodReference );
+                }
+            }
+        }
+        return parameterAssignment;
+    }
+
+
+    private TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {
         ConversionProvider conversionProvider = conversions.getConversion( sourceType, targetType );
 
         if ( conversionProvider == null ) {
@@ -115,7 +192,7 @@ public class MappingMethodResolver {
      *
      * @return a method reference.
      */
-    public MethodReference getMappingMethodReferenceBasedOnMethod(SourceMethod mappingMethod,
+    private MethodReference getMappingMethodReferenceBasedOnMethod(SourceMethod mappingMethod,
                                                                    String mappedElement,
                                                                    List<MapperReference> mapperReferences,
                                                                    List<SourceMethod> methods,
@@ -172,7 +249,7 @@ public class MappingMethodResolver {
      *
      * @return a method reference.
      */
-    public MethodReference getMappingMethodReferenceBasedOnParameter(SourceMethod mappingMethod,
+    private MethodReference getMappingMethodReferenceBasedOnParameter(SourceMethod mappingMethod,
                                                                       String mappedElement,
                                                                       List<MapperReference> mapperReferences,
                                                                       List<SourceMethod> methods,
@@ -267,7 +344,7 @@ public class MappingMethodResolver {
         return null;
     }
 
-    public Set<VirtualMappingMethod> getVirtualMethodsToCreate() {
+    public Set<VirtualMappingMethod> getVirtualMethodsToGenerate() {
         return virtualMethods;
     }
 
