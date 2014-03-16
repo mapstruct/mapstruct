@@ -51,6 +51,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.prism.MappingTargetPrism;
 import org.mapstruct.ap.prism.TargetTypePrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
+import org.mapstruct.ap.util.TypeUtilsJDK6Fix;
 
 /**
  * Factory creating {@link Type} instances.
@@ -122,18 +123,9 @@ public class TypeFactory {
 
         Type implementationType = getImplementationType( mirror );
 
-        boolean isIterableType = typeUtils.isSubtype(
-            typeUtils.erasure( mirror ),
-            typeUtils.erasure( iterableType )
-        );
-        boolean isCollectionType = typeUtils.isSubtype(
-            typeUtils.erasure( mirror ),
-            typeUtils.erasure( collectionType )
-        );
-        boolean isMapType = typeUtils.isSubtype(
-            typeUtils.erasure( mirror ),
-            typeUtils.erasure( mapType )
-        );
+        boolean isIterableType = TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, iterableType );
+        boolean isCollectionType = TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, collectionType );
+        boolean isMapType = TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, mapType );
 
         boolean isEnumType;
         boolean isInterface;
