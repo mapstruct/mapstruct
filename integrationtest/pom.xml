@@ -114,6 +114,30 @@
 
     <build>
         <plugins>
+			<plugin>
+			    <!--
+			         As a workaround to a bug in JDK8, where a security error is thrown for "xjc.xsd"
+			         being loaded with protocol 'file', even though we specified '-disableXmlSecurity',
+			         we set a system property to suppress the error
+			    -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>set-system-properties</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<properties>
+						<property>
+							<name>javax.xml.accessExternalSchema</name>
+							<value>file</value>
+						</property>
+					</properties>
+				</configuration>
+			</plugin>
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
@@ -136,6 +160,9 @@
                     <extension>true</extension>
                     <verbose>true</verbose>
                     <specVersion>2.1</specVersion>
+                    <args>
+                        <arg>-disableXmlSecurity</arg>
+                     </args>
                 </configuration>
             </plugin>
             <plugin>
