@@ -18,8 +18,26 @@
      limitations under the License.
 
 -->
-<#if methodRefChild??>
-    <#if declaringMapper??>${mapperVariableName}.</#if>${name}(<#list parameters as param> <#if param.targetType>${ext.targetType}.class<#else><@includeModel object=methodRefChild input=ext.input targetType=singleSourceParameterType.name/></#if><#if param_has_next>,<#else> </#if></#list><#if contextParam??>, ${contextParam}</#if>)<#t>
-<#else>
-    <#if declaringMapper??>${mapperVariableName}.</#if>${name}(<#list parameters as param> <#if param.targetType>${ext.targetType}.class<#else>${ext.input}</#if><#if param_has_next>,<#else> </#if></#list><#if contextParam??>, ${contextParam}</#if>)<#t>
-</#if>
+<@compress single_line=true>
+    <#-- method is either internal to the mapper class, or external (via uses) declaringMapper!=null -->
+    <#if declaringMapper??>${mapperVariableName}.</#if>${name}( <@arguments/> )
+    <#macro arguments>
+        <#list parameters as param>
+            <#if param.targetType>
+                <#-- a class is passed on for casting, see @TargetType -->
+                ${ext.targetType}.class
+            <#else>
+                <#if methodRefChild??>
+                    <#-- the nested case -->
+                    <@includeModel object=methodRefChild source=ext.source targetType=singleSourceParameterType.name/>
+                <#else>
+                    <#-- the non nested case -->
+                    ${ext.source}
+                </#if>
+            </#if>
+            <#if param_has_next>, </#if>
+        </#list>
+        <#-- context parameter, e.g. for buildin methods concerning date conversion -->
+        <#if contextParam??>, ${contextParam}</#if>
+    </#macro>
+</@compress>

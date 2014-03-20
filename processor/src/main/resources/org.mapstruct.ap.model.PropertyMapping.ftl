@@ -18,87 +18,55 @@
      limitations under the License.
 
 -->
-<#-- a) invoke mapping method -->
-<#if mappingMethod??>
-    <@assignResult
-        existingInstanceMapping=ext.existingInstanceMapping
-        targetAccessorSetter=targetAccessorSetter
-        targetType=targetType
-        targetBeanName=ext.targetBeanName
-        targetReadAccessorName=targetReadAccessorName
-        targetAccessorName=targetAccessorName
-        sourceBeanName=sourceBeanName
-        sourceAccessorName=sourceAccessorName><#compress>
-            <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()" targetType=targetType raw=true/>
-    </#compress></@assignResult>
-<#-- b) simple conversion -->
-<#elseif conversion??>
-    <#if sourceType.primitive == false>
+ <#if !( targetType.collectionType || targetType.mapType ) >
+    <#-- non collections or maps -->
+    <#if ( !sourceType.primitive && parameterAssignment.assignmentType!="ASSIGNMENT" ) >
         if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-             <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
+           <@assignmentLine/>
         }
     <#else>
-        <@applyConversion targetBeanName=ext.targetBeanName targetAccessorName=targetAccessorName conversion=conversion/>
+        <@assignmentLine/>
     </#if>
-<#-- c) simply set -->
 <#else>
-    <@assignResult
-        existingInstanceMapping=ext.existingInstanceMapping
-        targetAccessorSetter=targetAccessorSetter
-        targetType=targetType
-        targetBeanName=ext.targetBeanName
-        targetReadAccessorName=targetReadAccessorName
-        targetAccessorName=targetAccessorName
-        sourceBeanName=sourceBeanName
-        sourceAccessorName=sourceAccessorName
-        ; use_plain><#compress>
-        <#if use_plain>
-            ${sourceBeanName}.${sourceAccessorName}()
-        <#else>
-            new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${sourceBeanName}.${sourceAccessorName}() )
-        </#if>
-    </#compress></@assignResult>
-</#if>
-<#macro assignResult existingInstanceMapping targetAccessorSetter targetType targetBeanName targetReadAccessorName targetAccessorName sourceBeanName sourceAccessorName>
-    <#if ( existingInstanceMapping || !targetAccessorSetter ) && ( targetType.collectionType || targetType.mapType ) >
-        if ( ${targetBeanName}.${targetReadAccessorName}() != null ) {
-            <#if existingInstanceMapping>
-                ${targetBeanName}.${targetReadAccessorName}().clear();
-            </#if><#t>
-            if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+    <#-- collections or maps -->
+    <#if ( ext.existingInstanceMapping || !targetAccessorSetter ) >
+        if ( ${ext.targetBeanName}.${targetReadAccessorName}() != null ) {
+            <#if ext.existingInstanceMapping>
+                ${ext.targetBeanName}.${targetReadAccessorName}().clear();
+             </#if><#t>
+             if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
                 <#if targetType.collectionType>
-                    ${targetBeanName}.${targetReadAccessorName}().addAll( <#nested true> );
+                    <@collectionOrMapAssignmentLine target="${ext.targetBeanName}.${targetReadAccessorName}().addAll"/>
                 <#else>
-                    ${targetBeanName}.${targetReadAccessorName}().putAll( <#nested true> );
+                    <@collectionOrMapAssignmentLine target="${ext.targetBeanName}.${targetReadAccessorName}().putAll"/>
                 </#if>
             }
         }
         <#if targetAccessorSetter>
-        else if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-            ${targetBeanName}.${targetAccessorName}( <#nested false> );
-        }
+           else if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+              <@collectionOrMapAssignmentLine/>
+           }
         </#if>
     <#elseif targetAccessorSetter>
-        <#if targetType.collectionType || targetType.mapType>
-        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-            ${targetBeanName}.${targetAccessorName}( <#nested false> );
-        }
-        <#else>
-            ${targetBeanName}.${targetAccessorName}( <#nested true> );
-        </#if>
-    </#if>
+         if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
+              <@collectionOrMapAssignmentLine/>
+         }
+     </#if>
+ </#if>
+ <#macro collectionOrMapAssignmentLine
+        target="${ext.targetBeanName}.${targetAccessorName}"
+        source="${sourceBeanName}.${sourceAccessorName}">
+    <#compress>
+         <#if parameterAssignment?? && parameterAssignment.assignmentType!="ASSIGNMENT">
+             <@assignmentLine target source/>
+         <#else>
+             ${target}( new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${source}() ) );
+         </#if>
+    </#compress>
+
 </#macro>
-<#macro applyConversion targetBeanName targetAccessorName conversion>
-    <#if (conversion.exceptionTypes?size == 0) >
-        ${targetBeanName}.${targetAccessorName}( <@includeModel object=conversion/> );
-    <#else>
-        try {
-            ${targetBeanName}.${targetAccessorName}( <@includeModel object=conversion/> );
-        }
-        <#list conversion.exceptionTypes as exceptionType>
-        catch( <@includeModel object=exceptionType/> e ) {
-            throw new RuntimeException( e );
-        }
-        </#list>
-    </#if>
+<#macro assignmentLine
+         target="${ext.targetBeanName}.${targetAccessorName}"
+         source="${sourceBeanName}.${sourceAccessorName}">
+     <@includeModel object=parameterAssignment target=target source="${source}()" targetType=targetType raw=true/>
 </#macro>

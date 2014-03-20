@@ -33,21 +33,16 @@ import org.mapstruct.ap.util.Strings;
  */
 public class MapMappingMethod extends MappingMethod {
 
-    private final MethodReference keyMappingMethod;
-    private final MethodReference valueMappingMethod;
-    private final TypeConversion keyConversion;
-    private final TypeConversion valueConversion;
+    private final ParameterAssignment keyAssignment;
+    private final ParameterAssignment valueAssignment;
     private final MethodReference factoryMethod;
 
-    public MapMappingMethod(SourceMethod method, MethodReference keyMappingMethod, TypeConversion keyConversion,
-                            MethodReference valueMappingMethod, TypeConversion valueConversion,
+    public MapMappingMethod(SourceMethod method, ParameterAssignment keyAssignment, ParameterAssignment valueAssignment,
                             MethodReference factoryMethod) {
         super( method );
 
-        this.keyMappingMethod = keyMappingMethod;
-        this.keyConversion = keyConversion;
-        this.valueMappingMethod = valueMappingMethod;
-        this.valueConversion = valueConversion;
+        this.keyAssignment = keyAssignment;
+        this.valueAssignment = valueAssignment;
         this.factoryMethod = factoryMethod;
     }
 
@@ -61,31 +56,23 @@ public class MapMappingMethod extends MappingMethod {
         throw new IllegalStateException( "Method " + this + " has no source parameter." );
     }
 
-    public MethodReference getKeyMappingMethod() {
-        return keyMappingMethod;
+    public ParameterAssignment getKeyAssignment() {
+        return keyAssignment;
     }
 
-    public TypeConversion getKeyConversion() {
-        return keyConversion;
-    }
-
-    public MethodReference getValueMappingMethod() {
-        return valueMappingMethod;
-    }
-
-    public TypeConversion getValueConversion() {
-        return valueConversion;
+    public ParameterAssignment getValueAssignment() {
+        return valueAssignment;
     }
 
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = super.getImportTypes();
 
-        if ( valueConversion != null ) {
-            types.addAll( valueConversion.getImportTypes() );
+        if ( keyAssignment != null ) {
+            types.addAll( keyAssignment.getImportTypes() );
         }
-        if ( keyConversion != null ) {
-            types.addAll( keyConversion.getImportTypes() );
+        if ( valueAssignment != null ) {
+            types.addAll( valueAssignment.getImportTypes() );
         }
 
         return types;

@@ -662,8 +662,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             Executables.getPropertyName( targetAcessor ),
             targetAcessor.getSimpleName().toString(),
             targetType,
-            parameterAssignment != null ? parameterAssignment.getMethodReference() : null,
-            parameterAssignment != null ? parameterAssignment.getTypeConversion() : null
+            parameterAssignment
         );
 
         if ( !isPropertyMappable( property ) ) {
@@ -715,12 +714,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
-        return new IterableMappingMethod(
-            method,
-            parameterAssignment != null ? parameterAssignment.getMethodReference() : null,
-            parameterAssignment != null ? parameterAssignment.getTypeConversion() : null,
-            factoryMethod
-        );
+        return new IterableMappingMethod( method, parameterAssignment, factoryMethod );
     }
 
     private MapMappingMethod getMapMappingMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
@@ -787,15 +781,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
-
-        return new MapMappingMethod(
-                method,
-                parameterAssignmentKey != null ? parameterAssignmentKey.getMethodReference() : null,
-                parameterAssignmentKey != null ? parameterAssignmentKey.getTypeConversion() : null,
-                parameterAssignmentValue != null ? parameterAssignmentValue.getMethodReference() : null,
-                parameterAssignmentValue != null ? parameterAssignmentValue.getTypeConversion() : null,
-                factoryMethod
-        );
+        return new MapMappingMethod( method, parameterAssignmentKey,  parameterAssignmentValue, factoryMethod );
     }
 
     private EnumMappingMethod getEnumMappingMethod(SourceMethod method) {
@@ -977,9 +963,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             );
         }
 
-        if ( property.getSourceType().isAssignableTo( property.getTargetType() ) ||
-            property.getMappingMethod() != null ||
-            property.getConversion() != null ||
+        if ( property.getParameterAssignment() != null ||
             ( ( property.getTargetType().isCollectionType() || property.getTargetType().isMapType() ) &&
                 collectionOrMapTargetTypeHasCompatibleConstructor ) ) {
             return true;

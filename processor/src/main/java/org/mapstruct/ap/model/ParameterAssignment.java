@@ -18,6 +18,13 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.mapstruct.ap.model.common.ModelElement;
+import org.mapstruct.ap.model.common.Type;
+
 /**
  * This class carries the possible ways to do an assignment to a parameter on a mapping target
  *
@@ -30,20 +37,28 @@ package org.mapstruct.ap.model;
  *
  * @author Sjaak Derksen
  */
-public class ParameterAssignment {
+public class ParameterAssignment extends ModelElement {
 
+
+
+    public static enum AssignmentType { TYPE_CONVERSION, METHOD_REFERENCE, ASSIGNMENT };
 
     private MethodReference methodReference;
     private TypeConversion typeConversion;
+    private final AssignmentType assignmentType;
+
 
     public ParameterAssignment() {
+        assignmentType = AssignmentType.ASSIGNMENT;
     }
 
     public ParameterAssignment( MethodReference methodReference ) {
+        assignmentType = AssignmentType.METHOD_REFERENCE;
         this.methodReference = methodReference;
     }
 
     public ParameterAssignment( TypeConversion typeConversion ) {
+        assignmentType = AssignmentType.TYPE_CONVERSION;
         this.typeConversion = typeConversion;
     }
 
@@ -55,4 +70,51 @@ public class ParameterAssignment {
         return typeConversion;
     }
 
+    public AssignmentType getAssignmentType() {
+        return assignmentType;
+    }
+
+    public List<Type> getExceptionTypes() {
+        List<Type> exceptionTypes = new ArrayList<Type>();
+         switch ( assignmentType ) {
+            case METHOD_REFERENCE:
+//                exceptionTypes.addAll( methodReference.getExceptionTypes() );
+                break;
+            case TYPE_CONVERSION:
+                exceptionTypes.addAll( typeConversion.getExceptionTypes() );
+                break;
+            default:
+        }
+        return exceptionTypes;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> importedTypes = new HashSet<Type>();
+        switch ( assignmentType ) {
+            case METHOD_REFERENCE:
+                importedTypes.addAll( methodReference.getImportTypes() );
+                break;
+            case TYPE_CONVERSION:
+                importedTypes.addAll( typeConversion.getImportTypes() );
+                break;
+            default:
+        }
+        return importedTypes;
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+         switch ( assignmentType ) {
+            case METHOD_REFERENCE:
+                result = methodReference.toString();
+                break;
+            case TYPE_CONVERSION:
+                result = typeConversion.toString();
+                break;
+            default:
+        }
+        return result;
+    }
 }

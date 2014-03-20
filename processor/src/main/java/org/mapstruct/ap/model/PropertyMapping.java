@@ -23,7 +23,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
-
+import org.mapstruct.ap.model.ParameterAssignment.AssignmentType;
 /**
  * Represents the mapping between a source and target property, e.g. from
  * {@code String Source#foo} to {@code int Target#bar}. Name and type of source
@@ -45,12 +45,12 @@ public class PropertyMapping extends ModelElement {
     private final boolean isTargetAccessorSetter;
     private final String targetReadAccessorName;
 
-    private final MethodReference mappingMethod;
-    private final TypeConversion conversion;
+    private final ParameterAssignment parameterAssignment;
+
 
     public PropertyMapping(String sourceBeanName, String sourceName, String sourceAccessorName, Type sourceType,
                            String targetName, String targetAccessorName, Type targetType,
-                           MethodReference mappingMethod, TypeConversion conversion) {
+                           ParameterAssignment parameterAssignment ) {
 
         this.sourceBeanName = sourceBeanName;
         this.sourceName = sourceName;
@@ -64,8 +64,7 @@ public class PropertyMapping extends ModelElement {
         this.targetReadAccessorName =
             this.isTargetAccessorSetter ? "get" + targetAccessorName.substring( 3 ) : targetAccessorName;
 
-        this.mappingMethod = mappingMethod;
-        this.conversion = conversion;
+        this.parameterAssignment = parameterAssignment;
     }
 
     public String getSourceBeanName() {
@@ -96,12 +95,8 @@ public class PropertyMapping extends ModelElement {
         return targetType;
     }
 
-    public MethodReference getMappingMethod() {
-        return mappingMethod;
-    }
-
-    public TypeConversion getConversion() {
-        return conversion;
+    public ParameterAssignment getParameterAssignment() {
+        return parameterAssignment;
     }
 
     /**
@@ -125,16 +120,17 @@ public class PropertyMapping extends ModelElement {
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> importTypes = new HashSet<Type>();
+        if ( parameterAssignment != null ) {
+            if ( isTargetAccessorSetter()
+                    && parameterAssignment.getAssignmentType().equals( AssignmentType.ASSIGNMENT )
+                    && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
+                importTypes.addAll( targetType.getImportTypes() );
+            }
 
-        if ( isTargetAccessorSetter() && getMappingMethod() == null
-            && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
-            importTypes.addAll( targetType.getImportTypes() );
+            if ( !parameterAssignment.getAssignmentType().equals( AssignmentType.ASSIGNMENT ) ) {
+                importTypes.addAll( parameterAssignment.getImportTypes() );
+            }
         }
-
-        if ( conversion != null && mappingMethod == null ) {
-            importTypes.addAll( conversion.getImportTypes() );
-        }
-
         return importTypes;
     }
 
@@ -145,8 +141,7 @@ public class PropertyMapping extends ModelElement {
             "\n    sourceType=" + sourceType + "," +
             "\n    targetName='" + targetAccessorName + "\'," +
             "\n    targetType=" + targetType + "," +
-            "\n    mappingMethod=" + mappingMethod + "," +
-            "\n    Conversion='" + conversion + "\'," +
+            "\n    parameterAssignment=" + parameterAssignment +
             "\n}";
     }
 }
