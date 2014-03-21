@@ -113,7 +113,8 @@ public class DecoratorTest extends MapperTestBase {
         //given
         Calendar birthday = Calendar.getInstance();
         birthday.set( 1928, 4, 23 );
-        Person person = new Person( "Gary", "Crant", birthday.getTime(), new Address( "42 Ocean View Drive" ) );
+        Person person = new Person2( "Gary", "Crant", birthday.getTime(), new Address( "42 Ocean View Drive" ) );
+
 
         //when
         PersonDto personDto = YetAnotherPersonMapper.INSTANCE.personToPersonDto( person );
@@ -123,6 +124,43 @@ public class DecoratorTest extends MapperTestBase {
         assertThat( personDto.getName() ).isEqualTo( "Gary Crant" );
         assertThat( personDto.getAddress() ).isNotNull();
         assertThat( personDto.getAddress().getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
+    }
+
+    @IssueKey("173")
+    @Test
+    @WithClasses({
+        Person2Mapper.class,
+        Person2MapperDecorator.class,
+        Person2.class,
+        PersonDto2.class,
+        Employer.class,
+        EmployerDto.class,
+        EmployerMapper.class,
+        SportsClub.class,
+        SportsClubDto.class,
+    })
+    public void shouldApplyCustomMappers() {
+        //given
+        Calendar birthday = Calendar.getInstance();
+        birthday.set( 1928, 4, 23 );
+        Person2 person = new Person2( "Gary", "Crant", birthday.getTime(), new Address( "42 Ocean View Drive" ) );
+        person.setEmployer( new Employer( "ACME" ) );
+        person.setSportsClub( new SportsClub( "SC Duckburg" ) );
+
+        //when
+        PersonDto2 personDto = Person2Mapper.INSTANCE.personToPersonDto( person );
+
+        //then
+        assertThat( personDto ).isNotNull();
+        assertThat( personDto.getName() ).isEqualTo( "Gary Crant" );
+        assertThat( personDto.getAddress() ).isNotNull();
+        assertThat( personDto.getAddress().getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
+        assertThat( personDto.getEmployer() ).isNotNull();
+        assertThat( personDto.getEmployer().getName() ).isNotNull();
+        assertThat( personDto.getEmployer().getName() ).isEqualTo( "ACME" );
+        assertThat( personDto.getSportsClub() ).isNotNull();
+        assertThat( personDto.getSportsClub().getName() ).isNotNull();
+        assertThat( personDto.getSportsClub().getName() ).isEqualTo( "SC Duckburg" );
     }
 
     @Test
