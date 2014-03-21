@@ -192,9 +192,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     break;
                 }
             }
-
+            Type declaringMapper = mappingMethod.getDeclaringMapper();
             if ( implementationRequired ) {
-                mappingMethods.add( new DelegatingMethod( mappingMethod ) );
+                if ( ( declaringMapper == null ) ||  declaringMapper.equals( typeFactory.getType( element ) ) ) {
+                    mappingMethods.add( new DelegatingMethod( mappingMethod ) );
+                }
             }
         }
 
