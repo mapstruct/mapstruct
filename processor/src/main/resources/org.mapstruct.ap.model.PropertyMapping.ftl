@@ -20,7 +20,7 @@
 -->
  <#if !( targetType.collectionType || targetType.mapType ) >
     <#-- non collections or maps -->
-    <#if ( !sourceType.primitive && parameterAssignment.assignmentType!="ASSIGNMENT" ) >
+    <#if ( !sourceType.primitive && propertyAssignment.assignmentType!="ASSIGNMENT" ) >
         if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
            <@assignmentLine/>
         }
@@ -57,7 +57,7 @@
         target="${ext.targetBeanName}.${targetAccessorName}"
         source="${sourceBeanName}.${sourceAccessorName}">
     <#compress>
-         <#if parameterAssignment?? && parameterAssignment.assignmentType!="ASSIGNMENT">
+         <#if propertyAssignment?? && propertyAssignment.assignmentType!="ASSIGNMENT">
              <@assignmentLine target source/>
          <#else>
              ${target}( new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${source}() ) );
@@ -68,5 +68,5 @@
 <#macro assignmentLine
          target="${ext.targetBeanName}.${targetAccessorName}"
          source="${sourceBeanName}.${sourceAccessorName}">
-     <@includeModel object=parameterAssignment target=target source="${source}()" targetType=targetType raw=true/>
+     <@includeModel object=propertyAssignment target=target source="${source}()" targetType=targetType raw=true/>
 </#macro>

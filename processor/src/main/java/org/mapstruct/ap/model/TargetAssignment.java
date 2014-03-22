@@ -32,12 +32,12 @@ import org.mapstruct.ap.model.common.Type;
  * <ol>
  * <li>MethodReference</li>
  * <li>TypeConversion</li>
- * <li>Simple Assignment (empty ParameterAssignment)</li>
+ * <li>Simple Assignment (empty TargetAssignment)</li>
  * </ol>
  *
  * @author Sjaak Derksen
  */
-public class ParameterAssignment extends ModelElement {
+public class TargetAssignment extends ModelElement {
 
 
 
@@ -48,16 +48,16 @@ public class ParameterAssignment extends ModelElement {
     private final AssignmentType assignmentType;
 
 
-    public ParameterAssignment() {
+    public TargetAssignment() {
         assignmentType = AssignmentType.ASSIGNMENT;
     }
 
-    public ParameterAssignment( MethodReference methodReference ) {
+    public TargetAssignment( MethodReference methodReference ) {
         assignmentType = AssignmentType.METHOD_REFERENCE;
         this.methodReference = methodReference;
     }
 
-    public ParameterAssignment( TypeConversion typeConversion ) {
+    public TargetAssignment( TypeConversion typeConversion ) {
         assignmentType = AssignmentType.TYPE_CONVERSION;
         this.typeConversion = typeConversion;
     }

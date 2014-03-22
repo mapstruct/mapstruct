@@ -16,9 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.processor;
+package org.mapstruct.ap.processor.creation;
 
-import org.mapstruct.ap.model.ParameterAssignment;
+import org.mapstruct.ap.model.TargetAssignment;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -107,11 +107,11 @@ public class MappingResolver {
      * <ol>
      * <li>MethodReference</li>
      * <li>TypeConversion</li>
-     * <li>Simple Assignment (empty ParameterAssignment)</li>
+     * <li>Simple Assignment (empty TargetAssignment)</li>
      * <li>null, no assignment found</li>
      * </ol>
      */
-     public ParameterAssignment getParameterAssignment( SourceMethod mappingMethod,
+     public TargetAssignment getTargetAssignment( SourceMethod mappingMethod,
             String mappedElement,
             List<MapperReference> mapperReferences,
             List<SourceMethod> methods,
@@ -121,7 +121,7 @@ public class MappingResolver {
             String dateFormat,
             String sourceReference ) {
 
-        MethodReference mappingMethodReference = getMappingMethodReferenceBasedOnMethod(
+        MethodReference mappingMethodReference = resolveViaMethod(
                 mappingMethod,
                 mappedElement,
                 mapperReferences,
@@ -132,21 +132,21 @@ public class MappingResolver {
                 dateFormat
         );
 
-        ParameterAssignment parameterAssignment = null;
+        TargetAssignment assignment = null;
 
         if (mappingMethodReference != null ) {
-            parameterAssignment = new ParameterAssignment(mappingMethodReference );
+            assignment = new TargetAssignment(mappingMethodReference );
         }
         else if (sourceType.isAssignableTo( targetType ) ) {
-            parameterAssignment = new ParameterAssignment();
+            assignment = new TargetAssignment();
         }
         else {
-            TypeConversion conversion = getConversion( sourceType, targetType, dateFormat, sourceReference );
+            TypeConversion conversion = resolveViaConversion( sourceType, targetType, dateFormat, sourceReference );
             if ( conversion != null ) {
-                parameterAssignment = new ParameterAssignment(conversion );
+                assignment = new TargetAssignment(conversion );
             }
             else {
-                mappingMethodReference = getMappingMethodReferenceBasedOnParameter(
+                mappingMethodReference = resolveViaMethodAndMethod(
                         mappingMethod,
                         mappedElement,
                         mapperReferences,
@@ -157,15 +157,18 @@ public class MappingResolver {
                         dateFormat
                 );
                 if ( mappingMethodReference != null ) {
-                    parameterAssignment = new ParameterAssignment( mappingMethodReference );
+                    assignment = new TargetAssignment( mappingMethodReference );
                 }
             }
         }
-        return parameterAssignment;
+        return assignment;
     }
 
 
-    private TypeConversion getConversion(Type sourceType, Type targetType, String dateFormat, String sourceReference) {
+    private TypeConversion resolveViaConversion( Type sourceType,
+            Type targetType,
+            String dateFormat,
+            String sourceReference ) {
         ConversionProvider conversionProvider = conversions.getConversion( sourceType, targetType );
 
         if ( conversionProvider == null ) {
@@ -192,14 +195,15 @@ public class MappingResolver {
      *
      * @return a method reference.
      */
-    private MethodReference getMappingMethodReferenceBasedOnMethod(SourceMethod mappingMethod,
-                                                                   String mappedElement,
-                                                                   List<MapperReference> mapperReferences,
-                                                                   List<SourceMethod> methods,
-                                                                   Type sourceType,
-                                                                   Type targetType,
-                                                                   String targetPropertyName,
-                                                                   String dateFormat) {
+    private MethodReference resolveViaMethod( SourceMethod mappingMethod,
+            String mappedElement,
+            List<MapperReference> mapperReferences,
+            List<SourceMethod> methods,
+            Type sourceType,
+            Type targetType,
+            String targetPropertyName,
+            String dateFormat ) {
+
         // first try to find a matching source method
         SourceMethod matchingSourceMethod = getBestMatch(
             mappingMethod,
@@ -249,14 +253,14 @@ public class MappingResolver {
      *
      * @return a method reference.
      */
-    private MethodReference getMappingMethodReferenceBasedOnParameter(SourceMethod mappingMethod,
-                                                                      String mappedElement,
-                                                                      List<MapperReference> mapperReferences,
-                                                                      List<SourceMethod> methods,
-                                                                      Type sourceType,
-                                                                      Type targetType,
-                                                                      String targetPropertyName,
-                                                                      String dateFormat) {
+    private MethodReference resolveViaMethodAndMethod( SourceMethod mappingMethod,
+            String mappedElement,
+            List<MapperReference> mapperReferences,
+            List<SourceMethod> methods,
+            Type sourceType,
+            Type targetType,
+            String targetPropertyName,
+            String dateFormat ) {
 
         List<Method> methodYCandidates = new ArrayList<Method>( methods );
         methodYCandidates.addAll( builtInMethods.getBuiltInMethods() );
@@ -272,7 +276,7 @@ public class MappingResolver {
         // a nested method call can be called. so C = methodY( methodX (A) )
         for ( Method methodYCandidate : methodYCandidates ) {
             if ( methodYCandidate.getSourceParameters().size() == 1 ) {
-                methodRefY = getMappingMethodReferenceBasedOnMethod(
+                methodRefY = resolveViaMethod(
                     mappingMethod,
                     mappedElement,
                     mapperReferences,
@@ -283,7 +287,7 @@ public class MappingResolver {
                     dateFormat
                 );
                 if ( methodRefY != null ) {
-                    MethodReference methodRefX = getMappingMethodReferenceBasedOnMethod(
+                    MethodReference methodRefX = resolveViaMethod(
                         mappingMethod,
                         mappedElement,
                         mapperReferences,
@@ -307,12 +311,12 @@ public class MappingResolver {
         return methodRefY;
     }
 
-    private <T extends Method> T getBestMatch(SourceMethod mappingMethod,
-                                              String mappedElement,
-                                              List<T> methods,
-                                              Type sourceType,
-                                              Type returnType,
-                                              String targetPropertyName) {
+    private <T extends Method> T getBestMatch( SourceMethod mappingMethod,
+            String mappedElement,
+            List<T> methods,
+            Type sourceType,
+            Type returnType,
+            String targetPropertyName ) {
 
         List<T> candidates = methodSelectors.getMatchingMethods(
             mappingMethod,
@@ -349,8 +353,9 @@ public class MappingResolver {
     }
 
 
-    private MethodReference getMappingMethodReference(SourceMethod method, List<MapperReference> mapperReferences,
-                                                      Type targetType) {
+    private MethodReference getMappingMethodReference( SourceMethod method,
+            List<MapperReference> mapperReferences,
+            Type targetType ) {
         MapperReference mapperReference = findMapperReference( mapperReferences, method );
 
         return new MethodReference(

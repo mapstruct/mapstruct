@@ -18,7 +18,8 @@
  */
 package org.mapstruct.ap.processor;
 
-import org.mapstruct.ap.model.ParameterAssignment;
+import org.mapstruct.ap.processor.creation.MappingResolver;
+import org.mapstruct.ap.model.TargetAssignment;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -642,7 +643,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         String mappedElement = "property '" + Executables.getPropertyName( sourceAccessor ) + "'";
 
-        ParameterAssignment parameterAssignment = mappingResolver.getParameterAssignment(
+        TargetAssignment parameterAssignment = mappingResolver.getTargetAssignment(
             method,
             mappedElement,
             mapperReferences,
@@ -689,7 +690,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         String dateFormat = method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null;
         String conversionStr = Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
 
-        ParameterAssignment parameterAssignment = mappingResolver.getParameterAssignment(
+        TargetAssignment parameterAssignment = mappingResolver.getTargetAssignment(
             method,
             "collection element",
             mapperReferences,
@@ -727,7 +728,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         Type keyTargetType = resultTypeParams.get( 0 );
         String keyDateFormat = method.getMapMapping() != null ? method.getMapMapping().getKeyFormat() : null;
 
-        ParameterAssignment parameterAssignmentKey = mappingResolver.getParameterAssignment(
+        TargetAssignment parameterAssignmentKey = mappingResolver.getTargetAssignment(
             method,
             "map key",
             mapperReferences,
@@ -756,7 +757,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         Type valueTargetType = resultTypeParams.get( 1 );
         String valueDateFormat = method.getMapMapping() != null ? method.getMapMapping().getValueFormat() : null;
 
-        ParameterAssignment parameterAssignmentValue = mappingResolver.getParameterAssignment(
+        TargetAssignment parameterAssignmentValue = mappingResolver.getTargetAssignment(
             method,
             "map value",
             mapperReferences,
@@ -963,7 +964,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             );
         }
 
-        if ( property.getParameterAssignment() != null ||
+        if ( property.getPropertyAssignment() != null ||
             ( ( property.getTargetType().isCollectionType() || property.getTargetType().isMapType() ) &&
                 collectionOrMapTargetTypeHasCompatibleConstructor ) ) {
             return true;
