@@ -44,22 +44,22 @@ public class WrapperToWrapperConversion extends SimpleConversion {
     }
 
     @Override
-    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
+    public String[] getToExpressions(ConversionContext conversionContext) {
         if ( sourceType == targetType ) {
-            return sourceReference;
+            return new String[] { "", "" };
         }
         else {
-            return sourceReference + "." + targetType.getName() + "Value()";
+            return new String[] { "", "." + targetType.getName() + "Value()" };
         }
     }
 
     @Override
-    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
+    public String[] getFromExpressions(ConversionContext conversionContext) {
         if ( sourceType == targetType ) {
-            return targetReference;
+            return new String[] { "", "" };
         }
         else {
-            return targetReference + "." + sourceType.getName() + "Value()";
+            return new String[] { "",  "." + sourceType.getName() + "Value()" };
         }
     }
 }

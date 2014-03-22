@@ -28,12 +28,12 @@ import org.mapstruct.ap.model.common.ConversionContext;
 public class CharWrapperToStringConversion extends SimpleConversion {
 
     @Override
-    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
-        return sourceReference + ".toString()";
+    public String[] getToExpressions(ConversionContext conversionContext) {
+        return new String[]{ "", ".toString()" };
     }
 
     @Override
-    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
-        return targetReference + ".charAt( 0 )";
+    public String[] getFromExpressions(ConversionContext conversionContext) {
+        return new String[]{ "", ".charAt( 0 )" };
     }
 }

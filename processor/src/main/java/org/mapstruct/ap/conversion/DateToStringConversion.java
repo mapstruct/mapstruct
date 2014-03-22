@@ -42,7 +42,9 @@ public class DateToStringConversion implements ConversionProvider {
         return new TypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
             Collections.<Type>emptyList(),
-            getConversionString( sourceReference, conversionContext, "format" )
+            getOpenExpression( conversionContext, "format" ),
+            sourceReference,
+            getCloseExpression()
         );
     }
 
@@ -51,11 +53,13 @@ public class DateToStringConversion implements ConversionProvider {
         return new TypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
             Arrays.asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
-            getConversionString( targetReference, conversionContext, "parse" )
+            getOpenExpression( conversionContext, "parse" ),
+            targetReference,
+            getCloseExpression()
         );
     }
 
-    private String getConversionString(String targetReference, ConversionContext conversionContext, String method) {
+    private String getOpenExpression(ConversionContext conversionContext, String method) {
         StringBuilder conversionString = new StringBuilder( "new SimpleDateFormat(" );
 
         if ( conversionContext.getDateFormat() != null ) {
@@ -67,9 +71,11 @@ public class DateToStringConversion implements ConversionProvider {
         conversionString.append( ")." );
         conversionString.append( method );
         conversionString.append( "( " );
-        conversionString.append( targetReference );
-        conversionString.append( " )" );
 
         return conversionString.toString();
+    }
+
+    private String getCloseExpression() {
+       return " )";
     }
 }
