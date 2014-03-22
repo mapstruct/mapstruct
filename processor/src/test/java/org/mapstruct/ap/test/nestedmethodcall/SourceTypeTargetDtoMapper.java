@@ -19,27 +19,20 @@
 
 package org.mapstruct.ap.test.nestedmethodcall;
 
-import java.util.List;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Sjaak Derksen
  */
-@Mapper
-public interface SourceTargetMapper {
+@Mapper( uses = ObjectFactory.class )
+public interface SourceTypeTargetDtoMapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    SourceTypeTargetDtoMapper INSTANCE = Mappers.getMapper( SourceTypeTargetDtoMapper.class );
 
-    OrderDto sourceToTarget(OrderType source);
+    @Mapping(source = "date", target = "date", dateFormat = "dd.MM.yyyy")
+    SourceType targetToSource( TargetDto source );
+//    TargetDto sourceToTarget(SourceType source);
 
-    OrderDetailsDto detailsToDto(OrderDetailsType source);
-
-    @IterableMapping(dateFormat = "dd.MM.yyyy")
-    List<String> stringListToDateList(List<JAXBElement<XMLGregorianCalendar>> dates);
 }

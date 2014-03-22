@@ -38,11 +38,12 @@ public class MethodReference extends MappingMethod {
     private final Set<Type> importTypes;
 
     /**
-     * A reference to another mapping method in case this is a two-step mapping, e.g. from {@code JAXBElement<Bar>} to
-     * {@code Foo} to for which a nested method call will be generated:
+     * A reference to another mapping method or typeConversion in case this is a two-step mapping, e.g. from
+     * {@code JAXBElement<Bar>} to {@code Foo} to for which a nested method call will be generated:
      * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}
      */
     private MethodReference methodRefChild;
+    private TypeConversion typeConversion;
 
     /**
      * In case this reference targets a built-in method, allows to pass specific context information to the invoked
@@ -107,12 +108,23 @@ public class MethodReference extends MappingMethod {
         return methodRefChild;
     }
 
+    public void setTypeConversionChild( TypeConversion typeConversion ) {
+        this.typeConversion = typeConversion;
+    }
+
+    public TypeConversion getTypeConversion() {
+        return typeConversion;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = super.getImportTypes();
         imported.addAll( importTypes );
         if ( methodRefChild != null ) {
             imported.addAll( methodRefChild.getImportTypes() );
+        }
+        else if ( typeConversion != null ) {
+            imported.addAll( typeConversion.getImportTypes() );
         }
         return imported;
     }

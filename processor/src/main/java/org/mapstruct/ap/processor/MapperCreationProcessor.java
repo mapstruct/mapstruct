@@ -643,7 +643,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         String mappedElement = "property '" + Executables.getPropertyName( sourceAccessor ) + "'";
 
-        TargetAssignment parameterAssignment = mappingResolver.getTargetAssignment(
+        TargetAssignment assignment = mappingResolver.getTargetAssignment(
             method,
             mappedElement,
             mapperReferences,
@@ -663,7 +663,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             Executables.getPropertyName( targetAcessor ),
             targetAcessor.getSimpleName().toString(),
             targetType,
-            parameterAssignment
+            assignment
         );
 
         if ( !isPropertyMappable( property ) ) {
@@ -690,7 +690,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         String dateFormat = method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null;
         String conversionStr = Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
 
-        TargetAssignment parameterAssignment = mappingResolver.getTargetAssignment(
+        TargetAssignment assignment = mappingResolver.getTargetAssignment(
             method,
             "collection element",
             mapperReferences,
@@ -702,7 +702,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             conversionStr
         );
 
-        if ( parameterAssignment == null ) {
+        if ( assignment == null ) {
             messager.printMessage(
                 Kind.ERROR,
                 String.format(
@@ -715,7 +715,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
-        return new IterableMappingMethod( method, parameterAssignment, factoryMethod );
+        return new IterableMappingMethod( method, assignment, factoryMethod );
     }
 
     private MapMappingMethod getMapMappingMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
@@ -728,7 +728,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         Type keyTargetType = resultTypeParams.get( 0 );
         String keyDateFormat = method.getMapMapping() != null ? method.getMapMapping().getKeyFormat() : null;
 
-        TargetAssignment parameterAssignmentKey = mappingResolver.getTargetAssignment(
+        TargetAssignment keyAssignment = mappingResolver.getTargetAssignment(
             method,
             "map key",
             mapperReferences,
@@ -740,7 +740,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             "entry.getKey()"
         );
 
-        if ( parameterAssignmentKey == null ) {
+        if ( keyAssignment == null ) {
             messager.printMessage(
                 Kind.ERROR,
                 String.format(
@@ -757,7 +757,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         Type valueTargetType = resultTypeParams.get( 1 );
         String valueDateFormat = method.getMapMapping() != null ? method.getMapMapping().getValueFormat() : null;
 
-        TargetAssignment parameterAssignmentValue = mappingResolver.getTargetAssignment(
+        TargetAssignment valueAssignment = mappingResolver.getTargetAssignment(
             method,
             "map value",
             mapperReferences,
@@ -769,7 +769,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             "entry.getValue()"
         );
 
-        if ( parameterAssignmentValue == null ) {
+        if ( valueAssignment == null ) {
             messager.printMessage(
                 Kind.ERROR,
                 String.format(
@@ -782,7 +782,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
-        return new MapMappingMethod( method, parameterAssignmentKey,  parameterAssignmentValue, factoryMethod );
+        return new MapMappingMethod( method, keyAssignment,  valueAssignment, factoryMethod );
     }
 
     private EnumMappingMethod getEnumMappingMethod(SourceMethod method) {

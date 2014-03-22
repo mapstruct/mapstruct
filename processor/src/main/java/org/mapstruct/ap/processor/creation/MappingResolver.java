@@ -159,6 +159,21 @@ public class MappingResolver {
                 if ( mappingMethodReference != null ) {
                     assignment = new TargetAssignment( mappingMethodReference );
                 }
+                else {
+                    mappingMethodReference = resolveViaConversionAndMethod(
+                            mappingMethod,
+                            mappedElement,
+                            mapperReferences,
+                            methods,
+                            sourceType,
+                            targetType,
+                            targetPropertyName,
+                            dateFormat,
+                            sourceReference );
+                }
+                if ( mappingMethodReference != null ) {
+                    assignment = new TargetAssignment( mappingMethodReference );
+                }
             }
         }
         return assignment;
@@ -184,16 +199,6 @@ public class MappingResolver {
     /**
      * Returns a reference to a method mapping the given source type to the given target type, if such a method exists.
      *
-     * @param mappingMethod target mapping method
-     * @param mappedElement used for error messages
-     * @param mapperReferences list of references to mapper
-     * @param methods list of candidate methods
-     * @param sourceType parameter to match
-     * @param targetType return type to match
-     * @param targetPropertyName name of the target property
-     * @param dateFormat used for formatting dates in build in methods that need context information
-     *
-     * @return a method reference.
      */
     private MethodReference resolveViaMethod( SourceMethod mappingMethod,
             String mappedElement,
@@ -241,17 +246,6 @@ public class MappingResolver {
      * <li>there is a method from B to C, methodY</li>
      * </ul>
      * then this method tries to resolve this combination and make a mapping methodY( methodX ( parameter ) )
-     *
-     * @param mappingMethod target mapping method
-     * @param mappedElement used for error messages
-     * @param mapperReferences list of references to mapper
-     * @param methods list of candidate methods
-     * @param sourceType parameter to match
-     * @param targetType return type to match
-     * @param targetPropertyName name of the target property
-     * @param dateFormat used for formatting dates in build in methods that need context information
-     *
-     * @return a method reference.
      */
     private MethodReference resolveViaMethodAndMethod( SourceMethod mappingMethod,
             String mappedElement,
@@ -310,6 +304,63 @@ public class MappingResolver {
         }
         return methodRefY;
     }
+
+    /**
+     * Suppose mapping required from A to C and:
+     * <ul>
+     * <li>there is a conversion from A to B, conversionX</li>
+     * <li>there is a method from B to C, methodY</li>
+     * </ul>
+     * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
+     */
+    private MethodReference resolveViaConversionAndMethod( SourceMethod mappingMethod,
+            String mappedElement,
+            List<MapperReference> mapperReferences,
+            List<SourceMethod> methods,
+            Type sourceType,
+            Type targetType,
+            String targetPropertyName,
+            String dateFormat,
+            String sourceReference ) {
+
+        List<Method> methodYCandidates = new ArrayList<Method>( methods );
+        methodYCandidates.addAll( builtInMethods.getBuiltInMethods() );
+
+        MethodReference methodRefY = null;
+
+        for ( Method methodYCandidate : methodYCandidates ) {
+            if ( methodYCandidate.getSourceParameters().size() == 1 ) {
+                methodRefY = resolveViaMethod(
+                    mappingMethod,
+                    mappedElement,
+                    mapperReferences,
+                    methods,
+                    methodYCandidate.getSourceParameters().get( 0 ).getType(),
+                    targetType,
+                    targetPropertyName,
+                    dateFormat
+                );
+                if ( methodRefY != null ) {
+                    TypeConversion conversionXRef = resolveViaConversion(
+                            sourceType,
+                            methodYCandidate.getSourceParameters().get( 0 ).getType(),
+                            dateFormat,
+                            sourceReference
+                    );
+                    if ( conversionXRef != null ) {
+                        methodRefY.setTypeConversionChild( conversionXRef );
+                        break;
+                    }
+                    else {
+                        // both should match;
+                        methodRefY = null;
+                    }
+                }
+            }
+        }
+        return methodRefY;
+    }
+
 
     private <T extends Method> T getBestMatch( SourceMethod mappingMethod,
             String mappedElement,

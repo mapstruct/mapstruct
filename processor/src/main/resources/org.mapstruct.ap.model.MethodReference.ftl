@@ -28,8 +28,11 @@
                 ${ext.targetType}.class
             <#else>
                 <#if methodRefChild??>
-                    <#-- the nested case -->
+                    <#-- the nested case: another method -->
                     <@includeModel object=methodRefChild source=ext.source targetType=singleSourceParameterType.name/>
+                <#elseif typeConversion??>
+                    <#-- the nested case: a type conversion -->
+                    <@includeModel object=typeConversion/>
                 <#else>
                     <#-- the non nested case -->
                     ${ext.source}
