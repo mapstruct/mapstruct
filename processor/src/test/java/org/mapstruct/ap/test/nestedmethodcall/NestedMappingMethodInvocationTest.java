@@ -90,6 +90,22 @@ public class NestedMappingMethodInvocationTest {
         ObjectFactory.class,
         TargetDto.class
     } )
+    public void shouldMapViaMethodAndConversion() throws DatatypeConfigurationException {
+        SourceTypeTargetDtoMapper instance = SourceTypeTargetDtoMapper.INSTANCE;
+
+        TargetDto target = instance.sourceToTarget( createSource() );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getDate() ).isEqualTo( new GregorianCalendar( 2013, 6, 6 ).getTime() );
+    }
+
+    @Test
+    @WithClasses( {
+        SourceTypeTargetDtoMapper.class,
+        SourceType.class,
+        ObjectFactory.class,
+        TargetDto.class
+    } )
     public void shouldMapViaConversionAndMethod() throws DatatypeConfigurationException {
         SourceTypeTargetDtoMapper instance = SourceTypeTargetDtoMapper.INSTANCE;
 
@@ -141,6 +157,12 @@ public class NestedMappingMethodInvocationTest {
             throws DatatypeConfigurationException {
         return DatatypeFactory.newInstance()
                 .newXMLGregorianCalendarDate( year, month, day, DatatypeConstants.FIELD_UNDEFINED );
+    }
+
+    private SourceType createSource() {
+         SourceType source = new SourceType();
+         source.setDate( new JAXBElement<String>( QNAME, String.class, "06.07.2013" ) );
+         return source;
     }
 
     private TargetDto createTarget() {

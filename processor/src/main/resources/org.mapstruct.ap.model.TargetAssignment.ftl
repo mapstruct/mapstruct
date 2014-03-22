@@ -52,7 +52,7 @@
     <#compress>
     <#switch assignmentType>
         <#case "TYPE_CONVERSION">
-            <@includeModel object=typeConversion/>
+            <@includeModel object=typeConversion source="${ext.source}" targetType=ext.targetType/>
             <#break>
         <#case "METHOD_REFERENCE">
             <@includeModel object=methodReference source="${ext.source}" targetType=ext.targetType raw=ext.raw/>

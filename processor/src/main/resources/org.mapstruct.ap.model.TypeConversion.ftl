@@ -18,4 +18,10 @@
      limitations under the License.
 
 -->
-${openExpression}${sourceReference}${closeExpression}
+<#if methodRefChild??>
+    <#-- the nested case: mapping method -->
+    ${openExpression}<@includeModel object=methodRefChild source=ext.source targetType=ext.targetType/>${closeExpression}
+<#else>
+    <#-- the non nested case: a type conversion -->
+    ${openExpression}${sourceReference}${closeExpression}
+</#if>

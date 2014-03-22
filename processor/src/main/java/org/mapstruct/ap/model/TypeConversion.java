@@ -38,6 +38,12 @@ public class TypeConversion extends ModelElement {
     private final String sourceReference;
     private final String openExpression;
     private final String closeExpression;
+    /**
+     * A reference to mapping method in case this is a two-step mapping, e.g. from
+     * {@code JAXBElement<Bar>} to {@code Foo} to for which a nested method call will be generated:
+     * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}
+     */
+    private MethodReference methodRefChild;
 
     public TypeConversion( Set<Type> importTypes,
             List<Type> exceptionTypes,
@@ -71,5 +77,13 @@ public class TypeConversion extends ModelElement {
 
     public String getCloseExpression() {
         return closeExpression;
+    }
+
+    public void setMethodRefChild( MethodReference methodRefChild ) {
+        this.methodRefChild = methodRefChild;
+    }
+
+    public MethodReference getMethodRefChild() {
+        return methodRefChild;
     }
 }

@@ -32,7 +32,7 @@ public interface SourceTypeTargetDtoMapper {
     SourceTypeTargetDtoMapper INSTANCE = Mappers.getMapper( SourceTypeTargetDtoMapper.class );
 
     @Mapping(source = "date", target = "date", dateFormat = "dd.MM.yyyy")
+    TargetDto sourceToTarget(SourceType source);
     SourceType targetToSource( TargetDto source );
-//    TargetDto sourceToTarget(SourceType source);
 
 }

@@ -32,7 +32,7 @@
                     <@includeModel object=methodRefChild source=ext.source targetType=singleSourceParameterType.name/>
                 <#elseif typeConversion??>
                     <#-- the nested case: a type conversion -->
-                    <@includeModel object=typeConversion/>
+                    <@includeModel object=typeConversion source=ext.source targetType=singleSourceParameterType.name/>
                 <#else>
                     <#-- the non nested case -->
                     ${ext.source}
