@@ -41,7 +41,7 @@ public class JaxbElemToValue extends BuiltInMethod {
     public boolean doTypeVarsMatch(Type sourceType, Type targetType) {
         boolean match = false;
         if ( sourceType.getTypeParameters().size() == 1 ) {
-            match = sourceType.getTypeParameters().get( 0 ).equals( targetType );
+            match = sourceType.getTypeParameters().get( 0 ).isAssignableTo( targetType );
         }
         return match;
     }
