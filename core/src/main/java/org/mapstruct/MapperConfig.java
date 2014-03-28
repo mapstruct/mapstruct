@@ -29,11 +29,14 @@ import org.mapstruct.factory.Mappers;
  * Marks an interface as mapper interface and activates the generation of a
  * mapper implementation for that interface.
  *
- * @author Gunnar Morling
+ * The {@link #unmappedTargetPolicy() } and {@link #componentModel() } an be overruled by a specific {@link Mapper}
+ * annotation. {@link #uses() } will be used in addition to what is specified in the {@link Mapper} annotation.
+ *
+ * @author Sjaak Derksen
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
-public @interface Mapper {
+public @interface MapperConfig {
 
     /**
      * The mapper types used by this mapper.
@@ -44,8 +47,7 @@ public @interface Mapper {
 
     /**
      * How unmapped properties of the target type of a mapping should be
-     * reported. The method overrides an unmappedTargetPolicy set in a central
-     * configuration set by {@link #mapperConfig() }
+     * reported.
      *
      * @return The reporting policy for unmapped target properties.
      */
@@ -67,18 +69,8 @@ public @interface Mapper {
      * {@code jsr330}: the generated mapper is annotated with {@code @Named} and
      * can be retrieved via {@code @Inject}</li>
      * </ul>
-     * The method overrides an unmappedTargetPolicy set in a central configuration set
-     * by {@link #mapperConfig() }
-
-* @return The component model for the generated mapper.
+     *
+     * @return The component model for the generated mapper.
      */
     String componentModel() default "default";
-
-    /**
-     * Central mapper configuration, carrying the {@link MapperConfig} annotation
-     *
-     * @return a centralized class with {@link MapperConfig} annotation.
-     */
-    Class<?> mapperConfig() default void.class;
-
 }

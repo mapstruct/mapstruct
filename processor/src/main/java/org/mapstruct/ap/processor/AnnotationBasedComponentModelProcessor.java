@@ -27,7 +27,7 @@ import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.option.OptionsHelper;
-import org.mapstruct.ap.prism.MapperPrism;
+import org.mapstruct.ap.util.MapperSettings;
 
 /**
  * An {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -45,7 +45,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
         this.typeFactory = context.getTypeFactory();
 
-        String componentModel = MapperPrism.getInstanceOn( mapperTypeElement ).componentModel();
+        String componentModel = MapperSettings.getInstanceOn( mapperTypeElement ).componentModel();
         String effectiveComponentModel = OptionsHelper.getEffectiveComponentModel(
             context.getOptions(),
             componentModel

@@ -26,6 +26,7 @@ import org.mapstruct.DecoratedWith;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.MapperConfig;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
@@ -45,6 +46,7 @@ import org.mapstruct.TargetType;
     @GeneratePrism(value = TargetType.class, publicAccess = true),
     @GeneratePrism(value = MappingTarget.class, publicAccess = true),
     @GeneratePrism(value = DecoratedWith.class, publicAccess = true),
+    @GeneratePrism(value = MapperConfig.class, publicAccess = true),
 
     // external types
     @GeneratePrism(value = XmlElementDecl.class, publicAccess = true)

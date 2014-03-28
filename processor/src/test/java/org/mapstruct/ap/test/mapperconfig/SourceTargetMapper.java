@@ -16,38 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
+package org.mapstruct.ap.test.mapperconfig;
 
-import javax.tools.Diagnostic.Kind;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Policy for reporting issues occurring during the generation of a mapper
- * implementation.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public enum ReportingPolicy {
+@Mapper(uses = { CustomMapperViaMapper.class }, mapperConfig = CentralConfig.class )
+public interface SourceTargetMapper {
 
-    /**
-     * No report will be created for the given issue.
-     */
-    IGNORE,
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    /**
-     * A report with {@link Kind#WARNING} will be created for the given issue.
-     */
-    WARN,
-
-    /**
-     * A report with {@link Kind#ERROR} will be created for the given issue,
-     * causing the compilation to fail.
-     */
-    ERROR,
-
-    /**
-     * A report with {@link Kind#WARNING} will be created for the given issue.
-     *
-     * This value is the default value and used to distinguish it from a user set WARNING level.
-     */
-    DEFAULT;
+    Target toTarget( Source source );
+    Source toSource( Target target );
 }

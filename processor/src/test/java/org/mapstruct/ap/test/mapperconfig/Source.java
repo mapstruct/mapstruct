@@ -16,38 +16,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
-
-import javax.tools.Diagnostic.Kind;
+package org.mapstruct.ap.test.mapperconfig;
 
 /**
- * Policy for reporting issues occurring during the generation of a mapper
- * implementation.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public enum ReportingPolicy {
+public class Source {
 
-    /**
-     * No report will be created for the given issue.
-     */
-    IGNORE,
+    private FooDto foo;
 
-    /**
-     * A report with {@link Kind#WARNING} will be created for the given issue.
-     */
-    WARN,
+    public Source( ) {
+    }
 
-    /**
-     * A report with {@link Kind#ERROR} will be created for the given issue,
-     * causing the compilation to fail.
-     */
-    ERROR,
+    public Source( FooDto foo ) {
+        this.foo = foo;
+    }
 
-    /**
-     * A report with {@link Kind#WARNING} will be created for the given issue.
-     *
-     * This value is the default value and used to distinguish it from a user set WARNING level.
-     */
-    DEFAULT;
+    public FooDto getFoo() {
+        return foo;
+    }
+
+    public void setFoo( FooDto foo ) {
+        this.foo = foo;
+    }
+
 }
