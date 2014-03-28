@@ -137,7 +137,7 @@ public class DecoratorTest extends MapperTestBase {
         EmployerDto.class,
         EmployerMapper.class,
         SportsClub.class,
-        SportsClubDto.class,
+        SportsClubDto.class
     })
     public void shouldApplyCustomMappers() {
         //given
