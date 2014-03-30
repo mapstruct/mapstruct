@@ -29,7 +29,10 @@ import javax.tools.Diagnostic.Kind;
  */
 public enum ReportingPolicy {
 
-    IGNORE( null, false, false ), WARN( Kind.WARNING, true, false ), ERROR( Kind.ERROR, true, true );
+    IGNORE( null, false, false ),
+    WARN( Kind.WARNING, true, false ),
+    ERROR( Kind.ERROR, true, true ),
+    DEFAULT( Kind.WARNING, true, false );
 
     private final Diagnostic.Kind diagnosticKind;
     private final boolean requiresReport;
