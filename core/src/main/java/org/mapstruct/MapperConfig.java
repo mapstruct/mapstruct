@@ -26,15 +26,14 @@ import java.lang.annotation.Target;
 import org.mapstruct.factory.Mappers;
 
 /**
- * Marks an interface as mapper interface and activates the generation of a
- * mapper implementation for that interface.
+ * Marks a class-, interface-, enum declaration or package declaration as (common) configuration.
  *
  * The {@link #unmappedTargetPolicy() } and {@link #componentModel() } an be overruled by a specific {@link Mapper}
  * annotation. {@link #uses() } will be used in addition to what is specified in the {@link Mapper} annotation.
  *
  * @author Sjaak Derksen
  */
-@Target(ElementType.TYPE)
+@Target( { ElementType.TYPE, ElementType.PACKAGE } )
 @Retention(RetentionPolicy.SOURCE)
 public @interface MapperConfig {
 
