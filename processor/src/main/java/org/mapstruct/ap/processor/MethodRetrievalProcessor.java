@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -89,7 +90,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private List<SourceMethod> retrieveMethods(TypeElement element, boolean mapperRequiresImplementation) {
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
 
-        for ( ExecutableElement executable : methodsIn( element.getEnclosedElements() ) ) {
+        for ( ExecutableElement executable : methodsIn( allEnclosingElementsIncludeSuper( element ) ) ) {
             SourceMethod method = getMethod( element, executable, mapperRequiresImplementation );
             if ( method != null ) {
                 methods.add( method );
@@ -106,16 +107,37 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             }
 
             for ( TypeMirror usedMapper : mapperSettings.uses() ) {
-                methods.addAll(
-                    retrieveMethods(
-                        (TypeElement) ( (DeclaredType) usedMapper ).asElement(),
-                        false
-                    )
-                );
+                methods.addAll( retrieveMethods( asTypeElement( usedMapper ), false ) );
             }
         }
 
         return methods;
+    }
+
+    private TypeElement asTypeElement(TypeMirror usedMapper) {
+        return (TypeElement) ( (DeclaredType) usedMapper ).asElement();
+    }
+
+    private List<Element> allEnclosingElementsIncludeSuper(TypeElement element) {
+        List<Element> enclosedElements = new ArrayList<Element>( element.getEnclosedElements() );
+        for ( TypeMirror interfaceType : element.getInterfaces() ) {
+            enclosedElements.addAll( allEnclosingElementsIncludeSuper( asTypeElement( interfaceType ) ) );
+        }
+
+        if ( hasNonObjectSuperclass( element ) ) {
+            enclosedElements.addAll( allEnclosingElementsIncludeSuper( asTypeElement( element.getSuperclass() ) ) );
+        }
+
+        return enclosedElements;
+    }
+
+    /**
+     * @param element the type element to check
+     * @return <code>true</code>, iff the type has a super-class that is not java.lang.Object
+     */
+    private boolean hasNonObjectSuperclass(TypeElement element) {
+        return element.getSuperclass().getKind() == TypeKind.DECLARED
+            && asTypeElement( element.getSuperclass() ).getSuperclass().getKind() == TypeKind.DECLARED;
     }
 
     private SourceMethod getMethod(TypeElement element,

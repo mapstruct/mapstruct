@@ -18,22 +18,10 @@
  */
 package org.mapstruct.ap.test.abstractclass;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
-
-@Mapper
-public abstract class SourceTargetMapper extends AbstractBaseMapper {
-
-    public static final SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    public abstract Target sourceToTarget(Source source);
-
-    protected String calendarToString(Calendar calendar) {
-        DateFormat format = new SimpleDateFormat( "dd.MM.yyyy" );
-        return format.format( calendar.getTime() );
-    }
+/**
+ * @author Andreas Gudian
+ *
+ */
+public interface BaseMapperInterface {
+    Target sourceToTargetFromBaseMapperInterface(Source source);
 }
