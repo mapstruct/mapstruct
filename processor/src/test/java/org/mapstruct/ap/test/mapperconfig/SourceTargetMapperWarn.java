@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper(uses = { CustomMapperViaMapper.class },
-        mapperConfig = CentralConfig.class,
+        config = CentralConfig.class,
         unmappedTargetPolicy = ReportingPolicy.WARN
 )
 public interface SourceTargetMapperWarn {

@@ -48,7 +48,7 @@ import org.mapstruct.ap.prism.MapMappingPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
-import org.mapstruct.ap.util.MapperSettings;
+import org.mapstruct.ap.util.MapperConfig;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -99,7 +99,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         //Add all methods of used mappers in order to reference them in the aggregated model
         if ( mapperRequiresImplementation ) {
-            MapperSettings mapperSettings = MapperSettings.getInstanceOn( element );
+            MapperConfig mapperSettings = MapperConfig.getInstanceOn( element );
             if ( !mapperSettings.isValid() ) {
                 throw new AnnotationProcessingException(
                     "Couldn't retrieve @Mapper annotation", element, mapperSettings.getAnnotationMirror()
