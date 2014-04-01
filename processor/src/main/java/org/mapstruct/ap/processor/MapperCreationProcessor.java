@@ -71,7 +71,7 @@ import org.mapstruct.ap.prism.DecoratedWithPrism;
 import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
-import org.mapstruct.ap.util.MapperSettings;
+import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -152,7 +152,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
      * @return The effective policy for reporting unmapped getReturnType properties.
      */
     private ReportingPolicy getEffectiveUnmappedTargetPolicy(TypeElement element) {
-        MapperSettings mapperSettings = MapperSettings.getInstanceOn( element );
+        MapperConfig mapperSettings = MapperConfig.getInstanceOn( element );
         boolean setViaAnnotation = mapperSettings.isSetUnmappedTargetPolicy();
         ReportingPolicy annotationValue = ReportingPolicy.valueOf( mapperSettings.unmappedTargetPolicy() );
 
@@ -244,7 +244,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         List<MapperReference> mapperReferences = new LinkedList<MapperReference>();
         List<String> variableNames = new LinkedList<String>();
 
-        MapperSettings mapperPrism = MapperSettings.getInstanceOn( element );
+        MapperConfig mapperPrism = MapperConfig.getInstanceOn( element );
 
         for ( TypeMirror usedMapper : mapperPrism.uses() ) {
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(

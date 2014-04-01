@@ -45,7 +45,7 @@ public @interface Mapper {
     /**
      * How unmapped properties of the target type of a mapping should be
      * reported. The method overrides an unmappedTargetPolicy set in a central
-     * configuration set by {@link #mapperConfig() }
+     * configuration set by {@link #config() }
      *
      * @return The reporting policy for unmapped target properties.
      */
@@ -68,7 +68,7 @@ public @interface Mapper {
      * can be retrieved via {@code @Inject}</li>
      * </ul>
      * The method overrides an unmappedTargetPolicy set in a central configuration set
-     * by {@link #mapperConfig() }
+     * by {@link #config() }
 
 * @return The component model for the generated mapper.
      */
@@ -79,6 +79,6 @@ public @interface Mapper {
      *
      * @return a centralized class with {@link MapperConfig} annotation.
      */
-    Class<?> mapperConfig() default void.class;
+    Class<?> config() default void.class;
 
 }

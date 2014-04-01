@@ -26,14 +26,14 @@ import java.lang.annotation.Target;
 import org.mapstruct.factory.Mappers;
 
 /**
- * Marks a class-, interface-, enum declaration or package declaration as (common) configuration.
+ * Marks a class-, interface-, enum declaration as (common) configuration.
  *
- * The {@link #unmappedTargetPolicy() } and {@link #componentModel() } an be overruled by a specific {@link Mapper}
+ * The {@link #unmappedTargetPolicy() } and {@link #componentModel() } can be overruled by a specific {@link Mapper}
  * annotation. {@link #uses() } will be used in addition to what is specified in the {@link Mapper} annotation.
  *
  * @author Sjaak Derksen
  */
-@Target( { ElementType.TYPE, ElementType.PACKAGE } )
+@Target( { ElementType.TYPE } )
 @Retention(RetentionPolicy.SOURCE)
 public @interface MapperConfig {
 
@@ -50,7 +50,7 @@ public @interface MapperConfig {
      *
      * @return The reporting policy for unmapped target properties.
      */
-    ReportingPolicy unmappedTargetPolicy() default ReportingPolicy.DEFAULT;
+    ReportingPolicy unmappedTargetPolicy() default ReportingPolicy.WARN;
 
     /**
      * Specifies the component model to which the generated mapper should
