@@ -18,13 +18,14 @@
  */
 package org.mapstruct.ap.test.imports;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.imports.from.Foo;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for generating a mapper which references types whose names clash with names of used annotations and exceptions.
@@ -41,7 +42,8 @@ import static org.fest.assertions.Assertions.assertThat;
     Foo.class,
     org.mapstruct.ap.test.imports.to.Foo.class
 })
-public class ConflictingTypesNamesTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class ConflictingTypesNamesTest {
 
     @Test
     public void mapperImportingTypesWithConflictingNamesCanBeGenerated() {

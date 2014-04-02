@@ -18,19 +18,20 @@
  */
 package org.mapstruct.ap.test.conversion.date;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Tests application of format strings for conversions between strings and dates.
@@ -43,9 +44,10 @@ import static org.fest.assertions.Assertions.assertThat;
     SourceTargetMapper.class
 })
 @IssueKey("43")
-public class DateConversionTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class DateConversionTest {
 
-    @BeforeMethod
+    @Before
     public void setDefaultLocale() {
         Locale.setDefault( Locale.GERMAN );
     }

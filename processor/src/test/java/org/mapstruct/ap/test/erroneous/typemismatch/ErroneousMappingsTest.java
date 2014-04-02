@@ -20,13 +20,14 @@ package org.mapstruct.ap.test.erroneous.typemismatch;
 
 import javax.tools.Diagnostic.Kind;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Tests failures expected for unmappable attributes.
@@ -34,7 +35,8 @@ import org.testng.annotations.Test;
  * @author Gunnar Morling
  */
 @WithClasses({ ErroneousMapper.class, Source.class, Target.class })
-public class ErroneousMappingsTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class ErroneousMappingsTest {
 
     @Test
     @IssueKey("6")

@@ -18,8 +18,11 @@
  */
 package org.mapstruct.ap.test.nestedmethodcall;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -27,12 +30,11 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for the nested invocation of mapping methods.
@@ -47,7 +49,8 @@ import static org.fest.assertions.Assertions.assertThat;
     OrderDetailsType.class,
     OrderType.class
 })
-public class NestedMappingMethodInvocationTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class NestedMappingMethodInvocationTest {
 
     private static final QName QNAME = new QName( "dont-care" );
 

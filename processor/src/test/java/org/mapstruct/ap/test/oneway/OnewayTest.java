@@ -18,12 +18,13 @@
  */
 package org.mapstruct.ap.test.oneway;
 
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
 import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for propagation of attribute without setter in source and getter in
@@ -32,7 +33,8 @@ import static org.fest.assertions.Assertions.assertThat;
  * @author Gunnar Morling
  */
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
-public class OnewayTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class OnewayTest {
 
     @Test
     @IssueKey("17")

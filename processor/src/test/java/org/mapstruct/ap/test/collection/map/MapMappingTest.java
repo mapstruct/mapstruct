@@ -26,10 +26,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for implementation of {@code Map} mapping methods.
@@ -38,7 +39,8 @@ import org.testng.annotations.Test;
  */
 @WithClasses({ SourceTargetMapper.class, CustomNumberMapper.class, Source.class, Target.class })
 @IssueKey("44")
-public class MapMappingTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class MapMappingTest {
 
     @Test
     public void shouldCreateMapMethodImplementation() {

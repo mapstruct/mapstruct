@@ -22,13 +22,14 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import javax.xml.bind.annotation.XmlElementDecl;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.jaxb.selection.test1.OrderType;
 import org.mapstruct.ap.test.jaxb.selection.test2.ObjectFactory;
 import org.mapstruct.ap.test.jaxb.selection.test2.OrderShippingDetailsType;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for the selection of JAXB mapping and factory methods based on the "name" and "scope" attributes
@@ -42,7 +43,8 @@ import org.testng.annotations.Test;
     OrderDto.class, OrderShippingDetailsDto.class, OrderType.class, OrderShippingDetailsType.class,
     OrderMapper.class
 })
-public class JaxbFactoryMethodSelectionTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class JaxbFactoryMethodSelectionTest {
 
     @Test
     public void shouldMatchOnNameAndOrScope() {

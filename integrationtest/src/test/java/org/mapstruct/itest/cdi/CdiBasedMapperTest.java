@@ -18,24 +18,26 @@
  */
 package org.mapstruct.itest.cdi;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.testng.Arquillian;
+import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.itest.cdi.other.DateMapper;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for generation of CDI-based mapper implementations.
  *
  * @author Gunnar Morling
  */
-public class CdiBasedMapperTest extends Arquillian {
+@RunWith( Arquillian.class )
+public class CdiBasedMapperTest {
 
     @Inject
     private SourceTargetMapper mapper;

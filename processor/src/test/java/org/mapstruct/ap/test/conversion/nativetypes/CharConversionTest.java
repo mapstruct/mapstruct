@@ -18,18 +18,20 @@
  */
 package org.mapstruct.ap.test.conversion.nativetypes;
 
-import org.mapstruct.ap.testutil.MapperTestBase;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
 import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses({
     CharSource.class,
     CharTarget.class,
     CharMapper.class
 })
-public class CharConversionTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class CharConversionTest {
 
     @Test
     public void shouldApplyCharConversion() {

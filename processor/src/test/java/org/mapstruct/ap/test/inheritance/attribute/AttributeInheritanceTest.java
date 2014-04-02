@@ -22,19 +22,21 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.testutil.MapperTestBase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for setting an attribute where the target attribute of a super-type.
  *
  * @author Gunnar Morling
  */
-public class AttributeInheritanceTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class AttributeInheritanceTest {
 
     @Test
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })

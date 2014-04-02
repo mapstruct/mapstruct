@@ -18,18 +18,20 @@
  */
 package org.mapstruct.ap.test.conversion.nativetypes;
 
-import org.mapstruct.ap.testutil.MapperTestBase;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
 import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses({
     BooleanSource.class,
     BooleanTarget.class,
     BooleanMapper.class
 })
-public class BooleanConversionTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class BooleanConversionTest {
 
     @Test
     public void shouldApplyBooleanConversion() {

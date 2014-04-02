@@ -18,18 +18,20 @@
  */
 package org.mapstruct.ap.test.conversion.string;
 
-import org.mapstruct.ap.testutil.MapperTestBase;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
 import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses({
     Source.class,
     Target.class,
     SourceTargetMapper.class
 })
-public class StringConversionTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class StringConversionTest {
 
     @Test
     public void shouldApplyStringConversions() {
