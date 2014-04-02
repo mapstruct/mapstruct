@@ -22,12 +22,13 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import javax.inject.Inject;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.itest.jsr330.Jsr330BasedMapperTest.SpringTestConfig;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.annotations.Test;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Test for generation of JSR-330-based Mapper implementations
@@ -35,7 +36,8 @@ import org.testng.annotations.Test;
  * @author Andreas Gudian
  */
 @ContextConfiguration(classes = SpringTestConfig.class )
-public class Jsr330BasedMapperTest extends AbstractTestNGSpringContextTests {
+@RunWith( SpringJUnit4ClassRunner.class )
+public class Jsr330BasedMapperTest {
     @Configuration
     @ComponentScan(basePackageClasses = Jsr330BasedMapperTest.class)
     public static class SpringTestConfig {

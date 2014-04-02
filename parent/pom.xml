@@ -101,11 +101,6 @@
                 <version>2.3.19</version>
             </dependency>
             <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>6.3.1</version>
-            </dependency>
-            <dependency>
                 <groupId>org.easytesting</groupId>
                 <artifactId>fest-assert</artifactId>
                 <version>1.4</version>
@@ -120,7 +115,11 @@
                 <artifactId>hickory</artifactId>
                 <version>${com.jolira.hickory.version}</version>
             </dependency>
-
+            <dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.11</version>
+			</dependency>
             <!-- CDI, Weld, Arquillian -->
             <dependency>
                 <groupId>javax.enterprise</groupId>

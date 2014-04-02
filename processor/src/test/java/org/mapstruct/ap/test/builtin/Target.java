@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.builtin;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 public class Target {

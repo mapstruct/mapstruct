@@ -18,17 +18,18 @@
  */
 package org.mapstruct.ap.test.enums;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import javax.tools.Diagnostic.Kind;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for the generation and invocation of enum mapping methods.
@@ -37,7 +38,8 @@ import static org.fest.assertions.Assertions.assertThat;
  */
 @IssueKey("128")
 @WithClasses({ OrderMapper.class, OrderEntity.class, OrderType.class, OrderDto.class, ExternalOrderType.class })
-public class EnumMappingTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class EnumMappingTest {
 
     @Test
     public void shouldGenerateEnumMappingMethod() {

@@ -18,14 +18,15 @@
  */
 package org.mapstruct.ap.test.erroneous.ambiguousfactorymethod;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.a.BarFactory;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Sjaak Derksen
@@ -35,7 +36,8 @@ import org.testng.annotations.Test;
     Bar.class, Foo.class, BarFactory.class, Source.class, SourceTargetMapperAndBarFactory.class,
     Target.class
 })
-public class FactoryTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class FactoryTest {
 
     @Test
     @IssueKey("81")

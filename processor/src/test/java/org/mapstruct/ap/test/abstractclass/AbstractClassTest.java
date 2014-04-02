@@ -20,10 +20,11 @@ package org.mapstruct.ap.test.abstractclass;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for the generation of implementation of abstract base classes.
@@ -32,7 +33,8 @@ import org.testng.annotations.Test;
  */
 @WithClasses( { Source.class, Target.class, SourceTargetMapper.class, AbstractBaseMapper.class,
     BaseMapperInterface.class } )
-public class AbstractClassTest extends MapperTestBase {
+@RunWith( AnnotationProcessorTestRunner.class )
+public class AbstractClassTest {
 
     @Test
     @IssueKey( "64" )

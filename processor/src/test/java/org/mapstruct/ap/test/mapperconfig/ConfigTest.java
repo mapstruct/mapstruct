@@ -19,13 +19,15 @@
 package org.mapstruct.ap.test.mapperconfig;
 
 import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  *
@@ -42,7 +44,8 @@ import org.testng.annotations.Test;
     CustomMapperViaMapperConfig.class,
     SourceTargetMapper.class
 } )
-public class ConfigTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class ConfigTest {
 
     @Test
     @WithClasses( { Target.class, SourceTargetMapper.class } )

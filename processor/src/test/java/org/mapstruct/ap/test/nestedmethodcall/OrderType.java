@@ -20,6 +20,7 @@
 package org.mapstruct.ap.test.nestedmethodcall;
 
 import java.util.List;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 

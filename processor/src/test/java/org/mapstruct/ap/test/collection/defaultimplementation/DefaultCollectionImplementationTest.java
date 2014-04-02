@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,13 +36,11 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses({
     Source.class,
@@ -48,7 +49,8 @@ import static org.fest.assertions.MapAssert.entry;
     TargetFoo.class,
     SourceTargetMapper.class
 })
-public class DefaultCollectionImplementationTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class DefaultCollectionImplementationTest {
 
     @Test
     @IssueKey("6")

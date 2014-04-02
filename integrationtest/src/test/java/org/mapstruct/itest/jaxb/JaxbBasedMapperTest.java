@@ -18,41 +18,29 @@
  */
 package org.mapstruct.itest.jaxb;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.testng.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Test;
 import org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory;
 import org.mapstruct.itest.jaxb.xsd.test1.OrderType;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for generation of JAXB based mapper implementations.
  *
  * @author Sjaak Derksen
  */
-public class JaxbBasedMapperTest extends Arquillian {
-
-    @Deployment
-    public static JavaArchive createDeployment() {
-        return ShrinkWrap.create( JavaArchive.class )
-            .addPackage( SourceTargetMapper.class.getPackage() )
-            .addPackage( org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory.class.getPackage() )
-            .addPackage( org.mapstruct.itest.jaxb.xsd.test2.ObjectFactory.class.getPackage() );
-    }
-
+public class JaxbBasedMapperTest {
     @Test
     public void shouldMapJaxb() throws ParseException, JAXBException {
 

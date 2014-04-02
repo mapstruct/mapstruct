@@ -18,19 +18,20 @@
  */
 package org.mapstruct.ap.test.naming;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for aming of variables/members which conflict with keywords or parameter names.
@@ -39,7 +40,8 @@ import static org.fest.assertions.MapAssert.entry;
  */
 @WithClasses({ SourceTargetMapper.class, While.class, Break.class, Source.class })
 @IssueKey("53")
-public class VariableNamingTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class VariableNamingTest {
 
     @Test
     public void shouldGenerateImplementationsOfMethodsWithProblematicVariableNmes() {

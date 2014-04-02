@@ -18,12 +18,13 @@
  */
 package org.mapstruct.ap.test.inheritance;
 
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
 import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for propagation of attributes inherited from super types.
@@ -31,7 +32,8 @@ import static org.fest.assertions.Assertions.assertThat;
  * @author Gunnar Morling
  */
 @WithClasses({ SourceBase.class, SourceExt.class, TargetBase.class, TargetExt.class, SourceTargetMapper.class })
-public class InheritanceTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class InheritanceTest {
 
     @Test
     @IssueKey("17")

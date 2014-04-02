@@ -24,10 +24,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for the generation of implementation of abstract base classes.
@@ -38,7 +39,8 @@ import org.testng.annotations.Test;
     Source.class, Target.class, SourceTargetMapper.class, TimeAndFormat.class,
     TimeAndFormatMapper.class
 })
-public class SourcePropertyMapSeveralTimesTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class SourcePropertyMapSeveralTimesTest {
 
     @Test
     @IssueKey("94")
