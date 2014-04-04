@@ -29,7 +29,7 @@
         targetAccessorName=targetAccessorName
         sourceBeanName=sourceBeanName
         sourceAccessorName=sourceAccessorName><#compress>
-            <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()" targetType=targetType.name/>
+            <@includeModel object=mappingMethod input="${sourceBeanName}.${sourceAccessorName}()" targetType=targetType raw=true/>
     </#compress></@assignResult>
 <#-- b) simple conversion -->
 <#elseif conversion??>

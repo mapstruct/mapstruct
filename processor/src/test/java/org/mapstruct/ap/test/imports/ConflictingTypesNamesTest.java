@@ -24,6 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.imports.from.Foo;
+import org.mapstruct.ap.test.imports.from.FooWrapper;
+import org.mapstruct.ap.test.imports.referenced.GenericMapper;
 import org.mapstruct.ap.test.imports.referenced.NotImportedDatatype;
 import org.mapstruct.ap.test.imports.referenced.Source;
 import org.mapstruct.ap.test.imports.referenced.Target;
@@ -45,13 +47,24 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
     List.class,
     Map.class,
     Foo.class,
-    org.mapstruct.ap.test.imports.to.Foo.class, Source.class, Target.class, NotImportedDatatype.class
+    org.mapstruct.ap.test.imports.to.Foo.class,
+    Source.class,
+    Target.class,
+    NotImportedDatatype.class,
+    GenericMapper.class,
+    FooWrapper.class,
+    org.mapstruct.ap.test.imports.to.FooWrapper.class,
+    SecondSourceTargetMapper.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class ConflictingTypesNamesTest {
 
+    private GeneratedSource generatedSource = new GeneratedSource();
+
     @Rule
-    public GeneratedSource generatedSource = new GeneratedSource();
+    public GeneratedSource getGeneratedSource() {
+        return generatedSource;
+    }
 
     @Test
     public void mapperImportingTypesWithConflictingNamesCanBeGenerated() {
@@ -72,7 +85,8 @@ public class ConflictingTypesNamesTest {
     }
 
     @Test
-    public void mapperNoUnecessaryImports() {
+    @IssueKey( "178" )
+    public void mapperHasNoUnecessaryImports() {
         Source source = new Source();
         source.setNotImported( new NotImportedDatatype( 42 ) );
 
@@ -82,5 +96,21 @@ public class ConflictingTypesNamesTest {
         assertThat( target.getNotImported() ).isSameAs( source.getNotImported() );
 
         generatedSource.forMapper( SourceTargetMapper.class ).containsNoImportFor( NotImportedDatatype.class );
+    }
+
+    @Test
+    @IssueKey( "156" )
+    public void importsForTargetTypes() {
+        FooWrapper source = new FooWrapper();
+        Foo value = new Foo();
+        value.setName( "foo" );
+        source.setValue( value );
+
+        org.mapstruct.ap.test.imports.to.FooWrapper result =
+            SecondSourceTargetMapper.INSTANCE.fooWrapperToFooWrapper( source );
+
+        assertThat( result ).isNotNull();
+        assertThat( result.getValue() ).isNotNull();
+        assertThat( result.getValue().getName() ).isEqualTo( "foo" );
     }
 }
