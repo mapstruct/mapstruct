@@ -19,8 +19,12 @@
 
 -->
 public ${name}() {
+    this( new ${delegateName}() );
+}
+
+private ${name}( ${delegateName} delegate ) {
     <#if invokeSuperConstructor>
-    super( new ${delegateName}() );
+    super( delegate );
     </#if>
-    this.delegate = new ${delegateName}();
+    this.delegate = delegate;
 }
