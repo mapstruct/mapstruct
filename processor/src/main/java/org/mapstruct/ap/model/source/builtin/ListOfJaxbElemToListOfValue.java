@@ -18,7 +18,12 @@
  */
 package org.mapstruct.ap.model.source.builtin;
 
+import static org.mapstruct.ap.util.Collections.asSet;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import javax.xml.bind.JAXBElement;
 
 import org.mapstruct.ap.model.common.Parameter;
@@ -33,11 +38,17 @@ public class ListOfJaxbElemToListOfValue extends BuiltInMethod {
     private final Parameter parameter;
     private final Type returnType;
     private final Type genericParam;
+    private final Set<Type> importTypes;
 
     public ListOfJaxbElemToListOfValue(TypeFactory typeFactory) {
         this.parameter = new Parameter( "elementList", typeFactory.getType( List.class ) );
         this.returnType = typeFactory.getType( List.class );
         this.genericParam = typeFactory.getType( JAXBElement.class ).erasure();
+        this.importTypes = asSet(
+            returnType,
+            typeFactory.getType( JAXBElement.class ),
+            typeFactory.getType( ArrayList.class )
+       );
     }
 
     @Override
@@ -60,5 +71,10 @@ public class ListOfJaxbElemToListOfValue extends BuiltInMethod {
     @Override
     public Type getReturnType() {
         return returnType;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        return importTypes;
     }
 }

@@ -18,8 +18,13 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
+import static org.mapstruct.ap.util.Collections.asSet;
+
 import java.math.BigInteger;
+import java.util.Set;
+
+import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.common.Type;
 
 /**
  * Conversion between {@link BigInteger} and native number types.
@@ -54,5 +59,10 @@ public class BigIntegerToPrimitiveConversion extends SimpleConversion {
         conversion.append( targetReference ).append( " )" );
 
         return conversion.toString();
+    }
+
+    @Override
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return asSet( conversionContext.getTypeFactory().getType( BigInteger.class ) );
     }
 }

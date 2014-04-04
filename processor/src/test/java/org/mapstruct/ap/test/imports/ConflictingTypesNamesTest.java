@@ -20,12 +20,17 @@ package org.mapstruct.ap.test.imports;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.imports.from.Foo;
+import org.mapstruct.ap.test.imports.referenced.NotImportedDatatype;
+import org.mapstruct.ap.test.imports.referenced.Source;
+import org.mapstruct.ap.test.imports.referenced.Target;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * Test for generating a mapper which references types whose names clash with names of used annotations and exceptions.
@@ -40,10 +45,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     List.class,
     Map.class,
     Foo.class,
-    org.mapstruct.ap.test.imports.to.Foo.class
+    org.mapstruct.ap.test.imports.to.Foo.class, Source.class, Target.class, NotImportedDatatype.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class ConflictingTypesNamesTest {
+
+    @Rule
+    public GeneratedSource generatedSource = new GeneratedSource();
 
     @Test
     public void mapperImportingTypesWithConflictingNamesCanBeGenerated() {
@@ -61,5 +69,18 @@ public class ConflictingTypesNamesTest {
         org.mapstruct.ap.test.imports.to.Foo foo2 = SourceTargetMapper.INSTANCE.fooToFoo( foo );
         assertThat( foo2 ).isNotNull();
         assertThat( foo2.getName() ).isEqualTo( "bar" );
+    }
+
+    @Test
+    public void mapperNoUnecessaryImports() {
+        Source source = new Source();
+        source.setNotImported( new NotImportedDatatype( 42 ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getNotImported() ).isSameAs( source.getNotImported() );
+
+        generatedSource.forMapper( SourceTargetMapper.class ).containsNoImportFor( NotImportedDatatype.class );
     }
 }
