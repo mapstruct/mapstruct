@@ -18,7 +18,12 @@
  */
 package org.mapstruct.ap.conversion;
 
+import static org.mapstruct.ap.util.Collections.asSet;
+
+import java.util.Set;
+
 import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.common.Type;
 
 /**
  * Conversion between {@link String} and {@link Enum} types.
@@ -35,5 +40,10 @@ public class EnumStringConversion extends SimpleConversion {
     @Override
     public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
         return "Enum.valueOf( " + conversionContext.getTargetType().getName() + ".class, " + targetReference + " )";
+    }
+
+    @Override
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return asSet( conversionContext.getTargetType() );
     }
 }

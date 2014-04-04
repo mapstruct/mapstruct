@@ -18,8 +18,13 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
+import static org.mapstruct.ap.util.Collections.asSet;
+
 import java.math.BigInteger;
+import java.util.Set;
+
+import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.common.Type;
 
 /**
  * Conversion between {@link BigInteger} and {@link String}.
@@ -36,5 +41,10 @@ public class BigIntegerToStringConversion extends SimpleConversion {
     @Override
     public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
         return "new BigInteger( " + targetReference + " )";
+    }
+
+    @Override
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return asSet( conversionContext.getTypeFactory().getType( BigInteger.class ) );
     }
 }

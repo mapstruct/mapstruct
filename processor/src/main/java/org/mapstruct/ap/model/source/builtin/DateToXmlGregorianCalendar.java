@@ -45,6 +45,7 @@ public class DateToXmlGregorianCalendar extends BuiltInMethod {
         this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
 
         this.importTypes = asSet(
+            returnType,
             typeFactory.getType( GregorianCalendar.class ),
             typeFactory.getType( DatatypeFactory.class ),
             typeFactory.getType( DatatypeConfigurationException.class )

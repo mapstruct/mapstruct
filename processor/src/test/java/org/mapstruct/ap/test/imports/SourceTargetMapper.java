@@ -21,6 +21,8 @@ package org.mapstruct.ap.test.imports;
 import java.util.Date;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.imports.referenced.Source;
+import org.mapstruct.ap.test.imports.referenced.Target;
 import org.mapstruct.ap.test.imports.to.Foo;
 import org.mapstruct.factory.Mappers;
 
@@ -44,4 +46,6 @@ public interface SourceTargetMapper {
     java.util.List<Date> stringsToDates(java.util.List<String> stringDates);
 
     java.util.Map<Date, Date> stringsToDates(java.util.Map<String, String> stringDates);
+
+    Target sourceToTarget(Source target);
 }
