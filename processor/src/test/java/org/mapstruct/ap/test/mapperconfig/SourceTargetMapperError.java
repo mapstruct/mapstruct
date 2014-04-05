@@ -25,7 +25,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author Sjaak Derksen
  */
-@Mapper(uses = { CustomMapperViaMapper.class }, mapperConfig = CentralConfig.class )
+@Mapper(uses = { CustomMapperViaMapper.class }, config = CentralConfig.class )
 public interface SourceTargetMapperError {
 
     SourceTargetMapperError INSTANCE = Mappers.getMapper( SourceTargetMapperError.class );

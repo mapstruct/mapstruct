@@ -32,25 +32,32 @@ import org.mapstruct.ap.prism.MapperConfigPrism;
 import org.mapstruct.ap.prism.MapperPrism;
 
 /**
+ * Class decorating the {@link MapperPrism} with the 'default' configuration.
+ *
+ * If no configuration for a property is defined in the {@link org.mapstruct.Mapper} annotation this
+ * decorator will revert to the {@link org.mapstruct.Mapper#config() } defined mapper.
+ *
+ * {@link org.mapstruct.MapperConfig#uses() } will add its Mappers to the ones defined in
+ * {@link org.mapstruct.Mapper#uses() }
  *
  * @author Sjaak Derksen
  */
-public class MapperSettings {
+public class MapperConfig {
 
     private final MapperPrism mapperPrism;
     private final MapperConfigPrism mapperConfigPrism;
 
-    public static MapperSettings getInstanceOn(Element e) {
-        return new MapperSettings( MapperPrism.getInstanceOn( e ) );
+    public static MapperConfig getInstanceOn(Element e) {
+        return new MapperConfig( MapperPrism.getInstanceOn( e ) );
     }
 
-    public static MapperSettings getInstance(AnnotationMirror mirror ) {
-        return new MapperSettings( MapperPrism.getInstance( mirror ) );
+    public static MapperConfig getInstance(AnnotationMirror mirror ) {
+        return new MapperConfig( MapperPrism.getInstance( mirror ) );
     }
 
-    private MapperSettings( MapperPrism mapperPrism ) {
+    private MapperConfig( MapperPrism mapperPrism ) {
         this.mapperPrism = mapperPrism;
-        TypeMirror typeMirror = mapperPrism.mapperConfig();
+        TypeMirror typeMirror = mapperPrism.config();
         if ( typeMirror.getKind().equals( TypeKind.DECLARED ) ) {
             this.mapperConfigPrism = MapperConfigPrism.getInstanceOn( ( (DeclaredType) typeMirror ).asElement() );
         }
