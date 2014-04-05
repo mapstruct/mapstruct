@@ -2,5 +2,6 @@ Contributors
 ============
 
 Andreas Gudian
+Christian Schuster
 Gunnar Morling
 Sjaak Derksen

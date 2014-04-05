@@ -22,7 +22,7 @@ public ${name}() {
     this( new ${delegateName}() );
 }
 
-private ${name}( ${delegateName} delegate ) {
+private ${name}(${delegateName} delegate) {
     <#if invokeSuperConstructor>
     super( delegate );
     </#if>
