@@ -32,16 +32,17 @@ import java.util.concurrent.ConcurrentMap;
  * @author Andreas Gudian
  */
 public class ModifiableURLClassLoader extends URLClassLoader {
-    private static final String ORG_MAPSTRUCT_AP_TEST = "org.mapstruct.ap.test.";
-    static {
 
+    private static final String ORG_MAPSTRUCT_AP_TEST = "org.mapstruct.ap.test.";
+
+    static {
         ClassLoader.registerAsParallelCapable();
     }
 
-    private ConcurrentMap<URL, URL> addedURLs = new ConcurrentHashMap<URL, URL>();
+    private final ConcurrentMap<URL, URL> addedURLs = new ConcurrentHashMap<URL, URL>();
 
     public ModifiableURLClassLoader() {
-        super( new URL[] {}, new FilteringParentClassLoader() );
+        super( new URL[] { }, new FilteringParentClassLoader() );
     }
 
     @Override

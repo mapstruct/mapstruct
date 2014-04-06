@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
@@ -51,12 +48,15 @@ import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 /**
  * A JUnit4 statement that performs source generation using the annotation processor and compiles those sources.
  *
  * @author Andreas Gudian
  */
 class CompilingStatement extends Statement {
+
     /**
      * Property to specify the sub-directory below /target/ where the generated files are placed
      */
@@ -67,7 +67,7 @@ class CompilingStatement extends Statement {
     private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     private static final DiagnosticDescriptorComparator COMPARATOR = new DiagnosticDescriptorComparator();
     private static final ThreadLocal<Integer> THREAD_NUMBER = new ThreadLocal<Integer>() {
-        private AtomicInteger highWaterMark = new AtomicInteger( 0 );
+        private final AtomicInteger highWaterMark = new AtomicInteger( 0 );
 
         @Override
         protected Integer initialValue() {
@@ -137,19 +137,24 @@ class CompilingStatement extends Statement {
             CompilationOutcomeDescriptor.forResult(
                 sourceDir,
                 compilationResult.compilationSuccessful,
-                compilationResult.diagnostics.getDiagnostics() );
+                compilationResult.diagnostics.getDiagnostics()
+            );
         CompilationOutcomeDescriptor expectedResult =
             CompilationOutcomeDescriptor.forExpectedCompilationResult(
-                method.getAnnotation( ExpectedCompilationOutcome.class ) );
+                method.getAnnotation( ExpectedCompilationOutcome.class )
+            );
 
         if ( expectedResult.getCompilationResult() == CompilationResult.SUCCEEDED ) {
             assertThat( actualResult.getCompilationResult() ).describedAs(
-                "Compilation failed. Diagnostics: " + compilationResult.diagnostics.getDiagnostics() ).isEqualTo(
-                CompilationResult.SUCCEEDED );
+                "Compilation failed. Diagnostics: " + compilationResult.diagnostics.getDiagnostics()
+            ).isEqualTo(
+                CompilationResult.SUCCEEDED
+            );
         }
         else {
             assertThat( actualResult.getCompilationResult() ).describedAs(
-                "Compilation succeeded but should have failed." ).isEqualTo( CompilationResult.FAILED );
+                "Compilation succeeded but should have failed."
+            ).isEqualTo( CompilationResult.FAILED );
         }
 
         assertDiagnostics( actualResult.getDiagnostics(), expectedResult.getDiagnostics() );
@@ -171,8 +176,11 @@ class CompilingStatement extends Statement {
                 actualDiagnostics.toString().replace( ", ", LINE_SEPARATOR ),
                 LINE_SEPARATOR,
                 LINE_SEPARATOR,
-                expectedDiagnostics.toString().replace( ", ", LINE_SEPARATOR ) ) ).hasSize(
-            expectedDiagnostics.size() );
+                expectedDiagnostics.toString().replace( ", ", LINE_SEPARATOR )
+            )
+        ).hasSize(
+            expectedDiagnostics.size()
+        );
 
         while ( actualIterator.hasNext() ) {
 
@@ -191,7 +199,9 @@ class CompilingStatement extends Statement {
                     "Unexpected message for diagnostic %s:%s %s",
                     actual.getSourceFileName(),
                     actual.getLine(),
-                    actual.getKind() ) ).matches( ".*" + expected.getMessage() + ".*" );
+                    actual.getKind()
+                )
+            ).matches( ".*" + expected.getMessage() + ".*" );
         }
     }
 
@@ -199,6 +209,7 @@ class CompilingStatement extends Statement {
      * Returns the classes to be compiled for this test.
      *
      * @param testMethod The test method of interest
+     *
      * @return A set containing the classes to be compiled for this test
      */
     private Set<Class<?>> getTestClasses() {
@@ -216,7 +227,8 @@ class CompilingStatement extends Statement {
 
         if ( testClasses.isEmpty() ) {
             throw new IllegalStateException(
-                "The classes to be compiled during the test must be specified via @WithClasses." );
+                "The classes to be compiled during the test must be specified via @WithClasses."
+            );
         }
 
         return testClasses;
@@ -226,6 +238,7 @@ class CompilingStatement extends Statement {
      * Returns the processor options to be used this test.
      *
      * @param testMethod The test method of interest
+     *
      * @return A list containing the processor options to be used for this test
      */
     private List<String> getProcessorOptions() {
@@ -236,7 +249,7 @@ class CompilingStatement extends Statement {
         }
 
         return processorOption != null ? Arrays.asList( asOptionString( processorOption ) )
-                        : Collections.<String> emptyList();
+            : Collections.<String>emptyList();
     }
 
     private String asOptionString(ProcessorOption processorOption) {
@@ -247,8 +260,12 @@ class CompilingStatement extends Statement {
         Set<File> sourceFiles = new HashSet<File>( classes.size() );
 
         for ( Class<?> clazz : classes ) {
-            sourceFiles.add( new File( sourceDir + File.separator + clazz.getName().replace( ".", File.separator )
-                + ".java" ) );
+            sourceFiles.add(
+                new File(
+                    sourceDir + File.separator + clazz.getName().replace( ".", File.separator )
+                        + ".java"
+                )
+            );
         }
 
         return sourceFiles;
@@ -353,8 +370,8 @@ class CompilingStatement extends Statement {
     }
 
     private static class CompilationResultHolder {
-        private DiagnosticCollector<JavaFileObject> diagnostics;
-        private boolean compilationSuccessful;
+        private final DiagnosticCollector<JavaFileObject> diagnostics;
+        private final boolean compilationSuccessful;
 
         public CompilationResultHolder(DiagnosticCollector<JavaFileObject> diagnostics, boolean compilationSuccessful) {
             this.diagnostics = diagnostics;

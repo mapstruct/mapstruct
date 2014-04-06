@@ -116,10 +116,11 @@
                 <version>${com.jolira.hickory.version}</version>
             </dependency>
             <dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.11</version>
-			</dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.11</version>
+            </dependency>
+
             <!-- CDI, Weld, Arquillian -->
             <dependency>
                 <groupId>javax.enterprise</groupId>
@@ -153,7 +154,6 @@
                 <artifactId>javax.el</artifactId>
                 <version>3.0-b07</version>
             </dependency>
-
 
             <!-- Spring -->
             <dependency>
