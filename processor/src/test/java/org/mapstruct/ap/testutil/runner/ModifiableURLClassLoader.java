@@ -19,6 +19,7 @@
 package org.mapstruct.ap.testutil.runner;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -36,7 +37,7 @@ public class ModifiableURLClassLoader extends URLClassLoader {
     private static final String ORG_MAPSTRUCT_AP_TEST = "org.mapstruct.ap.test.";
 
     static {
-        ClassLoader.registerAsParallelCapable();
+        tryRegisterAsParallelCapable();
     }
 
     private final ConcurrentMap<URL, URL> addedURLs = new ConcurrentHashMap<URL, URL>();
@@ -70,6 +71,27 @@ public class ModifiableURLClassLoader extends URLClassLoader {
         }
         catch ( MalformedURLException e ) {
             throw new RuntimeException( e );
+        }
+    }
+
+    private static void tryRegisterAsParallelCapable() {
+        try {
+            ClassLoader.class.getMethod( "registerAsParallelCapable" ).invoke( null );
+        }
+        catch ( NoSuchMethodException e ) {
+            return; // ignore
+        }
+        catch ( SecurityException e ) {
+            return; // ignore
+        }
+        catch ( IllegalAccessException e ) {
+            return; // ignore
+        }
+        catch ( IllegalArgumentException e ) {
+            return; // ignore
+        }
+        catch ( InvocationTargetException e ) {
+            return; // ignore
         }
     }
 

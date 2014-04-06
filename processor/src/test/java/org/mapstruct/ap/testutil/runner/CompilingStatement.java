@@ -63,7 +63,7 @@ class CompilingStatement extends Statement {
      */
     public static final String MAPPER_TEST_OUTPUT_DIR_PROPERTY = "mapper.test.output.dir";
     private static final String TARGET_COMPILATION_TESTS = "/target/"
-        + System.getProperty( MAPPER_TEST_OUTPUT_DIR_PROPERTY, "compilation-tests" ) + "_";
+        + System.getProperty( MAPPER_TEST_OUTPUT_DIR_PROPERTY, "compilation-tests" ) + "_thread-";
 
     private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     private static final DiagnosticDescriptorComparator COMPARATOR = new DiagnosticDescriptorComparator();

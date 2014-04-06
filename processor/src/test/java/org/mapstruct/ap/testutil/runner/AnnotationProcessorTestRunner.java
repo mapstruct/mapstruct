@@ -23,12 +23,24 @@ import java.net.URL;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 
 /**
  * A JUnit4 runner for Annotation Processor tests.
  * <p>
  * Test classes and test methods are safe to be executed in parallel.
+ * <p>
+ * The classes to be compiled for a given test method must be specified via {@link WithClasses}. In addition the
+ * following things can be configured optionally :
+ * <ul>
+ * <li>Processor options to be considered during compilation via {@link ProcessorOption}.</li>
+ * <li>The expected compilation outcome and expected diagnostics can be specified via {@link ExpectedCompilationOutcome}
+ * . If no outcome is specified, a successful compilation is assumed.</li>
+ * </ul>
  *
+ * @author Gunnar Morling
  * @author Andreas Gudian
  */
 public class AnnotationProcessorTestRunner extends BlockJUnit4ClassRunner {
