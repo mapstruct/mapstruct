@@ -69,15 +69,17 @@ public @interface Mapper {
      * </ul>
      * The method overrides an unmappedTargetPolicy set in a central configuration set
      * by {@link #config() }
-
-* @return The component model for the generated mapper.
+     *
+     * @return The component model for the generated mapper.
      */
     String componentModel() default "default";
 
     /**
-     * Central mapper configuration, carrying the {@link MapperConfig} annotation
+     * A class annotated with {@link MapperConfig} which should be used as configuration template. Any settings given
+     * via {@link Mapper} will take precedence over the settings from the referenced configuration source. The list of
+     * referenced mappers will contain all mappers given via {@link Mapper#uses()} and {@link MapperConfig#uses()}.
      *
-     * @return a centralized class with {@link MapperConfig} annotation.
+     * @return A class which should be used as configuration template.
      */
     Class<?> config() default void.class;
 

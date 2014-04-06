@@ -45,9 +45,12 @@ public enum ReportingPolicy {
     ERROR,
 
     /**
-     * A report with {@link Kind#WARNING} will be created for the given issue.
-     *
-     * This value is the default value and used to distinguish it from a user set WARNING level.
+     * When given as value for {@link Mapper#unmappedTargetPolicy()}, the setting from the configuration source
+     * referenced via {@link Mapper#config()} will be applied.
+     * <p>
+     * Otherwise (no configuration source is referenced, or this value is given via
+     * {@link MapperConfig#unmappedTargetPolicy()}), a report with {@link Kind#WARNING} will be created for the given
+     * issue.
      */
     DEFAULT;
 }
