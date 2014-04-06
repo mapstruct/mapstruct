@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
@@ -48,8 +51,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 /**
  * A JUnit4 statement that performs source generation using the annotation processor and compiles those sources.
  *
@@ -66,15 +67,20 @@ class CompilingStatement extends Statement {
 
     private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     private static final DiagnosticDescriptorComparator COMPARATOR = new DiagnosticDescriptorComparator();
+
     private static final ThreadLocal<Integer> THREAD_NUMBER = new ThreadLocal<Integer>() {
-        private final AtomicInteger highWaterMark = new AtomicInteger( 0 );
+        private final AtomicInteger nextThreadId = new AtomicInteger( 0 );
 
         @Override
         protected Integer initialValue() {
-            return highWaterMark.getAndIncrement();
+            return nextThreadId.getAndIncrement();
         }
     };
 
+    /**
+     * Caches the outcome of given compilations. That way we avoid the repeated compilation of the same source files for
+     * several test methods of one test class.
+     */
     private static final ThreadLocal<CompilationCache> COMPILATION_CACHE = new ThreadLocal<CompilationCache>() {
         @Override
         protected CompilationCache initialValue() {
@@ -369,6 +375,9 @@ class CompilingStatement extends Statement {
         private CompilationResultHolder lastResult;
     }
 
+    /**
+     * Represents the result of a compilation.
+     */
     private static class CompilationResultHolder {
         private final DiagnosticCollector<JavaFileObject> diagnostics;
         private final boolean compilationSuccessful;
@@ -379,6 +388,9 @@ class CompilingStatement extends Statement {
         }
     }
 
+    /**
+     * Represents a compilation task for a number of sources with given processor options.
+     */
     private static class CompilationRequest {
         private final Set<Class<?>> sourceClasses;
         private final List<String> processorOptions;
