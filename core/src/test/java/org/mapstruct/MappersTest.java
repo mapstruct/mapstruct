@@ -18,11 +18,11 @@
  */
 package org.mapstruct;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Test;
 import org.mapstruct.factory.Mappers;
 import org.mapstruct.test.model.Foo;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Unit test for {@link Mappers}.

@@ -18,22 +18,23 @@
  */
 package org.mapstruct.ap.test.complex;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.complex.other.DateMapper;
 import org.mapstruct.ap.test.complex.source.Car;
 import org.mapstruct.ap.test.complex.source.Category;
 import org.mapstruct.ap.test.complex.source.Person;
 import org.mapstruct.ap.test.complex.target.CarDto;
 import org.mapstruct.ap.test.complex.target.PersonDto;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses({
     Car.class,
@@ -44,7 +45,8 @@ import static org.fest.assertions.Assertions.assertThat;
     Category.class,
     DateMapper.class
 })
-public class CarMapperTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class CarMapperTest {
 
     @Test
     public void shouldProvideMapperInstance() throws Exception {

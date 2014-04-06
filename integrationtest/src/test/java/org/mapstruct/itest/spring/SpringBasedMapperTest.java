@@ -18,15 +18,16 @@
  */
 package org.mapstruct.itest.spring;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.itest.spring.SpringBasedMapperTest.SpringTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Test for generation of Spring-based Mapper implementations
@@ -34,7 +35,8 @@ import static org.fest.assertions.Assertions.assertThat;
  * @author Andreas Gudian
  */
 @ContextConfiguration(classes = SpringTestConfig.class )
-public class SpringBasedMapperTest extends AbstractTestNGSpringContextTests {
+@RunWith( SpringJUnit4ClassRunner.class )
+public class SpringBasedMapperTest {
     @Configuration
     @ComponentScan(basePackageClasses = SpringBasedMapperTest.class)
     public static class SpringTestConfig {

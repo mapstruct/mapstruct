@@ -38,29 +38,31 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
-import org.mapstruct.ap.testutil.MapperTestBase;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for the generation of built-in mapping methods.
  *
  * @author Sjaak Derksen
  */
-public class BuiltInTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class BuiltInTest {
 
-    private TimeZone originalTimeZone;
+    private static TimeZone originalTimeZone;
 
     @BeforeClass
-    public void setDefaultTimeZoneToCet() {
+    public static void setDefaultTimeZoneToCet() {
         originalTimeZone = TimeZone.getDefault();
         TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Berlin" ) );
     }
 
     @AfterClass
-    public void restoreOriginalTimeZone() {
+    public static void restoreOriginalTimeZone() {
         TimeZone.setDefault( originalTimeZone );
     }
 

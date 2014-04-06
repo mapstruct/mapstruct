@@ -18,18 +18,20 @@
  */
 package org.mapstruct.ap.test.inheritance.complex;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.Arrays;
+
 import javax.tools.Diagnostic.Kind;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for propagation of attributes inherited from super types.
@@ -41,7 +43,8 @@ import static org.fest.assertions.Assertions.assertThat;
     SourceExt.class, SourceExt2.class,
     TargetComposite.class, AdditionalFooSource.class
 })
-public class ComplexInheritanceTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class ComplexInheritanceTest {
 
     @Test
     @IssueKey("34")

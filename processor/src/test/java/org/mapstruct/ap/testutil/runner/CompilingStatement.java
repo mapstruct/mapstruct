@@ -16,15 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.testutil;
+package org.mapstruct.ap.testutil.runner;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -43,107 +41,115 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
 import org.mapstruct.ap.MappingProcessor;
+import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 
 /**
- * Base class for all mapper tests.
- * </p>
- * The classes to be compiled for a given test method must be specified via
- * {@link WithClasses}. In addition the following things can be configured
- * optionally :
- * <ul>
- * <li>Processor options to be considered during compilation via
- * {@link ProcessorOption}.</li>
- * <li>The expected compilation outcome and expected diagnostics can be
- * specified via {@link ExpectedCompilationOutcome}. If no outcome is specified,
- * a successful compilation is assumed.</li>
- * </ul>
+ * A JUnit4 statement that performs source generation using the annotation processor and compiles those sources.
  *
- * @author Gunnar Morling
+ * @author Andreas Gudian
  */
-public abstract class MapperTestBase {
+class CompilingStatement extends Statement {
+    /**
+     * Property to specify the sub-directory below /target/ where the generated files are placed
+     */
+    public static final String MAPPER_TEST_OUTPUT_DIR_PROPERTY = "mapper.test.output.dir";
+    private static final String TARGET_COMPILATION_TESTS = "/target/"
+        + System.getProperty( MAPPER_TEST_OUTPUT_DIR_PROPERTY, "compilation-tests" ) + "_";
 
     private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     private static final DiagnosticDescriptorComparator COMPARATOR = new DiagnosticDescriptorComparator();
-    private static volatile boolean enhancedClassloader = false;
+    private static final ThreadLocal<Integer> THREAD_NUMBER = new ThreadLocal<Integer>() {
+        private AtomicInteger highWaterMark = new AtomicInteger( 0 );
+
+        @Override
+        protected Integer initialValue() {
+            return highWaterMark.getAndIncrement();
+        }
+    };
+
+    private static final ThreadLocal<CompilationCache> COMPILATION_CACHE = new ThreadLocal<CompilationCache>() {
+        @Override
+        protected CompilationCache initialValue() {
+            return new CompilationCache();
+        }
+    };
+
+    private static final List<String> LIBRARIES = Arrays.asList( "mapstruct.jar", "guava.jar", "javax.inject.jar" );
+
+    private final Statement next;
+    private final FrameworkMethod method;
+    private final ModifiableURLClassLoader classloader;
 
     private JavaCompiler compiler;
     private String sourceDir;
     private String classOutputDir;
     private String sourceOutputDir;
     private List<File> classPath;
-    private final List<String> libraries;
-    private DiagnosticCollector<JavaFileObject> diagnostics;
 
-    public MapperTestBase() {
-        this.libraries = Arrays.asList( "mapstruct.jar", "guava.jar", "javax.inject.jar" );
+    public CompilingStatement(Statement next, FrameworkMethod method, ModifiableURLClassLoader classloader) {
+        this.next = next;
+        this.method = method;
+        this.classloader = classloader;
     }
 
-    @BeforeClass
-    public void setup() throws Exception {
+    @Override
+    public void evaluate() throws Throwable {
+        generateMapperImplementation();
+
+        next.evaluate();
+    }
+
+    protected void setupCompiler() throws Exception {
         compiler = ToolProvider.getSystemJavaCompiler();
 
         String basePath = getBasePath();
 
+        Integer i = THREAD_NUMBER.get();
+
         sourceDir = basePath + "/src/test/java";
-        classOutputDir = basePath + "/target/compilation-tests/classes";
-        sourceOutputDir = basePath + "/target/compilation-tests/generated-sources/mapping";
+        classOutputDir = basePath + TARGET_COMPILATION_TESTS + i + "/classes";
+        sourceOutputDir = basePath + TARGET_COMPILATION_TESTS + i + "/generated-sources/mapping";
 
         String testDependenciesDir = basePath + "/target/test-dependencies/";
 
         classPath = new ArrayList<File>();
-        for ( String library : libraries ) {
+        for ( String library : LIBRARIES ) {
             classPath.add( new File( testDependenciesDir, library ) );
         }
 
         createOutputDirs();
 
-        // TODO #140 Is there a better way to do this?
-        if ( !enhancedClassloader ) {
-            // we need to make sure that the the generated classes are loaded by the same classloader as the test has
-            // been loaded already. Otherwise some tests won't work.
-            URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-            Class<?> clazz = URLClassLoader.class;
-            Method method = clazz.getDeclaredMethod( "addURL", new Class[] { URL.class } );
-            method.setAccessible( true );
-            method.invoke( classLoader, new File( classOutputDir ).toURI().toURL() );
-            enhancedClassloader = true;
-        }
+        classloader.addOutputDir( classOutputDir );
     }
 
-    @BeforeMethod
-    public void generateMapperImplementation(Method testMethod) {
-        diagnostics = new DiagnosticCollector<JavaFileObject>();
-        Set<File> sourceFiles = getSourceFiles( getTestClasses( testMethod ) );
-        List<String> processorOptions = getProcessorOptions( testMethod );
+    protected void generateMapperImplementation() throws Exception {
+        CompilationResultHolder compilationResult = compile( getTestClasses(), getProcessorOptions() );
 
-        boolean compilationSuccessful = compile( diagnostics, sourceFiles, processorOptions );
-
-        CompilationOutcomeDescriptor actualResult = CompilationOutcomeDescriptor.forResult(
-            sourceDir,
-            compilationSuccessful,
-            diagnostics.getDiagnostics()
-        );
-        CompilationOutcomeDescriptor expectedResult = CompilationOutcomeDescriptor.forExpectedCompilationResult(
-                testMethod.getAnnotation( ExpectedCompilationOutcome.class )
-        );
+        CompilationOutcomeDescriptor actualResult =
+            CompilationOutcomeDescriptor.forResult(
+                sourceDir,
+                compilationResult.compilationSuccessful,
+                compilationResult.diagnostics.getDiagnostics() );
+        CompilationOutcomeDescriptor expectedResult =
+            CompilationOutcomeDescriptor.forExpectedCompilationResult(
+                method.getAnnotation( ExpectedCompilationOutcome.class ) );
 
         if ( expectedResult.getCompilationResult() == CompilationResult.SUCCEEDED ) {
-            assertThat( actualResult.getCompilationResult() )
-                .describedAs( "Compilation failed. Diagnostics: " + diagnostics.getDiagnostics() )
-                .isEqualTo( CompilationResult.SUCCEEDED );
+            assertThat( actualResult.getCompilationResult() ).describedAs(
+                "Compilation failed. Diagnostics: " + compilationResult.diagnostics.getDiagnostics() ).isEqualTo(
+                CompilationResult.SUCCEEDED );
         }
         else {
-            assertThat( actualResult.getCompilationResult() )
-                .describedAs( "Compilation succeeded but should have failed." )
-                .isEqualTo( CompilationResult.FAILED );
+            assertThat( actualResult.getCompilationResult() ).describedAs(
+                "Compilation succeeded but should have failed." ).isEqualTo( CompilationResult.FAILED );
         }
 
         assertDiagnostics( actualResult.getDiagnostics(), expectedResult.getDiagnostics() );
@@ -165,9 +171,8 @@ public abstract class MapperTestBase {
                 actualDiagnostics.toString().replace( ", ", LINE_SEPARATOR ),
                 LINE_SEPARATOR,
                 LINE_SEPARATOR,
-                expectedDiagnostics.toString().replace( ", ", LINE_SEPARATOR )
-            )
-        ).hasSize( expectedDiagnostics.size() );
+                expectedDiagnostics.toString().replace( ", ", LINE_SEPARATOR ) ) ).hasSize(
+            expectedDiagnostics.size() );
 
         while ( actualIterator.hasNext() ) {
 
@@ -186,9 +191,7 @@ public abstract class MapperTestBase {
                     "Unexpected message for diagnostic %s:%s %s",
                     actual.getSourceFileName(),
                     actual.getLine(),
-                    actual.getKind()
-                )
-            ).matches( ".*" + expected.getMessage() + ".*" );
+                    actual.getKind() ) ).matches( ".*" + expected.getMessage() + ".*" );
         }
     }
 
@@ -196,26 +199,24 @@ public abstract class MapperTestBase {
      * Returns the classes to be compiled for this test.
      *
      * @param testMethod The test method of interest
-     *
      * @return A set containing the classes to be compiled for this test
      */
-    private Set<Class<?>> getTestClasses(Method testMethod) {
+    private Set<Class<?>> getTestClasses() {
         Set<Class<?>> testClasses = new HashSet<Class<?>>();
 
-        WithClasses withClasses = testMethod.getAnnotation( WithClasses.class );
+        WithClasses withClasses = method.getAnnotation( WithClasses.class );
         if ( withClasses != null ) {
             testClasses.addAll( Arrays.asList( withClasses.value() ) );
         }
 
-        withClasses = this.getClass().getAnnotation( WithClasses.class );
+        withClasses = method.getMethod().getDeclaringClass().getAnnotation( WithClasses.class );
         if ( withClasses != null ) {
             testClasses.addAll( Arrays.asList( withClasses.value() ) );
         }
 
         if ( testClasses.isEmpty() ) {
             throw new IllegalStateException(
-                "The classes to be compiled during the test must be specified via @WithClasses."
-            );
+                "The classes to be compiled during the test must be specified via @WithClasses." );
         }
 
         return testClasses;
@@ -225,18 +226,17 @@ public abstract class MapperTestBase {
      * Returns the processor options to be used this test.
      *
      * @param testMethod The test method of interest
-     *
      * @return A list containing the processor options to be used for this test
      */
-    private List<String> getProcessorOptions(Method testMethod) {
-        ProcessorOption processorOption = testMethod.getAnnotation( ProcessorOption.class );
+    private List<String> getProcessorOptions() {
+        ProcessorOption processorOption = method.getAnnotation( ProcessorOption.class );
 
         if ( processorOption == null ) {
-            processorOption = this.getClass().getAnnotation( ProcessorOption.class );
+            processorOption = method.getMethod().getDeclaringClass().getAnnotation( ProcessorOption.class );
         }
 
-        return processorOption != null ? Arrays.asList( asOptionString( processorOption ) ) :
-            Collections.<String>emptyList();
+        return processorOption != null ? Arrays.asList( asOptionString( processorOption ) )
+                        : Collections.<String> emptyList();
     }
 
     private String asOptionString(ProcessorOption processorOption) {
@@ -247,24 +247,28 @@ public abstract class MapperTestBase {
         Set<File> sourceFiles = new HashSet<File>( classes.size() );
 
         for ( Class<?> clazz : classes ) {
-            sourceFiles.add(
-                new File(
-                    sourceDir +
-                        File.separator +
-                        clazz.getName().replace( ".", File.separator ) +
-                        ".java"
-                )
-            );
+            sourceFiles.add( new File( sourceDir + File.separator + clazz.getName().replace( ".", File.separator )
+                + ".java" ) );
         }
 
         return sourceFiles;
     }
 
-    private boolean compile(DiagnosticCollector<JavaFileObject> diagnostics, Iterable<File> sourceFiles,
-                            List<String> processorOptions) {
+    private CompilationResultHolder compile(Set<Class<?>> sourceClasses, List<String> processorOptions)
+        throws Exception {
+        CompilationRequest request = new CompilationRequest( sourceClasses, processorOptions );
+
+        CompilationCache cache = COMPILATION_CACHE.get();
+        if ( request.equals( cache.lastRequest ) ) {
+            return cache.lastResult;
+        }
+
+        setupCompiler();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, null );
 
-        Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles( sourceFiles );
+        Iterable<? extends JavaFileObject> compilationUnits =
+            fileManager.getJavaFileObjectsFromFiles( getSourceFiles( sourceClasses ) );
 
         try {
             fileManager.setLocation( StandardLocation.CLASS_PATH, classPath );
@@ -275,17 +279,15 @@ public abstract class MapperTestBase {
             throw new RuntimeException( e );
         }
 
-        CompilationTask task = compiler.getTask(
-            null,
-            fileManager,
-            diagnostics,
-            processorOptions,
-            null,
-            compilationUnits
-        );
+        CompilationTask task =
+            compiler.getTask( null, fileManager, diagnostics, processorOptions, null, compilationUnits );
         task.setProcessors( Arrays.asList( new MappingProcessor() ) );
 
-        return task.call();
+        CompilationResultHolder resultHolder = new CompilationResultHolder( diagnostics, task.call() );
+
+        cache.lastRequest = request;
+        cache.lastResult = resultHolder;
+        return resultHolder;
     }
 
     private String getBasePath() {
@@ -345,7 +347,53 @@ public abstract class MapperTestBase {
         }
     }
 
-    private boolean isJdk6() {
-        return ( Integer.parseInt( System.getProperty( "java.version" ).split( "\\." )[1]) == 6 );
+    private static class CompilationCache {
+        private CompilationRequest lastRequest;
+        private CompilationResultHolder lastResult;
+    }
+
+    private static class CompilationResultHolder {
+        private DiagnosticCollector<JavaFileObject> diagnostics;
+        private boolean compilationSuccessful;
+
+        public CompilationResultHolder(DiagnosticCollector<JavaFileObject> diagnostics, boolean compilationSuccessful) {
+            this.diagnostics = diagnostics;
+            this.compilationSuccessful = compilationSuccessful;
+        }
+    }
+
+    private static class CompilationRequest {
+        private final Set<Class<?>> sourceClasses;
+        private final List<String> processorOptions;
+
+        public CompilationRequest(Set<Class<?>> sourceClasses, List<String> processorOptions) {
+            this.sourceClasses = sourceClasses;
+            this.processorOptions = processorOptions;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ( ( processorOptions == null ) ? 0 : processorOptions.hashCode() );
+            result = prime * result + ( ( sourceClasses == null ) ? 0 : sourceClasses.hashCode() );
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if ( this == obj ) {
+                return true;
+            }
+            if ( obj == null ) {
+                return false;
+            }
+            if ( getClass() != obj.getClass() ) {
+                return false;
+            }
+            CompilationRequest other = (CompilationRequest) obj;
+
+            return processorOptions.equals( other.processorOptions ) && sourceClasses.equals( other.sourceClasses );
+        }
     }
 }

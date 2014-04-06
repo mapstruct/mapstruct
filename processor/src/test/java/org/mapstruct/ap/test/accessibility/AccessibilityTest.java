@@ -21,12 +21,13 @@ package org.mapstruct.ap.test.accessibility;
 import static java.lang.reflect.Modifier.isPrivate;
 import static java.lang.reflect.Modifier.isProtected;
 import static java.lang.reflect.Modifier.isPublic;
-import static org.testng.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for different accessibility modifiers
@@ -34,7 +35,8 @@ import org.testng.annotations.Test;
  * @author Andreas Gudian
  */
 @WithClasses({ Source.class, Target.class, DefaultSourceTargetMapperAbstr.class, DefaultSourceTargetMapperIfc.class })
-public class AccessibilityTest extends MapperTestBase {
+@RunWith( AnnotationProcessorTestRunner.class )
+public class AccessibilityTest {
 
     @Test
     @IssueKey("103")

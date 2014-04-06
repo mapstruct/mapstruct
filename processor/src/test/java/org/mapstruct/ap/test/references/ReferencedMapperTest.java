@@ -26,10 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Andreas Gudian
@@ -38,7 +39,8 @@ import org.testng.annotations.Test;
 @IssueKey( "82" )
 @WithClasses( { Bar.class, Foo.class, FooMapper.class, ReferencedCustomMapper.class, Source.class,
     SourceTargetMapper.class, Target.class, BaseType.class, SomeType.class, SomeOtherType.class } )
-public class ReferencedMapperTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class ReferencedMapperTest {
     @Test
     public void referencedMappersAreInstatiatedCorrectly() {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( createSource() );

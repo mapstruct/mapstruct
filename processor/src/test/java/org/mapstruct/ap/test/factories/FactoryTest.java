@@ -25,11 +25,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.factories.a.BarFactory;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Sjaak Derksen
@@ -40,7 +41,8 @@ import org.testng.annotations.Test;
     org.mapstruct.ap.test.factories.b.BarFactory.class, Source.class, SourceTargetMapperAndBar2Factory.class,
     Target.class, CustomList.class, CustomListImpl.class, CustomMap.class, CustomMapImpl.class, FactoryCreatable.class
 })
-public class FactoryTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class FactoryTest {
     @Test
     public void shouldUseTwoFactoryMethods() {
         Target target = SourceTargetMapperAndBar2Factory.INSTANCE.sourceToTarget( createSource() );

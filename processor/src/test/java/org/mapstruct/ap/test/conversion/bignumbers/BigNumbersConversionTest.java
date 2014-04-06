@@ -18,22 +18,24 @@
  */
 package org.mapstruct.ap.test.conversion.bignumbers;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Tests conversions between {@link BigInteger} and numbers as well as String.
  *
  * @author Gunnar Morling
  */
-public class BigNumbersConversionTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class BigNumbersConversionTest {
 
     @Test
     @IssueKey("21")

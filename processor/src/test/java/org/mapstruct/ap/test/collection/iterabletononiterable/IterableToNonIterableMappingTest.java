@@ -18,17 +18,19 @@
  */
 package org.mapstruct.ap.test.collection.iterabletononiterable;
 
-import java.util.Arrays;
-
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
 import static org.fest.assertions.Assertions.assertThat;
 
+import java.util.Arrays;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class, StringListMapper.class })
-public class IterableToNonIterableMappingTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class IterableToNonIterableMappingTest {
 
     @Test
     @IssueKey("6")

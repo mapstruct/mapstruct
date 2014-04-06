@@ -18,18 +18,19 @@
  */
 package org.mapstruct.ap.test.unmappedtarget;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import javax.tools.Diagnostic.Kind;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Tests expected diagnostics for unmapped target properties.
@@ -37,7 +38,8 @@ import static org.fest.assertions.Assertions.assertThat;
  * @author Gunnar Morling
  */
 @IssueKey("35")
-public class UnmappedTargetTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class UnmappedTargetTest {
 
     @Test
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })

@@ -29,13 +29,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class })
-public class CollectionMappingTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class CollectionMappingTest {
 
     @Test
     @IssueKey("6")

@@ -18,19 +18,20 @@
  */
 package org.mapstruct.ap.test.severalsources;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic.Kind;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for propagation of attribute without setter in source and getter in
@@ -39,7 +40,8 @@ import static org.fest.assertions.Assertions.assertThat;
  * @author Gunnar Morling
  */
 @IssueKey("31")
-public class SeveralSourceParametersTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class SeveralSourceParametersTest {
 
     @Test
     @WithClasses({ Person.class, Address.class, DeliveryAddress.class, SourceTargetMapper.class })

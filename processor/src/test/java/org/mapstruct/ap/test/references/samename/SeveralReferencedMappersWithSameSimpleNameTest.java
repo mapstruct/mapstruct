@@ -18,16 +18,17 @@
  */
 package org.mapstruct.ap.test.references.samename;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.references.samename.a.AnotherSourceTargetMapper;
 import org.mapstruct.ap.test.references.samename.a.CustomMapper;
 import org.mapstruct.ap.test.references.samename.model.Source;
 import org.mapstruct.ap.test.references.samename.model.Target;
 import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.MapperTestBase;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.testng.annotations.Test;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * Test for referring several mappers with the same simple name.
@@ -44,7 +45,8 @@ import static org.fest.assertions.Assertions.assertThat;
     Jsr330SourceTargetMapper.class,
     AnotherSourceTargetMapper.class
 })
-public class SeveralReferencedMappersWithSameSimpleNameTest extends MapperTestBase {
+@RunWith(AnnotationProcessorTestRunner.class)
+public class SeveralReferencedMappersWithSameSimpleNameTest {
 
     @Test
     public void severalMappersWithSameSimpleNameCanBeReferenced() {
