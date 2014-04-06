@@ -22,11 +22,14 @@ public class Person {
 
     private String name;
 
+    private Boolean male;
+
     public Person() {
     }
 
-    public Person(String name) {
+    public Person(String name, Boolean isMale) {
         this.name = name;
+        this.male = isMale;
     }
 
     public String getName() {
@@ -36,4 +39,14 @@ public class Person {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Boolean isMale() {
+        return male;
+    }
+
+    public void setMale( Boolean male ) {
+        this.male = male;
+    }
+
+
 }

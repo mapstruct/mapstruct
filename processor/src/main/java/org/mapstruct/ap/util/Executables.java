@@ -56,7 +56,8 @@ public class Executables {
         return method.getParameters().isEmpty() &&
             name.startsWith( "is" ) &&
             name.length() > 2 &&
-            method.getReturnType().getKind() == TypeKind.BOOLEAN;
+            method.getReturnType().getKind() == TypeKind.BOOLEAN ||
+                method.getReturnType().toString().equals( "java.lang.Boolean" );
     }
 
     public static boolean isSetterMethod(ExecutableElement method) {
