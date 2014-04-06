@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -26,11 +27,16 @@ import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import org.mapstruct.ap.util.Executables;
+import org.mapstruct.ap.util.Filters;
+import org.mapstruct.ap.util.TypeUtilsJDK6Fix;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -45,6 +51,7 @@ import javax.lang.model.util.Types;
 public class Type extends ModelElement implements Comparable<Type> {
 
     private final Types typeUtils;
+    private final Elements elementUtils;
 
     private final TypeMirror typeMirror;
     private final TypeElement typeElement;
@@ -64,19 +71,31 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isImported;
     private final List<String> enumConstants;
 
+    private List<ExecutableElement> getters = null;
+    private List<ExecutableElement> setters = null;
+    private List<ExecutableElement> alternativeTargetAccessors = null;
+
     //CHECKSTYLE:OFF
-    public Type(Types typeUtils, TypeMirror typeMirror, TypeElement typeElement, List<Type> typeParameters,
-                Type implementationType, String packageName, String name, String qualifiedName, boolean isInterface,
-                boolean isEnumType, boolean isIterableType, boolean isCollectionType, boolean isMapType,
-                boolean isImported) {
+    public Type(Types typeUtils,  Elements elementUtils,
+            TypeMirror typeMirror, TypeElement typeElement, List<Type> typeParameters,
+            Type implementationType,
+            String packageName,  String name,  String qualifiedName,
+            boolean isInterface,
+            boolean isEnumType, boolean isIterableType, boolean isCollectionType, boolean isMapType,
+            boolean isImported) {
+
         this.typeUtils = typeUtils;
+        this.elementUtils = elementUtils;
+
         this.typeMirror = typeMirror;
         this.typeElement = typeElement;
         this.typeParameters = typeParameters;
         this.implementationType = implementationType;
+
         this.packageName = packageName;
         this.name = name;
         this.qualifiedName = qualifiedName;
+
         this.isInterface = isInterface;
         this.isEnumType = isEnumType;
         this.isIterableType = isIterableType;
@@ -206,6 +225,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     public Type erasure() {
         return new Type(
             typeUtils,
+            elementUtils,
             typeUtils.erasure( typeMirror ),
             typeElement,
             typeParameters,
@@ -238,6 +258,79 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         return typeUtils.isAssignable( typeMirror, other.typeMirror );
     }
+
+    /**
+     * getGetters
+     *
+     * @return an unmodifiable list of all getters (including 'is' for booleans).
+     */
+    public List<ExecutableElement> getGetters() {
+        if (getters == null) {
+            List<? extends Element> members = elementUtils.getAllMembers( typeElement );
+            getters = Collections.unmodifiableList( Filters.getterMethodsIn( members ) );
+        }
+        return getters;
+    }
+
+    /**
+     * getSetters
+     *
+     * @return an unmodifiable list of all setters
+     */
+    public List<ExecutableElement> getSetters() {
+        if (setters == null) {
+            List<? extends Element> members = elementUtils.getAllMembers( typeElement );
+            setters = Collections.unmodifiableList( Filters.setterMethodsIn( members ) );
+        }
+        return setters;
+    }
+
+    /**
+     * Alternative accessors could be a getter for a collection. By means of the
+     * {@link java.util.Collection#addAll(java.util.Collection) } this getter can still
+     * be used as targetAccessor. JAXB XJC tool generates such constructs.
+     *
+     * This method can be extended when new cases come along.
+     *
+     * @return an unmodifiable list of alternative target accessors.
+     */
+    public List<ExecutableElement> getAlternativeTargetAccessors() {
+        if ( alternativeTargetAccessors == null ) {
+
+            List<ExecutableElement> result = new ArrayList<ExecutableElement>();
+            List<ExecutableElement> setterMethods = getSetters();
+            List<ExecutableElement> getterMethods = getGetters();
+
+            if ( getterMethods.size() > setterMethods.size() ) {
+                // there could be a getter method for a list that is not present as setter.
+                // a getter could substitute the setter in that case and act as setter.
+                // (assuming it is initialized)
+                for ( ExecutableElement getterMethod : getterMethods ) {
+                    boolean matchFound = false;
+                    String getterPropertyName = Executables.getPropertyName( getterMethod );
+                    for ( ExecutableElement setterMethod : setterMethods ) {
+                        String setterPropertyName = Executables.getPropertyName( setterMethod );
+                        if ( getterPropertyName.equals( setterPropertyName ) ) {
+                            matchFound = true;
+                            break;
+                        }
+                    }
+                    if ( !matchFound && isCollection( getterMethod.getReturnType() ) ) {
+                        result.add( getterMethod );
+                    }
+                }
+            }
+            alternativeTargetAccessors = Collections.unmodifiableList( result );
+        }
+        return alternativeTargetAccessors;
+    }
+
+    private boolean isCollection( TypeMirror candidate ) {
+        String collectionName = Collection.class.getCanonicalName();
+        TypeMirror collectionType = typeUtils.erasure( elementUtils.getTypeElement( collectionName ).asType() );
+        return TypeUtilsJDK6Fix.isSubType( typeUtils, candidate, collectionType );
+    }
+
 
     /**
      * Returns the length of the shortest path in the type hierarchy between this type and the specified other type.
