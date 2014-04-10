@@ -177,6 +177,13 @@
                 <version>${org.springframework.version}</version>
             </dependency>
 
+            <!-- joda -->
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>2.3</version>
+            </dependency>
+
             <!-- Project modules -->
             <dependency>
                 <groupId>${project.groupId}</groupId>

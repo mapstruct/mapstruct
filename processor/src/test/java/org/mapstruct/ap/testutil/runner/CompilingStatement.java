@@ -87,7 +87,12 @@ class CompilingStatement extends Statement {
         }
     };
 
-    private static final List<String> LIBRARIES = Arrays.asList( "mapstruct.jar", "guava.jar", "javax.inject.jar" );
+    private static final List<String> LIBRARIES = Arrays.asList(
+        "mapstruct.jar",
+        "guava.jar",
+        "javax.inject.jar",
+        "joda-time.jar"
+    );
 
     private final Statement next;
     private final FrameworkMethod method;

@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.lang.model.util.Elements;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 
@@ -176,6 +180,12 @@ public class Conversions {
         register( Character.class, String.class, new CharWrapperToStringConversion() );
         register( BigInteger.class, String.class, new BigIntegerToStringConversion() );
         register( BigDecimal.class, String.class, new BigDecimalToStringConversion() );
+
+        // joda
+        register( DateTime.class, String.class, new JodaTypeToStringConversion( DateTime.class ) );
+        register( LocalDate.class, String.class, new JodaTypeToStringConversion( LocalDate.class ) );
+        register( LocalTime.class, String.class, new JodaTypeToStringConversion( LocalTime.class ) );
+        register( LocalDateTime.class, String.class, new JodaTypeToStringConversion( LocalDateTime.class ) );
 
         //misc.
         register( Enum.class, String.class, new EnumStringConversion() );
