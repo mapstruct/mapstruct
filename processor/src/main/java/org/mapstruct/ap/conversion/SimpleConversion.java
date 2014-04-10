@@ -19,7 +19,6 @@
 package org.mapstruct.ap.conversion;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.model.TypeConversion;
@@ -27,8 +26,7 @@ import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 
 /**
- * Base class for {@link ConversionProvider}s creating {@link TypeConversion}s
- * which don't require any type imports nor declare any exception types.
+ * Base class for {@link ConversionProvider}s creating {@link TypeConversion}s which don't declare any exception types.
  *
  * @author Gunnar Morling
  */
@@ -38,7 +36,7 @@ public abstract class SimpleConversion implements ConversionProvider {
     public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
         return new TypeConversion(
             getToConversionImportTypes( conversionContext ),
-            getToConversionExceptionTypes( conversionContext ),
+            Collections.<Type> emptyList(),
             getToConversionString( sourceReference, conversionContext )
         );
     }
@@ -47,17 +45,9 @@ public abstract class SimpleConversion implements ConversionProvider {
     public TypeConversion from(String targetReference, ConversionContext conversionContext) {
         return new TypeConversion(
             getFromConversionImportTypes( conversionContext ),
-            getFromConversionExceptionTypes( conversionContext ),
+            Collections.<Type> emptyList(),
             getFromConversionString( targetReference, conversionContext )
         );
-    }
-
-    /**
-     * @param conversionContext the conversion context
-     * @return exception types required in the from-conversion
-     */
-    protected List<Type> getFromConversionExceptionTypes(ConversionContext conversionContext) {
-        return Collections.<Type> emptyList();
     }
 
     /**
@@ -66,14 +56,6 @@ public abstract class SimpleConversion implements ConversionProvider {
      */
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return Collections.<Type> emptySet();
-    }
-
-    /**
-     * @param conversionContext the conversion context
-     * @return exception types required in the to-conversion
-     */
-    protected List<Type> getToConversionExceptionTypes(ConversionContext conversionContext) {
-        return Collections.<Type> emptyList();
     }
 
     /**
