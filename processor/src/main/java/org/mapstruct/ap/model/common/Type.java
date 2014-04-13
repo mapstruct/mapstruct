@@ -34,6 +34,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.TypeUtilsJDK6Fix;
@@ -76,13 +77,10 @@ public class Type extends ModelElement implements Comparable<Type> {
     private List<ExecutableElement> alternativeTargetAccessors = null;
 
     //CHECKSTYLE:OFF
-    public Type(Types typeUtils,  Elements elementUtils,
-            TypeMirror typeMirror, TypeElement typeElement, List<Type> typeParameters,
-            Type implementationType,
-            String packageName,  String name,  String qualifiedName,
-            boolean isInterface,
-            boolean isEnumType, boolean isIterableType, boolean isCollectionType, boolean isMapType,
-            boolean isImported) {
+    public Type(Types typeUtils, Elements elementUtils, TypeMirror typeMirror, TypeElement typeElement,
+                List<Type> typeParameters, Type implementationType, String packageName, String name,
+                String qualifiedName, boolean isInterface, boolean isEnumType, boolean isIterableType,
+                boolean isCollectionType, boolean isMapType, boolean isImported) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
@@ -265,7 +263,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable list of all getters (including 'is' for booleans).
      */
     public List<ExecutableElement> getGetters() {
-        if (getters == null) {
+        if ( getters == null ) {
             List<? extends Element> members = elementUtils.getAllMembers( typeElement );
             getters = Collections.unmodifiableList( Filters.getterMethodsIn( members ) );
         }
@@ -278,7 +276,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable list of all setters
      */
     public List<ExecutableElement> getSetters() {
-        if (setters == null) {
+        if ( setters == null ) {
             List<? extends Element> members = elementUtils.getAllMembers( typeElement );
             setters = Collections.unmodifiableList( Filters.setterMethodsIn( members ) );
         }
@@ -325,12 +323,11 @@ public class Type extends ModelElement implements Comparable<Type> {
         return alternativeTargetAccessors;
     }
 
-    private boolean isCollection( TypeMirror candidate ) {
+    private boolean isCollection(TypeMirror candidate) {
         String collectionName = Collection.class.getCanonicalName();
         TypeMirror collectionType = typeUtils.erasure( elementUtils.getTypeElement( collectionName ).asType() );
         return TypeUtilsJDK6Fix.isSubType( typeUtils, candidate, collectionType );
     }
-
 
     /**
      * Returns the length of the shortest path in the type hierarchy between this type and the specified other type.
