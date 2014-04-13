@@ -113,6 +113,10 @@ class CompilingStatement extends Statement {
         next.evaluate();
     }
 
+    static String getSourceOutputDir() {
+        return COMPILATION_CACHE.get().lastSourceOutputDir;
+    }
+
     protected void setupCompiler() throws Exception {
         compiler = ToolProvider.getSystemJavaCompiler();
 
@@ -287,6 +291,8 @@ class CompilingStatement extends Statement {
         }
 
         setupCompiler();
+        cache.lastSourceOutputDir = sourceOutputDir;
+
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, null );
 
@@ -371,6 +377,7 @@ class CompilingStatement extends Statement {
     }
 
     private static class CompilationCache {
+        private String lastSourceOutputDir;
         private CompilationRequest lastRequest;
         private CompilationResultHolder lastResult;
     }

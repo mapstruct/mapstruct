@@ -49,6 +49,7 @@ public class StringToXmlGregorianCalendar extends BuiltInMethod {
         this.parameter = new Parameter( "date", typeFactory.getType( String.class ) );
         this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
         this.importTypes = asSet(
+            returnType,
             typeFactory.getType( Date.class ),
             typeFactory.getType( GregorianCalendar.class ),
             typeFactory.getType( SimpleDateFormat.class ),

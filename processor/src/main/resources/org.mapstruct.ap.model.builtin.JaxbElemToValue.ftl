@@ -18,7 +18,7 @@
      limitations under the License.
 
 -->
-private <T> T ${name}( JAXBElement <T> element ) {
+private <T> T ${name}( JAXBElement<T> element ) {
     if ( element == null ) {
         return null;
     }

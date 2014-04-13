@@ -125,8 +125,12 @@ public class PropertyMapping extends ModelElement {
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> importTypes = new HashSet<Type>();
-        importTypes.add( sourceType );
-        importTypes.add( targetType );
+
+        if ( isTargetAccessorSetter() && getMappingMethod() == null
+            && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
+            importTypes.addAll( targetType.getImportTypes() );
+        }
+
         if ( conversion != null && mappingMethod == null ) {
             importTypes.addAll( conversion.getImportTypes() );
         }

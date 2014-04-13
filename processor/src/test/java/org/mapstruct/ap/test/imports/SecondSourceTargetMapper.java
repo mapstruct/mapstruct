@@ -18,34 +18,18 @@
  */
 package org.mapstruct.ap.test.imports;
 
-import java.util.Date;
-
 import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.imports.referenced.Source;
-import org.mapstruct.ap.test.imports.referenced.Target;
-import org.mapstruct.ap.test.imports.to.Foo;
+import org.mapstruct.ap.test.imports.referenced.GenericMapper;
+import org.mapstruct.ap.test.imports.to.FooWrapper;
 import org.mapstruct.factory.Mappers;
 
 /**
- * @author Gunnar Morling
+ * @author Andreas Gudian
  */
-@Mapper(componentModel = "jsr330")
-public interface SourceTargetMapper {
+@Mapper( uses = GenericMapper.class )
+public interface SecondSourceTargetMapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    SecondSourceTargetMapper INSTANCE = Mappers.getMapper( SecondSourceTargetMapper.class );
 
-    ParseException sourceToTarget(Named source);
-
-    //custom types
-    Map listToMap(List list);
-
-    java.util.List<ParseException> namedsToExceptions(java.util.List<Named> source);
-
-    Foo fooToFoo(org.mapstruct.ap.test.imports.from.Foo foo);
-
-    java.util.List<Date> stringsToDates(java.util.List<String> stringDates);
-
-    java.util.Map<Date, Date> stringsToDates(java.util.Map<String, String> stringDates);
-
-    Target sourceToTarget(Source target);
+    FooWrapper fooWrapperToFooWrapper(org.mapstruct.ap.test.imports.from.FooWrapper foo);
 }

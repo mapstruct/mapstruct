@@ -18,12 +18,15 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
+import java.util.Collections;
+import java.util.Set;
+
 import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.common.Type;
 
 /**
- * Base class for {@link ConversionProvider}s creating {@link TypeConversion}s
- * which don't require any type imports nor declare any exception types.
+ * Base class for {@link ConversionProvider}s creating {@link TypeConversion}s which don't declare any exception types.
  *
  * @author Gunnar Morling
  */
@@ -32,6 +35,8 @@ public abstract class SimpleConversion implements ConversionProvider {
     @Override
     public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
         return new TypeConversion(
+            getToConversionImportTypes( conversionContext ),
+            Collections.<Type> emptyList(),
             getToConversionString( sourceReference, conversionContext )
         );
     }
@@ -39,18 +44,33 @@ public abstract class SimpleConversion implements ConversionProvider {
     @Override
     public TypeConversion from(String targetReference, ConversionContext conversionContext) {
         return new TypeConversion(
+            getFromConversionImportTypes( conversionContext ),
+            Collections.<Type> emptyList(),
             getFromConversionString( targetReference, conversionContext )
         );
     }
 
     /**
+     * @param conversionContext the conversion context
+     * @return conversion types required in the from-conversion
+     */
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return Collections.<Type> emptySet();
+    }
+
+    /**
+     * @param conversionContext the conversion context
+     * @return conversion types required in the to-conversion
+     */
+    protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
+        return Collections.<Type> emptySet();
+    }
+
+    /**
      * Returns the conversion string from source to target.
      *
-     * @param sourceReference A reference to the source object, e.g.
-     * {@code beanName.getFoo()}.
-     * @param conversionContext ConversionContext providing optional information required for creating
- the conversion.
-     *
+     * @param sourceReference A reference to the source object, e.g. {@code beanName.getFoo()}.
+     * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      * @return The conversion string from source to target.
      */
     protected abstract String getToConversionString(String sourceReference, ConversionContext conversionContext);
