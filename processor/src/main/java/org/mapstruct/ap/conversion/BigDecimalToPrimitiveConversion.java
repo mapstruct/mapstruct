@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.conversion;
 
-import static org.mapstruct.ap.util.Collections.asSet;
-
 import java.math.BigDecimal;
 import java.util.Set;
 
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
+
+import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  * Conversion between {@link BigDecimal} and native number types.

@@ -21,7 +21,6 @@ package org.mapstruct.ap.model.source;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
@@ -208,8 +207,8 @@ public class MethodMatcher {
             }
             else {
                 // check if types are in bound
-                if ( TypeUtilsJDK6Fix.isSubType( typeUtils, t.getLowerBound(), p) &&
-                        TypeUtilsJDK6Fix.isSubType( typeUtils, p, t.getUpperBound() ) ) {
+                if ( TypeUtilsJDK6Fix.isSubType( typeUtils, t.getLowerBound(), p ) &&
+                    TypeUtilsJDK6Fix.isSubType( typeUtils, p, t.getUpperBound() ) ) {
                     genericTypesMap.put( t, p );
                     return Boolean.TRUE;
                 }
@@ -251,8 +250,8 @@ public class MethodMatcher {
                         // for example method: String method(? super String)
                         // to check super type, we can simply reverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
-                        return TypeUtilsJDK6Fix.isSubType( typeUtils, superBound , p ) ||
-                                typeUtils.isSameType( p, superBound );
+                        return TypeUtilsJDK6Fix.isSubType( typeUtils, superBound, p ) ||
+                            typeUtils.isSameType( p, superBound );
 
                     case TYPEVAR:
 
@@ -270,8 +269,8 @@ public class MethodMatcher {
                         // to check super type, we can simply reverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
                         TypeMirror superBoundAsDeclared = typeParameter.getBounds().get( 0 );
-                        return ( TypeUtilsJDK6Fix.isSubType(  typeUtils, superBoundAsDeclared,  p )  ||
-                                 typeUtils.isSameType( p, superBoundAsDeclared ) );
+                        return ( TypeUtilsJDK6Fix.isSubType( typeUtils, superBoundAsDeclared, p ) ||
+                            typeUtils.isSameType( p, superBoundAsDeclared ) );
                     default:
                         // does this situation occur?
                         return Boolean.FALSE;
@@ -311,7 +310,7 @@ public class MethodMatcher {
         if ( t != null && bounds != null ) {
             for ( TypeMirror bound : bounds ) {
                 if ( !( bound.getKind().equals( TypeKind.DECLARED ) &&
-                        TypeUtilsJDK6Fix.isSubType( typeUtils, t,  bound ) ) ) {
+                    TypeUtilsJDK6Fix.isSubType( typeUtils, t, bound ) ) ) {
                     return false;
                 }
             }

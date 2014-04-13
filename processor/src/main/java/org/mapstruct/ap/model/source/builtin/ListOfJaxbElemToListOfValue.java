@@ -18,17 +18,16 @@
  */
 package org.mapstruct.ap.model.source.builtin;
 
-import static org.mapstruct.ap.util.Collections.asSet;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import javax.xml.bind.JAXBElement;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+
+import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  * @author Sjaak Derksen
@@ -48,7 +47,7 @@ public class ListOfJaxbElemToListOfValue extends BuiltInMethod {
             returnType,
             typeFactory.getType( JAXBElement.class ),
             typeFactory.getType( ArrayList.class )
-       );
+        );
     }
 
     @Override

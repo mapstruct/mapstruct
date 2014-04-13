@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -26,6 +25,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 
 import static org.mapstruct.ap.util.Collections.asSet;

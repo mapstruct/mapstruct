@@ -23,11 +23,10 @@ import org.mapstruct.ap.test.imports.from.Foo;
 
 /**
  * @author Andreas Gudian
- *
  */
 public class GenericMapper {
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T> T fromFoo(Foo fromFoo, @TargetType Class<T> toFooClass) {
         if ( org.mapstruct.ap.test.imports.to.Foo.class == toFooClass ) {
             org.mapstruct.ap.test.imports.to.Foo result = new org.mapstruct.ap.test.imports.to.Foo();

@@ -23,7 +23,6 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.model.common.Type;

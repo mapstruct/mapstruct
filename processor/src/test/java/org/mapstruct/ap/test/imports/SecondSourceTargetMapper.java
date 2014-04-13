@@ -26,7 +26,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Andreas Gudian
  */
-@Mapper( uses = GenericMapper.class )
+@Mapper(uses = GenericMapper.class)
 public interface SecondSourceTargetMapper {
 
     SecondSourceTargetMapper INSTANCE = Mappers.getMapper( SecondSourceTargetMapper.class );

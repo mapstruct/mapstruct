@@ -18,16 +18,15 @@
  */
 package org.mapstruct.ap.model.source.builtin;
 
-import static org.mapstruct.ap.util.Collections.asSet;
-
 import java.util.Date;
 import java.util.Set;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+
+import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  * @author Sjaak Derksen

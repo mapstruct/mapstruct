@@ -27,6 +27,7 @@ import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+
 import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
@@ -44,7 +45,8 @@ public class XmlGregorianCalendarToString extends BuiltInMethod {
         this.importTypes = asSet(
             typeFactory.getType( XMLGregorianCalendar.class ),
             typeFactory.getType( Date.class ),
-            typeFactory.getType( SimpleDateFormat.class ) );
+            typeFactory.getType( SimpleDateFormat.class )
+        );
     }
 
     @Override

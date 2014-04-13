@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.imports.to;
 
 /**
  * @author Andreas Gudian
- *
  */
 public class FooWrapper {
     private Foo value;

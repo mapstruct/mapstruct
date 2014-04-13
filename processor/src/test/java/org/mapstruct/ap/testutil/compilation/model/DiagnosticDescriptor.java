@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
@@ -49,8 +48,8 @@ public class DiagnosticDescriptor {
 
     public static DiagnosticDescriptor forDiagnostic(Diagnostic diagnostic) {
         String soureFileName = diagnostic.type() != void.class
-                            ? diagnostic.type().getName().replace( ".", File.separator ) + ".java"
-                            : null;
+            ? diagnostic.type().getName().replace( ".", File.separator ) + ".java"
+            : null;
         return new DiagnosticDescriptor(
             soureFileName,
             diagnostic.kind(),

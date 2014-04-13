@@ -53,6 +53,7 @@ public class MethodReference extends MappingMethod {
 
     /**
      * Creates a new reference to the given method.
+     *
      * @param method the target method of the reference
      * @param declaringMapper the method declaring the mapper; {@code null} if the current mapper itself
      * @param targetType in case the referenced method has a parameter for passing the target type, the given
@@ -63,8 +64,8 @@ public class MethodReference extends MappingMethod {
         this.declaringMapper = declaringMapper;
         this.contextParam = null;
         this.importTypes = targetType == null ?
-                Collections.<Type>emptySet() :
-                Collections.<Type>singleton( targetType );
+            Collections.<Type>emptySet() :
+            Collections.<Type>singleton( targetType );
     }
 
     public MethodReference(BuiltInMethod method, ConversionContext contextParam) {

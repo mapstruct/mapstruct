@@ -20,7 +20,6 @@ package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import javax.xml.bind.annotation.XmlElementDecl;
@@ -61,7 +60,7 @@ public class XmlElementDeclSelector implements MethodSelector {
         List<T> nameAndScopeMatches = new ArrayList<T>();
 
         for ( T candidate : methods ) {
-            if ( !(candidate instanceof SourceMethod ) ) {
+            if ( !( candidate instanceof SourceMethod ) ) {
                 continue;
             }
 

@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.imports.referenced;
 
 /**
  * @author Andreas Gudian
- *
  */
 public class Source {
     private NotImportedDatatype notImported;

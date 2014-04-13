@@ -18,8 +18,8 @@
  */
 package org.mapstruct.ap.testutil.compilation.annotation;
 
-import javax.tools.Diagnostic.Kind;
 import javax.lang.model.SourceVersion;
+import javax.tools.Diagnostic.Kind;
 
 /**
  * An expected diagnostic of a compilation.

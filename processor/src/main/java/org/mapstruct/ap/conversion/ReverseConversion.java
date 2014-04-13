@@ -18,8 +18,8 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.common.ConversionContext;
 
 /**
  * A {@link ConversionProvider} which creates the reversed conversions for a

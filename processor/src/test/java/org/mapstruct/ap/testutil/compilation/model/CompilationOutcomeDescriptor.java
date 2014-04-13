@@ -70,8 +70,8 @@ public class CompilationOutcomeDescriptor {
         if ( sourceVersions.length == 0 ) {
             return true;
         }
-        for (SourceVersion sourceVersion : sourceVersions) {
-            if (SourceVersion.latestSupported().equals( sourceVersion ) ) {
+        for ( SourceVersion sourceVersion : sourceVersions ) {
+            if ( SourceVersion.latestSupported().equals( sourceVersion ) ) {
                 return true;
             }
         }

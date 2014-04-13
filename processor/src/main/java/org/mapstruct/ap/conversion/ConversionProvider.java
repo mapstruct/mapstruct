@@ -18,9 +18,8 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
-
 import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.common.ConversionContext;
 
 /**
  * Implementations create inline {@link TypeConversion}s such as

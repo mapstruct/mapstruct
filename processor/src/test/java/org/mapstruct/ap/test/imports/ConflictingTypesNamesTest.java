@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.imports;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +31,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for generating a mapper which references types whose names clash with names of used annotations and exceptions.
@@ -85,7 +85,7 @@ public class ConflictingTypesNamesTest {
     }
 
     @Test
-    @IssueKey( "178" )
+    @IssueKey("178")
     public void mapperHasNoUnecessaryImports() {
         Source source = new Source();
         source.setNotImported( new NotImportedDatatype( 42 ) );
@@ -99,7 +99,7 @@ public class ConflictingTypesNamesTest {
     }
 
     @Test
-    @IssueKey( "156" )
+    @IssueKey("156")
     public void importsForTargetTypes() {
         FooWrapper source = new FooWrapper();
         Foo value = new Foo();

@@ -46,6 +46,7 @@ public class GeneratedSource implements TestRule {
 
     /**
      * @param mapperClass the class annotated with {@code &#064;Mapper}
+     *
      * @return an assert for the *Impl.java for the given mapper
      */
     public JavaFileAssert forMapper(Class<?> mapperClass) {
@@ -55,6 +56,7 @@ public class GeneratedSource implements TestRule {
 
     /**
      * @param path the path relative to the source output directory of the java file to return an assert for
+     *
      * @return an assert for the file specified by the given path
      */
     public JavaFileAssert forJavaFile(String path) {

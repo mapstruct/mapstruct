@@ -36,7 +36,7 @@ public abstract class SimpleConversion implements ConversionProvider {
     public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
         return new TypeConversion(
             getToConversionImportTypes( conversionContext ),
-            Collections.<Type> emptyList(),
+            Collections.<Type>emptyList(),
             getToConversionString( sourceReference, conversionContext )
         );
     }
@@ -45,25 +45,31 @@ public abstract class SimpleConversion implements ConversionProvider {
     public TypeConversion from(String targetReference, ConversionContext conversionContext) {
         return new TypeConversion(
             getFromConversionImportTypes( conversionContext ),
-            Collections.<Type> emptyList(),
+            Collections.<Type>emptyList(),
             getFromConversionString( targetReference, conversionContext )
         );
     }
 
     /**
+     * Returns a set with imported types of the "from" conversion. Defaults to an empty set; can be overridden in
+     * sub-classes to return the required types.
+     *
      * @param conversionContext the conversion context
-     * @return conversion types required in the from-conversion
+     * @return conversion types required in the "from" conversion
      */
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
-        return Collections.<Type> emptySet();
+        return Collections.<Type>emptySet();
     }
 
     /**
+     * Returns a set with imported types of the "to" conversion. Defaults to an empty set; can be overridden in
+     * sub-classes to return the required types.
+     *
      * @param conversionContext the conversion context
-     * @return conversion types required in the to-conversion
+     * @return conversion types required in the "to" conversion
      */
     protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
-        return Collections.<Type> emptySet();
+        return Collections.<Type>emptySet();
     }
 
     /**
@@ -71,6 +77,7 @@ public abstract class SimpleConversion implements ConversionProvider {
      *
      * @param sourceReference A reference to the source object, e.g. {@code beanName.getFoo()}.
      * @param conversionContext ConversionContext providing optional information required for creating the conversion.
+     *
      * @return The conversion string from source to target.
      */
     protected abstract String getToConversionString(String sourceReference, ConversionContext conversionContext);
@@ -81,7 +88,7 @@ public abstract class SimpleConversion implements ConversionProvider {
      * @param targetReference A reference to the targetReference object, e.g.
      * {@code beanName.getFoo()}.
      * @param conversionContext ConversionContext providing optional information required for creating
- the conversion.
+     * the conversion.
      *
      * @return The conversion string from target to source.
      */

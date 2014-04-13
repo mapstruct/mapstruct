@@ -48,6 +48,7 @@ public class AnnotationProcessorTestRunner extends BlockJUnit4ClassRunner {
 
     /**
      * @param klass the test class
+     *
      * @throws Exception see {@link BlockJUnit4ClassRunner#BlockJUnit4ClassRunner(Class)}
      */
     public AnnotationProcessorTestRunner(Class<?> klass) throws Exception {
@@ -58,6 +59,7 @@ public class AnnotationProcessorTestRunner extends BlockJUnit4ClassRunner {
      * newly loads the class with the test class loader and sets that loader as context class loader of the thread
      *
      * @param klass the class to replace
+     *
      * @return the class loaded with the test class loader
      */
     private static Class<?> replaceClassLoaderAndClass(Class<?> klass) {

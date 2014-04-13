@@ -21,7 +21,6 @@ package org.mapstruct.ap.model.source.selector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.model.common.Parameter;
@@ -72,10 +71,11 @@ public class MethodSelectors implements MethodSelector {
      * @param parameters the parameters to map the types for
      * @param sourceType the source type
      * @param returnType the return type
+     *
      * @return the list of actual parameter types
      */
     public static List<Type> getParameterTypes(TypeFactory typeFactory, List<Parameter> parameters, Type sourceType,
-                                              Type returnType) {
+                                               Type returnType) {
         List<Type> result = new ArrayList<Type>( parameters.size() );
         for ( Parameter param : parameters ) {
             if ( param.isTargetType() ) {
