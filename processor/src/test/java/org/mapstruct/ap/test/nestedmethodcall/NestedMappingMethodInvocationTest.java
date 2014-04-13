@@ -45,13 +45,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Sjaak Derksen
  */
 @IssueKey("134")
-//@WithClasses({
-//    SourceTypeTargetDtoMapper.class,
-//    OrderDto.class,
-//    OrderDetailsDto.class,
-//    OrderDetailsType.class,
-//    OrderType.class
-//})
 @RunWith(AnnotationProcessorTestRunner.class)
 public class NestedMappingMethodInvocationTest {
 
