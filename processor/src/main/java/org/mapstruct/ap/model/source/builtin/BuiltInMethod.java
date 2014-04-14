@@ -35,6 +35,8 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Strings;
 
+import static org.mapstruct.ap.util.Collections.first;
+
 /**
  * Represents a "built-in" mapping method which will be added as private method to the generated mapper. Built-in
  * methods are used in cases where a {@link SimpleConversion} doesn't suffice, e.g. as several lines of source code or a
@@ -72,7 +74,12 @@ public abstract class BuiltInMethod implements Method {
      * excluding generic type variables. When the implementor sees a need for this, this method can be overridden.
      */
     @Override
-    public boolean matches(Type sourceType, Type targetType) {
+    public boolean matches(List<Type> sourceTypes, Type targetType) {
+        if ( sourceTypes.size() != 1 ) {
+            return false;
+        }
+
+        Type sourceType = first( sourceTypes );
 
         if ( getReturnType().isAssignableTo( targetType.erasure() )
             && sourceType.erasure().isAssignableTo( getParameter().getType() ) ) {
@@ -235,5 +242,10 @@ public abstract class BuiltInMethod implements Method {
     @Override
     public MapperConfiguration getMapperConfiguration() {
         return null;
+    }
+
+    @Override
+    public boolean isLifecycleCallbackMethod() {
+        return false;
     }
 }

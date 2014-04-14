@@ -149,19 +149,28 @@ public class IterableMappingMethod extends MappingMethod {
             MethodReference factoryMethod
                 = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null );
 
+            List<LifecycleCallbackMethodReference> beforeMappingMethods =
+                LifecycleCallbackFactory.beforeMappingMethods( method, ctx );
+            List<LifecycleCallbackMethodReference> afterMappingMethods =
+                LifecycleCallbackFactory.afterMappingMethods( method, ctx );
+
             return new IterableMappingMethod(
                     method,
                     assignment,
                     factoryMethod,
                     mapNullToDefault,
-                    loopVariableName );
+                    loopVariableName,
+                    beforeMappingMethods,
+                    afterMappingMethods );
         }
     }
 
 
     private IterableMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
-                                  boolean mapNullToDefault, String loopVariableName ) {
-        super( method );
+                                  boolean mapNullToDefault, String loopVariableName,
+                                 List<LifecycleCallbackMethodReference> beforeMappingReferences,
+                                 List<LifecycleCallbackMethodReference> afterMappingReferences) {
+        super( method, beforeMappingReferences, afterMappingReferences );
         this.elementAssignment = parameterAssignment;
         this.factoryMethod = factoryMethod;
         this.overridden = method.overridesMethod();

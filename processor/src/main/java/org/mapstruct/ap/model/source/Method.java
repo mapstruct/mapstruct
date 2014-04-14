@@ -29,9 +29,8 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.util.MapperConfiguration;
 
 /**
- * This interface makes available common method properties and a matching method
- *
- * There are 2 known implementors: {@link BuiltInMethod} and {@link Method}
+ * This interface makes available common method properties and a matching method There are 2 known implementors:
+ * {@link BuiltInMethod} and {@link SourceMethod}
  *
  * @author Sjaak Derksen
  */
@@ -41,12 +40,12 @@ public interface Method {
      * Checks whether the provided sourceType and provided targetType match with the parameter respectively return type
      * of the method. The check also should incorporate wild card and generic type variables
      *
-     * @param sourceType the sourceType to match to the parameter
+     * @param sourceTypes the sourceTypes to match to the parameter
      * @param targetType the targetType to match to the returnType
      *
      * @return true when match
      */
-    boolean matches(Type sourceType, Type targetType );
+    boolean matches(List<Type> sourceTypes, Type targetType );
 
     /**
      * Returns the mapper type declaring this method if it is not declared by the mapper interface currently processed
@@ -150,4 +149,9 @@ public interface Method {
      * @return the mapper config when this method needs to be implemented
      */
     MapperConfiguration getMapperConfiguration();
+
+    /*
+     * @return {@code true}, if the method represents a mapping lifecycle callback (Before/After mapping method)
+     */
+    boolean isLifecycleCallbackMethod();
 }

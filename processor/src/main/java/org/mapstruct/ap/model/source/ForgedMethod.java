@@ -21,6 +21,7 @@ package org.mapstruct.ap.model.source;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.model.common.Accessibility;
@@ -28,6 +29,8 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Strings;
+
+import static org.mapstruct.ap.util.Collections.first;
 
 /**
  * This method will be generated in absence of a suitable abstract method to implement.
@@ -74,17 +77,17 @@ public class ForgedMethod implements Method {
     }
 
     @Override
-    public boolean matches(Type sourceTypes, Type targetType) {
+    public boolean matches(List<Type> sourceTypes, Type targetType) {
 
         if ( !targetType.equals( returnType ) ) {
             return false;
         }
 
-        if ( parameters.size() != 1 ) {
+        if ( parameters.size() != 1 || sourceTypes.size() != 1 ) {
             return false;
         }
 
-        if ( !sourceTypes.equals( parameters.get( 0 ).getType() ) ) {
+        if ( !first( sourceTypes ).equals( parameters.get( 0 ).getType() ) ) {
             return false;
         }
 
@@ -167,6 +170,11 @@ public class ForgedMethod implements Method {
     @Override
     public ExecutableElement getExecutable() {
         return positionHintElement;
+    }
+
+    @Override
+    public boolean isLifecycleCallbackMethod() {
+        return false;
     }
 
     @Override

@@ -162,13 +162,20 @@ public class BeanMappingMethod extends MappingMethod {
 
             sortPropertyMappingsByDependencies();
 
+            List<LifecycleCallbackMethodReference> beforeMappingMethods =
+                LifecycleCallbackFactory.beforeMappingMethods( method, ctx );
+            List<LifecycleCallbackMethodReference> afterMappingMethods =
+                LifecycleCallbackFactory.afterMappingMethods( method, ctx );
+
             return new BeanMappingMethod(
                 method,
                 propertyMappings,
                 factoryMethod,
                 mapNullToDefault,
                 resultType,
-                existingVariableNames
+                existingVariableNames,
+                beforeMappingMethods,
+                afterMappingMethods
             );
         }
 
@@ -572,8 +579,10 @@ public class BeanMappingMethod extends MappingMethod {
                               MethodReference factoryMethod,
                               boolean mapNullToDefault,
                               Type resultType,
-                              Collection<String> existingVariableNames ) {
-        super( method, existingVariableNames );
+                              Collection<String> existingVariableNames,
+                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
+                              List<LifecycleCallbackMethodReference> afterMappingReferences) {
+        super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences );
         this.propertyMappings = propertyMappings;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a

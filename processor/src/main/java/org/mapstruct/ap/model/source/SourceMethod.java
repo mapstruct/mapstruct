@@ -34,6 +34,8 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
+import org.mapstruct.ap.prism.AfterMappingPrism;
+import org.mapstruct.ap.prism.BeforeMappingPrism;
 import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Strings;
@@ -476,9 +478,9 @@ public class SourceMethod implements Method {
      * {@inheritDoc} {@link Method}
      */
     @Override
-    public boolean matches(Type sourceType, Type targetType) {
+    public boolean matches(List<Type> sourceTypes, Type targetType) {
         MethodMatcher matcher = new MethodMatcher( typeUtils, typeFactory, this );
-        return matcher.matches( sourceType, targetType );
+        return matcher.matches( sourceTypes, targetType );
     }
 
     /**
@@ -516,4 +518,28 @@ public class SourceMethod implements Method {
         return config;
     }
 
+    @Override
+    public boolean isLifecycleCallbackMethod() {
+        return isBeforeMappingMethod() || isAfterMappingMethod();
+    }
+
+    public boolean isAfterMappingMethod() {
+        return isAfterMappingMethod( getExecutable() );
+    }
+
+    public boolean isBeforeMappingMethod() {
+        return isBeforeMappingMethod( getExecutable() );
+    }
+
+    public static boolean isLifecycleCallbackMethod(ExecutableElement executableElement) {
+        return isBeforeMappingMethod( executableElement ) || isAfterMappingMethod( executableElement );
+    }
+
+    private static boolean isAfterMappingMethod(ExecutableElement executableElement) {
+        return AfterMappingPrism.getInstanceOn( executableElement ) != null;
+    }
+
+    private static boolean isBeforeMappingMethod(ExecutableElement executableElement) {
+        return BeforeMappingPrism.getInstanceOn( executableElement ) != null;
+    }
 }

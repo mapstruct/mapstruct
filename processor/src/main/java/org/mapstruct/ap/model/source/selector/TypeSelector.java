@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.mapstruct.ap.model.common.Type;
@@ -40,7 +41,7 @@ public class TypeSelector implements MethodSelector {
 
         List<T> result = new ArrayList<T>();
         for ( T method : methods ) {
-            if ( method.matches( sourceType, targetType ) ) {
+            if ( !method.isLifecycleCallbackMethod() && method.matches( Arrays.asList( sourceType ), targetType ) ) {
                 result.add( method );
             }
         }

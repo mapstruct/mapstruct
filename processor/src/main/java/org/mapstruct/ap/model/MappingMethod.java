@@ -48,6 +48,9 @@ public abstract class MappingMethod extends ModelElement {
     private final List<Type> thrownTypes;
     private final boolean isStatic;
     private final String resultName;
+    private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithMappingTarget;
+    private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithoutMappingTarget;
+    private final List<LifecycleCallbackMethodReference> afterMappingReferences;
 
     /**
      * constructor to be overloaded when local variable names are required prior to calling this constructor. (e.g. for
@@ -56,7 +59,9 @@ public abstract class MappingMethod extends ModelElement {
      * @param method method
      * @param existingVariableNames existingVariableNames
      */
-    protected MappingMethod(Method method, Collection<String> existingVariableNames ) {
+    protected MappingMethod(Method method, Collection<String> existingVariableNames,
+                            List<LifecycleCallbackMethodReference> beforeMappingReferences,
+                            List<LifecycleCallbackMethodReference> afterMappingReferences) {
         this.name = method.getName();
         this.parameters = method.getParameters();
         this.returnType = method.getReturnType();
@@ -65,17 +70,18 @@ public abstract class MappingMethod extends ModelElement {
         this.thrownTypes = method.getThrownTypes();
         this.isStatic = method.isStatic();
         this.resultName = initResultName( existingVariableNames );
+        this.beforeMappingReferencesWithMappingTarget = filterMappingTarget( beforeMappingReferences, true );
+        this.beforeMappingReferencesWithoutMappingTarget = filterMappingTarget( beforeMappingReferences, false );
+        this.afterMappingReferences = afterMappingReferences;
     }
 
-    protected MappingMethod(Method method ) {
-        this.name = method.getName();
-        this.parameters = method.getParameters();
-        this.returnType = method.getReturnType();
-        this.targetParameter = method.getMappingTargetParameter();
-        this.accessibility = method.getAccessibility();
-        this.thrownTypes = method.getThrownTypes();
-        this.isStatic = method.isStatic();
-        this.resultName = initResultName( method.getParameterNames() );
+    protected MappingMethod(Method method) {
+        this( method, method.getParameterNames(), null, null );
+    }
+
+    protected MappingMethod(Method method, List<LifecycleCallbackMethodReference> beforeMappingReferences,
+                            List<LifecycleCallbackMethodReference> afterMappingReferences) {
+        this( method, method.getParameterNames(), beforeMappingReferences, afterMappingReferences );
     }
 
     private String initResultName(Collection<String> existingVarNames) {
@@ -170,5 +176,33 @@ public abstract class MappingMethod extends ModelElement {
         return returnType + " " + getName() + "(" + join( parameters, ", " ) + ")";
     }
 
+    private List<LifecycleCallbackMethodReference> filterMappingTarget(List<LifecycleCallbackMethodReference> methods,
+                                                                         boolean mustHaveMappingTargetParameter) {
+        if ( methods == null ) {
+            return null;
+        }
 
+        List<LifecycleCallbackMethodReference> result =
+            new ArrayList<LifecycleCallbackMethodReference>( methods.size() );
+
+        for ( LifecycleCallbackMethodReference method : methods ) {
+            if ( mustHaveMappingTargetParameter == method.hasMappingTargetParameter() ) {
+                result.add( method );
+            }
+        }
+
+        return result;
+    }
+
+    public List<LifecycleCallbackMethodReference> getAfterMappingReferences() {
+        return afterMappingReferences;
+    }
+
+    public List<LifecycleCallbackMethodReference> getBeforeMappingReferencesWithMappingTarget() {
+        return beforeMappingReferencesWithMappingTarget;
+    }
+
+    public List<LifecycleCallbackMethodReference> getBeforeMappingReferencesWithoutMappingTarget() {
+        return beforeMappingReferencesWithoutMappingTarget;
+    }
 }

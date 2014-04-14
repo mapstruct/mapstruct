@@ -37,19 +37,16 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
-
 import org.mapstruct.ap.model.source.BeanMapping;
 import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.MapMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
-
 import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.prism.IterableMappingPrism;
 import org.mapstruct.ap.prism.MapMappingPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
-
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.MapperConfiguration;
@@ -183,6 +180,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         ExecutableType methodType = typeFactory.getMethodType( usedMapper, method );
         List<Parameter> parameters = typeFactory.getParameters( methodType, method );
+        Type returnType = typeFactory.getReturnType( method );
+
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
         boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
 
@@ -196,7 +195,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 prototypeMethods );
         }
         //otherwise add reference to existing mapper method
-        else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( parameters ) ) {
+        else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( parameters, returnType )
+            || isValidLifecycleCallbackMethod( method, returnType ) ) {
             return getReferencedMethod( usedMapper, methodType, method, mapperToImplement, parameters );
         }
         else {
@@ -271,31 +271,24 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 .build();
     }
 
-    private boolean isValidReferencedMethod(List<Parameter> parameters) {
-     int validSourceParameters = 0;
-        int targetParameters = 0;
-        int targetTypeParameters = 0;
-
-        for ( Parameter param : parameters ) {
-            if ( param.isMappingTarget() ) {
-                targetParameters++;
-            }
-
-            if ( param.isTargetType() ) {
-                targetTypeParameters++;
-            }
-
-            if ( !param.isMappingTarget() && !param.isTargetType() ) {
-                validSourceParameters++;
-            }
-        }
-        return validSourceParameters == 1
-            && targetParameters <= 1
-            && targetTypeParameters <= 1
-            && parameters.size() == validSourceParameters + targetParameters + targetTypeParameters;
+    private boolean isValidLifecycleCallbackMethod(ExecutableElement method, Type returnType) {
+        return isVoid( returnType ) && SourceMethod.isLifecycleCallbackMethod( method );
     }
 
-    private boolean isValidFactoryMethod(List<Parameter> parameters) {
+    private boolean isValidReferencedMethod(List<Parameter> parameters) {
+        return isValidReferencedOrFactoryMethod( 1, 1, parameters );
+    }
+
+    private boolean isValidFactoryMethod(List<Parameter> parameters, Type returnType) {
+        return !isVoid( returnType ) && isValidReferencedOrFactoryMethod( 0, 0, parameters );
+    }
+
+    private boolean isVoid(Type returnType) {
+        return returnType.getTypeMirror().getKind() == TypeKind.VOID;
+    }
+
+    private boolean isValidReferencedOrFactoryMethod(int sourceParamCount, int targetParamCount,
+                                                     List<Parameter> parameters) {
         int validSourceParameters = 0;
         int targetParameters = 0;
         int targetTypeParameters = 0;
@@ -313,8 +306,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 validSourceParameters++;
             }
         }
-        return validSourceParameters == 0
-            && targetParameters == 0
+
+        return validSourceParameters == sourceParamCount
+            && targetParameters <= targetParamCount
             && targetTypeParameters <= 1
             && parameters.size() == validSourceParameters + targetParameters + targetTypeParameters;
     }
@@ -362,7 +356,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( resultType.getTypeMirror().getKind() == TypeKind.VOID ) {
+        if ( isVoid( resultType ) ) {
             messager.printMessage( method, Message.RETRIEVAL_VOID_MAPPING_METHOD );
             return false;
         }

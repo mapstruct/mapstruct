@@ -24,7 +24,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper( uses = ReferencedMapper.class )
 public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );

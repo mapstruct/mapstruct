@@ -20,6 +20,12 @@
 -->
 <#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+    <#list beforeMappingReferencesWithoutMappingTarget as callback>
+    	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    	<#if !callback_has_next>
+
+    	</#if>
+    </#list>
     if ( ${sourceParameter.name} == null ) {
         <#if !mapNullToDefault>
             return<#if returnType.name != "void"> null</#if>;
@@ -39,6 +45,12 @@
         <@includeModel object=resultType /> ${resultName} = <@returnObjectCreation/>;
     </#if>
 
+    <#list beforeMappingReferencesWithMappingTarget as callback>
+        <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+        <#if !callback_has_next>
+
+        </#if>
+    </#list>
     <#-- Once #148 has been addressed, the simple name of Map.Entry can be used -->
     for ( java.util.Map.Entry<<#list sourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
     <#-- key -->
@@ -51,6 +63,12 @@
                    targetType=resultType.typeParameters[1].typeBound/>
         ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
     }
+    <#list afterMappingReferences as callback>
+    	<#if callback_index = 0>
+
+    	</#if>
+    	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    </#list>
     <#if returnType.name != "void">
 
         return ${resultName};

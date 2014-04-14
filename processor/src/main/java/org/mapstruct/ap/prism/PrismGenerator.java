@@ -22,7 +22,10 @@ import javax.xml.bind.annotation.XmlElementDecl;
 
 import net.java.dev.hickory.prism.GeneratePrism;
 import net.java.dev.hickory.prism.GeneratePrisms;
+
+import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
+import org.mapstruct.BeforeMapping;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
@@ -55,6 +58,8 @@ import org.mapstruct.TargetType;
     @GeneratePrism(value = InheritConfiguration.class, publicAccess = true),
     @GeneratePrism(value = InheritInverseConfiguration.class, publicAccess = true),
     @GeneratePrism(value = Qualifier.class, publicAccess = true),
+    @GeneratePrism(value = AfterMapping.class, publicAccess = true),
+    @GeneratePrism(value = BeforeMapping.class, publicAccess = true),
 
     // external types
     @GeneratePrism(value = XmlElementDecl.class, publicAccess = true)

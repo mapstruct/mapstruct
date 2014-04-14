@@ -419,14 +419,17 @@ public class MappingResolverImpl implements MappingResolver {
 
         private boolean isCreateMethodForMapping(Method methodCandidate) {
             // a create method may not return void and has no target parameter
-            return methodCandidate.getSourceParameters().size() == 1 && !methodCandidate.getReturnType().isVoid()
-                && methodCandidate.getMappingTargetParameter() == null;
+            return methodCandidate.getSourceParameters().size() == 1
+                && !methodCandidate.getReturnType().isVoid()
+                && methodCandidate.getMappingTargetParameter() == null
+                && !methodCandidate.isLifecycleCallbackMethod();
         }
 
         private boolean isUpdateMethodForMapping(Method methodCandidate) {
             // an update method may, or may not return void and has a target parameter
             return methodCandidate.getSourceParameters().size() == 1
-                && methodCandidate.getMappingTargetParameter() != null;
+                && methodCandidate.getMappingTargetParameter() != null
+                && !methodCandidate.isLifecycleCallbackMethod();
         }
 
         private <T extends Method> T getBestMatch(List<T> methods, Type sourceType, Type returnType) {

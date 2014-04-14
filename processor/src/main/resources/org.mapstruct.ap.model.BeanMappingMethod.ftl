@@ -20,13 +20,28 @@
 -->
 @Override
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+    <#list beforeMappingReferencesWithoutMappingTarget as callback>
+    	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    	<#if !callback_has_next>
+
+    	</#if>
+    </#list>
     <#if !mapNullToDefault>
     if ( <#list sourceParametersExcludingPrimitives as sourceParam>${sourceParam.name} == null<#if sourceParam_has_next> && </#if></#list> ) {
         return<#if returnType.name != "void"> null</#if>;
     }
     </#if>
 
-    <#if !existingInstanceMapping><@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else>new <@includeModel object=resultType/>()</#if>;</#if>
+    <#if !existingInstanceMapping>
+        <@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else>new <@includeModel object=resultType/>()</#if>;
+
+    </#if>
+    <#list beforeMappingReferencesWithMappingTarget as callback>
+    	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    	<#if !callback_has_next>
+
+    	</#if>
+    </#list>
     <#if (sourceParameters?size > 1)>
         <#list sourceParametersExcludingPrimitives as sourceParam>
             <#if (propertyMappingsByParameter[sourceParam.name]?size > 0)>
@@ -53,6 +68,12 @@
     </#if>
     <#list constantMappings as constantMapping>
          <@includeModel object=constantMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
+    </#list>
+    <#list afterMappingReferences as callback>
+    	<#if callback_index = 0>
+
+    	</#if>
+    	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     </#list>
     <#if returnType.name != "void">
 

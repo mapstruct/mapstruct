@@ -191,19 +191,28 @@ public class MapMappingMethod extends MappingMethod {
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes() );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes() );
 
+            List<LifecycleCallbackMethodReference> beforeMappingMethods =
+                LifecycleCallbackFactory.beforeMappingMethods( method, ctx );
+            List<LifecycleCallbackMethodReference> afterMappingMethods =
+                LifecycleCallbackFactory.afterMappingMethods( method, ctx );
+
             return new MapMappingMethod(
                 method,
                 keyAssignment,
                 valueAssignment,
                 factoryMethod,
-                mapNullToDefault
+                mapNullToDefault,
+                beforeMappingMethods,
+                afterMappingMethods
             );
         }
     }
 
     private MapMappingMethod(Method method, Assignment keyAssignment, Assignment valueAssignment,
-                             MethodReference factoryMethod, boolean mapNullToDefault) {
-        super( method );
+                             MethodReference factoryMethod, boolean mapNullToDefault,
+                             List<LifecycleCallbackMethodReference> beforeMappingReferences,
+                             List<LifecycleCallbackMethodReference> afterMappingReferences) {
+        super( method, beforeMappingReferences, afterMappingReferences );
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;

@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.severalsources;
 import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic.Kind;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -43,8 +44,18 @@ import static org.fest.assertions.Assertions.assertThat;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class SeveralSourceParametersTest {
 
+    @Before
+    public void reset() {
+        ReferencedMapper.setBeforeMappingCalled( false );
+    }
+
     @Test
-    @WithClasses({ Person.class, Address.class, DeliveryAddress.class, SourceTargetMapper.class })
+    @WithClasses( {
+        Person.class,
+        Address.class,
+        DeliveryAddress.class,
+        SourceTargetMapper.class,
+        ReferencedMapper.class } )
     public void shouldMapSeveralSourceAttributesToCombinedTarget() {
         Person person = new Person( "Bob", "Garner", 181, "An actor" );
         Address address = new Address( "Main street", 12345, 42, "His address" );
@@ -57,10 +68,17 @@ public class SeveralSourceParametersTest {
         assertThat( deliveryAddress.getZipCode() ).isEqualTo( 12345 );
         assertThat( deliveryAddress.getHouseNumber() ).isEqualTo( 42 );
         assertThat( deliveryAddress.getDescription() ).isEqualTo( "An actor" );
+
+        assertThat( ReferencedMapper.isBeforeMappingCalled() ).isTrue();
     }
 
     @Test
-    @WithClasses({ Person.class, Address.class, DeliveryAddress.class, SourceTargetMapper.class })
+    @WithClasses( {
+        Person.class,
+        Address.class,
+        DeliveryAddress.class,
+        SourceTargetMapper.class,
+        ReferencedMapper.class } )
     public void shouldMapSeveralSourceAttributesToCombinedTargetWithTargetParameter() {
         Person person = new Person( "Bob", "Garner", 181, "An actor" );
         Address address = new Address( "Main street", 12345, 42, "His address" );
@@ -72,10 +90,17 @@ public class SeveralSourceParametersTest {
         assertThat( deliveryAddress.getZipCode() ).isEqualTo( 12345 );
         assertThat( deliveryAddress.getHouseNumber() ).isEqualTo( 42 );
         assertThat( deliveryAddress.getDescription() ).isEqualTo( "An actor" );
+
+        assertThat( ReferencedMapper.isBeforeMappingCalled() ).isTrue();
     }
 
     @Test
-    @WithClasses({ Person.class, Address.class, DeliveryAddress.class, SourceTargetMapper.class })
+    @WithClasses( {
+        Person.class,
+        Address.class,
+        DeliveryAddress.class,
+        SourceTargetMapper.class,
+        ReferencedMapper.class } )
     public void shouldSetAttributesFromNonNullParameters() {
         Person person = new Person( "Bob", "Garner", 181, "An actor" );
 
@@ -90,7 +115,12 @@ public class SeveralSourceParametersTest {
     }
 
     @Test
-    @WithClasses({ Person.class, Address.class, DeliveryAddress.class, SourceTargetMapper.class })
+    @WithClasses( {
+        Person.class,
+        Address.class,
+        DeliveryAddress.class,
+        SourceTargetMapper.class,
+        ReferencedMapper.class } )
     public void shouldReturnNullIfAllParametersAreNull() {
         DeliveryAddress deliveryAddress = SourceTargetMapper.INSTANCE
             .personAndAddressToDeliveryAddress( null, null );
@@ -99,7 +129,12 @@ public class SeveralSourceParametersTest {
     }
 
     @Test
-    @WithClasses({ Person.class, Address.class, DeliveryAddress.class, SourceTargetMapper.class })
+    @WithClasses( {
+        Person.class,
+        Address.class,
+        DeliveryAddress.class,
+        SourceTargetMapper.class,
+        ReferencedMapper.class } )
     public void shouldMapSeveralSourceAttributesAndParameters() {
         Person person = new Person( "Bob", "Garner", 181, "An actor" );
 
@@ -135,7 +170,6 @@ public class SeveralSourceParametersTest {
                 messageRegExp = "Several possible source properties for target property \"street\"."),
 
     })
-
     public void shouldFailToGenerateMappingsForAmbigiousSourceProperty() {
     }
 }
