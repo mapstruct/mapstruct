@@ -16,24 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
+package org.mapstruct.ap.test.nestedmethodcall;
+
+import javax.xml.bind.JAXBElement;
 
 /**
- * Conversion between {@link Character} and {@link String}.
- *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class CharWrapperToStringConversion extends SimpleConversion {
+public class SourceType {
 
-    @Override
-    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".toString()" );
+    private JAXBElement<String> date;
+
+    public JAXBElement<String> getDate() {
+        return date;
     }
 
-    @Override
-    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".charAt( 0 )" );
+    public void setDate( JAXBElement<String> date ) {
+        this.date = date;
     }
 }

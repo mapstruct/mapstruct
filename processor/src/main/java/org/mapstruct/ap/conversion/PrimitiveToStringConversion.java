@@ -43,13 +43,13 @@ public class PrimitiveToStringConversion extends SimpleConversion {
     }
 
     @Override
-    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
-        return "String.valueOf( " + sourceReference + " )";
+    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( "String.valueOf( ", " )" );
     }
 
     @Override
-    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
-        return wrapperType.getSimpleName() + ".parse" + Strings.capitalize( sourceType.getSimpleName() ) + "( " +
-            targetReference + " )";
+    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( wrapperType.getSimpleName() + ".parse" +
+                Strings.capitalize( sourceType.getSimpleName() ) + "( ",  " )" );
     }
 }

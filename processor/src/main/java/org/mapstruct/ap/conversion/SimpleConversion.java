@@ -34,21 +34,46 @@ public abstract class SimpleConversion implements ConversionProvider {
 
     @Override
     public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
+        ConversionExpression toExpressions = getToExpressions( conversionContext );
         return new TypeConversion(
-            getToConversionImportTypes( conversionContext ),
-            Collections.<Type>emptyList(),
-            getToConversionString( sourceReference, conversionContext )
-        );
+                getToConversionImportTypes( conversionContext ),
+                Collections.<Type>emptyList(),
+                toExpressions.getOpenExpression(),
+                sourceReference,
+                toExpressions.getCloseExpression() );
     }
 
     @Override
     public TypeConversion from(String targetReference, ConversionContext conversionContext) {
+        ConversionExpression fromExpressions = getFromExpressions( conversionContext );
         return new TypeConversion(
-            getFromConversionImportTypes( conversionContext ),
-            Collections.<Type>emptyList(),
-            getFromConversionString( targetReference, conversionContext )
-        );
+                getFromConversionImportTypes( conversionContext ),
+                Collections.<Type>emptyList(),
+                fromExpressions.getOpenExpression(),
+                targetReference,
+                fromExpressions.getCloseExpression() );
     }
+
+    /**
+     * Returns the conversion string (opening and closing part) from source to target.
+     *
+     * @param conversionContext ConversionContext providing optional information required for creating the conversion.
+     *
+     * @return The conversion string from source to target. toConversionExpressions[0] = openConversionExpression,
+ toConversionExpressions[1] = closeConversionExpression
+     */
+    protected abstract ConversionExpression getToExpressions( ConversionContext conversionContext );
+
+    /**
+     * Creates the conversion string (opening and closing part) from target to source.
+     *
+     * @param conversionContext ConversionContext providing optional information required for creating
+     * the conversion.
+     *
+     * @return The conversion string from target to source, fromConversionExpressions[0] = openConversionExpression,
+ fromConversionExpressions[1] = closeConversionExpression
+     */
+    protected abstract ConversionExpression getFromExpressions( ConversionContext conversionContext );
 
     /**
      * Returns a set with imported types of the "from" conversion. Defaults to an empty set; can be overridden in
@@ -72,25 +97,4 @@ public abstract class SimpleConversion implements ConversionProvider {
         return Collections.<Type>emptySet();
     }
 
-    /**
-     * Returns the conversion string from source to target.
-     *
-     * @param sourceReference A reference to the source object, e.g. {@code beanName.getFoo()}.
-     * @param conversionContext ConversionContext providing optional information required for creating the conversion.
-     *
-     * @return The conversion string from source to target.
-     */
-    protected abstract String getToConversionString(String sourceReference, ConversionContext conversionContext);
-
-    /**
-     * Creates the conversion string from target to source.
-     *
-     * @param targetReference A reference to the targetReference object, e.g.
-     * {@code beanName.getFoo()}.
-     * @param conversionContext ConversionContext providing optional information required for creating
-     * the conversion.
-     *
-     * @return The conversion string from target to source.
-     */
-    protected abstract String getFromConversionString(String targetReference, ConversionContext conversionContext);
 }

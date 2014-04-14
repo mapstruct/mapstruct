@@ -32,24 +32,7 @@
    </#if>
 
     for ( <@includeModel object=sourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${sourceParameter.name} ) {
-        <#if elementMappingMethod??>
-        ${resultName}.add( <@includeModel object=elementMappingMethod input="${loopVariableName}" targetType="${resultType.typeParameters[0].name}"/> );
-        <#elseif conversion??>
-            <#if (conversion.exceptionTypes?size == 0) >
-        ${resultName}.add( <@includeModel object=conversion/> );
-            <#else>
-        try {
-            ${resultName}.add( <@includeModel object=conversion/> );
-        }
-                <#list conversion.exceptionTypes as exceptionType>
-        catch( <@includeModel object=exceptionType/> e ) {
-            throw new RuntimeException( e );
-        }
-                </#list>
-            </#if>
-        <#else>
-            ${resultName}.add( ${loopVariableName} );
-        </#if>
+     <@includeModel object=elementAssignment target="${resultName}.add" source="${loopVariableName}" targetType="${resultType.typeParameters[0].name}"/>
     }
     <#if returnType.name != "void">
 

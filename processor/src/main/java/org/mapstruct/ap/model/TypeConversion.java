@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.model;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,19 +32,30 @@ import org.mapstruct.ap.model.common.Type;
  */
 public class TypeConversion extends ModelElement {
 
+
     private final Set<Type> importTypes;
     private final List<Type> exceptionTypes;
-    private final String conversionString;
+    private final String sourceReference;
+    private final String openExpression;
+    private final String closeExpression;
+    /**
+     * A reference to mapping method in case this is a two-step mapping, e.g. from
+     * {@code JAXBElement<Bar>} to {@code Foo} to for which a nested method call will be generated:
+     * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}
+     */
+    private MethodReference methodRefChild;
 
-    public TypeConversion(String conversionString) {
-        this( Collections.<Type>emptySet(), Collections.<Type>emptyList(), conversionString );
-    }
-
-    public TypeConversion(Set<Type> importTypes, List<Type> exceptionTypes, String conversionString) {
+    public TypeConversion( Set<Type> importTypes,
+            List<Type> exceptionTypes,
+            String openExpression,
+            String sourceReference,
+            String closeExpression ) {
         this.importTypes = new HashSet<Type>( importTypes );
         this.importTypes.addAll( exceptionTypes );
         this.exceptionTypes = exceptionTypes;
-        this.conversionString = conversionString;
+        this.openExpression = openExpression;
+        this.sourceReference = sourceReference;
+        this.closeExpression = closeExpression;
     }
 
     @Override
@@ -57,7 +67,23 @@ public class TypeConversion extends ModelElement {
         return exceptionTypes;
     }
 
-    public String getConversionString() {
-        return conversionString;
+    public String getOpenExpression() {
+        return openExpression;
+    }
+
+    public String getSourceReference() {
+        return sourceReference;
+    }
+
+    public String getCloseExpression() {
+        return closeExpression;
+    }
+
+    public void setMethodRefChild( MethodReference methodRefChild ) {
+        this.methodRefChild = methodRefChild;
+    }
+
+    public MethodReference getMethodRefChild() {
+        return methodRefChild;
     }
 }

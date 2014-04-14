@@ -18,22 +18,39 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
-
 /**
- * Conversion between {@link Character} and {@link String}.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class CharWrapperToStringConversion extends SimpleConversion {
+public class ConversionExpression {
 
-    @Override
-    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".toString()" );
+    private final String openExpression;
+    private final String closeExpression;
+    private String expression;
+
+    public static ConversionExpression empty() {
+        return new ConversionExpression( "", "" );
     }
 
-    @Override
-    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".charAt( 0 )" );
+    public ConversionExpression( String openExpression, String closeExpression ) {
+        this.openExpression = openExpression;
+        this.closeExpression = closeExpression;
     }
+
+    public String getOpenExpression() {
+        return openExpression;
+    }
+
+    public String getCloseExpression() {
+        return closeExpression;
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
+    public void setExpression( String expression ) {
+        this.expression = expression;
+    }
+
 }

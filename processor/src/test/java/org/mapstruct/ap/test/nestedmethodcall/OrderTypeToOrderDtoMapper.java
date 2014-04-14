@@ -32,9 +32,9 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper
-public interface SourceTargetMapper {
+public interface OrderTypeToOrderDtoMapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    OrderTypeToOrderDtoMapper INSTANCE = Mappers.getMapper( OrderTypeToOrderDtoMapper.class );
 
     OrderDto sourceToTarget(OrderType source);
 

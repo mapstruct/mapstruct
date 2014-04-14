@@ -1,0 +1,447 @@
+/**
+ *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  and/or other contributors as indicated by the @authors tag. See the
+ *  copyright.txt file in the distribution for a full listing of all
+ *  contributors.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+package org.mapstruct.ap.processor.creation;
+
+import org.mapstruct.ap.model.TargetAssignment;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.processing.Messager;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
+import javax.tools.Diagnostic.Kind;
+
+import org.mapstruct.ap.conversion.ConversionProvider;
+import org.mapstruct.ap.conversion.Conversions;
+import org.mapstruct.ap.model.MapperReference;
+import org.mapstruct.ap.model.MethodReference;
+import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.VirtualMappingMethod;
+import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.common.DefaultConversionContext;
+import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.model.source.builtin.BuiltInMappingMethods;
+import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
+import org.mapstruct.ap.model.source.selector.MethodSelectors;
+import org.mapstruct.ap.util.Strings;
+
+/**
+ * Resolves class is responsible for resolving the most suitable way to resolve a mapping from source to target.
+ *
+ * There are 2 basic types of mappings:
+ * <ul>
+ * <li>conversions</li>
+ * <li>methods</li>
+ * </ul>
+ *
+ * conversions are essentially one line mappings, such as String to Integer and Integer to Long
+ * methods come in some varieties:
+ * <ul>
+ * <li>referenced mapping methods, these are methods implemented (or referenced) by the user. Sometimes indicated
+ * with the 'uses' in the mapping annotations or part of the abstract mapper class</li>
+ * <li>generated mapping methods (by means of MapStruct)</li>
+ * <li>built in methods</li>
+ * </ul>
+ *
+ * @author Sjaak Derksen
+ */
+public class MappingResolver {
+
+    private final Messager messager;
+    private final TypeFactory typeFactory;
+    private final Conversions conversions;
+    private final BuiltInMappingMethods builtInMethods;
+
+    private final MethodSelectors methodSelectors;
+    /**
+     * Private methods which are not present in the original mapper interface and are added to map certain property
+     * types.
+     */
+    private final Set<VirtualMappingMethod> virtualMethods;
+
+
+    public MappingResolver(Messager messager, TypeFactory typeFactory, Elements elementUtils, Types typeUtils) {
+        this.messager = messager;
+        this.typeFactory = typeFactory;
+        this.conversions = new Conversions( elementUtils, typeFactory );
+        this.builtInMethods = new BuiltInMappingMethods( typeFactory );
+        this.virtualMethods = new HashSet<VirtualMappingMethod>();
+        this.methodSelectors = new MethodSelectors( typeUtils, typeFactory );
+    }
+
+
+    /**
+     * returns a parameter assignment
+     *
+     * @param mappingMethod target mapping method
+     * @param mappedElement used for error messages
+     * @param mapperReferences list of references to mapper
+     * @param methods list of candidate methods
+     * @param sourceType parameter to match
+     * @param targetType return type to match
+     * @param targetPropertyName name of the target property
+     * @param dateFormat used for formatting dates in build in methods that need context information
+     * @param sourceReference call to source type as string
+     *
+     * @return an assignment to a method parameter, which can either be:
+     * <ol>
+     * <li>MethodReference</li>
+     * <li>TypeConversion</li>
+     * <li>Simple Assignment (empty TargetAssignment)</li>
+     * <li>null, no assignment found</li>
+     * </ol>
+     */
+    public TargetAssignment getTargetAssignment( SourceMethod mappingMethod,
+            String mappedElement,
+            List<MapperReference> mapperReferences,
+            List<SourceMethod> methods,
+            Type sourceType,
+            Type targetType,
+            String targetPropertyName,
+            String dateFormat,
+            String sourceReference ) {
+
+        ResolvingAttempt attempt = new ResolvingAttempt( mappingMethod,
+                mappedElement,
+                mapperReferences,
+                methods,
+                targetPropertyName,
+                dateFormat,
+                sourceReference,
+                this
+        );
+
+        return attempt.getTargetAssignment( sourceType, targetType );
+    }
+
+    public Set<VirtualMappingMethod> getVirtualMethodsToGenerate() {
+        return virtualMethods;
+    }
+
+
+    private static class ResolvingAttempt {
+
+        private final SourceMethod mappingMethod;
+        private final String mappedElement;
+        private final List<MapperReference> mapperReferences;
+        private final List<SourceMethod> methods;
+        private final String targetPropertyName;
+        private final String dateFormat;
+        private final String sourceReference;
+        private final MappingResolver context;
+
+        // resolving via 2 steps creates the possibillity of wrong matches, first builtin method matches,
+        // second doesn't. In that case, the first builtin method should not lead to a virtual method
+        // so this set must be cleared.
+        private final Set<VirtualMappingMethod> virtualMethodCandidates;
+
+        private ResolvingAttempt( SourceMethod mappingMethod,
+                String mappedElement,
+                List<MapperReference> mapperReferences,
+                List<SourceMethod> methods,
+                String targetPropertyName,
+                String dateFormat,
+                String sourceReference,
+                MappingResolver context ) {
+            this.mappingMethod = mappingMethod;
+            this.mappedElement = mappedElement;
+            this.mapperReferences = mapperReferences;
+            this.methods = methods;
+            this.targetPropertyName = targetPropertyName;
+            this.dateFormat = dateFormat;
+            this.sourceReference = sourceReference;
+            this.context = context;
+            this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
+        }
+
+        private TargetAssignment getTargetAssignment( Type sourceType, Type targetType ) {
+
+            // first simpele mapping method
+            MethodReference mappingMethodReference = resolveViaMethod( sourceType, targetType );
+            if ( mappingMethodReference != null ) {
+                context.virtualMethods.addAll( virtualMethodCandidates );
+                return new TargetAssignment( mappingMethodReference );
+            }
+
+            // then direct assignable
+            if ( sourceType.isAssignableTo( targetType ) ) {
+                return new TargetAssignment();
+            }
+
+            // then type conversion
+            TypeConversion conversion = resolveViaConversion( sourceType, targetType );
+            if ( conversion != null ) {
+                return new TargetAssignment( conversion );
+            }
+
+            // 2 step method, first: method(method(souurce))
+            mappingMethodReference = resolveViaMethodAndMethod( sourceType, targetType );
+            if ( mappingMethodReference != null ) {
+                context.virtualMethods.addAll( virtualMethodCandidates );
+                return new TargetAssignment( mappingMethodReference );
+            }
+
+            // 2 step method, then: method(conversion(souurce))
+            mappingMethodReference = resolveViaConversionAndMethod( sourceType, targetType );
+            if ( mappingMethodReference != null ) {
+                context.virtualMethods.addAll( virtualMethodCandidates );
+                return new TargetAssignment( mappingMethodReference );
+            }
+
+            // 2 step method, finally: conversion(method(souurce))
+            conversion = resolveViaMethodAndConversion( sourceType, targetType );
+            if ( conversion != null ) {
+                context.virtualMethods.addAll( virtualMethodCandidates );
+                return new TargetAssignment( conversion );
+            }
+
+            // if nothing works, alas, the result is null
+            return null;
+        }
+
+        private TypeConversion resolveViaConversion( Type sourceType, Type targetType ) {
+
+            ConversionProvider conversionProvider = context.conversions.getConversion( sourceType, targetType );
+
+            if ( conversionProvider == null ) {
+                return null;
+            }
+
+            return conversionProvider.to(
+                    sourceReference,
+                    new DefaultConversionContext( context.typeFactory, targetType, dateFormat )
+            );
+        }
+
+        /**
+         * Returns a reference to a method mapping the given source type to the given target type, if such a method
+         * exists.
+         *
+         */
+        private MethodReference resolveViaMethod( Type sourceType, Type targetType ) {
+
+            // first try to find a matching source method
+            SourceMethod matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
+
+            if ( matchingSourceMethod != null ) {
+                return getMappingMethodReference( matchingSourceMethod, mapperReferences, targetType );
+            }
+
+            // then a matching built-in method
+            BuiltInMethod matchingBuiltInMethod =
+                    getBestMatch( context.builtInMethods.getBuiltInMethods(), sourceType, targetType );
+
+            if ( matchingBuiltInMethod != null ) {
+                virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod ) );
+                ConversionContext ctx = new DefaultConversionContext( context.typeFactory, targetType, dateFormat );
+                return new MethodReference( matchingBuiltInMethod, ctx );
+            }
+
+            return null;
+        }
+
+        /**
+         * Suppose mapping required from A to C and:
+         * <ul>
+         * <li>no direct referenced mapping method either built-in or referenced is available from A to C</li>
+         * <li>no conversion is available</li>
+         * <li>there is a method from A to B, methodX</li>
+         * <li>there is a method from B to C, methodY</li>
+         * </ul>
+         * then this method tries to resolve this combination and make a mapping methodY( methodX ( parameter ) )
+         */
+        private MethodReference resolveViaMethodAndMethod( Type sourceType, Type targetType ) {
+
+            List<Method> methodYCandidates = new ArrayList<Method>( methods );
+            methodYCandidates.addAll( context.builtInMethods.getBuiltInMethods() );
+
+            MethodReference methodRefY = null;
+
+            // Iterate over all source methods. Check if the return type matches with the parameter that we need.
+            // so assume we need a method from A to C we look for a methodX from A to B (all methods in the
+            // list form such a candidate).
+            // For each of the candidates, we need to look if there's  a methodY, either
+            // sourceMethod or builtIn that fits the signature B to C. Only then there is a match. If we have a match
+            // a nested method call can be called. so C = methodY( methodX (A) )
+            for ( Method methodYCandidate : methodYCandidates ) {
+                if ( methodYCandidate.getSourceParameters().size() == 1 ) {
+                    methodRefY = resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(),
+                            targetType );
+                    if ( methodRefY != null ) {
+                        MethodReference methodRefX =  resolveViaMethod(
+                                sourceType,
+                                methodYCandidate.getSourceParameters().get( 0 ).getType()
+                        );
+                        if ( methodRefX != null ) {
+                            methodRefY.setMethodRefChild( methodRefX );
+                            break;
+                        }
+                        else {
+                            // both should match;
+                            virtualMethodCandidates.clear();
+                            methodRefY = null;
+                        }
+                    }
+                }
+            }
+            return methodRefY;
+        }
+
+        /**
+         * Suppose mapping required from A to C and:
+         * <ul>
+         * <li>there is a conversion from A to B, conversionX</li>
+         * <li>there is a method from B to C, methodY</li>
+         * </ul>
+         * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
+         */
+        private MethodReference resolveViaConversionAndMethod( Type sourceType, Type targetType ) {
+
+            List<Method> methodYCandidates = new ArrayList<Method>( methods );
+            methodYCandidates.addAll( context.builtInMethods.getBuiltInMethods() );
+
+            MethodReference methodRefY = null;
+
+            for ( Method methodYCandidate : methodYCandidates ) {
+                if ( methodYCandidate.getSourceParameters().size() == 1 ) {
+                    methodRefY = resolveViaMethod(
+                            methodYCandidate.getSourceParameters().get( 0 ).getType(),
+                            targetType
+                    );
+                    if ( methodRefY != null ) {
+                        TypeConversion conversionXRef = resolveViaConversion(
+                                sourceType,
+                                methodYCandidate.getSourceParameters().get( 0 ).getType()
+                        );
+                        if ( conversionXRef != null ) {
+                            methodRefY.setTypeConversionChild( conversionXRef );
+                            break;
+                        }
+                        else {
+                            // both should match
+                            virtualMethodCandidates.clear();
+                            methodRefY = null;
+                        }
+                    }
+                }
+            }
+            return methodRefY;
+        }
+
+        /**
+         * Suppose mapping required from A to C and:
+         * <ul>
+         * <li>there is a conversion from A to B, conversionX</li>
+         * <li>there is a method from B to C, methodY</li>
+         * </ul>
+         * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
+         */
+        private TypeConversion resolveViaMethodAndConversion( Type sourceType, Type targetType ) {
+
+            List<Method> methodXCandidates = new ArrayList<Method>( methods );
+            methodXCandidates.addAll( context.builtInMethods.getBuiltInMethods() );
+
+            TypeConversion conversionYRef = null;
+
+            // search the other way arround
+            for ( Method methodXCandidate : methodXCandidates ) {
+                if ( methodXCandidate.getSourceParameters().size() == 1 ) {
+                    MethodReference methodRefX = resolveViaMethod(
+                            sourceType,
+                            methodXCandidate.getReturnType()
+                    );
+                    if ( methodRefX != null ) {
+                        conversionYRef = resolveViaConversion(
+                                methodXCandidate.getReturnType(),
+                                targetType
+                        );
+                        if ( conversionYRef != null ) {
+                            conversionYRef.setMethodRefChild( methodRefX );
+                            break;
+                        }
+                        else {
+                            // both should match;
+                            virtualMethodCandidates.clear();
+                            conversionYRef = null;
+                        }
+                    }
+                }
+            }
+            return conversionYRef;
+        }
+
+        private <T extends Method> T getBestMatch( List<T> methods, Type sourceType, Type returnType ) {
+
+            List<T> candidates = context.methodSelectors.getMatchingMethods(
+                    mappingMethod,
+                    methods,
+                    sourceType,
+                    returnType,
+                    targetPropertyName
+            );
+
+            // raise an error if more than one mapping method is suitable to map the given source type
+            // into the target type
+            if ( candidates.size() > 1 ) {
+
+                context.messager.printMessage(
+                        Kind.ERROR,
+                        String.format(
+                                "Ambiguous mapping methods found for mapping " + mappedElement + " from %s to %s: %s.",
+                                sourceType,
+                                returnType,
+                                Strings.join( candidates, ", " )
+                        ),
+                        mappingMethod.getExecutable()
+                );
+            }
+
+            if ( !candidates.isEmpty() ) {
+                return candidates.get( 0 );
+            }
+
+            return null;
+        }
+
+        private MethodReference getMappingMethodReference( SourceMethod method,
+                List<MapperReference> mapperReferences,
+                Type targetType ) {
+            MapperReference mapperReference = findMapperReference( mapperReferences, method );
+
+            return new MethodReference(
+                    method,
+                    mapperReference,
+                    SourceMethod.containsTargetTypeParameter( method.getParameters() ) ? targetType : null
+            );
+        }
+
+        private MapperReference findMapperReference( List<MapperReference> mapperReferences, SourceMethod method ) {
+            for ( MapperReference ref : mapperReferences ) {
+                if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
+                    return ref;
+                }
+            }
+            return null;
+        }
+    }
+}

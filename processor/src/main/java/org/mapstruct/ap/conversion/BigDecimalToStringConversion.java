@@ -34,13 +34,13 @@ import static org.mapstruct.ap.util.Collections.asSet;
 public class BigDecimalToStringConversion extends SimpleConversion {
 
     @Override
-    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
-        return sourceReference + ".toString()";
+    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( "", ".toString()" );
     }
 
     @Override
-    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
-        return "new BigDecimal( " + targetReference + " )";
+    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( "new BigDecimal( ", " )" );
     }
 
     @Override

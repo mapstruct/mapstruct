@@ -45,17 +45,17 @@ public class PrimitiveToWrapperConversion extends SimpleConversion {
     }
 
     @Override
-    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
+    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
         if ( sourceType == targetType ) {
-            return sourceReference;
+            return ConversionExpression.empty();
         }
         else {
-            return "(" + targetType.getName() + ") " + sourceReference;
+            return new ConversionExpression( "(" + targetType.getName() + ") ", "" );
         }
     }
 
     @Override
-    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
-        return targetReference + "." + sourceType.getName() + "Value()";
+    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( "", "." + sourceType.getName() + "Value()" );
     }
 }
