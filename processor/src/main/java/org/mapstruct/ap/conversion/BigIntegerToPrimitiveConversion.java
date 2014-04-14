@@ -44,17 +44,17 @@ public class BigIntegerToPrimitiveConversion extends SimpleConversion {
     }
 
     @Override
-    public String[] getToExpressions(ConversionContext conversionContext) {
-        return new String[]{ "", "." + targetType.getName() + "Value()" };
+    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( "", "." + targetType.getName() + "Value()" );
     }
 
     @Override
-    public String[] getFromExpressions(ConversionContext conversionContext) {
+    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
         String castString = "";
         if ( targetType == float.class || targetType == double.class ) {
             castString = "(long) ";
         }
-        return new String[]{ "BigInteger.valueOf( " + castString, " )" };
+        return new ConversionExpression( "BigInteger.valueOf( " + castString, " )" );
     }
 
     @Override

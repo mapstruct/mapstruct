@@ -45,13 +45,13 @@ public class BigDecimalToWrapperConversion extends SimpleConversion {
     }
 
     @Override
-    public String[] getToExpressions(ConversionContext conversionContext) {
-        return new String[]{ "", "." + targetType.getName() + "Value()" };
+    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( "", "." + targetType.getName() + "Value()" );
     }
 
     @Override
-    public String[] getFromExpressions(ConversionContext conversionContext) {
-        return new String[]{ "BigDecimal.valueOf( ",  " )" };
+    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( "BigDecimal.valueOf( ",  " )" );
     }
 
     @Override

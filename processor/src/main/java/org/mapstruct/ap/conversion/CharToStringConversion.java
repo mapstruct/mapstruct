@@ -28,12 +28,12 @@ import org.mapstruct.ap.model.common.ConversionContext;
 public class CharToStringConversion extends SimpleConversion {
 
     @Override
-    public String[] getToExpressions(ConversionContext conversionContext) {
-        return new String[]{ "String.valueOf( ", " )" };
+    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( "String.valueOf( ", " )" );
     }
 
     @Override
-    public String[] getFromExpressions(ConversionContext conversionContext) {
-        return new String[]{ "", ".charAt( 0 )" };
+    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( "", ".charAt( 0 )" );
     }
 }

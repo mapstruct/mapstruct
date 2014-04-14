@@ -45,19 +45,19 @@ public class BigIntegerToWrapperConversion extends SimpleConversion {
     }
 
     @Override
-    public String[] getToExpressions(ConversionContext conversionContext) {
-        return new String[]{ "", "." + targetType.getName() + "Value()" };
+    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression( "", "." + targetType.getName() + "Value()" );
     }
 
     @Override
-    public String[] getFromExpressions(ConversionContext conversionContext) {
+    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
 
         String toLongValueStr = "";
         if ( targetType == float.class || targetType == double.class ) {
             toLongValueStr = ".longValue()";
         }
 
-        return new String[]{ "BigInteger.valueOf( ", toLongValueStr + " )" };
+        return new ConversionExpression( "BigInteger.valueOf( ", toLongValueStr + " )" );
     }
 
     @Override

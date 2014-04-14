@@ -33,13 +33,15 @@ import static org.mapstruct.ap.util.Collections.asSet;
 public class EnumStringConversion extends SimpleConversion {
 
     @Override
-    public String[] getToExpressions(ConversionContext conversionContext) {
-        return new String[] {"", ".toString()" };
+    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression("", ".toString()" );
     }
 
     @Override
-    public String[] getFromExpressions(ConversionContext conversionContext) {
-        return new String[] { "Enum.valueOf( " + conversionContext.getTargetType().getName() + ".class, ", " )" };
+    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
+        return new ConversionExpression(
+                "Enum.valueOf( " + conversionContext.getTargetType().getName() + ".class, ",
+                " )" );
     }
 
     @Override
