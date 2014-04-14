@@ -20,11 +20,10 @@ package org.mapstruct.ap.conversion;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-
-import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.Assignment;
+import org.mapstruct.ap.model.assignment.AssignmentFactory;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 
@@ -38,23 +37,21 @@ import static org.mapstruct.ap.util.Collections.asSet;
 public class DateToStringConversion implements ConversionProvider {
 
     @Override
-    public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
-        return new TypeConversion(
+    public Assignment to(ConversionContext conversionContext) {
+        return AssignmentFactory.createTypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
-            Collections.<Type>emptyList(),
+            Collections.<Type>emptySet(),
             getOpenExpression( conversionContext, "format" ),
-            sourceReference,
-            getCloseExpression()
-        );
+            getCloseExpression() );
+
     }
 
     @Override
-    public TypeConversion from(String targetReference, ConversionContext conversionContext) {
-        return new TypeConversion(
+    public Assignment from(ConversionContext conversionContext) {
+        return AssignmentFactory.createTypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
-            Arrays.asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
+            asSet( conversionContext.getTypeFactory().getType( ParseException.class ) ),
             getOpenExpression( conversionContext, "parse" ),
-            targetReference,
             getCloseExpression()
         );
     }

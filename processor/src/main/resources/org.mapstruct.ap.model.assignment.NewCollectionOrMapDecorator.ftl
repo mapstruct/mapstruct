@@ -18,10 +18,4 @@
      limitations under the License.
 
 -->
-<#if methodRefChild??>
-    <#-- the nested case: mapping method -->
-    ${openExpression}<@includeModel object=methodRefChild source=ext.source targetType=ext.targetType/>${closeExpression}
-<#else>
-    <#-- the non nested case: a type conversion -->
-    ${openExpression}${sourceReference}${closeExpression}
-</#if>
+${ext.target}( new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>( ${sourceReference} ) );

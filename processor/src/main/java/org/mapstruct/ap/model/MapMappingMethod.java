@@ -33,12 +33,12 @@ import org.mapstruct.ap.util.Strings;
  */
 public class MapMappingMethod extends MappingMethod {
 
-    private final TargetAssignment keyAssignment;
-    private final TargetAssignment valueAssignment;
-    private final MethodReference factoryMethod;
+    private final Assignment keyAssignment;
+    private final Assignment valueAssignment;
+    private final Factory factoryMethod;
 
-    public MapMappingMethod(SourceMethod method, TargetAssignment keyAssignment, TargetAssignment valueAssignment,
-                            MethodReference factoryMethod) {
+    public MapMappingMethod(SourceMethod method, Assignment keyAssignment, Assignment valueAssignment,
+            Factory factoryMethod) {
         super( method );
 
         this.keyAssignment = keyAssignment;
@@ -56,11 +56,11 @@ public class MapMappingMethod extends MappingMethod {
         throw new IllegalStateException( "Method " + this + " has no source parameter." );
     }
 
-    public TargetAssignment getKeyAssignment() {
+    public Assignment getKeyAssignment() {
         return keyAssignment;
     }
 
-    public TargetAssignment getValueAssignment() {
+    public Assignment getValueAssignment() {
         return valueAssignment;
     }
 
@@ -99,7 +99,7 @@ public class MapMappingMethod extends MappingMethod {
         );
     }
 
-    public MethodReference getFactoryMethod() {
+    public Factory getFactoryMethod() {
         return this.factoryMethod;
     }
 

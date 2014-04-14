@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.TargetAssignment.AssignmentType;
 /**
  * Represents the mapping between a source and target property, e.g. from
  * {@code String Source#foo} to {@code int Target#bar}. Name and type of source
@@ -45,12 +44,12 @@ public class PropertyMapping extends ModelElement {
     private final boolean isTargetAccessorSetter;
     private final String targetReadAccessorName;
 
-    private final TargetAssignment propertyAssignment;
+    private final Assignment propertyAssignment;
 
 
     public PropertyMapping(String sourceBeanName, String sourceName, String sourceAccessorName, Type sourceType,
                            String targetName, String targetAccessorName, Type targetType,
-                           TargetAssignment propertyAssignment ) {
+                           Assignment propertyAssignment ) {
 
         this.sourceBeanName = sourceBeanName;
         this.sourceName = sourceName;
@@ -95,7 +94,7 @@ public class PropertyMapping extends ModelElement {
         return targetType;
     }
 
-    public TargetAssignment getPropertyAssignment() {
+    public Assignment getPropertyAssignment() {
         return propertyAssignment;
     }
 
@@ -122,12 +121,12 @@ public class PropertyMapping extends ModelElement {
         Set<Type> importTypes = new HashSet<Type>();
         if ( propertyAssignment != null ) {
             if ( isTargetAccessorSetter()
-                    && propertyAssignment.getAssignmentType().equals( AssignmentType.ASSIGNMENT )
+                    && propertyAssignment.isSimple()
                     && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
                 importTypes.addAll( targetType.getImportTypes() );
             }
 
-            if ( !propertyAssignment.getAssignmentType().equals( AssignmentType.ASSIGNMENT ) ) {
+            if ( !propertyAssignment.isSimple() ) {
                 importTypes.addAll( propertyAssignment.getImportTypes() );
             }
         }

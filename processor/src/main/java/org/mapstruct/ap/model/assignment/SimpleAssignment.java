@@ -16,36 +16,47 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.model.assignment;
 
+import java.util.Collections;
+import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
-import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.common.ModelElement;
+import org.mapstruct.ap.model.common.Type;
 
 /**
- * A {@link ConversionProvider} which creates the reversed conversions for a
- * given conversion provider.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class ReverseConversion implements ConversionProvider {
+public class SimpleAssignment extends ModelElement implements Assignment {
 
-    private ConversionProvider conversionProvider;
+    private final String sourceReference;
 
-    public static ReverseConversion reverse(ConversionProvider conversionProvider) {
-        return new ReverseConversion( conversionProvider );
-    }
-
-    private ReverseConversion(ConversionProvider conversionProvider) {
-        this.conversionProvider = conversionProvider;
+    public SimpleAssignment( String sourceReference ) {
+        this.sourceReference = sourceReference;
     }
 
     @Override
-    public Assignment to( ConversionContext conversionContext) {
-        return conversionProvider.from( conversionContext );
+    public String getSourceReference() {
+        return sourceReference;
     }
 
     @Override
-    public Assignment from(ConversionContext conversionContext) {
-        return conversionProvider.to( conversionContext );
+    public Set<Type> getImportTypes() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Set<Type> getExceptionTypes() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public void setAssignment( Assignment assignment ) {
+        throw new UnsupportedOperationException( "Not supported." );
+    }
+
+    public boolean isSimple() {
+        return true;
     }
 }

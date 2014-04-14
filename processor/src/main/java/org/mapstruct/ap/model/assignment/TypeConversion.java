@@ -16,11 +16,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.model.assignment;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import org.mapstruct.ap.model.Assignment;
 
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
@@ -30,31 +30,30 @@ import org.mapstruct.ap.model.common.Type;
  *
  * @author Gunnar Morling
  */
-public class TypeConversion extends ModelElement {
+public class TypeConversion extends ModelElement implements Assignment {
 
 
     private final Set<Type> importTypes;
-    private final List<Type> exceptionTypes;
-    private final String sourceReference;
+    private final Set<Type> exceptionTypes;
     private final String openExpression;
     private final String closeExpression;
+
     /**
      * A reference to mapping method in case this is a two-step mapping, e.g. from
      * {@code JAXBElement<Bar>} to {@code Foo} to for which a nested method call will be generated:
      * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}
      */
-    private MethodReference methodRefChild;
+    private Assignment assignment;
 
-    public TypeConversion( Set<Type> importTypes,
-            List<Type> exceptionTypes,
+
+    TypeConversion( Set<Type> importTypes,
+            Set<Type> exceptionTypes,
             String openExpression,
-            String sourceReference,
             String closeExpression ) {
         this.importTypes = new HashSet<Type>( importTypes );
         this.importTypes.addAll( exceptionTypes );
         this.exceptionTypes = exceptionTypes;
         this.openExpression = openExpression;
-        this.sourceReference = sourceReference;
         this.closeExpression = closeExpression;
     }
 
@@ -63,7 +62,8 @@ public class TypeConversion extends ModelElement {
         return importTypes;
     }
 
-    public List<Type> getExceptionTypes() {
+    @Override
+    public Set<Type> getExceptionTypes() {
         return exceptionTypes;
     }
 
@@ -71,19 +71,26 @@ public class TypeConversion extends ModelElement {
         return openExpression;
     }
 
-    public String getSourceReference() {
-        return sourceReference;
-    }
-
     public String getCloseExpression() {
         return closeExpression;
     }
 
-    public void setMethodRefChild( MethodReference methodRefChild ) {
-        this.methodRefChild = methodRefChild;
+    public Assignment getAssignment() {
+        return assignment;
     }
 
-    public MethodReference getMethodRefChild() {
-        return methodRefChild;
+    @Override
+    public String getSourceReference() {
+        return assignment.getSourceReference();
+    }
+
+    @Override
+    public void setAssignment( Assignment assignment ) {
+        this.assignment = assignment;
+    }
+
+    @Override
+    public boolean isSimple() {
+        return false;
     }
 }

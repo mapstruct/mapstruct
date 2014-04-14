@@ -20,9 +20,10 @@ package org.mapstruct.ap.conversion;
 
 import java.util.Collections;
 import java.util.Set;
-
-import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.Assignment;
+import org.mapstruct.ap.model.assignment.AssignmentFactory;
 import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.assignment.TypeConversion;
 import org.mapstruct.ap.model.common.Type;
 
 /**
@@ -33,24 +34,22 @@ import org.mapstruct.ap.model.common.Type;
 public abstract class SimpleConversion implements ConversionProvider {
 
     @Override
-    public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
+    public Assignment to(ConversionContext conversionContext) {
         ConversionExpression toExpressions = getToExpressions( conversionContext );
-        return new TypeConversion(
+        return AssignmentFactory.createTypeConversion(
                 getToConversionImportTypes( conversionContext ),
-                Collections.<Type>emptyList(),
+                Collections.<Type>emptySet(),
                 toExpressions.getOpenExpression(),
-                sourceReference,
                 toExpressions.getCloseExpression() );
     }
 
     @Override
-    public TypeConversion from(String targetReference, ConversionContext conversionContext) {
+    public Assignment from(ConversionContext conversionContext) {
         ConversionExpression fromExpressions = getFromExpressions( conversionContext );
-        return new TypeConversion(
+        return AssignmentFactory.createTypeConversion(
                 getFromConversionImportTypes( conversionContext ),
-                Collections.<Type>emptyList(),
+                Collections.<Type>emptySet(),
                 fromExpressions.getOpenExpression(),
-                targetReference,
                 fromExpressions.getCloseExpression() );
     }
 

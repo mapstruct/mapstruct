@@ -19,7 +19,6 @@
 package org.mapstruct.ap.processor;
 
 import org.mapstruct.ap.processor.creation.MappingResolver;
-import org.mapstruct.ap.model.TargetAssignment;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,19 +36,25 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
+import org.mapstruct.ap.model.Assignment;
 
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.Decorator;
 import org.mapstruct.ap.model.DefaultMapperReference;
 import org.mapstruct.ap.model.DelegatingMethod;
 import org.mapstruct.ap.model.EnumMappingMethod;
+import org.mapstruct.ap.model.Factory;
 import org.mapstruct.ap.model.IterableMappingMethod;
 import org.mapstruct.ap.model.MapMappingMethod;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
-import org.mapstruct.ap.model.MethodReference;
 import org.mapstruct.ap.model.PropertyMapping;
+import org.mapstruct.ap.model.assignment.AssignmentFactory;
+import org.mapstruct.ap.model.assignment.NewCollectionOrMapDecorator;
+import org.mapstruct.ap.model.assignment.LocalVarDecorator;
+import org.mapstruct.ap.model.assignment.NullCheckDecorator;
+import org.mapstruct.ap.model.assignment.SetterDecorator;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -316,9 +321,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return mappingMethods;
     }
 
-    private MethodReference getFactoryMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
+    private Factory getFactoryMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
                                              Type returnType) {
-        MethodReference result = null;
+        Factory result = null;
         for ( SourceMethod method : methods ) {
             if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
                 && method.getSourceParameters().size() == 0 ) {
@@ -329,7 +334,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 if ( method.matches( parameterTypes, returnType ) ) {
                     if ( result == null ) {
                         MapperReference mapperReference = findMapperReference( mapperReferences, method );
-                        result = new MethodReference( method, mapperReference, null );
+                        result = AssignmentFactory.createFactory( method, mapperReference );
                     }
                     else {
                         messager.printMessage(
@@ -488,7 +493,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             mappedTargetProperties
         );
 
-        MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+        Factory factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
         return new BeanMappingMethod( method, propertyMappings, factoryMethod );
     }
 
@@ -631,7 +636,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                String dateFormat) {
         Type sourceType = typeFactory.getReturnType( sourceAccessor );
         Type targetType = null;
-        String conversionString = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
+        String sourceReference = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
         if ( Executables.isSetterMethod( targetAcessor ) ) {
             targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
         }
@@ -643,7 +648,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         String mappedElement = "property '" + Executables.getPropertyName( sourceAccessor ) + "'";
 
-        TargetAssignment assignment = mappingResolver.getTargetAssignment(
+        Assignment assignment = mappingResolver.getTargetAssignment(
             method,
             mappedElement,
             mapperReferences,
@@ -652,34 +657,51 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             targetType,
             targetPropertyName,
             dateFormat,
-            conversionString
+            sourceReference
         );
 
-        PropertyMapping property = new PropertyMapping(
-            parameter.getName(),
-            Executables.getPropertyName( sourceAccessor ),
-            sourceAccessor.getSimpleName().toString(),
-            sourceType,
-            Executables.getPropertyName( targetAcessor ),
-            targetAcessor.getSimpleName().toString(),
-            targetType,
-            assignment
-        );
+        if ( assignment != null ) {
 
-        if ( !isPropertyMappable( property ) ) {
+            // target accessor is setter, so decorate assigmment as setter
+            assignment = new SetterDecorator( assignment );
+
+            // create a new Map or Collection implementation if no method or type conversion
+            if ( targetType != null && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
+                if ( assignment.isSimple() ) {
+                    assignment = new NewCollectionOrMapDecorator( assignment );
+                }
+            }
+
+            // decorate assigment with null check of source can be null (is not primitive)
+            if ( !sourceType.isPrimitive() ) {
+                assignment = new NullCheckDecorator( assignment );
+            }
+
+
+        }
+        else {
             messager.printMessage(
-                Kind.ERROR,
-                String.format(
-                    "Can't map property \"%s %s\" to \"%s %s\".",
-                    property.getSourceType(),
-                    property.getSourceName(),
-                    property.getTargetType(),
-                    property.getTargetName()
-                ),
-                method.getExecutable()
+                    Kind.ERROR,
+                    String.format(
+                            "Can't map property \"%s %s\" to \"%s %s\".",
+                            sourceType,
+                            Executables.getPropertyName( sourceAccessor ),
+                            targetType,
+                            Executables.getPropertyName( targetAcessor )
+                    ),
+                    method.getExecutable()
             );
         }
-        return property;
+        return new PropertyMapping(
+                parameter.getName(),
+                Executables.getPropertyName( sourceAccessor ),
+                sourceAccessor.getSimpleName().toString(),
+                sourceType,
+                Executables.getPropertyName( targetAcessor ),
+                targetAcessor.getSimpleName().toString(),
+                targetType,
+                assignment
+        );
     }
 
     private IterableMappingMethod getIterableMappingMethod(List<MapperReference> mapperReferences,
@@ -690,7 +712,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         String dateFormat = method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null;
         String conversionStr = Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
 
-        TargetAssignment assignment = mappingResolver.getTargetAssignment(
+        Assignment assignment = mappingResolver.getTargetAssignment(
             method,
             "collection element",
             mapperReferences,
@@ -714,7 +736,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             );
         }
 
-        MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+        // target accessor is setter, so decorate assigmment as setter
+        assignment = new SetterDecorator( assignment );
+
+        Factory factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
         return new IterableMappingMethod( method, assignment, factoryMethod );
     }
 
@@ -728,7 +753,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         Type keyTargetType = resultTypeParams.get( 0 );
         String keyDateFormat = method.getMapMapping() != null ? method.getMapMapping().getKeyFormat() : null;
 
-        TargetAssignment keyAssignment = mappingResolver.getTargetAssignment(
+        Assignment keyAssignment = mappingResolver.getTargetAssignment(
             method,
             "map key",
             mapperReferences,
@@ -757,7 +782,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         Type valueTargetType = resultTypeParams.get( 1 );
         String valueDateFormat = method.getMapMapping() != null ? method.getMapMapping().getValueFormat() : null;
 
-        TargetAssignment valueAssignment = mappingResolver.getTargetAssignment(
+        Assignment valueAssignment = mappingResolver.getTargetAssignment(
             method,
             "map value",
             mapperReferences,
@@ -781,7 +806,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             );
         }
 
-        MethodReference factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+        Factory factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+
+        keyAssignment = new LocalVarDecorator( keyAssignment );
+        valueAssignment = new LocalVarDecorator( valueAssignment );
+
         return new MapMappingMethod( method, keyAssignment,  valueAssignment, factoryMethod );
     }
 
@@ -928,116 +957,5 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
         return null;
-    }
-
-    /**
-     * Whether the specified property can  be mapped from source to target or not. A mapping if possible if one of
-     * the following conditions is true:
-     * <ul>
-     * <li>the source type is assignable to the target type</li>
-     * <li>a mapping method exists</li>
-     * <li>a built-in conversion exists</li>
-     * <li>the property is of a collection or map type and the constructor of the target type (either itself or its
-     * implementation type) accepts the source type.</li>
-     * </ul>
-     *
-     * @param property The property mapping to check.
-     *
-     * @return {@code true} if the specified property can be mapped, {@code false} otherwise.
-     */
-    private boolean isPropertyMappable(PropertyMapping property) {
-        boolean collectionOrMapTargetTypeHasCompatibleConstructor = false;
-
-        if ( property.getSourceType().isCollectionType() && property.getTargetType().isCollectionType() ) {
-            collectionOrMapTargetTypeHasCompatibleConstructor = collectionTypeHasCompatibleConstructor(
-                property.getSourceType(),
-                property.getTargetType().getImplementationType() != null ?
-                    property.getTargetType().getImplementationType() : property.getTargetType()
-            );
-        }
-
-        if ( property.getSourceType().isMapType() && property.getTargetType().isMapType() ) {
-            collectionOrMapTargetTypeHasCompatibleConstructor = mapTypeHasCompatibleConstructor(
-                property.getSourceType(),
-                property.getTargetType().getImplementationType() != null ?
-                    property.getTargetType().getImplementationType() : property.getTargetType()
-            );
-        }
-
-        if ( property.getPropertyAssignment() != null ||
-            ( ( property.getTargetType().isCollectionType() || property.getTargetType().isMapType() ) &&
-                collectionOrMapTargetTypeHasCompatibleConstructor ) ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Whether the given target type has a single-argument constructor which accepts the given source type.
-     *
-     * @param sourceType the source type
-     * @param targetType the target type
-     *
-     * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
-     *         otherwise.
-     */
-    private boolean collectionTypeHasCompatibleConstructor(Type sourceType, Type targetType) {
-        // note (issue #127): actually this should check for the presence of a matching constructor, with help of
-        // Types#asMemberOf(); but this method seems to not work correctly in the Eclipse implementation, so instead we
-        // just check whether the target type is parameterized in a way that it implicitly should have a constructor
-        // which accepts the source type
-
-        TypeMirror sourceElementType = sourceType.getTypeParameters().isEmpty() ?
-            typeFactory.getType( Object.class ).getTypeMirror() :
-            sourceType.getTypeParameters().get( 0 ).getTypeMirror();
-
-        TypeMirror targetElementType = targetType.getTypeParameters().isEmpty() ?
-            typeFactory.getType( Object.class ).getTypeMirror() :
-            targetType.getTypeParameters().get( 0 ).getTypeMirror();
-
-        return typeUtils.isAssignable( sourceElementType, targetElementType );
-    }
-
-    /**
-     * Whether the given target type has a single-argument constructor which accepts the given source type.
-     *
-     * @param sourceType the source type
-     * @param targetType the target type
-     *
-     * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
-     *         otherwise.
-     */
-    private boolean mapTypeHasCompatibleConstructor(Type sourceType, Type targetType) {
-        // note (issue #127): actually this should check for the presence of a matching constructor, with help of
-        // Types#asMemberOf(); but this method seems to not work correctly in the Eclipse implementation, so instead we
-        // just check whether the target type is parameterized in a way that it implicitly should have a constructor
-        // which accepts the source type
-
-        TypeMirror sourceKeyType = null;
-        TypeMirror targetKeyType = null;
-        TypeMirror sourceValueType = null;
-        TypeMirror targetValueType = null;
-
-        if ( sourceType.getTypeParameters().isEmpty() ) {
-            sourceKeyType = typeFactory.getType( Object.class ).getTypeMirror();
-            sourceValueType = typeFactory.getType( Object.class ).getTypeMirror();
-        }
-        else {
-            sourceKeyType = sourceType.getTypeParameters().get( 0 ).getTypeMirror();
-            sourceValueType = sourceType.getTypeParameters().get( 1 ).getTypeMirror();
-        }
-
-        if ( targetType.getTypeParameters().isEmpty() ) {
-            targetKeyType = typeFactory.getType( Object.class ).getTypeMirror();
-            targetValueType = typeFactory.getType( Object.class ).getTypeMirror();
-        }
-        else {
-            targetKeyType = targetType.getTypeParameters().get( 0 ).getTypeMirror();
-            targetValueType = targetType.getTypeParameters().get( 1 ).getTypeMirror();
-        }
-
-        return typeUtils.isAssignable( sourceKeyType, targetKeyType ) &&
-            typeUtils.isAssignable( sourceValueType, targetValueType );
     }
 }

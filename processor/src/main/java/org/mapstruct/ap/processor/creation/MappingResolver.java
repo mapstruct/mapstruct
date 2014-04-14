@@ -18,22 +18,23 @@
  */
 package org.mapstruct.ap.processor.creation;
 
-import org.mapstruct.ap.model.TargetAssignment;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Messager;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
+import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.MapperReference;
-import org.mapstruct.ap.model.MethodReference;
-import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.assignment.SimpleAssignment;
 import org.mapstruct.ap.model.VirtualMappingMethod;
+import org.mapstruct.ap.model.assignment.AssignmentFactory;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.DefaultConversionContext;
 import org.mapstruct.ap.model.common.Type;
@@ -71,6 +72,7 @@ public class MappingResolver {
     private final TypeFactory typeFactory;
     private final Conversions conversions;
     private final BuiltInMappingMethods builtInMethods;
+    private final Types typeUtils;
 
     private final MethodSelectors methodSelectors;
     /**
@@ -87,6 +89,7 @@ public class MappingResolver {
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
         this.virtualMethods = new HashSet<VirtualMappingMethod>();
         this.methodSelectors = new MethodSelectors( typeUtils, typeFactory );
+        this.typeUtils = typeUtils;
     }
 
 
@@ -111,7 +114,7 @@ public class MappingResolver {
      * <li>null, no assignment found</li>
      * </ol>
      */
-    public TargetAssignment getTargetAssignment( SourceMethod mappingMethod,
+    public Assignment getTargetAssignment( SourceMethod mappingMethod,
             String mappedElement,
             List<MapperReference> mapperReferences,
             List<SourceMethod> methods,
@@ -174,52 +177,55 @@ public class MappingResolver {
             this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
         }
 
-        private TargetAssignment getTargetAssignment( Type sourceType, Type targetType ) {
+        private Assignment getTargetAssignment( Type sourceType, Type targetType ) {
 
             // first simpele mapping method
-            MethodReference mappingMethodReference = resolveViaMethod( sourceType, targetType );
-            if ( mappingMethodReference != null ) {
+            Assignment referencedMethod = resolveViaMethod( sourceType, targetType );
+            if ( referencedMethod != null ) {
+                referencedMethod.setAssignment( AssignmentFactory.createAssignment( sourceReference ) );
                 context.virtualMethods.addAll( virtualMethodCandidates );
-                return new TargetAssignment( mappingMethodReference );
+                return referencedMethod;
             }
 
             // then direct assignable
-            if ( sourceType.isAssignableTo( targetType ) ) {
-                return new TargetAssignment();
+            if ( sourceType.isAssignableTo( targetType ) || context.isPropertyMappable( sourceType, targetType ) ) {
+                SimpleAssignment simpleAssignment = AssignmentFactory.createAssignment( sourceReference );
+                return simpleAssignment;
             }
 
             // then type conversion
-            TypeConversion conversion = resolveViaConversion( sourceType, targetType );
+            Assignment conversion = resolveViaConversion( sourceType, targetType );
             if ( conversion != null ) {
-                return new TargetAssignment( conversion );
+                conversion.setAssignment( AssignmentFactory.createAssignment( sourceReference) );
+                return conversion;
             }
 
             // 2 step method, first: method(method(souurce))
-            mappingMethodReference = resolveViaMethodAndMethod( sourceType, targetType );
-            if ( mappingMethodReference != null ) {
+            referencedMethod = resolveViaMethodAndMethod( sourceType, targetType );
+            if ( referencedMethod != null ) {
                 context.virtualMethods.addAll( virtualMethodCandidates );
-                return new TargetAssignment( mappingMethodReference );
+                return referencedMethod;
             }
 
             // 2 step method, then: method(conversion(souurce))
-            mappingMethodReference = resolveViaConversionAndMethod( sourceType, targetType );
-            if ( mappingMethodReference != null ) {
+            referencedMethod = resolveViaConversionAndMethod( sourceType, targetType );
+            if ( referencedMethod != null ) {
                 context.virtualMethods.addAll( virtualMethodCandidates );
-                return new TargetAssignment( mappingMethodReference );
+                return referencedMethod;
             }
 
             // 2 step method, finally: conversion(method(souurce))
             conversion = resolveViaMethodAndConversion( sourceType, targetType );
             if ( conversion != null ) {
                 context.virtualMethods.addAll( virtualMethodCandidates );
-                return new TargetAssignment( conversion );
+                return conversion;
             }
 
             // if nothing works, alas, the result is null
             return null;
         }
 
-        private TypeConversion resolveViaConversion( Type sourceType, Type targetType ) {
+        private Assignment resolveViaConversion( Type sourceType, Type targetType ) {
 
             ConversionProvider conversionProvider = context.conversions.getConversion( sourceType, targetType );
 
@@ -227,10 +233,9 @@ public class MappingResolver {
                 return null;
             }
 
-            return conversionProvider.to(
-                    sourceReference,
-                    new DefaultConversionContext( context.typeFactory, targetType, dateFormat )
-            );
+            ConversionContext ctx = new DefaultConversionContext( context.typeFactory, targetType, dateFormat );
+            Assignment typeConversion = conversionProvider.to( ctx );
+            return typeConversion;
         }
 
         /**
@@ -238,7 +243,7 @@ public class MappingResolver {
          * exists.
          *
          */
-        private MethodReference resolveViaMethod( Type sourceType, Type targetType ) {
+        private Assignment resolveViaMethod( Type sourceType, Type targetType ) {
 
             // first try to find a matching source method
             SourceMethod matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
@@ -254,7 +259,9 @@ public class MappingResolver {
             if ( matchingBuiltInMethod != null ) {
                 virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod ) );
                 ConversionContext ctx = new DefaultConversionContext( context.typeFactory, targetType, dateFormat );
-                return new MethodReference( matchingBuiltInMethod, ctx );
+                Assignment methodReference =  AssignmentFactory.createAssignment( matchingBuiltInMethod, ctx );
+                methodReference.setAssignment( AssignmentFactory.createAssignment( sourceReference ) );
+                return methodReference;
             }
 
             return null;
@@ -270,12 +277,12 @@ public class MappingResolver {
          * </ul>
          * then this method tries to resolve this combination and make a mapping methodY( methodX ( parameter ) )
          */
-        private MethodReference resolveViaMethodAndMethod( Type sourceType, Type targetType ) {
+        private Assignment resolveViaMethodAndMethod( Type sourceType, Type targetType ) {
 
             List<Method> methodYCandidates = new ArrayList<Method>( methods );
             methodYCandidates.addAll( context.builtInMethods.getBuiltInMethods() );
 
-            MethodReference methodRefY = null;
+            Assignment methodRefY = null;
 
             // Iterate over all source methods. Check if the return type matches with the parameter that we need.
             // so assume we need a method from A to C we look for a methodX from A to B (all methods in the
@@ -288,12 +295,13 @@ public class MappingResolver {
                     methodRefY = resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(),
                             targetType );
                     if ( methodRefY != null ) {
-                        MethodReference methodRefX =  resolveViaMethod(
+                        Assignment methodRefX =  resolveViaMethod(
                                 sourceType,
                                 methodYCandidate.getSourceParameters().get( 0 ).getType()
                         );
                         if ( methodRefX != null ) {
-                            methodRefY.setMethodRefChild( methodRefX );
+                            methodRefY.setAssignment( methodRefX );
+                            methodRefX.setAssignment( AssignmentFactory.createAssignment( sourceReference ) );
                             break;
                         }
                         else {
@@ -315,12 +323,12 @@ public class MappingResolver {
          * </ul>
          * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
          */
-        private MethodReference resolveViaConversionAndMethod( Type sourceType, Type targetType ) {
+        private Assignment resolveViaConversionAndMethod( Type sourceType, Type targetType ) {
 
             List<Method> methodYCandidates = new ArrayList<Method>( methods );
             methodYCandidates.addAll( context.builtInMethods.getBuiltInMethods() );
 
-            MethodReference methodRefY = null;
+            Assignment methodRefY = null;
 
             for ( Method methodYCandidate : methodYCandidates ) {
                 if ( methodYCandidate.getSourceParameters().size() == 1 ) {
@@ -329,12 +337,13 @@ public class MappingResolver {
                             targetType
                     );
                     if ( methodRefY != null ) {
-                        TypeConversion conversionXRef = resolveViaConversion(
+                        Assignment conversionXRef = resolveViaConversion(
                                 sourceType,
                                 methodYCandidate.getSourceParameters().get( 0 ).getType()
                         );
                         if ( conversionXRef != null ) {
-                            methodRefY.setTypeConversionChild( conversionXRef );
+                            methodRefY.setAssignment( conversionXRef );
+                            conversionXRef.setAssignment( new SimpleAssignment( sourceReference ) );
                             break;
                         }
                         else {
@@ -356,27 +365,25 @@ public class MappingResolver {
          * </ul>
          * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
          */
-        private TypeConversion resolveViaMethodAndConversion( Type sourceType, Type targetType ) {
+        private Assignment resolveViaMethodAndConversion( Type sourceType, Type targetType ) {
 
             List<Method> methodXCandidates = new ArrayList<Method>( methods );
             methodXCandidates.addAll( context.builtInMethods.getBuiltInMethods() );
 
-            TypeConversion conversionYRef = null;
+            Assignment conversionYRef = null;
 
             // search the other way arround
             for ( Method methodXCandidate : methodXCandidates ) {
                 if ( methodXCandidate.getSourceParameters().size() == 1 ) {
-                    MethodReference methodRefX = resolveViaMethod(
+                    Assignment methodRefX = resolveViaMethod(
                             sourceType,
                             methodXCandidate.getReturnType()
                     );
                     if ( methodRefX != null ) {
-                        conversionYRef = resolveViaConversion(
-                                methodXCandidate.getReturnType(),
-                                targetType
-                        );
+                        conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
                         if ( conversionYRef != null ) {
-                            conversionYRef.setMethodRefChild( methodRefX );
+                            conversionYRef.setAssignment( methodRefX );
+                            methodRefX.setAssignment( new SimpleAssignment( sourceReference ) );
                             break;
                         }
                         else {
@@ -423,12 +430,12 @@ public class MappingResolver {
             return null;
         }
 
-        private MethodReference getMappingMethodReference( SourceMethod method,
+        private Assignment getMappingMethodReference( SourceMethod method,
                 List<MapperReference> mapperReferences,
                 Type targetType ) {
             MapperReference mapperReference = findMapperReference( mapperReferences, method );
 
-            return new MethodReference(
+            return AssignmentFactory.createAssignment(
                     method,
                     mapperReference,
                     SourceMethod.containsTargetTypeParameter( method.getParameters() ) ? targetType : null
@@ -443,5 +450,114 @@ public class MappingResolver {
             }
             return null;
         }
+    }
+
+    /**
+     * Whether the specified property can  be mapped from source to target or not. A mapping if possible if one of
+     * the following conditions is true:
+     * <ul>
+     * <li>the source type is assignable to the target type</li>
+     * <li>a mapping method exists</li>
+     * <li>a built-in conversion exists</li>
+     * <li>the property is of a collection or map type and the constructor of the target type (either itself or its
+     * implementation type) accepts the source type.</li>
+     * </ul>
+     *
+     * @param property The property mapping to check.
+     *
+     * @return {@code true} if the specified property can be mapped, {@code false} otherwise.
+     */
+     private boolean isPropertyMappable(Type sourceType, Type targetType) {
+        boolean collectionOrMapTargetTypeHasCompatibleConstructor = false;
+
+        if ( sourceType.isCollectionType() && targetType.isCollectionType() ) {
+            collectionOrMapTargetTypeHasCompatibleConstructor = collectionTypeHasCompatibleConstructor(
+                sourceType,
+                targetType.getImplementationType() != null ?
+                    targetType.getImplementationType() : targetType
+            );
+        }
+
+        if ( sourceType.isMapType() && targetType.isMapType() ) {
+            collectionOrMapTargetTypeHasCompatibleConstructor = mapTypeHasCompatibleConstructor(
+                sourceType,
+                targetType.getImplementationType() != null ?
+                    targetType.getImplementationType() : targetType
+            );
+        }
+
+        if ( ( ( targetType.isCollectionType() || targetType.isMapType() ) &&
+                collectionOrMapTargetTypeHasCompatibleConstructor ) ) {
+            return true;
+        }
+
+        return false;
+    }
+   /**
+     * Whether the given target type has a single-argument constructor which accepts the given source type.
+     *
+     * @param sourceType the source type
+     * @param targetType the target type
+     *
+     * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
+     *         otherwise.
+     */
+    private boolean collectionTypeHasCompatibleConstructor(Type sourceType, Type targetType) {
+        // note (issue #127): actually this should check for the presence of a matching constructor, with help of
+        // Types#asMemberOf(); but this method seems to not work correctly in the Eclipse implementation, so instead we
+        // just check whether the target type is parameterized in a way that it implicitly should have a constructor
+        // which accepts the source type
+
+        TypeMirror sourceElementType = sourceType.getTypeParameters().isEmpty() ?
+            typeFactory.getType( Object.class ).getTypeMirror() :
+            sourceType.getTypeParameters().get( 0 ).getTypeMirror();
+
+        TypeMirror targetElementType = targetType.getTypeParameters().isEmpty() ?
+            typeFactory.getType( Object.class ).getTypeMirror() :
+            targetType.getTypeParameters().get( 0 ).getTypeMirror();
+
+        return typeUtils.isAssignable( sourceElementType, targetElementType );
+    }
+
+    /**
+     * Whether the given target type has a single-argument constructor which accepts the given source type.
+     *
+     * @param sourceType the source type
+     * @param targetType the target type
+     *
+     * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
+     *         otherwise.
+     */
+    private boolean mapTypeHasCompatibleConstructor(Type sourceType, Type targetType) {
+        // note (issue #127): actually this should check for the presence of a matching constructor, with help of
+        // Types#asMemberOf(); but this method seems to not work correctly in the Eclipse implementation, so instead we
+        // just check whether the target type is parameterized in a way that it implicitly should have a constructor
+        // which accepts the source type
+
+        TypeMirror sourceKeyType = null;
+        TypeMirror targetKeyType = null;
+        TypeMirror sourceValueType = null;
+        TypeMirror targetValueType = null;
+
+        if ( sourceType.getTypeParameters().isEmpty() ) {
+            sourceKeyType = typeFactory.getType( Object.class ).getTypeMirror();
+            sourceValueType = typeFactory.getType( Object.class ).getTypeMirror();
+        }
+        else {
+            sourceKeyType = sourceType.getTypeParameters().get( 0 ).getTypeMirror();
+            sourceValueType = sourceType.getTypeParameters().get( 1 ).getTypeMirror();
+        }
+
+        if ( targetType.getTypeParameters().isEmpty() ) {
+            targetKeyType = typeFactory.getType( Object.class ).getTypeMirror();
+            targetValueType = typeFactory.getType( Object.class ).getTypeMirror();
+        }
+        else {
+            targetKeyType = targetType.getTypeParameters().get( 0 ).getTypeMirror();
+            targetValueType = targetType.getTypeParameters().get( 1 ).getTypeMirror();
+        }
+
+        return typeUtils.isAssignable( sourceKeyType, targetKeyType ) &&
+            typeUtils.isAssignable( sourceValueType, targetValueType );
     }
 }

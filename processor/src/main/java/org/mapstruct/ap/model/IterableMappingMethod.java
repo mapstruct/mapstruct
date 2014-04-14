@@ -33,11 +33,10 @@ import org.mapstruct.ap.util.Strings;
  */
 public class IterableMappingMethod extends MappingMethod {
 
-    private final TargetAssignment elementAssignment;
-    private final MethodReference factoryMethod;
+    private final Assignment elementAssignment;
+    private final Factory factoryMethod;
 
-    public IterableMappingMethod(SourceMethod method, TargetAssignment parameterAssignment,
-            MethodReference factoryMethod) {
+    public IterableMappingMethod(SourceMethod method, Assignment parameterAssignment, Factory factoryMethod) {
         super( method );
         this.elementAssignment = parameterAssignment;
         this.factoryMethod = factoryMethod;
@@ -53,7 +52,7 @@ public class IterableMappingMethod extends MappingMethod {
         throw new IllegalStateException( "Method " + this + " has no source parameter." );
     }
 
-    public TargetAssignment getElementAssignment() {
+    public Assignment getElementAssignment() {
         return elementAssignment;
     }
 
@@ -75,7 +74,7 @@ public class IterableMappingMethod extends MappingMethod {
         );
     }
 
-    public MethodReference getFactoryMethod() {
+    public Factory getFactoryMethod() {
         return this.factoryMethod;
     }
 }

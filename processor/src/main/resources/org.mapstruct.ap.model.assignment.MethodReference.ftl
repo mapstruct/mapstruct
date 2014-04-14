@@ -27,20 +27,11 @@
                 <#-- a class is passed on for casting, see @TargetType -->
                 ${ext.targetType}.class
             <#else>
-                <#if methodRefChild??>
-                    <#-- the nested case: another method -->
-                    <@includeModel object=methodRefChild source=ext.source targetType=singleSourceParameterType.name/>
-                <#elseif typeConversion??>
-                    <#-- the nested case: a type conversion -->
-                    <@includeModel object=typeConversion source=ext.source targetType=singleSourceParameterType.name/>
-                <#else>
-                    <#-- the non nested case -->
-                    ${ext.source}
-                </#if>
+                <@includeModel object=assignment targetType=singleSourceParameterType raw=ext.raw/>
             </#if>
             <#if param_has_next>, </#if>
         </#list>
-        <#-- context parameter, e.g. for buildin methods concerning date conversion -->
+        <#-- context parameter, e.g. for builtin methods concerning date conversion -->
         <#if contextParam??>, ${contextParam}</#if>
     </#macro>
 </@compress>

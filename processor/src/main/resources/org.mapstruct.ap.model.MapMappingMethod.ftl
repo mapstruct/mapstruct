@@ -36,13 +36,11 @@
         <@includeModel object=keyAssignment
                    target=keyVariableName
                    targetType=typeName(resultType.typeParameters[0])
-                   source="entry.getKey()"
                    isLocalVar=true/>
     <#-- value -->
         <@includeModel object=valueAssignment
                    target=valueVariableName
                    targetType=typeName(resultType.typeParameters[1])
-                   source="entry.getValue()"
                    isLocalVar=true/>
         ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
     }

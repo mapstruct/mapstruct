@@ -20,13 +20,7 @@
 -->
  <#if !( targetType.collectionType || targetType.mapType ) >
     <#-- non collections or maps -->
-    <#if ( !sourceType.primitive && propertyAssignment.assignmentType!="ASSIGNMENT" ) >
-        if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-           <@assignmentLine/>
-        }
-    <#else>
-        <@assignmentLine/>
-    </#if>
+    <@assignment aTargetType=targetType/>
 <#else>
     <#-- collections or maps -->
     <#if ( ext.existingInstanceMapping || !targetAccessorSetter ) >
@@ -34,39 +28,19 @@
             <#if ext.existingInstanceMapping>
                 ${ext.targetBeanName}.${targetReadAccessorName}().clear();
              </#if><#t>
-             if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
                 <#if targetType.collectionType>
-                    <@collectionOrMapAssignmentLine target="${ext.targetBeanName}.${targetReadAccessorName}().addAll"/>
+                    <@assignment aTarget="${ext.targetBeanName}.${targetReadAccessorName}().addAll"/>
                 <#else>
-                    <@collectionOrMapAssignmentLine target="${ext.targetBeanName}.${targetReadAccessorName}().putAll"/>
+                    <@assignment aTarget="${ext.targetBeanName}.${targetReadAccessorName}().putAll"/>
                 </#if>
-            }
         }
         <#if targetAccessorSetter>
-           else if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-              <@collectionOrMapAssignmentLine/>
-           }
+           else <@assignment/>
         </#if>
     <#elseif targetAccessorSetter>
-         if ( ${sourceBeanName}.${sourceAccessorName}() != null ) {
-              <@collectionOrMapAssignmentLine/>
-         }
+           <@assignment/>
      </#if>
  </#if>
- <#macro collectionOrMapAssignmentLine
-        target="${ext.targetBeanName}.${targetAccessorName}"
-        source="${sourceBeanName}.${sourceAccessorName}">
-    <#compress>
-         <#if propertyAssignment?? && propertyAssignment.assignmentType!="ASSIGNMENT">
-             <@assignmentLine target source/>
-         <#else>
-             ${target}( new <#if targetType.implementationType??><@includeModel object=targetType.implementationType/><#else><@includeModel object=targetType/></#if>( ${source}() ) );
-         </#if>
-    </#compress>
-
-</#macro>
-<#macro assignmentLine
-         target="${ext.targetBeanName}.${targetAccessorName}"
-         source="${sourceBeanName}.${sourceAccessorName}">
-     <@includeModel object=propertyAssignment target=target source="${source}()" targetType=targetType raw=true/>
+ <#macro assignment aTarget="${ext.targetBeanName}.${targetAccessorName}" aTargetType=targetType>
+         <@includeModel object=propertyAssignment target=aTarget targetType=aTargetType raw=true/>
 </#macro>
