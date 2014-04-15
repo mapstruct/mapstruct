@@ -21,12 +21,13 @@ package org.mapstruct.ap.model.assignment;
 import org.mapstruct.ap.model.Assignment;
 
 /**
+ * Wraps the assignment in a target setter.
  *
  * @author Sjaak Derksen
  */
-public class SetterDecorator extends AssignmentDecorator {
+public class SetterWrapper extends AssignmentWrapper {
 
-    public SetterDecorator( Assignment decoratedAssignment ) {
+    public SetterWrapper( Assignment decoratedAssignment ) {
         super( decoratedAssignment );
     }
 }

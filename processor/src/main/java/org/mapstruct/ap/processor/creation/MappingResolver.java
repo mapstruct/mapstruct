@@ -32,7 +32,7 @@ import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.MapperReference;
-import org.mapstruct.ap.model.assignment.SimpleAssignment;
+import org.mapstruct.ap.model.assignment.Simple;
 import org.mapstruct.ap.model.VirtualMappingMethod;
 import org.mapstruct.ap.model.assignment.AssignmentFactory;
 import org.mapstruct.ap.model.common.ConversionContext;
@@ -182,21 +182,21 @@ public class MappingResolver {
             // first simpele mapping method
             Assignment referencedMethod = resolveViaMethod( sourceType, targetType );
             if ( referencedMethod != null ) {
-                referencedMethod.setAssignment( AssignmentFactory.createAssignment( sourceReference ) );
+                referencedMethod.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
                 context.virtualMethods.addAll( virtualMethodCandidates );
                 return referencedMethod;
             }
 
             // then direct assignable
             if ( sourceType.isAssignableTo( targetType ) || context.isPropertyMappable( sourceType, targetType ) ) {
-                SimpleAssignment simpleAssignment = AssignmentFactory.createAssignment( sourceReference );
+                Simple simpleAssignment = AssignmentFactory.createSimple( sourceReference );
                 return simpleAssignment;
             }
 
             // then type conversion
             Assignment conversion = resolveViaConversion( sourceType, targetType );
             if ( conversion != null ) {
-                conversion.setAssignment( AssignmentFactory.createAssignment( sourceReference) );
+                conversion.setAssignment( AssignmentFactory.createSimple( sourceReference) );
                 return conversion;
             }
 
@@ -259,8 +259,8 @@ public class MappingResolver {
             if ( matchingBuiltInMethod != null ) {
                 virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod ) );
                 ConversionContext ctx = new DefaultConversionContext( context.typeFactory, targetType, dateFormat );
-                Assignment methodReference =  AssignmentFactory.createAssignment( matchingBuiltInMethod, ctx );
-                methodReference.setAssignment( AssignmentFactory.createAssignment( sourceReference ) );
+                Assignment methodReference =  AssignmentFactory.createMethodReference( matchingBuiltInMethod, ctx );
+                methodReference.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
                 return methodReference;
             }
 
@@ -301,7 +301,7 @@ public class MappingResolver {
                         );
                         if ( methodRefX != null ) {
                             methodRefY.setAssignment( methodRefX );
-                            methodRefX.setAssignment( AssignmentFactory.createAssignment( sourceReference ) );
+                            methodRefX.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
                             break;
                         }
                         else {
@@ -343,7 +343,7 @@ public class MappingResolver {
                         );
                         if ( conversionXRef != null ) {
                             methodRefY.setAssignment( conversionXRef );
-                            conversionXRef.setAssignment( new SimpleAssignment( sourceReference ) );
+                            conversionXRef.setAssignment( new Simple( sourceReference ) );
                             break;
                         }
                         else {
@@ -383,7 +383,7 @@ public class MappingResolver {
                         conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
                         if ( conversionYRef != null ) {
                             conversionYRef.setAssignment( methodRefX );
-                            methodRefX.setAssignment( new SimpleAssignment( sourceReference ) );
+                            methodRefX.setAssignment( new Simple( sourceReference ) );
                             break;
                         }
                         else {
@@ -435,7 +435,7 @@ public class MappingResolver {
                 Type targetType ) {
             MapperReference mapperReference = findMapperReference( mapperReferences, method );
 
-            return AssignmentFactory.createAssignment(
+            return AssignmentFactory.createMethodReference(
                     method,
                     mapperReference,
                     SourceMethod.containsTargetTypeParameter( method.getParameters() ) ? targetType : null

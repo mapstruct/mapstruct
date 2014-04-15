@@ -18,7 +18,14 @@
  */
 /**
  * <p>
- * Meta-model of assignments
+ * Meta-model of assignments. There are currently three types of assignment
+ * <ul>
+ * <li>Simple</li>
+ * <li>TypeConversion</li>
+ * <li>MethodReference</li>
+ *
+ * The assignments can be wrapped. E.g. in a collection or map constructor, a null check, a try-catch, etc.
+ * </ul>
  * </p>
  */
 package org.mapstruct.ap.model.assignment;

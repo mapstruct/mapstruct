@@ -43,7 +43,7 @@ import org.mapstruct.ap.model.Decorator;
 import org.mapstruct.ap.model.DefaultMapperReference;
 import org.mapstruct.ap.model.DelegatingMethod;
 import org.mapstruct.ap.model.EnumMappingMethod;
-import org.mapstruct.ap.model.Factory;
+import org.mapstruct.ap.model.FactoryMethod;
 import org.mapstruct.ap.model.IterableMappingMethod;
 import org.mapstruct.ap.model.MapMappingMethod;
 import org.mapstruct.ap.model.Mapper;
@@ -51,10 +51,10 @@ import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.assignment.AssignmentFactory;
-import org.mapstruct.ap.model.assignment.NewCollectionOrMapDecorator;
-import org.mapstruct.ap.model.assignment.LocalVarDecorator;
-import org.mapstruct.ap.model.assignment.NullCheckDecorator;
-import org.mapstruct.ap.model.assignment.SetterDecorator;
+import org.mapstruct.ap.model.assignment.NewCollectionOrMapWrapper;
+import org.mapstruct.ap.model.assignment.LocalVarWrapper;
+import org.mapstruct.ap.model.assignment.NullCheckWrapper;
+import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -321,9 +321,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return mappingMethods;
     }
 
-    private Factory getFactoryMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
+    private FactoryMethod getFactoryMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
                                              Type returnType) {
-        Factory result = null;
+        FactoryMethod result = null;
         for ( SourceMethod method : methods ) {
             if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
                 && method.getSourceParameters().size() == 0 ) {
@@ -493,7 +493,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             mappedTargetProperties
         );
 
-        Factory factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+        FactoryMethod factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
         return new BeanMappingMethod( method, propertyMappings, factoryMethod );
     }
 
@@ -662,21 +662,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         if ( assignment != null ) {
 
-            // target accessor is setter, so decorate assigmment as setter
-            assignment = new SetterDecorator( assignment );
-
             // create a new Map or Collection implementation if no method or type conversion
             if ( targetType != null && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
                 if ( assignment.isSimple() ) {
-                    assignment = new NewCollectionOrMapDecorator( assignment );
+                    assignment = new NewCollectionOrMapWrapper( assignment );
                 }
             }
 
+            // target accessor is setter, so decorate assigmment as setter
+            assignment = new SetterWrapper( assignment );
+
             // decorate assigment with null check of source can be null (is not primitive)
             if ( !sourceType.isPrimitive() ) {
-                assignment = new NullCheckDecorator( assignment );
+                assignment = new NullCheckWrapper( assignment );
             }
-
 
         }
         else {
@@ -737,9 +736,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         // target accessor is setter, so decorate assigmment as setter
-        assignment = new SetterDecorator( assignment );
+        assignment = new SetterWrapper( assignment );
 
-        Factory factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+        FactoryMethod factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
         return new IterableMappingMethod( method, assignment, factoryMethod );
     }
 
@@ -806,10 +805,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             );
         }
 
-        Factory factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
+        FactoryMethod factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
 
-        keyAssignment = new LocalVarDecorator( keyAssignment );
-        valueAssignment = new LocalVarDecorator( valueAssignment );
+        keyAssignment = new LocalVarWrapper( keyAssignment );
+        valueAssignment = new LocalVarWrapper( valueAssignment );
 
         return new MapMappingMethod( method, keyAssignment,  valueAssignment, factoryMethod );
     }

@@ -22,19 +22,49 @@ import java.util.Set;
 import org.mapstruct.ap.model.common.Type;
 
 /**
+ * Assignment represents all kind of manners a source can be assigned to a target.
  *
  * @author Sjaak Derksen
  */
 public interface Assignment {
 
+    /**
+     * returns all types required as import by the assignment statement.
+     *
+     * @return imported types
+     */
      Set<Type> getImportTypes();
 
+    /**
+     * returns all types exception types thrown by this assignment.
+     *
+     * @return exceptions thrown
+     */
      Set<Type> getExceptionTypes();
 
+     /**
+      * An assignment in itself can wrap another assignment. E.g.:
+      * <ul>
+      * <li>a MethodReference can wrap a TypeConversion, another MethodReference and ultimately a Simple</li>
+      * <li>a TypeConversion can wrap a MethodReference, and ultimately a Simple</li>
+      * </ul>
+      *
+      * @param assignment
+      */
      void setAssignment( Assignment assignment );
 
+     /**
+      * the source reference being a source-getter, a constant, etc.
+      *
+      * @return source reference
+      */
      String getSourceReference();
 
-     // TODO: tempfix..
+     /**
+      * Returns whether the implemented assignment is a plain source assignment (Simple assignment)
+      * (so not a MethodReference or TypeConversion).
+      *
+      * @return true when this is a (wrapped) Simple Assignment
+      */
      boolean isSimple();
 }

@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
-import org.mapstruct.ap.model.Factory;
+import org.mapstruct.ap.model.FactoryMethod;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
 
@@ -37,7 +37,7 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
  *
  * @author Gunnar Morling
  */
-public class MethodReference extends MappingMethod implements Assignment, Factory {
+public class MethodReference extends MappingMethod implements Assignment, FactoryMethod {
 
     private final MapperReference declaringMapper;
     private final Set<Type> importTypes;
@@ -121,8 +121,7 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet(super.getImportTypes());
-        imported.addAll( importTypes );
+        Set<Type> imported = org.mapstruct.ap.util.Collections.asSet( importTypes, super.getImportTypes() );
         if ( assignment != null ) {
             imported.addAll( assignment.getImportTypes() );
         }

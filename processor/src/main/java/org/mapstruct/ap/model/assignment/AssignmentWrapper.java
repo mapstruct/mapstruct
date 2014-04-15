@@ -24,14 +24,15 @@ import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 
 /**
+ * Base class for decorators (wrappers). Decorator pattern is used to decorate assignments.
  *
  * @author Sjaak Derksen
  */
-public abstract class AssignmentDecorator extends ModelElement implements Assignment {
+public abstract class AssignmentWrapper extends ModelElement implements Assignment {
 
     private final Assignment decoratedAssignment;
 
-    public AssignmentDecorator( Assignment decoratedAssignment ) {
+    public AssignmentWrapper( Assignment decoratedAssignment ) {
         this.decoratedAssignment = decoratedAssignment;
     }
 
@@ -47,7 +48,7 @@ public abstract class AssignmentDecorator extends ModelElement implements Assign
 
     @Override
     public void setAssignment( Assignment assignment ) {
-        decoratedAssignment.setAssignment( assignment );
+        throw new UnsupportedOperationException("deliberately not implemented");
     }
 
     public Assignment getAssignment() {

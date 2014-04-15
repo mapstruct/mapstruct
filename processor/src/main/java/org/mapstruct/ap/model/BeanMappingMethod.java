@@ -38,11 +38,11 @@ import org.mapstruct.ap.model.source.SourceMethod;
 public class BeanMappingMethod extends MappingMethod {
 
     private final List<PropertyMapping> propertyMappings;
-    private final Factory factoryMethod;
+    private final FactoryMethod factoryMethod;
 
     public BeanMappingMethod(SourceMethod method,
                              List<PropertyMapping> propertyMappings,
-                             Factory factoryMethod) {
+                             FactoryMethod factoryMethod) {
         super( method );
         this.propertyMappings = propertyMappings;
         this.factoryMethod = factoryMethod;
@@ -78,7 +78,7 @@ public class BeanMappingMethod extends MappingMethod {
         return types;
     }
 
-    public Factory getFactoryMethod() {
+    public FactoryMethod getFactoryMethod() {
         return this.factoryMethod;
     }
 

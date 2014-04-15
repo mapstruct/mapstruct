@@ -34,9 +34,9 @@ import org.mapstruct.ap.util.Strings;
 public class IterableMappingMethod extends MappingMethod {
 
     private final Assignment elementAssignment;
-    private final Factory factoryMethod;
+    private final FactoryMethod factoryMethod;
 
-    public IterableMappingMethod(SourceMethod method, Assignment parameterAssignment, Factory factoryMethod) {
+    public IterableMappingMethod(SourceMethod method, Assignment parameterAssignment, FactoryMethod factoryMethod) {
         super( method );
         this.elementAssignment = parameterAssignment;
         this.factoryMethod = factoryMethod;
@@ -74,7 +74,7 @@ public class IterableMappingMethod extends MappingMethod {
         );
     }
 
-    public Factory getFactoryMethod() {
+    public FactoryMethod getFactoryMethod() {
         return this.factoryMethod;
     }
 }

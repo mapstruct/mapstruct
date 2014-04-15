@@ -35,10 +35,10 @@ public class MapMappingMethod extends MappingMethod {
 
     private final Assignment keyAssignment;
     private final Assignment valueAssignment;
-    private final Factory factoryMethod;
+    private final FactoryMethod factoryMethod;
 
     public MapMappingMethod(SourceMethod method, Assignment keyAssignment, Assignment valueAssignment,
-            Factory factoryMethod) {
+            FactoryMethod factoryMethod) {
         super( method );
 
         this.keyAssignment = keyAssignment;
@@ -99,7 +99,7 @@ public class MapMappingMethod extends MappingMethod {
         );
     }
 
-    public Factory getFactoryMethod() {
+    public FactoryMethod getFactoryMethod() {
         return this.factoryMethod;
     }
 

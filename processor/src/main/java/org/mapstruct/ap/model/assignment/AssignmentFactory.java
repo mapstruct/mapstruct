@@ -18,10 +18,9 @@
  */
 package org.mapstruct.ap.model.assignment;
 
-import java.util.Collections;
 import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
-import org.mapstruct.ap.model.Factory;
+import org.mapstruct.ap.model.FactoryMethod;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
@@ -29,6 +28,7 @@ import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 
 /**
+ * Factory class for creating all types of assignments
  *
  * @author Sjaak Derksen
  */
@@ -44,27 +44,21 @@ public class AssignmentFactory {
         return new TypeConversion( importTypes, exceptionTypes, openExpression, closeExpression );
     }
 
-    public static Assignment createTypeConversion( String openExpression,  String closeExpression ) {
-        return new TypeConversion( Collections.<Type>emptySet(),
-                Collections.<Type>emptySet(),
-                openExpression,
-                closeExpression );
-    }
-
-    public static Factory createFactory(SourceMethod method, MapperReference declaringMapper) {
+    public static FactoryMethod createFactory(SourceMethod method, MapperReference declaringMapper) {
         return  new MethodReference( method, declaringMapper, null );
     }
 
-    public static Assignment createAssignment(SourceMethod method, MapperReference declaringMapper, Type targetType) {
+    public static Assignment createMethodReference(SourceMethod method, MapperReference declaringMapper,
+            Type targetType) {
         return new  MethodReference(method, declaringMapper, targetType);
     }
 
-    public static Assignment createAssignment( BuiltInMethod method, ConversionContext contextParam ) {
+    public static Assignment createMethodReference( BuiltInMethod method, ConversionContext contextParam ) {
         return new MethodReference( method, contextParam );
     }
 
-    public static SimpleAssignment createAssignment( String sourceRef ) {
-        return new SimpleAssignment(sourceRef );
+    public static Simple createSimple( String sourceRef ) {
+        return new Simple(sourceRef );
     }
 
 }

@@ -16,17 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.model.assignment;
 
-import java.util.Set;
-import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.Assignment;
 
 /**
+ * Wraps the assignment in a null check.
  *
  * @author Sjaak Derksen
  */
-public interface Factory {
+public class NullCheckWrapper extends AssignmentWrapper {
 
-     Set<Type> getExceptionTypes();
-
+    public NullCheckWrapper( Assignment decoratedAssignment ) {
+        super( decoratedAssignment );
+    }
 }

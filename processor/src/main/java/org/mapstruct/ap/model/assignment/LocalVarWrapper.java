@@ -18,45 +18,16 @@
  */
 package org.mapstruct.ap.model.assignment;
 
-import java.util.Collections;
-import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
-import org.mapstruct.ap.model.common.ModelElement;
-import org.mapstruct.ap.model.common.Type;
 
 /**
+ * Decorates an assignment as local variable.
  *
  * @author Sjaak Derksen
  */
-public class SimpleAssignment extends ModelElement implements Assignment {
+public class LocalVarWrapper extends AssignmentWrapper {
 
-    private final String sourceReference;
-
-    public SimpleAssignment( String sourceReference ) {
-        this.sourceReference = sourceReference;
-    }
-
-    @Override
-    public String getSourceReference() {
-        return sourceReference;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Set<Type> getExceptionTypes() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public void setAssignment( Assignment assignment ) {
-        throw new UnsupportedOperationException( "Not supported." );
-    }
-
-    public boolean isSimple() {
-        return true;
+    public LocalVarWrapper( Assignment decoratedAssignment ) {
+        super( decoratedAssignment );
     }
 }

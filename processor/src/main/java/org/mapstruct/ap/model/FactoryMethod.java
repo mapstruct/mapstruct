@@ -16,17 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.assignment;
+package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.model.Assignment;
+import java.util.Set;
+import org.mapstruct.ap.model.common.Type;
 
 /**
+ * FactoryMethod, implemented in referenced mapper.
  *
  * @author Sjaak Derksen
  */
-public class NullCheckDecorator extends AssignmentDecorator {
+public interface FactoryMethod {
 
-    public NullCheckDecorator( Assignment decoratedAssignment ) {
-        super( decoratedAssignment );
-    }
+     Set<Type> getExceptionTypes();
+
 }

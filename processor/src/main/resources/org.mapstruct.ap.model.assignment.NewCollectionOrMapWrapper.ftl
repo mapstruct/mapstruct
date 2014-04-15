@@ -18,4 +18,11 @@
      limitations under the License.
 
 -->
-${ext.target}( new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>( ${sourceReference} ) );
+<@compress single_line=true>
+new <#if ext.targetType.implementationType??>
+    <@includeModel object=ext.targetType.implementationType/>
+<#else>
+    <@includeModel object=ext.targetType/>
+</#if>
+( <@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/> )
+</@compress>

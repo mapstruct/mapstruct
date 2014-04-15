@@ -21,12 +21,13 @@ package org.mapstruct.ap.model.assignment;
 import org.mapstruct.ap.model.Assignment;
 
 /**
+ * Decorates the assignment as a Map or Collection constructor
  *
  * @author Sjaak Derksen
  */
-public class NewCollectionOrMapDecorator extends AssignmentDecorator {
+public class NewCollectionOrMapWrapper extends AssignmentWrapper {
 
-    public NewCollectionOrMapDecorator( Assignment decoratedAssignment ) {
+    public NewCollectionOrMapWrapper( Assignment decoratedAssignment ) {
         super( decoratedAssignment );
     }
 }

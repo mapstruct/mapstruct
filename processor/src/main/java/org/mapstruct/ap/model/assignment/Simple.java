@@ -18,15 +18,46 @@
  */
 package org.mapstruct.ap.model.assignment;
 
+import java.util.Collections;
+import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
+import org.mapstruct.ap.model.common.ModelElement;
+import org.mapstruct.ap.model.common.Type;
 
 /**
+ * Simple Assignment. Just a source reference
  *
  * @author Sjaak Derksen
  */
-public class LocalVarDecorator extends AssignmentDecorator {
+public class Simple extends ModelElement implements Assignment {
 
-    public LocalVarDecorator( Assignment decoratedAssignment ) {
-        super( decoratedAssignment );
+    private final String sourceReference;
+
+    public Simple( String sourceReference ) {
+        this.sourceReference = sourceReference;
+    }
+
+    @Override
+    public String getSourceReference() {
+        return sourceReference;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Set<Type> getExceptionTypes() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public void setAssignment( Assignment assignment ) {
+        throw new UnsupportedOperationException( "Not supported." );
+    }
+
+    public boolean isSimple() {
+        return true;
     }
 }
