@@ -16,24 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
+package org.mapstruct.ap.test.nestedmethodcall;
+
+import java.util.Date;
 
 /**
- * Conversion between {@link Character} and {@link String}.
- *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class CharWrapperToStringConversion extends SimpleConversion {
+public class TargetDto {
 
-    @Override
-    public ConversionExpression getToExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".toString()" );
+    private Date date;
+
+    public Date getDate() {
+        return date;
     }
 
-    @Override
-    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".charAt( 0 )" );
+    public void setDate( Date date ) {
+        this.date = date;
     }
 }

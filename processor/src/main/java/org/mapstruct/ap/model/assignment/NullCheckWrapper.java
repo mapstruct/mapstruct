@@ -16,24 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.model.assignment;
 
-import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.Assignment;
 
 /**
- * Conversion between {@link Character} and {@link String}.
+ * Wraps the assignment in a null check.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class CharWrapperToStringConversion extends SimpleConversion {
+public class NullCheckWrapper extends AssignmentWrapper {
 
-    @Override
-    public ConversionExpression getToExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".toString()" );
-    }
-
-    @Override
-    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".charAt( 0 )" );
+    public NullCheckWrapper( Assignment decoratedAssignment ) {
+        super( decoratedAssignment );
     }
 }

@@ -16,24 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
+package org.mapstruct.ap.test.nestedmethodcall;
+
+import java.util.List;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.mapstruct.IterableMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Conversion between {@link Character} and {@link String}.
- *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class CharWrapperToStringConversion extends SimpleConversion {
+@Mapper
+public interface OrderTypeToOrderDtoMapper {
 
-    @Override
-    public ConversionExpression getToExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".toString()" );
-    }
+    OrderTypeToOrderDtoMapper INSTANCE = Mappers.getMapper( OrderTypeToOrderDtoMapper.class );
 
-    @Override
-    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".charAt( 0 )" );
-    }
+    OrderDto sourceToTarget(OrderType source);
+
+    OrderDetailsDto detailsToDto(OrderDetailsType source);
+
+    @IterableMapping(dateFormat = "dd.MM.yyyy")
+    List<String> stringListToDateList(List<JAXBElement<XMLGregorianCalendar>> dates);
 }

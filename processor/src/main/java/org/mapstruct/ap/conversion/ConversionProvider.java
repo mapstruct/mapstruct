@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.ConversionContext;
 
 /**
@@ -37,22 +37,18 @@ public interface ConversionProvider {
     /**
      * Creates the conversion from source to target of a property mapping.
      *
-     * @param sourceReference A reference to the source object, e.g.
-     * {@code beanName.getFoo()}.
      * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      *
      * @return A conversion from source to target.
      */
-    TypeConversion to(String sourceReference, ConversionContext conversionContext);
+    Assignment to(ConversionContext conversionContext);
 
     /**
      * Creates the conversion from target to source of a property mapping.
      *
-     * @param targetReference A reference to the targetReference object, e.g.
-     * {@code beanName.getFoo()}.
      * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      *
      * @return A conversion from target to source.
      */
-    TypeConversion from(String targetReference, ConversionContext conversionContext);
+    Assignment from(ConversionContext conversionContext);
 }

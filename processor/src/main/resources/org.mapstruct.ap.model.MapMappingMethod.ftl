@@ -32,52 +32,24 @@
 
     <#-- Once #148 has been addressed, the simple name of Map.Entry can be used -->
     for ( java.util.Map.Entry<<#list sourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
-
     <#-- key -->
-    <#if keyMappingMethod??>
-        <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyMappingMethod input="entry.getKey()"  targetType="${resultType.typeParameters[0].name}"/>;
-    <#elseif keyConversion??>
-        <#if (keyConversion.exceptionTypes?size == 0) >
-        <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = <@includeModel object=keyConversion/>;
-        <#else>
-        <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName};
-        try {
-            ${keyVariableName} = <@includeModel object=keyConversion/>;
-        }
-            <#list keyConversion.exceptionTypes as exceptionType>
-        catch( <@includeModel object=exceptionType/> e ) {
-            throw new RuntimeException( e );
-        }
-            </#list>
-        </#if>
-    <#else>
-        <@includeModel object=resultType.typeParameters[0]/> ${keyVariableName} = entry.getKey();
-    </#if>
+        <@includeModel object=keyAssignment
+                   target=keyVariableName
+                   targetType=typeName(resultType.typeParameters[0])
+                   isLocalVar=true/>
     <#-- value -->
-    <#if valueMappingMethod??>
-        <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueMappingMethod input="entry.getValue()" targetType="${resultType.typeParameters[1].name}"/>;
-    <#elseif valueConversion??>
-        <#if (valueConversion.exceptionTypes?size == 0) >
-        <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = <@includeModel object=valueConversion/>;
-        <#else>
-        <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName};
-        try {
-            ${valueVariableName} = <@includeModel object=valueConversion/>;
-        }
-            <#list valueConversion.exceptionTypes as exceptionType>
-        catch( <@includeModel object=exceptionType/> e ) {
-            throw new RuntimeException( e );
-        }
-            </#list>
-        </#if>
-    <#else>
-        <@includeModel object=resultType.typeParameters[1]/> ${valueVariableName} = entry.getValue();
-    </#if>
-
+        <@includeModel object=valueAssignment
+                   target=valueVariableName
+                   targetType=typeName(resultType.typeParameters[1])
+                   isLocalVar=true/>
         ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
     }
     <#if returnType.name != "void">
 
-    return ${resultName};
+        return ${resultName};
     </#if>
 }
+<#function typeName type>
+  <#local result><@includeModel object=type/></#local>
+  <#return result>
+</#function>

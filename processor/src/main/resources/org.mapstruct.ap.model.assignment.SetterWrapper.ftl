@@ -18,4 +18,15 @@
      limitations under the License.
 
 -->
-${conversionString}
+<#if (exceptionTypes?size == 0) >
+    ${ext.target}( <@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/> );
+<#else>
+    try {
+        ${ext.target}( <@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/> );
+    }
+    <#list exceptionTypes as exceptionType>
+    catch ( <@includeModel object=exceptionType/> e ) {
+        throw new RuntimeException( e );
+    }
+    </#list>
+</#if>

@@ -16,48 +16,50 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.model.assignment;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 
 /**
- * An inline conversion between source and target type of a mapping.
+ * Simple Assignment. Just a source reference
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class TypeConversion extends ModelElement {
+public class Simple extends ModelElement implements Assignment {
 
-    private final Set<Type> importTypes;
-    private final List<Type> exceptionTypes;
-    private final String conversionString;
+    private final String sourceReference;
 
-    public TypeConversion(String conversionString) {
-        this( Collections.<Type>emptySet(), Collections.<Type>emptyList(), conversionString );
+    public Simple( String sourceReference ) {
+        this.sourceReference = sourceReference;
     }
 
-    public TypeConversion(Set<Type> importTypes, List<Type> exceptionTypes, String conversionString) {
-        this.importTypes = new HashSet<Type>( importTypes );
-        this.importTypes.addAll( exceptionTypes );
-        this.exceptionTypes = exceptionTypes;
-        this.conversionString = conversionString;
+    @Override
+    public String getSourceReference() {
+        return sourceReference;
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        return importTypes;
+        return Collections.emptySet();
     }
 
+    @Override
     public List<Type> getExceptionTypes() {
-        return exceptionTypes;
+        return Collections.emptyList();
     }
 
-    public String getConversionString() {
-        return conversionString;
+    @Override
+    public void setAssignment( Assignment assignment ) {
+        throw new UnsupportedOperationException( "Not supported." );
+    }
+
+    @Override
+    public boolean isSimple() {
+        return true;
     }
 }

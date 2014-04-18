@@ -51,4 +51,14 @@ public class Collections {
 
         return set;
     }
+
+    public static <T> Set<T> asSet(Collection<T> collection, Collection<T>... elements) {
+        Set<T> set = new HashSet<T>( collection );
+
+        for ( Collection<T> element : elements ) {
+            set.addAll( element );
+        }
+
+        return set;
+    }
 }

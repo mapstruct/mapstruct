@@ -18,32 +18,39 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.common.ConversionContext;
-
 /**
- * Conversion between primitive types such as {@code byte} or {@code long}.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class PrimitiveToPrimitiveConversion extends SimpleConversion {
+public class ConversionExpression {
 
-    private final Class<?> sourceType;
+    private final String openExpression;
+    private final String closeExpression;
+    private String expression;
 
-    public PrimitiveToPrimitiveConversion(Class<?> sourceType) {
-        if ( !sourceType.isPrimitive() ) {
-            throw new IllegalArgumentException( sourceType + " is no primitive type." );
-        }
-
-        this.sourceType = sourceType;
+    public static ConversionExpression empty() {
+        return new ConversionExpression( "", "" );
     }
 
-    @Override
-    public ConversionExpression getToExpression(ConversionContext conversionContext) {
-        return ConversionExpression.empty();
+    public ConversionExpression( String openExpression, String closeExpression ) {
+        this.openExpression = openExpression;
+        this.closeExpression = closeExpression;
     }
 
-    @Override
-    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "(" + sourceType + ") ", "" );
+    public String getOpenExpression() {
+        return openExpression;
     }
+
+    public String getCloseExpression() {
+        return closeExpression;
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
+    public void setExpression( String expression ) {
+        this.expression = expression;
+    }
+
 }

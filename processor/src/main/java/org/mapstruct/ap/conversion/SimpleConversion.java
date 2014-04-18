@@ -20,9 +20,10 @@ package org.mapstruct.ap.conversion;
 
 import java.util.Collections;
 import java.util.Set;
-
-import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.Assignment;
+import org.mapstruct.ap.model.assignment.AssignmentFactory;
 import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.assignment.TypeConversion;
 import org.mapstruct.ap.model.common.Type;
 
 /**
@@ -33,22 +34,43 @@ import org.mapstruct.ap.model.common.Type;
 public abstract class SimpleConversion implements ConversionProvider {
 
     @Override
-    public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
-        return new TypeConversion(
-            getToConversionImportTypes( conversionContext ),
-            Collections.<Type>emptyList(),
-            getToConversionString( sourceReference, conversionContext )
-        );
+    public Assignment to(ConversionContext conversionContext) {
+        ConversionExpression toExpressions = getToExpression( conversionContext );
+        return AssignmentFactory.createTypeConversion(
+                getToConversionImportTypes( conversionContext ),
+                Collections.<Type>emptyList(),
+                toExpressions.getOpenExpression(),
+                toExpressions.getCloseExpression() );
     }
 
     @Override
-    public TypeConversion from(String targetReference, ConversionContext conversionContext) {
-        return new TypeConversion(
-            getFromConversionImportTypes( conversionContext ),
-            Collections.<Type>emptyList(),
-            getFromConversionString( targetReference, conversionContext )
-        );
+    public Assignment from(ConversionContext conversionContext) {
+        ConversionExpression fromExpressions = getFromExpression( conversionContext );
+        return AssignmentFactory.createTypeConversion(
+                getFromConversionImportTypes( conversionContext ),
+                Collections.<Type>emptyList(),
+                fromExpressions.getOpenExpression(),
+                fromExpressions.getCloseExpression() );
     }
+
+    /**
+     * Returns the conversion string (opening and closing part) from source to target.
+     *
+     * @param conversionContext ConversionContext providing optional information required for creating the conversion.
+     *
+     * @return The open- and close parts of the conversion expression
+     */
+    protected abstract ConversionExpression getToExpression( ConversionContext conversionContext );
+
+    /**
+     * Creates the conversion string (opening and closing part) from target to source.
+     *
+     * @param conversionContext ConversionContext providing optional information required for creating
+     * the conversion.
+     *
+     * @return The open- and close parts of the conversion expression
+     */
+    protected abstract ConversionExpression getFromExpression( ConversionContext conversionContext );
 
     /**
      * Returns a set with imported types of the "from" conversion. Defaults to an empty set; can be overridden in
@@ -72,25 +94,4 @@ public abstract class SimpleConversion implements ConversionProvider {
         return Collections.<Type>emptySet();
     }
 
-    /**
-     * Returns the conversion string from source to target.
-     *
-     * @param sourceReference A reference to the source object, e.g. {@code beanName.getFoo()}.
-     * @param conversionContext ConversionContext providing optional information required for creating the conversion.
-     *
-     * @return The conversion string from source to target.
-     */
-    protected abstract String getToConversionString(String sourceReference, ConversionContext conversionContext);
-
-    /**
-     * Creates the conversion string from target to source.
-     *
-     * @param targetReference A reference to the targetReference object, e.g.
-     * {@code beanName.getFoo()}.
-     * @param conversionContext ConversionContext providing optional information required for creating
-     * the conversion.
-     *
-     * @return The conversion string from target to source.
-     */
-    protected abstract String getFromConversionString(String targetReference, ConversionContext conversionContext);
 }

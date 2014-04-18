@@ -20,15 +20,15 @@ package org.mapstruct.ap.conversion;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-
-import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.Assignment;
+import org.mapstruct.ap.model.assignment.AssignmentFactory;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 
 import static org.mapstruct.ap.util.Collections.asSet;
+import static java.util.Arrays.asList;
 
 /**
  * Conversion between {@link String} and {@link Date}.
@@ -38,24 +38,26 @@ import static org.mapstruct.ap.util.Collections.asSet;
 public class DateToStringConversion implements ConversionProvider {
 
     @Override
-    public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
-        return new TypeConversion(
+    public Assignment to(ConversionContext conversionContext) {
+        return AssignmentFactory.createTypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
             Collections.<Type>emptyList(),
-            getConversionString( sourceReference, conversionContext, "format" )
-        );
+            getOpenExpression( conversionContext, "format" ),
+            getCloseExpression() );
+
     }
 
     @Override
-    public TypeConversion from(String targetReference, ConversionContext conversionContext) {
-        return new TypeConversion(
+    public Assignment from(ConversionContext conversionContext) {
+        return AssignmentFactory.createTypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
-            Arrays.asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
-            getConversionString( targetReference, conversionContext, "parse" )
+            asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
+            getOpenExpression( conversionContext, "parse" ),
+            getCloseExpression()
         );
     }
 
-    private String getConversionString(String targetReference, ConversionContext conversionContext, String method) {
+    private String getOpenExpression(ConversionContext conversionContext, String method) {
         StringBuilder conversionString = new StringBuilder( "new SimpleDateFormat(" );
 
         if ( conversionContext.getDateFormat() != null ) {
@@ -67,9 +69,11 @@ public class DateToStringConversion implements ConversionProvider {
         conversionString.append( ")." );
         conversionString.append( method );
         conversionString.append( "( " );
-        conversionString.append( targetReference );
-        conversionString.append( " )" );
 
         return conversionString.toString();
+    }
+
+    private String getCloseExpression() {
+       return " )";
     }
 }

@@ -16,24 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.model.common.ConversionContext;
+import java.util.List;
+import org.mapstruct.ap.model.common.Type;
 
 /**
- * Conversion between {@link Character} and {@link String}.
+ * FactoryMethod, implemented in referenced mapper.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class CharWrapperToStringConversion extends SimpleConversion {
+public interface FactoryMethod {
 
-    @Override
-    public ConversionExpression getToExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".toString()" );
-    }
+     List<Type> getExceptionTypes();
 
-    @Override
-    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".charAt( 0 )" );
-    }
 }

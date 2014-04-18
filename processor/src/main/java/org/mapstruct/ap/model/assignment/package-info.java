@@ -16,24 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
-
-import org.mapstruct.ap.model.common.ConversionContext;
-
 /**
- * Conversion between {@link Character} and {@link String}.
+ * <p>
+ * Meta-model of assignments. There are currently three types of assignment
+ * <ul>
+ * <li>Simple</li>
+ * <li>TypeConversion</li>
+ * <li>MethodReference</li>
  *
- * @author Gunnar Morling
+ * The assignments can be wrapped. E.g. in a collection or map constructor, a null check, a try-catch, etc.
+ * </ul>
+ * </p>
  */
-public class CharWrapperToStringConversion extends SimpleConversion {
-
-    @Override
-    public ConversionExpression getToExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".toString()" );
-    }
-
-    @Override
-    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".charAt( 0 )" );
-    }
-}
+package org.mapstruct.ap.model.assignment;
