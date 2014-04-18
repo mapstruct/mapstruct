@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model.assignment;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
 
@@ -34,7 +35,7 @@ public class TypeConversion extends ModelElement implements Assignment {
 
 
     private final Set<Type> importTypes;
-    private final Set<Type> exceptionTypes;
+    private final List<Type> exceptionTypes;
     private final String openExpression;
     private final String closeExpression;
 
@@ -47,7 +48,7 @@ public class TypeConversion extends ModelElement implements Assignment {
 
 
     TypeConversion( Set<Type> importTypes,
-            Set<Type> exceptionTypes,
+            List<Type> exceptionTypes,
             String openExpression,
             String closeExpression ) {
         this.importTypes = new HashSet<Type>( importTypes );
@@ -63,7 +64,7 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
-    public Set<Type> getExceptionTypes() {
+    public List<Type> getExceptionTypes() {
         return exceptionTypes;
     }
 

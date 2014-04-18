@@ -28,6 +28,7 @@ import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 
 import static org.mapstruct.ap.util.Collections.asSet;
+import static java.util.Arrays.asList;
 
 /**
  * Conversion between {@link String} and {@link Date}.
@@ -40,7 +41,7 @@ public class DateToStringConversion implements ConversionProvider {
     public Assignment to(ConversionContext conversionContext) {
         return AssignmentFactory.createTypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
-            Collections.<Type>emptySet(),
+            Collections.<Type>emptyList(),
             getOpenExpression( conversionContext, "format" ),
             getCloseExpression() );
 
@@ -50,7 +51,7 @@ public class DateToStringConversion implements ConversionProvider {
     public Assignment from(ConversionContext conversionContext) {
         return AssignmentFactory.createTypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
-            asSet( conversionContext.getTypeFactory().getType( ParseException.class ) ),
+            asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
             getOpenExpression( conversionContext, "parse" ),
             getCloseExpression()
         );

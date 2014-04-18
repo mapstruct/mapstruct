@@ -45,7 +45,7 @@ public class PrimitiveToWrapperConversion extends SimpleConversion {
     }
 
     @Override
-    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
+    public ConversionExpression getToExpression(ConversionContext conversionContext) {
         if ( sourceType == targetType ) {
             return ConversionExpression.empty();
         }
@@ -55,7 +55,7 @@ public class PrimitiveToWrapperConversion extends SimpleConversion {
     }
 
     @Override
-    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
+    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
         return new ConversionExpression( "", "." + sourceType.getName() + "Value()" );
     }
 }

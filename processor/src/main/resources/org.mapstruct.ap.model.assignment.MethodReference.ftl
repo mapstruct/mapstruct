@@ -20,7 +20,7 @@
 -->
 <@compress single_line=true>
     <#-- method is either internal to the mapper class, or external (via uses) declaringMapper!=null -->
-    <#if declaringMapper??>${mapperVariableName}.</#if>${name}( <@arguments/> )
+    <#if declaringMapper??>${mapperVariableName}.</#if>${name}<#if (parameters?size > 0)>( <@arguments/> )<#else>()</#if>
     <#macro arguments>
         <#list parameters as param>
             <#if param.targetType>

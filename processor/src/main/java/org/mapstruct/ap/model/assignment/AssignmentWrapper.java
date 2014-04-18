@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model.assignment;
 
+import java.util.List;
 import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.ModelElement;
@@ -42,7 +43,7 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     }
 
     @Override
-    public Set<Type> getExceptionTypes() {
+    public List<Type> getExceptionTypes() {
         return decoratedAssignment.getExceptionTypes();
     }
 

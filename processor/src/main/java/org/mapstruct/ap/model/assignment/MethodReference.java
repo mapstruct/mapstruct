@@ -19,7 +19,7 @@
 package org.mapstruct.ap.model.assignment;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.FactoryMethod;
@@ -54,6 +54,8 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
      * A reference to another mapping method or typeConversion in case this is a two-step mapping, e.g. from
      * {@code JAXBElement<Bar>} to {@code Foo} to for which a nested method call will be generated:
      * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}
+     *
+     * If there's no nested typeConversion or other mapping method, this will be a {@link Simple} assignment.
      */
     private Assignment assignment;
 
@@ -129,8 +131,8 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
     }
 
     @Override
-    public Set<Type> getExceptionTypes() {
-        Set<Type> exceptions = new HashSet();
+    public List<Type> getExceptionTypes() {
+        List<Type> exceptions = Collections.emptyList();
         if ( assignment != null ) {
             exceptions.addAll( assignment.getExceptionTypes() );
         }

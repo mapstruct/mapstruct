@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model.assignment;
 
+import java.util.List;
 import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.FactoryMethod;
@@ -38,7 +39,7 @@ public class AssignmentFactory {
     }
 
     public static Assignment createTypeConversion( Set<Type> importTypes,
-            Set<Type> exceptionTypes,
+            List<Type> exceptionTypes,
             String openExpression,
             String closeExpression ) {
         return new TypeConversion( importTypes, exceptionTypes, openExpression, closeExpression );

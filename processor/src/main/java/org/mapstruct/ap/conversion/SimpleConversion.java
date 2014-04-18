@@ -35,20 +35,20 @@ public abstract class SimpleConversion implements ConversionProvider {
 
     @Override
     public Assignment to(ConversionContext conversionContext) {
-        ConversionExpression toExpressions = getToExpressions( conversionContext );
+        ConversionExpression toExpressions = getToExpression( conversionContext );
         return AssignmentFactory.createTypeConversion(
                 getToConversionImportTypes( conversionContext ),
-                Collections.<Type>emptySet(),
+                Collections.<Type>emptyList(),
                 toExpressions.getOpenExpression(),
                 toExpressions.getCloseExpression() );
     }
 
     @Override
     public Assignment from(ConversionContext conversionContext) {
-        ConversionExpression fromExpressions = getFromExpressions( conversionContext );
+        ConversionExpression fromExpressions = getFromExpression( conversionContext );
         return AssignmentFactory.createTypeConversion(
                 getFromConversionImportTypes( conversionContext ),
-                Collections.<Type>emptySet(),
+                Collections.<Type>emptyList(),
                 fromExpressions.getOpenExpression(),
                 fromExpressions.getCloseExpression() );
     }
@@ -58,10 +58,9 @@ public abstract class SimpleConversion implements ConversionProvider {
      *
      * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      *
-     * @return The conversion string from source to target. toConversionExpressions[0] = openConversionExpression,
- toConversionExpressions[1] = closeConversionExpression
+     * @return The open- and close parts of the conversion expression
      */
-    protected abstract ConversionExpression getToExpressions( ConversionContext conversionContext );
+    protected abstract ConversionExpression getToExpression( ConversionContext conversionContext );
 
     /**
      * Creates the conversion string (opening and closing part) from target to source.
@@ -69,10 +68,9 @@ public abstract class SimpleConversion implements ConversionProvider {
      * @param conversionContext ConversionContext providing optional information required for creating
      * the conversion.
      *
-     * @return The conversion string from target to source, fromConversionExpressions[0] = openConversionExpression,
- fromConversionExpressions[1] = closeConversionExpression
+     * @return The open- and close parts of the conversion expression
      */
-    protected abstract ConversionExpression getFromExpressions( ConversionContext conversionContext );
+    protected abstract ConversionExpression getFromExpression( ConversionContext conversionContext );
 
     /**
      * Returns a set with imported types of the "from" conversion. Defaults to an empty set; can be overridden in

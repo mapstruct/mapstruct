@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model.assignment;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.ModelElement;
@@ -48,8 +49,8 @@ public class Simple extends ModelElement implements Assignment {
     }
 
     @Override
-    public Set<Type> getExceptionTypes() {
-        return Collections.emptySet();
+    public List<Type> getExceptionTypes() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -57,6 +58,7 @@ public class Simple extends ModelElement implements Assignment {
         throw new UnsupportedOperationException( "Not supported." );
     }
 
+    @Override
     public boolean isSimple() {
         return true;
     }

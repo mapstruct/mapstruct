@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.List;
 import java.util.Set;
 import org.mapstruct.ap.model.common.Type;
 
@@ -40,7 +41,7 @@ public interface Assignment {
      *
      * @return exceptions thrown
      */
-     Set<Type> getExceptionTypes();
+     List<Type> getExceptionTypes();
 
      /**
       * An assignment in itself can wrap another assignment. E.g.:

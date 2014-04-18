@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.model;
 
-import java.util.Set;
+import java.util.List;
 import org.mapstruct.ap.model.common.Type;
 
 /**
@@ -28,6 +28,6 @@ import org.mapstruct.ap.model.common.Type;
  */
 public interface FactoryMethod {
 
-     Set<Type> getExceptionTypes();
+     List<Type> getExceptionTypes();
 
 }

@@ -34,12 +34,12 @@ import static org.mapstruct.ap.util.Collections.asSet;
 public class BigDecimalToStringConversion extends SimpleConversion {
 
     @Override
-    public ConversionExpression getToExpressions(ConversionContext conversionContext) {
+    public ConversionExpression getToExpression(ConversionContext conversionContext) {
         return new ConversionExpression( "", ".toString()" );
     }
 
     @Override
-    public ConversionExpression getFromExpressions(ConversionContext conversionContext) {
+    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
         return new ConversionExpression( "new BigDecimal( ", " )" );
     }
 
