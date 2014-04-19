@@ -39,6 +39,7 @@ public class BeanMappingMethod extends MappingMethod {
 
     private final List<PropertyMapping> propertyMappings;
     private final FactoryMethod factoryMethod;
+    private final List<Type> exceptionTypes;
 
     public BeanMappingMethod(SourceMethod method,
                              List<PropertyMapping> propertyMappings,
@@ -46,6 +47,7 @@ public class BeanMappingMethod extends MappingMethod {
         super( method );
         this.propertyMappings = propertyMappings;
         this.factoryMethod = factoryMethod;
+        this.exceptionTypes = method.getExceptionTypes();
     }
 
     public List<PropertyMapping> getPropertyMappings() {
@@ -82,4 +84,7 @@ public class BeanMappingMethod extends MappingMethod {
         return this.factoryMethod;
     }
 
+    public List<Type> getExceptionTypes() {
+        return exceptionTypes;
+    }
 }

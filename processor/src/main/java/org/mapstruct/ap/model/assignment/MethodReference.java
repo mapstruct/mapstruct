@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model.assignment;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +42,7 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
 
     private final MapperReference declaringMapper;
     private final Set<Type> importTypes;
+    private final List<Type> exceptionTypes;
 
     /**
      * In case this reference targets a built-in method, allows to pass specific context information to the invoked
@@ -74,13 +76,15 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
         this.importTypes = targetType == null ?
             Collections.<Type>emptySet() :
             Collections.<Type>singleton( targetType );
-    }
+        this.exceptionTypes = method.getExceptionTypes();
+   }
 
     public MethodReference(BuiltInMethod method, ConversionContext contextParam) {
         super( method );
         this.declaringMapper = null;
         this.contextParam = method.getContextParameter( contextParam );
         this.importTypes = Collections.emptySet();
+        this.exceptionTypes = Collections.emptyList();
     }
 
     public MapperReference getDeclaringMapper() {
@@ -132,7 +136,8 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
 
     @Override
     public List<Type> getExceptionTypes() {
-        List<Type> exceptions = Collections.emptyList();
+        List<Type> exceptions = new ArrayList<Type>();
+        exceptions.addAll( exceptionTypes );
         if ( assignment != null ) {
             exceptions.addAll( assignment.getExceptionTypes() );
         }

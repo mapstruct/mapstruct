@@ -16,32 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.assignment;
-
-import java.util.List;
-import org.mapstruct.ap.model.Assignment;
-import org.mapstruct.ap.model.common.Type;
+package org.mapstruct.ap.test.exceptions;
 
 /**
- * Decorates an assignment as local variable.
- *
  * @author Sjaak Derksen
+ *
  */
-public class LocalVarWrapper extends AssignmentWrapper {
+public class ExceptionTestMapper  {
 
-    private final List<Type> exceptionTypesToExclude;
-
-    public LocalVarWrapper( Assignment decoratedAssignment, List<Type> exceptionTypesToExclude ) {
-        super( decoratedAssignment );
-        this.exceptionTypesToExclude = exceptionTypesToExclude;
-    }
-
-    @Override
-    public List<Type> getExceptionTypes() {
-        List<Type> result = super.getExceptionTypes();
-        for (Type exceptionTypeToExclude : exceptionTypesToExclude) {
-            result.remove( exceptionTypeToExclude );
+    public Long toLong(int size) throws TestException1, TestException2 {
+        if ( size == 1 ) {
+            throw new TestException1();
         }
-        return result;
+        else if ( size == 2 ) {
+            throw new TestException2();
+        }
+        return new Long(size);
     }
 }

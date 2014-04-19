@@ -145,6 +145,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                    boolean mapperRequiresImplementation) {
         List<Parameter> parameters = typeFactory.getParameters( method );
         Type returnType = typeFactory.getReturnType( method );
+        List<Type> exceptionTypes = typeFactory.getThrownTypes( method );
 
         //add method with property mappings if an implementation needs to be generated
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
@@ -170,6 +171,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                         method,
                         parameters,
                         returnType,
+                        exceptionTypes,
                         getMappings( method ),
                         IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ) ),
                         MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ) ),
@@ -188,6 +190,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     method,
                     parameters,
                     returnType,
+                    exceptionTypes,
                     typeUtils
                 );
         }

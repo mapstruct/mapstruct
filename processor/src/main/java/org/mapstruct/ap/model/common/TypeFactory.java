@@ -241,6 +241,14 @@ public class TypeFactory {
         return getType( method.getReturnType() );
     }
 
+    public List<Type> getThrownTypes(ExecutableElement method) {
+        List<Type> thrownTypes = new ArrayList<Type>();
+        for (TypeMirror exceptionType : method.getThrownTypes() ) {
+            thrownTypes.add( getType( exceptionType ) );
+        }
+        return thrownTypes;
+    }
+
     private List<Type> getTypeParameters(TypeMirror mirror) {
         if ( mirror.getKind() != TypeKind.DECLARED ) {
             return java.util.Collections.emptyList();

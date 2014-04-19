@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.model.assignment;
 
+import java.util.List;
 import org.mapstruct.ap.model.Assignment;
+import org.mapstruct.ap.model.common.Type;
 
 /**
  * Wraps the assignment in a target setter.
@@ -27,7 +29,19 @@ import org.mapstruct.ap.model.Assignment;
  */
 public class SetterWrapper extends AssignmentWrapper {
 
-    public SetterWrapper( Assignment decoratedAssignment ) {
+    private final List<Type> exceptionTypesToExclude;
+
+    public SetterWrapper( Assignment decoratedAssignment, List<Type> exceptionTypesToExclude ) {
         super( decoratedAssignment );
+        this.exceptionTypesToExclude = exceptionTypesToExclude;
+    }
+
+    @Override
+    public List<Type> getExceptionTypes() {
+        List<Type> result = super.getExceptionTypes();
+        for (Type exceptionTypeToExclude : exceptionTypesToExclude) {
+            result.remove( exceptionTypeToExclude );
+        }
+        return result;
     }
 }
