@@ -38,6 +38,9 @@
             <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
         </#list>
     </#if>
+    <#list constantMappings as constantMapping>
+         <@includeModel object=constantMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
+    </#list>
     <#if returnType.name != "void">
 
     return ${resultName};
