@@ -38,6 +38,10 @@ import org.mapstruct.ap.model.source.SourceMethod;
 public class BeanMappingMethod extends MappingMethod {
 
     private final List<PropertyMapping> propertyMappings;
+    private final Map<String, List<PropertyMapping>> mappingsByParameter;
+    private final List<PropertyMapping> constantMappings;
+
+
     private final FactoryMethod factoryMethod;
 
     public BeanMappingMethod(SourceMethod method,
@@ -45,6 +49,22 @@ public class BeanMappingMethod extends MappingMethod {
                              FactoryMethod factoryMethod) {
         super( method );
         this.propertyMappings = propertyMappings;
+
+
+        // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
+        // parameter mapping.
+        this.mappingsByParameter = new HashMap<String, List<PropertyMapping>>();
+        this.constantMappings = new ArrayList<PropertyMapping>( propertyMappings );
+        for ( Parameter sourceParameter : getSourceParameters() ) {
+            ArrayList<PropertyMapping> mappingsOfParameter = new ArrayList<PropertyMapping>();
+            mappingsByParameter.put( sourceParameter.getName(), mappingsOfParameter );
+            for ( PropertyMapping mapping : propertyMappings ) {
+                if ( sourceParameter.getName().equals( mapping.getSourceBeanName() ) ) {
+                    mappingsOfParameter.add( mapping );
+                    constantMappings.remove( mapping );
+                }
+            }
+        }
         this.factoryMethod = factoryMethod;
     }
 
@@ -52,18 +72,11 @@ public class BeanMappingMethod extends MappingMethod {
         return propertyMappings;
     }
 
-    public Map<String, List<PropertyMapping>> getPropertyMappingsByParameter() {
-        Map<String, List<PropertyMapping>> mappingsByParameter = new HashMap<String, List<PropertyMapping>>();
+    public List<PropertyMapping> getConstantMappings() {
+        return constantMappings;
+    }
 
-        for ( Parameter sourceParameter : getSourceParameters() ) {
-            ArrayList<PropertyMapping> mappingsOfParameter = new ArrayList<PropertyMapping>();
-            mappingsByParameter.put( sourceParameter.getName(), mappingsOfParameter );
-            for ( PropertyMapping mapping : propertyMappings ) {
-                if ( mapping.getSourceBeanName().equals( sourceParameter.getName() ) ) {
-                    mappingsOfParameter.add( mapping );
-                }
-            }
-        }
+    public Map<String, List<PropertyMapping>> getPropertyMappingsByParameter() {
         return mappingsByParameter;
     }
 
