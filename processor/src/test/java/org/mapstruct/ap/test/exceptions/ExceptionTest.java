@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.exceptions;
 
+import java.text.ParseException;
 import org.mapstruct.ap.test.exceptions.imports.TestException1;
 import org.mapstruct.ap.test.exceptions.imports.TestExceptionBase;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class ExceptionTest {
 
     @Test( expected = RuntimeException.class )
     @IssueKey( "198" )
-    public void shouldThrowRuntimeInBeanMapping() throws TestException2 {
+    public void shouldThrowRuntimeInBeanMapping() throws TestException2, ParseException {
         Source source = new Source();
         source.setSize( 1 );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
@@ -57,9 +58,18 @@ public class ExceptionTest {
 
     @Test( expected = TestException2.class )
     @IssueKey( "198" )
-    public void shouldThrowTestException2InBeanMapping() throws TestException2 {
+    public void shouldThrowTestException2InBeanMapping() throws TestException2, ParseException {
         Source source = new Source();
         source.setSize( 2 );
+        SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
+        sourceTargetMapper.sourceToTarget( source );
+    }
+
+    @Test( expected = ParseException.class )
+    @IssueKey( "198" )
+    public void shouldThrowTestParseExceptionInBeanMappingDueToTypeConverion() throws TestException2, ParseException {
+        Source source = new Source();
+        source.setDate( "nonsense" );
         SourceTargetMapper sourceTargetMapper = SourceTargetMapper.INSTANCE;
         sourceTargetMapper.sourceToTarget( source );
     }

@@ -25,6 +25,7 @@ package org.mapstruct.ap.test.exceptions;
 public class Source {
 
     private int size;
+    private String date;
 
     public int getSize() {
         return size;
@@ -33,4 +34,13 @@ public class Source {
     public void setSize( int size ) {
         this.size = size;
     }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate( String date ) {
+        this.date = date;
+    }
+
 }

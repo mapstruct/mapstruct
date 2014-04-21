@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.exceptions;
 
+import java.util.Date;
+
 /**
  *
  * @author Sjaak Derksen
@@ -25,6 +27,7 @@ package org.mapstruct.ap.test.exceptions;
 public class Target {
 
     private Long size;
+    private Date date;
 
     public Long getSize() {
         return size;
@@ -32,6 +35,14 @@ public class Target {
 
     public void setSize(Long size) {
         this.size = size;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate( Date date ) {
+        this.date = date;
     }
 
 }

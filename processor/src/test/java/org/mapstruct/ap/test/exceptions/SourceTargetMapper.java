@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.exceptions;
 
 
+import java.text.ParseException;
 import org.mapstruct.ap.test.exceptions.imports.TestExceptionBase;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public  interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    Target sourceToTarget(Source source) throws TestException2;
+    Target sourceToTarget(Source source) throws TestException2, ParseException;
 
     List<Long> integerListToLongList(List<Integer> sizes) throws TestException2;
 
