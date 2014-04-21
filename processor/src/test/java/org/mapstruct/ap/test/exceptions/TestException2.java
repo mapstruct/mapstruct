@@ -18,9 +18,11 @@
  */
 package org.mapstruct.ap.test.exceptions;
 
+import org.mapstruct.ap.test.exceptions.imports.TestExceptionBase;
+
 /**
  *
  * @author Sjaak Derksen
  */
-public class TestException2 extends Exception {
+public class TestException2 extends TestExceptionBase {
 }

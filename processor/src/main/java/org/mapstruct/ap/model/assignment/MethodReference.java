@@ -20,6 +20,7 @@ package org.mapstruct.ap.model.assignment;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
@@ -73,10 +74,12 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
         super( method );
         this.declaringMapper = declaringMapper;
         this.contextParam = null;
-        this.importTypes = targetType == null ?
-            Collections.<Type>emptySet() :
-            Collections.<Type>singleton( targetType );
-        this.exceptionTypes = method.getExceptionTypes();
+        Set<Type> imported = new HashSet( method.getThrownTypes() );
+        if ( targetType != null ) {
+            imported.add( targetType );
+        }
+        this.importTypes = Collections.<Type>unmodifiableSet( imported );
+        this.exceptionTypes = method.getThrownTypes();
    }
 
     public MethodReference(BuiltInMethod method, ConversionContext contextParam) {

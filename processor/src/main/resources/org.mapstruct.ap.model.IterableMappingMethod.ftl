@@ -19,7 +19,7 @@
 
 -->
 @Override
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
+<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
     if ( ${sourceParameter.name} == null ) {
         return<#if returnType.name != "void"> null</#if>;
     }
@@ -39,3 +39,12 @@
     return ${resultName};
     </#if>
 }
+<#macro throws>
+    <@compress single_line=true>
+        <#if (thrownTypes?size > 0)>throws </#if>
+        <#list thrownTypes as exceptionType>
+            <@includeModel object=exceptionType/>
+            <#if exceptionType_has_next>, </#if>
+        </#list>
+    </@compress>
+</#macro>

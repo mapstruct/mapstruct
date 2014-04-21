@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model.assignment;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.Type;
@@ -38,10 +39,16 @@ public class SetterWrapper extends AssignmentWrapper {
 
     @Override
     public List<Type> getExceptionTypes() {
-        List<Type> result = super.getExceptionTypes();
-        for (Type exceptionTypeToExclude : exceptionTypesToExclude) {
-            result.remove( exceptionTypeToExclude );
+        List<Type> parentExceptionTypes = super.getExceptionTypes();
+        List<Type> result = new ArrayList<Type>( parentExceptionTypes );
+        for ( Type exceptionTypeToExclude : exceptionTypesToExclude ) {
+            for ( Type parentExceptionType : parentExceptionTypes ) {
+                if ( parentExceptionType.isAssignableTo( exceptionTypeToExclude ) ) {
+                    result.remove( parentExceptionType );
+                }
+            }
         }
         return result;
     }
+
 }

@@ -351,7 +351,7 @@ public class SourceMethod implements Method {
         return false;
     }
 
-    public List<Type> getExceptionTypes() {
+    public List<Type> getThrownTypes() {
         return exceptionTypes;
     }
 }

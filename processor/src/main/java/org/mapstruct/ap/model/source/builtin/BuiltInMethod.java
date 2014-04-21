@@ -177,4 +177,9 @@ public abstract class BuiltInMethod implements Method {
     public Accessibility getAccessibility() {
         return Accessibility.PRIVATE;
     }
+
+    @Override
+    public List<Type> getThrownTypes() {
+        return Collections.emptyList();
+    }
 }

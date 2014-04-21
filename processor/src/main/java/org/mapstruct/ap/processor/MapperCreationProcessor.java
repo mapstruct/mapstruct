@@ -670,7 +670,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
 
             // target accessor is setter, so decorate assigmment as setter
-            assignment = new SetterWrapper( assignment, method.getExceptionTypes() );
+            assignment = new SetterWrapper( assignment, method.getThrownTypes() );
 
             // decorate assigment with null check of source can be null (is not primitive)
             if ( !sourceType.isPrimitive() ) {
@@ -736,7 +736,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         // target accessor is setter, so decorate assigmment as setter
-        assignment = new SetterWrapper( assignment, method.getExceptionTypes() );
+        assignment = new SetterWrapper( assignment, method.getThrownTypes() );
 
         FactoryMethod factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
         return new IterableMappingMethod( method, assignment, factoryMethod );
@@ -807,8 +807,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         FactoryMethod factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
 
-        keyAssignment = new LocalVarWrapper( keyAssignment, method.getExceptionTypes() );
-        valueAssignment = new LocalVarWrapper( valueAssignment, method.getExceptionTypes() );
+        keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes() );
+        valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes() );
 
         return new MapMappingMethod( method, keyAssignment,  valueAssignment, factoryMethod );
     }

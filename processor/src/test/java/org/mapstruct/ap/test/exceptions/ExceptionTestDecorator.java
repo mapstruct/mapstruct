@@ -18,9 +18,11 @@
  */
 package org.mapstruct.ap.test.exceptions;
 
-/**
- *
- * @author Sjaak Derksen
- */
-public class TestException1 extends Exception {
+public abstract class ExceptionTestDecorator implements SourceTargetMapper {
+
+    private final SourceTargetMapper delegate;
+
+    public ExceptionTestDecorator(SourceTargetMapper delegate) {
+        this.delegate = delegate;
+    }
 }

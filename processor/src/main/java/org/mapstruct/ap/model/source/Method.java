@@ -96,4 +96,11 @@ public interface Method {
      * @return return type
      */
     Type getReturnType();
+
+    /**
+     * Returns all exceptions thrown by this method
+     *
+     * @return exceptions thrown
+     */
+    List<Type> getThrownTypes();
 }
