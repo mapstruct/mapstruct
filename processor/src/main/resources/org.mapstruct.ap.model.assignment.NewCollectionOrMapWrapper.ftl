@@ -18,8 +18,11 @@
      limitations under the License.
 
 -->
-<#if methodRefChild??>
-    <#if declaringMapper??>${mapperVariableName}.</#if>${name}(<#list parameters as param> <#if param.targetType>${ext.targetType}.class<#else><@includeModel object=methodRefChild input=ext.input targetType=singleSourceParameterType.name/></#if><#if param_has_next>,<#else> </#if></#list><#if contextParam??>, ${contextParam}</#if>)<#t>
+<@compress single_line=true>
+new <#if ext.targetType.implementationType??>
+    <@includeModel object=ext.targetType.implementationType/>
 <#else>
-    <#if declaringMapper??>${mapperVariableName}.</#if>${name}(<#list parameters as param> <#if param.targetType>${ext.targetType}.class<#else>${ext.input}</#if><#if param_has_next>,<#else> </#if></#list><#if contextParam??>, ${contextParam}</#if>)<#t>
+    <@includeModel object=ext.targetType/>
 </#if>
+( <@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/> )
+</@compress>

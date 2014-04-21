@@ -16,10 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model;
+package org.mapstruct.ap.model.assignment;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import org.mapstruct.ap.model.Assignment;
+import org.mapstruct.ap.model.FactoryMethod;
+import org.mapstruct.ap.model.MapperReference;
+import org.mapstruct.ap.model.MappingMethod;
 
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
@@ -32,17 +39,11 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
  *
  * @author Gunnar Morling
  */
-public class MethodReference extends MappingMethod {
+public class MethodReference extends MappingMethod implements Assignment, FactoryMethod {
 
     private final MapperReference declaringMapper;
     private final Set<Type> importTypes;
-
-    /**
-     * A reference to another mapping method in case this is a two-step mapping, e.g. from {@code JAXBElement<Bar>} to
-     * {@code Foo} to for which a nested method call will be generated:
-     * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}
-     */
-    private MethodReference methodRefChild;
+    private final List<Type> exceptionTypes;
 
     /**
      * In case this reference targets a built-in method, allows to pass specific context information to the invoked
@@ -50,6 +51,16 @@ public class MethodReference extends MappingMethod {
      * which requires that.
      */
     private final String contextParam;
+
+
+    /**
+     * A reference to another mapping method or typeConversion in case this is a two-step mapping, e.g. from
+     * {@code JAXBElement<Bar>} to {@code Foo} to for which a nested method call will be generated:
+     * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}
+     *
+     * If there's no nested typeConversion or other mapping method, this will be a {@link Simple} assignment.
+     */
+    private Assignment assignment;
 
     /**
      * Creates a new reference to the given method.
@@ -63,16 +74,20 @@ public class MethodReference extends MappingMethod {
         super( method );
         this.declaringMapper = declaringMapper;
         this.contextParam = null;
-        this.importTypes = targetType == null ?
-            Collections.<Type>emptySet() :
-            Collections.<Type>singleton( targetType );
-    }
+        Set<Type> imported = new HashSet( method.getThrownTypes() );
+        if ( targetType != null ) {
+            imported.add( targetType );
+        }
+        this.importTypes = Collections.<Type>unmodifiableSet( imported );
+        this.exceptionTypes = method.getThrownTypes();
+   }
 
     public MethodReference(BuiltInMethod method, ConversionContext contextParam) {
         super( method );
         this.declaringMapper = null;
         this.contextParam = method.getContextParameter( contextParam );
         this.importTypes = Collections.emptySet();
+        this.exceptionTypes = Collections.emptyList();
     }
 
     public MapperReference getDeclaringMapper() {
@@ -87,6 +102,20 @@ public class MethodReference extends MappingMethod {
         return contextParam;
     }
 
+    public Assignment getAssignment() {
+        return assignment;
+    }
+
+    @Override
+    public void setAssignment( Assignment assignment ) {
+        this.assignment = assignment;
+    }
+
+    @Override
+    public String getSourceReference() {
+        return assignment.getSourceReference();
+    }
+
     /**
      * @return the type of the single source parameter that is not the {@code @TargetType} parameter
      */
@@ -99,21 +128,27 @@ public class MethodReference extends MappingMethod {
         return null;
     }
 
-    public void setMethodRefChild(MethodReference methodRefChild) {
-        this.methodRefChild = methodRefChild;
-    }
-
-    public MethodReference getMethodRefChild() {
-        return methodRefChild;
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> imported = org.mapstruct.ap.util.Collections.asSet( importTypes, super.getImportTypes() );
+        if ( assignment != null ) {
+            imported.addAll( assignment.getImportTypes() );
+        }
+        return imported;
     }
 
     @Override
-    public Set<Type> getImportTypes() {
-        Set<Type> imported = super.getImportTypes();
-        imported.addAll( importTypes );
-        if ( methodRefChild != null ) {
-            imported.addAll( methodRefChild.getImportTypes() );
+    public List<Type> getExceptionTypes() {
+        List<Type> exceptions = new ArrayList<Type>();
+        exceptions.addAll( exceptionTypes );
+        if ( assignment != null ) {
+            exceptions.addAll( assignment.getExceptionTypes() );
         }
-        return imported;
+        return exceptions;
+    }
+
+    @Override
+    public boolean isSimple() {
+        return false;
     }
 }

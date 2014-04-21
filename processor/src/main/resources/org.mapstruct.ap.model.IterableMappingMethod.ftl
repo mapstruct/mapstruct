@@ -19,7 +19,7 @@
 
 -->
 @Override
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
+<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
     if ( ${sourceParameter.name} == null ) {
         return<#if returnType.name != "void"> null</#if>;
     }
@@ -32,27 +32,19 @@
    </#if>
 
     for ( <@includeModel object=sourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${sourceParameter.name} ) {
-        <#if elementMappingMethod??>
-        ${resultName}.add( <@includeModel object=elementMappingMethod input="${loopVariableName}" targetType="${resultType.typeParameters[0].name}"/> );
-        <#elseif conversion??>
-            <#if (conversion.exceptionTypes?size == 0) >
-        ${resultName}.add( <@includeModel object=conversion/> );
-            <#else>
-        try {
-            ${resultName}.add( <@includeModel object=conversion/> );
-        }
-                <#list conversion.exceptionTypes as exceptionType>
-        catch( <@includeModel object=exceptionType/> e ) {
-            throw new RuntimeException( e );
-        }
-                </#list>
-            </#if>
-        <#else>
-            ${resultName}.add( ${loopVariableName} );
-        </#if>
+     <@includeModel object=elementAssignment target="${resultName}.add" targetType="${resultType.typeParameters[0].name}"/>
     }
     <#if returnType.name != "void">
 
     return ${resultName};
     </#if>
 }
+<#macro throws>
+    <@compress single_line=true>
+        <#if (thrownTypes?size > 0)>throws </#if>
+        <#list thrownTypes as exceptionType>
+            <@includeModel object=exceptionType/>
+            <#if exceptionType_has_next>, </#if>
+        </#list>
+    </@compress>
+</#macro>

@@ -16,30 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package org.mapstruct.ap.model.assignment;
 
-package org.mapstruct.ap.test.nestedmethodcall;
-
-import java.util.List;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.ap.model.Assignment;
 
 /**
+ * Decorates the assignment as a Map or Collection constructor
+ *
  * @author Sjaak Derksen
  */
-@Mapper
-public interface SourceTargetMapper {
+public class NewCollectionOrMapWrapper extends AssignmentWrapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    OrderDto sourceToTarget(OrderType source);
-
-    OrderDetailsDto detailsToDto(OrderDetailsType source);
-
-    @IterableMapping(dateFormat = "dd.MM.yyyy")
-    List<String> stringListToDateList(List<JAXBElement<XMLGregorianCalendar>> dates);
+    public NewCollectionOrMapWrapper( Assignment decoratedAssignment ) {
+        super( decoratedAssignment );
+    }
 }

@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.TypeConversion;
+import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.ConversionContext;
 
 /**
@@ -40,12 +40,12 @@ public class ReverseConversion implements ConversionProvider {
     }
 
     @Override
-    public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
-        return conversionProvider.from( sourceReference, conversionContext );
+    public Assignment to( ConversionContext conversionContext) {
+        return conversionProvider.from( conversionContext );
     }
 
     @Override
-    public TypeConversion from(String targetReference, ConversionContext conversionContext) {
-        return conversionProvider.to( targetReference, conversionContext );
+    public Assignment from(ConversionContext conversionContext) {
+        return conversionProvider.to( conversionContext );
     }
 }

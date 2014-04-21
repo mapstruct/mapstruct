@@ -34,13 +34,13 @@ import static org.mapstruct.ap.util.Collections.asSet;
 public class BigIntegerToStringConversion extends SimpleConversion {
 
     @Override
-    public String getToConversionString(String sourceReference, ConversionContext conversionContext) {
-        return sourceReference + ".toString()";
+    public ConversionExpression getToExpression(ConversionContext conversionContext) {
+        return new ConversionExpression( "", ".toString()" );
     }
 
     @Override
-    public String getFromConversionString(String targetReference, ConversionContext conversionContext) {
-        return "new BigInteger( " + targetReference + " )";
+    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
+        return new ConversionExpression( "new BigInteger( ", " )" );
     }
 
     @Override

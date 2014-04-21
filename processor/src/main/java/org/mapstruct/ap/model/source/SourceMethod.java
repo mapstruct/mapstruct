@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
@@ -50,6 +51,7 @@ public class SourceMethod implements Method {
     private final Type returnType;
     private final Accessibility accessibility;
     private final Types typeUtils;
+    private final List<Type> exceptionTypes;
 
     private Map<String, List<Mapping>> mappings;
     private IterableMapping iterableMapping;
@@ -58,7 +60,9 @@ public class SourceMethod implements Method {
     private boolean configuredByReverseMappingMethod = false;
 
     public static SourceMethod forMethodRequiringImplementation(ExecutableElement executable,
-                                                                List<Parameter> parameters, Type returnType,
+                                                                List<Parameter> parameters,
+                                                                Type returnType,
+                                                                List<Type> exceptionTypes,
                                                                 Map<String, List<Mapping>> mappings,
                                                                 IterableMapping iterableMapping, MapMapping mapMapping,
                                                                 Types typeUtils) {
@@ -68,50 +72,52 @@ public class SourceMethod implements Method {
             executable,
             parameters,
             returnType,
+            exceptionTypes,
             mappings,
             iterableMapping,
             mapMapping,
-            typeUtils
-        );
+            typeUtils );
     }
 
     public static SourceMethod forReferencedMethod(Type declaringMapper, ExecutableElement executable,
-                                                   List<Parameter> parameters, Type returnType, Types typeUtils) {
+                                                   List<Parameter> parameters, Type returnType,
+                                                   List<Type> exceptionTypes, Types typeUtils) {
 
         return new SourceMethod(
             declaringMapper,
             executable,
             parameters,
             returnType,
-            Collections.<String, List<Mapping>>emptyMap(),
+            exceptionTypes,
+            Collections.<String, List<Mapping>> emptyMap(),
             null,
             null,
-            typeUtils
-        );
+            typeUtils );
     }
 
     public static SourceMethod forFactoryMethod(Type declaringMapper, ExecutableElement executable, Type returnType,
-                                                Types typeUtils) {
+                                                List<Type> exceptionTypes, Types typeUtils) {
 
         return new SourceMethod(
             declaringMapper,
             executable,
-            Collections.<Parameter>emptyList(),
+            Collections.<Parameter> emptyList(),
             returnType,
-            Collections.<String, List<Mapping>>emptyMap(),
+            exceptionTypes,
+            Collections.<String, List<Mapping>> emptyMap(),
             null,
             null,
-            typeUtils
-        );
+            typeUtils );
     }
 
     private SourceMethod(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
-                         Type returnType, Map<String, List<Mapping>> mappings, IterableMapping iterableMapping,
-                         MapMapping mapMapping, Types typeUtils) {
+                         Type returnType, List<Type> exceptionTypes, Map<String, List<Mapping>> mappings,
+                         IterableMapping iterableMapping, MapMapping mapMapping, Types typeUtils) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
         this.returnType = returnType;
+        this.exceptionTypes = exceptionTypes;
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
@@ -333,7 +339,6 @@ public class SourceMethod implements Method {
 
     /**
      * @param parameters the parameter list to check
-     *
      * @return <code>true</code>, iff the parameter list contains a parameter annotated with {@code @TargetType}
      */
     public static boolean containsTargetTypeParameter(List<Parameter> parameters) {
@@ -344,5 +349,9 @@ public class SourceMethod implements Method {
         }
 
         return false;
+    }
+
+    public List<Type> getThrownTypes() {
+        return exceptionTypes;
     }
 }

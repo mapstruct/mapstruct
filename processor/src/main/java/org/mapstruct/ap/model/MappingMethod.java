@@ -42,6 +42,7 @@ public abstract class MappingMethod extends ModelElement {
     private final Type returnType;
     private final Parameter targetParameter;
     private final Accessibility accessibility;
+    private final List<Type> thrownTypes;
 
     protected MappingMethod(Method method) {
         this.name = method.getName();
@@ -49,6 +50,7 @@ public abstract class MappingMethod extends ModelElement {
         this.returnType = method.getReturnType();
         this.targetParameter = method.getTargetParameter();
         this.accessibility = method.getAccessibility();
+        this.thrownTypes = method.getThrownTypes();
     }
 
     public String getName() {
@@ -102,7 +104,7 @@ public abstract class MappingMethod extends ModelElement {
 
         types.add( getReturnType() );
         types.addAll( getReturnType().getImportTypes() );
-
+        types.addAll( thrownTypes );
         return types;
     }
 
@@ -114,6 +116,10 @@ public abstract class MappingMethod extends ModelElement {
         }
 
         return parameterNames;
+    }
+
+    public List<Type> getThrownTypes() {
+        return thrownTypes;
     }
 
     @Override

@@ -33,21 +33,16 @@ import org.mapstruct.ap.util.Strings;
  */
 public class MapMappingMethod extends MappingMethod {
 
-    private final MethodReference keyMappingMethod;
-    private final MethodReference valueMappingMethod;
-    private final TypeConversion keyConversion;
-    private final TypeConversion valueConversion;
-    private final MethodReference factoryMethod;
+    private final Assignment keyAssignment;
+    private final Assignment valueAssignment;
+    private final FactoryMethod factoryMethod;
 
-    public MapMappingMethod(SourceMethod method, MethodReference keyMappingMethod, TypeConversion keyConversion,
-                            MethodReference valueMappingMethod, TypeConversion valueConversion,
-                            MethodReference factoryMethod) {
+    public MapMappingMethod(SourceMethod method, Assignment keyAssignment, Assignment valueAssignment,
+            FactoryMethod factoryMethod) {
         super( method );
 
-        this.keyMappingMethod = keyMappingMethod;
-        this.keyConversion = keyConversion;
-        this.valueMappingMethod = valueMappingMethod;
-        this.valueConversion = valueConversion;
+        this.keyAssignment = keyAssignment;
+        this.valueAssignment = valueAssignment;
         this.factoryMethod = factoryMethod;
     }
 
@@ -61,31 +56,23 @@ public class MapMappingMethod extends MappingMethod {
         throw new IllegalStateException( "Method " + this + " has no source parameter." );
     }
 
-    public MethodReference getKeyMappingMethod() {
-        return keyMappingMethod;
+    public Assignment getKeyAssignment() {
+        return keyAssignment;
     }
 
-    public TypeConversion getKeyConversion() {
-        return keyConversion;
-    }
-
-    public MethodReference getValueMappingMethod() {
-        return valueMappingMethod;
-    }
-
-    public TypeConversion getValueConversion() {
-        return valueConversion;
+    public Assignment getValueAssignment() {
+        return valueAssignment;
     }
 
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = super.getImportTypes();
 
-        if ( valueConversion != null ) {
-            types.addAll( valueConversion.getImportTypes() );
+        if ( keyAssignment != null ) {
+            types.addAll( keyAssignment.getImportTypes() );
         }
-        if ( keyConversion != null ) {
-            types.addAll( keyConversion.getImportTypes() );
+        if ( valueAssignment != null ) {
+            types.addAll( valueAssignment.getImportTypes() );
         }
 
         return types;
@@ -112,7 +99,7 @@ public class MapMappingMethod extends MappingMethod {
         );
     }
 
-    public MethodReference getFactoryMethod() {
+    public FactoryMethod getFactoryMethod() {
         return this.factoryMethod;
     }
 
