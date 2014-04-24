@@ -40,4 +40,5 @@ public interface SourceTargetMapper {
         @Mapping( target = "nameConstants", expression = "jack-jill-tom" )
     } )
     Target sourceToTarget(Source s);
+    Source targetToSource(Target t);
 }
