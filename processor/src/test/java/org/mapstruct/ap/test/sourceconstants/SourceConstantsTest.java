@@ -69,6 +69,24 @@ public class SourceConstantsTest {
     @WithClasses( {
         Source.class,
         Target.class,
+        SourceTargetMapper.class,
+        StringListMapper.class
+    } )
+    public void shouldMapTargetToSourceWithoutWhining() throws ParseException {
+        Target target = new Target();
+        target.setPropertyThatShouldBeMapped( "SomeProperty" );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( target.getPropertyThatShouldBeMapped() ).isEqualTo( "SomeProperty" );
+    }
+
+    @Test
+    @IssueKey( "187" )
+    @WithClasses( {
+        Source.class,
+        Target.class,
         ErroneousMapper1.class,
         StringListMapper.class
     } )
