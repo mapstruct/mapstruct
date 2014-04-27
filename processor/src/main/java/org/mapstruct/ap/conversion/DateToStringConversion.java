@@ -22,13 +22,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.assignment.AssignmentFactory;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 
-import static org.mapstruct.ap.util.Collections.asSet;
 import static java.util.Arrays.asList;
+import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  * Conversion between {@link String} and {@link Date}.
@@ -42,9 +43,8 @@ public class DateToStringConversion implements ConversionProvider {
         return AssignmentFactory.createTypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
             Collections.<Type>emptyList(),
-            getOpenExpression( conversionContext, "format" ),
-            getCloseExpression() );
-
+            getConversionExpression( conversionContext, "format" )
+        );
     }
 
     @Override
@@ -52,12 +52,11 @@ public class DateToStringConversion implements ConversionProvider {
         return AssignmentFactory.createTypeConversion(
             asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
             asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
-            getOpenExpression( conversionContext, "parse" ),
-            getCloseExpression()
+            getConversionExpression( conversionContext, "parse" )
         );
     }
 
-    private String getOpenExpression(ConversionContext conversionContext, String method) {
+    private String getConversionExpression(ConversionContext conversionContext, String method) {
         StringBuilder conversionString = new StringBuilder( "new SimpleDateFormat(" );
 
         if ( conversionContext.getDateFormat() != null ) {
@@ -68,12 +67,8 @@ public class DateToStringConversion implements ConversionProvider {
 
         conversionString.append( ")." );
         conversionString.append( method );
-        conversionString.append( "( " );
+        conversionString.append( "( <SOURCE> )" );
 
         return conversionString.toString();
-    }
-
-    private String getCloseExpression() {
-       return " )";
     }
 }

@@ -42,13 +42,13 @@ public class WrapperToStringConversion extends SimpleConversion {
     }
 
     @Override
-    public ConversionExpression getToExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "String.valueOf( ", " )" );
+    public String getToExpression(ConversionContext conversionContext) {
+        return "String.valueOf( <SOURCE> )";
     }
 
     @Override
-    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( sourceType.getSimpleName() + ".parse" +
-                Strings.capitalize( primitiveType.getSimpleName() ) + "( ", " )" );
+    public String getFromExpression(ConversionContext conversionContext) {
+        return sourceType.getSimpleName() + ".parse" +
+            Strings.capitalize( primitiveType.getSimpleName() ) + "( <SOURCE> )";
     }
 }

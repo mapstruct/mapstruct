@@ -44,13 +44,13 @@ public class BigDecimalToPrimitiveConversion extends SimpleConversion {
     }
 
     @Override
-    public ConversionExpression getToExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", "." + targetType.getName() + "Value()" );
+    public String getToExpression(ConversionContext conversionContext) {
+        return "<SOURCE>." + targetType.getName() + "Value()";
     }
 
     @Override
-    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "BigDecimal.valueOf( ", " )" );
+    public String getFromExpression(ConversionContext conversionContext) {
+        return "BigDecimal.valueOf( <SOURCE> )";
     }
 
     @Override

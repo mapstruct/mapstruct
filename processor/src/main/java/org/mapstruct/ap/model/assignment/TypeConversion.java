@@ -21,8 +21,8 @@ package org.mapstruct.ap.model.assignment;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.mapstruct.ap.model.Assignment;
 
+import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 
@@ -33,6 +33,7 @@ import org.mapstruct.ap.model.common.Type;
  */
 public class TypeConversion extends ModelElement implements Assignment {
 
+    private static final String SOURCE_REFERENCE_PATTERN = "<SOURCE>";
 
     private final Set<Type> importTypes;
     private final List<Type> exceptionTypes;
@@ -46,16 +47,16 @@ public class TypeConversion extends ModelElement implements Assignment {
      */
     private Assignment assignment;
 
-
     TypeConversion( Set<Type> importTypes,
             List<Type> exceptionTypes,
-            String openExpression,
-            String closeExpression ) {
+            String expression ) {
         this.importTypes = new HashSet<Type>( importTypes );
         this.importTypes.addAll( exceptionTypes );
         this.exceptionTypes = exceptionTypes;
-        this.openExpression = openExpression;
-        this.closeExpression = closeExpression;
+
+        int patternIndex = expression.indexOf( SOURCE_REFERENCE_PATTERN );
+        this.openExpression = expression.substring( 0, patternIndex );
+        this.closeExpression = expression.substring( patternIndex + 8 );
     }
 
     @Override

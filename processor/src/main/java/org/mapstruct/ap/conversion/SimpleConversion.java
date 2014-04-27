@@ -20,10 +20,11 @@ package org.mapstruct.ap.conversion;
 
 import java.util.Collections;
 import java.util.Set;
+
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.assignment.AssignmentFactory;
-import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.assignment.TypeConversion;
+import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 
 /**
@@ -35,48 +36,50 @@ public abstract class SimpleConversion implements ConversionProvider {
 
     @Override
     public Assignment to(ConversionContext conversionContext) {
-        ConversionExpression toExpressions = getToExpression( conversionContext );
+        String toExpression = getToExpression( conversionContext );
         return AssignmentFactory.createTypeConversion(
-                getToConversionImportTypes( conversionContext ),
-                Collections.<Type>emptyList(),
-                toExpressions.getOpenExpression(),
-                toExpressions.getCloseExpression() );
+            getToConversionImportTypes( conversionContext ),
+            Collections.<Type>emptyList(),
+            toExpression
+        );
     }
 
     @Override
     public Assignment from(ConversionContext conversionContext) {
-        ConversionExpression fromExpressions = getFromExpression( conversionContext );
+        String fromExpression = getFromExpression( conversionContext );
         return AssignmentFactory.createTypeConversion(
-                getFromConversionImportTypes( conversionContext ),
-                Collections.<Type>emptyList(),
-                fromExpressions.getOpenExpression(),
-                fromExpressions.getCloseExpression() );
+            getFromConversionImportTypes( conversionContext ),
+            Collections.<Type>emptyList(),
+            fromExpression
+        );
     }
 
     /**
-     * Returns the conversion string (opening and closing part) from source to target.
+     * Returns the conversion string from source to target. The placeholder {@code <SOURCE>} can be used to represent a
+     * reference to the source value.
+     *
+     * @param conversionContext A context providing optional information required for creating the conversion.
+     *
+     * @return The conversion string from source to target
+     */
+    protected abstract String getToExpression(ConversionContext conversionContext);
+
+    /**
+     * Returns the conversion string from target to source. The placeholder {@code <SOURCE>} can be used to represent a
+     * reference to the target value.
      *
      * @param conversionContext ConversionContext providing optional information required for creating the conversion.
      *
-     * @return The open- and close parts of the conversion expression
+     * @return The conversion string from target to source
      */
-    protected abstract ConversionExpression getToExpression( ConversionContext conversionContext );
-
-    /**
-     * Creates the conversion string (opening and closing part) from target to source.
-     *
-     * @param conversionContext ConversionContext providing optional information required for creating
-     * the conversion.
-     *
-     * @return The open- and close parts of the conversion expression
-     */
-    protected abstract ConversionExpression getFromExpression( ConversionContext conversionContext );
+    protected abstract String getFromExpression(ConversionContext conversionContext);
 
     /**
      * Returns a set with imported types of the "from" conversion. Defaults to an empty set; can be overridden in
      * sub-classes to return the required types.
      *
      * @param conversionContext the conversion context
+     *
      * @return conversion types required in the "from" conversion
      */
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
@@ -88,10 +91,10 @@ public abstract class SimpleConversion implements ConversionProvider {
      * sub-classes to return the required types.
      *
      * @param conversionContext the conversion context
+     *
      * @return conversion types required in the "to" conversion
      */
     protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
         return Collections.<Type>emptySet();
     }
-
 }

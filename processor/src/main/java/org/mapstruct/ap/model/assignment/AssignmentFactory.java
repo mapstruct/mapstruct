@@ -20,6 +20,7 @@ package org.mapstruct.ap.model.assignment;
 
 import java.util.List;
 import java.util.Set;
+
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.FactoryMethod;
 import org.mapstruct.ap.model.MapperReference;
@@ -38,28 +39,25 @@ public class AssignmentFactory {
     private AssignmentFactory() {
     }
 
-    public static Assignment createTypeConversion( Set<Type> importTypes,
-            List<Type> exceptionTypes,
-            String openExpression,
-            String closeExpression ) {
-        return new TypeConversion( importTypes, exceptionTypes, openExpression, closeExpression );
+    public static Assignment createTypeConversion(Set<Type> importTypes, List<Type> exceptionTypes, String expression) {
+        return new TypeConversion( importTypes, exceptionTypes, expression );
     }
 
     public static FactoryMethod createFactory(SourceMethod method, MapperReference declaringMapper) {
-        return  new MethodReference( method, declaringMapper, null );
+        return new MethodReference( method, declaringMapper, null );
     }
 
     public static Assignment createMethodReference(SourceMethod method, MapperReference declaringMapper,
-            Type targetType) {
-        return new  MethodReference(method, declaringMapper, targetType);
+                                                   Type targetType) {
+        return new MethodReference( method, declaringMapper, targetType );
     }
 
-    public static Assignment createMethodReference( BuiltInMethod method, ConversionContext contextParam ) {
+    public static Assignment createMethodReference(BuiltInMethod method, ConversionContext contextParam) {
         return new MethodReference( method, contextParam );
     }
 
-    public static Simple createSimple( String sourceRef ) {
-        return new Simple(sourceRef );
+    public static Simple createSimple(String sourceRef) {
+        return new Simple( sourceRef );
     }
 
 }

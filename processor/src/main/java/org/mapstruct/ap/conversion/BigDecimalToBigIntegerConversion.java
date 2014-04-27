@@ -35,13 +35,13 @@ import static org.mapstruct.ap.util.Collections.asSet;
 public class BigDecimalToBigIntegerConversion extends SimpleConversion {
 
     @Override
-    public ConversionExpression getToExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "", ".toBigInteger()" );
+    public String getToExpression(ConversionContext conversionContext) {
+        return "<SOURCE>.toBigInteger()";
     }
 
     @Override
-    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
-        return new ConversionExpression("new BigDecimal( ", " )");
+    public String getFromExpression(ConversionContext conversionContext) {
+        return "new BigDecimal( <SOURCE> )";
     }
 
     @Override

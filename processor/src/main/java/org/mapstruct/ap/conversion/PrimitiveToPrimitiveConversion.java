@@ -38,12 +38,12 @@ public class PrimitiveToPrimitiveConversion extends SimpleConversion {
     }
 
     @Override
-    public ConversionExpression getToExpression(ConversionContext conversionContext) {
-        return ConversionExpression.empty();
+    public String getToExpression(ConversionContext conversionContext) {
+        return "<SOURCE>";
     }
 
     @Override
-    public ConversionExpression getFromExpression(ConversionContext conversionContext) {
-        return new ConversionExpression( "(" + sourceType + ") ", "" );
+    public String getFromExpression(ConversionContext conversionContext) {
+        return "(" + sourceType + ")<SOURCE>";
     }
 }
