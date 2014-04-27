@@ -5,6 +5,7 @@
 .settings
 .factorypath
 .checkstyle
+.externalToolBuilders
 
 # IntelliJ
 *.iml

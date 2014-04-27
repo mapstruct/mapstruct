@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -32,9 +33,9 @@ import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.MapperReference;
-import org.mapstruct.ap.model.assignment.Simple;
 import org.mapstruct.ap.model.VirtualMappingMethod;
 import org.mapstruct.ap.model.assignment.AssignmentFactory;
+import org.mapstruct.ap.model.assignment.Simple;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.DefaultConversionContext;
 import org.mapstruct.ap.model.common.Type;
@@ -189,7 +190,7 @@ public class MappingResolver {
 
             // then direct assignable
             if ( sourceType.isAssignableTo( targetType ) || context.isPropertyMappable( sourceType, targetType ) ) {
-                Simple simpleAssignment = AssignmentFactory.createSimple( sourceReference );
+                Assignment simpleAssignment = AssignmentFactory.createSimple( sourceReference );
                 return simpleAssignment;
             }
 
@@ -226,7 +227,6 @@ public class MappingResolver {
         }
 
         private Assignment resolveViaConversion( Type sourceType, Type targetType ) {
-
             ConversionProvider conversionProvider = context.conversions.getConversion( sourceType, targetType );
 
             if ( conversionProvider == null ) {
@@ -234,8 +234,7 @@ public class MappingResolver {
             }
 
             ConversionContext ctx = new DefaultConversionContext( context.typeFactory, targetType, dateFormat );
-            Assignment typeConversion = conversionProvider.to( ctx );
-            return typeConversion;
+            return conversionProvider.to( ctx );
         }
 
         /**
@@ -372,7 +371,7 @@ public class MappingResolver {
 
             Assignment conversionYRef = null;
 
-            // search the other way arround
+            // search the other way around
             for ( Method methodXCandidate : methodXCandidates ) {
                 if ( methodXCandidate.getSourceParameters().size() == 1 ) {
                     Assignment methodRefX = resolveViaMethod(

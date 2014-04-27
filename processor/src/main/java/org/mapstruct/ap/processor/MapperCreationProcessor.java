@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.processor;
 
-import org.mapstruct.ap.processor.creation.MappingResolver;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -36,8 +36,8 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
-import org.mapstruct.ap.model.Assignment;
 
+import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.Decorator;
 import org.mapstruct.ap.model.DefaultMapperReference;
@@ -51,8 +51,8 @@ import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.assignment.AssignmentFactory;
-import org.mapstruct.ap.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.LocalVarWrapper;
+import org.mapstruct.ap.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.NullCheckWrapper;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
@@ -66,6 +66,7 @@ import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.DecoratedWithPrism;
 import org.mapstruct.ap.prism.MapperPrism;
+import org.mapstruct.ap.processor.creation.MappingResolver;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
@@ -88,7 +89,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private MappingResolver mappingResolver;
 
 
-
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
         this.elementUtils = context.getElementUtils();
@@ -98,7 +98,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         this.typeFactory = context.getTypeFactory();
 
-        this.mappingResolver = new MappingResolver(messager, typeFactory, elementUtils, typeUtils );
+        this.mappingResolver = new MappingResolver( messager, typeFactory, elementUtils, typeUtils );
 
 
         return getMapper( mapperTypeElement, sourceModel );
@@ -322,7 +322,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private FactoryMethod getFactoryMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
-                                             Type returnType) {
+                                           Type returnType) {
         FactoryMethod result = null;
         for ( SourceMethod method : methods ) {
             if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
@@ -669,10 +669,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
             }
 
-            // target accessor is setter, so decorate assigmment as setter
+            // target accessor is setter, so decorate assignment as setter
             assignment = new SetterWrapper( assignment, method.getThrownTypes() );
 
-            // decorate assigment with null check of source can be null (is not primitive)
+            // decorate assignment with null check of source can be null (is not primitive)
             if ( !sourceType.isPrimitive() ) {
                 assignment = new NullCheckWrapper( assignment );
             }
@@ -680,26 +680,26 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
         else {
             messager.printMessage(
-                    Kind.ERROR,
-                    String.format(
-                            "Can't map property \"%s %s\" to \"%s %s\".",
-                            sourceType,
-                            Executables.getPropertyName( sourceAccessor ),
-                            targetType,
-                            Executables.getPropertyName( targetAcessor )
-                    ),
-                    method.getExecutable()
+                Kind.ERROR,
+                String.format(
+                    "Can't map property \"%s %s\" to \"%s %s\".",
+                    sourceType,
+                    Executables.getPropertyName( sourceAccessor ),
+                    targetType,
+                    Executables.getPropertyName( targetAcessor )
+                ),
+                method.getExecutable()
             );
         }
         return new PropertyMapping(
-                parameter.getName(),
-                Executables.getPropertyName( sourceAccessor ),
-                sourceAccessor.getSimpleName().toString(),
-                sourceType,
-                Executables.getPropertyName( targetAcessor ),
-                targetAcessor.getSimpleName().toString(),
-                targetType,
-                assignment
+            parameter.getName(),
+            Executables.getPropertyName( sourceAccessor ),
+            sourceAccessor.getSimpleName().toString(),
+            sourceType,
+            Executables.getPropertyName( targetAcessor ),
+            targetAcessor.getSimpleName().toString(),
+            targetType,
+            assignment
         );
     }
 
@@ -735,7 +735,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             );
         }
 
-        // target accessor is setter, so decorate assigmment as setter
+        // target accessor is setter, so decorate assignment as setter
         assignment = new SetterWrapper( assignment, method.getThrownTypes() );
 
         FactoryMethod factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
@@ -810,7 +810,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes() );
         valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes() );
 
-        return new MapMappingMethod( method, keyAssignment,  valueAssignment, factoryMethod );
+        return new MapMappingMethod( method, keyAssignment, valueAssignment, factoryMethod );
     }
 
     private EnumMappingMethod getEnumMappingMethod(SourceMethod method) {

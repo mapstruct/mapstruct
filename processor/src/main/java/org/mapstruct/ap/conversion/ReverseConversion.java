@@ -40,7 +40,7 @@ public class ReverseConversion implements ConversionProvider {
     }
 
     @Override
-    public Assignment to( ConversionContext conversionContext) {
+    public Assignment to(ConversionContext conversionContext) {
         return conversionProvider.from( conversionContext );
     }
 
