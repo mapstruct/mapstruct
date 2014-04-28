@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.test.conversion.jodatime;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  *
  */
@@ -30,6 +33,10 @@ public class Target {
     private String localDate;
 
     private String localTime;
+
+    private Date dateTimeForDateConversion;
+
+    private Calendar dateTimeForCalendarConversion;
 
     public String getDateTime() {
         return dateTime;
@@ -61,5 +68,21 @@ public class Target {
 
     public void setLocalTime(String localTime) {
         this.localTime = localTime;
+    }
+
+    public Date getDateTimeForDateConversion() {
+        return dateTimeForDateConversion;
+    }
+
+    public void setDateTimeForDateConversion(Date dateTimeForDateConversion) {
+        this.dateTimeForDateConversion = dateTimeForDateConversion;
+    }
+
+    public Calendar getDateTimeForCalendarConversion() {
+        return dateTimeForCalendarConversion;
+    }
+
+    public void setDateTimeForCalendarConversion(Calendar dateTimeForCalendarConversion) {
+        this.dateTimeForCalendarConversion = dateTimeForCalendarConversion;
     }
 }
