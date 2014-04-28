@@ -20,17 +20,15 @@ package org.mapstruct.ap.conversion;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.lang.model.util.Elements;
 
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.util.ClassUtils;
 
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 
@@ -181,16 +179,89 @@ public class Conversions {
         register( BigInteger.class, String.class, new BigIntegerToStringConversion() );
         register( BigDecimal.class, String.class, new BigDecimalToStringConversion() );
 
-        // joda
-        register( DateTime.class, String.class, new JodaTypeToStringConversion( DateTime.class ) );
-        register( LocalDate.class, String.class, new JodaTypeToStringConversion( LocalDate.class ) );
-        register( LocalTime.class, String.class, new JodaTypeToStringConversion( LocalTime.class ) );
-        register( LocalDateTime.class, String.class, new JodaTypeToStringConversion( LocalDateTime.class ) );
+        registerJoda();
 
         //misc.
         register( Enum.class, String.class, new EnumStringConversion() );
         register( Date.class, String.class, new DateToStringConversion() );
         register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
+    }
+
+    private void registerJoda() {
+        if ( isJodaTimeAvailable() ) {
+            // joda to string
+            tryRegisterClassByName(
+                JodaTimeConstants.DATE_TIME_FQN,
+                String.class,
+                new JodaDateTimeToStringConversion()
+            );
+            tryRegisterClassByName(
+                JodaTimeConstants.LOCAL_DATE_FQN,
+                String.class,
+                new JodaLocalDateToStringConversion()
+            );
+            tryRegisterClassByName(
+                JodaTimeConstants.LOCAL_DATE_TIME_FQN,
+                String.class,
+                new JodaLocalDateTimeToStringConversion()
+            );
+            tryRegisterClassByName(
+                JodaTimeConstants.LOCAL_TIME_FQN,
+                String.class,
+                new JodaLocalTimeToStringConversion()
+            );
+
+            // joda to date
+            tryRegisterClassByName(
+                JodaTimeConstants.DATE_TIME_FQN,
+                Date.class,
+                new JodaTimeToDateConversion()
+            );
+            tryRegisterClassByName(
+                JodaTimeConstants.LOCAL_DATE_FQN,
+                Date.class,
+                new JodaTimeToDateConversion()
+            );
+            tryRegisterClassByName(
+                JodaTimeConstants.LOCAL_DATE_TIME_FQN,
+                Date.class,
+                new JodaTimeToDateConversion()
+            );
+
+            tryRegisterClassByName(
+                JodaTimeConstants.DATE_TIME_FQN,
+                Calendar.class,
+                new JodaTimeToCalendarConversion()
+            );
+        }
+    }
+
+    private static boolean isJodaTimeAvailable() {
+        return ClassUtils.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN );
+    }
+
+    /**
+     * Invokes
+     * <ol>
+     * <li>{@link Class#forName(String)} </li>
+     * <li>{@link org.mapstruct.ap.conversion.Conversions#register(Class, Class, ConversionProvider)} </li>
+     * </ol>
+     * with the instance returned from 1.
+     *
+     * @param fullQualifiedClassName Name of type that should be reigstered
+     * @param target Target for {@link Conversions#register(Class, Class, ConversionProvider)}
+     * @param conversionProvider conversionProvider for
+     * {@link Conversions#register(Class, Class, ConversionProvider)}
+     */
+    private void tryRegisterClassByName(String fullQualifiedClassName, Class<?> target,
+                                        ConversionProvider conversionProvider) {
+        try {
+            Class<?> classByName = Class.forName( fullQualifiedClassName );
+            register( classByName, target, conversionProvider );
+        }
+        catch ( ClassNotFoundException e ) {
+            throw new RuntimeException( e ); // rethrow exception?
+        }
     }
 
     private void registerNativeTypeConversion(Class<?> sourceType, Class<?> targetType) {
@@ -261,7 +332,6 @@ public class Conversions {
     private static class Key {
         private final Type sourceType;
         private final Type targetType;
-
 
         private Key(Type sourceType, Type targetType) {
             this.sourceType = sourceType;

@@ -36,6 +36,10 @@ public class Source {
 
     private LocalTime localTime;
 
+    private DateTime dateTimeForDateConversion;
+
+    private DateTime dateTimeForCalendarConversion;
+
     public DateTime getDateTime() {
         return dateTime;
     }
@@ -66,5 +70,21 @@ public class Source {
 
     public void setLocalTime(LocalTime localTime) {
         this.localTime = localTime;
+    }
+
+    public DateTime getDateTimeForDateConversion() {
+        return dateTimeForDateConversion;
+    }
+
+    public void setDateTimeForDateConversion(DateTime dateTimeForDateConversion) {
+        this.dateTimeForDateConversion = dateTimeForDateConversion;
+    }
+
+    public DateTime getDateTimeForCalendarConversion() {
+        return dateTimeForCalendarConversion;
+    }
+
+    public void setDateTimeForCalendarConversion(DateTime dateTimeForCalendarConversion) {
+        this.dateTimeForCalendarConversion = dateTimeForCalendarConversion;
     }
 }
