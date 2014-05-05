@@ -774,7 +774,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
 
             // target accessor is setter, so decorate assigmment as setter
-            assignment = new SetterWrapper( assignment );
+            assignment = new SetterWrapper( assignment, method.getThrownTypes() );
 
         }
         else {
