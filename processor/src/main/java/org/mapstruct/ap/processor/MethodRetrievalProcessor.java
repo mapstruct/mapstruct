@@ -240,11 +240,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
         else if ( method.getModifiers().contains( Modifier.PROTECTED ) ) {
-            return mapperToImplement.isAssignableTo( usedMapper );
+            return mapperToImplement.isAssignableTo( usedMapper ) ||
+                    mapperToImplement.getPackageName().equals( usedMapper.getPackageName() );
         }
         else if ( !method.getModifiers().contains( Modifier.PUBLIC ) ) {
             // default
-            return mapperToImplement.getPackageName().equals( usedMapper.getPackageName());
+            return mapperToImplement.getPackageName().equals( usedMapper.getPackageName() );
         }
         // public
         return true;
