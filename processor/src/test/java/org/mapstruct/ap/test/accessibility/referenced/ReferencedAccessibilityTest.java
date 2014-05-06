@@ -60,6 +60,11 @@ public class ReferencedAccessibilityTest {
 
     @Test
     @IssueKey( "206" )
+    @WithClasses( { SourceTargetMapperProtected.class, ReferencedMapperProtected.class } )
+    public void shouldBeAbleToAccessProtectedMethodInReferencedInSamePackage() throws Exception { }
+
+    @Test
+    @IssueKey( "206" )
     @WithClasses( { SourceTargetMapperDefaultOther.class, ReferencedMapperDefaultOther.class } )
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
