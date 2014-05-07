@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.Set;
 
@@ -27,9 +28,11 @@ import org.mapstruct.ap.model.common.Type;
 import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
+ * Conversion between {@code DateTime} and {@link Calendar}.
  *
+ * @author Timo Eckhardt
  */
-public class JodaTimeToCalendarConversion extends SimpleConversion {
+public class JodaDateTimeToCalendarConversion extends SimpleConversion {
 
     @Override
     protected String getToExpression(ConversionContext conversionContext) {

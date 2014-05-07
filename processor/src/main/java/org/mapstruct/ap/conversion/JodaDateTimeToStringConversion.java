@@ -19,7 +19,9 @@
 package org.mapstruct.ap.conversion;
 
 /**
+ * Conversion between {@code DateTime} and {@code String}.
  *
+ * @author Timo Eckhardt
  */
 public class JodaDateTimeToStringConversion extends AbstractJodaTypeToStringConversion {
 

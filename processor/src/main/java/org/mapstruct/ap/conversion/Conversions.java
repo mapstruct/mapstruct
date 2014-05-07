@@ -179,7 +179,7 @@ public class Conversions {
         register( BigInteger.class, String.class, new BigIntegerToStringConversion() );
         register( BigDecimal.class, String.class, new BigDecimalToStringConversion() );
 
-        registerJoda();
+        registerJodaConversions();
 
         //misc.
         register( Enum.class, String.class, new EnumStringConversion() );
@@ -187,7 +187,7 @@ public class Conversions {
         register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
     }
 
-    private void registerJoda() {
+    private void registerJodaConversions() {
         if ( !isJodaTimeAvailable() ) {
             return;
         }
@@ -235,7 +235,7 @@ public class Conversions {
         register(
             getClass( JodaTimeConstants.DATE_TIME_FQN ),
             Calendar.class,
-            new JodaTimeToCalendarConversion()
+            new JodaDateTimeToCalendarConversion()
         );
     }
 
