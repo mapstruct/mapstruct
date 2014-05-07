@@ -18,51 +18,49 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.TypeConversion;
+import java.util.Locale;
+import java.util.Set;
+
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.util.Strings;
-
-import java.util.Collections;
-import java.util.Locale;
 
 import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  *
  */
-public abstract class AbstractJodaTypeToStringConversion implements ConversionProvider {
+public abstract class AbstractJodaTypeToStringConversion extends SimpleConversion {
 
-    public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
-        return new TypeConversion(
-                        asSet(
-                                        conversionContext.getTypeFactory().getType( dateTimeFormatClass() ),
-                                        conversionContext.getTypeFactory().getType( Locale.class ) ),
-                        Collections.<Type>emptyList(),
-                        conversionString( sourceReference, conversionContext, "print" )
+    @Override
+    protected String getToExpression(ConversionContext conversionContext) {
+        return conversionString( conversionContext, "print" );
+    }
+
+    @Override
+    protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
+        return asSet(
+            conversionContext.getTypeFactory().getType( dateTimeFormatClass() ),
+            conversionContext.getTypeFactory().getType( Locale.class )
         );
     }
 
-    public TypeConversion from(String targetReference, ConversionContext conversionContext) {
-        return new TypeConversion(
-                        asSet(
-                                        conversionContext.getTypeFactory().getType( dateTimeFormatClass() ) ),
-                        Collections.<Type>emptyList(),
-                        conversionString(
-                                        targetReference,
-                                        conversionContext,
-                                        parseMethod() )
-        );
+    @Override
+    protected String getFromExpression(ConversionContext conversionContext) {
+        return conversionString( conversionContext, parseMethod() );
     }
 
-    private String conversionString(String reference, ConversionContext conversionContext, String method) {
+    @Override
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return asSet( conversionContext.getTypeFactory().getType( dateTimeFormatClass() ) );
+    }
+
+    private String conversionString(ConversionContext conversionContext, String method) {
         StringBuilder conversionString = new StringBuilder( "DateTimeFormat" );
         conversionString.append( dateFormatPattern( conversionContext ) );
         conversionString.append( "." );
         conversionString.append( method );
-        conversionString.append( "( " );
-        conversionString.append( reference );
-        conversionString.append( " )" );
+        conversionString.append( "( <SOURCE> )" );
         return conversionString.toString();
     }
 
@@ -98,7 +96,7 @@ public abstract class AbstractJodaTypeToStringConversion implements ConversionPr
             return Class.forName( "org.joda.time.format.DateTimeFormat" );
         }
         catch ( ClassNotFoundException e ) {
-            throw new RuntimeException( "org.joda.time.format.DateTimeFormat  not found on classpath" );
+            throw new RuntimeException( "org.joda.time.format.DateTimeFormat not found on classpath" );
         }
     }
 

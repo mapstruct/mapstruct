@@ -18,34 +18,36 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.TypeConversion;
+import java.util.Locale;
+import java.util.Set;
+
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
-
-import java.util.Collections;
-import java.util.Locale;
 
 import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  *
  */
-public class JodaTimeToCalendarConversion implements ConversionProvider {
+public class JodaTimeToCalendarConversion extends SimpleConversion {
 
     @Override
-    public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
-        return new TypeConversion(
-                        asSet( conversionContext.getTypeFactory().getType( Locale.class ) ),
-                        Collections.<Type>emptyList(),
-                        sourceReference + ".toCalendar( Locale.getDefault() )" );
+    protected String getToExpression(ConversionContext conversionContext) {
+        return "<SOURCE>.toCalendar( Locale.getDefault() )";
     }
 
     @Override
-    public TypeConversion from(String targetReference, ConversionContext conversionContext) {
-        return new TypeConversion(
-                        Collections.<Type>emptySet(),
-                        Collections.<Type>emptyList(),
-                        "new " + conversionContext.getTargetType().getFullyQualifiedName() + "( " + targetReference
-                                        + " )" );
+    protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
+        return asSet( conversionContext.getTypeFactory().getType( Locale.class ) );
+    }
+
+    @Override
+    protected String getFromExpression(ConversionContext conversionContext) {
+        return "new " + conversionContext.getTargetType().getName() + "( <SOURCE> )";
+    }
+
+    @Override
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return asSet( conversionContext.getTargetType() );
     }
 }

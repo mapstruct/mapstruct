@@ -18,11 +18,12 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.TypeConversion;
+import java.util.Set;
+
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 
-import java.util.Collections;
+import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  * Implementation of {@link org.mapstruct.ap.conversion.ConversionProvider} mapping Joda Types
@@ -34,22 +35,20 @@ import java.util.Collections;
  * to java.util.Date by invoking org.joda.time.base.AbstractInstant#toDate().
  * Backward conversion is done.
  */
-public class JodaTimeToDateConversion implements ConversionProvider {
+public class JodaTimeToDateConversion extends SimpleConversion {
 
     @Override
-    public TypeConversion to(String sourceReference, ConversionContext conversionContext) {
-        return new TypeConversion(
-                        Collections.<Type>emptySet(),
-                        Collections.<Type>emptyList(),
-                        sourceReference + ".toDate()" );
+    protected String getToExpression(ConversionContext conversionContext) {
+        return "<SOURCE>.toDate()";
     }
 
     @Override
-    public TypeConversion from(String targetReference, ConversionContext conversionContext) {
-        return new TypeConversion(
-                        Collections.<Type>emptySet(),
-                        Collections.<Type>emptyList(),
-                        "new " + conversionContext.getTargetType().getFullyQualifiedName() + "( " + targetReference
-                                        + " )" );
+    protected String getFromExpression(ConversionContext conversionContext) {
+        return "new " + conversionContext.getTargetType().getName() + "( <SOURCE> )";
+    }
+
+    @Override
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return asSet( conversionContext.getTargetType() );
     }
 }
