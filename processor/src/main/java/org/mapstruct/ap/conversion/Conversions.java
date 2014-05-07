@@ -18,19 +18,20 @@
  */
 package org.mapstruct.ap.conversion;
 
+import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
-import org.mapstruct.ap.util.ClassUtils;
-
-import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
+import org.mapstruct.ap.util.NativeTypes;
 
 /**
  * Holds built-in {@link ConversionProvider}s such as from {@code int} to {@code String}.
@@ -237,7 +238,7 @@ public class Conversions {
     }
 
     private static boolean isJodaTimeAvailable() {
-        return ClassUtils.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN );
+        return NativeTypes.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN );
     }
 
     /**
