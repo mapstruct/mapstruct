@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
+import java.util.Date;
 import java.util.Set;
 
 import org.mapstruct.ap.model.common.ConversionContext;
@@ -26,14 +27,14 @@ import org.mapstruct.ap.model.common.Type;
 import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
- * Implementation of {@link org.mapstruct.ap.conversion.ConversionProvider} mapping Joda Types
+ * Conversion between the following Joda types and {@link Date}:
  * <ul>
  * <li>org.joda.time.DateTime</li>
  * <li>org.joda.time.LocalDateTime</li>
  * <li>org.joda.time.LocalDate</li>
  * </ul>
- * to java.util.Date by invoking org.joda.time.base.AbstractInstant#toDate().
- * Backward conversion is done.
+ *
+ * @author Timo Eckhardt
  */
 public class JodaTimeToDateConversion extends SimpleConversion {
 

@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.test.conversion.jodatime;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -29,13 +32,12 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-
 import static org.fest.assertions.Assertions.assertThat;
 
 /**
+ * Tests the conversion between Joda-Time types and String/Date/Calendar.
  *
+ * @author Timo Eckhardt
  */
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
@@ -110,7 +112,7 @@ public class JodaConversionTest {
         Target target = new Target();
         target.setDateTime( dateTimeAsString );
         DateTime sourceDateTime =
-                        new DateTime( 2014, 1, 1, 0, 0, 0, DateTimeZone.UTC );
+            new DateTime( 2014, 1, 1, 0, 0, 0, DateTimeZone.UTC );
 
         Source src = SourceTargetMapper.INSTANCE.targetToSourceDateTimeMapped( target );
         assertThat( src ).isNotNull();
@@ -123,7 +125,7 @@ public class JodaConversionTest {
         Target target = new Target();
         target.setLocalDateTime( dateTimeAsString );
         LocalDateTime sourceDateTime =
-                        new LocalDateTime( 2014, 1, 1, 0, 0, 0 );
+            new LocalDateTime( 2014, 1, 1, 0, 0, 0 );
 
         Source src = SourceTargetMapper.INSTANCE.targetToSourceLocalDateTimeMapped( target );
         assertThat( src ).isNotNull();
@@ -136,7 +138,7 @@ public class JodaConversionTest {
         Target target = new Target();
         target.setLocalDate( dateTimeAsString );
         LocalDate sourceDate =
-                        new LocalDate( 2014, 1, 1 );
+            new LocalDate( 2014, 1, 1 );
 
         Source src = SourceTargetMapper.INSTANCE.targetToSourceLocalDateMapped( target );
         assertThat( src ).isNotNull();
@@ -149,7 +151,7 @@ public class JodaConversionTest {
         Target target = new Target();
         target.setLocalTime( dateTimeAsString );
         LocalTime sourceTime =
-                        new LocalTime( 0, 0 );
+            new LocalTime( 0, 0 );
 
         Source src = SourceTargetMapper.INSTANCE.targetToSourceLocalTimeMapped( target );
         assertThat( src ).isNotNull();
@@ -199,6 +201,5 @@ public class JodaConversionTest {
         Source mappedSource = SourceTargetMapper.INSTANCE.targetToSource( target );
         assertThat( mappedSource ).isNotNull();
         assertThat( mappedSource.getDateTimeForCalendarConversion() ).isEqualTo( dateTimeWithCalendar );
-
     }
 }

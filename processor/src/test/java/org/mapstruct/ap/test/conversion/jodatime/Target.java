@@ -21,9 +21,6 @@ package org.mapstruct.ap.test.conversion.jodatime;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- *
- */
 public class Target {
 
     private String dateTime;

@@ -23,9 +23,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
-/**
- *
- */
 @Mapper
 public interface SourceTargetMapper {
 
@@ -39,43 +36,47 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mappings({ @Mapping( source = "dateTime", dateFormat = DATE_TIME_FORMAT ),
-                    @Mapping( source = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT ),
-                    @Mapping( source = "localDate", dateFormat = LOCAL_DATE_FORMAT ),
-                    @Mapping( source = "localTime", dateFormat = LOCAL_TIME_FORMAT ) })
+    @Mappings({
+        @Mapping(source = "dateTime", dateFormat = DATE_TIME_FORMAT),
+        @Mapping(source = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT),
+        @Mapping(source = "localDate", dateFormat = LOCAL_DATE_FORMAT),
+        @Mapping(source = "localTime", dateFormat = LOCAL_TIME_FORMAT)
+    })
     Target sourceToTarget(Source source);
 
     Target sourceToTargetDefaultMapping(Source source);
 
-    @Mapping( source = "dateTime", dateFormat = DATE_TIME_FORMAT )
+    @Mapping(source = "dateTime", dateFormat = DATE_TIME_FORMAT)
     Target sourceToTargetDateTimeMapped(Source source);
 
-    @Mapping( source = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT )
+    @Mapping(source = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT)
     Target sourceToTargetLocalDateTimeMapped(Source source);
 
-    @Mapping( source = "localDate", dateFormat = LOCAL_DATE_FORMAT )
+    @Mapping(source = "localDate", dateFormat = LOCAL_DATE_FORMAT)
     Target sourceToTargetLocalDateMapped(Source source);
 
-    @Mapping( source = "localTime", dateFormat = LOCAL_TIME_FORMAT )
+    @Mapping(source = "localTime", dateFormat = LOCAL_TIME_FORMAT)
     Target sourceToTargetLocalTimeMapped(Source source);
 
 
-    @Mappings({ @Mapping( source = "dateTime", dateFormat = DATE_TIME_FORMAT ),
-                    @Mapping( source = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT ),
-                    @Mapping( source = "localDate", dateFormat = LOCAL_DATE_FORMAT ),
-                    @Mapping( source = "localTime", dateFormat = LOCAL_TIME_FORMAT ) })
+    @Mappings({
+        @Mapping(source = "dateTime", dateFormat = DATE_TIME_FORMAT),
+        @Mapping(source = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT),
+        @Mapping(source = "localDate", dateFormat = LOCAL_DATE_FORMAT),
+        @Mapping(source = "localTime", dateFormat = LOCAL_TIME_FORMAT)
+    })
     Source targetToSource(Target target);
 
-    @Mapping( source = "dateTime", dateFormat = DATE_TIME_FORMAT )
+    @Mapping(source = "dateTime", dateFormat = DATE_TIME_FORMAT)
     Source targetToSourceDateTimeMapped(Target target);
 
-    @Mapping( source = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT )
+    @Mapping(source = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT)
     Source targetToSourceLocalDateTimeMapped(Target target);
 
-    @Mapping( source = "localDate", dateFormat = LOCAL_DATE_FORMAT )
+    @Mapping(source = "localDate", dateFormat = LOCAL_DATE_FORMAT)
     Source targetToSourceLocalDateMapped(Target target);
 
-    @Mapping( source = "localTime", dateFormat = LOCAL_TIME_FORMAT )
+    @Mapping(source = "localTime", dateFormat = LOCAL_TIME_FORMAT)
     Source targetToSourceLocalTimeMapped(Target target);
 
     Source targetToSourceDefaultMapping(Target target);

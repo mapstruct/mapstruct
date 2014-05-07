@@ -28,7 +28,9 @@ import org.mapstruct.ap.util.Strings;
 import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
+ * Base class for conversions between Joda-Time types and String.
  *
+ * @author Timo Eckhardt
  */
 public abstract class AbstractJodaTypeToStringConversion extends SimpleConversion {
 
@@ -83,11 +85,17 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
         return conversionString.toString();
     }
 
-    public String defaultDateFormatPattern() {
+    private String defaultDateFormatPattern() {
         return "DateTimeFormat.patternForStyle( \"" + formatStyle() + "\", Locale.getDefault() )";
     }
 
+    /**
+     * Returns the default format style to be applied if non is given explicitly.
+     */
     protected abstract String formatStyle();
 
+    /**
+     * Returns the name of the parse method for converting a String into a specific Joda-Time type.
+     */
     protected abstract String parseMethod();
 }

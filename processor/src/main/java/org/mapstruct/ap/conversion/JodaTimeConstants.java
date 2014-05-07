@@ -19,7 +19,9 @@
 package org.mapstruct.ap.conversion;
 
 /**
- * Helper holding constants for working with joda time
+ * Helper holding constants for working with Joda-Time.
+ *
+ * @author Timo Eckhardt
  */
 public final class JodaTimeConstants {
 
