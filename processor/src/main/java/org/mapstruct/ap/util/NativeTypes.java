@@ -77,4 +77,20 @@ public class NativeTypes {
 
         return WRAPPER_TO_PRIMITIVE_TYPES.get( clazz );
     }
+
+    /**
+     * Determines if the type with the given full qualified name is part of the classpath
+     *
+     * @param fullQualifiedClassName Name of the type to be checked for availability
+     * @return true if the type with the given full qualified name is part of the classpath.
+     */
+    public static boolean isTypeAvailable(String fullQualifiedClassName) {
+        try {
+            Class.forName( fullQualifiedClassName, false, NativeTypes.class.getClassLoader() );
+        }
+        catch ( ClassNotFoundException e ) {
+            return false;
+        }
+        return true;
+    }
 }

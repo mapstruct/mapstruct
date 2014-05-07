@@ -177,12 +177,11 @@
                 <version>${org.springframework.version}</version>
             </dependency>
 
-            <!-- joda -->
+            <!-- Joda-Time -->
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
                 <version>2.3</version>
-                <scope>test</scope>
             </dependency>
 
             <!-- Project modules -->

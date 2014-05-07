@@ -57,11 +57,7 @@
             <artifactId>mapstruct</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- joda -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
@@ -86,6 +82,13 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- There is no compile dependency to Joda-Time; It's only required for testing the Joda conversions -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
