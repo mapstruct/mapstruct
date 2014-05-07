@@ -18,20 +18,19 @@
  */
 package org.mapstruct.ap.conversion;
 
-import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.util.NativeTypes;
+
+import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 
 /**
  * Holds built-in {@link ConversionProvider}s such as from {@code int} to {@code String}.
@@ -189,80 +188,59 @@ public class Conversions {
     }
 
     private void registerJoda() {
-        if ( isJodaTimeAvailable() ) {
-            // joda to string
-            tryRegisterClassByName(
-                JodaTimeConstants.DATE_TIME_FQN,
-                String.class,
-                new JodaDateTimeToStringConversion()
-            );
-            tryRegisterClassByName(
-                JodaTimeConstants.LOCAL_DATE_FQN,
-                String.class,
-                new JodaLocalDateToStringConversion()
-            );
-            tryRegisterClassByName(
-                JodaTimeConstants.LOCAL_DATE_TIME_FQN,
-                String.class,
-                new JodaLocalDateTimeToStringConversion()
-            );
-            tryRegisterClassByName(
-                JodaTimeConstants.LOCAL_TIME_FQN,
-                String.class,
-                new JodaLocalTimeToStringConversion()
-            );
-
-            // joda to date
-            tryRegisterClassByName(
-                JodaTimeConstants.DATE_TIME_FQN,
-                Date.class,
-                new JodaTimeToDateConversion()
-            );
-            tryRegisterClassByName(
-                JodaTimeConstants.LOCAL_DATE_FQN,
-                Date.class,
-                new JodaTimeToDateConversion()
-            );
-            tryRegisterClassByName(
-                JodaTimeConstants.LOCAL_DATE_TIME_FQN,
-                Date.class,
-                new JodaTimeToDateConversion()
-            );
-
-            tryRegisterClassByName(
-                JodaTimeConstants.DATE_TIME_FQN,
-                Calendar.class,
-                new JodaTimeToCalendarConversion()
-            );
+        if ( !isJodaTimeAvailable() ) {
+            return;
         }
+
+        // Joda to String
+        register(
+            getClass( JodaTimeConstants.DATE_TIME_FQN ),
+            String.class,
+            new JodaDateTimeToStringConversion()
+        );
+        register(
+            getClass( JodaTimeConstants.LOCAL_DATE_FQN ),
+            String.class,
+            new JodaLocalDateToStringConversion()
+        );
+        register(
+            getClass( JodaTimeConstants.LOCAL_DATE_TIME_FQN ),
+            String.class,
+            new JodaLocalDateTimeToStringConversion()
+        );
+        register(
+            getClass( JodaTimeConstants.LOCAL_TIME_FQN ),
+            String.class,
+            new JodaLocalTimeToStringConversion()
+        );
+
+        // Joda to Date
+        register(
+            getClass( JodaTimeConstants.DATE_TIME_FQN ),
+            Date.class,
+            new JodaTimeToDateConversion()
+        );
+        register(
+            getClass( JodaTimeConstants.LOCAL_DATE_FQN ),
+            Date.class,
+            new JodaTimeToDateConversion()
+        );
+        register(
+            getClass( JodaTimeConstants.LOCAL_DATE_TIME_FQN ),
+            Date.class,
+            new JodaTimeToDateConversion()
+        );
+
+        // Joda to Calendar
+        register(
+            getClass( JodaTimeConstants.DATE_TIME_FQN ),
+            Calendar.class,
+            new JodaTimeToCalendarConversion()
+        );
     }
 
     private static boolean isJodaTimeAvailable() {
         return NativeTypes.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN );
-    }
-
-    /**
-     * Invokes
-     * <ol>
-     * <li>{@link Class#forName(String)} </li>
-     * <li>{@link org.mapstruct.ap.conversion.Conversions#register(Class, Class, ConversionProvider)} </li>
-     * </ol>
-     * with the instance returned from 1.
-     *
-     * @param fullQualifiedClassName Name of type that should be reigstered
-     * @param target Target for {@link Conversions#register(Class, Class, ConversionProvider)}
-     * @param conversionProvider conversionProvider for
-     * {@link Conversions#register(Class, Class, ConversionProvider)}
-     */
-    private void tryRegisterClassByName(String fullQualifiedClassName, Class<?> target,
-                                        ConversionProvider conversionProvider) {
-        try {
-            Class<?> classByName = Class.forName( fullQualifiedClassName );
-            register( classByName, target, conversionProvider );
-        }
-        catch ( ClassNotFoundException e ) {
-            throw new RuntimeException( e ); // rethrow exception?
-        }
     }
 
     private void registerNativeTypeConversion(Class<?> sourceType, Class<?> targetType) {
@@ -328,6 +306,15 @@ public class Conversions {
         Type targetType = typeFactory.getType( targetClass );
 
         return new Key( sourceType, targetType );
+    }
+
+    private Class<?> getClass(String fullyQualifiedName) {
+        try {
+            return Conversions.class.getClassLoader().loadClass( fullyQualifiedName );
+        }
+        catch ( ClassNotFoundException e ) {
+            throw new RuntimeException( "Couldn't load class: " + fullyQualifiedName, e );
+        }
     }
 
     private static class Key {
