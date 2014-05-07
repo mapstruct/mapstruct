@@ -40,7 +40,7 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
     @Override
     protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
         return asSet(
-            conversionContext.getTypeFactory().getType( dateTimeFormatClass() ),
+            conversionContext.getTypeFactory().getType( JodaTimeConstants.DATE_TIME_FORMAT_FQN ),
             conversionContext.getTypeFactory().getType( Locale.class )
         );
     }
@@ -52,7 +52,7 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
-        return asSet( conversionContext.getTypeFactory().getType( dateTimeFormatClass() ) );
+        return asSet( conversionContext.getTypeFactory().getType( JodaTimeConstants.DATE_TIME_FORMAT_FQN ) );
     }
 
     private String conversionString(ConversionContext conversionContext, String method) {
@@ -90,14 +90,4 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
     protected abstract String formatStyle();
 
     protected abstract String parseMethod();
-
-    private Class dateTimeFormatClass() {
-        try {
-            return Class.forName( "org.joda.time.format.DateTimeFormat" );
-        }
-        catch ( ClassNotFoundException e ) {
-            throw new RuntimeException( "org.joda.time.format.DateTimeFormat not found on classpath" );
-        }
-    }
-
 }

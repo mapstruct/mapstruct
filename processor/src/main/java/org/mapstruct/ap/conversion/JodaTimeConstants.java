@@ -34,5 +34,7 @@ public final class JodaTimeConstants {
 
     public static final String LOCAL_TIME_FQN = "org.joda.time.LocalTime";
 
+    public static final String DATE_TIME_FORMAT_FQN = "org.joda.time.format.DateTimeFormat";
+
     public static final String DATE_TIME_FORMAT = "LL";
 }
