@@ -69,7 +69,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.messager = context.getMessager();
         this.typeFactory = context.getTypeFactory();
         this.typeUtils = context.getTypeUtils();
-        return retrieveMethods( mapperTypeElement, true );
+        return retrieveMethods( mapperTypeElement, mapperTypeElement );
     }
 
     @Override
@@ -80,34 +80,32 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     /**
      * Retrieves the mapping methods declared by the given mapper type.
      *
-     * @param element The type of interest
-     * @param mapperRequiresImplementation Whether an implementation of this type must be generated or not. {@code true}
-     * if the type is the currently processed mapper interface, {@code false} if the given type is one
-     * referred to via {@code Mapper#uses()}.
+     * @param usedMapper The type of interest (either the mapper to implement or a used mapper via @uses annotation)
+     * @param mapperToImplement the top level type (mapper) that requires implementation
      *
      * @return All mapping methods declared by the given type
      */
-    private List<SourceMethod> retrieveMethods(TypeElement element, boolean mapperRequiresImplementation) {
+    private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement) {
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
 
-        for ( ExecutableElement executable : methodsIn( allEnclosingElementsIncludeSuper( element ) ) ) {
-            SourceMethod method = getMethod( element, executable, mapperRequiresImplementation );
+        for ( ExecutableElement executable : methodsIn( allEnclosingElementsIncludeSuper( usedMapper ) ) ) {
+            SourceMethod method = getMethod( usedMapper, executable, mapperToImplement );
             if ( method != null ) {
                 methods.add( method );
             }
         }
 
         //Add all methods of used mappers in order to reference them in the aggregated model
-        if ( mapperRequiresImplementation ) {
-            MapperConfig mapperSettings = MapperConfig.getInstanceOn( element );
+        if ( usedMapper.equals( mapperToImplement ) ) {
+            MapperConfig mapperSettings = MapperConfig.getInstanceOn( usedMapper );
             if ( !mapperSettings.isValid() ) {
                 throw new AnnotationProcessingException(
-                    "Couldn't retrieve @Mapper annotation", element, mapperSettings.getAnnotationMirror()
+                    "Couldn't retrieve @Mapper annotation", usedMapper, mapperSettings.getAnnotationMirror()
                 );
             }
 
-            for ( TypeMirror usedMapper : mapperSettings.uses() ) {
-                methods.addAll( retrieveMethods( asTypeElement( usedMapper ), false ) );
+            for ( TypeMirror mapper : mapperSettings.uses() ) {
+                methods.addAll( retrieveMethods( asTypeElement( mapper ), mapperToImplement ) );
             }
         }
 
@@ -140,9 +138,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             && asTypeElement( element.getSuperclass() ).getSuperclass().getKind() == TypeKind.DECLARED;
     }
 
-    private SourceMethod getMethod(TypeElement element,
+    private SourceMethod getMethod(TypeElement usedMapper,
                                    ExecutableElement method,
-                                   boolean mapperRequiresImplementation) {
+                                   TypeElement mapperToImplement) {
         List<Parameter> parameters = typeFactory.getParameters( method );
         Type returnType = typeFactory.getReturnType( method );
         List<Type> exceptionTypes = typeFactory.getThrownTypes( method );
@@ -151,7 +149,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
         boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
 
-        if ( mapperRequiresImplementation && methodRequiresImplementation ) {
+        if ( ( usedMapper.equals( mapperToImplement ) ) && methodRequiresImplementation ) {
             List<Parameter> sourceParameters = extractSourceParameters( parameters );
             Parameter targetParameter = extractTargetParameter( parameters );
             Type resultType = selectResultType( returnType, targetParameter );
@@ -184,15 +182,21 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
         //otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( parameters ) ) {
-            return
-                SourceMethod.forReferencedMethod(
-                    mapperRequiresImplementation ? null : typeFactory.getType( element ),
-                    method,
-                    parameters,
-                    returnType,
-                    exceptionTypes,
-                    typeUtils
+            Type usedMapperAsType = typeFactory.getType( usedMapper );
+            Type mapperToImplementAsType = typeFactory.getType( mapperToImplement );
+            if ( isAccessible( mapperToImplementAsType, usedMapperAsType, method ) ) {
+                return SourceMethod.forReferencedMethod(
+                        usedMapper.equals( mapperToImplement )  ? null : usedMapperAsType,
+                        method,
+                        parameters,
+                        returnType,
+                        exceptionTypes,
+                        typeUtils
                 );
+            }
+            else {
+                return null;
+            }
         }
         else {
             return null;
@@ -227,6 +231,24 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
         return validSourceParameters == sourceParamCount && targetParameters == 0 && targetTypeParameters <= 1
             && parameters.size() == validSourceParameters + targetParameters + targetTypeParameters;
+    }
+
+
+    private boolean isAccessible( Type mapperToImplement, Type usedMapper, ExecutableElement method ) {
+
+        if ( method.getModifiers().contains( Modifier.PRIVATE ) ) {
+            return false;
+        }
+        else if ( method.getModifiers().contains( Modifier.PROTECTED ) ) {
+            return mapperToImplement.isAssignableTo( usedMapper ) ||
+                    mapperToImplement.getPackageName().equals( usedMapper.getPackageName() );
+        }
+        else if ( !method.getModifiers().contains( Modifier.PUBLIC ) ) {
+            // default
+            return mapperToImplement.getPackageName().equals( usedMapper.getPackageName() );
+        }
+        // public
+        return true;
     }
 
     private Parameter extractTargetParameter(List<Parameter> parameters) {
