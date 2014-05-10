@@ -18,13 +18,10 @@
  */
 package org.mapstruct.ap.processor;
 
-import static javax.lang.model.util.ElementFilter.methodsIn;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -49,6 +46,8 @@ import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.MapperConfig;
+
+import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -131,6 +130,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     /**
      * @param element the type element to check
+     *
      * @return <code>true</code>, iff the type has a super-class that is not java.lang.Object
      */
     private boolean hasNonObjectSuperclass(TypeElement element) {
@@ -142,66 +142,77 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                    ExecutableElement method,
                                    TypeElement mapperToImplement) {
         List<Parameter> parameters = typeFactory.getParameters( method );
-        Type returnType = typeFactory.getReturnType( method );
-        List<Type> exceptionTypes = typeFactory.getThrownTypes( method );
 
-        //add method with property mappings if an implementation needs to be generated
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
         boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
 
+        //add method with property mappings if an implementation needs to be generated
         if ( ( usedMapper.equals( mapperToImplement ) ) && methodRequiresImplementation ) {
-            List<Parameter> sourceParameters = extractSourceParameters( parameters );
-            Parameter targetParameter = extractTargetParameter( parameters );
-            Type resultType = selectResultType( returnType, targetParameter );
-
-            boolean isValid =
-                checkParameterAndReturnType(
-                    method,
-                    sourceParameters,
-                    targetParameter,
-                    resultType,
-                    returnType,
-                    containsTargetTypeParameter );
-
-            if ( isValid ) {
-                return
-                    SourceMethod.forMethodRequiringImplementation(
-                        method,
-                        parameters,
-                        returnType,
-                        exceptionTypes,
-                        getMappings( method ),
-                        IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ) ),
-                        MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ) ),
-                        typeUtils
-                    );
-            }
-            else {
-                return null;
-            }
+            return getMethodRequiringImplementation( method, parameters, containsTargetTypeParameter );
         }
         //otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( parameters ) ) {
-            Type usedMapperAsType = typeFactory.getType( usedMapper );
-            Type mapperToImplementAsType = typeFactory.getType( mapperToImplement );
-            if ( isAccessible( mapperToImplementAsType, usedMapperAsType, method ) ) {
-                return SourceMethod.forReferencedMethod(
-                        usedMapper.equals( mapperToImplement )  ? null : usedMapperAsType,
-                        method,
-                        parameters,
-                        returnType,
-                        exceptionTypes,
-                        typeUtils
-                );
-            }
-            else {
-                return null;
-            }
+            return getReferencedMethod( usedMapper, method, mapperToImplement, parameters );
         }
         else {
             return null;
         }
     }
+
+    private SourceMethod getMethodRequiringImplementation(ExecutableElement method, List<Parameter> parameters,
+                                                          boolean containsTargetTypeParameter) {
+        Type returnType = typeFactory.getReturnType( method );
+        List<Type> exceptionTypes = typeFactory.getThrownTypes( method );
+        List<Parameter> sourceParameters = extractSourceParameters( parameters );
+        Parameter targetParameter = extractTargetParameter( parameters );
+        Type resultType = selectResultType( returnType, targetParameter );
+
+        boolean isValid = checkParameterAndReturnType(
+            method,
+            sourceParameters,
+            targetParameter,
+            resultType,
+            returnType,
+            containsTargetTypeParameter
+        );
+
+        if ( !isValid ) {
+            return null;
+        }
+
+        return SourceMethod.forMethodRequiringImplementation(
+            method,
+            parameters,
+            returnType,
+            exceptionTypes,
+            getMappings( method ),
+            IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ) ),
+            MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ) ),
+            typeUtils
+        );
+    }
+
+    private SourceMethod getReferencedMethod(TypeElement usedMapper, ExecutableElement method,
+                                             TypeElement mapperToImplement, List<Parameter> parameters) {
+        Type returnType = typeFactory.getReturnType( method );
+        List<Type> exceptionTypes = typeFactory.getThrownTypes( method );
+        Type usedMapperAsType = typeFactory.getType( usedMapper );
+        Type mapperToImplementAsType = typeFactory.getType( mapperToImplement );
+
+        if ( !mapperToImplementAsType.canAccess( usedMapperAsType, method ) ) {
+            return null;
+        }
+
+        return SourceMethod.forReferencedMethod(
+            usedMapper.equals( mapperToImplement ) ? null : usedMapperAsType,
+            method,
+            parameters,
+            returnType,
+            exceptionTypes,
+            typeUtils
+        );
+    }
+
 
     private boolean isValidReferencedMethod(List<Parameter> parameters) {
         return isValidReferencedOrFactoryMethod( 1, parameters );
@@ -231,24 +242,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
         return validSourceParameters == sourceParamCount && targetParameters == 0 && targetTypeParameters <= 1
             && parameters.size() == validSourceParameters + targetParameters + targetTypeParameters;
-    }
-
-
-    private boolean isAccessible( Type mapperToImplement, Type usedMapper, ExecutableElement method ) {
-
-        if ( method.getModifiers().contains( Modifier.PRIVATE ) ) {
-            return false;
-        }
-        else if ( method.getModifiers().contains( Modifier.PROTECTED ) ) {
-            return mapperToImplement.isAssignableTo( usedMapper ) ||
-                    mapperToImplement.getPackageName().equals( usedMapper.getPackageName() );
-        }
-        else if ( !method.getModifiers().contains( Modifier.PUBLIC ) ) {
-            // default
-            return mapperToImplement.getPackageName().equals( usedMapper.getPackageName() );
-        }
-        // public
-        return true;
     }
 
     private Parameter extractTargetParameter(List<Parameter> parameters) {
@@ -328,7 +321,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             messager.printMessage(
                 Kind.ERROR,
                 "Can't generate mapping method that has a parameter annotated with @TargetType.",
-                method );
+                method
+            );
             return false;
         }
 

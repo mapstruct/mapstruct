@@ -19,12 +19,12 @@
 package org.mapstruct.ap.test.accessibility.referenced;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class ReferencedMapperPrivate {
 
-    private ReferencedTarget sourceToTarget( ReferencedSource source ) {
+    @SuppressWarnings("unused")
+    private ReferencedTarget sourceToTarget(ReferencedSource source) {
         ReferencedTarget target = new ReferencedTarget();
         target.setFoo( source.getFoo() );
         return target;

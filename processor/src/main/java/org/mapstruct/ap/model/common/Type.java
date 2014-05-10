@@ -363,6 +363,24 @@ public class Type extends ModelElement implements Comparable<Type> {
         return 1 + minDistanceOfSuperToTargetType;
     }
 
+    /**
+     * Whether this type can access the given method declared on the given type.
+     */
+    public boolean canAccess(Type type, ExecutableElement method) {
+        if ( method.getModifiers().contains( Modifier.PRIVATE ) ) {
+            return false;
+        }
+        else if ( method.getModifiers().contains( Modifier.PROTECTED ) ) {
+            return isAssignableTo( type ) || getPackageName().equals( type.getPackageName() );
+        }
+        else if ( !method.getModifiers().contains( Modifier.PUBLIC ) ) {
+            // default
+            return getPackageName().equals( type.getPackageName() );
+        }
+        // public
+        return true;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
