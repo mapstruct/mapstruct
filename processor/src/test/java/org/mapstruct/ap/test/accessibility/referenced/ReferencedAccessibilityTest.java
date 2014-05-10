@@ -84,7 +84,6 @@ public class ReferencedAccessibilityTest {
     @WithClasses( { AbstractSourceTargetMapperProtected.class, SourceTargetmapperProtectedBase.class } )
     public void shouldBeAbleToAccessProtectedMethodInBase() throws Exception { }
 
-
     @Test
     @IssueKey( "206" )
     @WithClasses( { AbstractSourceTargetMapperPrivate.class, SourceTargetmapperPrivateBase.class } )
