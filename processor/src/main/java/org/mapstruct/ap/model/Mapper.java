@@ -40,11 +40,18 @@ public class Mapper extends GeneratedType {
     private final List<MapperReference> referencedMappers;
     private final Decorator decorator;
 
-    private Mapper(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                   String interfaceName,
-                   List<MappingMethod> methods, boolean suppressGeneratorTimestamp, Accessibility accessibility,
-                   List<MapperReference> referencedMappers, Decorator decorator) {
-
+    //CHECKSTYLE:OFF
+    private Mapper( TypeFactory typeFactory,
+            String packageName,
+            String name,
+            String superClassName,
+            String interfaceName,
+            List<MappingMethod> methods,
+            boolean suppressGeneratorTimestamp,
+            Accessibility accessibility,
+            List<MapperReference> referencedMappers,
+            Initializers constructors,
+            Decorator decorator ) {
         super(
             typeFactory,
             packageName,
@@ -53,6 +60,7 @@ public class Mapper extends GeneratedType {
             interfaceName,
             methods,
             referencedMappers,
+            constructors,
             suppressGeneratorTimestamp,
             accessibility
         );
@@ -111,6 +119,11 @@ public class Mapper extends GeneratedType {
             String implementationName = element.getSimpleName()
                 + ( decorator == null ? IMPLEMENTATION_SUFFIX : DECORATED_IMPLEMENTATION_SUFFIX );
 
+            Initializers constructors = null;
+            if ( decorator != null ) {
+                constructors = new MapperInitializer( implementationName, decorator.getName() );
+            }
+
             return new Mapper(
                 typeFactory,
                 elementUtils.getPackageOf( element ).getQualifiedName().toString(),
@@ -121,6 +134,7 @@ public class Mapper extends GeneratedType {
                 suppressGeneratorTimestamp,
                 Accessibility.fromModifiers( element.getModifiers() ),
                 mapperReferences,
+                constructors,
                 decorator
             );
         }

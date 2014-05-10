@@ -25,7 +25,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.model.common.Accessibility;
-import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.prism.DecoratedWithPrism;
@@ -40,7 +39,7 @@ public class Decorator extends GeneratedType {
     private static final String IMPLEMENTATION_SUFFIX = "Impl";
 
     private Decorator(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                      String interfaceName, List<MappingMethod> methods, List<? extends ModelElement> fields,
+                      String interfaceName, List<MappingMethod> methods, List<Field> fields, Initializers constructors,
                       boolean suppressGeneratorTimestamp, Accessibility accessibility) {
         super(
             typeFactory,
@@ -50,6 +49,7 @@ public class Decorator extends GeneratedType {
             interfaceName,
             methods,
             fields,
+            constructors,
             suppressGeneratorTimestamp,
             accessibility
         );
@@ -62,22 +62,20 @@ public class Decorator extends GeneratedType {
         Type decoratorType = typeFactory.getType( decoratorPrism.value() );
 
         return new Decorator(
-            typeFactory,
-            elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString(),
-            mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
-            decoratorType.getName(),
-            mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
-            methods,
-            Arrays.asList(
-                new Field( typeFactory.getType( mapperElement ), "delegate" ),
-                new DecoratorConstructor(
-                    mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
-                    mapperElement.getSimpleName().toString() + "Impl_",
-                    hasDelegateConstructor
-                )
-            ),
-            suppressGeneratorTimestamp,
-            Accessibility.fromModifiers( mapperElement.getModifiers() )
+                typeFactory,
+                elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString(),
+                mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
+                decoratorType.getName(),
+                mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
+                methods,
+                Arrays.asList( new Field( typeFactory.getType( mapperElement ), "delegate" ) ),
+                new DecoratorConstructors(
+                        mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
+                        mapperElement.getSimpleName().toString() + "Impl_",
+                        hasDelegateConstructor
+                ),
+                suppressGeneratorTimestamp,
+                Accessibility.fromModifiers( mapperElement.getModifiers() )
         );
     }
 

@@ -44,12 +44,14 @@ public class AssignmentFactory {
     }
 
     public static FactoryMethod createFactory(SourceMethod method, MapperReference declaringMapper) {
-        return new MethodReference( method, declaringMapper, null );
+        String variableName = declaringMapper != null ? declaringMapper.getVariableName() : null;
+        return new MethodReference( method, variableName, null );
     }
 
     public static Assignment createMethodReference(SourceMethod method, MapperReference declaringMapper,
                                                    Type targetType) {
-        return new MethodReference( method, declaringMapper, targetType );
+        String variableName = declaringMapper != null ? declaringMapper.getVariableName() : null;
+        return new MethodReference( method, variableName, targetType );
     }
 
     public static Assignment createMethodReference(BuiltInMethod method, ConversionContext contextParam) {

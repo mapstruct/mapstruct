@@ -16,29 +16,41 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.decorator.nested;
+package org.mapstruct.ap.model;
+
+import java.util.Collections;
+import java.util.Set;
+
+import org.mapstruct.ap.model.common.ModelElement;
+import org.mapstruct.ap.model.common.Type;
 
 /**
+ * Represents the constructor of a decorator.
  *
  * @author Sjaak Derksen
  */
-public abstract class CompanyMapperDecorator implements CompanyMapper {
+public class MapperInitializer extends ModelElement implements Initializers {
 
-    private final CompanyMapper delegate;
+    private final String name;
+    private final String delegatorName;
 
-    public CompanyMapperDecorator( CompanyMapper delegate ) {
-        this.delegate = delegate;
+    public MapperInitializer(String name, String delegatorName) {
+        this.name = name;
+        this.delegatorName = delegatorName;
     }
 
     @Override
-    public AddressDto toAddressDto(Address address) {
-        AddressDto addressDto = delegate.toAddressDto( address );
-        String addressLine = address.getAddressLine();
-        int seperatorIndex = addressLine.indexOf( ";" );
-        addressDto.setStreet( addressLine.substring( 0, seperatorIndex ) );
-        String houseNumber = addressLine.substring( seperatorIndex + 1, addressLine.length() );
-        addressDto.setHouseNumber( Integer.parseInt( houseNumber ) );
-        return addressDto;
+    public Set<Type> getImportTypes() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public String getDelegatorName() {
+        return delegatorName;
     }
 
 }

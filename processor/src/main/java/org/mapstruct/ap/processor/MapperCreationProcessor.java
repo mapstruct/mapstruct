@@ -40,6 +40,7 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.Decorator;
+import org.mapstruct.ap.model.DecoratorReference;
 import org.mapstruct.ap.model.DefaultMapperReference;
 import org.mapstruct.ap.model.DelegatingMethod;
 import org.mapstruct.ap.model.EnumMappingMethod;
@@ -111,7 +112,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private Mapper getMapper(TypeElement element, List<SourceMethod> methods) {
         ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy( element );
-        List<MapperReference> mapperReferences = getReferencedMappers( element );
+        Decorator decorator = getDecorator( element, methods );
+        List<MapperReference> mapperReferences = getReferencedMappers( element, decorator );
         List<MappingMethod> mappingMethods = getMappingMethods( mapperReferences, methods, unmappedTargetPolicy );
         mappingMethods.addAll( mappingResolver.getVirtualMethodsToGenerate() );
 
@@ -120,7 +122,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .mappingMethods( mappingMethods )
             .mapperReferences( mapperReferences )
             .suppressGeneratorTimestamp( options.isSuppressGeneratorTimestamp() )
-            .decorator( getDecorator( element, methods ) )
+            .decorator( decorator )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
             .build();
@@ -228,10 +230,19 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
     }
 
-    private List<MapperReference> getReferencedMappers(TypeElement element) {
+    private List<MapperReference> getReferencedMappers(TypeElement element, Decorator decorator) {
         List<MapperReference> mapperReferences = new LinkedList<MapperReference>();
         List<String> variableNames = new LinkedList<String>();
 
+        // the delegator is also a reference
+        if ( decorator != null ) {
+            Type decoratorImpl = typeFactory.getType( element );
+            DecoratorReference decoratorReference = new DecoratorReference( decoratorImpl );
+            mapperReferences.add( decoratorReference );
+            variableNames.add( decoratorReference.getVariableName() );
+        }
+
+        // now the other referenced mappers (including annotated ones with @Mapper)
         MapperConfig mapperPrism = MapperConfig.getInstanceOn( element );
 
         for ( TypeMirror usedMapper : mapperPrism.uses() ) {

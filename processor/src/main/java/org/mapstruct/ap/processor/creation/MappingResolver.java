@@ -32,6 +32,7 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.Assignment;
+import org.mapstruct.ap.model.DecoratorReference;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.VirtualMappingMethod;
 import org.mapstruct.ap.model.assignment.AssignmentFactory;
@@ -443,7 +444,8 @@ public class MappingResolver {
 
         private MapperReference findMapperReference( List<MapperReference> mapperReferences, SourceMethod method ) {
             for ( MapperReference ref : mapperReferences ) {
-                if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
+                if ( ref.getType().equals( method.getDeclaringMapper() )
+                        || ( method.getDeclaringMapper() == null && ref instanceof DecoratorReference ) ) {
                     return ref;
                 }
             }

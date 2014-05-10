@@ -18,43 +18,18 @@
  */
 package org.mapstruct.ap.model;
 
-import java.util.Collections;
 import java.util.Set;
-
-import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 
 /**
- * Represents the constructor of a decorator.
+ * This class is a holder for both constructors and initialization methods
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class DecoratorConstructor extends ModelElement {
+public interface Initializers {
 
-    private final String name;
-    private final String delegateName;
-    private final boolean invokeSuperConstructor;
+    Set<Type> getImportTypes();
 
-    public DecoratorConstructor(String name, String delegateName, boolean invokeSuperConstructor) {
-        this.name = name;
-        this.delegateName = delegateName;
-        this.invokeSuperConstructor = invokeSuperConstructor;
-    }
+    String getName();
 
-    @Override
-    public Set<Type> getImportTypes() {
-        return Collections.emptySet();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDelegateName() {
-        return delegateName;
-    }
-
-    public boolean isInvokeSuperConstructor() {
-        return invokeSuperConstructor;
-    }
 }

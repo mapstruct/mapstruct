@@ -45,6 +45,7 @@ public abstract class GeneratedType extends ModelElement {
     private final List<Annotation> annotations;
     private final List<MappingMethod> methods;
     private final List<? extends ModelElement> fields;
+    private final Initializers constructors;
 
     private final boolean suppressGeneratorTimestamp;
     private final Accessibility accessibility;
@@ -57,7 +58,8 @@ public abstract class GeneratedType extends ModelElement {
     protected GeneratedType(TypeFactory typeFactory, String packageName, String name, String superClassName,
                             String interfaceName,
                             List<MappingMethod> methods,
-                            List<? extends ModelElement> fields,
+                            List<? extends Field> fields,
+                            Initializers constructors,
                             boolean suppressGeneratorTimestamp, Accessibility accessibility) {
         this.packageName = packageName;
         this.name = name;
@@ -67,6 +69,7 @@ public abstract class GeneratedType extends ModelElement {
         this.annotations = new ArrayList<Annotation>();
         this.methods = methods;
         this.fields = fields;
+        this.constructors = constructors;
 
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.accessibility = accessibility;
@@ -104,6 +107,10 @@ public abstract class GeneratedType extends ModelElement {
 
     public List<? extends ModelElement> getFields() {
         return fields;
+    }
+
+    public Initializers getConstructors() {
+        return constructors;
     }
 
     public boolean isSuppressGeneratorTimestamp() {

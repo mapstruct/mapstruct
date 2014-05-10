@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.FactoryMethod;
-import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
 
 import org.mapstruct.ap.model.common.ConversionContext;
@@ -41,7 +40,7 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
  */
 public class MethodReference extends MappingMethod implements Assignment, FactoryMethod {
 
-    private final MapperReference declaringMapper;
+    private final String variableName;
     private final Set<Type> importTypes;
     private final List<Type> exceptionTypes;
 
@@ -66,13 +65,13 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
      * Creates a new reference to the given method.
      *
      * @param method the target method of the reference
-     * @param declaringMapper the method declaring the mapper; {@code null} if the current mapper itself
+     * @param variableName instance variable in mapper to call this method upon
      * @param targetType in case the referenced method has a parameter for passing the target type, the given
      * target type, otherwise {@code null}
      */
-    public MethodReference(SourceMethod method, MapperReference declaringMapper, Type targetType) {
+    public MethodReference(SourceMethod method, String variableName, Type targetType) {
         super( method );
-        this.declaringMapper = declaringMapper;
+        this.variableName = variableName;
         this.contextParam = null;
         Set<Type> imported = new HashSet( method.getThrownTypes() );
         if ( targetType != null ) {
@@ -84,18 +83,14 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
 
     public MethodReference(BuiltInMethod method, ConversionContext contextParam) {
         super( method );
-        this.declaringMapper = null;
+        this.variableName = null;
         this.contextParam = method.getContextParameter( contextParam );
         this.importTypes = Collections.emptySet();
         this.exceptionTypes = Collections.emptyList();
     }
 
-    public MapperReference getDeclaringMapper() {
-        return declaringMapper;
-    }
-
     public String getMapperVariableName() {
-        return declaringMapper.getVariableName();
+        return variableName;
     }
 
     public String getContextParam() {

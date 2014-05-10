@@ -18,13 +18,4 @@
      limitations under the License.
 
 -->
-public ${name}() {
-    this( new ${delegateName}() );
-}
-
-private ${name}(${delegateName} delegate) {
-    <#if invokeSuperConstructor>
-    super( delegate );
-    </#if>
-    this.delegate = delegate;
-}
+private <@includeModel object=type/> ${variableName};

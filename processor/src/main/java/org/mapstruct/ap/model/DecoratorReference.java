@@ -16,29 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.decorator.nested;
+package org.mapstruct.ap.model;
+
+import org.mapstruct.ap.model.common.Type;
 
 /**
- *
  * @author Sjaak Derksen
  */
-public abstract class CompanyMapperDecorator implements CompanyMapper {
+public class DecoratorReference extends MapperReference {
 
-    private final CompanyMapper delegate;
-
-    public CompanyMapperDecorator( CompanyMapper delegate ) {
-        this.delegate = delegate;
+    public DecoratorReference(Type type) {
+        super( type, "delegator" );
     }
-
-    @Override
-    public AddressDto toAddressDto(Address address) {
-        AddressDto addressDto = delegate.toAddressDto( address );
-        String addressLine = address.getAddressLine();
-        int seperatorIndex = addressLine.indexOf( ";" );
-        addressDto.setStreet( addressLine.substring( 0, seperatorIndex ) );
-        String houseNumber = addressLine.substring( seperatorIndex + 1, addressLine.length() );
-        addressDto.setHouseNumber( Integer.parseInt( houseNumber ) );
-        return addressDto;
-    }
-
 }

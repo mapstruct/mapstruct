@@ -62,12 +62,12 @@ public class NestedDecoratorTest {
         // test
         CompanyDto companyDto = CompanyMapper.INSTANCE.toCompanyDto( company );
 
-//        // verify
+        // verify
         assertThat( companyDto.getEmployees() ).isNotEmpty();
         assertThat( companyDto.getEmployees().size() ).isEqualTo( 1 );
         assertThat( companyDto.getEmployees().get( 0 ).getAddress() ).isNotNull();
-//        assertThat( companyDto.getEmployees().get( 0 ).getAddress().getHouseNumber() ).isEqualTo( 5 );
-//        assertThat( companyDto.getEmployees().get( 0 ).getAddress().getStreet() ).isEqualTo( "RoadToNowhere" );
+        assertThat( companyDto.getEmployees().get( 0 ).getAddress().getHouseNumber() ).isEqualTo( 5 );
+        assertThat( companyDto.getEmployees().get( 0 ).getAddress().getStreet() ).isEqualTo( "RoadToNowhere" );
         assertThat( companyDto.getEmployees().get( 0 ).getAddress().getTown() ).isEqualTo( "SmallTown" );
     }
 

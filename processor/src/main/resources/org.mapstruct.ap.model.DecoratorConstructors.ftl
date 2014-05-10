@@ -18,31 +18,14 @@
      limitations under the License.
 
 -->
-package ${packageName};
+public ${name}() {
+    this( new ${delegateName}() );
+}
 
-<#list importTypes as importedType>
-import ${importedType.fullyQualifiedName};
-</#list>
-
-@Generated(
-    value = "org.mapstruct.ap.MappingProcessor"<#if suppressGeneratorTimestamp == false>,
-    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
-)
-<#list annotations as annotation>
-<#nt><@includeModel object=annotation/>
-</#list>
-<#lt>${accessibility.keyword} class ${name}<#if superClassName??> extends ${superClassName}</#if><#if interfaceName??> implements ${interfaceName}</#if> {
-<#list fields as field>
-
-<#nt>    <@includeModel object=field/>
-</#list>
-<#if constructors??>
-
-         <@includeModel object=constructors/>
-
-</#if>
-<#list methods as method>
-
-<#nt>    <@includeModel object=method/>
-</#list>
+private ${name}(${delegateName} delegate) {
+    <#if invokeSuperConstructor>
+    super( delegate );
+    </#if>
+    delegate.init( this );
+    this.delegate = delegate;
 }
