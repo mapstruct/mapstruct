@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 public @interface Mappings {
 
     /**
-     * The onfiguration of the bean attributes.
+     * The configuration of the bean attributes.
      *
      * @return The configuration of the bean attributes.
      */
