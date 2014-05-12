@@ -43,7 +43,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <com.jolira.hickory.version>1.0.0</com.jolira.hickory.version>
         <org.apache.maven.plugins.enforcer.version>1.2</org.apache.maven.plugins.enforcer.version>
-        <org.springframework.version>3.2.3.RELEASE</org.springframework.version>
+        <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
 
         <forkCount>1</forkCount>
     </properties>
@@ -157,7 +157,7 @@
             <dependency>
                 <groupId>org.glassfish</groupId>
                 <artifactId>javax.el</artifactId>
-                <version>3.0-b07</version>
+                <version>3.0-b01</version>
             </dependency>
 
             <!-- Spring -->
@@ -340,6 +340,13 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>animal-sniffer-maven-plugin</artifactId>
                     <version>1.9</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.ow2.asm</groupId>
+                            <artifactId>asm-all</artifactId>
+                            <version>5.0.2</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
