@@ -187,7 +187,17 @@
             <!-- Project modules -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>mapstruct-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>mapstruct</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>mapstruct-jdk8</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
