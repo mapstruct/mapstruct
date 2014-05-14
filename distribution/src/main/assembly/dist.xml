@@ -32,6 +32,7 @@
             <outputDirectory>lib</outputDirectory>
             <includes>
                 <include>org.mapstruct:mapstruct</include>
+                <include>org.mapstruct:mapstruct-jdk8</include>
                 <include>org.mapstruct:mapstruct-processor</include>
             </includes>
         </dependencySet>
