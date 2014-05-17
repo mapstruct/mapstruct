@@ -33,8 +33,8 @@ import org.mapstruct.factory.Mappers;
  *
  * @author Sjaak Derksen
  */
-@Target( { ElementType.TYPE } )
-@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.CLASS)
 public @interface MapperConfig {
 
     /**
