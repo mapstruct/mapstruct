@@ -55,6 +55,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <sourcepath>
+                        ${basedir}/../core-common/src/main/java;
                         ${basedir}/../core/src/main/java;
                         ${basedir}/../processor/src/main/java
                     </sourcepath>
