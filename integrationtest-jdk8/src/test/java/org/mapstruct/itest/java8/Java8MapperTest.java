@@ -20,9 +20,7 @@
 package org.mapstruct.itest.java8;
 
 import static org.fest.assertions.Assertions.assertThat;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+
 import org.junit.Test;
 
 /**
@@ -31,12 +29,6 @@ import org.junit.Test;
  * @author Christian Schuster
  */
 public class Java8MapperTest {
-
-    @Deployment
-    public static JavaArchive createDeployment() {
-        return ShrinkWrap.create( JavaArchive.class )
-            .addPackage( Java8Mapper.class.getPackage() );
-    }
 
     @Test
     public void shouldMapWithRepeatedMappingAnnotation() {

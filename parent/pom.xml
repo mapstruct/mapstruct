@@ -372,6 +372,7 @@
                                         <versionRange>[2.4,)</versionRange>
                                         <goals>
                                             <goal>copy-dependencies</goal>
+                                            <goal>unpack-dependencies</goal>
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
@@ -489,7 +490,7 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>[1.6,)</version>
+                                    <version>[1.8,)</version>
                                 </requireJavaVersion>
                                 <DependencyConvergence />
                                 <requirePluginVersions />
