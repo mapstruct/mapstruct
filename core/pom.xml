@@ -33,6 +33,10 @@
     <packaging>jar</packaging>
     <name>MapStruct Core</name>
 
+    <properties>
+        <common.sources.dir>copied-common-sources</common.sources.dir>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -80,18 +84,38 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-copied-common-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/${common.sources.dir}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>add-copied-common-sources</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
                             <includeArtifactIds>mapstruct-common</includeArtifactIds>
-                            <includes>**/*.class</includes>
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <includes>**/*.java</includes>
+                            <classifier>sources</classifier>
+                            <outputDirectory>${project.build.directory}/${common.sources.dir}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

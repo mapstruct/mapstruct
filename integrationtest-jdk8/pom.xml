@@ -29,18 +29,17 @@
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>mapstruct-integrationtest</artifactId>
+    <artifactId>mapstruct-integrationtest-jdk8</artifactId>
     <packaging>jar</packaging>
-    <name>MapStruct Integration Test</name>
+    <name>MapStruct Integration Tests for JDK 8</name>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>mapstruct</artifactId>
+            <artifactId>mapstruct-jdk8</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -51,121 +50,19 @@
             <artifactId>fest-assert</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- CDI, Weld, Arquillian -->
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-container-test-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.shrinkwrap</groupId>
-            <artifactId>shrinkwrap-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.weld</groupId>
-            <artifactId>weld-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.el</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Spring -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-			<plugin>
-			    <!--
-			         As a workaround to a bug in JDK8, where a security error is thrown for "xjc.xsd"
-			         being loaded with protocol 'file', even though we specified '-disableXmlSecurity',
-			         we set a system property to suppress the error
-			    -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>set-system-properties</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<properties>
-						<property>
-							<name>javax.xml.accessExternalSchema</name>
-							<value>file</value>
-						</property>
-					</properties>
-				</configuration>
-			</plugin>
             <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
+            <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <schemaDirectory>${project.build.resources[0].directory}/schema/</schemaDirectory>
-                    <schemaIncludes>
-                        <include>**/test1.xsd</include>
-                    </schemaIncludes>
-                    <bindingDirectory>${project.build.resources[0].directory}/binding</bindingDirectory>
-                    <bindingIncludes>
-                        <include>**/binding.xjb</include>
-                    </bindingIncludes>
-                    <extension>true</extension>
-                    <verbose>true</verbose>
-                    <specVersion>2.1</specVersion>
-                    <args>
-                        <arg>-disableXmlSecurity</arg>
-                     </args>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
