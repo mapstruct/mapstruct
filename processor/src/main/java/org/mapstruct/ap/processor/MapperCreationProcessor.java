@@ -664,7 +664,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
             // create a new Map or Collection implementation if no method or type conversion
             if ( targetType != null && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
-                if ( assignment.isSimple() ) {
+                if ( assignment.isSimple() && Executables.isSetterMethod( targetAcessor ) ) {
                     assignment = new NewCollectionOrMapWrapper( assignment );
                 }
             }
