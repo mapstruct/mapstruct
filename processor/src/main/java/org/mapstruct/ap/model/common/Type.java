@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -284,11 +285,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * Alternative accessors could be a getter for a collection. By means of the
-     * {@link java.util.Collection#addAll(java.util.Collection) } this getter can still
-     * be used as targetAccessor. JAXB XJC tool generates such constructs.
-     *
-     * This method can be extended when new cases come along.
+     * Alternative accessors could be a getter for a collection / map. By means of the
+     * {@link Collection#addAll(Collection) } or {@link Map#putAll(Map)} this getter can still be used as
+     * targetAccessor. JAXB XJC tool generates such constructs. This method can be extended when new cases come along.
      *
      * @return an unmodifiable list of alternative target accessors.
      */
@@ -299,34 +298,47 @@ public class Type extends ModelElement implements Comparable<Type> {
             List<ExecutableElement> setterMethods = getSetters();
             List<ExecutableElement> getterMethods = getGetters();
 
-            if ( getterMethods.size() > setterMethods.size() ) {
-                // there could be a getter method for a list that is not present as setter.
-                // a getter could substitute the setter in that case and act as setter.
-                // (assuming it is initialized)
-                for ( ExecutableElement getterMethod : getterMethods ) {
-                    boolean matchFound = false;
-                    String getterPropertyName = Executables.getPropertyName( getterMethod );
-                    for ( ExecutableElement setterMethod : setterMethods ) {
-                        String setterPropertyName = Executables.getPropertyName( setterMethod );
-                        if ( getterPropertyName.equals( setterPropertyName ) ) {
-                            matchFound = true;
-                            break;
-                        }
-                    }
-                    if ( !matchFound && isCollection( getterMethod.getReturnType() ) ) {
-                        result.add( getterMethod );
-                    }
+            // there could be a getter method for a list/map that is not present as setter.
+            // a getter could substitute the setter in that case and act as setter.
+            // (assuming it is initialized)
+            for ( ExecutableElement getterMethod : getterMethods ) {
+                if ( hasNoSetterMethod( getterMethod, setterMethods ) && isCollectionOrMap( getterMethod ) ) {
+                    result.add( getterMethod );
                 }
             }
+
             alternativeTargetAccessors = Collections.unmodifiableList( result );
         }
         return alternativeTargetAccessors;
     }
 
+    private boolean hasNoSetterMethod(ExecutableElement getterMethod, List<ExecutableElement> setterMethods) {
+        String getterPropertyName = Executables.getPropertyName( getterMethod );
+        for ( ExecutableElement setterMethod : setterMethods ) {
+            String setterPropertyName = Executables.getPropertyName( setterMethod );
+            if ( getterPropertyName.equals( setterPropertyName ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isCollectionOrMap(ExecutableElement getterMethod) {
+        return isCollection( getterMethod.getReturnType() ) || isMap( getterMethod.getReturnType() );
+    }
+
     private boolean isCollection(TypeMirror candidate) {
-        String collectionName = Collection.class.getCanonicalName();
-        TypeMirror collectionType = typeUtils.erasure( elementUtils.getTypeElement( collectionName ).asType() );
-        return TypeUtilsJDK6Fix.isSubType( typeUtils, candidate, collectionType );
+        return isSubType( candidate, Collection.class );
+    }
+
+    private boolean isMap(TypeMirror candidate) {
+        return isSubType( candidate, Map.class );
+    }
+
+    private boolean isSubType(TypeMirror candidate, Class<?> clazz) {
+        String className = clazz.getCanonicalName();
+        TypeMirror classType = typeUtils.erasure( elementUtils.getTypeElement( className ).asType() );
+        return TypeUtilsJDK6Fix.isSubType( typeUtils, candidate, classType );
     }
 
     /**
