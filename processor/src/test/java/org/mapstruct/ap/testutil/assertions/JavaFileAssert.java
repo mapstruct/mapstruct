@@ -21,10 +21,12 @@ package org.mapstruct.ap.testutil.assertions;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Assertions;
 import org.fest.assertions.FileAssert;
 import org.fest.assertions.StringAssert;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 
 /**
  * Allows to perform assertions on .java source files.
@@ -47,7 +49,7 @@ public class JavaFileAssert extends FileAssert {
         isFile();
 
         try {
-            return Assertions.assertThat( FileUtils.readFileToString( actual ) );
+            return Assertions.assertThat( Files.toString( actual, Charsets.UTF_8 ) );
         }
         catch ( IOException e ) {
             failIfCustomMessageIsSet( e );

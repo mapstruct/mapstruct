@@ -59,7 +59,7 @@ import static org.fest.assertions.Assertions.assertThat;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class ConflictingTypesNamesTest {
 
-    private GeneratedSource generatedSource = new GeneratedSource();
+    private final GeneratedSource generatedSource = new GeneratedSource();
 
     @Rule
     public GeneratedSource getGeneratedSource() {
@@ -86,7 +86,7 @@ public class ConflictingTypesNamesTest {
 
     @Test
     @IssueKey("178")
-    public void mapperHasNoUnecessaryImports() {
+    public void mapperHasNoUnnecessaryImports() {
         Source source = new Source();
         source.setNotImported( new NotImportedDatatype( 42 ) );
 

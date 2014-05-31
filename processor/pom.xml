@@ -79,11 +79,6 @@
             <artifactId>javax.inject</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <!-- There is no compile dependency to Joda-Time; It's only required for testing the Joda conversions -->
         <dependency>
