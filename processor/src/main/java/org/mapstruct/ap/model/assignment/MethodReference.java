@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.FactoryMethod;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
-
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -74,7 +74,7 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
         super( method );
         this.declaringMapper = declaringMapper;
         this.contextParam = null;
-        Set<Type> imported = new HashSet( method.getThrownTypes() );
+        Set<Type> imported = new HashSet<Type>( method.getThrownTypes() );
         if ( targetType != null ) {
             imported.add( targetType );
         }
@@ -130,7 +130,7 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = org.mapstruct.ap.util.Collections.asSet( importTypes, super.getImportTypes() );
+        Set<Type> imported = new HashSet<Type>( importTypes );
         if ( assignment != null ) {
             imported.addAll( assignment.getImportTypes() );
         }

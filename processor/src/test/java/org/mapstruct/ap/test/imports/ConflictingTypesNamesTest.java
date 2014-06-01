@@ -95,7 +95,13 @@ public class ConflictingTypesNamesTest {
         assertThat( target ).isNotNull();
         assertThat( target.getNotImported() ).isSameAs( source.getNotImported() );
 
+        target = SecondSourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getNotImported() ).isSameAs( source.getNotImported() );
+
         generatedSource.forMapper( SourceTargetMapper.class ).containsNoImportFor( NotImportedDatatype.class );
+        generatedSource.forMapper( SecondSourceTargetMapper.class ).containsNoImportFor( NotImportedDatatype.class );
     }
 
     @Test
