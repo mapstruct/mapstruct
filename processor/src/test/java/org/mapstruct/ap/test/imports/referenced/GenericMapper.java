@@ -37,4 +37,8 @@ public class GenericMapper {
 
         return null;
     }
+
+    public NotImportedDatatype identity(NotImportedDatatype notImported) {
+        return notImported;
+    }
 }
