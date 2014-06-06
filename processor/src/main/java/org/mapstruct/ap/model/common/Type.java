@@ -165,7 +165,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * implementation type is {@code HashSet<String>}.
      *
      * @return The implementation type to be instantiated in case this type is an interface iterable, collection or map
-     *         type, {@code null} otherwise.
+     * type, {@code null} otherwise.
      */
     public Type getImplementationType() {
         return implementationType;
@@ -302,7 +302,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             // a getter could substitute the setter in that case and act as setter.
             // (assuming it is initialized)
             for ( ExecutableElement getterMethod : getterMethods ) {
-                if ( hasNoSetterMethod( getterMethod, setterMethods ) && isCollectionOrMap( getterMethod ) ) {
+                if ( isCollectionOrMap( getterMethod ) &&
+                    !correspondingSetterMethodExists( getterMethod, setterMethods ) ) {
                     result.add( getterMethod );
                 }
             }
@@ -312,15 +313,18 @@ public class Type extends ModelElement implements Comparable<Type> {
         return alternativeTargetAccessors;
     }
 
-    private boolean hasNoSetterMethod(ExecutableElement getterMethod, List<ExecutableElement> setterMethods) {
+    private boolean correspondingSetterMethodExists(ExecutableElement getterMethod,
+                                                    List<ExecutableElement> setterMethods) {
         String getterPropertyName = Executables.getPropertyName( getterMethod );
+
         for ( ExecutableElement setterMethod : setterMethods ) {
             String setterPropertyName = Executables.getPropertyName( setterMethod );
             if ( getterPropertyName.equals( setterPropertyName ) ) {
-                return false;
+                return true;
             }
         }
-        return true;
+
+        return false;
     }
 
     private boolean isCollectionOrMap(ExecutableElement getterMethod) {
