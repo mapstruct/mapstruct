@@ -35,12 +35,15 @@ import java.util.Date;
 public @interface Mapping {
 
     /**
-     * The source name of the configured property as defined by the JavaBeans specification. If used to map an enum
-     * constant, the name of the constant member is to be given.
+     * The source to use for this Mapping. This can either be:
+     * <ol>
+     * <li>The source name of the configured property as defined by the JavaBeans specification.</li>
+     * <li>When used to map an enum constant, the name of the constant member is to be given<./li>.
+     * </ol>
      *
-     * @return The source name of the configured property or enum constant
+     * @return The source name of the configured property or enum constant.
      */
-    String source();
+    String source() default "";
 
     /**
      * The target name of the configured property as defined by the JavaBeans specification. Defaults to the source name
@@ -57,4 +60,12 @@ public @interface Mapping {
      * @return A date format string as processable by {@link SimpleDateFormat}.
      */
     String dateFormat() default "";
+
+    /**
+     * {@link String} expression that uses available mappings and conversion to set the designated target property to
+     * the provided expression.
+     *
+     * @return expression
+     */
+    String expression() default "";
 }

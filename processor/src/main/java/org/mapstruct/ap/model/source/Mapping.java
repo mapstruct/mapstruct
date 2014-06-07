@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
@@ -40,42 +42,63 @@ public class Mapping {
     private final String sourceName;
     private final String sourceParameterName;
     private final String sourcePropertyName;
+    private final String expression;
     private final String targetName;
     private final String dateFormat;
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
 
-    public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation, Element element) {
+    public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation, Element element,
+            Messager messager) {
         Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
-        for ( MappingPrism mapping : mappingsAnnotation.value() ) {
-            if ( !mappings.containsKey( mapping.source() ) ) {
-                mappings.put( mapping.source(), new ArrayList<Mapping>() );
+        for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
+            if ( !mappings.containsKey( mappingPrism.source() ) ) {
+                mappings.put( mappingPrism.source(), new ArrayList<Mapping>() );
             }
-            mappings.get( mapping.source() ).add( fromMappingPrism( mapping, element ) );
+            Mapping mapping = fromMappingPrism( mappingPrism, element, messager );
+            if ( mapping != null ) {
+                mappings.get( mappingPrism.source() ).add( mapping );
+            }
         }
 
         return mappings;
     }
 
-    public static Mapping fromMappingPrism(MappingPrism mapping, Element element) {
+    public static Mapping fromMappingPrism(MappingPrism mappingPrism, Element element, Messager messager) {
         String[] sourceNameParts = getSourceNameParts(
-            mapping.source(),
+            mappingPrism.source(),
             element,
-            mapping.mirror,
-            mapping.values.source()
+            mappingPrism.mirror,
+            mappingPrism.values.source()
         );
 
+        if ( mappingPrism.source().isEmpty() && mappingPrism.expression().isEmpty() ) {
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                    "Either define a source or an expression in a Mapping",
+                    element
+            );
+            return null;
+        }
+        else if  ( !mappingPrism.source().isEmpty() && !mappingPrism.expression().isEmpty() ) {
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                    "Source and expression are both defined in Mapping, either define a source or an expression",
+                    element
+            );
+            return null;
+        }
+
         return new Mapping(
-            mapping.source(),
+            mappingPrism.source(),
             sourceNameParts != null ? sourceNameParts[0] : null,
-            sourceNameParts != null ? sourceNameParts[1] : mapping.source(),
-            mapping.target(),
-            mapping.dateFormat(),
-            mapping.mirror,
-            mapping.values.source(),
-            mapping.values.target()
+            sourceNameParts != null ? sourceNameParts[1] : mappingPrism.source(),
+            mappingPrism.expression(),
+            mappingPrism.target(),
+            mappingPrism.dateFormat(),
+            mappingPrism.mirror,
+            mappingPrism.values.source(),
+            mappingPrism.values.target()
         );
     }
 
@@ -98,12 +121,13 @@ public class Mapping {
         return parts;
     }
 
-    private Mapping(String sourceName, String sourceParameterName, String sourcePropertyName, String targetName,
-                    String dateFormat, AnnotationMirror mirror, AnnotationValue sourceAnnotationValue,
-                    AnnotationValue targetAnnotationValue) {
+    private Mapping(String sourceName, String sourceParameterName, String sourcePropertyName, String expression,
+                    String targetName, String dateFormat, AnnotationMirror mirror,
+                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
         this.sourceParameterName = sourceParameterName;
         this.sourcePropertyName = sourcePropertyName;
+        this.expression = expression;
         this.targetName = targetName.equals( "" ) ? sourceName : targetName;
         this.dateFormat = dateFormat;
         this.mirror = mirror;
@@ -139,6 +163,11 @@ public class Mapping {
         return sourceParameterName;
     }
 
+    public String getExpression() {
+        return expression;
+    }
+
+
     public String getTargetName() {
         return targetName;
     }
@@ -160,16 +189,22 @@ public class Mapping {
     }
 
     public Mapping reverse() {
-        return new Mapping(
-            targetName,
-            null,
-            targetName,
-            sourceName,
-            dateFormat,
-            mirror,
-            sourceAnnotationValue,
-            targetAnnotationValue
-        );
+        Mapping reverse = null;
+        if ( expression != null ) {
+            /* mapping can only be reversed if the source was not a constant */
+            reverse = new Mapping(
+                    targetName,
+                    null,
+                    targetName,
+                    expression,
+                    sourceName,
+                    dateFormat,
+                    mirror,
+                    sourceAnnotationValue,
+                    targetAnnotationValue
+            );
+        }
+        return reverse;
     }
 
     @Override

@@ -384,11 +384,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             if ( !mappings.containsKey( mappingAnnotation.source() ) ) {
                 mappings.put( mappingAnnotation.source(), new ArrayList<Mapping>() );
             }
-            mappings.get( mappingAnnotation.source() ).add( Mapping.fromMappingPrism( mappingAnnotation, method ) );
+            Mapping mapping =  Mapping.fromMappingPrism( mappingAnnotation, method, messager );
+            if ( mapping != null ) {
+                mappings.get( mappingAnnotation.source() ).add( mapping );
+            }
         }
 
         if ( mappingsAnnotation != null ) {
-            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation, method ) );
+            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager ) );
         }
 
         return mappings;

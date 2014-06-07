@@ -376,7 +376,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 if ( !reversed.containsKey( mapping.getTargetName() ) ) {
                     reversed.put( mapping.getTargetName(), new ArrayList<Mapping>() );
                 }
-                reversed.get( mapping.getTargetName() ).add( mapping.reverse() );
+                Mapping reverseMapping = mapping.reverse();
+                if ( reverseMapping != null ) {
+                    reversed.get( mapping.getTargetName() ).add( reverseMapping );
+                }
             }
         }
         return reversed;
@@ -387,12 +390,39 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                SourceMethod method,
                                                ExecutableElement targetAcessor,
                                                Parameter parameter) {
-        String targetPropertyName = Executables.getPropertyName( targetAcessor );
+    String targetPropertyName = Executables.getPropertyName( targetAcessor );
+
+        // check if there's a mapping defined
         Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
-        String dateFormat = mapping != null ? mapping.getDateFormat() : null;
-        String sourcePropertyName = mapping != null ? mapping.getSourcePropertyName() : targetPropertyName;
+        String dateFormat = null;
+        boolean isSourceConstant = false;
+        String sourceConstant = null;
+        String sourcePropertyName;
+        if ( mapping != null ) {
+            dateFormat = mapping.getDateFormat();
+            isSourceConstant = !mapping.getExpression().isEmpty();
+            sourceConstant =  "\"" + mapping.getExpression() + "\"";
+            sourcePropertyName = mapping.getSourcePropertyName();
+        }
+        else {
+            sourcePropertyName = targetPropertyName;
+        }
+
         List<ExecutableElement> sourceGetters = parameter.getType().getGetters();
 
+        // check constants first
+        if ( isSourceConstant ) {
+            return getConstantMapping(
+                    mapperReferences,
+                    methods,
+                    method,
+                    sourceConstant,
+                    targetAcessor,
+                    dateFormat
+            );
+        }
+
+        // then iterate over source accessors (assuming the source is a bean)
         for ( ExecutableElement sourceAccessor : sourceGetters ) {
 
             List<Mapping> sourceMappings = method.getMappings().get( sourcePropertyName );
@@ -425,7 +455,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 );
             }
         }
-
         return null;
     }
 
@@ -592,10 +621,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     }
 
                 }
-                else if ( !hasSourceProperty(
-                    method,
-                    mappedProperty.getSourcePropertyName()
-                ) ) {
+                else if ( mappedProperty.getExpression().isEmpty() &&
+                          !hasSourceProperty( method, mappedProperty.getSourcePropertyName() ) ) {
                     messager.printMessage(
                         Kind.ERROR,
                         String.format(
@@ -627,7 +654,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return !foundUnmappedProperty;
     }
 
-    private PropertyMapping getPropertyMapping(List<MapperReference> mapperReferences,
+ private PropertyMapping getPropertyMapping(List<MapperReference> mapperReferences,
                                                List<SourceMethod> methods,
                                                SourceMethod method,
                                                Parameter parameter,
@@ -700,6 +727,78 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             targetAcessor.getSimpleName().toString(),
             targetType,
             assignment
+        );
+    }
+
+    private PropertyMapping getConstantMapping(List<MapperReference> mapperReferences,
+                                               List<SourceMethod> methods,
+                                               SourceMethod method,
+                                               String sourceReference,
+                                               ExecutableElement targetAcessor,
+                                               String dateFormat) {
+
+        // source
+       String mappedElement =  "constant '" + sourceReference + "'";
+       Type sourceType = typeFactory.getType( String.class );
+
+        // target
+        Type targetType = null;
+        if ( Executables.isSetterMethod( targetAcessor ) ) {
+            targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
+        }
+        else if ( Executables.isGetterMethod( targetAcessor ) ) {
+            targetType = typeFactory.getReturnType( targetAcessor );
+        }
+        String targetPropertyName = Executables.getPropertyName( targetAcessor );
+
+
+        Assignment assignment = mappingResolver.getTargetAssignment(
+            method,
+            mappedElement,
+            mapperReferences,
+            methods,
+            sourceType,
+            targetType,
+            targetPropertyName,
+            dateFormat,
+            sourceReference
+        );
+
+        if ( assignment != null ) {
+
+            // create a new Map or Collection implementation if no method or type conversion
+            if ( targetType != null && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
+                if ( assignment.isSimple() ) {
+                    assignment = new NewCollectionOrMapWrapper( assignment );
+                }
+            }
+
+            // target accessor is setter, so decorate assigmment as setter
+            assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+
+        }
+        else {
+            messager.printMessage(
+                    Kind.ERROR,
+                    String.format(
+                            "Can't map \"%s %s\" to \"%s %s\".",
+                            sourceType,
+                            sourceReference,
+                            targetType,
+                            Executables.getPropertyName( targetAcessor )
+                    ),
+                    method.getExecutable()
+            );
+        }
+        return new PropertyMapping(
+                null,
+                null,
+                null,
+                sourceType,
+                Executables.getPropertyName( targetAcessor ),
+                targetAcessor.getSimpleName().toString(),
+                targetType,
+                assignment
         );
     }
 
