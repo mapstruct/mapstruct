@@ -50,7 +50,7 @@ public class Mapping {
     private final AnnotationValue targetAnnotationValue;
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation, Element element,
-            Messager messager) {
+                                                               Messager messager) {
         Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
@@ -75,16 +75,18 @@ public class Mapping {
         );
 
         if ( mappingPrism.source().isEmpty() && mappingPrism.expression().isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                    "Either define a source or an expression in a Mapping",
-                    element
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Either define a source or an expression in a Mapping",
+                element
             );
             return null;
         }
-        else if  ( !mappingPrism.source().isEmpty() && !mappingPrism.expression().isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                    "Source and expression are both defined in Mapping, either define a source or an expression",
-                    element
+        else if ( !mappingPrism.source().isEmpty() && !mappingPrism.expression().isEmpty() ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Source and expression are both defined in Mapping, either define a source or an expression",
+                element
             );
             return null;
         }
@@ -193,15 +195,15 @@ public class Mapping {
         if ( expression != null ) {
             /* mapping can only be reversed if the source was not a constant */
             reverse = new Mapping(
-                    targetName,
-                    null,
-                    targetName,
-                    expression,
-                    sourceName,
-                    dateFormat,
-                    mirror,
-                    sourceAnnotationValue,
-                    targetAnnotationValue
+                targetName,
+                null,
+                targetName,
+                expression,
+                sourceName,
+                dateFormat,
+                mirror,
+                sourceAnnotationValue,
+                targetAnnotationValue
             );
         }
         return reverse;

@@ -83,11 +83,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private Types typeUtils;
     private Messager messager;
     private Options options;
-
     private TypeFactory typeFactory;
-
     private MappingResolver mappingResolver;
-
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
@@ -95,11 +92,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.typeUtils = context.getTypeUtils();
         this.messager = context.getMessager();
         this.options = context.getOptions();
-
         this.typeFactory = context.getTypeFactory();
-
         this.mappingResolver = new MappingResolver( messager, typeFactory, elementUtils, typeUtils );
-
 
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -390,7 +384,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                SourceMethod method,
                                                ExecutableElement targetAcessor,
                                                Parameter parameter) {
-    String targetPropertyName = Executables.getPropertyName( targetAcessor );
+        String targetPropertyName = Executables.getPropertyName( targetAcessor );
 
         // check if there's a mapping defined
         Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
@@ -401,7 +395,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         if ( mapping != null ) {
             dateFormat = mapping.getDateFormat();
             isSourceConstant = !mapping.getExpression().isEmpty();
-            sourceConstant =  "\"" + mapping.getExpression() + "\"";
+            sourceConstant = "\"" + mapping.getExpression() + "\"";
             sourcePropertyName = mapping.getSourcePropertyName();
         }
         else {
@@ -413,12 +407,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // check constants first
         if ( isSourceConstant ) {
             return getConstantMapping(
-                    mapperReferences,
-                    methods,
-                    method,
-                    sourceConstant,
-                    targetAcessor,
-                    dateFormat
+                mapperReferences,
+                methods,
+                method,
+                sourceConstant,
+                targetAcessor,
+                dateFormat
             );
         }
 
@@ -622,7 +616,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 }
                 else if ( mappedProperty.getExpression().isEmpty() &&
-                          !hasSourceProperty( method, mappedProperty.getSourcePropertyName() ) ) {
+                    !hasSourceProperty( method, mappedProperty.getSourcePropertyName() ) ) {
                     messager.printMessage(
                         Kind.ERROR,
                         String.format(
@@ -654,7 +648,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return !foundUnmappedProperty;
     }
 
- private PropertyMapping getPropertyMapping(List<MapperReference> mapperReferences,
+    private PropertyMapping getPropertyMapping(List<MapperReference> mapperReferences,
                                                List<SourceMethod> methods,
                                                SourceMethod method,
                                                Parameter parameter,
@@ -703,7 +697,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             if ( !sourceType.isPrimitive() ) {
                 assignment = new NullCheckWrapper( assignment );
             }
-
         }
         else {
             messager.printMessage(
@@ -730,16 +723,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
     }
 
+    /**
+     * Creates a {@link PropertyMapping} representing the mapping of the given constant expression into the target
+     * property.
+     */
     private PropertyMapping getConstantMapping(List<MapperReference> mapperReferences,
                                                List<SourceMethod> methods,
                                                SourceMethod method,
-                                               String sourceReference,
+                                               String constantExpression,
                                                ExecutableElement targetAcessor,
                                                String dateFormat) {
 
         // source
-       String mappedElement =  "constant '" + sourceReference + "'";
-       Type sourceType = typeFactory.getType( String.class );
+        String mappedElement = "constant '" + constantExpression + "'";
+        Type sourceType = typeFactory.getType( String.class );
 
         // target
         Type targetType = null;
@@ -751,7 +748,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
         String targetPropertyName = Executables.getPropertyName( targetAcessor );
 
-
         Assignment assignment = mappingResolver.getTargetAssignment(
             method,
             mappedElement,
@@ -761,7 +757,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             targetType,
             targetPropertyName,
             dateFormat,
-            sourceReference
+            constantExpression
         );
 
         if ( assignment != null ) {
@@ -773,32 +769,29 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
             }
 
-            // target accessor is setter, so decorate assigmment as setter
+            // target accessor is setter, so decorate assignment as setter
             assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-
         }
         else {
             messager.printMessage(
-                    Kind.ERROR,
-                    String.format(
-                            "Can't map \"%s %s\" to \"%s %s\".",
-                            sourceType,
-                            sourceReference,
-                            targetType,
-                            Executables.getPropertyName( targetAcessor )
-                    ),
-                    method.getExecutable()
+                Kind.ERROR,
+                String.format(
+                    "Can't map \"%s %s\" to \"%s %s\".",
+                    sourceType,
+                    constantExpression,
+                    targetType,
+                    targetPropertyName
+                ),
+                method.getExecutable()
             );
         }
+
         return new PropertyMapping(
-                null,
-                null,
-                null,
-                sourceType,
-                Executables.getPropertyName( targetAcessor ),
-                targetAcessor.getSimpleName().toString(),
-                targetType,
-                assignment
+            sourceType,
+            targetPropertyName,
+            targetAcessor.getSimpleName().toString(),
+            targetType,
+            assignment
         );
     }
 

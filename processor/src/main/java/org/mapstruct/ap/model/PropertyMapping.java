@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
+
 /**
  * Represents the mapping between a source and target property, e.g. from
  * {@code String Source#foo} to {@code int Target#bar}. Name and type of source
@@ -46,10 +47,17 @@ public class PropertyMapping extends ModelElement {
 
     private final Assignment propertyAssignment;
 
+    /**
+     * Constructor for creating mappings of constant expressions.
+     */
+    public PropertyMapping(Type sourceType, String targetName, String targetAccessorName, Type targetType,
+                           Assignment propertyAssignment) {
+        this( null, null, null, sourceType, targetName, targetAccessorName, targetType, propertyAssignment );
+    }
 
     public PropertyMapping(String sourceBeanName, String sourceName, String sourceAccessorName, Type sourceType,
                            String targetName, String targetAccessorName, Type targetType,
-                           Assignment propertyAssignment ) {
+                           Assignment propertyAssignment) {
 
         this.sourceBeanName = sourceBeanName;
         this.sourceName = sourceName;
@@ -121,8 +129,8 @@ public class PropertyMapping extends ModelElement {
         Set<Type> importTypes = new HashSet<Type>();
         if ( propertyAssignment != null ) {
             if ( isTargetAccessorSetter()
-                    && propertyAssignment.isSimple()
-                    && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
+                && propertyAssignment.isSimple()
+                && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
                 importTypes.addAll( targetType.getImportTypes() );
             }
 
