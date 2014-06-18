@@ -44,6 +44,6 @@ public class PrimitiveToPrimitiveConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        return "(" + sourceType + ")<SOURCE>";
+        return "(" + sourceType + ") <SOURCE>";
     }
 }

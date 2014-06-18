@@ -16,22 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.defaultimplementation;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+package org.mapstruct.ap.test.npe;
 
 /**
- * @author Andreas Gudian
  *
+ * @author Sjaak Derksen
  */
-@Mapper
-public interface NoSetterMapper {
+public class NullObject {
 
-    NoSetterMapper INSTANCE = Mappers.getMapper( NoSetterMapper.class );
-
-    NoSetterTarget toTarget(NoSetterSource source);
-
-    NoSetterTarget toTargetWithExistingTarget(NoSetterSource source, @MappingTarget NoSetterTarget preExistTarget);
 }

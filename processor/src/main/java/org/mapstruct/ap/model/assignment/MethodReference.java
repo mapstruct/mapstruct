@@ -148,7 +148,17 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
     }
 
     @Override
-    public boolean isSimple() {
-        return false;
+    public AssignmentType getType() {
+
+        switch ( assignment.getType() ) {
+            case DIRECT:
+                return AssignmentType.MAPPED;
+            case MAPPED:
+                return AssignmentType.MAPPED_TWICE;
+            case TYPE_CONVERTED:
+                return AssignmentType.TYPE_CONVERTED_MAPPED;
+            default:
+                return null;
+        }
     }
 }

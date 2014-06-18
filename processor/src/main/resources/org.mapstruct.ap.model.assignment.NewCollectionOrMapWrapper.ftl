@@ -24,5 +24,5 @@ new <#if ext.targetType.implementationType??>
 <#else>
     <@includeModel object=ext.targetType/>
 </#if>
-( <@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/> )
+( <@includeModel object=assignment targetBeanName=ext.targetBeanName targetAccessorName=ext.targetAccessorName targetType=ext.targetType raw=ext.raw/> )
 </@compress>

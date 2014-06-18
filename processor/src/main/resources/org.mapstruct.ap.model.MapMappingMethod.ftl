@@ -34,12 +34,12 @@
     for ( java.util.Map.Entry<<#list sourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
     <#-- key -->
         <@includeModel object=keyAssignment
-                   target=keyVariableName
+                   targetAccessorName=keyVariableName
                    targetType=typeName(resultType.typeParameters[0])
                    isLocalVar=true/>
     <#-- value -->
         <@includeModel object=valueAssignment
-                   target=valueVariableName
+                   targetAccessorName=valueVariableName
                    targetType=typeName(resultType.typeParameters[1])
                    isLocalVar=true/>
         ${resultName}.put( ${keyVariableName}, ${valueVariableName} );

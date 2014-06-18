@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -36,8 +35,9 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
-
 import org.mapstruct.ap.model.Assignment;
+import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.Decorator;
 import org.mapstruct.ap.model.DefaultMapperReference;
@@ -51,9 +51,11 @@ import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.PropertyMapping;
 import org.mapstruct.ap.model.assignment.AssignmentFactory;
+import org.mapstruct.ap.model.assignment.GetterCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.NullCheckWrapper;
+import org.mapstruct.ap.model.assignment.SetterCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -78,6 +80,8 @@ import org.mapstruct.ap.util.Strings;
  * @author Gunnar Morling
  */
 public class MapperCreationProcessor implements ModelElementProcessor<List<SourceMethod>, Mapper> {
+
+    private enum TargetAccessorType { GETTER, SETTER };
 
     private Elements elementUtils;
     private Types typeUtils;
@@ -655,14 +659,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                ExecutableElement sourceAccessor,
                                                ExecutableElement targetAcessor,
                                                String dateFormat) {
+
+        TargetAccessorType targetAccessorType = TargetAccessorType.SETTER;
         Type sourceType = typeFactory.getReturnType( sourceAccessor );
-        Type targetType = null;
+        Type targetType;
         String sourceReference = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
         if ( Executables.isSetterMethod( targetAcessor ) ) {
             targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
         }
-        else if ( Executables.isGetterMethod( targetAcessor ) ) {
+        else  { // must be getter
             targetType = typeFactory.getReturnType( targetAcessor );
+            targetAccessorType = TargetAccessorType.GETTER;
         }
 
         String targetPropertyName = Executables.getPropertyName( targetAcessor );
@@ -683,19 +690,50 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         if ( assignment != null ) {
 
-            // create a new Map or Collection implementation if no method or type conversion
-            if ( targetType != null && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
-                if ( assignment.isSimple() && Executables.isSetterMethod( targetAcessor ) ) {
+            if ( targetType.isCollectionOrMapType() ) {
+
+                // wrap the assignment in a new Map or Collection implementation if this is not done in a mapping
+                // method. Note, typeconversons do not apply to collections or maps
+                if ( assignment.getType() == DIRECT ) {
+
                     assignment = new NewCollectionOrMapWrapper( assignment );
                 }
+
+                // wrap the assignment in the setter method
+                assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+
+                // wrap the setter in the collection / map initializers
+                switch ( targetAccessorType ) {
+
+                    case GETTER:
+                        // target accessor is getter, so decorate assignment as getter
+                        assignment =  new GetterCollectionOrMapWrapper( assignment,
+                                targetAcessor.getSimpleName().toString() );
+                        break;
+
+                    default: // setter
+
+                        assignment =  new SetterCollectionOrMapWrapper( assignment,
+                                targetAcessor.getSimpleName().toString() );
+                        break;
+                }
+
+                // For collections and maps include a null check, when the assignment type is DIRECT.
+                // for mapping methods (builtin / custom), the mapping method is responsible for the
+                // null check. Typeconversions do not apply to collections and maps.
+                if ( assignment.getType() == DIRECT ) {
+                    assignment = new NullCheckWrapper( assignment );
+                }
+
             }
+            else {
 
-            // target accessor is setter, so decorate assignment as setter
-            assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-
-            // decorate assignment with null check of source can be null (is not primitive)
-            if ( !sourceType.isPrimitive() ) {
-                assignment = new NullCheckWrapper( assignment );
+                assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+                if ( !sourceType.isPrimitive() && ( assignment.getType() == TYPE_CONVERTED ) ) {
+                    // for primitive types null check is not possible at all, but a conversion needs
+                    // a null check.
+                    assignment = new NullCheckWrapper( assignment );
+                }
             }
         }
         else {
@@ -713,10 +751,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
         return new PropertyMapping(
             parameter.getName(),
-            Executables.getPropertyName( sourceAccessor ),
-            sourceAccessor.getSimpleName().toString(),
-            sourceType,
-            Executables.getPropertyName( targetAcessor ),
             targetAcessor.getSimpleName().toString(),
             targetType,
             assignment
@@ -764,7 +798,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
             // create a new Map or Collection implementation if no method or type conversion
             if ( targetType != null && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
-                if ( assignment.isSimple() ) {
+                if ( assignment.getType() == DIRECT ) {
                     assignment = new NewCollectionOrMapWrapper( assignment );
                 }
             }
@@ -786,13 +820,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             );
         }
 
-        return new PropertyMapping(
-            sourceType,
-            targetPropertyName,
-            targetAcessor.getSimpleName().toString(),
-            targetType,
-            assignment
-        );
+        return new PropertyMapping( targetAcessor.getSimpleName().toString(), targetType, assignment );
     }
 
     private IterableMappingMethod getIterableMappingMethod(List<MapperReference> mapperReferences,

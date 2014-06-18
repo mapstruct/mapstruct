@@ -35,7 +35,7 @@ import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.VirtualMappingMethod;
 import org.mapstruct.ap.model.assignment.AssignmentFactory;
-import org.mapstruct.ap.model.assignment.Simple;
+import org.mapstruct.ap.model.assignment.Direct;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.DefaultConversionContext;
 import org.mapstruct.ap.model.common.Type;
@@ -111,7 +111,7 @@ public class MappingResolver {
      * <ol>
      * <li>MethodReference</li>
      * <li>TypeConversion</li>
-     * <li>Simple Assignment (empty TargetAssignment)</li>
+     * <li>Direct Assignment (empty TargetAssignment)</li>
      * <li>null, no assignment found</li>
      * </ol>
      */
@@ -342,7 +342,7 @@ public class MappingResolver {
                         );
                         if ( conversionXRef != null ) {
                             methodRefY.setAssignment( conversionXRef );
-                            conversionXRef.setAssignment( new Simple( sourceReference ) );
+                            conversionXRef.setAssignment( new Direct( sourceReference ) );
                             break;
                         }
                         else {
@@ -382,7 +382,7 @@ public class MappingResolver {
                         conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
                         if ( conversionYRef != null ) {
                             conversionYRef.setAssignment( methodRefX );
-                            methodRefX.setAssignment( new Simple( sourceReference ) );
+                            methodRefX.setAssignment( new Direct( sourceReference ) );
                             break;
                         }
                         else {

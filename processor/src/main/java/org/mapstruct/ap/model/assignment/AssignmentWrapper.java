@@ -62,7 +62,7 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     }
 
     @Override
-    public boolean isSimple() {
-        return decoratedAssignment.isSimple();
+    public AssignmentType getType() {
+        return decoratedAssignment.getType();
     }
 }
