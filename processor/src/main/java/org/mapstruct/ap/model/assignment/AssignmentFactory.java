@@ -56,8 +56,8 @@ public class AssignmentFactory {
         return new MethodReference( method, contextParam );
     }
 
-    public static Simple createSimple(String sourceRef) {
-        return new Simple( sourceRef );
+    public static Direct createSimple(String sourceRef) {
+        return new Direct( sourceRef );
     }
 
 }

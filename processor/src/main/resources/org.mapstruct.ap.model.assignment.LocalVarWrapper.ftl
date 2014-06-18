@@ -19,11 +19,11 @@
 
 -->
 <#if (exceptionTypes?size == 0) >
-    ${ext.targetType} ${ext.target} = <@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/>;
+    ${ext.targetType} ${ext.targetAccessorName} = <@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>;
 <#else>
-    ${ext.targetType} ${ext.target};
+    ${ext.targetType} ${ext.targetAccessorName};
     try {
-        ${ext.target} = <@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/>;
+        ${ext.targetAccessorName} = <@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>;
     }
     <#list exceptionTypes as exceptionType>
     catch ( <@includeModel object=exceptionType/> e ) {

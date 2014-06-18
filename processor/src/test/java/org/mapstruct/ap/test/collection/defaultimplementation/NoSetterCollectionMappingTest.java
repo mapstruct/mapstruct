@@ -20,6 +20,8 @@ package org.mapstruct.ap.test.collection.defaultimplementation;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,5 +55,22 @@ public class NoSetterCollectionMappingTest {
 
         assertThat( target.getListValues() ).containsExactly( "foo", "bar" );
         assertThat( target.getMapValues() ).includes( entry( "fooKey", "fooVal" ), entry( "barKey", "barVal" ) );
+
+        // now test existing instances
+
+        NoSetterSource source2 = new NoSetterSource();
+        source2.setListValues( Arrays.asList( "baz" ) );
+        List<String> originalCollectionInstance = target.getListValues();
+        Map<String, String> originalMapInstance = target.getMapValues();
+
+        NoSetterTarget target2 = NoSetterMapper.INSTANCE.toTargetWithExistingTarget( source2, target );
+
+        assertThat( target2.getListValues() ).isSameAs( originalCollectionInstance );
+        assertThat( target2.getListValues() ).containsExactly( "baz" );
+        assertThat( target2.getMapValues() ).isSameAs( originalMapInstance );
+        // source2 mapvalues is empty, so the map is not cleared
+        assertThat( target2.getMapValues() ).includes( entry( "fooKey", "fooVal" ), entry( "barKey", "barVal" ) );
+
+
     }
 }

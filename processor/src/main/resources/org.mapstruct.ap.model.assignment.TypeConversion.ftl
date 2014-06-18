@@ -18,4 +18,4 @@
      limitations under the License.
 
 -->
-${openExpression}<@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/>${closeExpression}
+${openExpression}<@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>${closeExpression}

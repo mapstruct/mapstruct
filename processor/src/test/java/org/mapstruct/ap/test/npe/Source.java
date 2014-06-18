@@ -16,22 +16,44 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.defaultimplementation;
+package org.mapstruct.ap.test.npe;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+import java.util.List;
 
 /**
- * @author Andreas Gudian
  *
+ * @author Sjaak Derksen
  */
-@Mapper
-public interface NoSetterMapper {
+public class Source {
 
-    NoSetterMapper INSTANCE = Mappers.getMapper( NoSetterMapper.class );
+    private NullObject someObject;
+    private String number;
+    private List<String> someList;
 
-    NoSetterTarget toTarget(NoSetterSource source);
+    public NullObject getSomeObject() {
+        return someObject;
+    }
 
-    NoSetterTarget toTargetWithExistingTarget(NoSetterSource source, @MappingTarget NoSetterTarget preExistTarget);
+    public void setSomeObject( NullObject someObject ) {
+        this.someObject = someObject;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber( String number ) {
+        this.number = number;
+    }
+
+    public List<String> getSomeList() {
+        return someList;
+    }
+
+    public void setSomeList( List<String> someList ) {
+        this.someList = someList;
+    }
+
+
+
 }

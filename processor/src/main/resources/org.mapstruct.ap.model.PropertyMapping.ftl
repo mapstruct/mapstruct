@@ -18,29 +18,9 @@
      limitations under the License.
 
 -->
- <#if !( targetType.collectionType || targetType.mapType ) >
-    <#-- non collections or maps -->
-    <@assignment aTargetType=targetType/>
-<#else>
-    <#-- collections or maps -->
-    <#if ( ext.existingInstanceMapping || !targetAccessorSetter ) >
-        if ( ${ext.targetBeanName}.${targetReadAccessorName}() != null ) {
-            <#if ext.existingInstanceMapping>
-                ${ext.targetBeanName}.${targetReadAccessorName}().clear();
-             </#if><#t>
-                <#if targetType.collectionType>
-                    <@assignment aTarget="${ext.targetBeanName}.${targetReadAccessorName}().addAll"/>
-                <#else>
-                    <@assignment aTarget="${ext.targetBeanName}.${targetReadAccessorName}().putAll"/>
-                </#if>
-        }
-        <#if targetAccessorSetter>
-           else <@assignment/>
-        </#if>
-    <#elseif targetAccessorSetter>
-           <@assignment/>
-     </#if>
- </#if>
- <#macro assignment aTarget="${ext.targetBeanName}.${targetAccessorName}" aTargetType=targetType>
-         <@includeModel object=propertyAssignment target=aTarget targetType=aTargetType raw=true/>
-</#macro>
+<@includeModel object=assignment
+               targetBeanName=ext.targetBeanName
+               raw=ext.raw
+               existingInstanceMapping=ext.existingInstanceMapping
+               targetAccessorName=targetAccessorName
+               targetType=targetType/>

@@ -24,6 +24,8 @@ import java.util.Set;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 
+import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
+
 /**
  * Represents the mapping between a source and target property, e.g. from
  * {@code String Source#foo} to {@code int Target#bar}. Name and type of source
@@ -35,63 +37,29 @@ import org.mapstruct.ap.model.common.Type;
 public class PropertyMapping extends ModelElement {
 
     private final String sourceBeanName;
-    private final String sourceName;
-    private final String sourceAccessorName;
-    private final Type sourceType;
 
-    private final String targetName;
     private final String targetAccessorName;
     private final Type targetType;
-    private final boolean isTargetAccessorSetter;
-    private final String targetReadAccessorName;
 
-    private final Assignment propertyAssignment;
+    private final Assignment assignment;
 
-    /**
-     * Constructor for creating mappings of constant expressions.
-     */
-    public PropertyMapping(Type sourceType, String targetName, String targetAccessorName, Type targetType,
-                           Assignment propertyAssignment) {
-        this( null, null, null, sourceType, targetName, targetAccessorName, targetType, propertyAssignment );
+    // Constructor for creating mappings of constant expressions.
+    public PropertyMapping(String targetAccessorName, Type targetType, Assignment propertyAssignment) {
+        this( null, targetAccessorName, targetType, propertyAssignment );
     }
 
-    public PropertyMapping(String sourceBeanName, String sourceName, String sourceAccessorName, Type sourceType,
-                           String targetName, String targetAccessorName, Type targetType,
-                           Assignment propertyAssignment) {
+    public PropertyMapping(String sourceBeanName, String targetAccessorName, Type targetType, Assignment assignment) {
 
         this.sourceBeanName = sourceBeanName;
-        this.sourceName = sourceName;
-        this.sourceAccessorName = sourceAccessorName;
-        this.sourceType = sourceType;
 
-        this.targetName = targetName;
         this.targetAccessorName = targetAccessorName;
         this.targetType = targetType;
-        this.isTargetAccessorSetter = targetAccessorName.startsWith( "set" );
-        this.targetReadAccessorName =
-            this.isTargetAccessorSetter ? "get" + targetAccessorName.substring( 3 ) : targetAccessorName;
 
-        this.propertyAssignment = propertyAssignment;
+        this.assignment = assignment;
     }
 
     public String getSourceBeanName() {
         return sourceBeanName;
-    }
-
-    public String getSourceName() {
-        return sourceName;
-    }
-
-    public String getSourceAccessorName() {
-        return sourceAccessorName;
-    }
-
-    public Type getSourceType() {
-        return sourceType;
-    }
-
-    public String getTargetName() {
-        return targetName;
     }
 
     public String getTargetAccessorName() {
@@ -102,41 +70,20 @@ public class PropertyMapping extends ModelElement {
         return targetType;
     }
 
-    public Assignment getPropertyAssignment() {
-        return propertyAssignment;
-    }
-
-    /**
-     * Whether the target accessor is a setter method or not. The only case where it is not a setter but a getter is a
-     * collection-typed property without a getter, to which elements are set by adding the source elements to the
-     * collection retrieved via the getter.
-     *
-     * @return {@code true} if the target accessor is a setter, {@code false} otherwise
-     */
-    public boolean isTargetAccessorSetter() {
-        return isTargetAccessorSetter;
-    }
-
-    /**
-     * @return the read-accessor for the target property (i.e. the getter method)
-     */
-    public String getTargetReadAccessorName() {
-        return targetReadAccessorName;
+    public Assignment getAssignment() {
+        return assignment;
     }
 
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> importTypes = new HashSet<Type>();
-        if ( propertyAssignment != null ) {
-            if ( isTargetAccessorSetter()
-                && propertyAssignment.isSimple()
-                && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
+        if ( assignment.getType() == DIRECT  ) {
+            if ( targetType.isCollectionOrMapType() ) {
                 importTypes.addAll( targetType.getImportTypes() );
             }
-
-            if ( !propertyAssignment.isSimple() ) {
-                importTypes.addAll( propertyAssignment.getImportTypes() );
-            }
+        }
+        else {
+            importTypes.addAll( assignment.getImportTypes() );
         }
         return importTypes;
     }
@@ -144,11 +91,9 @@ public class PropertyMapping extends ModelElement {
     @Override
     public String toString() {
         return "PropertyMapping {" +
-            "\n    sourceName='" + sourceAccessorName + "\'," +
-            "\n    sourceType=" + sourceType + "," +
             "\n    targetName='" + targetAccessorName + "\'," +
             "\n    targetType=" + targetType + "," +
-            "\n    propertyAssignment=" + propertyAssignment +
+            "\n    propertyAssignment=" + assignment +
             "\n}";
     }
 }

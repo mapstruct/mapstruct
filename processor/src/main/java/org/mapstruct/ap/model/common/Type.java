@@ -183,6 +183,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return isMapType;
     }
 
+    public boolean isCollectionOrMapType() {
+        return isCollectionType || isMapType;
+    }
+
     public String getFullyQualifiedName() {
         return qualifiedName;
     }

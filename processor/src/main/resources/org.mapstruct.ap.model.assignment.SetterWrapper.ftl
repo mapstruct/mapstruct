@@ -19,10 +19,10 @@
 
 -->
 <#if (exceptionTypes?size == 0) >
-    ${ext.target}( <@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/> );
+    ${ext.targetBeanName}.${ext.targetAccessorName}( <@_assignment/> );
 <#else>
     try {
-        ${ext.target}( <@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/> );
+        ${ext.targetBeanName}.${ext.targetAccessorName}( <@_assignment/> );
     }
     <#list exceptionTypes as exceptionType>
     catch ( <@includeModel object=exceptionType/> e ) {
@@ -30,3 +30,6 @@
     }
     </#list>
 </#if>
+<#macro _assignment>
+    <@includeModel object=assignment raw=ext.raw targetType=ext.targetType/>
+</#macro>

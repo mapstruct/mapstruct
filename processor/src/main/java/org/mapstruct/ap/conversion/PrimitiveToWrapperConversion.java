@@ -50,7 +50,7 @@ public class PrimitiveToWrapperConversion extends SimpleConversion {
             return "<SOURCE>";
         }
         else {
-            return "(" + targetType.getName() + ")<SOURCE>";
+            return "(" + targetType.getName() + ") <SOURCE>";
         }
     }
 

@@ -29,6 +29,21 @@ import org.mapstruct.ap.model.common.Type;
  */
 public interface Assignment {
 
+    public static enum AssignmentType {
+        /** assignment is direct */
+        DIRECT,
+        /** assignment is type converted */
+        TYPE_CONVERTED,
+        /** assignment is mapped (builtin/custom) */
+        MAPPED,
+        /** 2 mapping methods (builtin/custom) are applied to get the target */
+        MAPPED_TWICE,
+        /** assignment is first mapped (builtin/custom), then the result is type converted */
+        MAPPED_TYPE_CONVERTED,
+        /** assignment is first type converted, and then mapped (builtin/custom) */
+        TYPE_CONVERTED_MAPPED
+    }
+
     /**
      * returns all types required as import by the assignment statement.
      *
@@ -62,10 +77,10 @@ public interface Assignment {
      String getSourceReference();
 
      /**
-      * Returns whether the implemented assignment is a plain source assignment (Simple assignment)
-      * (so not a MethodReference or TypeConversion).
+      * Returns whether the type of assignment
       *
-      * @return true when this is a (wrapped) Simple Assignment
+      * @return {@link  AssignmentType}
       */
-     boolean isSimple();
+     AssignmentType getType();
+
 }

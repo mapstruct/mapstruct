@@ -26,15 +26,15 @@ import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 
 /**
- * Simple Assignment. Just a source reference
+ * Direct Assignment. Just a source reference
  *
  * @author Sjaak Derksen
  */
-public class Simple extends ModelElement implements Assignment {
+public class Direct extends ModelElement implements Assignment {
 
     private final String sourceReference;
 
-    public Simple( String sourceReference ) {
+    public Direct( String sourceReference ) {
         this.sourceReference = sourceReference;
     }
 
@@ -59,7 +59,7 @@ public class Simple extends ModelElement implements Assignment {
     }
 
     @Override
-    public boolean isSimple() {
-        return true;
+    public AssignmentType getType() {
+        return AssignmentType.DIRECT;
     }
 }

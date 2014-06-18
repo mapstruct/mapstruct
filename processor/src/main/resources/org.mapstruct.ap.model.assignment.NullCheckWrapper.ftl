@@ -19,5 +19,10 @@
 
 -->
 if ( ${sourceReference} != null ) {
-    <@includeModel object=assignment target=ext.target targetType=ext.targetType raw=ext.raw/>
+    <@includeModel object=assignment
+                targetBeanName=ext.targetBeanName
+                raw=ext.raw
+                existingInstanceMapping=ext.existingInstanceMapping
+                targetAccessorName=ext.targetAccessorName
+                targetType=ext.targetType/>
 }
