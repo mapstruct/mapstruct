@@ -35,6 +35,8 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
+import org.mapstruct.CollectionMappingStrategy;
+
 import org.mapstruct.ap.model.Assignment;
 import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED;
@@ -50,6 +52,7 @@ import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.PropertyMapping;
+import org.mapstruct.ap.model.assignment.AdderWrapper;
 import org.mapstruct.ap.model.assignment.AssignmentFactory;
 import org.mapstruct.ap.model.assignment.GetterCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.LocalVarWrapper;
@@ -81,7 +84,7 @@ import org.mapstruct.ap.util.Strings;
  */
 public class MapperCreationProcessor implements ModelElementProcessor<List<SourceMethod>, Mapper> {
 
-    private enum TargetAccessorType { GETTER, SETTER };
+    private enum TargetAccessorType { GETTER, SETTER, ADDER };
 
     private Elements elementUtils;
     private Types typeUtils;
@@ -108,9 +111,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private Mapper getMapper(TypeElement element, List<SourceMethod> methods) {
-        ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy( element );
         List<MapperReference> mapperReferences = getReferencedMappers( element );
-        List<MappingMethod> mappingMethods = getMappingMethods( mapperReferences, methods, unmappedTargetPolicy );
+        List<MappingMethod> mappingMethods =  getMappingMethods( mapperReferences, methods, element );
         mappingMethods.addAll( mappingResolver.getVirtualMethodsToGenerate() );
 
         Mapper mapper = new Mapper.Builder()
@@ -149,6 +151,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         else {
             return options.getUnmappedTargetPolicy();
         }
+    }
+
+    private CollectionMappingStrategy getEffectiveCollectionMappingStrategy(TypeElement element) {
+        MapperConfig mapperSettings = MapperConfig.getInstanceOn( element );
+        return mapperSettings.getCollectionMappingStrategy();
     }
 
     private Decorator getDecorator(TypeElement element, List<SourceMethod> methods) {
@@ -248,7 +255,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private List<MappingMethod> getMappingMethods(List<MapperReference> mapperReferences, List<SourceMethod> methods,
-                                                  ReportingPolicy unmappedTargetPolicy) {
+                                                  TypeElement element ) {
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>();
 
         for ( SourceMethod method : methods ) {
@@ -301,7 +308,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     mapperReferences,
                     methods,
                     method,
-                    unmappedTargetPolicy
+                    element
                 );
                 if ( beanMappingMethod != null ) {
                     hasFactoryMethod = beanMappingMethod.getFactoryMethod() != null;
@@ -386,9 +393,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private PropertyMapping getPropertyMapping(List<MapperReference> mapperReferences,
                                                List<SourceMethod> methods,
                                                SourceMethod method,
-                                               ExecutableElement targetAcessor,
+                                               ExecutableElement targetAccessor,
+                                               String targetPropertyName,
                                                Parameter parameter) {
-        String targetPropertyName = Executables.getPropertyName( targetAcessor );
 
         // check if there's a mapping defined
         Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
@@ -415,7 +422,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 methods,
                 method,
                 sourceConstant,
-                targetAcessor,
+                targetAccessor,
                 dateFormat
             );
         }
@@ -435,7 +442,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                             method,
                             parameter,
                             sourceAccessor,
-                            targetAcessor,
+                            targetAccessor,
+                            targetPropertyName,
                             dateFormat
                         );
                     }
@@ -448,7 +456,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     method,
                     parameter,
                     sourceAccessor,
-                    targetAcessor,
+                    targetAccessor,
+                    targetPropertyName,
                     dateFormat
                 );
             }
@@ -457,7 +466,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private BeanMappingMethod getBeanMappingMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
-                                                   SourceMethod method, ReportingPolicy unmappedTargetPolicy) {
+                                                   SourceMethod method, TypeElement element) {
+
+        // fetch settings from element to implement
+        ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy( element );
+        CollectionMappingStrategy cmStrategy = getEffectiveCollectionMappingStrategy( element );
+
 
         List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         Set<String> mappedTargetProperties = new HashSet<String>();
@@ -476,10 +490,44 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
             Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
 
+            // A target access is in general a setter method on the target object. However, in case of collections,
+            // the current target accessor can also be a getter method.
+            //
+            // The following if block, checks if the target accessor should be overruled by an add method.
+            if ( cmStrategy.equals( CollectionMappingStrategy.SETTER_PREFERRED ) ||
+                 cmStrategy.equals( CollectionMappingStrategy.ADDER_PREFERRED ) ) {
+
+                // first check if there's a setter method.
+                ExecutableElement adderAccessor = null;
+                if ( Executables.isSetterMethod( targetAccessor ) ) {
+                    Type targetType = typeFactory.getSingleParameter( targetAccessor ).getType();
+                    // ok, the current accessor is a setter. So now the strategy determines what to use
+                    if ( cmStrategy.equals( CollectionMappingStrategy.ADDER_PREFERRED ) ) {
+                        adderAccessor = method.getResultType().getAdderForType( targetType, targetPropertyName );
+                    }
+                }
+                else if ( Executables.isGetterMethod( targetAccessor ) ) {
+                    // the current accessor is a getter (no setter available). But still, an add method is according
+                    // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
+                    Type targetType = typeFactory.getReturnType( targetAccessor );
+                    adderAccessor = method.getResultType().getAdderForType( targetType, targetPropertyName );
+                }
+                if ( adderAccessor != null ) {
+                    // an adder has been found (according strategy) so overrule current choice.
+                    targetAccessor = adderAccessor;
+                }
+            }
+
             PropertyMapping propertyMapping = null;
             if ( mapping != null && mapping.getSourceParameterName() != null ) {
                 Parameter parameter = method.getSourceParameter( mapping.getSourceParameterName() );
-                propertyMapping = getPropertyMapping( mapperReferences, methods, method, targetAccessor, parameter );
+                propertyMapping = getPropertyMapping(
+                        mapperReferences,
+                        methods,
+                        method,
+                        targetAccessor,
+                        targetPropertyName,
+                        parameter );
             }
 
             if ( propertyMapping == null ) {
@@ -489,6 +537,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                         methods,
                         method,
                         targetAccessor,
+                        targetPropertyName,
                         sourceParameter
                     );
                     if ( propertyMapping != null && newPropertyMapping != null ) {
@@ -657,24 +706,36 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                SourceMethod method,
                                                Parameter parameter,
                                                ExecutableElement sourceAccessor,
-                                               ExecutableElement targetAcessor,
+                                               ExecutableElement targetAccessor,
+                                               String targetPropertyName,
                                                String dateFormat) {
 
-        TargetAccessorType targetAccessorType = TargetAccessorType.SETTER;
-        Type sourceType = typeFactory.getReturnType( sourceAccessor );
+        Type sourceType;
         Type targetType;
+        TargetAccessorType targetAccessorType;
         String sourceReference = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
-        if ( Executables.isSetterMethod( targetAcessor ) ) {
-            targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
+        String iteratorReference = null;
+        if ( Executables.isSetterMethod( targetAccessor ) ) {
+            sourceType = typeFactory.getReturnType( sourceAccessor );
+            targetType = typeFactory.getSingleParameter( targetAccessor ).getType();
+            targetAccessorType = TargetAccessorType.SETTER;
         }
-        else  { // must be getter
-            targetType = typeFactory.getReturnType( targetAcessor );
+        else if ( Executables.isAdderMethod( targetAccessor ) ) {
+            sourceType = typeFactory.getReturnType( sourceAccessor );
+            if ( sourceType.isCollectionType() && !sourceType.getTypeParameters().isEmpty() ) {
+                sourceType = sourceType.getTypeParameters().get( 0 );
+                iteratorReference = Executables.getElementNameForAdder( targetAccessor );
+            }
+            targetType = typeFactory.getSingleParameter( targetAccessor ).getType();
+            targetAccessorType = TargetAccessorType.ADDER;
+        }
+        else {
+            sourceType = typeFactory.getReturnType( sourceAccessor );
+            targetType = typeFactory.getReturnType( targetAccessor );
             targetAccessorType = TargetAccessorType.GETTER;
         }
-
-        String targetPropertyName = Executables.getPropertyName( targetAcessor );
-
-        String mappedElement = "property '" + Executables.getPropertyName( sourceAccessor ) + "'";
+        String sourcePropertyName = Executables.getPropertyName( sourceAccessor );
+        String mappedElement = "property '" + sourcePropertyName + "'";
 
         Assignment assignment = mappingResolver.getTargetAssignment(
             method,
@@ -685,7 +746,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             targetType,
             targetPropertyName,
             dateFormat,
-            sourceReference
+            iteratorReference != null ? iteratorReference : sourceReference
         );
 
         if ( assignment != null ) {
@@ -703,19 +764,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 assignment = new SetterWrapper( assignment, method.getThrownTypes() );
 
                 // wrap the setter in the collection / map initializers
-                switch ( targetAccessorType ) {
-
-                    case GETTER:
-                        // target accessor is getter, so decorate assignment as getter
-                        assignment =  new GetterCollectionOrMapWrapper( assignment,
-                                targetAcessor.getSimpleName().toString() );
-                        break;
-
-                    default: // setter
-
-                        assignment =  new SetterCollectionOrMapWrapper( assignment,
-                                targetAcessor.getSimpleName().toString() );
-                        break;
+                if ( targetAccessorType == TargetAccessorType.SETTER ) {
+                    // target accessor is setter, so decorate assignment as setter
+                    assignment = new SetterCollectionOrMapWrapper( assignment,
+                            targetAccessor.getSimpleName().toString() );
+                }
+                else {
+                    // target accessor is getter, so decorate assignment as getter
+                    assignment = new GetterCollectionOrMapWrapper( assignment,
+                            targetAccessor.getSimpleName().toString() );
                 }
 
                 // For collections and maps include a null check, when the assignment type is DIRECT.
@@ -728,11 +785,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
 
-                assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-                if ( !sourceType.isPrimitive() && ( assignment.getType() == TYPE_CONVERTED ) ) {
+                if ( targetAccessorType == TargetAccessorType.SETTER ) {
+                    assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+                    if ( !sourceType.isPrimitive() && ( assignment.getType() == TYPE_CONVERTED ) ) {
                     // for primitive types null check is not possible at all, but a conversion needs
-                    // a null check.
-                    assignment = new NullCheckWrapper( assignment );
+                        // a null check.
+                        assignment = new NullCheckWrapper( assignment );
+                    }
+                }
+                else {
+                    // adder, so wrap as adder
+                    assignment = new AdderWrapper( assignment, method.getThrownTypes(), sourceReference, sourceType );
                 }
             }
         }
@@ -742,16 +805,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 String.format(
                     "Can't map property \"%s %s\" to \"%s %s\".",
                     sourceType,
-                    Executables.getPropertyName( sourceAccessor ),
+                    sourcePropertyName,
                     targetType,
-                    Executables.getPropertyName( targetAcessor )
+                    targetPropertyName
                 ),
                 method.getExecutable()
             );
         }
         return new PropertyMapping(
             parameter.getName(),
-            targetAcessor.getSimpleName().toString(),
+            targetAccessor.getSimpleName().toString(),
             targetType,
             assignment
         );

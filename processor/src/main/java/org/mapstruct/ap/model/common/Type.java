@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -32,12 +31,13 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
+import org.mapstruct.ap.util.Nouns;
 import org.mapstruct.ap.util.TypeUtilsJDK6Fix;
 
 /**
@@ -75,6 +75,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<ExecutableElement> getters = null;
     private List<ExecutableElement> setters = null;
+    private List<ExecutableElement> adders = null;
     private List<ExecutableElement> alternativeTargetAccessors = null;
 
     //CHECKSTYLE:OFF
@@ -276,6 +277,70 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
+     * Tries to find an addMethod in this type for given collection property in this type.
+     *
+     * Matching occurs on:
+     * <ul>
+     * <li>1. The generic type parameter type of the collection should match the adder method argument</li>
+     * <li>2. When there are more candidates, property name is made singular (as good as is possible). This routine
+     * looks for a matching add method name.</li>
+     * <li>3. The singularization rules of Dali are used to make a property name singular. This routine
+     * looks for a matching add method name.</li>
+     * </ul>
+     *
+     * @param collectionProperty property type (assumed collection) to find  the adder method for
+     * @param pluralPropertyName the property name (assumed plural)
+     *
+     * @return corresponding adder method for getter when present
+     */
+    public ExecutableElement getAdderForType( Type collectionProperty, String pluralPropertyName ) {
+
+        List<ExecutableElement> candidates = new ArrayList<ExecutableElement>();
+        if ( collectionProperty.isCollectionType ) {
+
+            // this is a collection, so this can be done always
+            if ( !collectionProperty.getTypeParameters().isEmpty() ) {
+                // there's only one type arg to a collection
+                TypeMirror typeArg = collectionProperty.getTypeParameters().get( 0 ).getTypeMirror();
+                // now, look for a method that
+                // 1) starts with add,
+                // 2) and has typeArg as one and only arg
+                List<ExecutableElement> adderList = getAdders();
+                for ( ExecutableElement adder : adderList ) {
+                    VariableElement arg = adder.getParameters().get( 0 );
+                    if ( arg.asType().equals( typeArg ) ) {
+                        candidates.add( adder );
+                    }
+                }
+            }
+        }
+        if (candidates.isEmpty()) {
+            return null;
+        }
+        else if (candidates.size() == 1) {
+            return candidates.get( 0 );
+        }
+        else {
+            // try to match according human rules
+           for (ExecutableElement candidate : candidates) {
+                String adderName = Executables.getElementNameForAdder( candidate );
+                if (adderName.equals( Nouns.singularizeHuman( pluralPropertyName ) ) ) {
+                    return candidate;
+                }
+            }
+            // try to match according dali rules
+            for (ExecutableElement candidate : candidates) {
+                String adderName = Executables.getElementNameForAdder( candidate );
+                if (adderName.equals( Nouns.singularizeDali( pluralPropertyName ) ) ) {
+                    return candidate;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * getSetters
      *
      * @return an unmodifiable list of all setters
@@ -292,6 +357,24 @@ public class Type extends ModelElement implements Comparable<Type> {
      * Alternative accessors could be a getter for a collection / map. By means of the
      * {@link Collection#addAll(Collection) } or {@link Map#putAll(Map)} this getter can still be used as
      * targetAccessor. JAXB XJC tool generates such constructs. This method can be extended when new cases come along.
+     * getAdders
+     *
+     * @return an unmodifiable list of all adders
+     */
+    private List<ExecutableElement> getAdders() {
+        if ( adders == null ) {
+            List<? extends Element> members = elementUtils.getAllMembers( typeElement );
+            adders = Collections.unmodifiableList( Filters.adderMethodsIn( members ) );
+        }
+        return adders;
+    }
+
+    /**
+     * Alternative accessors could be a getter for a collection. By means of the
+     * {@link java.util.Collection#addAll(java.util.Collection) } this getter can still
+     * be used as targetAccessor. JAXB XJC tool generates such constructs.
+     *
+     * This method can be extended when new cases come along.
      *
      * @return an unmodifiable list of alternative target accessors.
      */

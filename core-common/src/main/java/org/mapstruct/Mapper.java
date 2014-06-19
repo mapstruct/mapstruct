@@ -83,4 +83,12 @@ public @interface Mapper {
      */
     Class<?> config() default void.class;
 
+    /**
+     * When a the target is a collection, look for a suitable adder. If the property is defined as plural, (so
+     * getItems(), the adder will assumed to be the singular form: addItem()
+     *
+     * @return true if the adder should be used.
+     */
+    CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.DEFAULT;
+
 }

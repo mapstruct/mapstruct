@@ -74,4 +74,5 @@ public @interface Mapping {
      * @return A constant {@code String} expression specifying the value for the designated target prperty
      */
     String expression() default "";
+
 }
