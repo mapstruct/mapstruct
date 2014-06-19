@@ -27,10 +27,13 @@ import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.MapperConfigPrism;
 import org.mapstruct.ap.prism.MapperPrism;
-
+import static org.mapstruct.CollectionMappingStrategy.DEFAULT;
+import static org.mapstruct.CollectionMappingStrategy.SETTER_ONLY;
+import static org.mapstruct.CollectionMappingStrategy.valueOf;
 /**
  * Class decorating the {@link MapperPrism} with the 'default' configuration.
  *
@@ -87,6 +90,25 @@ public class MapperConfig {
         else {
             return ReportingPolicy.WARN.name();
         }
+    }
+
+    public CollectionMappingStrategy getCollectionMappingStrategy() {
+        CollectionMappingStrategy mapperPolicy = valueOf( mapperPrism.collectionMappingStrategy() );
+
+        if ( !mapperPolicy.equals( DEFAULT ) ) {
+            // it is not the default mapper configuration, so return the mapper configured value
+            return mapperPolicy;
+        }
+        else if ( mapperConfigPrism != null ) {
+            // try the config mapper configuration
+            CollectionMappingStrategy configPolicy = valueOf( mapperConfigPrism.collectionMappingStrategy() );
+            if ( !configPolicy.equals( DEFAULT ) ) {
+                // its not the default configuration, so return the mapper config configured value
+                return configPolicy;
+            }
+        }
+        // when nothing specified, return SETTER_ONLY (default option)
+        return SETTER_ONLY;
     }
 
     public String componentModel() {

@@ -190,6 +190,7 @@ public class Mapping {
         return targetAnnotationValue;
     }
 
+
     public Mapping reverse() {
         Mapping reverse = null;
         if ( expression != null ) {

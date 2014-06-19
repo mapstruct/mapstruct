@@ -70,6 +70,17 @@ public class Executables {
         return false;
     }
 
+    public static boolean isAdderMethod(ExecutableElement method) {
+        String name = method.getSimpleName().toString();
+
+        if ( isPublic( method ) && name.startsWith( "add" ) && name.length() > 3 && method.getParameters()
+            .size() == 1 && method.getReturnType().getKind() == TypeKind.VOID ) {
+            return true;
+        }
+
+        return false;
+    }
+
     private static boolean isPublic(ExecutableElement method) {
         return method.getModifiers().contains( Modifier.PUBLIC );
     }
@@ -92,6 +103,35 @@ public class Executables {
         }
 
         throw new IllegalArgumentException( "Executable " + getterOrSetterMethod + " is not getter or setter method." );
+    }
+
+    /**
+     * Returns the 'element name' to which an adder method applies.
+     *
+     * If an collection getter / setter are defined by a plural name of the element they apply to, then this
+     * method gives the supposedly (singular) element name of the collection.
+     * for example:
+     * getter = {@code List<Child> getChildren()} , then the adder name is supposedly named: {@code addChild(Child v)},
+     * element name = 'Child'
+     *
+     * getter = {@code List<Bike> getBikes()} , then the adder name is supposedly named: {@code addBike(Bike v)},
+     * element name = 'Bike'
+     *
+     * getter = {@code List<Goose> getGeese()} , then the adder name is supposedly named: {@code addGoose(Goose v)},
+     * element name = 'Goose'
+     *
+     * @param adderMethod
+     *
+     * @return the element name
+     */
+    public static String getElementNameForAdder(ExecutableElement adderMethod) {
+        if ( isAdderMethod( adderMethod ) ) {
+            return Introspector.decapitalize(
+                adderMethod.getSimpleName().toString().substring( 3 )
+            );
+        }
+
+        throw new IllegalArgumentException( "Executable " + adderMethod + " is not an adder method." );
     }
 
     public static Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {

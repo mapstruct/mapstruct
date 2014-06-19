@@ -58,4 +58,16 @@ public class Filters {
         }
         return setterMethods;
     }
+
+    public static List<ExecutableElement> adderMethodsIn(Iterable<? extends Element> elements) {
+        List<ExecutableElement> adderMethods = new LinkedList<ExecutableElement>();
+
+        for ( ExecutableElement method : methodsIn( elements ) ) {
+            if ( Executables.isAdderMethod( method ) ) {
+                adderMethods.add( method );
+            }
+        }
+
+        return adderMethods;
+    }
 }
