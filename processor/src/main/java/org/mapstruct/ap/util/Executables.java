@@ -106,23 +106,8 @@ public class Executables {
     }
 
     /**
-     * Returns the 'element name' to which an adder method applies.
-     *
-     * If an collection getter / setter are defined by a plural name of the element they apply to, then this
-     * method gives the supposedly (singular) element name of the collection.
-     * for example:
-     * getter = {@code List<Child> getChildren()} , then the adder name is supposedly named: {@code addChild(Child v)},
-     * element name = 'Child'
-     *
-     * getter = {@code List<Bike> getBikes()} , then the adder name is supposedly named: {@code addBike(Bike v)},
-     * element name = 'Bike'
-     *
-     * getter = {@code List<Goose> getGeese()} , then the adder name is supposedly named: {@code addGoose(Goose v)},
-     * element name = 'Goose'
-     *
-     * @param adderMethod
-     *
-     * @return the element name
+     * Returns the 'element name' to which an adder method applies. If. e.g. an adder method is named
+     * {@code addChild(Child v)}, the element name would be 'Child'.
      */
     public static String getElementNameForAdder(ExecutableElement adderMethod) {
         if ( isAdderMethod( adderMethod ) ) {

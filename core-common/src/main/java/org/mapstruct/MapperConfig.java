@@ -74,10 +74,11 @@ public @interface MapperConfig {
     String componentModel() default "default";
 
     /**
-     * When a the target is a collection, look for a suitable adder. If the property is defined as plural, (so
-     * getItems(), the adder will assumed to be the singular form: addItem()
+     * The strategy to be applied when propagating the value of collection-typed properties. By default, only JavaBeans
+     * accessor methods (setters or getters) will be used, but it is also possible to invoke a corresponding adder
+     * method for each element of the source collection (e.g. {@code orderDto.addOrderLine()}).
      *
-     * @return true if the adder should be used.
+     * @return The strategy applied when propagating the value of collection-typed properties.
      */
     CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.DEFAULT;
 }

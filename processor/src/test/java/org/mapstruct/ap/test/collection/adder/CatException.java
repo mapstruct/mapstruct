@@ -19,15 +19,16 @@
 package org.mapstruct.ap.test.collection.adder;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class CatException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
     public CatException() {
     }
 
-    public CatException( String msg ) {
+    public CatException(String msg) {
         super( msg );
     }
 }
