@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -35,6 +36,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.Nouns;
@@ -280,13 +282,13 @@ public class Type extends ModelElement implements Comparable<Type> {
      * Tries to find an addMethod in this type for given collection property in this type.
      *
      * Matching occurs on:
-     * <ul>
-     * <li>1. The generic type parameter type of the collection should match the adder method argument</li>
-     * <li>2. When there are more candidates, property name is made singular (as good as is possible). This routine
+     * <ol>
+     * <li>The generic type parameter type of the collection should match the adder method argument</li>
+     * <li>When there are more candidates, property name is made singular (as good as is possible). This routine
      * looks for a matching add method name.</li>
-     * <li>3. The singularization rules of Dali are used to make a property name singular. This routine
+     * <li>The singularization rules of Dali are used to make a property name singular. This routine
      * looks for a matching add method name.</li>
-     * </ul>
+     * </ol>
      *
      * @param collectionProperty property type (assumed collection) to find  the adder method for
      * @param pluralPropertyName the property name (assumed plural)
@@ -321,17 +323,9 @@ public class Type extends ModelElement implements Comparable<Type> {
             return candidates.get( 0 );
         }
         else {
-            // try to match according human rules
            for (ExecutableElement candidate : candidates) {
-                String adderName = Executables.getElementNameForAdder( candidate );
-                if (adderName.equals( Nouns.singularizeHuman( pluralPropertyName ) ) ) {
-                    return candidate;
-                }
-            }
-            // try to match according dali rules
-            for (ExecutableElement candidate : candidates) {
-                String adderName = Executables.getElementNameForAdder( candidate );
-                if (adderName.equals( Nouns.singularizeDali( pluralPropertyName ) ) ) {
+                String elementName = Executables.getElementNameForAdder( candidate );
+                if (elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
                     return candidate;
                 }
             }

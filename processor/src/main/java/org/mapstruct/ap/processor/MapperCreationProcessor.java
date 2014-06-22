@@ -498,23 +498,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                  cmStrategy.equals( CollectionMappingStrategy.ADDER_PREFERRED ) ) {
 
                 // first check if there's a setter method.
-                ExecutableElement adderAccessor = null;
+                ExecutableElement adderMethod = null;
                 if ( Executables.isSetterMethod( targetAccessor ) ) {
                     Type targetType = typeFactory.getSingleParameter( targetAccessor ).getType();
                     // ok, the current accessor is a setter. So now the strategy determines what to use
                     if ( cmStrategy.equals( CollectionMappingStrategy.ADDER_PREFERRED ) ) {
-                        adderAccessor = method.getResultType().getAdderForType( targetType, targetPropertyName );
+                        adderMethod = method.getResultType().getAdderForType( targetType, targetPropertyName );
                     }
                 }
                 else if ( Executables.isGetterMethod( targetAccessor ) ) {
                     // the current accessor is a getter (no setter available). But still, an add method is according
                     // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
                     Type targetType = typeFactory.getReturnType( targetAccessor );
-                    adderAccessor = method.getResultType().getAdderForType( targetType, targetPropertyName );
+                    adderMethod = method.getResultType().getAdderForType( targetType, targetPropertyName );
                 }
-                if ( adderAccessor != null ) {
+                if ( adderMethod != null ) {
                     // an adder has been found (according strategy) so overrule current choice.
-                    targetAccessor = adderAccessor;
+                    targetAccessor = adderMethod;
                 }
             }
 

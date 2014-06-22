@@ -37,7 +37,4 @@ public class IndoorPet extends Pet {
     public void setValue( Long value ) {
         this.value = value;
     }
-
-
-
 }

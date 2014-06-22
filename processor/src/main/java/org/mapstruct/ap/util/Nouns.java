@@ -32,7 +32,7 @@ public class Nouns {
 
     private Nouns() { }
 
-    private static final List<ReplaceRule> SINGULAR_HUMAN_RULES = Arrays.asList(
+    private static final List<ReplaceRule> SINGULAR_RULES = Arrays.asList(
             new ReplaceRule( "(equipment|information|rice|money|species|series|fish|sheep)$", "$1" ),
             new ReplaceRule( "(f)eet$", "$1oot" ),
             new ReplaceRule( "(t)eeth$", "$1ooth" ),
@@ -74,48 +74,36 @@ public class Nouns {
             new ReplaceRule( "s$", "" )
     );
 
+    /**
+     * Replacement rules based on the routine applied by the <a href="http://www.eclipse.org/webtools/dali/">Dali</a>
+     * project. Applied as a fallback if the other rules didn't yield a match.
+     */
     private static final List<ReplaceRule> SINGULAR_DALI_RULES = Arrays.asList(
             new ReplaceRule( "(us|ss)$", "$1" ),
             new ReplaceRule( "(ch|s)es$", "$1" ),
-            new ReplaceRule( "([^aeiouy])ies$", "$1y" ),
-            new ReplaceRule( "s$", "" )
+            new ReplaceRule( "([^aeiouy])ies$", "$1y" )
     );
 
-     /**
-     * Converts given in into a singular form as much as possible according human form. This will always be a best
-     * attempt. The rules are language context dependent and
-     *
-     * @param in String to singularize
-     * @return singularize form of in
+    /**
+     * Converts given pluralized noun into the singular form. If no singular form could be determined, the given word
+     * itself is returned.
      */
-    public static String singularizeHuman( String in ) {
-        for ( ReplaceRule replaceRule : SINGULAR_HUMAN_RULES ) {
-            String match = replaceRule.apply( in );
+    public static String singularize( String plural ) {
+        for ( ReplaceRule replaceRule : SINGULAR_RULES ) {
+            String match = replaceRule.apply( plural );
             if ( match != null ) {
                 return match;
             }
         }
-        return in;
-    }
 
-   /**
-     * Converts given in into a singular form according dali
-     * @see <a href="http://www.eclipse.org/webtools/dali/"></a> rules
-     *
-     * These rules are assumed to be incomplete and give wrong conversions from plural to singular that should
-     * be taken into account as well.
-     *
-     * @param in String to singularize
-     * @return singularize form of in
-     */
-    public static String singularizeDali( String in ) {
         for ( ReplaceRule replaceRule : SINGULAR_DALI_RULES ) {
-            String match = replaceRule.apply( in );
+            String match = replaceRule.apply( plural );
             if ( match != null ) {
                 return match;
             }
         }
-        return in;
+
+        return plural;
     }
 
     private static final class ReplaceRule {
@@ -124,7 +112,7 @@ public class Nouns {
         private final String replacement;
         private final Pattern pattern;
 
-       private ReplaceRule( String regexp, String replacement ) {
+        private ReplaceRule( String regexp, String replacement ) {
             this.regexp = regexp;
             this.replacement = replacement;
             this.pattern = Pattern.compile( this.regexp, Pattern.CASE_INSENSITIVE );
@@ -139,5 +127,9 @@ public class Nouns {
             return result;
         }
 
+        @Override
+        public String toString() {
+            return "'" + regexp + "' -> '" + replacement;
+        }
     }
 }

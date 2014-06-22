@@ -19,15 +19,16 @@
 package org.mapstruct.ap.test.collection.adder;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class DogException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
     public DogException() {
     }
 
-    public DogException( String msg ) {
+    public DogException(String msg) {
         super( msg );
     }
 }

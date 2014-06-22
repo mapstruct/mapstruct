@@ -19,34 +19,44 @@
 package org.mapstruct;
 
 /**
- *  Strategy for mapping of collections.
+ * Strategy for propagating the value of collection-typed properties from source to target.
+ *
  * @author Sjaak Derksen
  */
 public enum CollectionMappingStrategy {
 
     /**
-     * MapStruct will consider setter methods as target as way to access the target.
-     *
-     * Note: If no setter is available a getter will be used under the assumption it has been initialized.
+     * The setter of the target property will be used to propagate the value:
+     * {@code orderDto.setOrderLines( order.getOrderLines )}.
+     * <p>
+     * If no setter is available but a getter method, this will be used, under the assumption it has been initialized:
+     * {@code orderDto.getOrderLines().addAll( order.getOrderLines )}.
      */
-    SETTER_ONLY,
+    ACCESSOR_ONLY,
+
     /**
-     * MapStruct will consider setter methods as preferred way to access the target.
-     *
-     * If no setter is available, MapStruct will first look for an adder method before resorting to a getter.
+     * If present, the setter of the target property will be used to propagate the value:
+     * {@code orderDto.setOrderLines( order.getOrderLines )}.
+     * <p>
+     * If no setter but and adder method is present, that adder will be invoked for each element of the source
+     * collection: {@code order.addOrderLine( orderLine() )}.
+     * <p>
+     * If neither a setter nor an adder method but a getter for the target property is present, that getter will be
+     * used, assuming it returns an initialized collection: If no setter is available, MapStruct will first look for an
+     * adder method before resorting to a getter.
      */
     SETTER_PREFERRED,
+
     /**
-     * MapStruct will consider adder methods as preferred way to access the target.
-     *
-     * If no adder is available, MapStruct will first look for a setter method before resorting to a getter.
+     * Identical to {@link #SETTER_PREFERRED}, only that adder methods will be preferred over setter methods, if both
+     * are present for a given collection-typed property.
      */
     ADDER_PREFERRED,
+
     /**
-     * The default option is: {@link CollectionMappingStrategy#SETTER_ONLY}.
-     *
-     * The default options forces deliberate setting in {@link Mapper#collectionMappingStrategy() }, in order
-     * to override a setting in {@link MapperConfig#collectionMappingStrategy() }
+     * If given via {@link Mapper#collectionMappingStrategy()}, causes the setting specified via
+     * {@link MapperConfig#collectionMappingStrategy()} to be applied, if present. Otherwise causes
+     * {@link #ACCESSOR_ONLY} to be applied.
      */
     DEFAULT;
 }
