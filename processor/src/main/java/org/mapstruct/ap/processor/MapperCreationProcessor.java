@@ -779,10 +779,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
                 else {
                     // target accessor is getter, so decorate assignment as getter
-                    assignment = new GetterCollectionOrMapWrapper(
-                        assignment,
-                        targetAccessor.getSimpleName().toString()
-                    );
+                    assignment = new GetterCollectionOrMapWrapper( assignment );
                 }
 
                 // For collections and maps include a null check, when the assignment type is DIRECT.

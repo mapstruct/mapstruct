@@ -18,23 +18,23 @@
      limitations under the License.
 
 -->
-if ( ${ext.targetBeanName}.${targetGetterName}() != null ) {
+if ( ${ext.targetBeanName}.${ext.targetAccessorName}() != null ) {
     <#if ext.existingInstanceMapping>
-        ${ext.targetBeanName}.${targetGetterName}().clear();
+        ${ext.targetBeanName}.${ext.targetAccessorName}().clear();
     </#if>
     <#if ext.targetType.collectionType>
         <@includeModel object=assignment
                    targetBeanName=ext.targetBeanName
                    raw=ext.raw
                    existingInstanceMapping=ext.existingInstanceMapping
-                   targetAccessorName="${targetGetterName}().addAll"
+                   targetAccessorName="${ext.targetAccessorName}().addAll"
                    targetType=ext.targetType/>
     <#else>
         <@includeModel object=assignment
                    targetBeanName=ext.targetBeanName
                    raw=ext.raw
                    existingInstanceMapping=ext.existingInstanceMapping
-                   targetAccessorName="${targetGetterName}().putAll"
+                   targetAccessorName="${ext.targetAccessorName}().putAll"
                    targetType=ext.targetType/>
     </#if>
 }
