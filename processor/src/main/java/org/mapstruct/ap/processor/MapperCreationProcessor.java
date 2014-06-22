@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -35,9 +36,8 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
+
 import org.mapstruct.ap.model.Assignment;
-import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.Decorator;
 import org.mapstruct.ap.model.DefaultMapperReference;
@@ -72,6 +72,9 @@ import org.mapstruct.ap.processor.creation.MappingResolver;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
+
+import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -729,7 +732,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else {
 
                 assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-                if ( !sourceType.isPrimitive() && ( assignment.getType() == TYPE_CONVERTED ) ) {
+                if ( !sourceType.isPrimitive()
+                    && ( assignment.getType() == TYPE_CONVERTED || assignment.getType() == DIRECT
+                        && targetType.isPrimitive() ) ) {
                     // for primitive types null check is not possible at all, but a conversion needs
                     // a null check.
                     assignment = new NullCheckWrapper( assignment );
