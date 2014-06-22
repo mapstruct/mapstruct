@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.collection.adder.source;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class Source {
@@ -32,7 +31,7 @@ public class Source {
         return pets;
     }
 
-    public void setPets( List<String> pets ) {
+    public void setPets(List<String> pets) {
         this.pets = pets;
     }
 }

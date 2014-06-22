@@ -18,24 +18,23 @@
  */
 package org.mapstruct.ap.test.collection.adder;
 
-import org.mapstruct.ap.test.collection.adder.source.Source;
-import org.mapstruct.ap.test.collection.adder.target.TargetWithoutSetter;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.collection.adder.source.Source;
+import org.mapstruct.ap.test.collection.adder.target.TargetWithoutSetter;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
-@Mapper( collectionMappingStrategy = CollectionMappingStrategy.SETTER_PREFERRED,
-        uses = { PetMapper.class }
+@Mapper(collectionMappingStrategy = CollectionMappingStrategy.SETTER_PREFERRED,
+    uses = { PetMapper.class }
 )
 public interface SourceTargetMapperStrategySetterPreferred {
 
     SourceTargetMapperStrategySetterPreferred INSTANCE =
-            Mappers.getMapper( SourceTargetMapperStrategySetterPreferred.class );
+        Mappers.getMapper( SourceTargetMapperStrategySetterPreferred.class );
 
-    TargetWithoutSetter toTargetDontUseAdder( Source source ) throws DogException;
+    TargetWithoutSetter toTargetDontUseAdder(Source source) throws DogException;
 
 }

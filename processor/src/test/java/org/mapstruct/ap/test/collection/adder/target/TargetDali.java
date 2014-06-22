@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class TargetDali {
@@ -33,11 +32,11 @@ public class TargetDali {
         return teeth;
     }
 
-    public void setTeeth( List<Integer> teeth ) {
+    public void setTeeth(List<Integer> teeth) {
         this.teeth = teeth;
     }
 
-    public void addTeeth( Integer tooth ) {
+    public void addTeeth(Integer tooth) {
         AdderUsageObserver.setUsed( true );
         if ( teeth == null ) {
             teeth = new ArrayList<Integer>();

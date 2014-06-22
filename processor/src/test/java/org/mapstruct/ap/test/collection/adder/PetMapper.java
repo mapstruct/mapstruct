@@ -18,41 +18,43 @@
  */
 package org.mapstruct.ap.test.collection.adder;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
 import org.mapstruct.TargetType;
 import org.mapstruct.ap.test.collection.adder.target.IndoorPet;
 import org.mapstruct.ap.test.collection.adder.target.OutdoorPet;
 import org.mapstruct.ap.test.collection.adder.target.Pet;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class PetMapper {
 
     private static final Map<String, Long> PETS_TO_TARGET = ImmutableMap.<String, Long>builder()
-            .put( "rabbit", 1L )
-            .put( "mouse", 2L ).build();
+        .put( "rabbit", 1L )
+        .put( "mouse", 2L ).build();
 
     private static final Map<Long, String> PETS_TO_SOURCE = ImmutableMap.<Long, String>builder()
-            .put( 1L, "rabbit" )
-            .put( 2L, "mouse" )
-            .put( 3L, "cat" )
-            .put( 4L, "dog" ).build();
+        .put( 1L, "rabbit" )
+        .put( 2L, "mouse" )
+        .put( 3L, "cat" )
+        .put( 4L, "dog" ).build();
 
 
     /**
      * method to be used when using an adder
      *
      * @param pet
+     *
      * @return
+     *
      * @throws CatException
      * @throws DogException
      */
-    public Long toPet( String pet ) throws CatException, DogException {
+    public Long toPet(String pet) throws CatException, DogException {
         if ( "cat".equals( pet ) ) {
             throw new CatException();
         }
@@ -66,19 +68,21 @@ public class PetMapper {
      * Method to be used when not using an adder
      *
      * @param pets
+     *
      * @return
+     *
      * @throws CatException
      * @throws DogException
      */
-    public List<Long> toPets( List<String> pets ) throws CatException, DogException {
-       List<Long> result = new ArrayList<Long>();
-       for (String pet : pets) {
-           result.add( toPet( pet) );
-       }
-       return result;
+    public List<Long> toPets(List<String> pets) throws CatException, DogException {
+        List<Long> result = new ArrayList<Long>();
+        for ( String pet : pets ) {
+            result.add( toPet( pet ) );
+        }
+        return result;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends Pet> T toPet(String pet, @TargetType Class<T> clazz) throws CatException, DogException {
         if ( clazz == IndoorPet.class ) {
             return (T) new IndoorPet( toPet( pet ) );
@@ -89,11 +93,11 @@ public class PetMapper {
         return null;
     }
 
-    public List<String> toSourcePets( List<Long> pets ) throws CatException, DogException {
-       List<String> result = new ArrayList<String>();
-       for (Long pet : pets) {
-           result.add( PETS_TO_SOURCE.get( pet ) );
-       }
-       return result;
+    public List<String> toSourcePets(List<Long> pets) throws CatException, DogException {
+        List<String> result = new ArrayList<String>();
+        for ( Long pet : pets ) {
+            result.add( PETS_TO_SOURCE.get( pet ) );
+        }
+        return result;
     }
 }

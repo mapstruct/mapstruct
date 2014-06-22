@@ -20,6 +20,7 @@ package org.mapstruct.ap.model.assignment;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.Type;
 
@@ -35,10 +36,10 @@ public class AdderWrapper extends AssignmentWrapper {
     private final Type sourceType;
 
     public AdderWrapper(
-            Assignment decoratedAssignment,
-            List<Type> exceptionTypesToExclude,
-            String sourceReference,
-            Type sourceType) {
+        Assignment decoratedAssignment,
+        List<Type> exceptionTypesToExclude,
+        String sourceReference,
+        Type sourceType) {
         super( decoratedAssignment );
         this.exceptionTypesToExclude = exceptionTypesToExclude;
         this.sourceReference = sourceReference;

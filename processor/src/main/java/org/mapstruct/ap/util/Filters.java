@@ -18,13 +18,12 @@
  */
 package org.mapstruct.ap.util;
 
-import static javax.lang.model.util.ElementFilter.methodsIn;
-
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+
+import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
  * Filter methods for working with {@link Element} collections.

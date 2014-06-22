@@ -18,20 +18,19 @@
  */
 package org.mapstruct.ap.test.collection.adder;
 
+import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.collection.adder.source.Source;
 import org.mapstruct.ap.test.collection.adder.target.Target;
-import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
-@Mapper( uses = { PetMapper.class }  )
+@Mapper(uses = { PetMapper.class })
 public interface SourceTargetMapperStrategyDefault {
 
     SourceTargetMapperStrategyDefault INSTANCE = Mappers.getMapper( SourceTargetMapperStrategyDefault.class );
 
-    Target shouldFallBackToAdder( Source source ) throws DogException;
+    Target shouldFallBackToAdder(Source source) throws DogException;
 
 }
