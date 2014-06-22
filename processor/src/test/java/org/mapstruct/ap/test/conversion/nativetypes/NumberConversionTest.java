@@ -18,12 +18,13 @@
  */
 package org.mapstruct.ap.test.conversion.nativetypes;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 @WithClasses({
     ByteSource.class,
@@ -449,5 +450,16 @@ public class NumberConversionTest {
         assertThat( target.getFf() ).isEqualTo( Float.valueOf( 10f ) );
         assertThat( target.getD() ).isEqualTo( 11d );
         assertThat( target.getDd() ).isEqualTo( Double.valueOf( 12d ) );
+    }
+
+    @Test
+    @IssueKey( "229" )
+    public void wrapperToPrimitveIsNullSafe() {
+        assertThat( SourceTargetMapper.INSTANCE.sourceToTarget( new ByteWrapperSource() ) ).isNotNull();
+        assertThat( SourceTargetMapper.INSTANCE.sourceToTarget( new DoubleWrapperSource() ) ).isNotNull();
+        assertThat( SourceTargetMapper.INSTANCE.sourceToTarget( new ShortWrapperSource() ) ).isNotNull();
+        assertThat( SourceTargetMapper.INSTANCE.sourceToTarget( new IntWrapperSource() ) ).isNotNull();
+        assertThat( SourceTargetMapper.INSTANCE.sourceToTarget( new FloatWrapperSource() ) ).isNotNull();
+        assertThat( SourceTargetMapper.INSTANCE.sourceToTarget( new LongWrapperSource() ) ).isNotNull();
     }
 }

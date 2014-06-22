@@ -791,13 +791,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 if ( assignment.getType() == DIRECT ) {
                     assignment = new NullCheckWrapper( assignment );
                 }
-
             }
             else {
-
                 if ( targetAccessorType == TargetAccessorType.SETTER ) {
                     assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-                    if ( !sourceType.isPrimitive() && ( assignment.getType() == TYPE_CONVERTED ) ) {
+                    if ( !sourceType.isPrimitive() &&
+                        ( assignment.getType() == TYPE_CONVERTED ||
+                          assignment.getType() == DIRECT && targetType.isPrimitive() ) ) {
                         // for primitive types null check is not possible at all, but a conversion needs
                         // a null check.
                         assignment = new NullCheckWrapper( assignment );
