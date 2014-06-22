@@ -35,15 +35,9 @@ import org.mapstruct.ap.model.Assignment;
  */
 public class GetterCollectionOrMapWrapper extends AssignmentWrapper {
 
-    private final String targetGetterName;
 
-    public GetterCollectionOrMapWrapper( Assignment decoratedAssignment, String targetGetterName ) {
+    public GetterCollectionOrMapWrapper( Assignment decoratedAssignment ) {
         super( decoratedAssignment );
-        this.targetGetterName = targetGetterName;
-    }
-
-    public String getTargetGetterName() {
-        return targetGetterName;
     }
 
 }
