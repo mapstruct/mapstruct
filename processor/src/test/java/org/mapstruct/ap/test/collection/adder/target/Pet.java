@@ -19,7 +19,6 @@
 package org.mapstruct.ap.test.collection.adder.target;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class Pet {

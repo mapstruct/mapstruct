@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -295,7 +294,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return corresponding adder method for getter when present
      */
-    public ExecutableElement getAdderForType( Type collectionProperty, String pluralPropertyName ) {
+    public ExecutableElement getAdderForType(Type collectionProperty, String pluralPropertyName) {
 
         List<ExecutableElement> candidates = new ArrayList<ExecutableElement>();
         if ( collectionProperty.isCollectionType ) {
@@ -316,16 +315,16 @@ public class Type extends ModelElement implements Comparable<Type> {
                 }
             }
         }
-        if (candidates.isEmpty()) {
+        if ( candidates.isEmpty() ) {
             return null;
         }
-        else if (candidates.size() == 1) {
+        else if ( candidates.size() == 1 ) {
             return candidates.get( 0 );
         }
         else {
-           for (ExecutableElement candidate : candidates) {
+            for ( ExecutableElement candidate : candidates ) {
                 String elementName = Executables.getElementNameForAdder( candidate );
-                if (elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
+                if ( elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
                     return candidate;
                 }
             }

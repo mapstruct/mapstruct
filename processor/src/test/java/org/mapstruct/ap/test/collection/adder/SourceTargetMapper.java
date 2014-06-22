@@ -18,38 +18,38 @@
  */
 package org.mapstruct.ap.test.collection.adder;
 
-import org.mapstruct.ap.test.collection.adder.source.Source;
-import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
-import org.mapstruct.ap.test.collection.adder.target.TargetOnlyGetter;
-import org.mapstruct.ap.test.collection.adder.target.TargetHuman;
-import org.mapstruct.ap.test.collection.adder.target.TargetDali;
-import org.mapstruct.ap.test.collection.adder.target.Target;
-import org.mapstruct.ap.test.collection.adder.target.TargetViaTargetType;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ap.test.collection.adder.source.Source;
+import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
+import org.mapstruct.ap.test.collection.adder.target.Target;
+import org.mapstruct.ap.test.collection.adder.target.TargetDali;
+import org.mapstruct.ap.test.collection.adder.target.TargetHuman;
+import org.mapstruct.ap.test.collection.adder.target.TargetOnlyGetter;
+import org.mapstruct.ap.test.collection.adder.target.TargetViaTargetType;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
-@Mapper( collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED,
-         uses = { PetMapper.class, TeethMapper.class }  )
+@Mapper(collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED,
+    uses = { PetMapper.class, TeethMapper.class })
 public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    Target toTarget( Source source ) throws DogException;
-    Source toSource( Target source );
+    Target toTarget(Source source) throws DogException;
 
-    void toExistingTarget( Source source, @MappingTarget Target target );
+    Source toSource(Target source);
 
-    TargetDali toTargetDali( SourceTeeth source );
+    void toExistingTarget(Source source, @MappingTarget Target target);
 
-    TargetHuman toTargetHuman( SourceTeeth source );
+    TargetDali toTargetDali(SourceTeeth source);
 
-    TargetOnlyGetter toTargetOnlyGetter( Source source ) throws DogException;
+    TargetHuman toTargetHuman(SourceTeeth source);
 
-    TargetViaTargetType toTargetViaTargetType( Source source );
+    TargetOnlyGetter toTargetOnlyGetter(Source source) throws DogException;
+
+    TargetViaTargetType toTargetViaTargetType(Source source);
 }

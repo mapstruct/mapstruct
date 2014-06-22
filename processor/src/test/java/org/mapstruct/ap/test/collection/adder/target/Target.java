@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class Target {
@@ -33,23 +32,23 @@ public class Target {
         return pets;
     }
 
-    public void setPets( List<Long> pets ) {
+    public void setPets(List<Long> pets) {
         this.pets = pets;
     }
 
-    public void addCat( Long cat ) {
+    public void addCat(Long cat) {
         // dummy method to test selection mechanims
     }
 
-    public void addDog( Long cat ) {
+    public void addDog(Long cat) {
         // dummy method to test selection mechanims
     }
 
-    public void addPets( Long cat ) {
+    public void addPets(Long cat) {
         // dummy method to test selection mechanims
     }
 
-    public void addPet( Long pet ) {
+    public void addPet(Long pet) {
         AdderUsageObserver.setUsed( true );
         if ( pets == null ) {
             pets = new ArrayList<Long>();

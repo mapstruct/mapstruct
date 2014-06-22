@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class TargetViaTargetType {
@@ -33,11 +32,11 @@ public class TargetViaTargetType {
         return pets;
     }
 
-    public void setPets( List<IndoorPet> pets ) {
+    public void setPets(List<IndoorPet> pets) {
         this.pets = pets;
     }
 
-    public void addPet( IndoorPet pet ) {
+    public void addPet(IndoorPet pet) {
         AdderUsageObserver.setUsed( true );
         if ( pets == null ) {
             pets = new ArrayList<IndoorPet>();

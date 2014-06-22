@@ -33,70 +33,70 @@ import static org.mapstruct.ap.util.Collections.asSet;
 public class Strings {
 
     private static final Set<String> KEYWORDS = asSet(
-            "abstract",
-            "continue",
-            "for",
-            "new",
-            "switch",
-            "assert",
-            "default",
-            "goto",
-            "package",
-            "synchronized",
-            "boolean",
-            "do",
-            "if",
-            "private",
-            "this",
-            "break",
-            "double",
-            "implements",
-            "protected",
-            "throw",
-            "byte",
-            "else",
-            "import",
-            "public",
-            "throws",
-            "case",
-            "enum",
-            "instanceof",
-            "return",
-            "transient",
-            "catch",
-            "extends",
-            "int",
-            "short",
-            "try",
-            "char",
-            "final",
-            "interface",
-            "static",
-            "void",
-            "class",
-            "finally",
-            "long",
-            "strictfp",
-            "volatile",
-            "const",
-            "float",
-            "native",
-            "super",
-            "while"
+        "abstract",
+        "continue",
+        "for",
+        "new",
+        "switch",
+        "assert",
+        "default",
+        "goto",
+        "package",
+        "synchronized",
+        "boolean",
+        "do",
+        "if",
+        "private",
+        "this",
+        "break",
+        "double",
+        "implements",
+        "protected",
+        "throw",
+        "byte",
+        "else",
+        "import",
+        "public",
+        "throws",
+        "case",
+        "enum",
+        "instanceof",
+        "return",
+        "transient",
+        "catch",
+        "extends",
+        "int",
+        "short",
+        "try",
+        "char",
+        "final",
+        "interface",
+        "static",
+        "void",
+        "class",
+        "finally",
+        "long",
+        "strictfp",
+        "volatile",
+        "const",
+        "float",
+        "native",
+        "super",
+        "while"
     );
 
     private Strings() {
     }
 
-    public static String capitalize( String string ) {
+    public static String capitalize(String string) {
         return string == null ? null : string.substring( 0, 1 ).toUpperCase() + string.substring( 1 );
     }
 
-    public static String decapitalize( String string ) {
+    public static String decapitalize(String string) {
         return string == null ? null : string.substring( 0, 1 ).toLowerCase() + string.substring( 1 );
     }
 
-    public static String join( Iterable<?> iterable, String separator ) {
+    public static String join(Iterable<?> iterable, String separator) {
         StringBuilder sb = new StringBuilder();
         boolean isFirst = true;
 
@@ -114,11 +114,11 @@ public class Strings {
         return sb.toString();
     }
 
-    public static boolean isEmpty( String string ) {
+    public static boolean isEmpty(String string) {
         return string == null || string.isEmpty();
     }
 
-    public static String getSaveVariableName( String name, String... existingVariableNames ) {
+    public static String getSaveVariableName(String name, String... existingVariableNames) {
         return getSaveVariableName( name, Arrays.asList( existingVariableNames ) );
     }
 
@@ -132,7 +132,7 @@ public class Strings {
      * @return a variable name based on the given original name, not conflicting with any of the given other names or
      * any Java keyword; starting with a lower-case letter
      */
-    public static String getSaveVariableName( String name, Collection<String> existingVariableNames ) {
+    public static String getSaveVariableName(String name, Collection<String> existingVariableNames) {
         name = decapitalize( name );
 
         Set<String> conflictingNames = new HashSet<String>( KEYWORDS );

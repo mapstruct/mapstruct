@@ -35,11 +35,9 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
-import org.mapstruct.CollectionMappingStrategy;
 
+import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.ap.model.Assignment;
-import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.Decorator;
 import org.mapstruct.ap.model.DefaultMapperReference;
@@ -76,6 +74,9 @@ import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
 
+import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED;
+
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
  * list of {@link SourceMethod}s.
@@ -84,7 +85,9 @@ import org.mapstruct.ap.util.Strings;
  */
 public class MapperCreationProcessor implements ModelElementProcessor<List<SourceMethod>, Mapper> {
 
-    private enum TargetAccessorType { GETTER, SETTER, ADDER };
+    private enum TargetAccessorType {GETTER, SETTER, ADDER}
+
+    ;
 
     private Elements elementUtils;
     private Types typeUtils;
@@ -112,7 +115,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private Mapper getMapper(TypeElement element, List<SourceMethod> methods) {
         List<MapperReference> mapperReferences = getReferencedMappers( element );
-        List<MappingMethod> mappingMethods =  getMappingMethods( mapperReferences, methods, element );
+        List<MappingMethod> mappingMethods = getMappingMethods( mapperReferences, methods, element );
         mappingMethods.addAll( mappingResolver.getVirtualMethodsToGenerate() );
 
         Mapper mapper = new Mapper.Builder()
@@ -255,7 +258,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private List<MappingMethod> getMappingMethods(List<MapperReference> mapperReferences, List<SourceMethod> methods,
-                                                  TypeElement element ) {
+                                                  TypeElement element) {
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>();
 
         for ( SourceMethod method : methods ) {
@@ -495,7 +498,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             //
             // The following if block, checks if the target accessor should be overruled by an add method.
             if ( cmStrategy.equals( CollectionMappingStrategy.SETTER_PREFERRED ) ||
-                 cmStrategy.equals( CollectionMappingStrategy.ADDER_PREFERRED ) ) {
+                cmStrategy.equals( CollectionMappingStrategy.ADDER_PREFERRED ) ) {
 
                 // first check if there's a setter method.
                 ExecutableElement adderMethod = null;
@@ -522,12 +525,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             if ( mapping != null && mapping.getSourceParameterName() != null ) {
                 Parameter parameter = method.getSourceParameter( mapping.getSourceParameterName() );
                 propertyMapping = getPropertyMapping(
-                        mapperReferences,
-                        methods,
-                        method,
-                        targetAccessor,
-                        targetPropertyName,
-                        parameter );
+                    mapperReferences,
+                    methods,
+                    method,
+                    targetAccessor,
+                    targetPropertyName,
+                    parameter
+                );
             }
 
             if ( propertyMapping == null ) {
@@ -766,13 +770,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 // wrap the setter in the collection / map initializers
                 if ( targetAccessorType == TargetAccessorType.SETTER ) {
                     // target accessor is setter, so decorate assignment as setter
-                    assignment = new SetterCollectionOrMapWrapper( assignment,
-                            targetAccessor.getSimpleName().toString() );
+                    assignment = new SetterCollectionOrMapWrapper(
+                        assignment,
+                        targetAccessor.getSimpleName().toString()
+                    );
                 }
                 else {
                     // target accessor is getter, so decorate assignment as getter
-                    assignment = new GetterCollectionOrMapWrapper( assignment,
-                            targetAccessor.getSimpleName().toString() );
+                    assignment = new GetterCollectionOrMapWrapper(
+                        assignment,
+                        targetAccessor.getSimpleName().toString()
+                    );
                 }
 
                 // For collections and maps include a null check, when the assignment type is DIRECT.
@@ -788,7 +796,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 if ( targetAccessorType == TargetAccessorType.SETTER ) {
                     assignment = new SetterWrapper( assignment, method.getThrownTypes() );
                     if ( !sourceType.isPrimitive() && ( assignment.getType() == TYPE_CONVERTED ) ) {
-                    // for primitive types null check is not possible at all, but a conversion needs
+                        // for primitive types null check is not possible at all, but a conversion needs
                         // a null check.
                         assignment = new NullCheckWrapper( assignment );
                     }

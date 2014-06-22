@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.collection.adder.source;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class SourceTeeth {
@@ -32,7 +31,7 @@ public class SourceTeeth {
         return teeth;
     }
 
-    public void setTeeth( List<String> teeth ) {
+    public void setTeeth(List<String> teeth) {
         this.teeth = teeth;
     }
 }

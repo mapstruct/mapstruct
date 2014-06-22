@@ -18,33 +18,34 @@
  */
 package org.mapstruct.ap.test.collection.adder;
 
-import org.mapstruct.ap.test.collection.adder.target.AdderUsageObserver;
-import org.mapstruct.ap.test.collection.adder.source.Source;
-import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
-import org.mapstruct.ap.test.collection.adder.target.TargetOnlyGetter;
-import org.mapstruct.ap.test.collection.adder.target.TargetHuman;
-import org.mapstruct.ap.test.collection.adder.target.TargetDali;
-import org.mapstruct.ap.test.collection.adder.target.Target;
-import org.mapstruct.ap.test.collection.adder.target.TargetViaTargetType;
-import org.mapstruct.ap.test.collection.adder.target.TargetWithoutSetter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.collection.adder.source.Source;
+import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
+import org.mapstruct.ap.test.collection.adder.target.AdderUsageObserver;
 import org.mapstruct.ap.test.collection.adder.target.IndoorPet;
 import org.mapstruct.ap.test.collection.adder.target.OutdoorPet;
 import org.mapstruct.ap.test.collection.adder.target.Pet;
+import org.mapstruct.ap.test.collection.adder.target.Target;
+import org.mapstruct.ap.test.collection.adder.target.TargetDali;
+import org.mapstruct.ap.test.collection.adder.target.TargetHuman;
+import org.mapstruct.ap.test.collection.adder.target.TargetOnlyGetter;
+import org.mapstruct.ap.test.collection.adder.target.TargetViaTargetType;
+import org.mapstruct.ap.test.collection.adder.target.TargetWithoutSetter;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
- *
  * @author Sjaak Derksen
  */
-@WithClasses( {
+@WithClasses({
     Source.class,
     SourceTeeth.class,
     Target.class,
@@ -63,8 +64,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     IndoorPet.class,
     OutdoorPet.class,
     DogException.class,
-    CatException.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
+    CatException.class
+})
+@RunWith(AnnotationProcessorTestRunner.class)
 public class AdderTest {
 
     @Test
@@ -81,7 +83,7 @@ public class AdderTest {
         assertTrue( AdderUsageObserver.isUsed() );
     }
 
-    @Test( expected = DogException.class )
+    @Test(expected = DogException.class)
     public void testAddWithExceptionInThrowsClause() throws DogException {
         AdderUsageObserver.setUsed( false );
 
@@ -91,7 +93,7 @@ public class AdderTest {
         SourceTargetMapper.INSTANCE.toTarget( source );
     }
 
-    @Test( expected = RuntimeException.class )
+    @Test(expected = RuntimeException.class)
     public void testAddWithExceptionNotInThrowsClause() throws DogException {
         AdderUsageObserver.setUsed( false );
 
@@ -109,7 +111,7 @@ public class AdderTest {
         source.setPets( Arrays.asList( "mouse" ) );
 
         Target target = new Target();
-        target.setPets( new ArrayList<Long>( Arrays.asList(  1L ) ) );
+        target.setPets( new ArrayList<Long>( Arrays.asList( 1L ) ) );
 
         SourceTargetMapper.INSTANCE.toExistingTarget( source, target );
         assertThat( target ).isNotNull();
@@ -167,7 +169,7 @@ public class AdderTest {
         AdderUsageObserver.setUsed( false );
 
         SourceTeeth source = new SourceTeeth();
-        source.setTeeth( Arrays.asList(  "moler" ) );
+        source.setTeeth( Arrays.asList( "moler" ) );
 
         TargetDali target = SourceTargetMapper.INSTANCE.toTargetDali( source );
         assertThat( target ).isNotNull();

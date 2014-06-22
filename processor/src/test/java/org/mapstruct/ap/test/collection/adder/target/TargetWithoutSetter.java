@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class TargetWithoutSetter {
@@ -33,7 +32,7 @@ public class TargetWithoutSetter {
         return pets;
     }
 
-    public void addPet( Long pet ) {
+    public void addPet(Long pet) {
         AdderUsageObserver.setUsed( true );
         if ( pets == null ) {
             pets = new ArrayList<Long>();

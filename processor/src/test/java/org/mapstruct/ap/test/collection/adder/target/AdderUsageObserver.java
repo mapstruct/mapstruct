@@ -19,12 +19,12 @@
 package org.mapstruct.ap.test.collection.adder.target;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class AdderUsageObserver {
 
-    private AdderUsageObserver() { }
+    private AdderUsageObserver() {
+    }
 
     private static boolean used = false;
 
@@ -32,7 +32,7 @@ public class AdderUsageObserver {
         return used;
     }
 
-    public static void setUsed( boolean used ) {
+    public static void setUsed(boolean used) {
         AdderUsageObserver.used = used;
     }
 

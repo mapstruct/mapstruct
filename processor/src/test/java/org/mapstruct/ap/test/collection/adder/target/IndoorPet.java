@@ -19,14 +19,13 @@
 package org.mapstruct.ap.test.collection.adder.target;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class IndoorPet extends Pet {
 
     private Long value;
 
-    public IndoorPet( Long value ) {
+    public IndoorPet(Long value) {
         this.value = value;
     }
 
@@ -34,7 +33,7 @@ public class IndoorPet extends Pet {
         return value;
     }
 
-    public void setValue( Long value ) {
+    public void setValue(Long value) {
         this.value = value;
     }
 }

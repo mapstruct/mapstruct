@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class TargetHuman {
@@ -33,11 +32,11 @@ public class TargetHuman {
         return teeth;
     }
 
-    public void setTeeth( List<Integer> teeth ) {
+    public void setTeeth(List<Integer> teeth) {
         this.teeth = teeth;
     }
 
-    public void addTooth( Integer pet ) {
+    public void addTooth(Integer pet) {
         AdderUsageObserver.setUsed( true );
         if ( teeth == null ) {
             teeth = new ArrayList<Integer>();
@@ -45,7 +44,7 @@ public class TargetHuman {
         teeth.add( pet );
     }
 
-    public void addTeeth( Integer tooth ) {
+    public void addTeeth(Integer tooth) {
         if ( teeth == null ) {
             teeth = new ArrayList<Integer>();
         }

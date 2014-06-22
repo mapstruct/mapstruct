@@ -18,13 +18,10 @@
  */
 package org.mapstruct.ap.util;
 
-import static org.mapstruct.CollectionMappingStrategy.valueOf;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
@@ -35,6 +32,9 @@ import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.MapperConfigPrism;
 import org.mapstruct.ap.prism.MapperPrism;
+
+import static org.mapstruct.CollectionMappingStrategy.valueOf;
+
 /**
  * Class decorating the {@link MapperPrism} with the 'default' configuration.
  *
@@ -55,11 +55,11 @@ public class MapperConfig {
         return new MapperConfig( MapperPrism.getInstanceOn( e ) );
     }
 
-    public static MapperConfig getInstance(AnnotationMirror mirror ) {
+    public static MapperConfig getInstance(AnnotationMirror mirror) {
         return new MapperConfig( MapperPrism.getInstance( mirror ) );
     }
 
-    private MapperConfig( MapperPrism mapperPrism ) {
+    private MapperConfig(MapperPrism mapperPrism) {
         this.mapperPrism = mapperPrism;
         TypeMirror typeMirror = mapperPrism.config();
         if ( typeMirror.getKind().equals( TypeKind.DECLARED ) ) {
@@ -84,8 +84,8 @@ public class MapperConfig {
             return mapperPrism.unmappedTargetPolicy();
         }
         else if ( mapperConfigPrism != null &&
-                  !ReportingPolicy.valueOf( mapperConfigPrism.unmappedTargetPolicy())
-                          .equals( ReportingPolicy.DEFAULT ) ) {
+            !ReportingPolicy.valueOf( mapperConfigPrism.unmappedTargetPolicy() )
+                .equals( ReportingPolicy.DEFAULT ) ) {
             return mapperConfigPrism.unmappedTargetPolicy();
         }
         else {

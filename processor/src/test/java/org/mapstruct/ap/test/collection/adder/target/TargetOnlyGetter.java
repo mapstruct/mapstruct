@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class TargetOnlyGetter {
@@ -33,19 +32,19 @@ public class TargetOnlyGetter {
         return pets;
     }
 
-    public void addCat( Long cat ) {
+    public void addCat(Long cat) {
         // dummy method to test selection mechanims
     }
 
-    public void addDog( Long cat ) {
+    public void addDog(Long cat) {
         // dummy method to test selection mechanims
     }
 
-    public void addPets( Long cat ) {
+    public void addPets(Long cat) {
         // dummy method to test selection mechanims
     }
 
-    public void addPet( Long pet ) {
+    public void addPet(Long pet) {
         AdderUsageObserver.setUsed( true );
         if ( pets == null ) {
             pets = new ArrayList<Long>();
