@@ -18,13 +18,11 @@
  */
 package org.mapstruct.ap.model;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 
-import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
 
 /**
  * Represents the mapping between a source and target property, e.g. from
@@ -76,16 +74,7 @@ public class PropertyMapping extends ModelElement {
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> importTypes = new HashSet<Type>();
-        if ( assignment.getType() == DIRECT  ) {
-            if ( targetType.isCollectionOrMapType() ) {
-                importTypes.addAll( targetType.getImportTypes() );
-            }
-        }
-        else {
-            importTypes.addAll( assignment.getImportTypes() );
-        }
-        return importTypes;
+        return assignment.getImportTypes();
     }
 
     @Override

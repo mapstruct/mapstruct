@@ -38,18 +38,32 @@
         </#if>
     }
     else {
-        <@includeModel object=assignment
-                targetBeanName=ext.targetBeanName
-                raw=ext.raw
-                existingInstanceMapping=ext.existingInstanceMapping
-                targetAccessorName=ext.targetAccessorName
-                targetType=ext.targetType/>
+        <#if newCollectionOrMapAssignment??>
+            <@_newCollectionOrMapAssignment/>
+        <#else>
+            <@_assignment/>
+        </#if>
     }
 <#else>
+    <#if newCollectionOrMapAssignment??>
+        <@_newCollectionOrMapAssignment/>
+    <#else>
+        <@_assignment/>
+    </#if>
+</#if>
+<#macro _assignment>
     <@includeModel object=assignment
             targetBeanName=ext.targetBeanName
             raw=ext.raw
             existingInstanceMapping=ext.existingInstanceMapping
             targetAccessorName=ext.targetAccessorName
             targetType=ext.targetType/>
-</#if>
+</#macro>
+<#macro _newCollectionOrMapAssignment>
+    <@includeModel object=newCollectionOrMapAssignment
+            targetBeanName=ext.targetBeanName
+            raw=ext.raw
+            existingInstanceMapping=ext.existingInstanceMapping
+            targetAccessorName=ext.targetAccessorName
+            targetType=ext.targetType/>
+</#macro>
