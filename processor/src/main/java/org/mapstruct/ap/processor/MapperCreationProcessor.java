@@ -85,9 +85,11 @@ import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED;
  */
 public class MapperCreationProcessor implements ModelElementProcessor<List<SourceMethod>, Mapper> {
 
-    private enum TargetAccessorType {GETTER, SETTER, ADDER}
-
-    ;
+    private enum TargetAccessorType {
+        GETTER,
+        SETTER,
+        ADDER
+    }
 
     private Elements elementUtils;
     private Types typeUtils;
