@@ -759,26 +759,32 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
             if ( targetType.isCollectionOrMapType() ) {
 
-                // wrap the assignment in a new Map or Collection implementation if this is not done in a mapping
-                // method. Note, typeconversons do not apply to collections or maps
-                if ( assignment.getType() == DIRECT ) {
-
-                    assignment = new NewCollectionOrMapWrapper( assignment );
-                }
-
-                // wrap the assignment in the setter method
-                assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-
                 // wrap the setter in the collection / map initializers
                 if ( targetAccessorType == TargetAccessorType.SETTER ) {
-                    // target accessor is setter, so decorate assignment as setter
+
+                    // wrap the assignment in a new Map or Collection implementation if this is not done in a mapping
+                    // method. Note, typeconversons do not apply to collections or maps
+                    Assignment newCollectionOrMap = null;
+                    if ( assignment.getType() == DIRECT ) {
+                        newCollectionOrMap = new NewCollectionOrMapWrapper( assignment, targetType.getImportTypes() );
+                        newCollectionOrMap = new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
+                    }
+
+                    // wrap the assignment in the setter method
+                    assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+
+                    // target accessor is setter, so wrap the setter in setter map/ collection handling
                     assignment = new SetterCollectionOrMapWrapper(
                         assignment,
-                        targetAccessor.getSimpleName().toString()
+                        targetAccessor.getSimpleName().toString(),
+                        newCollectionOrMap
                     );
                 }
                 else {
-                    // target accessor is getter, so decorate assignment as getter
+                    // wrap the assignment in the setter method
+                    assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+
+                    // target accessor is getter, so wrap the setter in getter map/ collection handling
                     assignment = new GetterCollectionOrMapWrapper( assignment );
                 }
 
@@ -869,7 +875,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             // create a new Map or Collection implementation if no method or type conversion
             if ( targetType != null && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
                 if ( assignment.getType() == DIRECT ) {
-                    assignment = new NewCollectionOrMapWrapper( assignment );
+                    assignment = new NewCollectionOrMapWrapper( assignment, targetType.getImportTypes() );
                 }
             }
 

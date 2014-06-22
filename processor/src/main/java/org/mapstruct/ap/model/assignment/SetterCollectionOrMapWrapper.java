@@ -18,7 +18,10 @@
  */
 package org.mapstruct.ap.model.assignment;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.mapstruct.ap.model.Assignment;
+import org.mapstruct.ap.model.common.Type;
 
 /**
  * This wrapper handles the situation were an assignment is done via the setter.
@@ -35,14 +38,31 @@ import org.mapstruct.ap.model.Assignment;
 public class SetterCollectionOrMapWrapper extends AssignmentWrapper {
 
     private final String targetGetterName;
+    private final Assignment newCollectionOrMapAssignment;
 
-    public SetterCollectionOrMapWrapper( Assignment decoratedAssignment, String targetSetterName ) {
+    public SetterCollectionOrMapWrapper( Assignment decoratedAssignment,
+            String targetSetterName,
+            Assignment newCollectionOrMapAssignment ) {
         super( decoratedAssignment );
         this.targetGetterName = "get" +  targetSetterName.substring( 3 );
+        this.newCollectionOrMapAssignment = newCollectionOrMapAssignment;
     }
 
     public String getTargetGetterName() {
         return targetGetterName;
     }
 
+    public Assignment getNewCollectionOrMapAssignment() {
+        return newCollectionOrMapAssignment;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> imported = new HashSet<Type>();
+        imported.addAll( getAssignment().getImportTypes() );
+        if ( newCollectionOrMapAssignment != null ) {
+            imported.addAll( newCollectionOrMapAssignment.getImportTypes() );
+        }
+        return imported;
+    }
 }
