@@ -33,11 +33,11 @@ public interface ErroneousMapper1 {
     ErroneousMapper1 INSTANCE = Mappers.getMapper( ErroneousMapper1.class );
 
     @Mappings( {
-        @Mapping( target = "stringConstant", expression = "stringConstant"),
-        @Mapping( source = "test" , target = "integerConstant", expression = "14"),
-        @Mapping( target = "longWrapperConstant", expression = "3001"),
-        @Mapping( target = "dateConstant", dateFormat = "dd-MM-yyyy", expression = "09-01-2014"),
-        @Mapping( target = "nameConstants", expression = "jack-jill-tom" )
+        @Mapping( target = "stringConstant", constant = "stringConstant"),
+        @Mapping( source = "test" , target = "integerConstant", constant = "14"),
+        @Mapping( target = "longWrapperConstant", constant = "3001"),
+        @Mapping( target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
+        @Mapping( target = "nameConstants", constant = "jack-jill-tom" )
     } )
     Target sourceToTarget(Source s);
 }
