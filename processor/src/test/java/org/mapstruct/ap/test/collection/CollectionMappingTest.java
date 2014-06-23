@@ -35,7 +35,7 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-@WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class })
+@WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class, TestList.class, TestMap.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class CollectionMappingTest {
 
@@ -107,6 +107,7 @@ public class CollectionMappingTest {
         target.getStringList().add( "Bill" );
 
         assertThat( source.getStringList() ).containsExactly( "Bob", "Alice" );
+        assertThat( source.getStringList() ).isNotEqualTo( target.getStringList() );
     }
 
     @Test
@@ -120,6 +121,13 @@ public class CollectionMappingTest {
 
         assertThat( source.getOtherStringList() ).containsExactly( "Bob", "Alice" );
 
+        // prepare a test list to monitor add all behaviour
+        List<String> testList = new TestList<String>();
+        testList.addAll( target.getOtherStringList() );
+        TestList.setAddAllCalled( false );
+        target.setOtherStringList( testList );
+
+        // prepare new source
         source.setOtherStringList( Arrays.asList( "Bob" ) );
         List<String> originalInstance = target.getOtherStringList();
 
@@ -127,6 +135,8 @@ public class CollectionMappingTest {
 
         assertThat( target.getOtherStringList() ).isSameAs( originalInstance );
         assertThat( target.getOtherStringList() ).containsExactly( "Bob" );
+        assertThat( TestList.isAddAllCalled() ).isTrue();
+        TestList.setAddAllCalled( false );
     }
 
     @Test
@@ -342,12 +352,19 @@ public class CollectionMappingTest {
         assertThat( target.getOtherStringLongMap() ).hasSize( 3 );
 
         source.getOtherStringLongMap().remove( "Alice" );
-        Map<String, Long> originalInstance = target.getOtherStringLongMap();
+
+       // prepare a test list to monitor add all behaviour
+        Map<String, Long> originalInstance  = new TestMap<String, Long>();
+        originalInstance.putAll( target.getOtherStringLongMap() );
+        TestMap.setPuttAllCalled( false );
+        target.setOtherStringLongMap( originalInstance );
 
         SourceTargetMapper.INSTANCE.sourceToTarget( source, target );
 
         assertThat( target.getOtherStringLongMap() ).isSameAs( originalInstance );
         assertThat( target.getOtherStringLongMap() ).hasSize( 1 );
+        assertThat( TestMap.isPuttAllCalled() ).isTrue();
+        TestMap.setPuttAllCalled( false );
     }
 
     @Test
