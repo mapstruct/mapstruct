@@ -410,8 +410,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         String sourcePropertyName;
         if ( mapping != null ) {
             dateFormat = mapping.getDateFormat();
-            isSourceConstant = !mapping.getExpression().isEmpty();
-            sourceConstant = "\"" + mapping.getExpression() + "\"";
+            isSourceConstant = !mapping.getConstant().isEmpty();
+            sourceConstant = "\"" + mapping.getConstant() + "\"";
             sourcePropertyName = mapping.getSourcePropertyName();
         }
         else {
@@ -674,7 +674,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     }
 
                 }
-                else if ( mappedProperty.getExpression().isEmpty() &&
+                else if ( mappedProperty.getConstant().isEmpty() &&
                     !hasSourceProperty( method, mappedProperty.getSourcePropertyName() ) ) {
                     messager.printMessage(
                         Kind.ERROR,
