@@ -336,7 +336,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         FactoryMethod result = null;
         for ( SourceMethod method : methods ) {
             if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
-                && method.getSourceParameters().size() == 0 ) {
+                && method.getSourceParameters().isEmpty() ) {
 
                 List<Type> parameterTypes =
                     MethodSelectors.getParameterTypes( typeFactory, method.getParameters(), null, returnType );
