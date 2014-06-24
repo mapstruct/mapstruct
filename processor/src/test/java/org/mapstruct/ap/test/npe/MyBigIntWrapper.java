@@ -18,51 +18,21 @@
  */
 package org.mapstruct.ap.test.npe;
 
-import java.util.List;
+import java.math.BigInteger;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class Target {
+public class MyBigIntWrapper {
 
-    private String someObject;
-    private Integer number;
-    private List<String> someList;
-    private MyBigIntWrapper someInteger;
+    private BigInteger myBigInt;
 
-    public String getSomeObject() {
-        return someObject;
+    public BigInteger getMyBigInt() {
+        return myBigInt;
     }
 
-    public void setSomeObject( String someObject ) {
-        this.someObject = someObject;
+    public void setMyBigInt( BigInteger myBigInt ) {
+        this.myBigInt = myBigInt;
     }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber( Integer number ) {
-        this.number = number;
-    }
-
-    public List<String> getSomeList() {
-        return someList;
-    }
-
-    public void setSomeList( List<String> someList ) {
-        this.someList = someList;
-    }
-
-    public MyBigIntWrapper getSomeInteger() {
-        return someInteger;
-    }
-
-    public void setSomeInteger( MyBigIntWrapper someInteger ) {
-        this.someInteger = someInteger;
-    }
-
-
-
 }
