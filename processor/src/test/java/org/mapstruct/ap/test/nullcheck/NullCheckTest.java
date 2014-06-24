@@ -35,8 +35,9 @@ import static org.fest.assertions.Assertions.assertThat;
     SourceTargetMapper.class,
     NullObjectMapper.class,
     NullObject.class,
-    MyBigIntMapper.class,
+    CustomMapper.class,
     MyBigIntWrapper.class,
+    MyLongWrapper.class,
     Source.class,
     Target.class
 })
@@ -50,6 +51,8 @@ public class NullCheckTest {
         Source source = new Source();
         source.setNumber( "5" );
         source.setSomeInteger( 7 );
+        source.setSomeLong( 2L );
+
         SourceTargetMapper.INSTANCE.sourceToTarget( source );
     }
 
@@ -60,6 +63,8 @@ public class NullCheckTest {
         Source source = new Source();
         source.setSomeObject( new NullObject() );
         source.setSomeInteger( 7 );
+        source.setSomeLong( 2L );
+
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target.getNumber() ).isNull();
@@ -73,6 +78,8 @@ public class NullCheckTest {
         Source source = new Source();
         source.setSomeObject( new NullObject() );
         source.setSomeInteger( 7 );
+        source.setSomeLong( 2L );
+
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target.getSomeList() ).isNull();
@@ -84,9 +91,25 @@ public class NullCheckTest {
 
         Source source = new Source();
         source.setSomeObject( new NullObject() );
+        source.setSomeLong( 2L );
+
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target.getSomeList() ).isNull();
         assertThat( target.getSomeInteger() ).isNull();
+    }
+
+    @Test
+    @IssueKey("231")
+    public void shouldSurroundConversionFromWrappedPassedToMappingMethodWithPrimitiveArgWithNullCheck() {
+
+        Source source = new Source();
+        source.setSomeObject( new NullObject() );
+        source.setSomeInteger( 7 );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target.getSomeList() ).isNull();
+        assertThat( target.getSomeLong()).isNull();
     }
 }

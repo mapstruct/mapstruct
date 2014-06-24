@@ -18,16 +18,21 @@
  */
 package org.mapstruct.ap.test.nullcheck;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import java.math.BigInteger;
 
 /**
  * @author Sjaak Derksen
  */
-@Mapper(uses = { NullObjectMapper.class, CustomMapper.class })
-public interface SourceTargetMapper {
+public class CustomMapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    Target sourceToTarget(Source source);
+    public MyBigIntWrapper toMyBigIntWrapper(BigInteger bigInteger) {
+        MyBigIntWrapper wrapper = new MyBigIntWrapper();
+        wrapper.setMyBigInt( bigInteger );
+        return wrapper;
+    }
+    public MyLongWrapper toMyBigIntWrapperViaPrimitive(long primitive) {
+        MyLongWrapper wrapper = new MyLongWrapper();
+        wrapper.setMyLong( primitive );
+        return wrapper;
+    }
 }

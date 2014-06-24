@@ -29,6 +29,7 @@ public class Source {
     private String number;
     private List<String> someList;
     private Integer someInteger;
+    private Long someLong;
 
     public NullObject getSomeObject() {
         return someObject;
@@ -60,6 +61,14 @@ public class Source {
 
     public void setSomeInteger(Integer someInteger) {
         this.someInteger = someInteger;
+    }
+
+    public Long getSomeLong() {
+        return someLong;
+    }
+
+    public void setSomeLong( Long someLong ) {
+        this.someLong = someLong;
     }
 
 }
