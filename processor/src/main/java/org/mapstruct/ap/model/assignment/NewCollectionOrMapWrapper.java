@@ -20,6 +20,7 @@ package org.mapstruct.ap.model.assignment;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.Type;
 
@@ -32,12 +33,12 @@ public class NewCollectionOrMapWrapper extends AssignmentWrapper {
 
     private final Set<Type> implementationTypes;
 
-    public NewCollectionOrMapWrapper( Assignment decoratedAssignment, Set<Type> implementationTypes ) {
+    public NewCollectionOrMapWrapper(Assignment decoratedAssignment, Set<Type> implementationTypes) {
         super( decoratedAssignment );
         this.implementationTypes = implementationTypes;
     }
 
-   @Override
+    @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>();
         imported.addAll( getAssignment().getImportTypes() );

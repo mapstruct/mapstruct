@@ -36,7 +36,7 @@ import org.mapstruct.ap.model.Assignment;
 public class GetterCollectionOrMapWrapper extends AssignmentWrapper {
 
 
-    public GetterCollectionOrMapWrapper( Assignment decoratedAssignment ) {
+    public GetterCollectionOrMapWrapper(Assignment decoratedAssignment) {
         super( decoratedAssignment );
     }
 

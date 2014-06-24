@@ -22,10 +22,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class TestMap<K, V> extends HashMap<K, V> {
+
+    private static final long serialVersionUID = 1L;
 
     private static boolean puttAllCalled = false;
 
@@ -33,16 +34,13 @@ public class TestMap<K, V> extends HashMap<K, V> {
         return puttAllCalled;
     }
 
-    public static void setPuttAllCalled( boolean puttAllCalled ) {
+    public static void setPuttAllCalled(boolean puttAllCalled) {
         TestMap.puttAllCalled = puttAllCalled;
     }
 
     @Override
-    public void putAll( Map m ) {
+    public void putAll(Map<? extends K, ? extends V> m) {
         puttAllCalled = true;
-        super.putAll( m ); //To change body of generated methods, choose Tools | Templates.
+        super.putAll( m );
     }
-
-
-
 }

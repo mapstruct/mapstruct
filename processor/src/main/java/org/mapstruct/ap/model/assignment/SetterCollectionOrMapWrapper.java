@@ -20,6 +20,7 @@ package org.mapstruct.ap.model.assignment;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.Type;
 
@@ -40,11 +41,11 @@ public class SetterCollectionOrMapWrapper extends AssignmentWrapper {
     private final String targetGetterName;
     private final Assignment newCollectionOrMapAssignment;
 
-    public SetterCollectionOrMapWrapper( Assignment decoratedAssignment,
-            String targetSetterName,
-            Assignment newCollectionOrMapAssignment ) {
+    public SetterCollectionOrMapWrapper(Assignment decoratedAssignment,
+                                        String targetSetterName,
+                                        Assignment newCollectionOrMapAssignment) {
         super( decoratedAssignment );
-        this.targetGetterName = "get" +  targetSetterName.substring( 3 );
+        this.targetGetterName = "get" + targetSetterName.substring( 3 );
         this.newCollectionOrMapAssignment = newCollectionOrMapAssignment;
     }
 

@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class TestList<E> extends ArrayList<E> {
+
+    private static final long serialVersionUID = 1L;
 
     private static boolean addAllCalled = false;
 
@@ -33,14 +34,13 @@ public class TestList<E> extends ArrayList<E> {
         return addAllCalled;
     }
 
-    public static void setAddAllCalled( boolean addAllCalled ) {
+    public static void setAddAllCalled(boolean addAllCalled) {
         TestList.addAllCalled = addAllCalled;
     }
 
     @Override
-    public boolean addAll( Collection c ) {
+    public boolean addAll(Collection<? extends E> c) {
         addAllCalled = true;
         return super.addAll( c );
     }
-
 }
