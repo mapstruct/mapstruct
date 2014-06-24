@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.sourceconstants;
+package org.mapstruct.ap.test.source.constants;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -96,9 +96,59 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.ERROR,
                 line = 42,
-                messageRegExp = "Source and constant are both defined in Mapping, either define a source or an "
-                        + "expression"),
+                messageRegExp = "Source and constant are both defined in Mapping, either define a source or a "
+                        + "constant"),
             @Diagnostic(type = ErroneousMapper1.class,
+                kind = Kind.WARNING,
+                line = 42,
+                messageRegExp = "Unmapped target property: \"integerConstant\"")
+        }
+    )
+    public void errorOnSourceAndConstant() throws ParseException {
+    }
+
+    @Test
+    @IssueKey( "187" )
+    @WithClasses( {
+        Source.class,
+        Target.class,
+        ErroneousMapper3.class,
+        StringListMapper.class
+    } )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapper3.class,
+                kind = Kind.ERROR,
+                line = 42,
+                messageRegExp = "Expression and constant are both defined in Mapping, either define an expression or a "
+                        + "constant"),
+            @Diagnostic(type = ErroneousMapper3.class,
+                kind = Kind.WARNING,
+                line = 42,
+                messageRegExp = "Unmapped target property: \"integerConstant\"")
+        }
+    )
+    public void errorOnConstantAndExpression() throws ParseException {
+    }
+
+   @Test
+    @IssueKey( "187" )
+    @WithClasses( {
+        Source.class,
+        Target.class,
+        ErroneousMapper4.class,
+        StringListMapper.class
+    } )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapper4.class,
+                kind = Kind.ERROR,
+                line = 42,
+                messageRegExp = "Source and expression are both defined in Mapping, either define a source or an "
+                        + "expression"),
+            @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.WARNING,
                 line = 42,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
@@ -121,7 +171,7 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper2.class,
                 kind = Kind.ERROR,
                 line = 42,
-                messageRegExp = "Either define a source or a constant in a Mapping"),
+                messageRegExp = "Either define a source, a constant or an epression in a Mapping"),
             @Diagnostic(type = ErroneousMapper2.class,
                 kind = Kind.WARNING,
                 line = 42,
