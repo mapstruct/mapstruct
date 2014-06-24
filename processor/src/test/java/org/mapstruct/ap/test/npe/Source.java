@@ -29,6 +29,7 @@ public class Source {
     private NullObject someObject;
     private String number;
     private List<String> someList;
+    private Integer someInteger;
 
     public NullObject getSomeObject() {
         return someObject;
@@ -54,6 +55,12 @@ public class Source {
         this.someList = someList;
     }
 
+    public Integer getSomeInteger() {
+        return someInteger;
+    }
 
+    public void setSomeInteger( Integer someInteger ) {
+        this.someInteger = someInteger;
+    }
 
 }

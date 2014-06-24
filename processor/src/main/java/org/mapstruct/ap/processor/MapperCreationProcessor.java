@@ -76,6 +76,7 @@ import org.mapstruct.ap.util.Strings;
 
 import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED;
+import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -797,6 +798,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     assignment = new SetterWrapper( assignment, method.getThrownTypes() );
                     if ( !sourceType.isPrimitive() &&
                         ( assignment.getType() == TYPE_CONVERTED ||
+                          assignment.getType() == TYPE_CONVERTED_MAPPED ||
                           assignment.getType() == DIRECT && targetType.isPrimitive() ) ) {
                         // for primitive types null check is not possible at all, but a conversion needs
                         // a null check.
