@@ -29,6 +29,7 @@ public class Target {
     private Integer number;
     private List<String> someList;
     private MyBigIntWrapper someInteger;
+    private MyLongWrapper someLong;
 
     public String getSomeObject() {
         return someObject;
@@ -61,4 +62,14 @@ public class Target {
     public void setSomeInteger(MyBigIntWrapper someInteger) {
         this.someInteger = someInteger;
     }
+
+    public MyLongWrapper getSomeLong() {
+        return someLong;
+    }
+
+    public void setSomeLong( MyLongWrapper someLong ) {
+        this.someLong = someLong;
+    }
+
+
 }

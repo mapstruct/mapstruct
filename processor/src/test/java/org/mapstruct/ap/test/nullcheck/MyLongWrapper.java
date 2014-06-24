@@ -18,16 +18,20 @@
  */
 package org.mapstruct.ap.test.nullcheck;
 
-import java.math.BigInteger;
 
 /**
  * @author Sjaak Derksen
  */
-public class MyBigIntMapper {
+public class MyLongWrapper {
 
-    public MyBigIntWrapper toMyBigIntWrapper(BigInteger bigInteger) {
-        MyBigIntWrapper wrapper = new MyBigIntWrapper();
-        wrapper.setMyBigInt( bigInteger );
-        return wrapper;
+    private Long myLong;
+
+    public Long getMyLong() {
+        return myLong;
     }
+
+    public void setMyLong( Long myLong ) {
+        this.myLong = myLong;
+    }
+
 }
