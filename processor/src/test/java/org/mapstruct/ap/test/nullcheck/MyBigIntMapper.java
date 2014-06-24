@@ -16,19 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.npe;
+package org.mapstruct.ap.test.nullcheck;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import java.math.BigInteger;
 
 /**
- *
  * @author Sjaak Derksen
  */
-@Mapper (uses = { NullObjectMapper.class, MyBigIntMapper.class } )
-public interface SourceTargetMapper {
+public class MyBigIntMapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    Target sourceToTarget(Source source);
+    public MyBigIntWrapper toMyBigIntWrapper(BigInteger bigInteger) {
+        MyBigIntWrapper wrapper = new MyBigIntWrapper();
+        wrapper.setMyBigInt( bigInteger );
+        return wrapper;
+    }
 }

@@ -16,34 +16,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.npe;
+package org.mapstruct.ap.test.nullcheck;
 
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
-public class Target {
+public class Source {
 
-    private String someObject;
-    private Integer number;
+    private NullObject someObject;
+    private String number;
     private List<String> someList;
-    private MyBigIntWrapper someInteger;
+    private Integer someInteger;
 
-    public String getSomeObject() {
+    public NullObject getSomeObject() {
         return someObject;
     }
 
-    public void setSomeObject( String someObject ) {
+    public void setSomeObject(NullObject someObject) {
         this.someObject = someObject;
     }
 
-    public Integer getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber( Integer number ) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
@@ -51,18 +50,16 @@ public class Target {
         return someList;
     }
 
-    public void setSomeList( List<String> someList ) {
+    public void setSomeList(List<String> someList) {
         this.someList = someList;
     }
 
-    public MyBigIntWrapper getSomeInteger() {
+    public Integer getSomeInteger() {
         return someInteger;
     }
 
-    public void setSomeInteger( MyBigIntWrapper someInteger ) {
+    public void setSomeInteger(Integer someInteger) {
         this.someInteger = someInteger;
     }
-
-
 
 }

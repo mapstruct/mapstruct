@@ -16,19 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.npe;
+package org.mapstruct.ap.test.nullcheck;
 
 import java.math.BigInteger;
 
 /**
- *
  * @author Sjaak Derksen
  */
-public class MyBigIntMapper {
+public class MyBigIntWrapper {
 
-    public MyBigIntWrapper toMyBigIntWrapper(BigInteger bigInteger) {
-        MyBigIntWrapper wrapper = new MyBigIntWrapper();
-        wrapper.setMyBigInt( bigInteger );
-        return wrapper;
+    private BigInteger myBigInt;
+
+    public BigInteger getMyBigInt() {
+        return myBigInt;
+    }
+
+    public void setMyBigInt(BigInteger myBigInt) {
+        this.myBigInt = myBigInt;
     }
 }
