@@ -406,13 +406,30 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // check if there's a mapping defined
         Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
         String dateFormat = null;
-        boolean isSourceConstant = false;
-        String sourceConstant = null;
+
         String sourcePropertyName;
         if ( mapping != null ) {
             dateFormat = mapping.getDateFormat();
-            isSourceConstant = !mapping.getConstant().isEmpty();
-            sourceConstant = "\"" + mapping.getConstant() + "\"";
+
+            if ( Executables.isSetterMethod( targetAccessor ) ) {
+
+                // check constants first
+                if ( !mapping.getConstant().isEmpty() ) {
+                    return getConstantMapping(
+                            mapperReferences,
+                            methods,
+                            method,
+                            "\"" + mapping.getConstant() + "\"",
+                            targetAccessor,
+                            dateFormat
+                    );
+                }
+
+                if ( !mapping.getJavaExpression().isEmpty() ) {
+                    return getJavaExpressionMapping( method, mapping.getJavaExpression(), targetAccessor );
+                }
+            }
+
             sourcePropertyName = mapping.getSourcePropertyName();
         }
         else {
@@ -420,18 +437,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         List<ExecutableElement> sourceGetters = parameter.getType().getGetters();
-
-        // check constants first
-        if ( isSourceConstant ) {
-            return getConstantMapping(
-                mapperReferences,
-                methods,
-                method,
-                sourceConstant,
-                targetAccessor,
-                dateFormat
-            );
-        }
 
         // then iterate over source accessors (assuming the source is a bean)
         for ( ExecutableElement sourceAccessor : sourceGetters ) {
@@ -676,6 +681,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 }
                 else if ( mappedProperty.getConstant().isEmpty() &&
+                          mappedProperty.getJavaExpression().isEmpty()  &&
                     !hasSourceProperty( method, mappedProperty.getSourcePropertyName() ) ) {
                     messager.printMessage(
                         Kind.ERROR,
@@ -843,7 +849,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                List<SourceMethod> methods,
                                                SourceMethod method,
                                                String constantExpression,
-                                               ExecutableElement targetAcessor,
+                                               ExecutableElement targetAccessor,
                                                String dateFormat) {
 
         // source
@@ -851,14 +857,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         Type sourceType = typeFactory.getType( String.class );
 
         // target
-        Type targetType = null;
-        if ( Executables.isSetterMethod( targetAcessor ) ) {
-            targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
-        }
-        else if ( Executables.isGetterMethod( targetAcessor ) ) {
-            targetType = typeFactory.getReturnType( targetAcessor );
-        }
-        String targetPropertyName = Executables.getPropertyName( targetAcessor );
+        Type targetType = typeFactory.getSingleParameter( targetAccessor ).getType();
+        String targetPropertyName = Executables.getPropertyName( targetAccessor );
 
         Assignment assignment = mappingResolver.getTargetAssignment(
             method,
@@ -873,13 +873,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( assignment != null ) {
-
-            // create a new Map or Collection implementation if no method or type conversion
-            if ( targetType != null && ( targetType.isCollectionType() || targetType.isMapType() ) ) {
-                if ( assignment.getType() == DIRECT ) {
-                    assignment = new NewCollectionOrMapWrapper( assignment, targetType.getImportTypes() );
-                }
-            }
 
             // target accessor is setter, so decorate assignment as setter
             assignment = new SetterWrapper( assignment, method.getThrownTypes() );
@@ -898,6 +891,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             );
         }
 
+        return new PropertyMapping( targetAccessor.getSimpleName().toString(), targetType, assignment );
+    }
+
+    /**
+     * Creates a {@link PropertyMapping} representing the mapping of the given java expression into the target
+     * property.
+     */
+    private PropertyMapping getJavaExpressionMapping(SourceMethod method,
+                                                     String javaExpression,
+                                                     ExecutableElement targetAcessor) {
+
+        Type  targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
+        Assignment assignment = AssignmentFactory.createSimple( javaExpression );
+        assignment = new SetterWrapper( assignment, method.getThrownTypes() );
         return new PropertyMapping( targetAcessor.getSimpleName().toString(), targetType, assignment );
     }
 
