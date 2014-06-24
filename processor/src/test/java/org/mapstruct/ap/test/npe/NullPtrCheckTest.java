@@ -30,44 +30,63 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  *
  * @author Sjaak Derksen
  */
-@IssueKey( "134" )
 @WithClasses( {
     SourceTargetMapper.class,
     NullObjectMapper.class,
     NullObject.class,
+    MyBigIntMapper.class,
+    MyBigIntWrapper.class,
     Source.class,
     Target.class
 } )
 @RunWith( AnnotationProcessorTestRunner.class )
 public class NullPtrCheckTest {
 
+    @IssueKey( "214" )
     @Test( expected = NullPointerException.class )
     public void shouldThrowNullptrWhenCustomMapperIsInvoked() {
 
         Source source = new Source();
         source.setNumber( "5" );
+        source.setSomeInteger( 7 );
         SourceTargetMapper.INSTANCE.sourceToTarget( source );
     }
 
+    @IssueKey( "214" )
     @Test
     public void shouldSurroundTypeConversionWithNPECheck() {
 
         Source source = new Source();
         source.setSomeObject( new NullObject() );
+        source.setSomeInteger( 7 );
         Target target =  SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target.getNumber() ).isNull();
 
     }
 
-   @Test
+    @IssueKey( "214" )
+    @Test
     public void shouldSurroundArrayListConstructionWithNPECheck() {
+
+        Source source = new Source();
+        source.setSomeObject( new NullObject() );
+        source.setSomeInteger( 7 );
+        Target target =  SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target.getSomeList() ).isNull();
+    }
+
+    @IssueKey( "237" )
+    @Test
+    public void shouldMapMappedTypeConversion() {
 
         Source source = new Source();
         source.setSomeObject( new NullObject() );
         Target target =  SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target.getSomeList() ).isNull();
+        assertThat( target.getSomeInteger() ).isNull();
     }
 
 }

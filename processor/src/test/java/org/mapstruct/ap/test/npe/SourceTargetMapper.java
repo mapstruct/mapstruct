@@ -25,7 +25,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author Sjaak Derksen
  */
-@Mapper (uses = NullObjectMapper.class)
+@Mapper (uses = { NullObjectMapper.class, MyBigIntMapper.class } )
 public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
