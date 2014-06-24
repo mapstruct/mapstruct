@@ -16,12 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.npe;
+package org.mapstruct.ap.test.nullcheck;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
-public class NullObject {
+@Mapper(uses = { NullObjectMapper.class, MyBigIntMapper.class })
+public interface SourceTargetMapper {
 
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    Target sourceToTarget(Source source);
 }

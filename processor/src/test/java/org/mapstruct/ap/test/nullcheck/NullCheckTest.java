@@ -16,21 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.npe;
+package org.mapstruct.ap.test.nullcheck;
 
-import static org.fest.assertions.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 /**
  * Test for correct handling of null checks.
  *
  * @author Sjaak Derksen
  */
-@WithClasses( {
+@WithClasses({
     SourceTargetMapper.class,
     NullObjectMapper.class,
     NullObject.class,
@@ -38,12 +39,12 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     MyBigIntWrapper.class,
     Source.class,
     Target.class
-} )
-@RunWith( AnnotationProcessorTestRunner.class )
-public class NullPtrCheckTest {
+})
+@RunWith(AnnotationProcessorTestRunner.class)
+public class NullCheckTest {
 
-    @IssueKey( "214" )
-    @Test( expected = NullPointerException.class )
+    @Test(expected = NullPointerException.class)
+    @IssueKey("214")
     public void shouldThrowNullptrWhenCustomMapperIsInvoked() {
 
         Source source = new Source();
@@ -52,41 +53,40 @@ public class NullPtrCheckTest {
         SourceTargetMapper.INSTANCE.sourceToTarget( source );
     }
 
-    @IssueKey( "214" )
     @Test
-    public void shouldSurroundTypeConversionWithNPECheck() {
+    @IssueKey("214")
+    public void shouldSurroundTypeConversionWithNullCheck() {
 
         Source source = new Source();
         source.setSomeObject( new NullObject() );
         source.setSomeInteger( 7 );
-        Target target =  SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target.getNumber() ).isNull();
 
     }
 
-    @IssueKey( "214" )
     @Test
-    public void shouldSurroundArrayListConstructionWithNPECheck() {
+    @IssueKey("214")
+    public void shouldSurroundArrayListConstructionWithNullCheck() {
 
         Source source = new Source();
         source.setSomeObject( new NullObject() );
         source.setSomeInteger( 7 );
-        Target target =  SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target.getSomeList() ).isNull();
     }
 
-    @IssueKey( "237" )
     @Test
-    public void shouldMapMappedTypeConversion() {
+    @IssueKey("237")
+    public void shouldSurroundConversionPassedToMappingMethodWithNullCheck() {
 
         Source source = new Source();
         source.setSomeObject( new NullObject() );
-        Target target =  SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target.getSomeList() ).isNull();
         assertThat( target.getSomeInteger() ).isNull();
     }
-
 }
