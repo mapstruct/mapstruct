@@ -41,6 +41,8 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.mapstruct.ap.test.collection.adder.source.SingleElementSource;
+import org.mapstruct.ap.testutil.IssueKey;
 
 /**
  * @author Sjaak Derksen
@@ -57,6 +59,7 @@ import static org.junit.Assert.assertTrue;
     SourceTargetMapper.class,
     SourceTargetMapperStrategyDefault.class,
     SourceTargetMapperStrategySetterPreferred.class,
+    SingleElementSource.class,
     PetMapper.class,
     TeethMapper.class,
     AdderUsageObserver.class,
@@ -69,6 +72,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class AdderTest {
 
+    @IssueKey("241")
     @Test
     public void testAdd() throws DogException {
         AdderUsageObserver.setUsed( false );
@@ -103,6 +107,7 @@ public class AdderTest {
         SourceTargetMapper.INSTANCE.toTarget( source );
     }
 
+    @IssueKey("241")
     @Test
     public void testAddwithExistingTarget() throws DogException {
         AdderUsageObserver.setUsed( false );
@@ -217,6 +222,21 @@ public class AdderTest {
         assertThat( target.getPets().size() ).isEqualTo( 1 );
         assertThat( target.getPets().get( 0 ) ).isNotNull();
         assertThat( target.getPets().get( 0 ).getValue() ).isEqualTo( 2L );
+        assertTrue( AdderUsageObserver.isUsed() );
+    }
+
+    @IssueKey("242")
+    @Test
+    public void testSingleElemtSource() throws DogException {
+        AdderUsageObserver.setUsed( false );
+
+        SingleElementSource source = new SingleElementSource();
+        source.setPet( "mouse" );
+
+        Target target = SourceTargetMapper.INSTANCE.fromSingleElementSource( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getPets().size() ).isEqualTo( 1 );
+        assertThat( target.getPets().get( 0 ) ).isEqualTo( 2L );
         assertTrue( AdderUsageObserver.isUsed() );
     }
 

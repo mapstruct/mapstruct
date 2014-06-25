@@ -72,12 +72,10 @@ public class Executables {
     public static boolean isAdderMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
-        if ( isPublic( method ) && name.startsWith( "add" ) && name.length() > 3 && method.getParameters()
-            .size() == 1 && method.getReturnType().getKind() == TypeKind.VOID ) {
-            return true;
-        }
+        return isPublic( method ) &&
+               name.startsWith( "add" ) && name.length() > 3 &&
+               method.getParameters().size() == 1;
 
-        return false;
     }
 
     private static boolean isPublic(ExecutableElement method) {

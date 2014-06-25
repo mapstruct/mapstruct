@@ -20,7 +20,9 @@ package org.mapstruct.ap.test.collection.adder;
 
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ap.test.collection.adder.source.SingleElementSource;
 import org.mapstruct.ap.test.collection.adder.source.Source;
 import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
 import org.mapstruct.ap.test.collection.adder.target.Target;
@@ -52,4 +54,7 @@ public interface SourceTargetMapper {
     TargetOnlyGetter toTargetOnlyGetter(Source source) throws DogException;
 
     TargetViaTargetType toTargetViaTargetType(Source source);
+
+    @Mapping(source = "pet", target = "pets")
+    Target fromSingleElementSource(SingleElementSource source);
 }
