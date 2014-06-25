@@ -728,6 +728,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         TargetAccessorType targetAccessorType;
         String sourceReference = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
         String iteratorReference = null;
+        boolean sourceIsCollection = false;
         if ( Executables.isSetterMethod( targetAccessor ) ) {
             sourceType = typeFactory.getReturnType( sourceAccessor );
             targetType = typeFactory.getSingleParameter( targetAccessor ).getType();
@@ -735,7 +736,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
         else if ( Executables.isAdderMethod( targetAccessor ) ) {
             sourceType = typeFactory.getReturnType( sourceAccessor );
-            if ( sourceType.isCollectionType() && !sourceType.getTypeParameters().isEmpty() ) {
+            if ( sourceType.isCollectionType() ) {
+                sourceIsCollection = true;
                 sourceType = sourceType.getTypeParameters().get( 0 );
                 iteratorReference = Executables.getElementNameForAdder( targetAccessor );
             }
@@ -815,8 +817,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     }
                 }
                 else {
-                    // adder, so wrap as adder
-                    assignment = new AdderWrapper( assignment, method.getThrownTypes(), sourceReference, sourceType );
+                    // TargetAccessorType must be ADDER
+                    if ( sourceIsCollection ) {
+                        assignment =
+                                new AdderWrapper( assignment, method.getThrownTypes(), sourceReference, sourceType );
+                    }
+                    else {
+                        // Possibly adding null to a target collection. So should be surrounded by an null check.
+                        assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+                        assignment = new NullCheckWrapper( assignment );
+                    }
                 }
             }
         }
