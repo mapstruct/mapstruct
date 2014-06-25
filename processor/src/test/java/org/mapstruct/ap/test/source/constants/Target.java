@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class Target {
@@ -38,7 +37,7 @@ public class Target {
         return propertyThatShouldBeMapped;
     }
 
-    public void setPropertyThatShouldBeMapped( String propertyThatShouldBeMapped ) {
+    public void setPropertyThatShouldBeMapped(String propertyThatShouldBeMapped) {
         this.propertyThatShouldBeMapped = propertyThatShouldBeMapped;
     }
 
@@ -46,7 +45,7 @@ public class Target {
         return stringConstant;
     }
 
-    public void setStringConstant( String stringConstant ) {
+    public void setStringConstant(String stringConstant) {
         this.stringConstant = stringConstant;
     }
 
@@ -54,7 +53,7 @@ public class Target {
         return integerConstant;
     }
 
-    public void setIntegerConstant( int integerConstant ) {
+    public void setIntegerConstant(int integerConstant) {
         this.integerConstant = integerConstant;
     }
 
@@ -62,7 +61,7 @@ public class Target {
         return longWrapperConstant;
     }
 
-    public void setLongWrapperConstant( Long longWrapperConstant ) {
+    public void setLongWrapperConstant(Long longWrapperConstant) {
         this.longWrapperConstant = longWrapperConstant;
     }
 
@@ -70,7 +69,7 @@ public class Target {
         return dateConstant;
     }
 
-    public void setDateConstant( Date dateConstant ) {
+    public void setDateConstant(Date dateConstant) {
         this.dateConstant = dateConstant;
     }
 
@@ -78,7 +77,7 @@ public class Target {
         return nameConstants;
     }
 
-    public void setNameConstants( List<String> nameConstants ) {
+    public void setNameConstants(List<String> nameConstants) {
         this.nameConstants = nameConstants;
     }
 

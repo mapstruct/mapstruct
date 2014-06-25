@@ -19,7 +19,6 @@
 package org.mapstruct.ap.test.source.constants;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class Source {
@@ -30,10 +29,9 @@ public class Source {
         return propertyThatShouldBeMapped;
     }
 
-    public void setPropertyThatShouldBeMapped( String propertyThatShouldBeMapped ) {
+    public void setPropertyThatShouldBeMapped(String propertyThatShouldBeMapped) {
         this.propertyThatShouldBeMapped = propertyThatShouldBeMapped;
     }
-
 
 
 }

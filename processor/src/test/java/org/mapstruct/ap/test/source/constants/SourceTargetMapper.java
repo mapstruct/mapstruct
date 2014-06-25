@@ -24,7 +24,6 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
 @Mapper(uses = StringListMapper.class)
@@ -32,13 +31,14 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mappings( {
-        @Mapping( target = "stringConstant", constant = "stringConstant"),
-        @Mapping( target = "integerConstant", constant = "14"),
-        @Mapping( target = "longWrapperConstant", constant = "3001"),
-        @Mapping( target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
-        @Mapping( target = "nameConstants", constant = "jack-jill-tom" )
-    } )
+    @Mappings({
+        @Mapping(target = "stringConstant", constant = "stringConstant"),
+        @Mapping(target = "integerConstant", constant = "14"),
+        @Mapping(target = "longWrapperConstant", constant = "3001"),
+        @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
+        @Mapping(target = "nameConstants", constant = "jack-jill-tom")
+    })
     Target sourceToTarget(Source s);
+
     Source targetToSource(Target t);
 }

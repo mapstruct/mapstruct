@@ -32,6 +32,6 @@ public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mapping(target = "timeAndFormat", expression = "java( new org.mapstruct.ap.test.source.expressions.java."
-            + "TimeAndFormat( s.getTime(), s.getFormat() ))")
+        + "TimeAndFormat( s.getTime(), s.getFormat() ))")
     Target sourceToTarget(Source s);
 }
