@@ -42,7 +42,7 @@ public @interface Mapping {
      * <li>The source name of the configured property as defined by the JavaBeans specification.</li>
      * <li>When used to map an enum constant, the name of the constant member is to be given<./li>.
      * </ol>
-     * Either this attribute or {@link #expression()} may be specified for a given mapping, but not both at the same
+     * Either this attribute or {@link #constant()} may be specified for a given mapping, but not both at the same
      * time.
      *
      * @return The source name of the configured property or enum constant.
@@ -66,15 +66,15 @@ public @interface Mapping {
     String dateFormat() default "";
 
     /**
-     * A constant {@link String} expression based on which the specified target property is to be set. If the designated
+     * A constant {@link String} based on which the specified target property is to be set. If the designated
      * target property is not of type {@code String}, the value will be converted by applying a matching conversion
      * method or built-in conversion.
      * <p>
      * Either this attribute or {@link #source()} may be specified for a given mapping, but not both at the same time.
      * If this attribute is given, the target property must be specified via {@link #target()}.
      *
-     * @return A constant {@code String} expression specifying the value for the designated target prperty
+     * @return A constant {@code String} constant specifying the value for the designated target property
      */
-    String expression() default "";
+    String constant() default "";
 
 }
