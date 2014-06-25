@@ -48,11 +48,12 @@ public class Target {
         // dummy method to test selection mechanims
     }
 
-    public void addPet(Long pet) {
+    public Long addPet(Long pet) {
         AdderUsageObserver.setUsed( true );
         if ( pets == null ) {
             pets = new ArrayList<Long>();
         }
         pets.add( pet );
+        return pet;
     }
 }
