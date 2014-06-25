@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.sourceconstants;
+package org.mapstruct.ap.test.source.constants;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,17 +28,16 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper(uses = StringListMapper.class)
-public interface SourceTargetMapper {
+public interface ErroneousMapper4 {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    ErroneousMapper4 INSTANCE = Mappers.getMapper( ErroneousMapper4.class );
 
     @Mappings( {
-        @Mapping( target = "stringConstant", expression = "stringConstant"),
-        @Mapping( target = "integerConstant", expression = "14"),
-        @Mapping( target = "longWrapperConstant", expression = "3001"),
-        @Mapping( target = "dateConstant", dateFormat = "dd-MM-yyyy", expression = "09-01-2014"),
-        @Mapping( target = "nameConstants", expression = "jack-jill-tom" )
+        @Mapping( target = "stringConstant", constant = "stringConstant"),
+        @Mapping( source = "test" , target = "integerConstant", expression = "java('test')"),
+        @Mapping( target = "longWrapperConstant", constant = "3001"),
+        @Mapping( target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
+        @Mapping( target = "nameConstants", constant = "jack-jill-tom" )
     } )
     Target sourceToTarget(Source s);
-    Source targetToSource(Target t);
 }

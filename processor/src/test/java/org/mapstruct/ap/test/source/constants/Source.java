@@ -16,15 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.sourceconstants;
+package org.mapstruct.ap.test.source.constants;
 
-import java.util.Arrays;
-import java.util.List;
+/**
+ *
+ * @author Sjaak Derksen
+ */
+public class Source {
 
+    private String propertyThatShouldBeMapped;
 
-public class StringListMapper {
-
-    public List<String> stringToStringList(String string) {
-        return string == null ? null : Arrays.asList( string.split( "-" ) );
+    public String getPropertyThatShouldBeMapped() {
+        return propertyThatShouldBeMapped;
     }
+
+    public void setPropertyThatShouldBeMapped( String propertyThatShouldBeMapped ) {
+        this.propertyThatShouldBeMapped = propertyThatShouldBeMapped;
+    }
+
+
+
 }

@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -39,10 +41,14 @@ import org.mapstruct.ap.util.AnnotationProcessingException;
  */
 public class Mapping {
 
+    private static final Pattern JAVA_EXPRESSION = Pattern.compile( "^java\\((.*)\\)$" );
+
     private final String sourceName;
     private final String sourceParameterName;
     private final String sourcePropertyName;
+    private final String constant;
     private final String expression;
+    private final String javaExpression;
     private final String targetName;
     private final String dateFormat;
     private final AnnotationMirror mirror;
@@ -74,10 +80,20 @@ public class Mapping {
             mappingPrism.values.source()
         );
 
-        if ( mappingPrism.source().isEmpty() && mappingPrism.expression().isEmpty() ) {
+        if ( mappingPrism.source().isEmpty() &&
+             mappingPrism.constant().isEmpty() &&
+             mappingPrism.expression().isEmpty() ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "Either define a source or an expression in a Mapping",
+                "Either define a source, a constant or an expression in a Mapping",
+                element
+            );
+            return null;
+        }
+        else if ( !mappingPrism.source().isEmpty() && !mappingPrism.constant().isEmpty() ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Source and constant are both defined in Mapping, either define a source or a constant",
                 element
             );
             return null;
@@ -90,11 +106,19 @@ public class Mapping {
             );
             return null;
         }
-
+        else if ( !mappingPrism.expression().isEmpty() && !mappingPrism.constant().isEmpty() ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Expression and constant are both defined in Mapping, either define an expression or a constant",
+                element
+            );
+            return null;
+        }
         return new Mapping(
             mappingPrism.source(),
             sourceNameParts != null ? sourceNameParts[0] : null,
             sourceNameParts != null ? sourceNameParts[1] : mappingPrism.source(),
+            mappingPrism.constant(),
             mappingPrism.expression(),
             mappingPrism.target(),
             mappingPrism.dateFormat(),
@@ -123,13 +147,16 @@ public class Mapping {
         return parts;
     }
 
-    private Mapping(String sourceName, String sourceParameterName, String sourcePropertyName, String expression,
-                    String targetName, String dateFormat, AnnotationMirror mirror,
+    private Mapping(String sourceName, String sourceParameterName, String sourcePropertyName, String constant,
+                    String expression, String targetName, String dateFormat, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
         this.sourceParameterName = sourceParameterName;
         this.sourcePropertyName = sourcePropertyName;
+        this.constant = constant;
         this.expression = expression;
+        Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( expression );
+        this.javaExpression = javaExpressionMatcher.matches() ? javaExpressionMatcher.group( 1 ).trim() : "";
         this.targetName = targetName.equals( "" ) ? sourceName : targetName;
         this.dateFormat = dateFormat;
         this.mirror = mirror;
@@ -165,10 +192,13 @@ public class Mapping {
         return sourceParameterName;
     }
 
-    public String getExpression() {
-        return expression;
+    public String getConstant() {
+        return constant;
     }
 
+    public String getJavaExpression() {
+        return javaExpression;
+    }
 
     public String getTargetName() {
         return targetName;
@@ -193,12 +223,13 @@ public class Mapping {
 
     public Mapping reverse() {
         Mapping reverse = null;
-        if ( expression != null ) {
+        if ( constant != null ) {
             /* mapping can only be reversed if the source was not a constant */
             reverse = new Mapping(
                 targetName,
                 null,
                 targetName,
+                constant,
                 expression,
                 sourceName,
                 dateFormat,
