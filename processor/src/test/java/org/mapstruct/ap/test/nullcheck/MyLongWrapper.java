@@ -30,7 +30,7 @@ public class MyLongWrapper {
         return myLong;
     }
 
-    public void setMyLong( Long myLong ) {
+    public void setMyLong(Long myLong) {
         this.myLong = myLong;
     }
 

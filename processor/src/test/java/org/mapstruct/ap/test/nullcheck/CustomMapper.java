@@ -30,6 +30,7 @@ public class CustomMapper {
         wrapper.setMyBigInt( bigInteger );
         return wrapper;
     }
+
     public MyLongWrapper toMyBigIntWrapperViaPrimitive(long primitive) {
         MyLongWrapper wrapper = new MyLongWrapper();
         wrapper.setMyLong( primitive );
