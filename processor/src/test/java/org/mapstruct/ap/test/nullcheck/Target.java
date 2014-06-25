@@ -67,7 +67,7 @@ public class Target {
         return someLong;
     }
 
-    public void setSomeLong( MyLongWrapper someLong ) {
+    public void setSomeLong(MyLongWrapper someLong) {
         this.someLong = someLong;
     }
 

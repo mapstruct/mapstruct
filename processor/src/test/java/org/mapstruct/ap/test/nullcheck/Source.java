@@ -67,7 +67,7 @@ public class Source {
         return someLong;
     }
 
-    public void setSomeLong( Long someLong ) {
+    public void setSomeLong(Long someLong) {
         this.someLong = someLong;
     }
 

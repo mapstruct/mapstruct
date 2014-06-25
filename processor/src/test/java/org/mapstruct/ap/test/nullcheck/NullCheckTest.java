@@ -110,6 +110,6 @@ public class NullCheckTest {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target.getSomeList() ).isNull();
-        assertThat( target.getSomeLong()).isNull();
+        assertThat( target.getSomeLong() ).isNull();
     }
 }
