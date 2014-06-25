@@ -85,7 +85,7 @@ public class Mapping {
              mappingPrism.expression().isEmpty() ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "Either define a source, a constant or an epression in a Mapping",
+                "Either define a source, a constant or an expression in a Mapping",
                 element
             );
             return null;
@@ -156,7 +156,7 @@ public class Mapping {
         this.constant = constant;
         this.expression = expression;
         Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( expression );
-        this.javaExpression = javaExpressionMatcher.matches() ? javaExpressionMatcher.group( 1 ) : "";
+        this.javaExpression = javaExpressionMatcher.matches() ? javaExpressionMatcher.group( 1 ).trim() : "";
         this.targetName = targetName.equals( "" ) ? sourceName : targetName;
         this.dateFormat = dateFormat;
         this.mirror = mirror;
