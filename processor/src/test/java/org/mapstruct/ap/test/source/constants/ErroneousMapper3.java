@@ -24,7 +24,6 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
 @Mapper(uses = StringListMapper.class)
@@ -32,12 +31,12 @@ public interface ErroneousMapper3 {
 
     ErroneousMapper3 INSTANCE = Mappers.getMapper( ErroneousMapper3.class );
 
-    @Mappings( {
-        @Mapping( target = "stringConstant", constant = "stringConstant"),
-        @Mapping( target = "integerConstant", expression = "java('test')", constant = "14"),
-        @Mapping( target = "longWrapperConstant", constant = "3001"),
-        @Mapping( target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
-        @Mapping( target = "nameConstants", constant = "jack-jill-tom" )
-    } )
+    @Mappings({
+        @Mapping(target = "stringConstant", constant = "stringConstant"),
+        @Mapping(target = "integerConstant", expression = "java('test')", constant = "14"),
+        @Mapping(target = "longWrapperConstant", constant = "3001"),
+        @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
+        @Mapping(target = "nameConstants", constant = "jack-jill-tom")
+    })
     Target sourceToTarget(Source s);
 }

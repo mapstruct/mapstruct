@@ -23,7 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import javax.tools.Diagnostic.Kind;
-import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -33,8 +33,9 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 /**
- *
  * @author Sjaak Derksen
  */
 
@@ -42,13 +43,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class SourceConstantsTest {
 
     @Test
-    @IssueKey( "187" )
-    @WithClasses( {
+    @IssueKey("187")
+    @WithClasses({
         Source.class,
         Target.class,
         SourceTargetMapper.class,
         StringListMapper.class
-    } )
+    })
     public void shouldMapSameSourcePropertyToSeveralTargetProperties() throws ParseException {
         Source source = new Source();
         source.setPropertyThatShouldBeMapped( "SomeProperty" );
@@ -59,19 +60,19 @@ public class SourceConstantsTest {
         assertThat( target.getPropertyThatShouldBeMapped() ).isEqualTo( "SomeProperty" );
         assertThat( target.getStringConstant() ).isEqualTo( "stringConstant" );
         assertThat( target.getIntegerConstant() ).isEqualTo( 14 );
-        assertThat( target.getLongWrapperConstant() ).isEqualTo( new Long(3001L) );
-        assertThat( target.getDateConstant() ).isEqualTo( getDate( "dd-MM-yyyy", "09-01-2014") );
+        assertThat( target.getLongWrapperConstant() ).isEqualTo( new Long( 3001L ) );
+        assertThat( target.getDateConstant() ).isEqualTo( getDate( "dd-MM-yyyy", "09-01-2014" ) );
         assertThat( target.getNameConstants() ).isEqualTo( Arrays.asList( "jack", "jill", "tom" ) );
     }
 
     @Test
-    @IssueKey( "187" )
-    @WithClasses( {
+    @IssueKey("187")
+    @WithClasses({
         Source.class,
         Target.class,
         SourceTargetMapper.class,
         StringListMapper.class
-    } )
+    })
     public void shouldMapTargetToSourceWithoutWhining() throws ParseException {
         Target target = new Target();
         target.setPropertyThatShouldBeMapped( "SomeProperty" );
@@ -83,24 +84,24 @@ public class SourceConstantsTest {
     }
 
     @Test
-    @IssueKey( "187" )
-    @WithClasses( {
+    @IssueKey("187")
+    @WithClasses({
         Source.class,
         Target.class,
         ErroneousMapper1.class,
         StringListMapper.class
-    } )
+    })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 41,
                 messageRegExp = "Source and constant are both defined in Mapping, either define a source or a "
-                        + "constant"),
+                    + "constant"),
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.WARNING,
-                line = 42,
+                line = 41,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
         }
     )
@@ -108,49 +109,49 @@ public class SourceConstantsTest {
     }
 
     @Test
-    @IssueKey( "187" )
-    @WithClasses( {
+    @IssueKey("187")
+    @WithClasses({
         Source.class,
         Target.class,
         ErroneousMapper3.class,
         StringListMapper.class
-    } )
+    })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 41,
                 messageRegExp = "Expression and constant are both defined in Mapping, either define an expression or a "
-                        + "constant"),
+                    + "constant"),
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.WARNING,
-                line = 42,
+                line = 41,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
         }
     )
     public void errorOnConstantAndExpression() throws ParseException {
     }
 
-   @Test
-    @IssueKey( "187" )
-    @WithClasses( {
+    @Test
+    @IssueKey("187")
+    @WithClasses({
         Source.class,
         Target.class,
         ErroneousMapper4.class,
         StringListMapper.class
-    } )
+    })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 41,
                 messageRegExp = "Source and expression are both defined in Mapping, either define a source or an "
-                        + "expression"),
+                    + "expression"),
             @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.WARNING,
-                line = 42,
+                line = 41,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
         }
     )
@@ -158,23 +159,23 @@ public class SourceConstantsTest {
     }
 
     @Test
-    @IssueKey( "187" )
-    @WithClasses( {
+    @IssueKey("187")
+    @WithClasses({
         Source.class,
         Target.class,
         ErroneousMapper2.class,
         StringListMapper.class
-    } )
+    })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousMapper2.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 41,
                 messageRegExp = "Either define a source, a constant or an expression in a Mapping"),
             @Diagnostic(type = ErroneousMapper2.class,
                 kind = Kind.WARNING,
-                line = 42,
+                line = 41,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
         }
     )

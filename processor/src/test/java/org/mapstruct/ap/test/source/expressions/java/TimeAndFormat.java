@@ -27,7 +27,7 @@ public class TimeAndFormat {
     private Date time;
     private String format;
 
-    public TimeAndFormat( Date time, String format ) {
+    public TimeAndFormat(Date time, String format) {
         this.time = time;
         this.format = format;
     }

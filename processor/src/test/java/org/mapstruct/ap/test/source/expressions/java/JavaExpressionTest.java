@@ -21,17 +21,18 @@ package org.mapstruct.ap.test.source.expressions.java;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 /**
- *
  * @author Sjaak Derksen
  */
-@WithClasses( {Source.class, Target.class, SourceTargetMapper.class, TimeAndFormat.class } )
+@WithClasses({ Source.class, Target.class, SourceTargetMapper.class, TimeAndFormat.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class JavaExpressionTest {
 
@@ -39,7 +40,7 @@ public class JavaExpressionTest {
     public void testJavaExpressionInsertion() throws ParseException {
         Source source = new Source();
         String format = "dd-MM-yyyy,hh:mm:ss";
-        Date time  = getTime( format, "09-01-2014,01:35:03");
+        Date time = getTime( format, "09-01-2014,01:35:03" );
 
         source.setFormat( format );
         source.setTime( time );
