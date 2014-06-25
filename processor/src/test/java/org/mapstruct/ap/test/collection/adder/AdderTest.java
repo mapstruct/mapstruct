@@ -41,6 +41,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.mapstruct.ap.testutil.IssueKey;
 
 /**
  * @author Sjaak Derksen
@@ -69,6 +70,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class AdderTest {
 
+    @IssueKey("241")
     @Test
     public void testAdd() throws DogException {
         AdderUsageObserver.setUsed( false );
@@ -103,6 +105,7 @@ public class AdderTest {
         SourceTargetMapper.INSTANCE.toTarget( source );
     }
 
+    @IssueKey("241")
     @Test
     public void testAddwithExistingTarget() throws DogException {
         AdderUsageObserver.setUsed( false );
