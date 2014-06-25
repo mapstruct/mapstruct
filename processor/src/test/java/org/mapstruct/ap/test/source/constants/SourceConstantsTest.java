@@ -171,7 +171,7 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper2.class,
                 kind = Kind.ERROR,
                 line = 42,
-                messageRegExp = "Either define a source, a constant or an epression in a Mapping"),
+                messageRegExp = "Either define a source, a constant or an expression in a Mapping"),
             @Diagnostic(type = ErroneousMapper2.class,
                 kind = Kind.WARNING,
                 line = 42,
