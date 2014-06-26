@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.collection.adder.source.SingleElementSource;
 import org.mapstruct.ap.test.collection.adder.source.Source;
 import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
 import org.mapstruct.ap.test.collection.adder.target.AdderUsageObserver;
@@ -35,14 +36,13 @@ import org.mapstruct.ap.test.collection.adder.target.TargetHuman;
 import org.mapstruct.ap.test.collection.adder.target.TargetOnlyGetter;
 import org.mapstruct.ap.test.collection.adder.target.TargetViaTargetType;
 import org.mapstruct.ap.test.collection.adder.target.TargetWithoutSetter;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.mapstruct.ap.test.collection.adder.source.SingleElementSource;
-import org.mapstruct.ap.testutil.IssueKey;
 
 /**
  * @author Sjaak Derksen
@@ -227,7 +227,7 @@ public class AdderTest {
 
     @IssueKey("242")
     @Test
-    public void testSingleElemtSource() throws DogException {
+    public void testSingleElementSource() throws DogException {
         AdderUsageObserver.setUsed( false );
 
         SingleElementSource source = new SingleElementSource();
@@ -239,5 +239,4 @@ public class AdderTest {
         assertThat( target.getPets().get( 0 ) ).isEqualTo( 2L );
         assertTrue( AdderUsageObserver.isUsed() );
     }
-
 }

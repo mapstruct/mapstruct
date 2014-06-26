@@ -30,7 +30,7 @@ public class SingleElementSource {
         return pet;
     }
 
-    public void setPet( String pet ) {
+    public void setPet(String pet) {
         this.pet = pet;
     }
 }
