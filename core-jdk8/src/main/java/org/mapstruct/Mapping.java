@@ -93,4 +93,14 @@ public @interface Mapping {
      * @return A constant {@code String} constant specifying the value for the designated target property
      */
     String expression() default "";
+
+    /**
+     * Whether the property specified via {@link #source()} or {@link #target()} should be ignored by the generated
+     * mapping method or not. This can be useful when certain attributes should not be propagated from source or target
+     * or when properties in the target object are populated using a decorator and thus would be reported as unmapped
+     * target property by default.
+     *
+     * @return {@code true} if the given property should be ignored, {@code false} otherwise
+     */
+    boolean ignore() default false;
 }
