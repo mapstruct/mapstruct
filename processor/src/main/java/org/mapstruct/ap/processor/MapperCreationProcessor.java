@@ -416,12 +416,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 // check constants first
                 if ( !mapping.getConstant().isEmpty() ) {
                     return getConstantMapping(
-                            mapperReferences,
-                            methods,
-                            method,
-                            "\"" + mapping.getConstant() + "\"",
-                            targetAccessor,
-                            dateFormat
+                        mapperReferences,
+                        methods,
+                        method,
+                        "\"" + mapping.getConstant() + "\"",
+                        targetAccessor,
+                        dateFormat
                     );
                 }
 
@@ -681,7 +681,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 }
                 else if ( mappedProperty.getConstant().isEmpty() &&
-                          mappedProperty.getJavaExpression().isEmpty()  &&
+                    mappedProperty.getJavaExpression().isEmpty() &&
                     !hasSourceProperty( method, mappedProperty.getSourcePropertyName() ) ) {
                     messager.printMessage(
                         Kind.ERROR,
@@ -809,8 +809,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     assignment = new SetterWrapper( assignment, method.getThrownTypes() );
                     if ( !sourceType.isPrimitive() &&
                         ( assignment.getType() == TYPE_CONVERTED ||
-                          assignment.getType() == TYPE_CONVERTED_MAPPED ||
-                          assignment.getType() == DIRECT && targetType.isPrimitive() ) ) {
+                            assignment.getType() == TYPE_CONVERTED_MAPPED ||
+                            assignment.getType() == DIRECT && targetType.isPrimitive() ) ) {
                         // for primitive types null check is not possible at all, but a conversion needs
                         // a null check.
                         assignment = new NullCheckWrapper( assignment );
@@ -820,7 +820,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     // TargetAccessorType must be ADDER
                     if ( sourceIsCollection ) {
                         assignment =
-                                new AdderWrapper( assignment, method.getThrownTypes(), sourceReference, sourceType );
+                            new AdderWrapper( assignment, method.getThrownTypes(), sourceReference, sourceType );
                     }
                     else {
                         // Possibly adding null to a target collection. So should be surrounded by an null check.
@@ -912,7 +912,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                      String javaExpression,
                                                      ExecutableElement targetAcessor) {
 
-        Type  targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
+        Type targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
         Assignment assignment = AssignmentFactory.createSimple( javaExpression );
         assignment = new SetterWrapper( assignment, method.getThrownTypes() );
         return new PropertyMapping( targetAcessor.getSimpleName().toString(), targetType, assignment );
