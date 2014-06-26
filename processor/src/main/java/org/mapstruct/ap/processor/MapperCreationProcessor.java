@@ -483,9 +483,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy( element );
         CollectionMappingStrategy cmStrategy = getEffectiveCollectionMappingStrategy( element );
 
-
         List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         Set<String> mappedTargetProperties = new HashSet<String>();
+        Set<String> ignoredTargetProperties = new HashSet<String>();
 
         if ( !reportErrorIfMappedPropertiesDontExist( method ) ) {
             return null;
@@ -500,6 +500,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             String targetPropertyName = Executables.getPropertyName( targetAccessor );
 
             Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
+
+            if ( mapping != null && mapping.isIgnored() ) {
+                ignoredTargetProperties.add( targetPropertyName );
+                continue;
+            }
 
             // A target access is in general a setter method on the target object. However, in case of collections,
             // the current target accessor can also be a getter method.
@@ -578,7 +583,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             method,
             unmappedTargetPolicy,
             targetProperties,
-            mappedTargetProperties
+            mappedTargetProperties,
+            ignoredTargetProperties
         );
 
         FactoryMethod factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
@@ -588,17 +594,24 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private void reportErrorForUnmappedTargetPropertiesIfRequired(SourceMethod method,
                                                                   ReportingPolicy unmappedTargetPolicy,
                                                                   Set<String> targetProperties,
-                                                                  Set<String> mappedTargetProperties) {
+                                                                  Set<String> mappedTargetProperties,
+                                                                  Set<String> ignoredTargetProperties) {
 
-        if ( targetProperties.size() > mappedTargetProperties.size() &&
-            unmappedTargetPolicy.requiresReport() ) {
-            targetProperties.removeAll( mappedTargetProperties );
+        Set<String> unmappedTargetProperties = new HashSet<String>();
+
+        for ( String property : targetProperties ) {
+            if ( !mappedTargetProperties.contains( property ) && !ignoredTargetProperties.contains( property ) ) {
+                unmappedTargetProperties.add( property );
+            }
+        }
+
+        if ( !unmappedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
             messager.printMessage(
                 unmappedTargetPolicy.getDiagnosticKind(),
                 MessageFormat.format(
                     "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
-                    targetProperties.size(),
-                    Strings.join( targetProperties, ", " )
+                    unmappedTargetProperties.size(),
+                    Strings.join( unmappedTargetProperties, ", " )
                 ),
                 method.getExecutable()
             );
@@ -646,6 +659,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         for ( List<Mapping> mappedProperties : method.getMappings().values() ) {
             for ( Mapping mappedProperty : mappedProperties ) {
+                if ( mappedProperty.isIgnored() ) {
+                    continue;
+                }
+
                 if ( mappedProperty.getSourceParameterName() != null ) {
                     Parameter sourceParameter = method.getSourceParameter( mappedProperty.getSourceParameterName() );
 

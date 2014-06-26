@@ -16,21 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.decorator;
+package org.mapstruct.ap.test.ignore;
 
-import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-@DecoratedWith(PersonMapperDecorator.class)
-public interface PersonMapper {
+public interface AnimalMapper {
 
-    PersonMapper INSTANCE = Mappers.getMapper( PersonMapper.class );
+    AnimalMapper INSTANCE = Mappers.getMapper( AnimalMapper.class );
 
-    @Mapping( target = "name", ignore = true )
-    PersonDto personToPersonDto(Person person);
+    @Mappings({
+        @Mapping(source = "size", ignore = true),
+        @Mapping(target = "age", ignore = true)
+    })
+    AnimalDto animalToDto(Animal animal);
 
-    AddressDto addressToAddressDto(Address address);
+    Animal animalDtoToAnimal(AnimalDto animalDto);
 }

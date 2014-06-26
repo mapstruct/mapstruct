@@ -16,21 +16,45 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.decorator;
+package org.mapstruct.ap.test.ignore;
 
-import org.mapstruct.DecoratedWith;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+public class AnimalDto {
 
-@Mapper
-@DecoratedWith(PersonMapperDecorator.class)
-public interface PersonMapper {
+    private String name;
+    private Integer size;
+    private Integer age;
 
-    PersonMapper INSTANCE = Mappers.getMapper( PersonMapper.class );
+    public AnimalDto() {
 
-    @Mapping( target = "name", ignore = true )
-    PersonDto personToPersonDto(Person person);
+    }
 
-    AddressDto addressToAddressDto(Address address);
+    public AnimalDto(String name, Integer size, Integer age) {
+        this.name = name;
+        this.size = size;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
 }

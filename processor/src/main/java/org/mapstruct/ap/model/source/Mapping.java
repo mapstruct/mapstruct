@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -51,9 +52,11 @@ public class Mapping {
     private final String javaExpression;
     private final String targetName;
     private final String dateFormat;
+    private final boolean isIgnored;
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
+
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation, Element element,
                                                                Messager messager) {
@@ -81,8 +84,9 @@ public class Mapping {
         );
 
         if ( mappingPrism.source().isEmpty() &&
-             mappingPrism.constant().isEmpty() &&
-             mappingPrism.expression().isEmpty() ) {
+            mappingPrism.constant().isEmpty() &&
+            mappingPrism.expression().isEmpty() &&
+            !mappingPrism.ignore() ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
                 "Either define a source, a constant or an expression in a Mapping",
@@ -122,6 +126,7 @@ public class Mapping {
             mappingPrism.expression(),
             mappingPrism.target(),
             mappingPrism.dateFormat(),
+            mappingPrism.ignore(),
             mappingPrism.mirror,
             mappingPrism.values.source(),
             mappingPrism.values.target()
@@ -147,8 +152,9 @@ public class Mapping {
         return parts;
     }
 
+    //CHECKSTYLE:OFF
     private Mapping(String sourceName, String sourceParameterName, String sourcePropertyName, String constant,
-                    String expression, String targetName, String dateFormat, AnnotationMirror mirror,
+                    String expression, String targetName, String dateFormat, boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
         this.sourceParameterName = sourceParameterName;
@@ -159,10 +165,12 @@ public class Mapping {
         this.javaExpression = javaExpressionMatcher.matches() ? javaExpressionMatcher.group( 1 ).trim() : "";
         this.targetName = targetName.equals( "" ) ? sourceName : targetName;
         this.dateFormat = dateFormat;
+        this.isIgnored = isIgnored;
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
     }
+    //CHECKSTYLE:ON
 
     /**
      * Returns the complete source name of this mapping, either a qualified (e.g. {@code parameter1.foo}) or
@@ -208,6 +216,10 @@ public class Mapping {
         return dateFormat;
     }
 
+    public boolean isIgnored() {
+        return isIgnored;
+    }
+
     public AnnotationMirror getMirror() {
         return mirror;
     }
@@ -220,11 +232,10 @@ public class Mapping {
         return targetAnnotationValue;
     }
 
-
     public Mapping reverse() {
         Mapping reverse = null;
-        if ( constant != null ) {
-            /* mapping can only be reversed if the source was not a constant */
+        // mapping can only be reversed if the source was not a constant nor an expression
+        if ( constant != null && expression != null ) {
             reverse = new Mapping(
                 targetName,
                 null,
@@ -233,6 +244,7 @@ public class Mapping {
                 expression,
                 sourceName,
                 dateFormat,
+                isIgnored,
                 mirror,
                 sourceAnnotationValue,
                 targetAnnotationValue
