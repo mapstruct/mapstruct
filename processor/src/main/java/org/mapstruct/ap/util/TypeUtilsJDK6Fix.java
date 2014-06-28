@@ -23,7 +23,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
 /**
- *
+ * Work-around for a bug related to sub-typing in the Eclipse JSR 269 implementation.
  * @author Sjaak Derksen
  */
 public class TypeUtilsJDK6Fix {
@@ -31,16 +31,14 @@ public class TypeUtilsJDK6Fix {
     private TypeUtilsJDK6Fix() { }
 
     /**
-     * Tests whether one type is a subtype of another.
-     * Any type is considered to be a subtype of itself.
+     * Tests whether one type is a subtype of another. Any type is considered to be a subtype of itself. Also see <a
+     * href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html">JLS section 4.10, Subtyping</a>.
      *
      * @param types the type utils
-     * @param t1  the first type
-     * @param t2  the second type
-     * @return {@code true} if and only if the first type is a subtype
-     *          of the second
+     * @param t1 the first type
+     * @param t2 the second type
+     * @return {@code true} if and only if the first type is a subtype of the second
      * @throws IllegalArgumentException if given an executable or package type
-     * @jls 4.10 Subtyping
      */
     public static boolean isSubType(Types types, TypeMirror t1, TypeMirror t2) {
         return types.isSubtype( types.erasure( t1 ), types.erasure( t2 ) );

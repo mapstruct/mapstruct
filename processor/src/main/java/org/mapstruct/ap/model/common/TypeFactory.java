@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -180,14 +181,14 @@ public class TypeFactory {
 
     /**
      * Returns the Type that represents the declared Class type of the given type. For primitive types, the boxed class
-     * will be used. <br />
-     * Examples: <br />
-     * If type represents {@code java.lang.Integer}, it will return the type that represents {@code Class<Integer>}.
-     * <br />
-     * If type represents {@code int}, it will return the type that represents {@code Class<Integer>}.
+     * will be used. Examples:
+     * <ul>
+     * <li>If type represents {@code java.lang.Integer}, it will return the type that represents {@code Class<Integer>}.
+     * </li>
+     * <li>If type represents {@code int}, it will return the type that represents {@code Class<Integer>}.</li>
+     * </ul>
      *
      * @param type the type to return the declared class type for
-     *
      * @return the type representing {@code Class<type>}.
      */
     public Type classTypeOf(Type type) {

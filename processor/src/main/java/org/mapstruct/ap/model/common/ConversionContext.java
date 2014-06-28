@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.model.common;
 
+import java.util.Date;
+
 /**
  * Context object passed to conversion providers and built-in methods.
  *
