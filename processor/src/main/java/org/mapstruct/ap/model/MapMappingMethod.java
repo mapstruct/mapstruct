@@ -20,6 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.util.Set;
 
+import org.mapstruct.ap.model.assignment.TypeConversion;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.SourceMethod;

@@ -21,6 +21,7 @@ package org.mapstruct.ap.model.source;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
@@ -45,7 +46,7 @@ import org.mapstruct.ap.util.TypeUtilsJDK6Fix;
  * SourceMethodHeader: SourceMethodModifiers TypeParameters Result SourceMethodDeclarator Throws
  * SourceMethodDeclarator: Identifier ( FormalParameterList )
  *
- * example &lt;T extends String & Serializable&gt;  T   getResult(? extends T) throws Exception
+ * example &lt;T extends String &amp; Serializable&gt;  T   getResult(? extends T) throws Exception
  *         \-------------------------------/ \-/            \---------/
  *               TypeParameters             Result        ParameterList
  * </pre>
@@ -55,8 +56,10 @@ import org.mapstruct.ap.util.TypeUtilsJDK6Fix;
  * For more info on java-generics: http://www.javacodegeeks.com/2011/04/java-generics-quick-tutorial.html
  * http://www.angelikalanger.com/GenericsFAQ/FAQSections/ParameterizedTypes.html
  * <p>
- * The following situations is not supported / tested: <br/>
- * 1) Multiple bounds were the bound itself is again a generic type.
+ * The following situations is not supported / tested:
+ * <ol>
+ * <li>Multiple bounds were the bound itself is again a generic type.</li>
+ * </ol>
  *
  * @author Sjaak Derksen
  */

@@ -40,7 +40,7 @@ public @interface Mapping {
      * The source to use for this Mapping. This can either be:
      * <ol>
      * <li>The source name of the configured property as defined by the JavaBeans specification.</li>
-     * <li>When used to map an enum constant, the name of the constant member is to be given<./li>.
+     * <li>When used to map an enum constant, the name of the constant member is to be given.</li>
      * </ol>
      * Either this attribute or {@link #constant()} or {@link #expression()} may be specified for a given mapping,
      * but not two at the same time. If this attribute is given, the target property must be specified via

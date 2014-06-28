@@ -303,7 +303,7 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.9</version>
                     <configuration>
-                        <additionalparam>-Xdoclint:none</additionalparam>
+                        <excludePackageNames>org.mapstruct.ap.prism;org.mapstruct.itest.jaxb.xsd.*</excludePackageNames>
                     </configuration>
                 </plugin>
                 <plugin>
