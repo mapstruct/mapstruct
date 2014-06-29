@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.builtin;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,8 +40,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for the generation of built-in mapping methods.
@@ -119,6 +120,17 @@ public class BuiltInTest {
         MapTarget target = MapSourceTargetMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
         assertThat( target.getExample().get( "TEST" ) ).isEqualTo( "1999-03-02+01:00" );
+    }
+
+    @Test
+    @IssueKey( "248" )
+    @WithClasses( { SourceWithDate.class, TargetWithDate.class, SourceTargetWithDateMapper.class } )
+    public void dateToXmlGregorianCalenderHasCorrectImports() {
+        assertThat( SourceTargetWithDateMapper.INSTANCE.toTargetWithDate( null ) ).isNull();
+
+        TargetWithDate targetWithDate = SourceTargetWithDateMapper.INSTANCE.toTargetWithDate( new SourceWithDate() );
+        assertThat( targetWithDate ).isNotNull();
+        assertThat( targetWithDate.getDate() ).isNull();
     }
 
     private JAXBElement<String> createJaxb(String test) {
