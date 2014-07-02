@@ -18,32 +18,24 @@
  */
 package org.mapstruct.ap.test.builtin;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TimeZone;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for the generation of built-in mapping methods.
@@ -80,6 +72,10 @@ public class BuiltInTest {
         source.setProp6NoFormat( createXmlCal( 1999, 3, 2, 60 ) );
         source.setProp7( createCalendar( "02.03.1999" ) );
         source.setProp8( createXmlCal( 1999, 3, 2, 60 ) );
+        source.setProp9( createCalendar( "02.03.1999" ) );
+        source.setProp10( new SimpleDateFormat( "dd.MM.yyyy" ).parse( "02.03.1999" ) );
+        source.setProp11( "02.03.1999" );
+        source.setProp12( createCalendar( "02.03.1999" ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
@@ -94,6 +90,10 @@ public class BuiltInTest {
         assertThat( target.getProp6NoFormat().toString() ).isEqualTo( "1999-03-02+01:00" );
         assertThat( target.getProp7().toString() ).isEqualTo( "1999-03-02T00:00:00.000+01:00" );
         assertThat( target.getProp8().getTimeInMillis() ).isEqualTo( 920329200000L );
+        assertThat( target.getProp9()).isEqualTo( createCalendar( "02.03.1999" ).getTime());
+        assertThat( target.getProp10()).isEqualTo( createCalendar( "02.03.1999" ));
+        assertThat( target.getProp11()).isEqualTo( createCalendar( "02.03.1999" ));
+        assertThat( target.getProp12()).isEqualTo( "02.03.1999" );
     }
 
     @Test

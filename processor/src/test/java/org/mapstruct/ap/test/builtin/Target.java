@@ -18,11 +18,10 @@
  */
 package org.mapstruct.ap.test.builtin;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 
 public class Target {
 
@@ -36,7 +35,10 @@ public class Target {
     private String prop6NoFormat;
     private XMLGregorianCalendar prop7;
     private Calendar prop8;
-
+    private Date prop9;
+    private Calendar prop10;
+    private Calendar prop11;
+    private String prop12;
 
     public String getProp1() {
         return prop1;
@@ -116,5 +118,37 @@ public class Target {
 
     public void setProp8( Calendar prop8 ) {
         this.prop8 = prop8;
+    }
+
+    public Date getProp9() {
+        return prop9;
+    }
+
+    public void setProp9(Date prop9) {
+        this.prop9 = prop9;
+    }
+
+    public Calendar getProp10() {
+        return prop10;
+    }
+
+    public void setProp10(Calendar prop10) {
+        this.prop10 = prop10;
+    }
+
+    public Calendar getProp11() {
+        return prop11;
+    }
+
+    public void setProp11(Calendar prop11) {
+        this.prop11 = prop11;
+    }
+
+    public String getProp12() {
+        return prop12;
+    }
+
+    public void setProp12(String prop12) {
+        this.prop12 = prop12;
     }
 }
