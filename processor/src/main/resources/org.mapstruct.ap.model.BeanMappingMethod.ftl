@@ -27,11 +27,13 @@
     <#if !existingInstanceMapping><@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType raw=true/><#else>new <@includeModel object=resultType/>()</#if>;</#if>
     <#if (sourceParameters?size > 1)>
         <#list sourceParameters as sourceParam>
-    if ( ${sourceParam.name} != null ) {
-            <#list propertyMappingsByParameter[sourceParam.name] as propertyMapping>
-                <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
-            </#list>
-    }
+            <#if (propertyMappingsByParameter[sourceParam.name]?size > 0)>
+                if ( ${sourceParam.name} != null ) {
+                    <#list propertyMappingsByParameter[sourceParam.name] as propertyMapping>
+                        <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
+                    </#list>
+                }
+            </#if>
         </#list>
     <#else>
         <#list propertyMappingsByParameter[sourceParameters[0].name] as propertyMapping>
