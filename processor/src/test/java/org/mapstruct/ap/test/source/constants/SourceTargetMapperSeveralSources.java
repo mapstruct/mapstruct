@@ -16,30 +16,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.source.expressions.java;
+package org.mapstruct.ap.test.source.constants;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 
 /**
  * @author Sjaak Derksen
  */
-public class Target {
+@Mapper
+public interface SourceTargetMapperSeveralSources {
 
-    private TimeAndFormat timeAndFormat;
-    private String anotherProp;
+    SourceTargetMapperSeveralSources INSTANCE = Mappers.getMapper( SourceTargetMapperSeveralSources.class );
 
-    public TimeAndFormat getTimeAndFormat() {
-        return timeAndFormat;
-    }
-
-    public String getAnotherProp() {
-        return anotherProp;
-    }
-
-    public void setAnotherProp( String anotherProp ) {
-        this.anotherProp = anotherProp;
-    }
-
-    public void setTimeAndFormat(TimeAndFormat timeAndFormat) {
-        this.timeAndFormat = timeAndFormat;
-    }
-
+    @Mappings({
+        @Mapping(source = "someProp", target = "someProp" ),
+        @Mapping(source = "anotherProp", target = "anotherProp" ),
+        @Mapping(target = "someConstant", constant = "stringConstant"),
+    })
+    Target2 sourceToTarget(Source1 s1, Source2 s2);
 }

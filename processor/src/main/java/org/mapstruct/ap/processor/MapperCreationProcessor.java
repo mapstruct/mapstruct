@@ -406,30 +406,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // check if there's a mapping defined
         Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
         String dateFormat = null;
-
         String sourcePropertyName;
         if ( mapping != null ) {
             dateFormat = mapping.getDateFormat();
-
-            if ( Executables.isSetterMethod( targetAccessor ) ) {
-
-                // check constants first
-                if ( !mapping.getConstant().isEmpty() ) {
-                    return getConstantMapping(
-                        mapperReferences,
-                        methods,
-                        method,
-                        "\"" + mapping.getConstant() + "\"",
-                        targetAccessor,
-                        dateFormat
-                    );
-                }
-
-                if ( !mapping.getJavaExpression().isEmpty() ) {
-                    return getJavaExpressionMapping( method, mapping.getJavaExpression(), targetAccessor );
-                }
-            }
-
             sourcePropertyName = mapping.getSourcePropertyName();
         }
         else {
@@ -535,16 +514,42 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
 
             PropertyMapping propertyMapping = null;
-            if ( mapping != null && mapping.getSourceParameterName() != null ) {
-                Parameter parameter = method.getSourceParameter( mapping.getSourceParameterName() );
-                propertyMapping = getPropertyMapping(
-                    mapperReferences,
-                    methods,
-                    method,
-                    targetAccessor,
-                    targetPropertyName,
-                    parameter
-                );
+            if ( mapping != null ) {
+                if ( mapping.getSourceParameterName() != null ) {
+                    // this is a parameterized property, so sourceParameter.property
+                    Parameter parameter = method.getSourceParameter( mapping.getSourceParameterName() );
+                    propertyMapping = getPropertyMapping(
+                            mapperReferences,
+                            methods,
+                            method,
+                            targetAccessor,
+                            targetPropertyName,
+                            parameter
+                    );
+                }
+                else if ( Executables.isSetterMethod( targetAccessor ) ) {
+
+                    if ( !mapping.getConstant().isEmpty() ) {
+                        // its a constant
+                        propertyMapping = getConstantMapping(
+                                mapperReferences,
+                                methods,
+                                method,
+                                "\"" + mapping.getConstant() + "\"",
+                                targetAccessor,
+                                mapping.getDateFormat()
+                        );
+                    }
+
+                    else if ( !mapping.getJavaExpression().isEmpty() ) {
+                        // its an expression
+                        propertyMapping = getJavaExpressionMapping(
+                                method,
+                                mapping.getJavaExpression(),
+                                targetAccessor
+                        );
+                    }
+                }
             }
 
             if ( propertyMapping == null ) {

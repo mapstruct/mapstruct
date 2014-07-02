@@ -19,16 +19,12 @@
 package org.mapstruct.ap.test.source.expressions.java;
 
 /**
+ *
  * @author Sjaak Derksen
  */
-public class Target {
+public class Source2 {
 
-    private TimeAndFormat timeAndFormat;
     private String anotherProp;
-
-    public TimeAndFormat getTimeAndFormat() {
-        return timeAndFormat;
-    }
 
     public String getAnotherProp() {
         return anotherProp;
@@ -36,10 +32,6 @@ public class Target {
 
     public void setAnotherProp( String anotherProp ) {
         this.anotherProp = anotherProp;
-    }
-
-    public void setTimeAndFormat(TimeAndFormat timeAndFormat) {
-        this.timeAndFormat = timeAndFormat;
     }
 
 }

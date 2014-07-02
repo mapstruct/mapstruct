@@ -46,6 +46,7 @@ public class SourceConstantsTest {
     @IssueKey("187")
     @WithClasses({
         Source.class,
+        Source2.class,
         Target.class,
         SourceTargetMapper.class,
         StringListMapper.class
@@ -180,6 +181,29 @@ public class SourceConstantsTest {
         }
     )
     public void errorOnNeitherSourceNorExpression() throws ParseException {
+    }
+
+
+    @Test
+    @IssueKey("255")
+    @WithClasses({
+        Source1.class,
+        Source2.class,
+        Target2.class,
+        SourceTargetMapperSeveralSources.class
+    })
+    public void shouldMapSameSourcePropertyToSeveralTargetPropertiesFromSeveralSources() throws ParseException {
+        Source1 source1 = new Source1();
+        source1.setSomeProp( "someProp" );
+
+        Source2 source2 = new Source2();
+        source2.setAnotherProp( "anotherProp" );
+        Target2 target = SourceTargetMapperSeveralSources.INSTANCE.sourceToTarget( source1, source2 );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getSomeProp() ).isEqualTo( "someProp" );
+        assertThat( target.getAnotherProp() ).isEqualTo( "anotherProp" );
+        assertThat( target.getSomeConstant() ).isEqualTo( "stringConstant" );
     }
 
     private Date getDate(String format, String date) throws ParseException {

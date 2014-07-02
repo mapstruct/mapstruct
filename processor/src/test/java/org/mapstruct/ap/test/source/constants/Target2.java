@@ -16,18 +16,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.source.expressions.java;
+package org.mapstruct.ap.test.source.constants;
+
 
 /**
+ *
  * @author Sjaak Derksen
  */
-public class Target {
+public class Target2 {
 
-    private TimeAndFormat timeAndFormat;
+    private String someProp;
     private String anotherProp;
+    private String someConstant;
 
-    public TimeAndFormat getTimeAndFormat() {
-        return timeAndFormat;
+    public String getSomeProp() {
+        return someProp;
+    }
+
+    public void setSomeProp( String someProp ) {
+        this.someProp = someProp;
     }
 
     public String getAnotherProp() {
@@ -38,8 +45,12 @@ public class Target {
         this.anotherProp = anotherProp;
     }
 
-    public void setTimeAndFormat(TimeAndFormat timeAndFormat) {
-        this.timeAndFormat = timeAndFormat;
+    public String getSomeConstant() {
+        return someConstant;
+    }
+
+    public void setSomeConstant( String someConstant ) {
+        this.someConstant = someConstant;
     }
 
 }
