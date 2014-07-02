@@ -18,28 +18,24 @@
  */
 package org.mapstruct.ap.test.source.expressions.java;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
+
 /**
  * @author Sjaak Derksen
  */
-public class Target {
+@Mapper
+public interface SourceTargetMapperSeveralSources {
 
-    private TimeAndFormat timeAndFormat;
-    private String anotherProp;
 
-    public TimeAndFormat getTimeAndFormat() {
-        return timeAndFormat;
-    }
+    SourceTargetMapperSeveralSources INSTANCE = Mappers.getMapper( SourceTargetMapperSeveralSources.class );
 
-    public String getAnotherProp() {
-        return anotherProp;
-    }
-
-    public void setAnotherProp( String anotherProp ) {
-        this.anotherProp = anotherProp;
-    }
-
-    public void setTimeAndFormat(TimeAndFormat timeAndFormat) {
-        this.timeAndFormat = timeAndFormat;
-    }
-
+    @Mappings( {
+        @Mapping( target = "timeAndFormat", expression = "java( new org.mapstruct.ap.test.source.expressions.java."
+                + "TimeAndFormat( s.getTime(), s.getFormat() ))" ),
+        @Mapping( source = "anotherProp", target = "anotherProp" )
+    } )
+    Target sourceToTarget(Source s, Source2 s1);
 }

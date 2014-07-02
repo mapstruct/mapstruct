@@ -28,15 +28,17 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.testutil.IssueKey;
 
 /**
  * @author Sjaak Derksen
  */
-@WithClasses({ Source.class, Target.class, SourceTargetMapper.class, TimeAndFormat.class })
+@WithClasses({ Source.class, Target.class, TimeAndFormat.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class JavaExpressionTest {
 
     @Test
+   @WithClasses({ SourceTargetMapper.class })
     public void testJavaExpressionInsertion() throws ParseException {
         Source source = new Source();
         String format = "dd-MM-yyyy,hh:mm:ss";
@@ -50,7 +52,32 @@ public class JavaExpressionTest {
         assertThat( target ).isNotNull();
         assertThat( target.getTimeAndFormat().getTime() ).isEqualTo( time );
         assertThat( target.getTimeAndFormat().getFormat() ).isEqualTo( format );
+        assertThat( target.getAnotherProp() ).isNull();
     }
+
+    @IssueKey( "255" )
+    @Test
+    @WithClasses({ SourceTargetMapperSeveralSources.class, Source2.class })
+    public void testJavaExpressionInsertionWithSeveralSources() throws ParseException {
+        Source source1 = new Source();
+        String format = "dd-MM-yyyy,hh:mm:ss";
+        Date time = getTime( format, "09-01-2014,01:35:03" );
+
+        source1.setFormat( format );
+        source1.setTime( time );
+
+        Source2 source2 = new Source2();
+        source2.setAnotherProp( "test" );
+
+
+        Target target = SourceTargetMapperSeveralSources.INSTANCE.sourceToTarget( source1, source2 );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getTimeAndFormat().getTime() ).isEqualTo( time );
+        assertThat( target.getTimeAndFormat().getFormat() ).isEqualTo( format );
+        assertThat( target.getAnotherProp() ).isEqualTo( "test" );
+    }
+
 
     private Date getTime(String format, String date) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat( format );
