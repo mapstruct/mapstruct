@@ -22,6 +22,8 @@ public class Target {
 
     private Long size;
     private String birthday;
+    private boolean notAttractingEqualsMethod;
+    private int manuallyConverted;
 
     public Long getSize() {
         return size;
@@ -37,5 +39,21 @@ public class Target {
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
+    }
+
+    public boolean isNotAttractingEqualsMethod() {
+        return notAttractingEqualsMethod;
+    }
+
+    public void setNotAttractingEqualsMethod(boolean notAttractingEqualsMethod) {
+        this.notAttractingEqualsMethod = notAttractingEqualsMethod;
+    }
+
+    public int getManuallyConverted() {
+        return manuallyConverted;
+    }
+
+    public void setManuallyConverted(int manuallyConverted) {
+        this.manuallyConverted = manuallyConverted;
     }
 }

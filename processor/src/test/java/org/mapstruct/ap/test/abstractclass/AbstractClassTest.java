@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.test.abstractclass;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for the generation of implementation of abstract base classes.
@@ -32,7 +32,10 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @WithClasses( { Source.class, Target.class, SourceTargetMapper.class, AbstractBaseMapper.class,
-    BaseMapperInterface.class } )
+    BaseMapperInterface.class,
+    ReferencedMapper.class,
+    AbstractReferencedMapper.class,
+    ReferencedMapperInterface.class } )
 @RunWith( AnnotationProcessorTestRunner.class )
 public class AbstractClassTest {
 
@@ -63,6 +66,8 @@ public class AbstractClassTest {
     private void assertResult(Target target) {
         assertThat( target ).isNotNull();
         assertThat( target.getSize() ).isEqualTo( Long.valueOf( 181 ) );
-        assertThat( target.getBirthday() ).isEqualTo( "26.04.1948" );
+        assertThat( target.getBirthday() ).isEqualTo( "Birthday: 26.04.1948" );
+        assertThat( target.getManuallyConverted() ).isEqualTo( 42 );
+        assertThat( target.isNotAttractingEqualsMethod() ).isTrue();
     }
 }
