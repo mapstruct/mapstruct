@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.conversion;
 
+import javax.lang.model.util.Elements;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -181,10 +181,39 @@ public class Conversions {
 
         registerJoda();
 
+        registerJavaTime();
+
         //misc.
         register( Enum.class, String.class, new EnumStringConversion() );
         register( Date.class, String.class, new DateToStringConversion() );
         register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
+    }
+
+    private void registerJavaTime() {
+        if ( isJavaTimeAvailable() ) {
+            // java time to string
+            tryRegisterClassByName(
+                            JavaTimeConstants.ZONED_DATE_TIME_FQN,
+                            String.class,
+                            new JavaZonedDateTimeToStringConversion()
+            );
+            tryRegisterClassByName(
+                            JavaTimeConstants.LOCAL_DATE_FQN,
+                            String.class,
+                            new JavaLocalDateToStringConversion()
+            );
+            tryRegisterClassByName(
+                            JavaTimeConstants.LOCAL_DATE_TIME_FQN,
+                            String.class,
+                            new JavaLocalDateTimeToStringConversion()
+            );
+            tryRegisterClassByName(
+                            JavaTimeConstants.LOCAL_TIME_FQN,
+                            String.class,
+                            new JavaLocalTimeToStringConversion()
+            );
+        }
+
     }
 
     private void registerJoda() {
@@ -238,6 +267,10 @@ public class Conversions {
 
     private static boolean isJodaTimeAvailable() {
         return ClassUtils.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN );
+    }
+
+    private static boolean isJavaTimeAvailable() {
+        return ClassUtils.isTypeAvailable( JavaTimeConstants.ZONED_DATE_TIME_FQN );
     }
 
     /**
