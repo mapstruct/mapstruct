@@ -25,7 +25,7 @@ import java.util.Calendar;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper( uses = ReferencedMapper.class )
 public abstract class SourceTargetMapper extends AbstractBaseMapper {
 
     public static final SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
@@ -34,6 +34,6 @@ public abstract class SourceTargetMapper extends AbstractBaseMapper {
 
     protected String calendarToString(Calendar calendar) {
         DateFormat format = new SimpleDateFormat( "dd.MM.yyyy" );
-        return format.format( calendar.getTime() );
+        return "Birthday: " + format.format( calendar.getTime() );
     }
 }

@@ -18,36 +18,33 @@
  */
 package org.mapstruct.ap.test.abstractclass;
 
-import java.util.Calendar;
-
 import javax.xml.ws.Holder;
 
-public class Source {
-
-    private final int size;
-    private final Calendar birthday;
-    private final String notAttractingEqualsMethod = "no way";
-    private final Holder<String> manuallyConverted = new Holder<String>("What is the answer?");
-
-    public Source() {
-        size = 181;
-        birthday = Calendar.getInstance();
-        birthday.set( 1948, 3, 26 );
+/**
+ * @author Andreas Gudian
+ *
+ */
+public abstract class AbstractReferencedMapper implements ReferencedMapperInterface {
+    @Override
+    public int holderToInt(Holder<String> holder) {
+        return 41;
     }
 
-    public int getSize() {
-        return size;
+    public boolean objectToBoolean(Object obj) {
+        if ( obj instanceof String ) {
+            return true;
+        }
+
+        return false;
     }
 
-    public Calendar getBirthday() {
-        return birthday;
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals( obj );
     }
 
-    public String getNotAttractingEqualsMethod() {
-        return notAttractingEqualsMethod;
-    }
-
-    public Holder<String> getManuallyConverted() {
-        return manuallyConverted;
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }
