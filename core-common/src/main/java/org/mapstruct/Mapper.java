@@ -32,7 +32,7 @@ import org.mapstruct.factory.Mappers;
  * @author Gunnar Morling
  */
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface Mapper {
 
     /**
