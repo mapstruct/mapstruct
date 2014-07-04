@@ -18,13 +18,6 @@
  */
 package org.mapstruct.ap.test.builtin;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -33,7 +26,21 @@ import javax.xml.namespace.QName;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TimeZone;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -94,6 +101,7 @@ public class BuiltInTest {
         assertThat( target.getProp10()).isEqualTo( createCalendar( "02.03.1999" ));
         assertThat( target.getProp11()).isEqualTo( createCalendar( "02.03.1999" ));
         assertThat( target.getProp12()).isEqualTo( "02.03.1999" );
+
     }
 
     @Test
