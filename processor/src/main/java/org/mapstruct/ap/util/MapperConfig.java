@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
@@ -30,6 +31,7 @@ import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.prism.GlobalMappingPrism;
 import org.mapstruct.ap.prism.MapperConfigPrism;
 import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
@@ -73,11 +75,25 @@ public class MapperConfig {
     }
 
     public List<TypeMirror> uses() {
-        Set<TypeMirror> uses = new HashSet<TypeMirror>( mapperPrism.uses() );
+        List<TypeMirror> result = new ArrayList<TypeMirror>();
+        Set<TypeMirror> alreadyAdded = new HashSet<TypeMirror>();
+
+        addAllOnce( result, alreadyAdded, mapperPrism.uses() );
+
         if ( mapperConfigPrism != null ) {
-            uses.addAll( mapperConfigPrism.uses() );
+            addAllOnce( result, alreadyAdded, mapperConfigPrism.uses() );
         }
-        return new ArrayList<TypeMirror>( uses );
+
+        return result;
+    }
+
+    private void addAllOnce(List<TypeMirror> result, Set<TypeMirror> alreadyAdded, List<TypeMirror> toAdd) {
+        for ( TypeMirror item : toAdd ) {
+            if ( !alreadyAdded.contains( item ) ) {
+                result.add( item );
+                alreadyAdded.add( item );
+            }
+        }
     }
 
     public List<TypeMirror> imports() {
@@ -162,6 +178,16 @@ public class MapperConfig {
         else {
             return "default";
         }
+    }
+
+    public List<GlobalMappingPrism> globalMappings() {
+        List<GlobalMappingPrism> globalMappings = new ArrayList<GlobalMappingPrism>( mapperPrism.globalMappings() );
+
+        if ( mapperConfigPrism != null ) {
+            globalMappings.addAll( mapperConfigPrism.globalMappings() );
+        }
+
+        return globalMappings;
     }
 
     public boolean isValid() {

@@ -39,9 +39,9 @@ import java.util.Date;
  *
  * @author Gunnar Morling
  */
-@Repeatable(Mappings.class)
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.METHOD)
+@Retention( RetentionPolicy.CLASS )
+@Target( ElementType.METHOD )
+@Repeatable( Mappings.class )
 public @interface Mapping {
 
     /**

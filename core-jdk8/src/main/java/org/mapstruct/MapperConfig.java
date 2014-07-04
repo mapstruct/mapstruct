@@ -89,4 +89,13 @@ public @interface MapperConfig {
      * @return The strategy to be applied when {@code null} is passed as source value to mapping methods.
      */
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.DEFAULT;
+
+    /**
+     * Global mappings can be used to define mapping configurations for mapping methods that fulfill certain source
+     * and/or target type criteria without having to repeat the same &#64;{@link Mapping} annotations for those methods.
+     *
+     * @return The global mapping configuration for mapping methods within all mappers that are configured with this
+     *         mapper config.
+     */
+    GlobalMapping[] globalMappings() default { };
 }

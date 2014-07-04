@@ -18,11 +18,9 @@
  */
 package org.mapstruct.factory;
 
-import org.mapstruct.Mapper;
-
 /**
  * Factory for obtaining mapper instances if no explicit component model such as CDI is configured via
- * {@link Mapper#componentModel()}.
+ * {@link org.mapstruct.Mapper#componentModel()}.
  * <p>
  * Mapper implementation types are expected to have the same fully qualified name as their interface type, with the
  * suffix {@code Impl} appended. When using this factory, mapper types - and any mappers they use - are instantiated by
