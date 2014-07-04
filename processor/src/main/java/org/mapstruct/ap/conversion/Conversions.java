@@ -18,16 +18,17 @@
  */
 package org.mapstruct.ap.conversion;
 
+import javax.lang.model.util.Elements;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.util.JavaTimeConstants;
 import org.mapstruct.ap.util.NativeTypes;
 
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
@@ -181,6 +182,8 @@ public class Conversions {
 
         registerJodaConversions();
 
+        registerJava8TimeConversions();
+
         //misc.
         register( Enum.class, String.class, new EnumStringConversion() );
         register( Date.class, String.class, new DateToStringConversion() );
@@ -239,10 +242,54 @@ public class Conversions {
         );
     }
 
+    private void registerJava8TimeConversions() {
+        if ( !isJava8TimeAvailable() ) {
+            return;
+        }
+
+        // Java 8 time to String
+        register(
+                        getClass( JavaTimeConstants.ZONED_DATE_TIME_FQN ),
+                        String.class,
+                        new JavaZonedDateTimeToStringConversion()
+        );
+        register(
+                        getClass( JavaTimeConstants.LOCAL_DATE_FQN ),
+                        String.class,
+                        new JavaLocalDateToStringConversion()
+        );
+        register(
+                        getClass( JavaTimeConstants.LOCAL_DATE_TIME_FQN ),
+                        String.class,
+                        new JavaLocalDateTimeToStringConversion()
+        );
+        register(
+                        getClass( JavaTimeConstants.LOCAL_TIME_FQN ),
+                        String.class,
+                        new JavaLocalTimeToStringConversion()
+        );
+
+        // Java 8  to Date
+        register(
+                        getClass( JavaTimeConstants.ZONED_DATE_TIME_FQN ),
+                        Date.class,
+                        new JavaZonedDateTimeToDateConversion()
+        );
+
+        register(
+                        getClass( JavaTimeConstants.LOCAL_DATE_TIME_FQN ),
+                        Date.class,
+                        new JavaLocalDateTimeToDateConversion()
+        );
+
+    }
+
     private static boolean isJodaTimeAvailable() {
         return NativeTypes.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN );
     }
-
+    private static boolean isJava8TimeAvailable() {
+        return NativeTypes.isTypeAvailable( JavaTimeConstants.ZONED_DATE_TIME_FQN );
+    }
     private void registerNativeTypeConversion(Class<?> sourceType, Class<?> targetType) {
         if ( sourceType.isPrimitive() && targetType.isPrimitive() ) {
             register( sourceType, targetType, new PrimitiveToPrimitiveConversion( sourceType ) );
