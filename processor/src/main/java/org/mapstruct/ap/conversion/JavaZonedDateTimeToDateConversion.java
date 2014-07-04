@@ -18,16 +18,22 @@
  */
 package org.mapstruct.ap.conversion;
 
+import org.mapstruct.ap.model.common.ConversionContext;
+
 /**
- * Helper holding Java time full qualified class names for conversion registration
+ * SimpleConversion for mapping {@link java.time.ZonedDateTime} to
+ * {@link java.util.Date} and vice versa.
  */
-public final class JavaTimeConstants {
 
-    public static final String ZONED_DATE_TIME_FQN = "java.time.ZonedDateTime";
-    public static final String LOCAL_DATE_TIME_FQN = "java.time.LocalDateTime";
-    public static final String LOCAL_DATE_FQN = "java.time.LocalDate";
-    public static final String LOCAL_TIME_FQN = "java.time.LocalTime";
+public class JavaZonedDateTimeToDateConversion extends SimpleConversion {
 
-    private JavaTimeConstants() {
+    @Override
+    protected String getToExpression(ConversionContext conversionContext) {
+        return "java.util.Date.from( <SOURCE>.toInstant() )";
+    }
+
+    @Override
+    protected String getFromExpression(ConversionContext conversionContext) {
+        return "java.time.ZonedDateTime.ofInstant( <SOURCE>.toInstant(), java.time.ZoneId.systemDefault() )";
     }
 }

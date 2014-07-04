@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,9 +37,9 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  *
  */
-@RunWith( AnnotationProcessorTestRunner.class )
-@WithClasses( { Source.class, Target.class, SourceTargetMapper.class } )
-@IssueKey( "121" )
+@RunWith(AnnotationProcessorTestRunner.class)
+@WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
+@IssueKey("121")
 public class Java8TimeConversionTest {
 
     @Test
@@ -188,6 +190,83 @@ public class Java8TimeConversionTest {
         assertThat( src.getLocalDateTime() ).isEqualTo( LocalDateTime.of( 2014, 1, 1, 0, 0 ) );
         assertThat( src.getLocalDate() ).isEqualTo( LocalDate.of( 2014, 1, 1 ) );
         assertThat( src.getLocalTime() ).isEqualTo( LocalTime.of( 0, 0 ) );
+    }
+
+    @Test
+    public void testCalendarMapping() {
+        Source source = new Source();
+        ZonedDateTime dateTime = ZonedDateTime.of( LocalDateTime.of( 2014, 1, 1, 0, 0 ), ZoneId.of( "UTC" ) );
+        source.setForCalendarConversion(
+                        dateTime );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target.getForCalendarConversion() ).isNotNull();
+        assertThat( target.getForCalendarConversion().getTimeZone() ).isEqualTo(
+                        TimeZone.getTimeZone(
+                                        "UTC" ) );
+        assertThat( target.getForCalendarConversion().get( Calendar.YEAR ) ).isEqualTo( dateTime.getYear() );
+        assertThat( target.getForCalendarConversion().get( Calendar.MONTH ) ).isEqualTo(
+                        dateTime.getMonthValue() - 1 );
+        assertThat( target.getForCalendarConversion().get( Calendar.DATE ) ).isEqualTo( dateTime.getDayOfMonth() );
+        assertThat( target.getForCalendarConversion().get( Calendar.MINUTE ) ).isEqualTo( dateTime.getMinute() );
+        assertThat( target.getForCalendarConversion().get( Calendar.HOUR ) ).isEqualTo( dateTime.getHour() );
+
+        source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source.getForCalendarConversion() ).isEqualTo( dateTime );
+    }
+
+    @Test
+    public void testZonedDateTimeToDateMapping() {
+        TimeZone.setDefault( TimeZone.getTimeZone( "UTC" ) );
+        Source source = new Source();
+        ZonedDateTime dateTime = ZonedDateTime.of( LocalDateTime.of( 2014, 1, 1, 0, 0 ), ZoneId.of( "UTC" ) );
+        source.setForDateConversionWithZonedDateTime(
+                        dateTime );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTargetDefaultMapping( source );
+
+        assertThat( target.getForDateConversionWithZonedDateTime() ).isNotNull();
+
+        Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
+        instance.setTimeInMillis( target.getForDateConversionWithZonedDateTime().getTime() );
+
+        assertThat( instance.get( Calendar.YEAR ) ).isEqualTo( dateTime.getYear() );
+        assertThat( instance.get( Calendar.MONTH ) ).isEqualTo( dateTime.getMonthValue() - 1 );
+        assertThat( instance.get( Calendar.DATE ) ).isEqualTo( dateTime.getDayOfMonth() );
+        assertThat( instance.get( Calendar.MINUTE ) ).isEqualTo( dateTime.getMinute() );
+        assertThat( instance.get( Calendar.HOUR ) ).isEqualTo( dateTime.getHour() );
+
+        source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source.getForDateConversionWithZonedDateTime() ).isEqualTo( dateTime );
+
+    }
+
+    @Test
+    public void testLocalDateTimeToDateMapping() {
+        TimeZone.setDefault( TimeZone.getTimeZone( "UTC" ) );
+        Source source = new Source();
+        LocalDateTime dateTime = LocalDateTime.of( 2014, 1, 1, 0, 0 );
+        source.setForDateConversionWithLocalDateTime( dateTime );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTargetDefaultMapping( source );
+
+        assertThat( target.getForDateConversionWithLocalDateTime() ).isNotNull();
+
+        Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
+        instance.setTimeInMillis( target.getForDateConversionWithLocalDateTime().getTime() );
+
+        assertThat( instance.get( Calendar.YEAR ) ).isEqualTo( dateTime.getYear() );
+        assertThat( instance.get( Calendar.MONTH ) ).isEqualTo( dateTime.getMonthValue() - 1 );
+        assertThat( instance.get( Calendar.DATE ) ).isEqualTo( dateTime.getDayOfMonth() );
+        assertThat( instance.get( Calendar.MINUTE ) ).isEqualTo( dateTime.getMinute() );
+        assertThat( instance.get( Calendar.HOUR ) ).isEqualTo( dateTime.getHour() );
+
+        source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source.getForDateConversionWithLocalDateTime() ).isEqualTo( dateTime );
+
     }
 
 }

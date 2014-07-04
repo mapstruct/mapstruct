@@ -41,7 +41,10 @@ public class BuiltInMappingMethods {
             new StringToXmlGregorianCalendar( typeFactory ),
             new XmlGregorianCalendarToString( typeFactory ),
             new CalendarToXmlGregorianCalendar( typeFactory ),
-            new XmlGregorianCalendarToCalendar( typeFactory )
+            new XmlGregorianCalendarToCalendar( typeFactory ),
+                        new ZonedDateTimeToCalendar( typeFactory ),
+                        new CalendarToZonedDateTime( typeFactory )
+
         );
     }
 

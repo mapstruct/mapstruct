@@ -29,6 +29,7 @@ import java.util.Map;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.util.ClassUtils;
+import org.mapstruct.ap.util.JavaTimeConstants;
 
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 
@@ -212,6 +213,20 @@ public class Conversions {
                             String.class,
                             new JavaLocalTimeToStringConversion()
             );
+
+            // java time to date
+            tryRegisterClassByName(
+                            JavaTimeConstants.ZONED_DATE_TIME_FQN,
+                            Date.class,
+                            new JavaZonedDateTimeToDateConversion()
+            );
+            tryRegisterClassByName(
+                            JavaTimeConstants.LOCAL_DATE_TIME_FQN,
+                            Date.class,
+                            new JavaLocalDateTimeToDateConversion()
+            );
+
+
         }
 
     }

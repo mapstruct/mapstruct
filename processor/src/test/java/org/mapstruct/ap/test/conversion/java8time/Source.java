@@ -36,6 +36,12 @@ public class Source {
 
     private LocalTime localTime;
 
+    private ZonedDateTime forCalendarConversion;
+
+    private ZonedDateTime forDateConversionWithZonedDateTime;
+
+    private LocalDateTime forDateConversionWithLocalDateTime;
+
     public ZonedDateTime getZonedDateTime() {
         return zonedDateTime;
     }
@@ -66,5 +72,29 @@ public class Source {
 
     public void setLocalTime(LocalTime localTime) {
         this.localTime = localTime;
+    }
+
+    public ZonedDateTime getForCalendarConversion() {
+        return forCalendarConversion;
+    }
+
+    public void setForCalendarConversion(ZonedDateTime forCalendarConversion) {
+        this.forCalendarConversion = forCalendarConversion;
+    }
+
+    public ZonedDateTime getForDateConversionWithZonedDateTime() {
+        return forDateConversionWithZonedDateTime;
+    }
+
+    public void setForDateConversionWithZonedDateTime(ZonedDateTime forDateConversionWithZonedDateTime) {
+        this.forDateConversionWithZonedDateTime = forDateConversionWithZonedDateTime;
+    }
+
+    public LocalDateTime getForDateConversionWithLocalDateTime() {
+        return forDateConversionWithLocalDateTime;
+    }
+
+    public void setForDateConversionWithLocalDateTime(LocalDateTime forDateConversionWithLocalDateTime) {
+        this.forDateConversionWithLocalDateTime = forDateConversionWithLocalDateTime;
     }
 }

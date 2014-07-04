@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  *
  */
@@ -30,6 +33,12 @@ public class Target {
     private String localDate;
 
     private String localTime;
+
+    private Calendar forCalendarConversion;
+
+    private Date forDateConversionWithZonedDateTime;
+
+    private Date forDateConversionWithLocalDateTime;
 
     public String getZonedDateTime() {
         return zonedDateTime;
@@ -61,5 +70,29 @@ public class Target {
 
     public void setLocalTime(String localTime) {
         this.localTime = localTime;
+    }
+
+    public Calendar getForCalendarConversion() {
+        return forCalendarConversion;
+    }
+
+    public void setForCalendarConversion(Calendar forCalendarConversion) {
+        this.forCalendarConversion = forCalendarConversion;
+    }
+
+    public Date getForDateConversionWithZonedDateTime() {
+        return forDateConversionWithZonedDateTime;
+    }
+
+    public void setForDateConversionWithZonedDateTime(Date forDateConversionWithZonedDateTime) {
+        this.forDateConversionWithZonedDateTime = forDateConversionWithZonedDateTime;
+    }
+
+    public Date getForDateConversionWithLocalDateTime() {
+        return forDateConversionWithLocalDateTime;
+    }
+
+    public void setForDateConversionWithLocalDateTime(Date forDateConversionWithLocalDateTime) {
+        this.forDateConversionWithLocalDateTime = forDateConversionWithLocalDateTime;
     }
 }
