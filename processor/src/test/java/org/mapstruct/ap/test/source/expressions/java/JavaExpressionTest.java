@@ -37,7 +37,7 @@ import org.mapstruct.ap.testutil.IssueKey;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class JavaExpressionTest {
 
-    @Test
+   @Test
    @WithClasses({ SourceTargetMapper.class })
     public void testJavaExpressionInsertion() throws ParseException {
         Source source = new Source();
@@ -83,5 +83,26 @@ public class JavaExpressionTest {
         SimpleDateFormat dateFormat = new SimpleDateFormat( format );
         Date result = dateFormat.parse( date );
         return result;
+    }
+
+   @Test
+   @WithClasses({ SourceTargetMapper.class })
+    public void testJavaExpressionInsertionWithExistingTarget() throws ParseException {
+        Source source = new Source();
+        String format = "dd-MM-yyyy,hh:mm:ss";
+        Date time = getTime( format, "09-01-2014,01:35:03" );
+
+        source.setFormat( format );
+        source.setTime( time );
+        Target target = new Target();
+
+
+        Target target2 = SourceTargetMapper.INSTANCE.sourceToTargetWithMappingTarget( source, target );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getTimeAndFormat().getTime() ).isEqualTo( time );
+        assertThat( target.getTimeAndFormat().getFormat() ).isEqualTo( format );
+        assertThat( target.getAnotherProp() ).isNull();
+        assertThat( target ).isEqualTo( target2 );
     }
 }
