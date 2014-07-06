@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.source.expressions.java;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
@@ -38,4 +39,11 @@ public interface SourceTargetMapper {
         @Mapping( target = "anotherProp", ignore = true )
     } )
     Target sourceToTarget(Source s);
+
+    @Mappings( {
+        @Mapping( target = "timeAndFormat", expression = "java( new org.mapstruct.ap.test.source.expressions.java."
+                + "TimeAndFormat( s.getTime(), s.getFormat() ))" ),
+        @Mapping( target = "anotherProp", ignore = true )
+    } )
+    Target sourceToTargetWithMappingTarget(Source s, @MappingTarget Target t);
 }
