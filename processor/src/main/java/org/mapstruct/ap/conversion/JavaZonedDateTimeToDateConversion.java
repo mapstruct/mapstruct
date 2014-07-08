@@ -18,7 +18,12 @@
  */
 package org.mapstruct.ap.conversion;
 
+import java.util.Set;
+
 import org.mapstruct.ap.model.common.ConversionContext;
+import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.util.Collections;
+import org.mapstruct.ap.util.JavaTimeConstants;
 
 /**
  * SimpleConversion for mapping {@link java.time.ZonedDateTime} to
@@ -35,5 +40,21 @@ public class JavaZonedDateTimeToDateConversion extends SimpleConversion {
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
         return "java.time.ZonedDateTime.ofInstant( <SOURCE>.toInstant(), java.time.ZoneId.systemDefault() )";
+    }
+
+    @Override
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return Collections.asSet(
+                        conversionContext.getTypeFactory().getType( JavaTimeConstants.ZONED_DATE_TIME_FQN ),
+                        conversionContext.getTypeFactory().getType( JavaTimeConstants.ZONE_ID )
+        );
+    }
+
+    @Override
+    protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
+        return Collections.asSet(
+                        conversionContext.getTypeFactory().getType( JavaTimeConstants.ZONED_DATE_TIME_FQN ),
+                        conversionContext.getTypeFactory().getType( java.util.Date.class )
+        );
     }
 }

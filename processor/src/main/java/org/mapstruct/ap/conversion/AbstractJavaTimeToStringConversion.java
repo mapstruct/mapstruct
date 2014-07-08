@@ -23,6 +23,7 @@ import java.util.Set;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.util.Collections;
+import org.mapstruct.ap.util.JavaTimeConstants;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -83,24 +84,14 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
     @Override
     protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
         return Collections.asSet(
-                        conversionContext.getTypeFactory().getType( dateTimeFormatterClass() )
+                        conversionContext.getTypeFactory().getType( JavaTimeConstants.DATE_TIME_FORMATTER )
         );
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return Collections.asSet(
-                        conversionContext.getTypeFactory().getType( dateTimeFormatterClass() )
+                        conversionContext.getTypeFactory().getType( JavaTimeConstants.DATE_TIME_FORMATTER )
         );
     }
-
-    private Class dateTimeFormatterClass() {
-        try {
-            return Class.forName( "java.time.format.DateTimeFormatter" );
-        }
-        catch ( ClassNotFoundException e ) {
-            throw new RuntimeException( "java.time.format.DateTimeFormatter not found on classpath" );
-        }
-    }
-
 }
