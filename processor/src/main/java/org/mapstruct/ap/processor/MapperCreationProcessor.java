@@ -33,6 +33,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.BeanMappingMethod;
@@ -53,8 +54,10 @@ import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.prism.DecoratedWithPrism;
 import org.mapstruct.ap.prism.MapperPrism;
+import org.mapstruct.ap.prism.ReverseMappingMethodPrism;
 import org.mapstruct.ap.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.util.MapperConfig;
+import org.mapstruct.ap.util.Strings;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -308,7 +311,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( method.isEnumMapping() ) {
 
                 EnumMappingMethod.Builder builder = new EnumMappingMethod.Builder();
-
+                mergeWithReverseMappings( reverseMappingMethod, method);
                 if ( method.getMappings().isEmpty() ) {
                     if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
                         method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
@@ -327,13 +330,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else {
 
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
-
-                if ( method.getMappings().isEmpty() ) {
-                    if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
-                        method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
-                    }
-                }
-
+                mergeWithReverseMappings( reverseMappingMethod, method);
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
@@ -388,12 +385,146 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return reversed;
     }
 
-    private SourceMethod getReverseMappingMethod(List<SourceMethod> rawMethods, SourceMethod method) {
-        for ( SourceMethod oneMethod : rawMethods ) {
-            if ( oneMethod.reverses( method ) ) {
-                return oneMethod;
-            }
+    private void mergeWithReverseMappings( SourceMethod reverseMappingMethod, SourceMethod method ) {
+        Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();
+        if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
+            // define all the base mappings based on its forward counterpart
+            newMappings.putAll( reverse( reverseMappingMethod.getMappings() ) );
         }
-        return null;
+
+        if ( method.getMappings().isEmpty() ) {
+            // the mapping method is configuredByReverseMappingMethod, see SourceMethod#setMappings()
+            method.setMappings( newMappings );
+        }
+        else {
+            // now add all of its own mappings
+            newMappings.putAll( method.getMappings() );
+            method.getMappings().clear();
+            // the mapping method is NOT configuredByReverseMappingMethod,
+            method.getMappings().putAll( newMappings );
+        }
+    }
+
+
+    private SourceMethod getReverseMappingMethod(List<SourceMethod> rawMethods, SourceMethod method) {
+
+        SourceMethod result = null;
+
+        ReverseMappingMethodPrism reversePrism = ReverseMappingMethodPrism.getInstanceOn( method.getExecutable() );
+        if ( reversePrism != null ) {
+
+            // method is configured as being reverse method, collect candidates
+            List<SourceMethod> candidates = new ArrayList<SourceMethod>();
+            for ( SourceMethod oneMethod : rawMethods ) {
+                if ( oneMethod.reverses( method ) ) {
+                    candidates.add( oneMethod );
+                }
+            }
+
+            String configuredBy = reversePrism.configuredBy();
+            if ( candidates.size() == 1 ) {
+                // no ambiguity: if no configuredBy is specified, or configuredBy specified and match
+                if ( configuredBy.isEmpty() ) {
+                    result = candidates.get( 0 );
+                }
+                else if ( candidates.get( 0 ).getName().equals( configuredBy ) ) {
+                    result = candidates.get( 0 );
+                }
+                else {
+                    reportErrorWhenNonMatchingConfiguredBy( candidates.get( 0 ), method, reversePrism );
+                }
+            }
+            else if ( candidates.size() > 1 ) {
+                // ambiguity: find a matching method that matches configuredBy
+
+                List<SourceMethod> nameFilteredcandidates = new ArrayList<SourceMethod>();
+                for ( SourceMethod candidate : candidates ) {
+                    if ( candidate.getName().equals( configuredBy ) ) {
+                        nameFilteredcandidates.add( candidate );
+                    }
+                }
+
+                if ( nameFilteredcandidates.size() ==  1 ) {
+                    result = nameFilteredcandidates.get( 0 );
+                }
+                else if ( nameFilteredcandidates.size() > 1 ) {
+                    reportErrorWhenMoreConfiguredByMatch( nameFilteredcandidates, method, reversePrism );
+                }
+
+                if ( result == null ) {
+                    reportErrorWhenAmbigousReverseMapping( candidates, method, reversePrism );
+                }
+            }
+
+            if ( result != null ) {
+                reportErrorIfForwardMethodHasReverseMappingMethodAnnotation( result, method, reversePrism );
+            }
+
+        }
+        return result;
+    }
+
+    private void reportErrorIfForwardMethodHasReverseMappingMethodAnnotation( SourceMethod candidate,
+            SourceMethod method, ReverseMappingMethodPrism reversePrism ) {
+
+        ReverseMappingMethodPrism candidatePrism = ReverseMappingMethodPrism.getInstanceOn( candidate.getExecutable() );
+        if ( candidatePrism != null ) {
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                    String.format( "Resolved reverse mapping: \"%s\" should not carry the @ReverseMappingMethod "
+                            + "annotation itself.",
+                            candidate.getName()
+                    ),
+                    method.getExecutable(),
+                    reversePrism.mirror );
+        }
+    }
+
+    private void reportErrorWhenAmbigousReverseMapping( List<SourceMethod> candidates, SourceMethod method,
+            ReverseMappingMethodPrism reversePrism ) {
+
+        List<String> candidateNames = new ArrayList<String>();
+        for (SourceMethod candidate : candidates ) {
+            candidateNames.add( candidate.getName() );
+        }
+
+        String configuredBy = reversePrism.configuredBy();
+        if ( configuredBy.isEmpty() ) {
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                    String.format( "None of the candidates \"%s\" matches. Consider specifiying 'configuredBy'.",
+                            Strings.join( candidateNames, "," )
+                    ),
+                    method.getExecutable(),
+                    reversePrism.mirror );
+        }
+        else {
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                    String.format( "None of the candidates \"%s\", matches configuredBy: \"blah\".",
+                            Strings.join( candidateNames, "," ), configuredBy
+                    ),
+                    method.getExecutable(),
+                    reversePrism.mirror );
+        }
+    }
+
+    private void reportErrorWhenMoreConfiguredByMatch(List<SourceMethod> candidates, SourceMethod method,
+            ReverseMappingMethodPrism reversePrism ) {
+
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                    String.format( "ConfiguredBy: \"%s\" matches more candidates: \"%s\".",
+                            Strings.join( candidates, "," ), reversePrism.configuredBy()
+                    ),
+                    method.getExecutable(),
+                    reversePrism.mirror );
+    }
+
+    private void reportErrorWhenNonMatchingConfiguredBy(SourceMethod onlyCandidate, SourceMethod method,
+            ReverseMappingMethodPrism reversePrism ) {
+
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                    String.format( "ConfiguredBy: \"%s\" does not match the only candidate. Did you mean: \"%s\".",
+                            reversePrism.configuredBy(), onlyCandidate.getName()
+                    ),
+                    method.getExecutable(),
+                    reversePrism.mirror );
     }
 }

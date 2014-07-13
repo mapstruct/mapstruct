@@ -196,7 +196,7 @@ public class JodaConversionTest {
         src.setDateTimeForCalendarConversion( dateTimeWithCalendar );
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( src );
         assertThat( target ).isNotNull();
-        assertThat( target.getDateTimeForCalendarConversion() ).isEqualTo( calendar );
+        assertThat( target.getDateTimeForCalendarConversion().getTime() ).isEqualTo( calendar.getTime() );
 
         Source mappedSource = SourceTargetMapper.INSTANCE.targetToSource( target );
         assertThat( mappedSource ).isNotNull();

@@ -24,6 +24,7 @@ import java.util.Map;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = CustomNumberMapper.class)
@@ -33,7 +34,7 @@ public interface SourceTargetMapper {
 
     @MapMapping(valueDateFormat = "dd.MM.yyyy")
     Map<String, String> longDateMapToStringStringMap(Map<Long, Date> source);
-
+    @ReverseMappingMethod
     Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source);
 
     @MapMapping(valueDateFormat = "dd.MM.yyyy")
@@ -45,7 +46,7 @@ public interface SourceTargetMapper {
                                                                               @MappingTarget Map<Long, Date> target);
 
     Target sourceToTarget(Source source);
-
+    @ReverseMappingMethod
     Source targetToSource(Target target);
 
     Map<Number, Number> intIntToNumberNumberMap(Map<Integer, Integer> source);

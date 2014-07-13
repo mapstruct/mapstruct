@@ -30,6 +30,7 @@ import org.mapstruct.MapperConfig;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.TargetType;
 
 /**
@@ -47,6 +48,7 @@ import org.mapstruct.TargetType;
     @GeneratePrism(value = MappingTarget.class, publicAccess = true),
     @GeneratePrism(value = DecoratedWith.class, publicAccess = true),
     @GeneratePrism(value = MapperConfig.class, publicAccess = true),
+    @GeneratePrism(value = ReverseMappingMethod.class, publicAccess = true),
 
     // external types
     @GeneratePrism(value = XmlElementDecl.class, publicAccess = true)

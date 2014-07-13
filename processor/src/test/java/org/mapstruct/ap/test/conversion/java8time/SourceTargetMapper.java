@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.conversion.java8time;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -44,6 +45,10 @@ public interface SourceTargetMapper {
                     @Mapping( source = "localTime", dateFormat = LOCAL_TIME_FORMAT ) } )
     Target sourceToTarget(Source source);
 
+    @Mappings( { @Mapping( source = "zonedDateTime", dateFormat = DATE_TIME_FORMAT ),
+                    @Mapping( source = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT ),
+                    @Mapping( source = "localDate", dateFormat = LOCAL_DATE_FORMAT ),
+                    @Mapping( source = "localTime", dateFormat = LOCAL_TIME_FORMAT ) } )
     Target sourceToTargetDefaultMapping(Source source);
 
     @Mapping( source = "zonedDateTime", dateFormat = DATE_TIME_FORMAT )
@@ -76,5 +81,6 @@ public interface SourceTargetMapper {
     @Mapping( source = "localTime", dateFormat = LOCAL_TIME_FORMAT )
     Source targetToSourceLocalTimeMapped(Target target);
 
+    @ReverseMappingMethod(configuredBy = "sourceToTarget")
     Source targetToSourceDefaultMapping(Target target);
 }

@@ -131,7 +131,7 @@ public class CollectionMappingTest {
         source.setOtherStringList( Arrays.asList( "Bob" ) );
         List<String> originalInstance = target.getOtherStringList();
 
-        SourceTargetMapper.INSTANCE.sourceToTarget( source, target );
+        SourceTargetMapper.INSTANCE.sourceToTargetTwoArg( source, target );
 
         assertThat( target.getOtherStringList() ).isSameAs( originalInstance );
         assertThat( target.getOtherStringList() ).containsExactly( "Bob" );
@@ -359,7 +359,7 @@ public class CollectionMappingTest {
         TestMap.setPuttAllCalled( false );
         target.setOtherStringLongMap( originalInstance );
 
-        SourceTargetMapper.INSTANCE.sourceToTarget( source, target );
+        SourceTargetMapper.INSTANCE.sourceToTargetTwoArg( source, target );
 
         assertThat( target.getOtherStringLongMap() ).isSameAs( originalInstance );
         assertThat( target.getOtherStringLongMap() ).hasSize( 1 );

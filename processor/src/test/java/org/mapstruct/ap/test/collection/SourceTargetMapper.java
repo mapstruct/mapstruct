@@ -24,6 +24,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -38,17 +39,23 @@ public interface SourceTargetMapper {
         @Mapping(source = "stringList2", target = "stringListNoSetter")
     })
     Target sourceToTarget(Source source);
-
+    @ReverseMappingMethod(configuredBy = "sourceToTarget")
     Source targetToSource(Target target);
 
-    Target sourceToTarget(Source source, @MappingTarget Target target);
+    @Mappings({
+        @Mapping(source = "integerList", target = "integerCollection"),
+        @Mapping(source = "integerSet", target = "set"),
+        @Mapping(source = "anotherIntegerSet", target = "anotherStringSet"),
+        @Mapping(source = "stringList2", target = "stringListNoSetter")
+    })
+    Target sourceToTargetTwoArg(Source source, @MappingTarget Target target);
 
     Set<String> integerSetToStringSet(Set<Integer> integers);
-
+    @ReverseMappingMethod
     Set<Integer> stringSetToIntegerSet(Set<String> strings);
 
     Set<String> colourSetToStringSet(Set<Colour> colours);
-
+    @ReverseMappingMethod
     Set<Colour> stringSetToColourSet(Set<String> colours);
 
     Set<Number> integerSetToNumberSet(Set<Integer> integers);

@@ -24,6 +24,7 @@ import java.util.List;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -33,11 +34,11 @@ public interface SourceTargetMapper {
 
     @Mapping(source = "date", dateFormat = "dd.MM.yyyy")
     Target sourceToTarget(Source source);
-
+    @ReverseMappingMethod
     Source targetToSource(Target target);
 
     @IterableMapping(dateFormat = "dd.MM.yyyy")
     List<String> stringListToDateList(List<Date> dates);
-
+    @ReverseMappingMethod
     List<Date> dateListToStringList(List<String> strings);
 }

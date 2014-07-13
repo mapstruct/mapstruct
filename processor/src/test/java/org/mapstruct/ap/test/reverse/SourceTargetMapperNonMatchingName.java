@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.ignore;
+package org.mapstruct.ap.test.reverse;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,16 +24,27 @@ import org.mapstruct.Mappings;
 import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
+/**
+ *
+ * @author Sjaak Derksen
+ */
+
 @Mapper
-public interface AnimalMapper {
+public interface SourceTargetMapperNonMatchingName {
 
-    AnimalMapper INSTANCE = Mappers.getMapper( AnimalMapper.class );
+    SourceTargetMapperNonMatchingName INSTANCE = Mappers.getMapper( SourceTargetMapperNonMatchingName.class );
 
-    @Mappings({
-        @Mapping(source = "size", ignore = true),
-        @Mapping(target = "age", ignore = true)
-    })
-    AnimalDto animalToDto(Animal animal);
-    @ReverseMappingMethod
-    Animal animalDtoToAnimal(AnimalDto animalDto);
+    @Mappings( {
+        @Mapping( source = "stringPropX", target = "stringPropY" ),
+        @Mapping( source = "integerPropX", target = "integerPropY" ),
+        @Mapping( source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream" )
+    } )
+    Target forward( Source source );
+
+    @ReverseMappingMethod(configuredBy = "blah")
+    @Mappings( {
+        @Mapping( target = "someConstantDownstream", constant = "test" ),
+        @Mapping( source = "propertyToIgnoreDownstream", ignore = true )
+    } )
+    Source reverse( Target target );
 }

@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.conversion;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -33,6 +34,6 @@ public interface SourceTargetMapper {
         @Mapping(source = "baz", target = "qax")
     })
     Target sourceToTarget(Source source);
-
+    @ReverseMappingMethod
     Source targetToSource(Target target);
 }

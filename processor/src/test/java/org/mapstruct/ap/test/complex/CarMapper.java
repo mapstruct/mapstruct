@@ -23,6 +23,7 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.ap.test.complex.other.DateMapper;
 import org.mapstruct.ap.test.complex.source.Car;
 import org.mapstruct.ap.test.complex.source.Person;
@@ -40,18 +41,18 @@ public interface CarMapper {
         @Mapping(source = "manufacturingDate", target = "manufacturingYear")
     })
     CarDto carToCarDto(Car car);
-
+    @ReverseMappingMethod
     Car carDtoToCar(CarDto carDto);
 
     List<CarDto> carsToCarDtos(List<Car> cars);
-
+    @ReverseMappingMethod
     List<Car> carDtosToCars(List<CarDto> carDtos);
 
     PersonDto personToPersonDto(Person person);
-
+    @ReverseMappingMethod
     Person personDtoToPerson(PersonDto personDto);
 
     List<PersonDto> personsToPersonDtos(List<Person> persons);
-
+    @ReverseMappingMethod
     List<Person> personDtosToPersons(List<PersonDto> personDtos);
 }

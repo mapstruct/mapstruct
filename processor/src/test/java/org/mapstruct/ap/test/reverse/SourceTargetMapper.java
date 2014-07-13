@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest.simple;
+package org.mapstruct.ap.test.reverse;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,17 +24,34 @@ import org.mapstruct.Mappings;
 import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
+/**
+ *
+ * @author Sjaak Derksen
+ */
+
 @Mapper
 public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mappings({
-        @Mapping(source = "qax", target = "baz"),
-        @Mapping(source = "baz", target = "qax")
-    })
-    Target sourceToTarget(Source source);
+    @Mappings( {
+        @Mapping( source = "stringPropX", target = "stringPropY" ),
+        @Mapping( source = "integerPropX", target = "integerPropY" ),
+        @Mapping( source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream" )
+    } )
+    Target forward( Source source );
 
-    @ReverseMappingMethod
-    Source targetToSource(Target target);
+    @Mappings( {
+        @Mapping( source = "stringPropX", target = "stringPropY" ),
+        @Mapping( source = "integerPropX", target = "integerPropY" ),
+        @Mapping( source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream" )
+    } )
+    Target forwardNotToReverse( Source source );
+
+    @ReverseMappingMethod(configuredBy = "forward")
+    @Mappings( {
+        @Mapping( target = "someConstantDownstream", constant = "test" ),
+        @Mapping( source = "propertyToIgnoreDownstream", ignore = true )
+    } )
+    Source reverse( Target target );
 }

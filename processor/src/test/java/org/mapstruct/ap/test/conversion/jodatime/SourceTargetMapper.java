@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.conversion.jodatime;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -44,6 +45,7 @@ public interface SourceTargetMapper {
     })
     Target sourceToTarget(Source source);
 
+    @ReverseMappingMethod(configuredBy = "targetToSource") // TODO: FIXME
     Target sourceToTargetDefaultMapping(Source source);
 
     @Mapping(source = "dateTime", dateFormat = DATE_TIME_FORMAT)
@@ -79,5 +81,6 @@ public interface SourceTargetMapper {
     @Mapping(source = "localTime", dateFormat = LOCAL_TIME_FORMAT)
     Source targetToSourceLocalTimeMapped(Target target);
 
+    @ReverseMappingMethod(configuredBy = "sourceToTarget") // TODO: FIXME
     Source targetToSourceDefaultMapping(Target target);
 }
