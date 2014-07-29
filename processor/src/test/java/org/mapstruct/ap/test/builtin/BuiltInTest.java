@@ -81,6 +81,10 @@ public class BuiltInTest {
         source.setProp6NoFormat( createXmlCal( 1999, 3, 2, 60 ) );
         source.setProp7( createCalendar( "02.03.1999" ) );
         source.setProp8( createXmlCal( 1999, 3, 2, 60 ) );
+        source.setProp9( createCalendar( "02.03.1999" ) );
+        source.setProp10( new SimpleDateFormat( "dd.MM.yyyy" ).parse( "02.03.1999" ) );
+        source.setProp11( "02.03.1999" );
+        source.setProp12( createCalendar( "02.03.1999" ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
@@ -95,6 +99,10 @@ public class BuiltInTest {
         assertThat( target.getProp6NoFormat().toString() ).isEqualTo( "1999-03-02+01:00" );
         assertThat( target.getProp7().toString() ).isEqualTo( "1999-03-02T00:00:00.000+01:00" );
         assertThat( target.getProp8().getTimeInMillis() ).isEqualTo( 920329200000L );
+        assertThat( target.getProp9()).isEqualTo( createCalendar( "02.03.1999" ).getTime());
+        assertThat( target.getProp10()).isEqualTo( createCalendar( "02.03.1999" ));
+        assertThat( target.getProp11()).isEqualTo( createCalendar( "02.03.1999" ));
+        assertThat( target.getProp12()).isEqualTo( "02.03.1999" );
     }
 
     @Test

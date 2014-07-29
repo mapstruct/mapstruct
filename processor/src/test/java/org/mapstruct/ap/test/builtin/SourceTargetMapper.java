@@ -29,7 +29,9 @@ public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
     @Mappings({
         @Mapping(source = "prop5", dateFormat = "dd.MM.yyyy"),
-        @Mapping(source = "prop6", dateFormat = "dd.MM.yyyy")
+        @Mapping(source = "prop6", dateFormat = "dd.MM.yyyy"),
+        @Mapping(source = "prop11", dateFormat = "dd.MM.yyyy"),
+        @Mapping(source = "prop12", dateFormat = "dd.MM.yyyy")
     })
     Target sourceToTarget(Source source);
 }
