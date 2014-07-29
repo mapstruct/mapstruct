@@ -18,9 +18,10 @@
      limitations under the License.
 
 -->
-private ZonedDateTime ${name}( Calendar cal ) {
-  if ( cal == null) {
-    return null;
-  }
-  return ZonedDateTime.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId());
+private ZonedDateTime ${name}(Calendar cal) {
+    if ( cal == null ) {
+        return null;
+    }
+
+    return ZonedDateTime.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
 }

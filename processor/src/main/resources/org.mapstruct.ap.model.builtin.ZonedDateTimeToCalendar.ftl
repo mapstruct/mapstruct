@@ -18,11 +18,12 @@
      limitations under the License.
 
 -->
-private Calendar ${name}( ZonedDateTime dateTime ) {
-  if (dateTime == null) {
-    return null;
-  }
-  Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( dateTime.getZone() ) );
-  instance.setTimeInMillis( dateTime.toInstant().toEpochMilli() );
-  return instance;
+private Calendar ${name}(ZonedDateTime dateTime) {
+    if ( dateTime == null ) {
+       return null;
+    }
+
+    Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( dateTime.getZone() ) );
+    instance.setTimeInMillis( dateTime.toInstant().toEpochMilli() );
+    return instance;
 }
