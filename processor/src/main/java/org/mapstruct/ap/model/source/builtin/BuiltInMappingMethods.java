@@ -18,10 +18,12 @@
  */
 package org.mapstruct.ap.model.source.builtin;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.util.Collections;
+import org.mapstruct.ap.util.JavaTimeConstants;
+import org.mapstruct.ap.util.NativeTypes;
 
 /**
  * Registry for all built-in methods.
@@ -33,7 +35,7 @@ public class BuiltInMappingMethods {
     private final List<BuiltInMethod> builtInMethods;
 
     public BuiltInMappingMethods(TypeFactory typeFactory) {
-        builtInMethods = Arrays.asList(
+        builtInMethods = Collections.newArrayList(
             new JaxbElemToValue( typeFactory ),
             new ListOfJaxbElemToListOfValue( typeFactory ),
             new DateToXmlGregorianCalendar( typeFactory ),
@@ -41,11 +43,18 @@ public class BuiltInMappingMethods {
             new StringToXmlGregorianCalendar( typeFactory ),
             new XmlGregorianCalendarToString( typeFactory ),
             new CalendarToXmlGregorianCalendar( typeFactory ),
-            new XmlGregorianCalendarToCalendar( typeFactory ),
-            new ZonedDateTimeToCalendar( typeFactory ),
-            new CalendarToZonedDateTime( typeFactory )
+            new XmlGregorianCalendarToCalendar( typeFactory )
 
         );
+
+        if ( isJava8TimeAvailable() ) {
+            builtInMethods.add( new ZonedDateTimeToCalendar( typeFactory ) );
+            builtInMethods.add( new CalendarToZonedDateTime( typeFactory ) );
+        }
+    }
+
+    private static boolean isJava8TimeAvailable() {
+        return NativeTypes.isTypeAvailable( JavaTimeConstants.ZONED_DATE_TIME_FQN );
     }
 
     public List<BuiltInMethod> getBuiltInMethods() {

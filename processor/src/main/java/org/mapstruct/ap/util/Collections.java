@@ -18,8 +18,11 @@
  */
 package org.mapstruct.ap.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,6 +43,14 @@ public class Collections {
         }
 
         return set;
+    }
+
+    public static <T> List<T> newArrayList(T... elements) {
+        List<T> list = new ArrayList<T>();
+
+        list.addAll( Arrays.asList( elements ) );
+
+        return list;
     }
 
     public static <T> Set<T> asSet(Collection<T> collection, T... elements) {
