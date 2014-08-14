@@ -95,8 +95,20 @@ public class MethodMatcher {
         int i = 0;
         for ( VariableElement candidateParameter : candidateParameters ) {
             TypeMatcher parameterMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_FROM, genericTypesMap );
-            if ( !parameterMatcher.visit( candidateParameter.asType(), sourceTypes.get( i++ ).getTypeMirror() ) ) {
-                return false;
+            Type sourceType = sourceTypes.get( i++ );
+            if ( !parameterMatcher.visit( candidateParameter.asType(), sourceType.getTypeMirror() ) ) {
+                if (sourceType.isPrimitive() ) {
+                    // the candidate source is primitive, so promote to its boxed type and check again (autobox)
+                    TypeMirror boxedType = typeUtils.boxedClass( (PrimitiveType) sourceType.getTypeMirror() ).asType();
+                    if ( !parameterMatcher.visit( candidateParameter.asType(), boxedType ) ) {
+                        return false;
+                    }
+                }
+                else {
+                    // NOTE: unboxing is deliberately not considered here. This should be handled via type-conversion
+                    // (for NPE safety).
+                    return false;
+                }
             }
         }
 

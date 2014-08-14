@@ -16,23 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.exceptions;
+package org.mapstruct.ap.test.selection.primitives;
 
-import org.mapstruct.ap.test.exceptions.imports.TestException1;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- * @author Sjaak Derksen
  *
+ * @author Sjaak Derksen
  */
-public class ExceptionTestMapper  {
+@Mapper(uses = { WrappedMapper.class } )
+public interface SourceTargetMapperWrapped {
 
-    public Long toLong(Integer size) throws TestException1, TestException2 {
-        if ( size == 1 ) {
-            throw new TestException1();
-        }
-        else if ( size == 2 ) {
-            throw new TestException2();
-        }
-        return new Long(size);
-    }
+    SourceTargetMapperWrapped INSTANCE = Mappers.getMapper( SourceTargetMapperWrapped.class );
+
+    Target toTarget(Source s);
 }

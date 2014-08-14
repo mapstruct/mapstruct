@@ -18,13 +18,12 @@
  */
 package org.mapstruct.ap.test.nullcheck;
 
+import static org.fest.assertions.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for correct handling of null checks.

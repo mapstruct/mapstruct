@@ -16,23 +16,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.exceptions;
+package org.mapstruct.ap.test.selection.primitives;
 
-import org.mapstruct.ap.test.exceptions.imports.TestException1;
 
 /**
  * @author Sjaak Derksen
  *
  */
-public class ExceptionTestMapper  {
+public class PrimitiveMapper  {
 
-    public Long toLong(Integer size) throws TestException1, TestException2 {
-        if ( size == 1 ) {
-            throw new TestException1();
-        }
-        else if ( size == 2 ) {
-            throw new TestException2();
-        }
-        return new Long(size);
+    private static boolean calledUpon;
+
+    public MyLong fromPrimitiveInt(int size)  {
+        calledUpon = true;
+        return new MyLong( (long) size );
     }
+
+    public static boolean isCalledUpon() {
+        return calledUpon;
+    }
+
+    public static void setCalledUpon( boolean calledUpon ) {
+        PrimitiveMapper.calledUpon = calledUpon;
+    }
+
 }
