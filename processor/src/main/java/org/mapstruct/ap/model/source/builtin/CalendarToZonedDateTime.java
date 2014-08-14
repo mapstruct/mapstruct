@@ -25,8 +25,9 @@ import java.util.TimeZone;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
-import org.mapstruct.ap.util.Collections;
 import org.mapstruct.ap.util.JavaTimeConstants;
+
+import static org.mapstruct.ap.util.Collections.asSet;
 
 /**
  * {@link BuiltInMethod} for mapping between {@link java.util.Calendar}
@@ -43,11 +44,7 @@ public class CalendarToZonedDateTime extends BuiltInMethod {
     CalendarToZonedDateTime(TypeFactory typeFactory) {
         this.returnType = typeFactory.getType( JavaTimeConstants.ZONED_DATE_TIME_FQN );
         this.parameter = new Parameter( "cal", typeFactory.getType( Calendar.class ) );
-        this.importedTypes = Collections.asSet(
-                        typeFactory.getType( Calendar.class ),
-                        typeFactory.getType( TimeZone.class ),
-                        typeFactory.getType( JavaTimeConstants.ZONED_DATE_TIME_FQN )
-        );
+        this.importedTypes = asSet( returnType, parameter.getType(), typeFactory.getType( TimeZone.class ) );
     }
 
     @Override

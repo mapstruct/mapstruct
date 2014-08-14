@@ -41,10 +41,7 @@ public class ZonedDateTimeToCalendar extends BuiltInMethod {
     ZonedDateTimeToCalendar(TypeFactory typeFactory) {
         this.returnType = typeFactory.getType( Calendar.class );
         this.parameter = new Parameter( "dateTime", typeFactory.getType( JavaTimeConstants.ZONED_DATE_TIME_FQN ) );
-        this.importedTypes = Collections.asSet(
-                        typeFactory.getType( Calendar.class ),
-                        typeFactory.getType( JavaTimeConstants.ZONED_DATE_TIME_FQN )
-        );
+        this.importedTypes = Collections.asSet( returnType, parameter.getType() );
     }
 
     @Override
