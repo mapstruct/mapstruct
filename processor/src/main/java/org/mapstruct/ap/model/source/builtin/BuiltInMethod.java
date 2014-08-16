@@ -76,8 +76,18 @@ public abstract class BuiltInMethod implements Method {
         }
         Type sourceType = sourceTypes.iterator().next();
 
-        if ( targetType.erasure().isAssignableTo( getReturnType().erasure() )
-            && sourceType.erasure().isAssignableTo( getParameter().getType().erasure() ) ) {
+        if ( getReturnType().isAssignableTo( targetType.erasure() )
+            && sourceType.erasure().isAssignableTo( getParameter().getType() ) ) {
+            return doTypeVarsMatch( sourceType, targetType );
+        }
+        if ( getReturnType().getFullyQualifiedName().equals( "java.lang.Object" )
+            && sourceType.erasure().isAssignableTo( getParameter().getType() ) ) {
+            // return type could be a type parameter T
+            return doTypeVarsMatch( sourceType, targetType );
+        }
+        if ( getReturnType().isAssignableTo( targetType.erasure() )
+            &&  getParameter().getType().getFullyQualifiedName().equals( "java.lang.Object" ) ) {
+            // parameter type could be a type parameter T
             return doTypeVarsMatch( sourceType, targetType );
         }
         return false;
@@ -167,6 +177,8 @@ public abstract class BuiltInMethod implements Method {
     public boolean doTypeVarsMatch(Type parameter, Type returnType) {
         return true;
     }
+
+
 
     /**
      * There's currently only one parameter foreseen instead of a list of parameter

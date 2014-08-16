@@ -18,15 +18,8 @@
  */
 package org.mapstruct.ap.test.builtin;
 
-import org.mapstruct.ap.test.builtin.mapper.MapSourceTargetMapper;
-import org.mapstruct.ap.test.builtin.mapper.IterableSourceTargetMapper;
-import org.mapstruct.ap.test.builtin.mapper.SourceTargetWithDateMapper;
-import org.mapstruct.ap.test.builtin.target.TargetWithDate;
-import org.mapstruct.ap.test.builtin.target.IterableTarget;
-import org.mapstruct.ap.test.builtin.target.MapTarget;
-import org.mapstruct.ap.test.builtin.source.SourceWithDate;
-import org.mapstruct.ap.test.builtin.source.IterableSource;
-import org.mapstruct.ap.test.builtin.source.MapSource;
+import org.mapstruct.ap.test.builtin.target.TargetWithSqlDate;
+import org.mapstruct.ap.test.builtin.mapper.SourceTargetWithSqlDateMapper;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,7 +37,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
-import static org.fest.assertions.Assertions.assertThat;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -61,16 +53,30 @@ import org.mapstruct.ap.test.builtin.mapper.CalendarToStringMapper;
 import org.mapstruct.ap.test.builtin.mapper.CalendarToXmlGregCalMapper;
 import org.mapstruct.ap.test.builtin.mapper.DateToCalendarMapper;
 import org.mapstruct.ap.test.builtin.mapper.DateToXmlGregCalMapper;
+import org.mapstruct.ap.test.builtin.mapper.IterableSourceTargetMapper;
 import org.mapstruct.ap.test.builtin.mapper.JaxbListMapper;
 import org.mapstruct.ap.test.builtin.mapper.JaxbMapper;
+import org.mapstruct.ap.test.builtin.mapper.MapSourceTargetMapper;
+import org.mapstruct.ap.test.builtin.mapper.SourceTargetWithDateMapper;
 import org.mapstruct.ap.test.builtin.mapper.StringToCalendarMapper;
 import org.mapstruct.ap.test.builtin.mapper.StringToXmlGregCalMapper;
 import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToCalendarMapper;
 import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToDateMapper;
 import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToStringMapper;
+import org.mapstruct.ap.test.builtin.source.IterableSource;
+import org.mapstruct.ap.test.builtin.source.MapSource;
+import org.mapstruct.ap.test.builtin.source.SourceWithDate;
+import org.mapstruct.ap.test.builtin.target.IterableTarget;
+import org.mapstruct.ap.test.builtin.target.MapTarget;
+import org.mapstruct.ap.test.builtin.target.TargetWithDate;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for the generation of built-in mapping methods.
@@ -301,6 +307,22 @@ public class BuiltInTest {
         TargetWithDate targetWithDate = SourceTargetWithDateMapper.INSTANCE.toTargetWithDate( new SourceWithDate() );
         assertThat( targetWithDate ).isNotNull();
         assertThat( targetWithDate.getDate() ).isNull();
+    }
+
+    @Test
+    @IssueKey( "277" )
+    @WithClasses( { SourceWithDate.class, TargetWithSqlDate.class, SourceTargetWithSqlDateMapper.class } )
+    @ExpectedCompilationOutcome(
+            value = CompilationResult.FAILED,
+            diagnostics = {
+                @Diagnostic( type = SourceTargetWithSqlDateMapper.class,
+                        kind = javax.tools.Diagnostic.Kind.ERROR,
+                        line = 35,
+                        messageRegExp = "Can't map property \"java\\.util\\.Date date\" to "
+                                + "\"java\\.sql\\.Date date\"" )
+            }
+    )
+    public void shouldNotMapJavaUtilDateToJavaSqlDate() {
     }
 
     private JAXBElement<String> createJaxb(String test) {
