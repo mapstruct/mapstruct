@@ -27,7 +27,6 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
  * Applies all known {@link MethodSelector}s in order.
@@ -48,9 +47,8 @@ public class MethodSelectors implements MethodSelector {
     }
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, List<T> methods,
-                                                         Type parameterType, Type returnType,
-                                                         String targetPropertyName) {
+    public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods, Type parameterType,
+                                                         Type returnType, String targetPropertyName) {
 
         List<T> candidates = new ArrayList<T>( methods );
 

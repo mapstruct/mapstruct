@@ -56,33 +56,4 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailToGenerateImplementationBetweenCollectionAndNonCollection() {
     }
 
-    @Test
-    @WithClasses({ ErroneousCollectionMapper.class, Source.class, Target.class })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousCollectionMapper.class,
-                kind = Kind.ERROR,
-                line = 26,
-                messageRegExp = "Can't map property \"java\\.util\\.Set<java\\.lang\\.String> fooSet\" to" +
-                        " \"java\\.util\\.Set<java\\.lang\\.Long> fooSet\"" )
-        }
-    )
-    public void shouldFailToGenerateImplementationDueToDifferentlyParameterizedCollections() {
-    }
-
-    @Test
-    @WithClasses({ ErroneousMapMapper.class, Source.class, AnotherTarget.class })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousMapMapper.class,
-                kind = Kind.ERROR,
-                line = 26,
-                messageRegExp = "Can't map property \"java\\.util\\.Map<java\\.lang\\.String,java\\.lang\\.Long>" +
-                        " barMap\" to \"java.util.Map<java\\.lang\\.String,java\\.lang\\.String> barMap\"")
-        }
-    )
-    public void shouldFailToGenerateImplementationDueToDifferentlyParameterizedMaps() {
-    }
 }

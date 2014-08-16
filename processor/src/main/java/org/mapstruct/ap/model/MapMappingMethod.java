@@ -19,11 +19,10 @@
 package org.mapstruct.ap.model;
 
 import java.util.Set;
-
 import org.mapstruct.ap.model.assignment.TypeConversion;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -37,14 +36,16 @@ public class MapMappingMethod extends MappingMethod {
     private final Assignment keyAssignment;
     private final Assignment valueAssignment;
     private final FactoryMethod factoryMethod;
+    private final boolean overridden;
 
-    public MapMappingMethod(SourceMethod method, Assignment keyAssignment, Assignment valueAssignment,
+    public MapMappingMethod(Method method, Assignment keyAssignment, Assignment valueAssignment,
             FactoryMethod factoryMethod) {
         super( method );
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;
         this.factoryMethod = factoryMethod;
+        this.overridden = method.overridesMethod();
     }
 
     public Parameter getSourceParameter() {
@@ -104,4 +105,46 @@ public class MapMappingMethod extends MappingMethod {
         return this.factoryMethod;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( getResultType() == null ) ? 0 : getResultType().hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
+        if ( obj == null ) {
+            return false;
+        }
+        if ( getClass() != obj.getClass() ) {
+            return false;
+        }
+        MapMappingMethod other = (MapMappingMethod) obj;
+
+        if ( !getResultType().equals( other.getResultType() ) ) {
+            return false;
+        }
+
+        if ( getSourceParameters().size() != other.getSourceParameters().size() ) {
+            return false;
+        }
+
+        for (int i = 0; i < getSourceParameters().size(); i++ ) {
+            if ( !getSourceParameters().get( i ).getType().getTypeParameters().get( 0 )
+                    .equals( other.getSourceParameters().get( i ).getType().getTypeParameters().get( 0 ) ) ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isOverridden() {
+        return overridden;
+    }
 }

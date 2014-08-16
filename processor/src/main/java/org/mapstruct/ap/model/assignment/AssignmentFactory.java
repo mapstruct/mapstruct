@@ -20,12 +20,12 @@ package org.mapstruct.ap.model.assignment;
 
 import java.util.List;
 import java.util.Set;
-
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.FactoryMethod;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 
@@ -47,7 +47,7 @@ public class AssignmentFactory {
         return new MethodReference( method, declaringMapper, null );
     }
 
-    public static Assignment createMethodReference(SourceMethod method, MapperReference declaringMapper,
+    public static Assignment createMethodReference(Method method, MapperReference declaringMapper,
                                                    Type targetType) {
         return new MethodReference( method, declaringMapper, targetType );
     }
