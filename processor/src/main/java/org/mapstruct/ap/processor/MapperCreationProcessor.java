@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
@@ -35,9 +36,11 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
-
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.ap.model.Assignment;
+import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED;
+import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.Decorator;
 import org.mapstruct.ap.model.DefaultMapperReference;
@@ -62,7 +65,9 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.EnumMapping;
+import org.mapstruct.ap.model.source.ForgedMethod;
 import org.mapstruct.ap.model.source.Mapping;
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.option.Options;
@@ -73,10 +78,6 @@ import org.mapstruct.ap.processor.creation.MappingResolver;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
-
-import static org.mapstruct.ap.model.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED;
-import static org.mapstruct.ap.model.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -98,6 +99,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private Options options;
     private TypeFactory typeFactory;
     private MappingResolver mappingResolver;
+    private final List<MappingMethod> mappingsToGenerate = new ArrayList<MappingMethod>();
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
@@ -120,6 +122,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         List<MapperReference> mapperReferences = getReferencedMappers( element );
         List<MappingMethod> mappingMethods = getMappingMethods( mapperReferences, methods, element );
         mappingMethods.addAll( mappingResolver.getVirtualMethodsToGenerate() );
+        mappingMethods.addAll( mappingsToGenerate );
 
         Mapper mapper = new Mapper.Builder()
             .element( element )
@@ -265,7 +268,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>();
 
         for ( SourceMethod method : methods ) {
-            if ( !method.requiresImplementation() ) {
+            if ( !method.overridesMethod() ) {
                 continue;
             }
 
@@ -277,8 +280,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     reverseMappingMethod.getIterableMapping() != null ) {
                     method.setIterableMapping( reverseMappingMethod.getIterableMapping() );
                 }
+                String dateFormat
+                        = method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null;
+
                 IterableMappingMethod iterableMappingMethod
-                    = getIterableMappingMethod( mapperReferences, methods, method );
+                    = getIterableMappingMethod( mapperReferences, methods, method, dateFormat );
                 hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( iterableMappingMethod );
             }
@@ -287,7 +293,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     reverseMappingMethod.getMapMapping() != null ) {
                     method.setMapMapping( reverseMappingMethod.getMapMapping() );
                 }
-                MapMappingMethod mapMappingMethod = getMapMappingMethod( mapperReferences, methods, method );
+                String keyDateFormat = null;
+                String valueDateFormat = null;
+                if ( method.getMapMapping() != null ) {
+                    keyDateFormat = method.getMapMapping().getKeyFormat();
+                    valueDateFormat = method.getMapMapping().getValueFormat();
+                }
+
+                MapMappingMethod mapMappingMethod
+                        = getMapMappingMethod( mapperReferences, methods, method, keyDateFormat, valueDateFormat );
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( mapMappingMethod );
             }
@@ -336,7 +350,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                            Type returnType) {
         FactoryMethod result = null;
         for ( SourceMethod method : methods ) {
-            if ( !method.requiresImplementation() && !method.isIterableMapping() && !method.isMapMapping()
+            if ( !method.overridesMethod() && !method.isIterableMapping() && !method.isMapMapping()
                 && method.getSourceParameters().isEmpty() ) {
 
                 List<Type> parameterTypes =
@@ -786,6 +800,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             iteratorReference != null ? iteratorReference : sourceReference
         );
 
+        if ( assignment == null ) {
+            assignment = forgeMapping(
+                    mapperReferences,
+                    methods,
+                    sourceType,
+                    targetType,
+                    sourceReference,
+                    method.getExecutable()
+            );
+        }
+
         if ( assignment != null ) {
 
             if ( targetType.isCollectionOrMapType() ) {
@@ -942,10 +967,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private IterableMappingMethod getIterableMappingMethod(List<MapperReference> mapperReferences,
                                                            List<SourceMethod> methods,
-                                                           SourceMethod method) {
+                                                           Method method,
+                                                           String dateFormat ) {
         Type sourceElementType = method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
         Type targetElementType = method.getResultType().getTypeParameters().get( 0 );
-        String dateFormat = method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null;
         String conversionStr = Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
 
         Assignment assignment = mappingResolver.getTargetAssignment(
@@ -961,15 +986,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( assignment == null ) {
-            messager.printMessage(
-                Kind.ERROR,
-                String.format(
+            String message = String.format(
                     "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
-                        + "source element type into target element type.",
+                    + "source element type into target element type.",
                     method
-                ),
-                method.getExecutable()
             );
+            method.printMessage( messager, Kind.ERROR, message );
         }
 
         // target accessor is setter, so decorate assignment as setter
@@ -980,14 +1002,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private MapMappingMethod getMapMappingMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
-                                                 SourceMethod method) {
+                                                Method method, String keyDateFormat, String valueDateFormat ) {
         List<Type> sourceTypeParams = method.getSourceParameters().iterator().next().getType().getTypeParameters();
         List<Type> resultTypeParams = method.getResultType().getTypeParameters();
 
         // find mapping method or conversion for key
         Type keySourceType = sourceTypeParams.get( 0 );
         Type keyTargetType = resultTypeParams.get( 0 );
-        String keyDateFormat = method.getMapMapping() != null ? method.getMapMapping().getKeyFormat() : null;
 
         Assignment keyAssignment = mappingResolver.getTargetAssignment(
             method,
@@ -1002,21 +1023,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( keyAssignment == null ) {
-            messager.printMessage(
-                Kind.ERROR,
-                String.format(
-                    "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
-                        + "source key type to target key type.",
-                    method
-                ),
-                method.getExecutable()
-            );
+            String message = String.format( "Can't create implementation of method %s. Found no method nor built-in "
+                    + "conversion for mapping source key type to target key type.", method );
+            method.printMessage( messager, Kind.ERROR, message );
         }
 
         // find mapping method or conversion for value
         Type valueSourceType = sourceTypeParams.get( 1 );
         Type valueTargetType = resultTypeParams.get( 1 );
-        String valueDateFormat = method.getMapMapping() != null ? method.getMapMapping().getValueFormat() : null;
 
         Assignment valueAssignment = mappingResolver.getTargetAssignment(
             method,
@@ -1031,15 +1045,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( valueAssignment == null ) {
-            messager.printMessage(
-                Kind.ERROR,
-                String.format(
-                    "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
-                        + "source value type to target value type.",
-                    method
-                ),
-                method.getExecutable()
-            );
+            String message = String.format( "Can't create implementation of method %s. Found no method nor built-in "
+                    + "conversion for mapping source value type to target value type.", method );
+            method.printMessage( messager, Kind.ERROR, message );
         }
 
         FactoryMethod factoryMethod = getFactoryMethod( mapperReferences, methods, method.getReturnType() );
@@ -1193,5 +1201,40 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
         return null;
+    }
+
+    public Assignment forgeMapping( List<MapperReference> mapperReferences,
+                                    List<SourceMethod> methods,
+                                    Type sourceType,
+                                    Type targetType,
+                                    String sourceReference,
+                                    Element element) {
+        Assignment assignment = null;
+        if ( sourceType.isCollectionType() && targetType.isCollectionType() ) {
+
+            ForgedMethod methodToGenerate
+                    = new ForgedMethod( sourceType, targetType, element );
+            IterableMappingMethod iterableMappingMethod
+                    = getIterableMappingMethod( mapperReferences, methods, methodToGenerate, null );
+            if ( !mappingsToGenerate.contains( iterableMappingMethod ) ) {
+                mappingsToGenerate.add( iterableMappingMethod );
+            }
+            assignment = AssignmentFactory.createMethodReference( methodToGenerate, null, targetType );
+            assignment.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
+
+        }
+        else if ( sourceType.isMapType() && targetType.isMapType() ) {
+
+            ForgedMethod methodToGenerate
+                    = new ForgedMethod( sourceType, targetType, element );
+            MapMappingMethod mapMappingMethod
+                    = getMapMappingMethod( mapperReferences, methods, methodToGenerate, null, null );
+            if ( !mappingsToGenerate.contains( mapMappingMethod ) ) {
+                mappingsToGenerate.add( mapMappingMethod );
+            }
+            assignment = AssignmentFactory.createMethodReference( methodToGenerate, null, targetType );
+            assignment.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
+        }
+        return assignment;
     }
 }

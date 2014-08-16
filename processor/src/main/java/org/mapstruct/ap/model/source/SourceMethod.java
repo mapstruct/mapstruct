@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
-
+import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -182,6 +182,7 @@ public class SourceMethod implements Method {
         return sourceParameters;
     }
 
+    @Override
     public List<String> getParameterNames() {
         List<String> parameterNames = new ArrayList<String>( parameters.size() );
 
@@ -192,6 +193,7 @@ public class SourceMethod implements Method {
         return parameterNames;
     }
 
+    @Override
     public Type getResultType() {
         return targetParameter != null ? targetParameter.getType() : returnType;
     }
@@ -210,7 +212,7 @@ public class SourceMethod implements Method {
     }
 
     /**
-     * Returns the {@link Mapping}s configured for this method, keyed by source property name.
+     * @return the {@link Mapping}s configured for this method, keyed by source property name.
      */
     public Map<String, List<Mapping>> getMappings() {
         return mappings;
@@ -324,7 +326,8 @@ public class SourceMethod implements Method {
      *
      * @return true when an implementation is required
      */
-    public boolean requiresImplementation() {
+    @Override
+    public boolean overridesMethod() {
         return declaringMapper == null && executable.getModifiers().contains( Modifier.ABSTRACT );
     }
 
@@ -351,7 +354,14 @@ public class SourceMethod implements Method {
         return false;
     }
 
+    @Override
     public List<Type> getThrownTypes() {
         return exceptionTypes;
     }
+
+    @Override
+    public void printMessage( Messager messager, Kind kind, String message ) {
+        messager.printMessage( kind, message, executable );
+    }
+
 }

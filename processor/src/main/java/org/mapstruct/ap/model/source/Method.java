@@ -20,7 +20,8 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.List;
-
+import javax.annotation.processing.Messager;
+import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -103,4 +104,37 @@ public interface Method {
      * @return exceptions thrown
      */
     List<Type> getThrownTypes();
+
+    /**
+     * Prints a message to the provided messager. Uses
+     *
+     * @param messager the messager
+     * @param kind error, warning, etc.
+     * @param message message to print
+     */
+    void printMessage( Messager messager, Kind kind, String message );
+
+    /**
+     * Returns the type of the result.
+     *
+     * The result is defined as the type of the parameter designated with {@link org.mapstruct.MappingTarget},
+     * or in absence the return type.
+     *
+     * @return
+     */
+    Type getResultType();
+
+
+    /**
+     *
+     * @return the names of the parameters of this mapping method
+     */
+    List<String> getParameterNames();
+
+    /**
+     * Whether this method overrides an abstract method.
+     *
+     * @return true when an abstract method is overridden.
+     */
+    boolean overridesMethod();
 }

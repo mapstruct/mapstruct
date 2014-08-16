@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.FactoryMethod;
 import org.mapstruct.ap.model.MapperReference;
@@ -31,7 +30,7 @@ import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 
 /**
@@ -70,7 +69,7 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
      * @param targetType in case the referenced method has a parameter for passing the target type, the given
      * target type, otherwise {@code null}
      */
-    public MethodReference(SourceMethod method, MapperReference declaringMapper, Type targetType) {
+    public MethodReference(Method method, MapperReference declaringMapper, Type targetType) {
         super( method );
         this.declaringMapper = declaringMapper;
         this.contextParam = null;

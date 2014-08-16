@@ -16,12 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erroneous;
+package org.mapstruct.ap.test.collection.forged;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface ErroneousCollectionMapper {
+public interface CollectionMapper {
+
+    CollectionMapper INSTANCE = Mappers.getMapper( CollectionMapper.class );
 
     Target sourceToTarget(Source source);
+    Source targetToSource(Target target);
 }

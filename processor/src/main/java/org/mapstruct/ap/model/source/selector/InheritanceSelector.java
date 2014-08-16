@@ -24,7 +24,6 @@ import java.util.List;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
  * Selects on inheritance distance, e.g. the amount of inheritance steps from the parameter type.
@@ -34,13 +33,8 @@ import org.mapstruct.ap.model.source.SourceMethod;
 public class InheritanceSelector implements MethodSelector {
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(
-        SourceMethod mappingMethod,
-        List<T> methods,
-        Type parameterType,
-        Type returnType,
-        String targetPropertyName
-    ) {
+   public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods, Type parameterType,
+                                                         Type returnType, String targetPropertyName) {
 
         List<T> candidatesWithBestMatchingSourceType = new ArrayList<T>();
         int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;

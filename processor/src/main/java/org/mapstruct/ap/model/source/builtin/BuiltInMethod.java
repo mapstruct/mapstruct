@@ -18,11 +18,13 @@
  */
 package org.mapstruct.ap.model.source.builtin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
+import javax.annotation.processing.Messager;
+import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.conversion.SimpleConversion;
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.ConversionContext;
@@ -181,5 +183,30 @@ public abstract class BuiltInMethod implements Method {
     @Override
     public List<Type> getThrownTypes() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public void printMessage( Messager messager, Kind kind, String message ) {
+        messager.printMessage( kind, message );
+    }
+
+    @Override
+    public Type getResultType() {
+        return getReturnType();
+    }
+
+    @Override
+    public List<String> getParameterNames() {
+        List<String> parameterNames = new ArrayList<String>( getParameters().size() );
+        for ( Parameter parameter : getParameters() ) {
+            parameterNames.add( parameter.getName() );
+        }
+
+        return parameterNames;
+    }
+
+    @Override
+    public boolean overridesMethod() {
+        return  false;
     }
 }

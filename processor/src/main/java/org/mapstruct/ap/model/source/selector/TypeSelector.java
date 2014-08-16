@@ -25,7 +25,6 @@ import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.MethodMatcher;
-import org.mapstruct.ap.model.source.SourceMethod;
 
 /**
  * Selects those methods from the given input set which match the given source and target types (via
@@ -42,9 +41,8 @@ public class TypeSelector implements MethodSelector {
     }
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(SourceMethod mappingMethod, List<T> methods,
-                                                         Type parameterType, Type returnType,
-                                                         String targetPropertyName) {
+    public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods, Type parameterType,
+                                                         Type returnType, String targetPropertyName) {
 
         List<T> result = new ArrayList<T>();
         for ( T method : methods ) {

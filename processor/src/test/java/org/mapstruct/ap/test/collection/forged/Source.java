@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erroneous;
+package org.mapstruct.ap.test.collection.forged;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,8 +24,10 @@ import java.util.Set;
 public class Source {
 
     private Set<String> fooSet;
+    private Set<String> fooSet2;
 
     private Map<String, Long> barMap;
+    private Map<String, Long> barMap2;
 
     public Set<String> getFooSet() {
         return fooSet;
@@ -42,4 +44,24 @@ public class Source {
     public void setBarMap(Map<String, Long> barMap) {
         this.barMap = barMap;
     }
+
+    public Set<String> getFooSet2() {
+        return fooSet2;
+    }
+
+    public void setFooSet2( Set<String> fooSet2 ) {
+        this.fooSet2 = fooSet2;
+    }
+
+    public Map<String, Long> getBarMap2() {
+        return barMap2;
+    }
+
+    public void setBarMap2( Map<String, Long> barMap2 ) {
+        this.barMap2 = barMap2;
+    }
+
+
+
+
 }

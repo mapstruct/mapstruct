@@ -115,7 +115,7 @@ public class MappingResolver {
      * <li>null, no assignment found</li>
      * </ol>
      */
-    public Assignment getTargetAssignment( SourceMethod mappingMethod,
+    public Assignment getTargetAssignment( Method mappingMethod,
             String mappedElement,
             List<MapperReference> mapperReferences,
             List<SourceMethod> methods,
@@ -145,7 +145,7 @@ public class MappingResolver {
 
     private static class ResolvingAttempt {
 
-        private final SourceMethod mappingMethod;
+        private final Method mappingMethod;
         private final String mappedElement;
         private final List<MapperReference> mapperReferences;
         private final List<SourceMethod> methods;
@@ -159,7 +159,7 @@ public class MappingResolver {
         // so this set must be cleared.
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
-        private ResolvingAttempt( SourceMethod mappingMethod,
+        private ResolvingAttempt( Method mappingMethod,
                 String mappedElement,
                 List<MapperReference> mapperReferences,
                 List<SourceMethod> methods,
@@ -410,16 +410,13 @@ public class MappingResolver {
             // into the target type
             if ( candidates.size() > 1 ) {
 
-                context.messager.printMessage(
-                        Kind.ERROR,
-                        String.format(
+                String errorMsg =  String.format(
                                 "Ambiguous mapping methods found for mapping " + mappedElement + " from %s to %s: %s.",
                                 sourceType,
                                 returnType,
-                                Strings.join( candidates, ", " )
-                        ),
-                        mappingMethod.getExecutable()
-                );
+                                Strings.join( candidates, ", " ) );
+
+                mappingMethod.printMessage( context.messager, Kind.ERROR, errorMsg );
             }
 
             if ( !candidates.isEmpty() ) {
