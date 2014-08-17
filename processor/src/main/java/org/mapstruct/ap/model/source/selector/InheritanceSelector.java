@@ -20,6 +20,7 @@ package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -33,8 +34,14 @@ import org.mapstruct.ap.model.source.Method;
 public class InheritanceSelector implements MethodSelector {
 
     @Override
-   public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods, Type parameterType,
-                                                         Type returnType, String targetPropertyName) {
+    public <T extends Method> List<T> getMatchingMethods(
+        Method mappingMethod,
+        List<T> methods,
+        Type parameterType,
+        Type returnType,
+        List<TypeMirror> qualifiers,
+        String targetPropertyName
+    ) {
 
         List<T> candidatesWithBestMatchingSourceType = new ArrayList<T>();
         int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;

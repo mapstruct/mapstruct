@@ -21,6 +21,8 @@ package org.mapstruct.ap.model.source.selector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.model.common.Parameter;
@@ -37,18 +39,21 @@ public class MethodSelectors implements MethodSelector {
 
     private final List<MethodSelector> selectors;
 
-    public MethodSelectors(Types typeUtils, TypeFactory typeFactory) {
+    public MethodSelectors(Types typeUtils, Elements elementUtils, TypeFactory typeFactory) {
         selectors =
             Arrays.<MethodSelector>asList(
                 new TypeSelector( typeFactory ),
                 new InheritanceSelector(),
-                new XmlElementDeclSelector( typeUtils )
+                new XmlElementDeclSelector( typeUtils ),
+                new QualifierSelector( typeUtils, elementUtils )
             );
     }
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods, Type parameterType,
-                                                         Type returnType, String targetPropertyName) {
+    public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
+                                                         Type parameterType, Type returnType,
+                                                         List<TypeMirror> qualifiers,
+                                                         String targetPropertyName) {
 
         List<T> candidates = new ArrayList<T>( methods );
 
@@ -58,6 +63,7 @@ public class MethodSelectors implements MethodSelector {
                 candidates,
                 parameterType,
                 returnType,
+                qualifiers,
                 targetPropertyName
             );
         }

@@ -18,6 +18,7 @@
  */
 package org.mapstruct;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -101,4 +102,14 @@ public @interface Mapping {
      * @return {@code true} if the given property should be ignored, {@code false} otherwise
      */
     boolean ignore() default false;
+
+    /**
+     * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple
+     * mappers (hand written of internal) qualify and result in an 'Ambiguous mapping methods found' error.
+     *
+     * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
+     *
+     * @return the qualifiers
+     */
+    Class<? extends Annotation>[] qualifiedBy() default { };
 }

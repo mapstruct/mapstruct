@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model.source.selector;
 
 import java.util.List;
+import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
@@ -40,10 +41,12 @@ public interface MethodSelector {
      * @param methods list of available methods
      * @param parameterType parameter type that should be matched
      * @param returnType return type that should be matched
+     * @param qualifiers list of custom annotations, used in the qualifying process
      * @param targetPropertyName some information can be derived from the target property
      *
      * @return list of methods that passes the matching process
      */
     <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods, Type parameterType,
-                                                  Type returnType, String targetPropertyName);
+                                                  Type returnType, List<TypeMirror> qualifiers,
+                                                  String targetPropertyName);
 }

@@ -29,6 +29,7 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.prism.MappingPrism;
@@ -52,6 +53,7 @@ public class Mapping {
     private final String javaExpression;
     private final String targetName;
     private final String dateFormat;
+    private final List<TypeMirror>  qualifiers;
     private final boolean isIgnored;
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -126,6 +128,7 @@ public class Mapping {
             mappingPrism.expression(),
             mappingPrism.target(),
             mappingPrism.dateFormat(),
+            mappingPrism.qualifiedBy(),
             mappingPrism.ignore(),
             mappingPrism.mirror,
             mappingPrism.values.source(),
@@ -153,9 +156,10 @@ public class Mapping {
     }
 
     //CHECKSTYLE:OFF
-    private Mapping(String sourceName, String sourceParameterName, String sourcePropertyName, String constant,
-                    String expression, String targetName, String dateFormat, boolean isIgnored, AnnotationMirror mirror,
-                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
+    private Mapping( String sourceName, String sourceParameterName, String sourcePropertyName, String constant,
+                    String expression, String targetName, String dateFormat, List<TypeMirror>  qualifiers,
+                    boolean isIgnored, AnnotationMirror mirror, AnnotationValue sourceAnnotationValue,
+                    AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
         this.sourceParameterName = sourceParameterName;
         this.sourcePropertyName = sourcePropertyName;
@@ -165,6 +169,7 @@ public class Mapping {
         this.javaExpression = javaExpressionMatcher.matches() ? javaExpressionMatcher.group( 1 ).trim() : "";
         this.targetName = targetName.equals( "" ) ? sourceName : targetName;
         this.dateFormat = dateFormat;
+        this.qualifiers = qualifiers;
         this.isIgnored = isIgnored;
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
@@ -216,6 +221,10 @@ public class Mapping {
         return dateFormat;
     }
 
+    public List<TypeMirror> getQualifiers() {
+        return qualifiers;
+    }
+
     public boolean isIgnored() {
         return isIgnored;
     }
@@ -244,6 +253,7 @@ public class Mapping {
                 expression,
                 sourceName,
                 dateFormat,
+                qualifiers,
                 isIgnored,
                 mirror,
                 sourceAnnotationValue,

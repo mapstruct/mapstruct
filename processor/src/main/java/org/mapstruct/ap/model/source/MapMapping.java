@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.model.source;
 
+import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.prism.MapMappingPrism;
 
@@ -30,7 +32,9 @@ import org.mapstruct.ap.prism.MapMappingPrism;
 public class MapMapping {
 
     private final String keyFormat;
+    private final List<TypeMirror> keyQualifiers;
     private final String valueFormat;
+    private final List<TypeMirror> valueQualifiers;
     private final AnnotationMirror mirror;
 
     public static MapMapping fromPrism(MapMappingPrism mapMapping) {
@@ -40,14 +44,23 @@ public class MapMapping {
 
         return new MapMapping(
             mapMapping.keyDateFormat(),
+            mapMapping.keyQualifiedBy(),
             mapMapping.valueDateFormat(),
+            mapMapping.valueQualifiedBy(),
             mapMapping.mirror
         );
     }
 
-    private MapMapping(String keyFormat, String valueFormat, AnnotationMirror mirror) {
+    private MapMapping(
+            String keyFormat,
+            List<TypeMirror> keyQualifiers,
+            String valueFormat,
+            List<TypeMirror> valueQualifiers,
+            AnnotationMirror mirror) {
         this.keyFormat = keyFormat;
+        this.keyQualifiers = keyQualifiers;
         this.valueFormat = valueFormat;
+        this.valueQualifiers = valueQualifiers;
         this.mirror = mirror;
     }
 
@@ -55,8 +68,16 @@ public class MapMapping {
         return keyFormat;
     }
 
+    public List<TypeMirror>  getKeyQualifiers() {
+        return keyQualifiers;
+    }
+
     public String getValueFormat() {
         return valueFormat;
+    }
+
+    public List<TypeMirror>  getValueQualifiers() {
+        return valueQualifiers;
     }
 
     public AnnotationMirror getMirror() {

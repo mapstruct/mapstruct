@@ -297,11 +297,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     reverseMappingMethod.getIterableMapping() != null ) {
                     method.setIterableMapping( reverseMappingMethod.getIterableMapping() );
                 }
-                String dateFormat
-                        = method.getIterableMapping() != null ? method.getIterableMapping().getDateFormat() : null;
 
-                IterableMappingMethod iterableMappingMethod
-                    = getIterableMappingMethod( mapperReferences, methods, method, dateFormat );
+                String dateFormat = null;
+                List<TypeMirror> qualifiers = null;
+                if ( method.getIterableMapping() != null ) {
+                    dateFormat = method.getIterableMapping().getDateFormat();
+                    qualifiers = method.getIterableMapping().getQualifiers();
+                }
+
+                IterableMappingMethod iterableMappingMethod = getIterableMappingMethod(
+                        mapperReferences,
+                        methods,
+                        method,
+                        dateFormat,
+                        qualifiers
+                );
                 hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( iterableMappingMethod );
             }
@@ -312,13 +322,24 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
                 String keyDateFormat = null;
                 String valueDateFormat = null;
+                List<TypeMirror> keyQualifiers = null;
+                List<TypeMirror> valueQualifiers = null;
                 if ( method.getMapMapping() != null ) {
                     keyDateFormat = method.getMapMapping().getKeyFormat();
                     valueDateFormat = method.getMapMapping().getValueFormat();
+                    keyQualifiers = method.getMapMapping().getKeyQualifiers();
+                    valueQualifiers = method.getMapMapping().getValueQualifiers();
                 }
 
-                MapMappingMethod mapMappingMethod
-                        = getMapMappingMethod( mapperReferences, methods, method, keyDateFormat, valueDateFormat );
+                MapMappingMethod mapMappingMethod = getMapMappingMethod(
+                        mapperReferences,
+                        methods,
+                        method,
+                        keyDateFormat,
+                        valueDateFormat,
+                        keyQualifiers,
+                        valueQualifiers
+                );
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( mapMappingMethod );
             }
@@ -438,9 +459,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         // check if there's a mapping defined
         Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
         String dateFormat = null;
+        List<TypeMirror> qualifiers = null;
         String sourcePropertyName;
         if ( mapping != null ) {
             dateFormat = mapping.getDateFormat();
+            qualifiers = mapping.getQualifiers();
             sourcePropertyName = mapping.getSourcePropertyName();
         }
         else {
@@ -466,7 +489,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                             sourceAccessor,
                             targetAccessor,
                             targetPropertyName,
-                            dateFormat
+                            dateFormat,
+                            qualifiers
                         );
                     }
                 }
@@ -480,7 +504,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     sourceAccessor,
                     targetAccessor,
                     targetPropertyName,
-                    dateFormat
+                    dateFormat,
+                    qualifiers
                 );
             }
         }
@@ -569,7 +594,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                 method,
                                 "\"" + mapping.getConstant() + "\"",
                                 targetAccessor,
-                                mapping.getDateFormat()
+                                mapping.getDateFormat(),
+                                mapping.getQualifiers()
                         );
                     }
 
@@ -775,7 +801,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                ExecutableElement sourceAccessor,
                                                ExecutableElement targetAccessor,
                                                String targetPropertyName,
-                                               String dateFormat) {
+                                               String dateFormat,
+                                               List<TypeMirror> qualifiers) {
 
         Type sourceType;
         Type targetType;
@@ -815,6 +842,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             targetType,
             targetPropertyName,
             dateFormat,
+            qualifiers,
             iteratorReference != null ? iteratorReference : sourceReference
         );
 
@@ -925,7 +953,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                                                SourceMethod method,
                                                String constantExpression,
                                                ExecutableElement targetAccessor,
-                                               String dateFormat) {
+                                               String dateFormat,
+                                               List<TypeMirror> qualifiers) {
 
         // source
         String mappedElement = "constant '" + constantExpression + "'";
@@ -944,6 +973,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             targetType,
             targetPropertyName,
             dateFormat,
+            qualifiers,
             constantExpression
         );
 
@@ -986,7 +1016,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private IterableMappingMethod getIterableMappingMethod(List<MapperReference> mapperReferences,
                                                            List<SourceMethod> methods,
                                                            Method method,
-                                                           String dateFormat ) {
+                                                           String dateFormat,
+                                                           List<TypeMirror> qualifiers) {
         Type sourceElementType = method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
         Type targetElementType = method.getResultType().getTypeParameters().get( 0 );
         String conversionStr = Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
@@ -1000,6 +1031,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             targetElementType,
             null, // there is no targetPropertyName
             dateFormat,
+            qualifiers,
             conversionStr
         );
 
@@ -1019,8 +1051,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return new IterableMappingMethod( method, assignment, factoryMethod );
     }
 
-    private MapMappingMethod getMapMappingMethod(List<MapperReference> mapperReferences, List<SourceMethod> methods,
-                                                Method method, String keyDateFormat, String valueDateFormat ) {
+    private MapMappingMethod getMapMappingMethod(List<MapperReference> mapperReferences,
+                                                 List<SourceMethod> methods,
+                                                 Method method,
+                                                 String keyDateFormat,
+                                                 String valueDateFormat,
+                                                 List<TypeMirror> keyQualifiers,
+                                                 List<TypeMirror> valueQualifiers     ) {
         List<Type> sourceTypeParams = method.getSourceParameters().iterator().next().getType().getTypeParameters();
         List<Type> resultTypeParams = method.getResultType().getTypeParameters();
 
@@ -1037,6 +1074,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             keyTargetType,
             null, // there is no targetPropertyName
             keyDateFormat,
+            keyQualifiers,
             "entry.getKey()"
         );
 
@@ -1059,6 +1097,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             valueTargetType,
             null, // there is no targetPropertyName
             valueDateFormat,
+            valueQualifiers,
             "entry.getValue()"
         );
 
@@ -1233,7 +1272,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             ForgedMethod methodToGenerate
                     = new ForgedMethod( sourceType, targetType, element );
             IterableMappingMethod iterableMappingMethod
-                    = getIterableMappingMethod( mapperReferences, methods, methodToGenerate, null );
+                    = getIterableMappingMethod( mapperReferences, methods, methodToGenerate, null, null );
             if ( !mappingsToGenerate.contains( iterableMappingMethod ) ) {
                 mappingsToGenerate.add( iterableMappingMethod );
             }
@@ -1246,7 +1285,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             ForgedMethod methodToGenerate
                     = new ForgedMethod( sourceType, targetType, element );
             MapMappingMethod mapMappingMethod
-                    = getMapMappingMethod( mapperReferences, methods, methodToGenerate, null, null );
+                    = getMapMappingMethod( mapperReferences, methods, methodToGenerate, null, null, null, null );
             if ( !mappingsToGenerate.contains( mapMappingMethod ) ) {
                 mappingsToGenerate.add( mapMappingMethod );
             }

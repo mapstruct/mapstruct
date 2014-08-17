@@ -18,6 +18,7 @@
  */
 package org.mapstruct;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -31,9 +32,9 @@ import java.util.Date;
  *
  * @author Gunnar Morling
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.METHOD)
-@Repeatable(Mappings.class)
+@Retention( RetentionPolicy.SOURCE )
+@Target( ElementType.METHOD )
+@Repeatable( Mappings.class )
 public @interface Mapping {
 
     /**
@@ -42,8 +43,8 @@ public @interface Mapping {
      * <li>The source name of the configured property as defined by the JavaBeans specification.</li>
      * <li>When used to map an enum constant, the name of the constant member is to be given.</li>
      * </ol>
-     * Either this attribute or {@link #constant()} or {@link #expression()} may be specified for a given mapping,
-     * but not two at the same time. If this attribute is given, the target property must be specified via
+     * Either this attribute or {@link #constant()} or {@link #expression()} may be specified for a given mapping, but
+     * not two at the same time. If this attribute is given, the target property must be specified via
      * {@link #target()}.
      *
      * @return The source name of the configured property or enum constant.
@@ -67,13 +68,12 @@ public @interface Mapping {
     String dateFormat() default "";
 
     /**
-     * A constant {@link String} based on which the specified target property is to be set. If the designated
-     * target property is not of type {@code String}, the value will be converted by applying a matching conversion
-     * method or built-in conversion.
+     * A constant {@link String} based on which the specified target property is to be set. If the designated target
+     * property is not of type {@code String}, the value will be converted by applying a matching conversion method or
+     * built-in conversion.
      * <p>
-     * Either this attribute or {@link #source()} or {@link #expression()} may be specified for a given mapping,
-     * but not two at the same time. If this attribute is given, the target property must be specified via
-     * {@link #target()}.
+     * Either this attribute or {@link #source()} or {@link #expression()} may be specified for a given mapping, but not
+     * two at the same time. If this attribute is given, the target property must be specified via {@link #target()}.
      *
      * @return A constant {@code String} constant specifying the value for the designated target property
      */
@@ -86,9 +86,8 @@ public @interface Mapping {
      * {@code expression = "java(new org.example.TimeAndFormat( s.getTime(), s.getFormat() ))")} will insert the java
      * expression in the designated {@link #target()} property.
      * <p>
-     * Either this attribute or {@link #source()} or {@link #constant()} may be specified for a given mapping,
-     * but not two at the same time. If this attribute is given, the target property must be specified via
-     * {@link #target()}.
+     * Either this attribute or {@link #source()} or {@link #constant()} may be specified for a given mapping, but not
+     * two at the same time. If this attribute is given, the target property must be specified via {@link #target()}.
      *
      * @return A constant {@code String} constant specifying the value for the designated target property
      */
@@ -103,4 +102,14 @@ public @interface Mapping {
      * @return {@code true} if the given property should be ignored, {@code false} otherwise
      */
     boolean ignore() default false;
+
+    /**
+     * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple
+     * mappers (hand written of internal) qualify and result in an 'Ambiguous mapping methods found' error.
+     *
+     * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
+     *
+     * @return the qualifiers
+     */
+    Class<? extends Annotation>[] qualifiedBy() default { };
 }

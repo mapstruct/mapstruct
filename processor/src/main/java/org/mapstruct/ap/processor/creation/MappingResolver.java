@@ -89,7 +89,7 @@ public class MappingResolver {
         this.conversions = new Conversions( elementUtils, typeFactory );
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
         this.virtualMethods = new HashSet<VirtualMappingMethod>();
-        this.methodSelectors = new MethodSelectors( typeUtils, typeFactory );
+        this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, typeFactory );
         this.typeUtils = typeUtils;
     }
 
@@ -105,6 +105,7 @@ public class MappingResolver {
      * @param targetType return type to match
      * @param targetPropertyName name of the target property
      * @param dateFormat used for formatting dates in build in methods that need context information
+     * @param qualifiers used for further select the appropriate mapping method based on class and name
      * @param sourceReference call to source type as string
      *
      * @return an assignment to a method parameter, which can either be:
@@ -123,6 +124,7 @@ public class MappingResolver {
             Type targetType,
             String targetPropertyName,
             String dateFormat,
+            List<TypeMirror> qualifiers,
             String sourceReference ) {
 
         ResolvingAttempt attempt = new ResolvingAttempt( mappingMethod,
@@ -131,6 +133,7 @@ public class MappingResolver {
                 methods,
                 targetPropertyName,
                 dateFormat,
+                qualifiers,
                 sourceReference,
                 this
         );
@@ -151,6 +154,7 @@ public class MappingResolver {
         private final List<SourceMethod> methods;
         private final String targetPropertyName;
         private final String dateFormat;
+        private final List<TypeMirror> qualifiers;
         private final String sourceReference;
         private final MappingResolver context;
 
@@ -165,6 +169,7 @@ public class MappingResolver {
                 List<SourceMethod> methods,
                 String targetPropertyName,
                 String dateFormat,
+                List<TypeMirror> qualifiers,
                 String sourceReference,
                 MappingResolver context ) {
             this.mappingMethod = mappingMethod;
@@ -173,6 +178,7 @@ public class MappingResolver {
             this.methods = methods;
             this.targetPropertyName = targetPropertyName;
             this.dateFormat = dateFormat;
+            this.qualifiers = qualifiers;
             this.sourceReference = sourceReference;
             this.context = context;
             this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
@@ -403,6 +409,7 @@ public class MappingResolver {
                     methods,
                     sourceType,
                     returnType,
+                    qualifiers,
                     targetPropertyName
             );
 

@@ -18,8 +18,10 @@
  */
 package org.mapstruct.ap.model.source;
 
+import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.prism.IterableMappingPrism;
 
@@ -31,6 +33,7 @@ import org.mapstruct.ap.prism.IterableMappingPrism;
 public class IterableMapping {
 
     private final String dateFormat;
+    private final List<TypeMirror> qualifiers;
     private final AnnotationMirror mirror;
     private final AnnotationValue dateFormatAnnotationValue;
 
@@ -41,19 +44,29 @@ public class IterableMapping {
 
         return new IterableMapping(
             iterableMapping.dateFormat(),
+            iterableMapping.qualifiedBy(),
             iterableMapping.mirror,
             iterableMapping.values.dateFormat()
         );
     }
 
-    private IterableMapping(String dateFormat, AnnotationMirror mirror, AnnotationValue dateFormatAnnotationValue) {
+    private IterableMapping(
+            String dateFormat,
+            List<TypeMirror> qualifiers,
+            AnnotationMirror mirror,
+            AnnotationValue dateFormatAnnotationValue) {
         this.dateFormat = dateFormat;
+        this.qualifiers = qualifiers;
         this.mirror = mirror;
         this.dateFormatAnnotationValue = dateFormatAnnotationValue;
     }
 
     public String getDateFormat() {
         return dateFormat;
+    }
+
+    public List<TypeMirror> getQualifiers() {
+        return qualifiers;
     }
 
     public AnnotationMirror getMirror() {
