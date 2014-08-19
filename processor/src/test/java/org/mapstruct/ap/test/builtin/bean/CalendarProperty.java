@@ -16,23 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin;
+package org.mapstruct.ap.test.builtin.bean;
 
-import java.util.List;
+import java.util.Calendar;
 
-import javax.xml.datatype.XMLGregorianCalendar;
+public class CalendarProperty {
 
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+    private Calendar prop;
 
-@Mapper
-public interface IterableSourceTargetMapper {
+    public Calendar getProp() {
+        return prop;
+    }
 
-    IterableSourceTargetMapper INSTANCE = Mappers.getMapper( IterableSourceTargetMapper.class );
-
-    IterableTarget sourceToTarget(IterableSource source);
-
-    @IterableMapping(dateFormat = "dd.MM.yyyy")
-    List<String> stringListToDateList(List<XMLGregorianCalendar> dates);
+    public void setProp( Calendar prop ) {
+        this.prop = prop;
+    }
 }

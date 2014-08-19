@@ -16,26 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin;
+package org.mapstruct.ap.test.builtin.mapper;
 
-import java.util.Map;
+import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.builtin.bean.DateProperty;
+import org.mapstruct.ap.test.builtin.bean.XmlGregorianCalendarProperty;
+import org.mapstruct.factory.Mappers;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
+@Mapper
+public interface DateToXmlGregCalMapper {
 
-/**
- *
- * @author Sjaak Derksen
- */
-public class MapSource {
+    DateToXmlGregCalMapper INSTANCE = Mappers.getMapper( DateToXmlGregCalMapper.class );
 
-    private Map<JAXBElement<String>, XMLGregorianCalendar> example;
-
-    public Map<JAXBElement<String>, XMLGregorianCalendar> getExample() {
-        return example;
-    }
-
-    public void setExample( Map<JAXBElement<String>, XMLGregorianCalendar> example ) {
-        this.example = example;
-    }
+    XmlGregorianCalendarProperty map(DateProperty source);
 }

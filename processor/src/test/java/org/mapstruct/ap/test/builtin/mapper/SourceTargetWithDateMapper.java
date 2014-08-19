@@ -16,22 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin;
+package org.mapstruct.ap.test.builtin.mapper;
 
+import org.mapstruct.ap.test.builtin.target.TargetWithDate;
+import org.mapstruct.ap.test.builtin.source.SourceWithDate;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
+/**
+ * @author Andreas Gudian
+ *
+ */
 @Mapper
-public interface SourceTargetMapper {
+public interface SourceTargetWithDateMapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-    @Mappings({
-        @Mapping(source = "prop5", dateFormat = "dd.MM.yyyy"),
-        @Mapping(source = "prop6", dateFormat = "dd.MM.yyyy"),
-        @Mapping(source = "prop11", dateFormat = "dd.MM.yyyy"),
-        @Mapping(source = "prop12", dateFormat = "dd.MM.yyyy")
-    })
-    Target sourceToTarget(Source source);
+    SourceTargetWithDateMapper INSTANCE = Mappers.getMapper( SourceTargetWithDateMapper.class );
+
+    TargetWithDate toTargetWithDate(SourceWithDate source);
 }

@@ -16,19 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin;
+package org.mapstruct.ap.test.builtin.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.builtin.bean.JaxbElementProperty;
+import org.mapstruct.ap.test.builtin.bean.StringProperty;
 import org.mapstruct.factory.Mappers;
 
-/**
- * @author Andreas Gudian
- *
- */
 @Mapper
-public interface SourceTargetWithDateMapper {
+public interface JaxbMapper {
 
-    SourceTargetWithDateMapper INSTANCE = Mappers.getMapper( SourceTargetWithDateMapper.class );
+    JaxbMapper INSTANCE = Mappers.getMapper( JaxbMapper.class );
 
-    TargetWithDate toTargetWithDate(SourceWithDate source);
+    StringProperty map(JaxbElementProperty source);
 }

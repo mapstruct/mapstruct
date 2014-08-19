@@ -16,22 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin;
+package org.mapstruct.ap.test.builtin.mapper;
 
-import javax.xml.datatype.XMLGregorianCalendar;
+import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.builtin.bean.JaxbElementListProperty;
+import org.mapstruct.ap.test.builtin.bean.StringListProperty;
+import org.mapstruct.factory.Mappers;
 
-/**
- * @author Andreas Gudian
- *
- */
-public class TargetWithDate {
-    private XMLGregorianCalendar date;
+@Mapper
+public interface JaxbListMapper {
 
-    public XMLGregorianCalendar getDate() {
-        return date;
-    }
+    JaxbListMapper INSTANCE = Mappers.getMapper( JaxbListMapper.class );
 
-    public void setDate(XMLGregorianCalendar date) {
-        this.date = date;
-    }
+    StringListProperty map(JaxbElementListProperty source);
 }

@@ -16,22 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin;
+package org.mapstruct.ap.test.builtin.mapper;
 
-import java.util.Date;
+import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
+import org.mapstruct.ap.test.builtin.bean.DateProperty;
+import org.mapstruct.factory.Mappers;
 
-/**
- * @author Andreas Gudian
- *
- */
-public class SourceWithDate {
-    private Date date;
+@Mapper
+public interface DateToCalendarMapper {
 
-    public Date getDate() {
-        return date;
-    }
+    DateToCalendarMapper INSTANCE = Mappers.getMapper( DateToCalendarMapper.class );
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
+    CalendarProperty map( DateProperty source);
 }

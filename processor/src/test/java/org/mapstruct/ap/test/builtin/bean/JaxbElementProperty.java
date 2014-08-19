@@ -16,25 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin;
+package org.mapstruct.ap.test.builtin.bean;
 
-import java.util.List;
+import javax.xml.bind.JAXBElement;
 
-import javax.xml.datatype.XMLGregorianCalendar;
+public class JaxbElementProperty {
 
-/**
- *
- * @author Sjaak Derksen
- */
-public class IterableSource {
+    private JAXBElement<String> prop;
 
-    private List<XMLGregorianCalendar> dates;
 
-    public List<XMLGregorianCalendar> getDates() {
-        return dates;
+    public JAXBElement<String> getProp() {
+        return prop;
     }
 
-    public void setDates( List<XMLGregorianCalendar> dates ) {
-        this.dates = dates;
+    public void setProp( JAXBElement<String> prop ) {
+        this.prop = prop;
     }
 }

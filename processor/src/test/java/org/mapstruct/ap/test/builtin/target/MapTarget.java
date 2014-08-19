@@ -16,24 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin;
+package org.mapstruct.ap.test.builtin.target;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class IterableTarget {
+public class MapTarget {
 
-    private List<String> dates;
+    private Map<String, String> example;
 
-    public List<String> getDates() {
-        return dates;
+    public Map<String, String> getExample() {
+        return example;
     }
 
-    public void setDates( List<String> dates ) {
-        this.dates = dates;
+    public void setExample( Map<String, String> example ) {
+        this.example = example;
     }
 
 }

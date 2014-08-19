@@ -18,6 +18,15 @@
  */
 package org.mapstruct.ap.test.builtin;
 
+import org.mapstruct.ap.test.builtin.mapper.MapSourceTargetMapper;
+import org.mapstruct.ap.test.builtin.mapper.IterableSourceTargetMapper;
+import org.mapstruct.ap.test.builtin.mapper.SourceTargetWithDateMapper;
+import org.mapstruct.ap.test.builtin.target.TargetWithDate;
+import org.mapstruct.ap.test.builtin.target.IterableTarget;
+import org.mapstruct.ap.test.builtin.target.MapTarget;
+import org.mapstruct.ap.test.builtin.source.SourceWithDate;
+import org.mapstruct.ap.test.builtin.source.IterableSource;
+import org.mapstruct.ap.test.builtin.source.MapSource;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,22 +38,39 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
+import static org.fest.assertions.Assertions.assertThat;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
+import org.mapstruct.ap.test.builtin.bean.DateProperty;
+import org.mapstruct.ap.test.builtin.bean.JaxbElementListProperty;
+import org.mapstruct.ap.test.builtin.bean.JaxbElementProperty;
+import org.mapstruct.ap.test.builtin.bean.StringListProperty;
+import org.mapstruct.ap.test.builtin.bean.StringProperty;
+import org.mapstruct.ap.test.builtin.bean.XmlGregorianCalendarProperty;
+import org.mapstruct.ap.test.builtin.mapper.CalendarToDateMapper;
+import org.mapstruct.ap.test.builtin.mapper.CalendarToStringMapper;
+import org.mapstruct.ap.test.builtin.mapper.CalendarToXmlGregCalMapper;
+import org.mapstruct.ap.test.builtin.mapper.DateToCalendarMapper;
+import org.mapstruct.ap.test.builtin.mapper.DateToXmlGregCalMapper;
+import org.mapstruct.ap.test.builtin.mapper.JaxbListMapper;
+import org.mapstruct.ap.test.builtin.mapper.JaxbMapper;
+import org.mapstruct.ap.test.builtin.mapper.StringToCalendarMapper;
+import org.mapstruct.ap.test.builtin.mapper.StringToXmlGregCalMapper;
+import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToCalendarMapper;
+import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToDateMapper;
+import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToStringMapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for the generation of built-in mapping methods.
@@ -68,41 +94,177 @@ public class BuiltInTest {
     }
 
     @Test
-    @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
-    public void shouldApplyBuiltIn() throws ParseException, DatatypeConfigurationException {
-        Source source = new Source();
-        source.setProp1( createJaxb( "TEST" ) );
-        source.setProp2( createJaxbList( "TEST2" ) );
-        source.setProp3( createDate( "31-08-1982 10:20:56" ) );
-        source.setProp4( createXmlCal( 1999, 3, 2, 60 ) );
-        source.setProp5( "05.07.1999" );
-        source.setProp5NoFormat( createLocaleDate( "31-08-1982 10:20:56" ) );
-        source.setProp6( createXmlCal( 1999, 3, 2, 60 ) );
-        source.setProp6NoFormat( createXmlCal( 1999, 3, 2, 60 ) );
-        source.setProp7( createCalendar( "02.03.1999" ) );
-        source.setProp8( createXmlCal( 1999, 3, 2, 60 ) );
-        source.setProp9( createCalendar( "02.03.1999" ) );
-        source.setProp10( new SimpleDateFormat( "dd.MM.yyyy" ).parse( "02.03.1999" ) );
-        source.setProp11( "02.03.1999" );
-        source.setProp12( createCalendar( "02.03.1999" ) );
+    @WithClasses({ JaxbElementProperty.class, StringProperty.class, JaxbMapper.class })
+    public void shoulApplyBuiltInOnJAXBElement() throws ParseException, DatatypeConfigurationException {
 
-        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        JaxbElementProperty source = new JaxbElementProperty();
+        source.setProp( createJaxb( "TEST" ) );
+
+        StringProperty target = JaxbMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
-        assertThat( target.getProp1() ).isEqualTo( "TEST" );
-        assertThat( target.getProp2().get( 0 ) ).isEqualTo( "TEST2" );
-        assertThat( target.getProp3() ).isNotNull();
-        assertThat( target.getProp3().toString() ).isEqualTo( "1982-08-31T10:20:56.000+02:00" );
-        assertThat( target.getProp4().toString() ).isEqualTo( "Tue Mar 02 00:00:00 CET 1999" );
-        assertThat( target.getProp5().toString() ).isEqualTo( "1999-07-05T00:00:00.000+02:00" );
-        assertThat( target.getProp5NoFormat().toString() ).isEqualTo( "1982-08-31T10:20:00.000+02:00" );
-        assertThat( target.getProp6().toString() ).isEqualTo( "02.03.1999" );
-        assertThat( target.getProp6NoFormat().toString() ).isEqualTo( "1999-03-02+01:00" );
-        assertThat( target.getProp7().toString() ).isEqualTo( "1999-03-02T00:00:00.000+01:00" );
-        assertThat( target.getProp8().getTimeInMillis() ).isEqualTo( 920329200000L );
-        assertThat( target.getProp9()).isEqualTo( createCalendar( "02.03.1999" ).getTime());
-        assertThat( target.getProp10()).isEqualTo( createCalendar( "02.03.1999" ));
-        assertThat( target.getProp11()).isEqualTo( createCalendar( "02.03.1999" ));
-        assertThat( target.getProp12()).isEqualTo( "02.03.1999" );
+        assertThat( target.getProp() ).isEqualTo( "TEST" );
+    }
+
+    @Test
+    @WithClasses({ JaxbElementListProperty.class, StringListProperty.class, JaxbListMapper.class })
+    public void shouldApplyBuiltInOnJAXBElementList() throws ParseException, DatatypeConfigurationException {
+
+        JaxbElementListProperty source = new JaxbElementListProperty();
+        source.setProp( createJaxbList( "TEST2" ) );
+
+        StringListProperty target = JaxbListMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp().get( 0 ) ).isEqualTo( "TEST2" );
+    }
+
+    @Test
+    @WithClasses({ DateProperty.class, XmlGregorianCalendarProperty.class, DateToXmlGregCalMapper.class })
+    public void shouldApplyBuiltInOnDateToXmlGregCal() throws ParseException, DatatypeConfigurationException {
+
+        DateProperty source = new DateProperty();
+        source.setProp( createDate( "31-08-1982 10:20:56" ) );
+
+        XmlGregorianCalendarProperty target = DateToXmlGregCalMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp().toString() ).isEqualTo( "1982-08-31T10:20:56.000+02:00" );
+    }
+
+    @Test
+    @WithClasses({ DateProperty.class, XmlGregorianCalendarProperty.class, XmlGregCalToDateMapper.class })
+    public void shouldApplyBuiltInOnXmlGregCalToDate() throws ParseException, DatatypeConfigurationException {
+
+        XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
+        source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
+
+        DateProperty target = XmlGregCalToDateMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp().toString() ).isEqualTo( "Tue Mar 02 00:00:00 CET 1999" );
+
+    }
+
+    @Test
+    @WithClasses({ StringProperty.class, XmlGregorianCalendarProperty.class, StringToXmlGregCalMapper.class })
+    public void shouldApplyBuiltInStringToXmlGregCal() throws ParseException, DatatypeConfigurationException {
+
+        StringProperty source = new StringProperty();
+        source.setProp( "05.07.1999" );
+
+        XmlGregorianCalendarProperty target = StringToXmlGregCalMapper.INSTANCE.mapAndFormat( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp().toString() ).isEqualTo( "1999-07-05T00:00:00.000+02:00" );
+
+        source.setProp( createLocaleDate( "31-08-1982 10:20:56" ) );
+
+        target = StringToXmlGregCalMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp().toString() ).isEqualTo( "1982-08-31T10:20:00.000+02:00" );
+
+    }
+
+    @Test
+    @WithClasses({ StringProperty.class, XmlGregorianCalendarProperty.class, XmlGregCalToStringMapper.class })
+    public void shouldApplyBuiltInXmlGregCalToString() throws ParseException, DatatypeConfigurationException {
+
+        XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
+        source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
+
+        StringProperty target = XmlGregCalToStringMapper.INSTANCE.mapAndFormat( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp() ).isEqualTo( "02.03.1999" );
+
+        source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
+
+        target = XmlGregCalToStringMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp() ).isEqualTo( "1999-03-02+01:00" );
+
+    }
+
+    @Test
+    @WithClasses({ CalendarProperty.class, XmlGregorianCalendarProperty.class, CalendarToXmlGregCalMapper.class })
+    public void shouldApplyBuiltInOnCalendarToXmlGregCal() throws ParseException, DatatypeConfigurationException {
+
+        CalendarProperty source = new CalendarProperty();
+        source.setProp( createCalendar( "02.03.1999" ) );
+
+        XmlGregorianCalendarProperty target = CalendarToXmlGregCalMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp().toString() ).isEqualTo( "1999-03-02T00:00:00.000+01:00" );
+    }
+
+    @Test
+    @WithClasses({ CalendarProperty.class, XmlGregorianCalendarProperty.class, XmlGregCalToCalendarMapper.class })
+    public void shouldApplyBuiltInOnXmlGregCalToCalendar() throws ParseException, DatatypeConfigurationException {
+
+        XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
+        source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
+
+        CalendarProperty target = XmlGregCalToCalendarMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp().getTimeInMillis() ).isEqualTo( 920329200000L );
+
+    }
+
+    @Test
+    @WithClasses({ DateProperty.class, CalendarProperty.class, CalendarToDateMapper.class })
+    public void shouldApplyBuiltInOnCalendarToDate() throws ParseException, DatatypeConfigurationException {
+
+        CalendarProperty source = new CalendarProperty();
+        source.setProp( createCalendar( "02.03.1999" ) );
+
+        DateProperty target = CalendarToDateMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp()).isEqualTo( createCalendar( "02.03.1999" ).getTime());
+    }
+
+    @Test
+    @WithClasses({ CalendarProperty.class, DateProperty.class, DateToCalendarMapper.class })
+    public void shouldApplyBuiltInOnDateToCalendar() throws ParseException, DatatypeConfigurationException {
+
+        DateProperty source = new DateProperty();
+        source.setProp( new SimpleDateFormat( "dd.MM.yyyy" ).parse( "02.03.1999" ) );
+
+        CalendarProperty target = DateToCalendarMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp()).isEqualTo( createCalendar( "02.03.1999" ));
+
+    }
+
+    @Test
+    @WithClasses({ StringProperty.class, CalendarProperty.class, CalendarToStringMapper.class })
+    public void shouldApplyBuiltInOnCalendarToString() throws ParseException, DatatypeConfigurationException {
+
+        CalendarProperty source = new CalendarProperty();
+        source.setProp( createCalendar( "02.03.1999" ) );
+
+        StringProperty target = CalendarToStringMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp()).isEqualTo( "02.03.1999" );
+    }
+
+    @Test
+    @WithClasses({ CalendarProperty.class, StringProperty.class, StringToCalendarMapper.class })
+    public void shouldApplyBuiltInOnStringToCalendar() throws ParseException, DatatypeConfigurationException {
+
+        StringProperty source = new StringProperty();
+        source.setProp( "02.03.1999" );
+
+        CalendarProperty target = StringToCalendarMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNotNull();
+        assertThat( target.getProp()).isEqualTo( createCalendar( "02.03.1999" ) );
+
     }
 
     @Test
