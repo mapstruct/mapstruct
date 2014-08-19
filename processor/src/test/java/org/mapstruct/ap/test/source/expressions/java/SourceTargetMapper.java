@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.source.expressions.java;
 
+import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -27,22 +28,20 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Sjaak Derksen
  */
-@Mapper
+@Mapper( imports = TimeAndFormat.class )
 public interface SourceTargetMapper {
 
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings( {
-        @Mapping( target = "timeAndFormat", expression = "java( new org.mapstruct.ap.test.source.expressions.java."
-                + "TimeAndFormat( s.getTime(), s.getFormat() ))" ),
+        @Mapping( target = "timeAndFormat", expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ))" ),
         @Mapping( target = "anotherProp", ignore = true )
     } )
-    Target sourceToTarget(Source s);
+    Target sourceToTarget( Source s );
 
     @Mappings( {
-        @Mapping( target = "timeAndFormat", expression = "java( new org.mapstruct.ap.test.source.expressions.java."
-                + "TimeAndFormat( s.getTime(), s.getFormat() ))" ),
+        @Mapping( target = "timeAndFormat",  expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ))"),
         @Mapping( target = "anotherProp", ignore = true )
     } )
     Target sourceToTargetWithMappingTarget(Source s, @MappingTarget Target t);

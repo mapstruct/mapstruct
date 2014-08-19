@@ -19,11 +19,12 @@
 package org.mapstruct.ap.model;
 
 import java.util.List;
+import java.util.SortedSet;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
-
 import org.mapstruct.ap.model.common.Accessibility;
+import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 
 /**
@@ -40,10 +41,11 @@ public class Mapper extends GeneratedType {
     private final List<MapperReference> referencedMappers;
     private final Decorator decorator;
 
+    //CHECKSTYLE:OFF
     private Mapper(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                   String interfaceName,
-                   List<MappingMethod> methods, boolean suppressGeneratorTimestamp, Accessibility accessibility,
-                   List<MapperReference> referencedMappers, Decorator decorator) {
+                   String interfaceName, List<MappingMethod> methods, boolean suppressGeneratorTimestamp,
+                   Accessibility accessibility, List<MapperReference> referencedMappers, Decorator decorator,
+                   SortedSet<Type> extraImportedTypes ) {
 
         super(
             typeFactory,
@@ -54,7 +56,8 @@ public class Mapper extends GeneratedType {
             methods,
             referencedMappers,
             suppressGeneratorTimestamp,
-            accessibility
+            accessibility,
+            extraImportedTypes
         );
 
         this.referencedMappers = referencedMappers;
@@ -67,6 +70,7 @@ public class Mapper extends GeneratedType {
         private TypeElement element;
         private List<MappingMethod> mappingMethods;
         private List<MapperReference> mapperReferences;
+        private SortedSet<Type> extraImportedTypes;
 
         private Elements elementUtils;
         private boolean suppressGeneratorTimestamp;
@@ -107,6 +111,11 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
+        public Builder extraImports(SortedSet<Type> extraImportedTypes) {
+            this.extraImportedTypes = extraImportedTypes;
+            return this;
+        }
+
         public Mapper build() {
             String implementationName = element.getSimpleName()
                 + ( decorator == null ? IMPLEMENTATION_SUFFIX : DECORATED_IMPLEMENTATION_SUFFIX );
@@ -121,7 +130,8 @@ public class Mapper extends GeneratedType {
                 suppressGeneratorTimestamp,
                 Accessibility.fromModifiers( element.getModifiers() ),
                 mapperReferences,
-                decorator
+                decorator,
+                extraImportedTypes
             );
         }
     }

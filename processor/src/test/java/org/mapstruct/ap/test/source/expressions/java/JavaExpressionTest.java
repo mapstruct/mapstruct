@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.source.expressions.java;
 
+import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

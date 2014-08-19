@@ -78,6 +78,10 @@ public class MapperConfig {
         return new ArrayList<TypeMirror>( uses );
     }
 
+    public List<TypeMirror> imports() {
+        return mapperPrism.imports();
+    }
+
     public String unmappedTargetPolicy() {
         if ( !ReportingPolicy.valueOf( mapperPrism.unmappedTargetPolicy() ).equals( ReportingPolicy.DEFAULT ) ) {
             // it is not the default configuration

@@ -45,6 +45,7 @@ public abstract class GeneratedType extends ModelElement {
     private final List<Annotation> annotations;
     private final List<MappingMethod> methods;
     private final List<? extends ModelElement> fields;
+    private final SortedSet<Type> extraImportedTypes;
 
     private final boolean suppressGeneratorTimestamp;
     private final Accessibility accessibility;
@@ -58,11 +59,14 @@ public abstract class GeneratedType extends ModelElement {
                             String interfaceName,
                             List<MappingMethod> methods,
                             List<? extends ModelElement> fields,
-                            boolean suppressGeneratorTimestamp, Accessibility accessibility) {
+                            boolean suppressGeneratorTimestamp,
+                            Accessibility accessibility,
+                            SortedSet<Type> extraImportedTypes) {
         this.packageName = packageName;
         this.name = name;
         this.superClassName = superClassName;
         this.interfaceName = interfaceName;
+        this.extraImportedTypes = extraImportedTypes;
 
         this.annotations = new ArrayList<Annotation>();
         this.methods = methods;
@@ -133,6 +137,10 @@ public abstract class GeneratedType extends ModelElement {
 
         for ( Annotation annotation : annotations ) {
             addWithDependents( importedTypes, annotation.getType() );
+        }
+
+        for ( Type extraImport : extraImportedTypes ) {
+            addWithDependents( importedTypes, extraImport );
         }
 
         return importedTypes;

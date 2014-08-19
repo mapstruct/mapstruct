@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -132,6 +134,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .decorator( getDecorator( element, methods ) )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
+            .extraImports( getExtraImports( element ) )
             .build();
 
         return mapper;
@@ -242,7 +245,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
     }
 
-    private List<MapperReference> getReferencedMappers(TypeElement element) {
+   private List<MapperReference> getReferencedMappers(TypeElement element) {
         List<MapperReference> mapperReferences = new LinkedList<MapperReference>();
         List<String> variableNames = new LinkedList<String>();
 
@@ -261,6 +264,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         return mapperReferences;
+    }
+
+    private SortedSet<Type> getExtraImports(TypeElement element) {
+
+        SortedSet<Type> extraImports = new TreeSet<Type>();
+
+        MapperConfig mapperPrism = MapperConfig.getInstanceOn( element );
+
+        for ( TypeMirror extraImport : mapperPrism.imports() ) {
+            Type type = typeFactory.getType( extraImport );
+            extraImports.add( type );
+        }
+
+        return extraImports;
     }
 
     private List<MappingMethod> getMappingMethods(List<MapperReference> mapperReferences, List<SourceMethod> methods,

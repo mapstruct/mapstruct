@@ -20,10 +20,10 @@ package org.mapstruct.ap.model;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
-
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
@@ -41,7 +41,7 @@ public class Decorator extends GeneratedType {
 
     private Decorator(TypeFactory typeFactory, String packageName, String name, String superClassName,
                       String interfaceName, List<MappingMethod> methods, List<? extends ModelElement> fields,
-                      boolean suppressGeneratorTimestamp, Accessibility accessibility) {
+                      boolean suppressGeneratorTimestamp, Accessibility accessibility ) {
         super(
             typeFactory,
             packageName,
@@ -51,7 +51,8 @@ public class Decorator extends GeneratedType {
             methods,
             fields,
             suppressGeneratorTimestamp,
-            accessibility
+            accessibility,
+            new TreeSet<Type>()
         );
     }
 

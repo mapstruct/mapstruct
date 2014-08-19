@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.source.expressions.java;
 
+import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
+
 /**
  * @author Sjaak Derksen
  */
