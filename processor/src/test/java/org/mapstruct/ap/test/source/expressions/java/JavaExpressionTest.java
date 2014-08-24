@@ -34,12 +34,11 @@ import org.mapstruct.ap.testutil.IssueKey;
 /**
  * @author Sjaak Derksen
  */
-@WithClasses({ Source.class, Target.class, TimeAndFormat.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class JavaExpressionTest {
 
    @Test
-   @WithClasses({ SourceTargetMapper.class })
+   @WithClasses({ Source.class, Target.class, TimeAndFormat.class, SourceTargetMapper.class })
     public void testJavaExpressionInsertion() throws ParseException {
         Source source = new Source();
         String format = "dd-MM-yyyy,hh:mm:ss";
@@ -58,7 +57,13 @@ public class JavaExpressionTest {
 
     @IssueKey( "255" )
     @Test
-    @WithClasses({ SourceTargetMapperSeveralSources.class, Source2.class })
+    @WithClasses({
+        Source.class,
+        Source2.class ,
+        Target.class,
+        TimeAndFormat.class,
+        SourceTargetMapperSeveralSources.class
+      })
     public void testJavaExpressionInsertionWithSeveralSources() throws ParseException {
         Source source1 = new Source();
         String format = "dd-MM-yyyy,hh:mm:ss";
@@ -87,7 +92,7 @@ public class JavaExpressionTest {
     }
 
    @Test
-   @WithClasses({ SourceTargetMapper.class })
+   @WithClasses({ Source.class, Target.class, TimeAndFormat.class, SourceTargetMapper.class })
     public void testJavaExpressionInsertionWithExistingTarget() throws ParseException {
         Source source = new Source();
         String format = "dd-MM-yyyy,hh:mm:ss";
@@ -106,4 +111,27 @@ public class JavaExpressionTest {
         assertThat( target.getAnotherProp() ).isNull();
         assertThat( target ).isEqualTo( target2 );
     }
+
+    @IssueKey( "278" )
+    @Test
+    @WithClasses({
+        SourceBooleanWorkAround.class,
+        TargetBooleanWorkAround.class,
+        BooleanWorkAroundMapper.class
+      })
+    public void testBooleanGetterWorkAround() throws ParseException {
+
+        SourceBooleanWorkAround source = new SourceBooleanWorkAround();
+        source.setVal( Boolean.TRUE );
+
+        TargetBooleanWorkAround target = BooleanWorkAroundMapper.INSTANCE.mapST( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.isVal() ).isTrue();
+
+        SourceBooleanWorkAround source2 = BooleanWorkAroundMapper.INSTANCE.mapTS( target );
+        assertThat( source2 ).isNotNull();
+        assertThat( source2.isVal() ).isTrue();
+
+    }
+
 }

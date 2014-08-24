@@ -235,7 +235,7 @@ public class Mapping {
     public Mapping reverse() {
         Mapping reverse = null;
         // mapping can only be reversed if the source was not a constant nor an expression
-        if ( constant != null && expression != null ) {
+        if ( constant.isEmpty() && expression.isEmpty() ) {
             reverse = new Mapping(
                 targetName,
                 null,

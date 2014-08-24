@@ -415,11 +415,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         for ( List<Mapping> mappingList : mappings.values() ) {
             for ( Mapping mapping : mappingList ) {
-                if ( !reversed.containsKey( mapping.getTargetName() ) ) {
-                    reversed.put( mapping.getTargetName(), new ArrayList<Mapping>() );
-                }
+
                 Mapping reverseMapping = mapping.reverse();
                 if ( reverseMapping != null ) {
+                    if ( !reversed.containsKey( mapping.getTargetName() ) ) {
+                        reversed.put( mapping.getTargetName(), new ArrayList<Mapping>() );
+                    }
                     reversed.get( mapping.getTargetName() ).add( reverseMapping );
                 }
             }
