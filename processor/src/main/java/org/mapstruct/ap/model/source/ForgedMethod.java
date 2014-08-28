@@ -141,4 +141,14 @@ public class ForgedMethod implements Method {
     public boolean overridesMethod() {
         return  false;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder( returnType.toString() );
+        sb.append( " " );
+
+        sb.append( getName() ).append( "(" ).append( Strings.join( parameters, ", " ) ).append( ")" );
+
+        return sb.toString();
+    }
 }
