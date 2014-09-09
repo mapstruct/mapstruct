@@ -102,20 +102,22 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>add-copied-common-sources</id>
+                        <id>copy-resources</id>
                         <phase>process-resources</phase>
                         <goals>
-                            <goal>unpack-dependencies</goal>
+                            <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <includeArtifactIds>mapstruct-common</includeArtifactIds>
-                            <includes>**/*.java</includes>
-                            <classifier>sources</classifier>
                             <outputDirectory>${project.build.directory}/${common.sources.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/../core-common/src/main/java</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
