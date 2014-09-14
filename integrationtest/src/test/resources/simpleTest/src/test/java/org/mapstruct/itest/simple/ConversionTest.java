@@ -16,11 +16,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest;
+package org.mapstruct.itest.simple;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Test;
+import org.mapstruct.itest.simple.Source;
+import org.mapstruct.itest.simple.SourceTargetMapper;
+import org.mapstruct.itest.simple.Target;
 
 public class ConversionTest {
 

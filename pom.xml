@@ -42,7 +42,6 @@
         <module>core-jdk8</module>
         <module>processor</module>
         <module>integrationtest</module>
-        <module>integrationtest-jdk8</module>
     </modules>
 
     <build>

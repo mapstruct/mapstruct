@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest;
+package org.mapstruct.itest.simple;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
