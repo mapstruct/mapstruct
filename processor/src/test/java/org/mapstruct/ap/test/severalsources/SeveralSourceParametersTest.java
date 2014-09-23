@@ -100,7 +100,7 @@ public class SeveralSourceParametersTest {
 
     @Test
     @WithClasses({ ErroneousSourceTargetMapper.class, Address.class, DeliveryAddress.class })
-    @ProcessorOption(name = "unmappedTargetPolicy", value = "IGNORE")
+    @ProcessorOption(name = "mapstruct.unmappedTargetPolicy", value = "IGNORE")
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {

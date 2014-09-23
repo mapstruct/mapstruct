@@ -93,9 +93,9 @@ public class MappingProcessor extends AbstractProcessor {
      */
     private static final boolean ANNOTATIONS_CLAIMED_EXCLUSIVELY = false;
 
-    protected static final String SUPPRESS_GENERATOR_TIMESTAMP = "suppressGeneratorTimestamp";
-    protected static final String UNMAPPED_TARGET_POLICY = "unmappedTargetPolicy";
-    protected static final String DEFAULT_COMPONENT_MODEL = "defaultComponentModel";
+    protected static final String SUPPRESS_GENERATOR_TIMESTAMP = "mapstruct.suppressGeneratorTimestamp";
+    protected static final String UNMAPPED_TARGET_POLICY = "mapstruct.unmappedTargetPolicy";
+    protected static final String DEFAULT_COMPONENT_MODEL = "mapstruct.defaultComponentModel";
 
     private Options options;
 

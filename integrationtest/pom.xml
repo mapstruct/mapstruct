@@ -90,7 +90,7 @@
                     </processors>
                     <options>
                         <!-- suppressGeneratorTimestamp=false is the default -->
-                        <suppressGeneratorTimestamp>false</suppressGeneratorTimestamp>
+                        <mapstruct.suppressGeneratorTimestamp>false</mapstruct.suppressGeneratorTimestamp>
                     </options>
                 </configuration>
                 <executions>
