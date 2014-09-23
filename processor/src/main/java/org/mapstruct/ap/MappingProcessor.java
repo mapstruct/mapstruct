@@ -42,6 +42,7 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.option.ReportingPolicy;
+import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.processor.DefaultModelElementProcessorContext;
 import org.mapstruct.ap.processor.ModelElementProcessor;
 import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
@@ -133,6 +134,12 @@ public class MappingProcessor extends AbstractProcessor {
 
             for ( Element mapperElement : roundEnvironment.getElementsAnnotatedWith( annotation ) ) {
                 TypeElement mapperTypeElement = asTypeElement( mapperElement );
+
+                // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
+                // annotations unknown to the compiler, even though they are not declared Mappers
+                if ( MapperPrism.getInstanceOn( mapperTypeElement ) == null ) {
+                    continue;
+                }
 
                 // create a new context for each generated mapper in order to have imports of referenced types
                 // correctly managed;
