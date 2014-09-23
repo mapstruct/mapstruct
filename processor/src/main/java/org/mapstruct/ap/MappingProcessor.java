@@ -137,7 +137,7 @@ public class MappingProcessor extends AbstractProcessor {
 
                 // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
                 // annotations unknown to the compiler, even though they are not declared Mappers
-                if ( MapperPrism.getInstanceOn( mapperTypeElement ) == null ) {
+                if ( mapperTypeElement == null || MapperPrism.getInstanceOn( mapperTypeElement ) == null ) {
                     continue;
                 }
 
