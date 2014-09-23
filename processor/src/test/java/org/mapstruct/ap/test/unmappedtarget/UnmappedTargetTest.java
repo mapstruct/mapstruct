@@ -87,7 +87,7 @@ public class UnmappedTargetTest {
 
     @Test
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
-    @ProcessorOption(name = "unmappedTargetPolicy", value = "ERROR")
+    @ProcessorOption(name = "mapstruct.unmappedTargetPolicy", value = "ERROR")
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
