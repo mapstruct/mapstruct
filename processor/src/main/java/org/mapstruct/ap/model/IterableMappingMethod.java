@@ -18,8 +18,12 @@
  */
 package org.mapstruct.ap.model;
 
+import org.mapstruct.ap.model.assignment.Assignment;
+import java.util.List;
 import java.util.Set;
-import org.mapstruct.ap.model.assignment.TypeConversion;
+import javax.lang.model.type.TypeMirror;
+import javax.tools.Diagnostic;
+import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
@@ -37,7 +41,71 @@ public class IterableMappingMethod extends MappingMethod {
     private final FactoryMethod factoryMethod;
     private final boolean overridden;
 
-    public IterableMappingMethod(Method method, Assignment parameterAssignment, FactoryMethod factoryMethod) {
+    public static class Builder  {
+
+        private Method method;
+        private MappingContext ctx;
+        private String dateFormat;
+        private List<TypeMirror> qualifiers;
+
+        public Builder mappingContext( MappingContext mappingContext ) {
+            this.ctx = mappingContext;
+            return this;
+        }
+
+        public Builder method( Method sourceMethod ) {
+            this.method = sourceMethod;
+            return this;
+        }
+
+        public Builder dateFormat( String dateFormat ) {
+            this.dateFormat = dateFormat;
+            return this;
+        }
+
+        public Builder qualifiers( List<TypeMirror> qualifiers ) {
+            this.qualifiers = qualifiers;
+            return this;
+        }
+
+        public IterableMappingMethod build( ) {
+            Type sourceElementType =
+                    method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
+            Type targetElementType =
+                    method.getResultType().getTypeParameters().get( 0 );
+            String conversionStr =
+                    Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
+
+
+            Assignment assignment = ctx.getMappingResolver().getTargetAssignment( method,
+                    "collection element",
+                    sourceElementType,
+                    targetElementType,
+                    null, // there is no targetPropertyName
+                    dateFormat,
+                    qualifiers,
+                    conversionStr
+            );
+
+            if ( assignment == null ) {
+                String message = String.format(
+                        "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
+                        + "source element type into target element type.",
+                        method
+                );
+                method.printMessage( ctx.getMessager(), Diagnostic.Kind.ERROR, message );
+            }
+
+            // target accessor is setter, so decorate assignment as setter
+            assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+
+            FactoryMethod factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
+            return new IterableMappingMethod( method, assignment, factoryMethod );
+        }
+    }
+
+
+    private IterableMappingMethod(Method method, Assignment parameterAssignment, FactoryMethod factoryMethod) {
         super( method );
         this.elementAssignment = parameterAssignment;
         this.factoryMethod = factoryMethod;

@@ -16,17 +16,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.assignment;
+package org.mapstruct.ap.model;
 
+import org.mapstruct.ap.model.assignment.Assignment;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.mapstruct.ap.model.Assignment;
-import org.mapstruct.ap.model.FactoryMethod;
-import org.mapstruct.ap.model.MapperReference;
-import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;

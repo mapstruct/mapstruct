@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
-import org.mapstruct.ap.model.Assignment;
+import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.common.ConversionContext;
 
 /**

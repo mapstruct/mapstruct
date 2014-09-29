@@ -20,7 +20,6 @@ package org.mapstruct.ap.model.assignment;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.Type;
 
 /**

@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.model.assignment;
 
-import org.mapstruct.ap.model.Assignment;
-
 /**
  * This wrapper handles the situation were an assignment must be done via a target getter method because there
  * is no setter available.

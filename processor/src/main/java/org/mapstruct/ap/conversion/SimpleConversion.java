@@ -21,9 +21,9 @@ package org.mapstruct.ap.conversion;
 import java.util.Collections;
 import java.util.Set;
 
-import org.mapstruct.ap.model.Assignment;
-import org.mapstruct.ap.model.assignment.AssignmentFactory;
-import org.mapstruct.ap.model.assignment.TypeConversion;
+import org.mapstruct.ap.model.assignment.Assignment;
+import org.mapstruct.ap.model.AssignmentFactory;
+import org.mapstruct.ap.model.TypeConversion;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 

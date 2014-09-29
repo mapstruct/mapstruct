@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.Type;
 
 /**

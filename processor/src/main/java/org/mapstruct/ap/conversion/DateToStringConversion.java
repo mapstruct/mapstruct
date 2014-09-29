@@ -23,8 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 
-import org.mapstruct.ap.model.Assignment;
-import org.mapstruct.ap.model.assignment.AssignmentFactory;
+import org.mapstruct.ap.model.assignment.Assignment;
+import org.mapstruct.ap.model.AssignmentFactory;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 

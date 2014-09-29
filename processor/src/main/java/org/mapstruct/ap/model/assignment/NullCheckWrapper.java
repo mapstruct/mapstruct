@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.model.assignment;
 
-import org.mapstruct.ap.model.Assignment;
-
 /**
  * Wraps the assignment in a null check.
  *

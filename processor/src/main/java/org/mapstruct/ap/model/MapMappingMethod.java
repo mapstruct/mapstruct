@@ -18,8 +18,12 @@
  */
 package org.mapstruct.ap.model;
 
+import org.mapstruct.ap.model.assignment.Assignment;
+import java.util.List;
 import java.util.Set;
-import org.mapstruct.ap.model.assignment.TypeConversion;
+import javax.lang.model.type.TypeMirror;
+import javax.tools.Diagnostic;
+import org.mapstruct.ap.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
@@ -38,7 +42,101 @@ public class MapMappingMethod extends MappingMethod {
     private final FactoryMethod factoryMethod;
     private final boolean overridden;
 
-    public MapMappingMethod(Method method, Assignment keyAssignment, Assignment valueAssignment,
+    public static class Builder  {
+
+        private String keyDateFormat;
+        private String valueDateFormat;
+        private List<TypeMirror> keyQualifiers;
+        private List<TypeMirror> valueQualifiers;
+        private Method method;
+        private MappingContext ctx;
+
+        public Builder mappingContext( MappingContext mappingContext ) {
+            this.ctx = mappingContext;
+            return this;
+        }
+
+        public Builder method( Method sourceMethod ) {
+            this.method = sourceMethod;
+            return this;
+        }
+
+        public Builder keyDateFormat( String keyDateFormat ) {
+            this.keyDateFormat = keyDateFormat;
+            return this;
+        }
+
+        public Builder valueDateFormat( String valueDateFormat ) {
+            this.valueDateFormat = valueDateFormat;
+            return this;
+        }
+
+        public Builder keyQualifiers( List<TypeMirror> keyQualifiers ) {
+            this.keyQualifiers = keyQualifiers;
+            return this;
+        }
+
+        public Builder valueQualifiers( List<TypeMirror> valueQualifiers ) {
+            this.valueQualifiers = valueQualifiers;
+            return this;
+        }
+
+        public MapMappingMethod build() {
+
+            List<Type> sourceTypeParams = method.getSourceParameters().iterator().next().getType().getTypeParameters();
+            List<Type> resultTypeParams = method.getResultType().getTypeParameters();
+
+            // find mapping method or conversion for key
+            Type keySourceType = sourceTypeParams.get( 0 );
+            Type keyTargetType = resultTypeParams.get( 0 );
+
+            Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment( method,
+                    "map key",
+                    keySourceType,
+                    keyTargetType,
+                    null, // there is no targetPropertyName
+                    keyDateFormat,
+                    keyQualifiers,
+                    "entry.getKey()"
+            );
+
+            if ( keyAssignment == null ) {
+                String message = String.format( "Can't create implementation of method %s. Found no method nor "
+                        + "built-in conversion for mapping source key type to target key type.", method );
+                method.printMessage( ctx.getMessager(), Diagnostic.Kind.ERROR, message );
+            }
+
+            // find mapping method or conversion for value
+            Type valueSourceType = sourceTypeParams.get( 1 );
+            Type valueTargetType = resultTypeParams.get( 1 );
+
+            Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment( method,
+                    "map value",
+                    valueSourceType,
+                    valueTargetType,
+                    null, // there is no targetPropertyName
+                    valueDateFormat,
+                    valueQualifiers,
+                    "entry.getValue()"
+            );
+
+            if ( valueAssignment == null ) {
+                String message = String.format( "Can't create implementation of method %s. Found no method nor "
+                        + "built-in conversion for mapping source value type to target value type.", method );
+                method.printMessage( ctx.getMessager(), Diagnostic.Kind.ERROR, message );
+            }
+
+            FactoryMethod factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
+
+            keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes() );
+            valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes() );
+
+            return new MapMappingMethod( method, keyAssignment, valueAssignment, factoryMethod );
+        }
+
+    }
+
+    private MapMappingMethod(Method method, Assignment keyAssignment, Assignment valueAssignment,
             FactoryMethod factoryMethod) {
         super( method );
 
