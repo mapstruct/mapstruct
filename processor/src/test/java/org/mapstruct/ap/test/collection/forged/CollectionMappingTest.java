@@ -34,7 +34,7 @@ import org.mapstruct.ap.util.Collections;
  *
  * @author Sjaak Derksen
  */
-@IssueKey("4")
+@IssueKey("4, 306")
 @RunWith(AnnotationProcessorTestRunner.class)
 public class CollectionMappingTest {
 

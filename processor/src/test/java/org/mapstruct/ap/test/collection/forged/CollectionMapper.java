@@ -18,14 +18,27 @@
  */
 package org.mapstruct.ap.test.collection.forged;
 
+import java.util.Set;
 import org.mapstruct.Mapper;
+import org.mapstruct.TargetType;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface CollectionMapper {
+public abstract class CollectionMapper {
 
-    CollectionMapper INSTANCE = Mappers.getMapper( CollectionMapper.class );
+    public static final CollectionMapper INSTANCE = Mappers.getMapper( CollectionMapper.class );
 
-    Target sourceToTarget(Source source);
-    Source targetToSource(Target target);
+    public abstract Target sourceToTarget(Source source);
+    public abstract Source targetToSource(Target target);
+
+
+    // this method is added to reproduce issue 306
+    protected void dummy1( Set<String> arg ) {
+        throw new RuntimeException();
+    }
+
+    // this method is added to reproduce issue 306
+    protected Set<Long> dummy2( Object object,  @TargetType Class clazz ) {
+        throw new RuntimeException();
+    }
 }

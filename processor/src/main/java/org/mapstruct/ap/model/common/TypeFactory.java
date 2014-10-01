@@ -193,7 +193,10 @@ public class TypeFactory {
      */
     public Type classTypeOf(Type type) {
         TypeMirror typeToUse;
-        if ( type.isPrimitive() ) {
+        if ( type.isVoid() ) {
+            return null;
+        }
+        else if ( type.isPrimitive() ) {
             typeToUse = typeUtils.boxedClass( (PrimitiveType) type.getTypeMirror() ).asType();
         }
         else {
