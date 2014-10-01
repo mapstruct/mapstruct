@@ -32,7 +32,7 @@
    </#if>
 
     for ( <@includeModel object=sourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${sourceParameter.name} ) {
-     <@includeModel object=elementAssignment targetBeanName=resultName targetAccessorName="add" targetType="${resultType.typeParameters[0].name}"/>
+     <@includeModel object=elementAssignment targetBeanName=resultName targetAccessorName="add" targetType=resultType.typeParameters[0]/>
     }
     <#if returnType.name != "void">
 
