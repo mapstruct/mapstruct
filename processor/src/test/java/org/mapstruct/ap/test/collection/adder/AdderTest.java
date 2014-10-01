@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.collection.adder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,9 +41,11 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.mapstruct.ap.test.collection.adder.source.Foo;
+import org.mapstruct.ap.test.collection.adder.source.Source2;
+import org.mapstruct.ap.test.collection.adder.target.Target2;
 
 /**
  * @author Sjaak Derksen
@@ -238,5 +241,23 @@ public class AdderTest {
         assertThat( target.getPets().size() ).isEqualTo( 1 );
         assertThat( target.getPets().get( 0 ) ).isEqualTo( 2L );
         assertTrue( AdderUsageObserver.isUsed() );
+    }
+
+    @IssueKey( "310" )
+    @Test
+    @WithClasses( {
+        Target2.class,
+        Source2.class,
+        Source2Target2Mapper.class,
+        Foo.class
+    } )
+    public void testMissingImport() throws DogException {
+
+        Source2 source = new Source2();
+        source.setAttributes( Arrays.asList( new Foo() ) );
+
+        Target2 target = Source2Target2Mapper.INSTANCE.toTarget( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getAttributes().size() ).isEqualTo( 1 );
     }
 }

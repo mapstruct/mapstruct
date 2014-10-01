@@ -19,7 +19,9 @@
 package org.mapstruct.ap.model.assignment;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mapstruct.ap.model.Assignment;
 import org.mapstruct.ap.model.common.Type;
@@ -67,6 +69,14 @@ public class AdderWrapper extends AssignmentWrapper {
     @Override
     public String getSourceReference() {
         return sourceReference;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> imported = new HashSet<Type>();
+        imported.addAll( super.getImportTypes() );
+        imported.add( sourceType );
+        return imported;
     }
 
     public String getIteratorReference() {
