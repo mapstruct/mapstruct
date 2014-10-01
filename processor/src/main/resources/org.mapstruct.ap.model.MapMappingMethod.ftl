@@ -35,12 +35,12 @@
     <#-- key -->
         <@includeModel object=keyAssignment
                    targetAccessorName=keyVariableName
-                   targetType=typeName(resultType.typeParameters[0])
+                   targetType=resultType.typeParameters[0]
                    isLocalVar=true/>
     <#-- value -->
         <@includeModel object=valueAssignment
                    targetAccessorName=valueVariableName
-                   targetType=typeName(resultType.typeParameters[1])
+                   targetType=resultType.typeParameters[1]
                    isLocalVar=true/>
         ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
     }
@@ -49,10 +49,6 @@
         return ${resultName};
     </#if>
 }
-<#function typeName type>
-  <#local result><@includeModel object=type/></#local>
-  <#return result>
-</#function>
 <#macro throws>
     <@compress single_line=true>
         <#if (thrownTypes?size > 0)>throws </#if>
