@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.source.expressions.java;
 import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Test;
@@ -133,5 +134,25 @@ public class JavaExpressionTest {
         assertThat( source2.isVal() ).isTrue();
 
     }
+
+  @IssueKey( "305" )
+    @Test
+    @WithClasses({
+        SourceList.class,
+        TargetList.class,
+        SourceTargetListMapper.class
+      })
+    public void testGetterOnly() throws ParseException {
+
+        SourceList source = new SourceList();
+        source.setList( Arrays.asList( "test1" ) );
+
+        TargetList target = SourceTargetListMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getList() ).isEqualTo( Arrays.asList( "test2" ) );
+
+
+    }
+
 
 }
