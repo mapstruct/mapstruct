@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.source.constants;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class Target {
     private int integerConstant;
     private Long longWrapperConstant;
     private Date dateConstant;
-    private List<String> nameConstants;
+    private List<String> nameConstants = new ArrayList<String>();
 
     public String getPropertyThatShouldBeMapped() {
         return propertyThatShouldBeMapped;
@@ -75,10 +76,6 @@ public class Target {
 
     public List<String> getNameConstants() {
         return nameConstants;
-    }
-
-    public void setNameConstants(List<String> nameConstants) {
-        this.nameConstants = nameConstants;
     }
 
 }
