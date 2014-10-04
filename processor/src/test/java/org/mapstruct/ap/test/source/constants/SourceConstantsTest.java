@@ -43,7 +43,7 @@ import static org.fest.assertions.Assertions.assertThat;
 public class SourceConstantsTest {
 
     @Test
-    @IssueKey("187")
+    @IssueKey("187, 305")
     @WithClasses({
         Source.class,
         Source2.class,

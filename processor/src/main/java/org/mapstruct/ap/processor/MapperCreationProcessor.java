@@ -584,7 +584,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                             parameter
                     );
                 }
-                else if ( Executables.isSetterMethod( targetAccessor ) ) {
+                else if ( Executables.isSetterMethod( targetAccessor ) ||
+                          Executables.isGetterMethod( targetAccessor ) ) {
 
                     if ( !mapping.getConstant().isEmpty() ) {
                         // its a constant
@@ -961,7 +962,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         Type sourceType = typeFactory.getType( String.class );
 
         // target
-        Type targetType = typeFactory.getSingleParameter( targetAccessor ).getType();
+        Type targetType;
+        if ( Executables.isSetterMethod( targetAccessor ) ) {
+            targetType = typeFactory.getSingleParameter( targetAccessor ).getType();
+        }
+        else {
+            targetType = typeFactory.getReturnType( targetAccessor );
+        }
         String targetPropertyName = Executables.getPropertyName( targetAccessor );
 
         Assignment assignment = mappingResolver.getTargetAssignment(
@@ -981,6 +988,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
             // target accessor is setter, so decorate assignment as setter
             assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+
+            // wrap when dealing with getter only on target
+            if ( Executables.isGetterMethod( targetAccessor ) ) {
+                assignment = new GetterCollectionOrMapWrapper( assignment );
+            }
         }
         else {
             messager.printMessage(
@@ -1005,12 +1017,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
      */
     private PropertyMapping getJavaExpressionMapping(SourceMethod method,
                                                      String javaExpression,
-                                                     ExecutableElement targetAcessor) {
+                                                     ExecutableElement targetAccessor) {
 
-        Type targetType = typeFactory.getSingleParameter( targetAcessor ).getType();
         Assignment assignment = AssignmentFactory.createSimple( javaExpression );
         assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-        return new PropertyMapping( targetAcessor.getSimpleName().toString(), targetType, assignment );
+
+        Type targetType;
+        if ( Executables.isSetterMethod( targetAccessor ) ) {
+            targetType = typeFactory.getSingleParameter( targetAccessor ).getType();
+        }
+        else {
+            targetType = typeFactory.getReturnType( targetAccessor );
+
+            // target accessor is getter, so wrap the setter in getter map/ collection handling
+            assignment = new GetterCollectionOrMapWrapper( assignment );
+        }
+
+        return new PropertyMapping( targetAccessor.getSimpleName().toString(), targetType, assignment );
     }
 
     private IterableMappingMethod getIterableMappingMethod(List<MapperReference> mapperReferences,
