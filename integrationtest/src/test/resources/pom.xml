@@ -115,6 +115,34 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>debug-forked-javac</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-compile</id>
+                                <configuration>
+                                    <fork>true</fork>
+                                    <compilerArgs>
+                                        <arg>-J-Xdebug</arg>
+                                        <arg>-J-Xnoagent</arg>
+                                        <arg>-J-Djava.compiler=NONE</arg>
+                                        <arg>-J-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000</arg>
+                                    </compilerArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>

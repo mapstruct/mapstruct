@@ -47,6 +47,16 @@ import static org.apache.maven.shared.utils.io.FileUtils.deleteDirectory;
  */
 public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
 
+    /**
+     * System property for specifying the location of the toolchains.xml file
+     */
+    public static final String SYS_PROP_TOOLCHAINS_FILE = "processorIntegrationTest.toolchainsFile";
+
+    /**
+     * System property to enable remote debugging of the processor execution in the integration test
+     */
+    public static final String SYS_PROP_DEBUG = "processorIntegrationTest.debug";
+
     public static final class ProcessorTestCase {
         private final String baseDir;
         private final ProcessorType processor;
@@ -147,7 +157,22 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
         File destination = extractTest( child, description );
         PrintStream originalOut = System.out;
 
-        Verifier verifier = new Verifier( destination.getCanonicalPath() );
+        final Verifier verifier;
+        if ( Boolean.getBoolean( SYS_PROP_DEBUG ) ) {
+            if ( child.processor.getToolchain() == null ) {
+                // when not using toolchains for a test, then the compiler is executed within the Maven JVM. So make
+                // sure we fork a new JVM for that, and let that new JVM use the command 'mvnDebug' instead of 'mvn'
+                verifier = new Verifier( destination.getCanonicalPath(), null, true, true );
+                verifier.setDebugJvm( true );
+            }
+            else {
+                verifier = new Verifier( destination.getCanonicalPath() );
+                verifier.addCliOption( "-Pdebug-forked-javac" );
+            }
+        }
+        else {
+            verifier = new Verifier( destination.getCanonicalPath() );
+        }
 
         List<String> goals = new ArrayList<String>( 3 );
 
@@ -164,6 +189,11 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
             }
             else {
                 verifier.addCliOption( "-Dmapstruct-artifact-id=mapstruct" );
+            }
+
+            if ( Boolean.getBoolean( SYS_PROP_DEBUG ) ) {
+                originalOut.print( "Processor Integration Test: " );
+                originalOut.println( "Listening for transport dt_socket at address: 8000 (in some seconds)" );
             }
 
             goals.add( "test" );
@@ -222,7 +252,7 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
     }
 
     private static File getSpecifiedToolchainsFile() {
-        String specifiedToolchainsFile = System.getProperty( "processorIntegrationTest.toolchainsFile" );
+        String specifiedToolchainsFile = System.getProperty( SYS_PROP_TOOLCHAINS_FILE );
         if ( null != specifiedToolchainsFile ) {
             try {
                 File canonical = new File( specifiedToolchainsFile ).getCanonicalFile();
