@@ -34,10 +34,9 @@ import org.mapstruct.ap.util.Collections;
  *
  * @author Sjaak Derksen
  */
-@IssueKey("4, 306")
+@IssueKey( "4" )
 @RunWith(AnnotationProcessorTestRunner.class)
 public class CollectionMappingTest {
-
 
     @Test
     @WithClasses({ CollectionMapper.class, Source.class, Target.class })
@@ -59,13 +58,13 @@ public class CollectionMappingTest {
     @WithClasses({ CollectionMapper.class, Source.class, Target.class })
     public void shouldForgeNewMapMappingMethod() {
 
-        Map sourceMap = ImmutableMap.<String, Long>builder().put( "rabbit", 1L ).build();
+        Map<String, Long> sourceMap = ImmutableMap.<String, Long>builder().put( "rabbit", 1L ).build();
         Source source = new Source();
         source.setBarMap( sourceMap );
 
         Target target = CollectionMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
-        Map targetMap = ImmutableMap.<String, String>builder().put( "rabbit", "1" ).build();
+        Map<String, String> targetMap = ImmutableMap.<String, String>builder().put( "rabbit", "1" ).build();
         assertThat( target.getBarMap() ).isEqualTo( targetMap );
 
         Source source2 = CollectionMapper.INSTANCE.targetToSource( target );

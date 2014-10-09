@@ -16,16 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.forged;
+package org.mapstruct.ap.test.bugs._306;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import java.util.Set;
 
-@Mapper
-public interface CollectionMapper {
 
-    CollectionMapper INSTANCE = Mappers.getMapper( CollectionMapper.class );
+public class Source {
 
-    Target sourceToTarget(Source source);
-    Source targetToSource(Target target);
+    private Set<String> fooSet;
+
+    public Set<String> getFooSet() {
+        return fooSet;
+    }
+
+    public void setFooSet(Set<String> fooSet) {
+        this.fooSet = fooSet;
+    }
 }

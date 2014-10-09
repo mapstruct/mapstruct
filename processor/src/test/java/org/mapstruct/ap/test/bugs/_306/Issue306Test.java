@@ -16,16 +16,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.forged;
+package org.mapstruct.ap.test.bugs._306;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-@Mapper
-public interface CollectionMapper {
+/**
+ * Reproducer for https://github.com/mapstruct/mapstruct/issues/306.
+ *
+ * @author Sjaak Derksen
+ */
+@IssueKey( "306" )
+@RunWith(AnnotationProcessorTestRunner.class)
+public class Issue306Test {
 
-    CollectionMapper INSTANCE = Mappers.getMapper( CollectionMapper.class );
-
-    Target sourceToTarget(Source source);
-    Source targetToSource(Target target);
+    @Test
+    @WithClasses( { Issue306Mapper.class, Source.class, Target.class } )
+    public void shouldForgeNewIterableMappingMethod() {
+    }
 }

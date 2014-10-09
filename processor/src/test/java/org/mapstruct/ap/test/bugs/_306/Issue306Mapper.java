@@ -16,16 +16,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.forged;
+package org.mapstruct.ap.test.bugs._306;
+
+import java.util.Set;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.TargetType;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface CollectionMapper {
+public abstract class Issue306Mapper {
 
-    CollectionMapper INSTANCE = Mappers.getMapper( CollectionMapper.class );
+    public static final Issue306Mapper INSTANCE = Mappers.getMapper( Issue306Mapper.class );
 
-    Target sourceToTarget(Source source);
-    Source targetToSource(Target target);
+    public abstract Source targetToSource(Target target);
+
+    protected void dummy1( Set<String> arg ) {
+        throw new RuntimeException();
+    }
+
+    protected Set<Long> dummy2( Object object,  @TargetType Class<?> clazz ) {
+        throw new RuntimeException();
+    }
 }
