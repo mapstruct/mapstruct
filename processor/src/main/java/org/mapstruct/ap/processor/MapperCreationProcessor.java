@@ -20,10 +20,12 @@ package org.mapstruct.ap.processor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -33,14 +35,17 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
+
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.Decorator;
+import org.mapstruct.ap.model.DefaultMapperReference;
 import org.mapstruct.ap.model.DelegatingMethod;
 import org.mapstruct.ap.model.EnumMappingMethod;
 import org.mapstruct.ap.model.IterableMappingMethod;
 import org.mapstruct.ap.model.MapMappingMethod;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
+import org.mapstruct.ap.model.MappingContext;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -48,7 +53,7 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.prism.DecoratedWithPrism;
-import org.mapstruct.ap.model.MappingContext;
+import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.util.MapperConfig;
 
@@ -59,7 +64,6 @@ import org.mapstruct.ap.util.MapperConfig;
  * @author Gunnar Morling
  */
 public class MapperCreationProcessor implements ModelElementProcessor<List<SourceMethod>, Mapper> {
-
 
     private Elements elementUtils;
     private Types typeUtils;
@@ -75,16 +79,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.messager = context.getMessager();
         this.options = context.getOptions();
         this.typeFactory = context.getTypeFactory();
+
+        List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement );
+
         MappingContext ctx =  new MappingContext(
                 typeFactory,
                 elementUtils,
                 typeUtils,
                 messager,
                 options,
+                new MappingResolverImpl( context.getMessager(), elementUtils, typeUtils, typeFactory, sourceModel, mapperReferences ),
                 mapperTypeElement,
-                sourceModel
+                sourceModel,
+                mapperReferences
         );
-        ctx.setMappingResolver( new MappingResolverImpl( ctx ) );
         this.mappingContext = ctx;
         return getMapper( mapperTypeElement, sourceModel );
     }
@@ -92,6 +100,27 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     @Override
     public int getPriority() {
         return 1000;
+    }
+
+    private List<MapperReference> initReferencedMappers(TypeElement element) {
+        List<MapperReference> result = new LinkedList<MapperReference>();
+        List<String> variableNames = new LinkedList<String>();
+
+        MapperConfig mapperPrism = MapperConfig.getInstanceOn( element );
+
+        for ( TypeMirror usedMapper : mapperPrism.uses() ) {
+            DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
+                typeFactory.getType( usedMapper ),
+                MapperPrism.getInstanceOn( typeUtils.asElement( usedMapper ) ) != null,
+                typeFactory,
+                variableNames
+            );
+
+            result.add( mapperReference );
+            variableNames.add( mapperReference.getVariableName() );
+        }
+
+        return result;
     }
 
     private Mapper getMapper(TypeElement element, List<SourceMethod> methods) {

@@ -18,26 +18,29 @@
  */
 package org.mapstruct.ap.processor.creation;
 
-import org.mapstruct.ap.model.MappingResolver;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.processing.Messager;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
-import org.mapstruct.ap.model.assignment.Assignment;
-import org.mapstruct.ap.model.MapperReference;
-import org.mapstruct.ap.model.MappingContext;
-import org.mapstruct.ap.model.VirtualMappingMethod;
 import org.mapstruct.ap.model.AssignmentFactory;
 import org.mapstruct.ap.model.Direct;
+import org.mapstruct.ap.model.MapperReference;
+import org.mapstruct.ap.model.MappingContext.MappingResolver;
+import org.mapstruct.ap.model.VirtualMappingMethod;
+import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.DefaultConversionContext;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.builtin.BuiltInMappingMethods;
@@ -46,50 +49,47 @@ import org.mapstruct.ap.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.util.Strings;
 
 /**
- * Resolves class is responsible for resolving the most suitable way to resolve a mapping from source to target.
- *
- * There are 2 basic types of mappings:
- * <ul>
- * <li>conversions</li>
- * <li>methods</li>
- * </ul>
- *
- * conversions are essentially one line mappings, such as String to Integer and Integer to Long
- * methods come in some varieties:
- * <ul>
- * <li>referenced mapping methods, these are methods implemented (or referenced) by the user. Sometimes indicated
- * with the 'uses' in the mapping annotations or part of the abstract mapper class</li>
- * <li>generated mapping methods (by means of MapStruct)</li>
- * <li>built in methods</li>
- * </ul>
+ * The one and only implementation of {@link MappingResolver}. The class has been split into an interface an
+ * implementation for the sake of avoiding package dependencies. Specifically, this implementation refers to classes
+ * which should not be exposed to the {@code model} package.
  *
  * @author Sjaak Derksen
  */
 public class MappingResolverImpl implements MappingResolver {
 
+    private final Messager messager;
+    private final Types typeUtils;
+    private final TypeFactory typeFactory;
+
+    private final List<SourceMethod> sourceModel;
+    private final List<MapperReference> mapperReferences;
+
     private final Conversions conversions;
     private final BuiltInMappingMethods builtInMethods;
     private final MethodSelectors methodSelectors;
-    private final MappingContext mappingContext;
-
-
 
     /**
      * Private methods which are not present in the original mapper interface and are added to map certain property
- types.
-     * @param mappingContext
+     * types.
      */
-    public MappingResolverImpl( MappingContext mappingContext ) {
-        this.conversions = new Conversions( mappingContext.getElementUtils(), mappingContext.getTypeFactory() );
-        this.builtInMethods = new BuiltInMappingMethods( mappingContext.getTypeFactory() );
-        this.methodSelectors = new MethodSelectors(
-                mappingContext.getTypeUtils(),
-                mappingContext.getElementUtils(),
-                mappingContext.getTypeFactory()
-        );
-        this.mappingContext = mappingContext;
-    }
+    private final Set<VirtualMappingMethod> usedVirtualMappings = new HashSet<VirtualMappingMethod>();
 
+    public MappingResolverImpl(Messager messager, Elements elementUtils, Types typeUtils, TypeFactory typeFactory, List<SourceMethod> sourceModel, List<MapperReference> mapperReferences) {
+        this.messager = messager;
+        this.typeUtils = typeUtils;
+        this.typeFactory = typeFactory;
+
+        this.sourceModel = sourceModel;
+        this.mapperReferences = mapperReferences;
+
+        this.conversions = new Conversions( elementUtils, typeFactory );
+        this.builtInMethods = new BuiltInMappingMethods( typeFactory );
+        this.methodSelectors = new MethodSelectors(
+                typeUtils,
+                elementUtils,
+                typeFactory
+        );
+    }
 
     /**
      * returns a parameter assignment
@@ -122,74 +122,64 @@ public class MappingResolverImpl implements MappingResolver {
             List<TypeMirror> qualifiers,
             String sourceReference ) {
 
-        ResolvingAttempt attempt = new ResolvingAttempt( mappingMethod,
+        ResolvingAttempt attempt = new ResolvingAttempt( sourceModel,
+                mapperReferences,
+                mappingMethod,
                 mappedElement,
                 targetPropertyName,
                 dateFormat,
                 qualifiers,
-                sourceReference,
-                conversions,
-                builtInMethods,
-                methodSelectors,
-                mappingContext
+                sourceReference
         );
 
         return attempt.getTargetAssignment( sourceType, targetType );
     }
 
+    @Override
+    public Set<VirtualMappingMethod> getUsedVirtualMappings() {
+        return usedVirtualMappings;
+    }
 
-    private static class ResolvingAttempt {
+    private class ResolvingAttempt {
 
         private final Method mappingMethod;
         private final String mappedElement;
-        private final List<MapperReference> mapperReferences;
         private final List<SourceMethod> methods;
         private final String targetPropertyName;
         private final String dateFormat;
         private final List<TypeMirror> qualifiers;
         private final String sourceReference;
-        private final Conversions conversions;
-        private final BuiltInMappingMethods builtInMethods;
-        private final MethodSelectors methodSelectors;
-        private final MappingContext mappingContext;
 
         // resolving via 2 steps creates the possibillity of wrong matches, first builtin method matches,
         // second doesn't. In that case, the first builtin method should not lead to a virtual method
         // so this set must be cleared.
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
-        private ResolvingAttempt( Method mappingMethod,
+        private ResolvingAttempt( List<SourceMethod> sourceModel,
+                List<MapperReference> mapperReferences,
+                Method mappingMethod,
                 String mappedElement,
                 String targetPropertyName,
                 String dateFormat,
                 List<TypeMirror> qualifiers,
-                String sourceReference,
-                Conversions conversions,
-                BuiltInMappingMethods builtInMethods,
-                MethodSelectors methodSelectors,
-                MappingContext mappingContext ) {
+                String sourceReference ) {
             this.mappingMethod = mappingMethod;
             this.mappedElement = mappedElement;
-            this.mapperReferences = mappingContext.getMapperReferences();
-            this.methods = mappingContext.getSourceModel();
+            this.methods = sourceModel;
             this.targetPropertyName = targetPropertyName;
             this.dateFormat = dateFormat;
             this.qualifiers = qualifiers;
             this.sourceReference = sourceReference;
-            this.conversions = conversions;
-            this.builtInMethods = builtInMethods;
-            this.methodSelectors = methodSelectors;
-            this.mappingContext = mappingContext;
             this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
         }
 
         private Assignment getTargetAssignment( Type sourceType, Type targetType ) {
 
-            // first simpele mapping method
+            // first simple mapping method
             Assignment referencedMethod = resolveViaMethod( sourceType, targetType );
             if ( referencedMethod != null ) {
                 referencedMethod.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
-                mappingContext.getUsedVirtualMappings().addAll( virtualMethodCandidates );
+                usedVirtualMappings.addAll( virtualMethodCandidates );
                 return referencedMethod;
             }
 
@@ -209,21 +199,21 @@ public class MappingResolverImpl implements MappingResolver {
             // 2 step method, first: method(method(souurce))
             referencedMethod = resolveViaMethodAndMethod( sourceType, targetType );
             if ( referencedMethod != null ) {
-                mappingContext.getUsedVirtualMappings().addAll( virtualMethodCandidates );
+                usedVirtualMappings.addAll( virtualMethodCandidates );
                 return referencedMethod;
             }
 
             // 2 step method, then: method(conversion(souurce))
             referencedMethod = resolveViaConversionAndMethod( sourceType, targetType );
             if ( referencedMethod != null ) {
-                mappingContext.getUsedVirtualMappings().addAll( virtualMethodCandidates );
+                usedVirtualMappings.addAll( virtualMethodCandidates );
                 return referencedMethod;
             }
 
             // 2 step method, finally: conversion(method(souurce))
             conversion = resolveViaMethodAndConversion( sourceType, targetType );
             if ( conversion != null ) {
-                mappingContext.getUsedVirtualMappings().addAll( virtualMethodCandidates );
+                usedVirtualMappings.addAll( virtualMethodCandidates );
                 return conversion;
             }
 
@@ -239,7 +229,7 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             ConversionContext ctx =
-                    new DefaultConversionContext( mappingContext.getTypeFactory(), targetType, dateFormat );
+                    new DefaultConversionContext( typeFactory, targetType, dateFormat );
             return conversionProvider.to( ctx );
         }
 
@@ -254,7 +244,7 @@ public class MappingResolverImpl implements MappingResolver {
             SourceMethod matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
 
             if ( matchingSourceMethod != null ) {
-                return getMappingMethodReference( matchingSourceMethod, mapperReferences, targetType );
+                return getMappingMethodReference( matchingSourceMethod, targetType );
             }
 
             // then a matching built-in method
@@ -264,7 +254,7 @@ public class MappingResolverImpl implements MappingResolver {
             if ( matchingBuiltInMethod != null ) {
                 virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod ) );
                 ConversionContext ctx =
-                        new DefaultConversionContext( mappingContext.getTypeFactory(), targetType, dateFormat );
+                        new DefaultConversionContext( typeFactory, targetType, dateFormat );
                 Assignment methodReference =  AssignmentFactory.createMethodReference( matchingBuiltInMethod, ctx );
                 methodReference.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
                 return methodReference;
@@ -424,7 +414,7 @@ public class MappingResolverImpl implements MappingResolver {
                                 returnType,
                                 Strings.join( candidates, ", " ) );
 
-                mappingMethod.printMessage( mappingContext.getMessager(), Kind.ERROR, errorMsg );
+                mappingMethod.printMessage( messager, Kind.ERROR, errorMsg );
             }
 
             if ( !candidates.isEmpty() ) {
@@ -435,9 +425,8 @@ public class MappingResolverImpl implements MappingResolver {
         }
 
         private Assignment getMappingMethodReference( SourceMethod method,
-                List<MapperReference> mapperReferences,
                 Type targetType ) {
-            MapperReference mapperReference = findMapperReference( mapperReferences, method );
+            MapperReference mapperReference = findMapperReference( method );
 
             return AssignmentFactory.createMethodReference(
                     method,
@@ -446,7 +435,7 @@ public class MappingResolverImpl implements MappingResolver {
             );
         }
 
-        private MapperReference findMapperReference( List<MapperReference> mapperReferences, SourceMethod method ) {
+        private MapperReference findMapperReference( SourceMethod method ) {
             for ( MapperReference ref : mapperReferences ) {
                 if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
                     return ref;
@@ -513,14 +502,14 @@ public class MappingResolverImpl implements MappingResolver {
             // constructor which accepts the source type
 
             TypeMirror sourceElementType = sourceType.getTypeParameters().isEmpty()
-                    ? mappingContext.getTypeFactory().getType( Object.class ).getTypeMirror()
+                    ? typeFactory.getType( Object.class ).getTypeMirror()
                     : sourceType.getTypeParameters().get( 0 ).getTypeMirror();
 
             TypeMirror targetElementType = targetType.getTypeParameters().isEmpty()
-                    ? mappingContext.getTypeFactory().getType( Object.class ).getTypeMirror()
+                    ? typeFactory.getType( Object.class ).getTypeMirror()
                     : targetType.getTypeParameters().get( 0 ).getTypeMirror();
 
-            return mappingContext.getTypeUtils().isAssignable( sourceElementType, targetElementType );
+            return typeUtils.isAssignable( sourceElementType, targetElementType );
         }
 
         /**
@@ -544,8 +533,8 @@ public class MappingResolverImpl implements MappingResolver {
             TypeMirror targetValueType;
 
             if ( sourceType.getTypeParameters().isEmpty() ) {
-                sourceKeyType = mappingContext.getTypeFactory().getType( Object.class ).getTypeMirror();
-                sourceValueType = mappingContext.getTypeFactory().getType( Object.class ).getTypeMirror();
+                sourceKeyType = typeFactory.getType( Object.class ).getTypeMirror();
+                sourceValueType = typeFactory.getType( Object.class ).getTypeMirror();
             }
             else {
                 sourceKeyType = sourceType.getTypeParameters().get( 0 ).getTypeMirror();
@@ -553,16 +542,16 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             if ( targetType.getTypeParameters().isEmpty() ) {
-                targetKeyType = mappingContext.getTypeFactory().getType( Object.class ).getTypeMirror();
-                targetValueType = mappingContext.getTypeFactory().getType( Object.class ).getTypeMirror();
+                targetKeyType = typeFactory.getType( Object.class ).getTypeMirror();
+                targetValueType = typeFactory.getType( Object.class ).getTypeMirror();
             }
             else {
                 targetKeyType = targetType.getTypeParameters().get( 0 ).getTypeMirror();
                 targetValueType = targetType.getTypeParameters().get( 1 ).getTypeMirror();
             }
 
-            return mappingContext.getTypeUtils().isAssignable( sourceKeyType, targetKeyType )
-                    && mappingContext.getTypeUtils().isAssignable( sourceValueType, targetValueType );
+            return typeUtils.isAssignable( sourceKeyType, targetKeyType )
+                    && typeUtils.isAssignable( sourceValueType, targetValueType );
         }
     }
 }

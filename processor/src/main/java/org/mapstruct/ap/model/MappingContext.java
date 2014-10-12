@@ -19,8 +19,6 @@
 package org.mapstruct.ap.model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Messager;
@@ -28,11 +26,13 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
+import org.mapstruct.ap.model.assignment.Assignment;
+import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.option.Options;
-import org.mapstruct.ap.prism.MapperPrism;
-import org.mapstruct.ap.util.MapperConfig;
 
 /**
  * This class provides the context for the builders.
@@ -61,6 +61,53 @@ import org.mapstruct.ap.util.MapperConfig;
  */
 public class MappingContext {
 
+    /**
+     * Resolves the most suitable way for mapping an element (property, iterable element etc.) from source to target.
+     * There are 2 basic types of mappings:
+     * <ul>
+     * <li>conversions</li>
+     * <li>methods</li>
+     * </ul>
+     * conversions are essentially one line mappings, such as String to Integer and Integer to Long methods come in some
+     * varieties:
+     * <ul>
+     * <li>referenced mapping methods, these are methods implemented (or referenced) by the user. Sometimes indicated
+     * with the 'uses' in the mapping annotations or part of the abstract mapper class</li>
+     * <li>generated mapping methods (by means of MapStruct)</li>
+     * <li>built in methods</li>
+     * </ul>
+     *
+     * @author Sjaak Derksen
+     */
+    public interface MappingResolver {
+
+        /**
+         * returns a parameter assignment
+         *
+         * @param mappingMethod target mapping method
+         * @param mappedElement used for error messages
+         * @param sourceType parameter to match
+         * @param targetType return type to match
+         * @param targetPropertyName name of the target property
+         * @param dateFormat used for formatting dates in build in methods that need context information
+         * @param qualifiers used for further select the appropriate mapping method based on class and name
+         * @param sourceReference call to source type as string
+         *
+         * @return an assignment to a method parameter, which can either be:
+         * <ol>
+         * <li>MethodReference</li>
+         * <li>TypeConversion</li>
+         * <li>Direct Assignment (empty TargetAssignment)</li>
+         * <li>null, no assignment found</li>
+         * </ol>
+         */
+        Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
+                                       String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
+                                       String sourceReference);
+
+        Set<VirtualMappingMethod> getUsedVirtualMappings();
+    }
+
     private final TypeFactory typeFactory;
     private final Elements elementUtils;
     private final Types typeUtils;
@@ -69,32 +116,27 @@ public class MappingContext {
     private final TypeElement mapperTypeElement;
     private final List<SourceMethod> sourceModel;
     private final List<MapperReference> mapperReferences;
-    private MappingResolver mappingResolver;
+    private final MappingResolver mappingResolver;
     private final List<MappingMethod> mappingsToGenerate = new ArrayList<MappingMethod>();
 
-    /**
-     * Private methods which are not present in the original mapper interface and are added to map certain property
-     * types.
-     */
-    private final Set<VirtualMappingMethod> usedVirtualMappings = new HashSet<VirtualMappingMethod>();
-
-
-
-    public MappingContext( TypeFactory typeFactory,
-            Elements elementUtils,
-            Types typeUtils,
-            Messager messager,
-            Options options,
-            TypeElement mapper,
-            List<SourceMethod> sourceModel ) {
+    public MappingContext(TypeFactory typeFactory,
+                          Elements elementUtils,
+                          Types typeUtils,
+                          Messager messager,
+                          Options options,
+                          MappingResolver mappingResolver,
+                          TypeElement mapper,
+                          List<SourceMethod> sourceModel,
+                          List<MapperReference> mapperReferences) {
         this.typeFactory = typeFactory;
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
         this.options = options;
+        this.mappingResolver = mappingResolver;
         this.mapperTypeElement = mapper;
         this.sourceModel = sourceModel;
-        this.mapperReferences = initReferencedMappers( mapper );
+        this.mapperReferences = mapperReferences;
     }
 
     public TypeElement getMapperTypeElement() {
@@ -133,39 +175,11 @@ public class MappingContext {
         return mappingResolver;
     }
 
-    public void setMappingResolver(MappingResolver mappingResolver) {
-        this.mappingResolver = mappingResolver;
-    }
-
     public List<MappingMethod> getMappingsToGenerate() {
         return mappingsToGenerate;
     }
 
     public Set<VirtualMappingMethod> getUsedVirtualMappings() {
-        return usedVirtualMappings;
+        return mappingResolver.getUsedVirtualMappings();
     }
-
-    private List<MapperReference> initReferencedMappers(TypeElement element) {
-        List<MapperReference> result = new LinkedList<MapperReference>();
-        List<String> variableNames = new LinkedList<String>();
-
-        MapperConfig mapperPrism = MapperConfig.getInstanceOn( element );
-
-        for ( TypeMirror usedMapper : mapperPrism.uses() ) {
-            DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
-                typeFactory.getType( usedMapper ),
-                MapperPrism.getInstanceOn( typeUtils.asElement( usedMapper ) ) != null,
-                typeFactory,
-                variableNames
-            );
-
-            result.add( mapperReference );
-            variableNames.add( mapperReference.getVariableName() );
-        }
-
-        return result;
-    }
-
-
-
 }
