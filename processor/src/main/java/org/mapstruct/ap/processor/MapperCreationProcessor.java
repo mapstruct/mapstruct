@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -70,7 +69,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private Messager messager;
     private Options options;
     private TypeFactory typeFactory;
-    private  MappingContext mappingContext;
+    private MappingContext mappingContext;
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
@@ -82,16 +81,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement );
 
-        MappingContext ctx =  new MappingContext(
-                typeFactory,
+        MappingContext ctx = new MappingContext(
+            typeFactory,
+            elementUtils,
+            typeUtils,
+            messager,
+            options,
+            new MappingResolverImpl(
+                context.getMessager(),
                 elementUtils,
                 typeUtils,
-                messager,
-                options,
-                new MappingResolverImpl( context.getMessager(), elementUtils, typeUtils, typeFactory, sourceModel, mapperReferences ),
-                mapperTypeElement,
+                typeFactory,
                 sourceModel,
                 mapperReferences
+            ),
+            mapperTypeElement,
+            sourceModel,
+            mapperReferences
         );
         this.mappingContext = ctx;
         return getMapper( mapperTypeElement, sourceModel );
@@ -232,7 +238,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return extraImports;
     }
 
-    private List<MappingMethod> getMappingMethods(List<SourceMethod> methods ) {
+    private List<MappingMethod> getMappingMethods(List<SourceMethod> methods) {
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>();
 
         for ( SourceMethod method : methods ) {
@@ -245,7 +251,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             boolean hasFactoryMethod = false;
             if ( method.isIterableMapping() ) {
 
-                IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder( );
+                IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
                 if ( method.getIterableMapping() == null && reverseMappingMethod != null &&
                     reverseMappingMethod.getIterableMapping() != null ) {
                     method.setIterableMapping( reverseMappingMethod.getIterableMapping() );
@@ -259,18 +265,18 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
 
                 IterableMappingMethod iterableMappingMethod = builder
-                        .mappingContext( mappingContext )
-                        .method( method )
-                        .dateFormat( dateFormat )
-                        .qualifiers( qualifiers )
-                        .build();
+                    .mappingContext( mappingContext )
+                    .method( method )
+                    .dateFormat( dateFormat )
+                    .qualifiers( qualifiers )
+                    .build();
 
                 hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( iterableMappingMethod );
             }
             else if ( method.isMapMapping() ) {
 
-                MapMappingMethod.Builder builder = new MapMappingMethod.Builder( );
+                MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
 
                 if ( method.getMapMapping() == null && reverseMappingMethod != null &&
                     reverseMappingMethod.getMapMapping() != null ) {
@@ -288,13 +294,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
 
                 MapMappingMethod mapMappingMethod = builder
-                        .mappingContext( mappingContext )
-                        .method( method )
-                        .keyDateFormat( keyDateFormat )
-                        .valueDateFormat( valueDateFormat )
-                        .keyQualifiers( keyQualifiers )
-                        .valueQualifiers( valueQualifiers )
-                        .build();
+                    .mappingContext( mappingContext )
+                    .method( method )
+                    .keyDateFormat( keyDateFormat )
+                    .valueDateFormat( valueDateFormat )
+                    .keyQualifiers( keyQualifiers )
+                    .valueQualifiers( valueQualifiers )
+                    .build();
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( mapMappingMethod );
@@ -310,9 +316,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
 
                 MappingMethod enumMappingMethod = builder
-                        .mappingContext( mappingContext )
-                        .souceMethod( method )
-                        .build();
+                    .mappingContext( mappingContext )
+                    .souceMethod( method )
+                    .build();
 
                 if ( enumMappingMethod != null ) {
                     mappingMethods.add( enumMappingMethod );
@@ -320,7 +326,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
 
-                BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder(  );
+                BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
 
                 if ( method.getMappings().isEmpty() ) {
                     if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
@@ -329,9 +335,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
 
                 BeanMappingMethod beanMappingMethod = builder
-                        .mappingContext( mappingContext )
-                        .souceMethod( method )
-                        .build();
+                    .mappingContext( mappingContext )
+                    .souceMethod( method )
+                    .build();
 
                 if ( beanMappingMethod != null ) {
                     hasFactoryMethod = beanMappingMethod.getFactoryMethod() != null;

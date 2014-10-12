@@ -18,11 +18,12 @@
  */
 package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.model.assignment.Assignment;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
+
+import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -41,57 +42,58 @@ public class IterableMappingMethod extends MappingMethod {
     private final FactoryMethod factoryMethod;
     private final boolean overridden;
 
-    public static class Builder  {
+    public static class Builder {
 
         private Method method;
         private MappingContext ctx;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
 
-        public Builder mappingContext( MappingContext mappingContext ) {
+        public Builder mappingContext(MappingContext mappingContext) {
             this.ctx = mappingContext;
             return this;
         }
 
-        public Builder method( Method sourceMethod ) {
+        public Builder method(Method sourceMethod) {
             this.method = sourceMethod;
             return this;
         }
 
-        public Builder dateFormat( String dateFormat ) {
+        public Builder dateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
             return this;
         }
 
-        public Builder qualifiers( List<TypeMirror> qualifiers ) {
+        public Builder qualifiers(List<TypeMirror> qualifiers) {
             this.qualifiers = qualifiers;
             return this;
         }
 
-        public IterableMappingMethod build( ) {
+        public IterableMappingMethod build() {
             Type sourceElementType =
-                    method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
+                method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
             Type targetElementType =
-                    method.getResultType().getTypeParameters().get( 0 );
+                method.getResultType().getTypeParameters().get( 0 );
             String conversionStr =
-                    Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
+                Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
 
 
-            Assignment assignment = ctx.getMappingResolver().getTargetAssignment( method,
-                    "collection element",
-                    sourceElementType,
-                    targetElementType,
-                    null, // there is no targetPropertyName
-                    dateFormat,
-                    qualifiers,
-                    conversionStr
+            Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
+                method,
+                "collection element",
+                sourceElementType,
+                targetElementType,
+                null, // there is no targetPropertyName
+                dateFormat,
+                qualifiers,
+                conversionStr
             );
 
             if ( assignment == null ) {
                 String message = String.format(
-                        "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
+                    "Can't create implementation of method %s. Found no method nor built-in conversion for mapping "
                         + "source element type into target element type.",
-                        method
+                    method
                 );
                 method.printMessage( ctx.getMessager(), Diagnostic.Kind.ERROR, message );
             }
@@ -169,7 +171,7 @@ public class IterableMappingMethod extends MappingMethod {
         }
         IterableMappingMethod other = (IterableMappingMethod) obj;
 
-       if ( !getResultType().equals( other.getResultType() ) ) {
+        if ( !getResultType().equals( other.getResultType() ) ) {
             return false;
         }
 
@@ -177,9 +179,9 @@ public class IterableMappingMethod extends MappingMethod {
             return false;
         }
 
-        for (int i = 0; i < getSourceParameters().size(); i++ ) {
+        for ( int i = 0; i < getSourceParameters().size(); i++ ) {
             if ( !getSourceParameters().get( i ).getType().getTypeParameters().get( 0 )
-                    .equals( other.getSourceParameters().get( i ).getType().getTypeParameters().get( 0 ) ) ) {
+                .equals( other.getSourceParameters().get( i ).getType().getTypeParameters().get( 0 ) ) ) {
                 return false;
             }
         }

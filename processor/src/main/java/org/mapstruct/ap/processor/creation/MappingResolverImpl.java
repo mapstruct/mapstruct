@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -74,7 +73,8 @@ public class MappingResolverImpl implements MappingResolver {
      */
     private final Set<VirtualMappingMethod> usedVirtualMappings = new HashSet<VirtualMappingMethod>();
 
-    public MappingResolverImpl(Messager messager, Elements elementUtils, Types typeUtils, TypeFactory typeFactory, List<SourceMethod> sourceModel, List<MapperReference> mapperReferences) {
+    public MappingResolverImpl(Messager messager, Elements elementUtils, Types typeUtils, TypeFactory typeFactory,
+                               List<SourceMethod> sourceModel, List<MapperReference> mapperReferences) {
         this.messager = messager;
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
@@ -85,9 +85,9 @@ public class MappingResolverImpl implements MappingResolver {
         this.conversions = new Conversions( elementUtils, typeFactory );
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
         this.methodSelectors = new MethodSelectors(
-                typeUtils,
-                elementUtils,
-                typeFactory
+            typeUtils,
+            elementUtils,
+            typeFactory
         );
     }
 
@@ -113,23 +113,24 @@ public class MappingResolverImpl implements MappingResolver {
      */
     @Override
     public Assignment getTargetAssignment(
-            Method mappingMethod,
-            String mappedElement,
-            Type sourceType,
-            Type targetType,
-            String targetPropertyName,
-            String dateFormat,
-            List<TypeMirror> qualifiers,
-            String sourceReference ) {
+        Method mappingMethod,
+        String mappedElement,
+        Type sourceType,
+        Type targetType,
+        String targetPropertyName,
+        String dateFormat,
+        List<TypeMirror> qualifiers,
+        String sourceReference) {
 
-        ResolvingAttempt attempt = new ResolvingAttempt( sourceModel,
-                mapperReferences,
-                mappingMethod,
-                mappedElement,
-                targetPropertyName,
-                dateFormat,
-                qualifiers,
-                sourceReference
+        ResolvingAttempt attempt = new ResolvingAttempt(
+            sourceModel,
+            mapperReferences,
+            mappingMethod,
+            mappedElement,
+            targetPropertyName,
+            dateFormat,
+            qualifiers,
+            sourceReference
         );
 
         return attempt.getTargetAssignment( sourceType, targetType );
@@ -155,14 +156,14 @@ public class MappingResolverImpl implements MappingResolver {
         // so this set must be cleared.
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
-        private ResolvingAttempt( List<SourceMethod> sourceModel,
-                List<MapperReference> mapperReferences,
-                Method mappingMethod,
-                String mappedElement,
-                String targetPropertyName,
-                String dateFormat,
-                List<TypeMirror> qualifiers,
-                String sourceReference ) {
+        private ResolvingAttempt(List<SourceMethod> sourceModel,
+                                 List<MapperReference> mapperReferences,
+                                 Method mappingMethod,
+                                 String mappedElement,
+                                 String targetPropertyName,
+                                 String dateFormat,
+                                 List<TypeMirror> qualifiers,
+                                 String sourceReference) {
             this.mappingMethod = mappingMethod;
             this.mappedElement = mappedElement;
             this.methods = sourceModel;
@@ -173,7 +174,7 @@ public class MappingResolverImpl implements MappingResolver {
             this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
         }
 
-        private Assignment getTargetAssignment( Type sourceType, Type targetType ) {
+        private Assignment getTargetAssignment(Type sourceType, Type targetType) {
 
             // first simple mapping method
             Assignment referencedMethod = resolveViaMethod( sourceType, targetType );
@@ -192,7 +193,7 @@ public class MappingResolverImpl implements MappingResolver {
             // then type conversion
             Assignment conversion = resolveViaConversion( sourceType, targetType );
             if ( conversion != null ) {
-                conversion.setAssignment( AssignmentFactory.createSimple( sourceReference) );
+                conversion.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
                 return conversion;
             }
 
@@ -221,7 +222,7 @@ public class MappingResolverImpl implements MappingResolver {
             return null;
         }
 
-        private Assignment resolveViaConversion( Type sourceType, Type targetType ) {
+        private Assignment resolveViaConversion(Type sourceType, Type targetType) {
             ConversionProvider conversionProvider = conversions.getConversion( sourceType, targetType );
 
             if ( conversionProvider == null ) {
@@ -229,16 +230,15 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             ConversionContext ctx =
-                    new DefaultConversionContext( typeFactory, targetType, dateFormat );
+                new DefaultConversionContext( typeFactory, targetType, dateFormat );
             return conversionProvider.to( ctx );
         }
 
         /**
          * Returns a reference to a method mapping the given source type to the given target type, if such a method
          * exists.
-         *
          */
-        private Assignment resolveViaMethod( Type sourceType, Type targetType ) {
+        private Assignment resolveViaMethod(Type sourceType, Type targetType) {
 
             // first try to find a matching source method
             SourceMethod matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
@@ -249,13 +249,13 @@ public class MappingResolverImpl implements MappingResolver {
 
             // then a matching built-in method
             BuiltInMethod matchingBuiltInMethod =
-                    getBestMatch( builtInMethods.getBuiltInMethods(), sourceType, targetType );
+                getBestMatch( builtInMethods.getBuiltInMethods(), sourceType, targetType );
 
             if ( matchingBuiltInMethod != null ) {
                 virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod ) );
                 ConversionContext ctx =
-                        new DefaultConversionContext( typeFactory, targetType, dateFormat );
-                Assignment methodReference =  AssignmentFactory.createMethodReference( matchingBuiltInMethod, ctx );
+                    new DefaultConversionContext( typeFactory, targetType, dateFormat );
+                Assignment methodReference = AssignmentFactory.createMethodReference( matchingBuiltInMethod, ctx );
                 methodReference.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
                 return methodReference;
             }
@@ -273,7 +273,7 @@ public class MappingResolverImpl implements MappingResolver {
          * </ul>
          * then this method tries to resolve this combination and make a mapping methodY( methodX ( parameter ) )
          */
-        private Assignment resolveViaMethodAndMethod( Type sourceType, Type targetType ) {
+        private Assignment resolveViaMethodAndMethod(Type sourceType, Type targetType) {
 
             List<Method> methodYCandidates = new ArrayList<Method>( methods );
             methodYCandidates.addAll( builtInMethods.getBuiltInMethods() );
@@ -288,12 +288,14 @@ public class MappingResolverImpl implements MappingResolver {
             // a nested method call can be called. so C = methodY( methodX (A) )
             for ( Method methodYCandidate : methodYCandidates ) {
                 if ( methodYCandidate.getSourceParameters().size() == 1 ) {
-                    methodRefY = resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(),
-                            targetType );
+                    methodRefY = resolveViaMethod(
+                        methodYCandidate.getSourceParameters().get( 0 ).getType(),
+                        targetType
+                    );
                     if ( methodRefY != null ) {
-                        Assignment methodRefX =  resolveViaMethod(
-                                sourceType,
-                                methodYCandidate.getSourceParameters().get( 0 ).getType()
+                        Assignment methodRefX = resolveViaMethod(
+                            sourceType,
+                            methodYCandidate.getSourceParameters().get( 0 ).getType()
                         );
                         if ( methodRefX != null ) {
                             methodRefY.setAssignment( methodRefX );
@@ -319,7 +321,7 @@ public class MappingResolverImpl implements MappingResolver {
          * </ul>
          * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
          */
-        private Assignment resolveViaConversionAndMethod( Type sourceType, Type targetType ) {
+        private Assignment resolveViaConversionAndMethod(Type sourceType, Type targetType) {
 
             List<Method> methodYCandidates = new ArrayList<Method>( methods );
             methodYCandidates.addAll( builtInMethods.getBuiltInMethods() );
@@ -329,13 +331,13 @@ public class MappingResolverImpl implements MappingResolver {
             for ( Method methodYCandidate : methodYCandidates ) {
                 if ( methodYCandidate.getSourceParameters().size() == 1 ) {
                     methodRefY = resolveViaMethod(
-                            methodYCandidate.getSourceParameters().get( 0 ).getType(),
-                            targetType
+                        methodYCandidate.getSourceParameters().get( 0 ).getType(),
+                        targetType
                     );
                     if ( methodRefY != null ) {
                         Assignment conversionXRef = resolveViaConversion(
-                                sourceType,
-                                methodYCandidate.getSourceParameters().get( 0 ).getType()
+                            sourceType,
+                            methodYCandidate.getSourceParameters().get( 0 ).getType()
                         );
                         if ( conversionXRef != null ) {
                             methodRefY.setAssignment( conversionXRef );
@@ -361,7 +363,7 @@ public class MappingResolverImpl implements MappingResolver {
          * </ul>
          * then this method tries to resolve this combination and make a mapping methodY( conversionX ( parameter ) )
          */
-        private Assignment resolveViaMethodAndConversion( Type sourceType, Type targetType ) {
+        private Assignment resolveViaMethodAndConversion(Type sourceType, Type targetType) {
 
             List<Method> methodXCandidates = new ArrayList<Method>( methods );
             methodXCandidates.addAll( builtInMethods.getBuiltInMethods() );
@@ -372,8 +374,8 @@ public class MappingResolverImpl implements MappingResolver {
             for ( Method methodXCandidate : methodXCandidates ) {
                 if ( methodXCandidate.getSourceParameters().size() == 1 ) {
                     Assignment methodRefX = resolveViaMethod(
-                            sourceType,
-                            methodXCandidate.getReturnType()
+                        sourceType,
+                        methodXCandidate.getReturnType()
                     );
                     if ( methodRefX != null ) {
                         conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
@@ -393,26 +395,27 @@ public class MappingResolverImpl implements MappingResolver {
             return conversionYRef;
         }
 
-        private <T extends Method> T getBestMatch( List<T> methods, Type sourceType, Type returnType ) {
+        private <T extends Method> T getBestMatch(List<T> methods, Type sourceType, Type returnType) {
 
             List<T> candidates = methodSelectors.getMatchingMethods(
-                    mappingMethod,
-                    methods,
-                    sourceType,
-                    returnType,
-                    qualifiers,
-                    targetPropertyName
+                mappingMethod,
+                methods,
+                sourceType,
+                returnType,
+                qualifiers,
+                targetPropertyName
             );
 
             // raise an error if more than one mapping method is suitable to map the given source type
             // into the target type
             if ( candidates.size() > 1 ) {
 
-                String errorMsg =  String.format(
-                                "Ambiguous mapping methods found for mapping " + mappedElement + " from %s to %s: %s.",
-                                sourceType,
-                                returnType,
-                                Strings.join( candidates, ", " ) );
+                String errorMsg = String.format(
+                    "Ambiguous mapping methods found for mapping " + mappedElement + " from %s to %s: %s.",
+                    sourceType,
+                    returnType,
+                    Strings.join( candidates, ", " )
+                );
 
                 mappingMethod.printMessage( messager, Kind.ERROR, errorMsg );
             }
@@ -424,18 +427,18 @@ public class MappingResolverImpl implements MappingResolver {
             return null;
         }
 
-        private Assignment getMappingMethodReference( SourceMethod method,
-                Type targetType ) {
+        private Assignment getMappingMethodReference(SourceMethod method,
+                                                     Type targetType) {
             MapperReference mapperReference = findMapperReference( method );
 
             return AssignmentFactory.createMethodReference(
-                    method,
-                    mapperReference,
-                    SourceMethod.containsTargetTypeParameter( method.getParameters() ) ? targetType : null
+                method,
+                mapperReference,
+                SourceMethod.containsTargetTypeParameter( method.getParameters() ) ? targetType : null
             );
         }
 
-        private MapperReference findMapperReference( SourceMethod method ) {
+        private MapperReference findMapperReference(SourceMethod method) {
             for ( MapperReference ref : mapperReferences ) {
                 if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
                     return ref;
@@ -459,27 +462,27 @@ public class MappingResolverImpl implements MappingResolver {
          *
          * @return {@code true} if the specified property can be mapped, {@code false} otherwise.
          */
-        private boolean isPropertyMappable( Type sourceType, Type targetType ) {
+        private boolean isPropertyMappable(Type sourceType, Type targetType) {
             boolean collectionOrMapTargetTypeHasCompatibleConstructor = false;
 
             if ( sourceType.isCollectionType() && targetType.isCollectionType() ) {
                 collectionOrMapTargetTypeHasCompatibleConstructor = collectionTypeHasCompatibleConstructor(
-                        sourceType,
-                        targetType.getImplementationType() != null
-                                ? targetType.getImplementationType() : targetType
+                    sourceType,
+                    targetType.getImplementationType() != null
+                        ? targetType.getImplementationType() : targetType
                 );
             }
 
             if ( sourceType.isMapType() && targetType.isMapType() ) {
                 collectionOrMapTargetTypeHasCompatibleConstructor = mapTypeHasCompatibleConstructor(
-                        sourceType,
-                        targetType.getImplementationType() != null
-                                ? targetType.getImplementationType() : targetType
+                    sourceType,
+                    targetType.getImplementationType() != null
+                        ? targetType.getImplementationType() : targetType
                 );
             }
 
             if ( ( ( targetType.isCollectionType() || targetType.isMapType() )
-                    && collectionOrMapTargetTypeHasCompatibleConstructor ) ) {
+                && collectionOrMapTargetTypeHasCompatibleConstructor ) ) {
                 return true;
             }
 
@@ -495,19 +498,19 @@ public class MappingResolverImpl implements MappingResolver {
          * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
          * otherwise.
          */
-        private boolean collectionTypeHasCompatibleConstructor( Type sourceType, Type targetType ) {
+        private boolean collectionTypeHasCompatibleConstructor(Type sourceType, Type targetType) {
             // note (issue #127): actually this should check for the presence of a matching constructor, with help of
             // Types#asMemberOf(); but this method seems to not work correctly in the Eclipse implementation, so instead
             // we just check whether the target type is parameterized in a way that it implicitly should have a
             // constructor which accepts the source type
 
             TypeMirror sourceElementType = sourceType.getTypeParameters().isEmpty()
-                    ? typeFactory.getType( Object.class ).getTypeMirror()
-                    : sourceType.getTypeParameters().get( 0 ).getTypeMirror();
+                ? typeFactory.getType( Object.class ).getTypeMirror()
+                : sourceType.getTypeParameters().get( 0 ).getTypeMirror();
 
             TypeMirror targetElementType = targetType.getTypeParameters().isEmpty()
-                    ? typeFactory.getType( Object.class ).getTypeMirror()
-                    : targetType.getTypeParameters().get( 0 ).getTypeMirror();
+                ? typeFactory.getType( Object.class ).getTypeMirror()
+                : targetType.getTypeParameters().get( 0 ).getTypeMirror();
 
             return typeUtils.isAssignable( sourceElementType, targetElementType );
         }
@@ -521,7 +524,7 @@ public class MappingResolverImpl implements MappingResolver {
          * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
          * otherwise.
          */
-        private boolean mapTypeHasCompatibleConstructor( Type sourceType, Type targetType ) {
+        private boolean mapTypeHasCompatibleConstructor(Type sourceType, Type targetType) {
             // note (issue #127): actually this should check for the presence of a matching constructor, with help of
             // Types#asMemberOf(); but this method seems to not work correctly in the Eclipse implementation, so instead
             // we just check whether the target type is parameterized in a way that it implicitly should have a
@@ -551,7 +554,7 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             return typeUtils.isAssignable( sourceKeyType, targetKeyType )
-                    && typeUtils.isAssignable( sourceValueType, targetValueType );
+                && typeUtils.isAssignable( sourceValueType, targetValueType );
         }
     }
 }

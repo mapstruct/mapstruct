@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 import javax.tools.Diagnostic;
-import org.mapstruct.CollectionMappingStrategy;
 
+import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Mapping;
@@ -54,7 +54,7 @@ public class BeanMappingMethod extends MappingMethod {
 
     private final FactoryMethod factoryMethod;
 
-    public static class Builder  {
+    public static class Builder {
 
         private MappingContext ctx;
         private SourceMethod method;
@@ -64,7 +64,7 @@ public class BeanMappingMethod extends MappingMethod {
             return this;
         }
 
-        public Builder souceMethod( SourceMethod sourceMethod ) {
+        public Builder souceMethod(SourceMethod sourceMethod) {
             this.method = sourceMethod;
             return this;
         }
@@ -103,7 +103,7 @@ public class BeanMappingMethod extends MappingMethod {
                 // the current target accessor can also be a getter method.
                 // The following if block, checks if the target accessor should be overruled by an add method.
                 if ( cmStrategy.equals( CollectionMappingStrategy.SETTER_PREFERRED )
-                        || cmStrategy.equals( CollectionMappingStrategy.ADDER_PREFERRED ) ) {
+                    || cmStrategy.equals( CollectionMappingStrategy.ADDER_PREFERRED ) ) {
 
                     // first check if there's a setter method.
                     ExecutableElement adderMethod = null;
@@ -115,7 +115,7 @@ public class BeanMappingMethod extends MappingMethod {
                         }
                     }
                     else if ( Executables.isGetterMethod( targetAccessor ) ) {
-                    // the current accessor is a getter (no setter available). But still, an add method is according
+                        // the current accessor is a getter (no setter available). But still, an add method is according
                         // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
                         Type targetType = ctx.getTypeFactory().getReturnType( targetAccessor );
                         adderMethod = method.getResultType().getAdderForType( targetType, targetPropertyName );
@@ -135,41 +135,41 @@ public class BeanMappingMethod extends MappingMethod {
 
                         PropertyMapping.PropertyMappingBuilder builder = new PropertyMapping.PropertyMappingBuilder();
                         propertyMapping = builder
-                                .mappingContext( ctx )
-                                .souceMethod( method )
-                                .targetAccessor( targetAccessor )
-                                .targetPropertyName( targetPropertyName )
-                                .parameter( parameter )
-                                .build();
+                            .mappingContext( ctx )
+                            .souceMethod( method )
+                            .targetAccessor( targetAccessor )
+                            .targetPropertyName( targetPropertyName )
+                            .parameter( parameter )
+                            .build();
 
                     }
                     else if ( Executables.isSetterMethod( targetAccessor )
-                            || Executables.isGetterMethod( targetAccessor ) ) {
+                        || Executables.isGetterMethod( targetAccessor ) ) {
 
                         if ( !mapping.getConstant().isEmpty() ) {
                             // its a constant
                             PropertyMapping.ConstantMappingBuilder builder =
-                                    new PropertyMapping.ConstantMappingBuilder();
+                                new PropertyMapping.ConstantMappingBuilder();
                             propertyMapping = builder
-                                    .mappingContext( ctx )
-                                    .sourceMethod( method )
-                                    .constantExpression( "\"" + mapping.getConstant() + "\"" )
-                                    .targetAccessor( targetAccessor )
-                                    .dateFormat( mapping.getDateFormat() )
-                                    .qualifiers( mapping.getQualifiers() )
-                                    .build();
+                                .mappingContext( ctx )
+                                .sourceMethod( method )
+                                .constantExpression( "\"" + mapping.getConstant() + "\"" )
+                                .targetAccessor( targetAccessor )
+                                .dateFormat( mapping.getDateFormat() )
+                                .qualifiers( mapping.getQualifiers() )
+                                .build();
                         }
 
                         else if ( !mapping.getJavaExpression().isEmpty() ) {
                             // its an expression
                             PropertyMapping.JavaExpressionMappingBuilder builder =
-                                    new PropertyMapping.JavaExpressionMappingBuilder();
+                                new PropertyMapping.JavaExpressionMappingBuilder();
                             propertyMapping = builder
-                                    .mappingContext( ctx )
-                                    .souceMethod( method )
-                                    .javaExpression( mapping.getJavaExpression() )
-                                    .targetAccessor( targetAccessor )
-                                    .build();
+                                .mappingContext( ctx )
+                                .souceMethod( method )
+                                .javaExpression( mapping.getJavaExpression() )
+                                .targetAccessor( targetAccessor )
+                                .build();
                         }
                     }
                 }
@@ -178,19 +178,19 @@ public class BeanMappingMethod extends MappingMethod {
                     for ( Parameter sourceParameter : method.getSourceParameters() ) {
                         PropertyMapping.PropertyMappingBuilder builder = new PropertyMapping.PropertyMappingBuilder();
                         PropertyMapping newPropertyMapping = builder
-                                .mappingContext( ctx )
-                                .souceMethod( method )
-                                .targetAccessor( targetAccessor )
-                                .targetPropertyName( targetPropertyName )
-                                .parameter( sourceParameter )
-                                .build();
+                            .mappingContext( ctx )
+                            .souceMethod( method )
+                            .targetAccessor( targetAccessor )
+                            .targetPropertyName( targetPropertyName )
+                            .parameter( sourceParameter )
+                            .build();
 
                         if ( propertyMapping != null && newPropertyMapping != null ) {
                             ctx.getMessager().printMessage(
-                                    Diagnostic.Kind.ERROR,
-                                    "Several possible source properties for target property \"" + targetPropertyName +
-                                            "\".",
-                                    method.getExecutable()
+                                Diagnostic.Kind.ERROR,
+                                "Several possible source properties for target property \"" + targetPropertyName +
+                                    "\".",
+                                method.getExecutable()
                             );
                             break;
                         }
@@ -209,11 +209,11 @@ public class BeanMappingMethod extends MappingMethod {
             Set<String> targetProperties = Executables.getPropertyNames( targetAccessors );
 
             reportErrorForUnmappedTargetPropertiesIfRequired(
-                    method,
-                    unmappedTargetPolicy,
-                    targetProperties,
-                    mappedTargetProperties,
-                    ignoredTargetProperties
+                method,
+                unmappedTargetPolicy,
+                targetProperties,
+                mappedTargetProperties,
+                ignoredTargetProperties
             );
             FactoryMethod factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
             return new BeanMappingMethod( method, propertyMappings, factoryMethod );
@@ -235,7 +235,7 @@ public class BeanMappingMethod extends MappingMethod {
             ReportingPolicy annotationValue = ReportingPolicy.valueOf( mapperSettings.unmappedTargetPolicy() );
 
             if ( setViaAnnotation
-                    || ctx.getOptions().getUnmappedTargetPolicy() == null ) {
+                || ctx.getOptions().getUnmappedTargetPolicy() == null ) {
                 return annotationValue;
             }
             else {
@@ -271,34 +271,34 @@ public class BeanMappingMethod extends MappingMethod {
 
                     if ( mappedProperty.getSourceParameterName() != null ) {
                         Parameter sourceParameter = method.getSourceParameter(
-                                mappedProperty.getSourceParameterName()
+                            mappedProperty.getSourceParameterName()
                         );
 
                         if ( sourceParameter == null ) {
                             ctx.getMessager().printMessage(
-                                    Diagnostic.Kind.ERROR,
-                                    String.format(
-                                            "Method has no parameter named \"%s\".",
-                                            mappedProperty.getSourceParameterName()
-                                    ),
-                                    method.getExecutable(),
-                                    mappedProperty.getMirror(),
-                                    mappedProperty.getSourceAnnotationValue()
+                                Diagnostic.Kind.ERROR,
+                                String.format(
+                                    "Method has no parameter named \"%s\".",
+                                    mappedProperty.getSourceParameterName()
+                                ),
+                                method.getExecutable(),
+                                mappedProperty.getMirror(),
+                                mappedProperty.getSourceAnnotationValue()
                             );
                             foundUnmappedProperty = true;
                         }
                         else {
                             if ( !hasSourceProperty( sourceParameter, mappedProperty.getSourcePropertyName() ) ) {
                                 ctx.getMessager().printMessage(
-                                        Diagnostic.Kind.ERROR,
-                                        String.format(
-                                                "The type of parameter \"%s\" has no property named \"%s\".",
-                                                mappedProperty.getSourceParameterName(),
-                                                mappedProperty.getSourcePropertyName()
-                                        ),
-                                        method.getExecutable(),
-                                        mappedProperty.getMirror(),
-                                        mappedProperty.getSourceAnnotationValue()
+                                    Diagnostic.Kind.ERROR,
+                                    String.format(
+                                        "The type of parameter \"%s\" has no property named \"%s\".",
+                                        mappedProperty.getSourceParameterName(),
+                                        mappedProperty.getSourcePropertyName()
+                                    ),
+                                    method.getExecutable(),
+                                    mappedProperty.getMirror(),
+                                    mappedProperty.getSourceAnnotationValue()
                                 );
                                 foundUnmappedProperty = true;
                             }
@@ -306,31 +306,31 @@ public class BeanMappingMethod extends MappingMethod {
 
                     }
                     else if ( mappedProperty.getConstant().isEmpty()
-                            && mappedProperty.getJavaExpression().isEmpty()
-                            && !hasSourceProperty( mappedProperty.getSourcePropertyName() ) ) {
+                        && mappedProperty.getJavaExpression().isEmpty()
+                        && !hasSourceProperty( mappedProperty.getSourcePropertyName() ) ) {
                         ctx.getMessager().printMessage(
-                                Diagnostic.Kind.ERROR,
-                                String.format(
-                                        "No property named \"%s\" exists in source parameter(s).",
-                                        mappedProperty.getSourceName()
-                                ),
-                                method.getExecutable(),
-                                mappedProperty.getMirror(),
-                                mappedProperty.getSourceAnnotationValue()
+                            Diagnostic.Kind.ERROR,
+                            String.format(
+                                "No property named \"%s\" exists in source parameter(s).",
+                                mappedProperty.getSourceName()
+                            ),
+                            method.getExecutable(),
+                            mappedProperty.getMirror(),
+                            mappedProperty.getSourceAnnotationValue()
                         );
                         foundUnmappedProperty = true;
                     }
                     if ( !targetProperties.contains( mappedProperty.getTargetName() ) ) {
                         ctx.getMessager().printMessage(
-                                Diagnostic.Kind.ERROR,
-                                String.format(
-                                        "Unknown property \"%s\" in return type %s.",
-                                        mappedProperty.getTargetName(),
-                                        method.getResultType()
-                                ),
-                                method.getExecutable(),
-                                mappedProperty.getMirror(),
-                                mappedProperty.getTargetAnnotationValue()
+                            Diagnostic.Kind.ERROR,
+                            String.format(
+                                "Unknown property \"%s\" in return type %s.",
+                                mappedProperty.getTargetName(),
+                                method.getResultType()
+                            ),
+                            method.getExecutable(),
+                            mappedProperty.getMirror(),
+                            mappedProperty.getTargetAnnotationValue()
                         );
                         foundUnmappedProperty = true;
                     }
@@ -339,11 +339,11 @@ public class BeanMappingMethod extends MappingMethod {
             return !foundUnmappedProperty;
         }
 
-        private void reportErrorForUnmappedTargetPropertiesIfRequired( SourceMethod method,
-                ReportingPolicy unmappedTargetPolicy,
-                Set<String> targetProperties,
-                Set<String> mappedTargetProperties,
-                Set<String> ignoredTargetProperties ) {
+        private void reportErrorForUnmappedTargetPropertiesIfRequired(SourceMethod method,
+                                                                      ReportingPolicy unmappedTargetPolicy,
+                                                                      Set<String> targetProperties,
+                                                                      Set<String> mappedTargetProperties,
+                                                                      Set<String> ignoredTargetProperties) {
 
             Set<String> unmappedTargetProperties = new HashSet<String>();
 
@@ -355,18 +355,18 @@ public class BeanMappingMethod extends MappingMethod {
 
             if ( !unmappedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
                 ctx.getMessager().printMessage(
-                        unmappedTargetPolicy.getDiagnosticKind(),
-                        MessageFormat.format(
-                                "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
-                                unmappedTargetProperties.size(),
-                                Strings.join( unmappedTargetProperties, ", " )
-                        ),
-                        method.getExecutable()
+                    unmappedTargetPolicy.getDiagnosticKind(),
+                    MessageFormat.format(
+                        "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
+                        unmappedTargetProperties.size(),
+                        Strings.join( unmappedTargetProperties, ", " )
+                    ),
+                    method.getExecutable()
                 );
             }
         }
 
-        private boolean hasSourceProperty( String propertyName ) {
+        private boolean hasSourceProperty(String propertyName) {
             for ( Parameter parameter : method.getSourceParameters() ) {
                 if ( hasSourceProperty( parameter, propertyName ) ) {
                     return true;
@@ -376,7 +376,7 @@ public class BeanMappingMethod extends MappingMethod {
             return false;
         }
 
-        private boolean hasSourceProperty( Parameter parameter, String propertyName ) {
+        private boolean hasSourceProperty(Parameter parameter, String propertyName) {
             List<ExecutableElement> getters = parameter.getType().getGetters();
             return Executables.getPropertyNames( getters ).contains( propertyName );
         }
@@ -384,8 +384,8 @@ public class BeanMappingMethod extends MappingMethod {
     }
 
     private BeanMappingMethod(SourceMethod method,
-                             List<PropertyMapping> propertyMappings,
-                             FactoryMethod factoryMethod) {
+                              List<PropertyMapping> propertyMappings,
+                              FactoryMethod factoryMethod) {
         super( method );
         this.propertyMappings = propertyMappings;
 
