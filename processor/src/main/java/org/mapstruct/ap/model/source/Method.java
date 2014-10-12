@@ -20,8 +20,9 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.List;
-import javax.annotation.processing.Messager;
-import javax.tools.Diagnostic.Kind;
+
+import javax.lang.model.element.ExecutableElement;
+
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -106,15 +107,6 @@ public interface Method {
     List<Type> getThrownTypes();
 
     /**
-     * Prints a message to the provided messager. Uses
-     *
-     * @param messager the messager
-     * @param kind error, warning, etc.
-     * @param message message to print
-     */
-    void printMessage( Messager messager, Kind kind, String message );
-
-    /**
      * Returns the type of the result.
      *
      * The result is defined as the type of the parameter designated with {@link org.mapstruct.MappingTarget},
@@ -137,4 +129,6 @@ public interface Method {
      * @return true when an abstract method is overridden.
      */
     boolean overridesMethod();
+
+    ExecutableElement getExecutable();
 }

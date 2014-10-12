@@ -95,7 +95,7 @@ public class IterableMappingMethod extends MappingMethod {
                         + "source element type into target element type.",
                     method
                 );
-                method.printMessage( ctx.getMessager(), Diagnostic.Kind.ERROR, message );
+                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR, message, method.getExecutable() );
             }
 
             // target accessor is setter, so decorate assignment as setter

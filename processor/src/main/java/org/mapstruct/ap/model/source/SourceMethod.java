@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.processing.Messager;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic.Kind;
+
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -358,10 +358,4 @@ public class SourceMethod implements Method {
     public List<Type> getThrownTypes() {
         return exceptionTypes;
     }
-
-    @Override
-    public void printMessage( Messager messager, Kind kind, String message ) {
-        messager.printMessage( kind, message, executable );
-    }
-
 }

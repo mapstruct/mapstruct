@@ -21,9 +21,9 @@ package org.mapstruct.ap.model.source;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.processing.Messager;
-import javax.lang.model.element.Element;
-import javax.tools.Diagnostic;
+
+import javax.lang.model.element.ExecutableElement;
+
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -41,9 +41,9 @@ public class ForgedMethod implements Method {
     private final List<Parameter> parameters;
     private final Type returnType;
     private final String name;
-    private final Element positionHintElement;
+    private final ExecutableElement positionHintElement;
 
-    public ForgedMethod( Type sourceType, Type targetType, Element positionHintElement ) {
+    public ForgedMethod( Type sourceType, Type targetType, ExecutableElement positionHintElement ) {
         this.parameters = Arrays.asList( new Parameter("source", sourceType) );
         this.returnType = targetType;
 
@@ -123,11 +123,6 @@ public class ForgedMethod implements Method {
     }
 
     @Override
-    public void printMessage( Messager messager, Diagnostic.Kind kind, String message ) {
-        messager.printMessage( kind, message, positionHintElement );
-    }
-
-    @Override
     public Type getResultType() {
         return returnType;
     }
@@ -140,6 +135,11 @@ public class ForgedMethod implements Method {
     @Override
     public boolean overridesMethod() {
         return  false;
+    }
+
+    @Override
+    public ExecutableElement getExecutable() {
+        return positionHintElement;
     }
 
     @Override

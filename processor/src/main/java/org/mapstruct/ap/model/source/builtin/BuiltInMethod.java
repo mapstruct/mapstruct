@@ -23,8 +23,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.processing.Messager;
-import javax.tools.Diagnostic.Kind;
+
+import javax.lang.model.element.ExecutableElement;
+
 import org.mapstruct.ap.conversion.SimpleConversion;
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.ConversionContext;
@@ -198,11 +199,6 @@ public abstract class BuiltInMethod implements Method {
     }
 
     @Override
-    public void printMessage( Messager messager, Kind kind, String message ) {
-        messager.printMessage( kind, message );
-    }
-
-    @Override
     public Type getResultType() {
         return getReturnType();
     }
@@ -220,5 +216,10 @@ public abstract class BuiltInMethod implements Method {
     @Override
     public boolean overridesMethod() {
         return  false;
+    }
+
+    @Override
+    public ExecutableElement getExecutable() {
+        return null;
     }
 }

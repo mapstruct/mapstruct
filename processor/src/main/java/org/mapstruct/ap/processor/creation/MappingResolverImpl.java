@@ -22,11 +22,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic.Kind;
+import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
@@ -417,7 +418,7 @@ public class MappingResolverImpl implements MappingResolver {
                     Strings.join( candidates, ", " )
                 );
 
-                mappingMethod.printMessage( messager, Kind.ERROR, errorMsg );
+                messager.printMessage( Diagnostic.Kind.ERROR, errorMsg, mappingMethod.getExecutable() );
             }
 
             if ( !candidates.isEmpty() ) {

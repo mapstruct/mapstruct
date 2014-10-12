@@ -107,7 +107,7 @@ public class MapMappingMethod extends MappingMethod {
                     "Can't create implementation of method %s. Found no method nor "
                         + "built-in conversion for mapping source key type to target key type.", method
                 );
-                method.printMessage( ctx.getMessager(), Diagnostic.Kind.ERROR, message );
+                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR, message, method.getExecutable() );
             }
 
             // find mapping method or conversion for value
@@ -130,7 +130,7 @@ public class MapMappingMethod extends MappingMethod {
                     "Can't create implementation of method %s. Found no method nor "
                         + "built-in conversion for mapping source value type to target value type.", method
                 );
-                method.printMessage( ctx.getMessager(), Diagnostic.Kind.ERROR, message );
+                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR, message, method.getExecutable() );
             }
 
             FactoryMethod factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );

@@ -18,23 +18,24 @@
  */
 package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.model.assignment.Assignment;
-import java.util.List;
-import java.util.Set;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+
+import java.util.List;
+import java.util.Set;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
+import javax.tools.Diagnostic;
+
 import org.mapstruct.ap.model.assignment.AdderWrapper;
+import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.assignment.GetterCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.NullCheckWrapper;
 import org.mapstruct.ap.model.assignment.SetterCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
-
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -278,7 +279,8 @@ public class PropertyMapping extends ModelElement {
             );
         }
 
-        private Assignment forgeMapping( Type sourceType, Type targetType, String sourceReference, Element element ) {
+        private Assignment forgeMapping(Type sourceType, Type targetType, String sourceReference,
+                                        ExecutableElement element) {
 
             Assignment assignment = null;
             if ( sourceType.isCollectionType() && targetType.isCollectionType() ) {
