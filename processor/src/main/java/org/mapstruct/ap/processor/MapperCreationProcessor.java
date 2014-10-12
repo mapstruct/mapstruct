@@ -44,7 +44,7 @@ import org.mapstruct.ap.model.IterableMappingMethod;
 import org.mapstruct.ap.model.MapMappingMethod;
 import org.mapstruct.ap.model.Mapper;
 import org.mapstruct.ap.model.MapperReference;
-import org.mapstruct.ap.model.MappingContext;
+import org.mapstruct.ap.model.MappingBuilderContext;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -69,7 +69,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private Messager messager;
     private Options options;
     private TypeFactory typeFactory;
-    private MappingContext mappingContext;
+    private MappingBuilderContext mappingContext;
 
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
@@ -81,7 +81,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement );
 
-        MappingContext ctx = new MappingContext(
+        MappingBuilderContext ctx = new MappingBuilderContext(
             typeFactory,
             elementUtils,
             typeUtils,

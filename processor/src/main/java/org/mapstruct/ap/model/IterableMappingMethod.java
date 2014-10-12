@@ -45,11 +45,11 @@ public class IterableMappingMethod extends MappingMethod {
     public static class Builder {
 
         private Method method;
-        private MappingContext ctx;
+        private MappingBuilderContext ctx;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
 
-        public Builder mappingContext(MappingContext mappingContext) {
+        public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
             return this;
         }

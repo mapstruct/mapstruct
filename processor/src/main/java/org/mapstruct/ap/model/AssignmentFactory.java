@@ -56,7 +56,7 @@ public class AssignmentFactory {
         return new Direct( sourceRef );
     }
 
-    public static FactoryMethod createFactoryMethod( Type returnType, MappingContext ctx ) {
+    public static FactoryMethod createFactoryMethod( Type returnType, MappingBuilderContext ctx ) {
         FactoryMethod result = null;
         for ( SourceMethod method : ctx.getSourceModel() ) {
             if ( !method.overridesMethod() && !method.isIterableMapping() && !method.isMapMapping()

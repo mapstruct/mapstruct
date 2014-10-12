@@ -21,6 +21,7 @@ package org.mapstruct.ap.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
@@ -38,7 +39,7 @@ import org.mapstruct.ap.option.Options;
  * This class provides the context for the builders.
  *
  * <p>
- * The following mappers make use of this context:
+ * The following builders make use of this context:
  * <ul>
  * <li>{@link BeanMappingMethod.Builder}</li>
  * <li>{@link PropertyMappingMethod.Builder}</li>
@@ -59,7 +60,7 @@ import org.mapstruct.ap.option.Options;
  *
  * @author Sjaak Derksen
  */
-public class MappingContext {
+public class MappingBuilderContext {
 
     /**
      * Resolves the most suitable way for mapping an element (property, iterable element etc.) from source to target.
@@ -119,7 +120,7 @@ public class MappingContext {
     private final MappingResolver mappingResolver;
     private final List<MappingMethod> mappingsToGenerate = new ArrayList<MappingMethod>();
 
-    public MappingContext(TypeFactory typeFactory,
+    public MappingBuilderContext(TypeFactory typeFactory,
                           Elements elementUtils,
                           Types typeUtils,
                           Messager messager,

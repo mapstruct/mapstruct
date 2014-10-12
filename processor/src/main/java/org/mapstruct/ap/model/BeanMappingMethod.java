@@ -56,10 +56,10 @@ public class BeanMappingMethod extends MappingMethod {
 
     public static class Builder {
 
-        private MappingContext ctx;
+        private MappingBuilderContext ctx;
         private SourceMethod method;
 
-        public Builder mappingContext(MappingContext mappingContext) {
+        public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
             return this;
         }

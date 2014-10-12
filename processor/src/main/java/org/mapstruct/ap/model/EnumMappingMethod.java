@@ -44,9 +44,9 @@ public class EnumMappingMethod extends MappingMethod {
     public static class Builder {
 
         private SourceMethod method;
-        private MappingContext ctx;
+        private MappingBuilderContext ctx;
 
-        public Builder mappingContext( MappingContext mappingContext ) {
+        public Builder mappingContext( MappingBuilderContext mappingContext ) {
             this.ctx = mappingContext;
             return this;
         }

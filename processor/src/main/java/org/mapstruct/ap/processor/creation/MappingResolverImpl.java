@@ -33,7 +33,7 @@ import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.AssignmentFactory;
 import org.mapstruct.ap.model.Direct;
 import org.mapstruct.ap.model.MapperReference;
-import org.mapstruct.ap.model.MappingContext.MappingResolver;
+import org.mapstruct.ap.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.model.VirtualMappingMethod;
 import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.common.ConversionContext;

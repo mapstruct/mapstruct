@@ -50,9 +50,9 @@ public class MapMappingMethod extends MappingMethod {
         private List<TypeMirror> keyQualifiers;
         private List<TypeMirror> valueQualifiers;
         private Method method;
-        private MappingContext ctx;
+        private MappingBuilderContext ctx;
 
-        public Builder mappingContext(MappingContext mappingContext) {
+        public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
             return this;
         }

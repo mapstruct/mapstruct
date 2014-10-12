@@ -63,13 +63,13 @@ public class PropertyMapping extends ModelElement {
 
     public static class PropertyMappingBuilder {
 
-        private MappingContext ctx;
+        private MappingBuilderContext ctx;
         private SourceMethod method;
         private ExecutableElement targetAccessor;
         private String targetPropertyName;
         private Parameter parameter;
 
-        public PropertyMappingBuilder mappingContext(MappingContext mappingContext) {
+        public PropertyMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
             return this;
         }
@@ -321,14 +321,14 @@ public class PropertyMapping extends ModelElement {
 
     public static class ConstantMappingBuilder {
 
-        private MappingContext ctx;
+        private MappingBuilderContext ctx;
         private SourceMethod method;
         private String constantExpression;
         private ExecutableElement targetAccessor;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
 
-        public ConstantMappingBuilder mappingContext(MappingContext mappingContext) {
+        public ConstantMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
             return this;
         }
@@ -415,12 +415,12 @@ public class PropertyMapping extends ModelElement {
 
     public static class JavaExpressionMappingBuilder {
 
-        private MappingContext ctx;
+        private MappingBuilderContext ctx;
         private SourceMethod method;
         private String javaExpression;
         private ExecutableElement targetAccessor;
 
-       public JavaExpressionMappingBuilder mappingContext(MappingContext mappingContext) {
+       public JavaExpressionMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
             return this;
         }
