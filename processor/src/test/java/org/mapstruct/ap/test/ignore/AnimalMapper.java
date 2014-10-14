@@ -21,7 +21,7 @@ package org.mapstruct.ap.test.ignore;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.ReverseMappingMethod;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -34,6 +34,6 @@ public interface AnimalMapper {
         @Mapping(target = "age", ignore = true)
     })
     AnimalDto animalToDto(Animal animal);
-    @ReverseMappingMethod
+    @InheritInverseConfiguration
     Animal animalDtoToAnimal(AnimalDto animalDto);
 }

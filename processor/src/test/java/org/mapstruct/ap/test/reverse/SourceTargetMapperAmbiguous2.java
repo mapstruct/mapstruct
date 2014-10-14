@@ -18,11 +18,10 @@
  */
 package org.mapstruct.ap.test.reverse;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -31,9 +30,9 @@ import org.mapstruct.factory.Mappers;
  */
 
 @Mapper
-public interface SourceTargetMapperAmbigious3 {
+public interface SourceTargetMapperAmbiguous2 {
 
-    SourceTargetMapperAmbigious3 INSTANCE = Mappers.getMapper( SourceTargetMapperAmbigious3.class );
+    SourceTargetMapperAmbiguous2 INSTANCE = Mappers.getMapper( SourceTargetMapperAmbiguous2.class );
 
     @Mappings( {
         @Mapping( source = "stringPropX", target = "stringPropY" ),
@@ -47,9 +46,9 @@ public interface SourceTargetMapperAmbigious3 {
         @Mapping( source = "integerPropX", target = "integerPropY" ),
         @Mapping( source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream" )
     } )
-    Target forward( Source source, @MappingTarget Target target );
+    Target forwardNotToReverse( Source source );
 
-    @ReverseMappingMethod(configuredBy = "forward")
+    @InheritInverseConfiguration( name = "blah" )
     @Mappings( {
         @Mapping( target = "someConstantDownstream", constant = "test" ),
         @Mapping( source = "propertyToIgnoreDownstream", ignore = true )

@@ -18,10 +18,10 @@
  */
 package org.mapstruct.ap.test.reverse;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -48,7 +48,7 @@ public interface SourceTargetMapper {
     } )
     Target forwardNotToReverse( Source source );
 
-    @ReverseMappingMethod(configuredBy = "forward")
+    @InheritInverseConfiguration( name = "forward" )
     @Mappings( {
         @Mapping( target = "someConstantDownstream", constant = "test" ),
         @Mapping( source = "propertyToIgnoreDownstream", ignore = true )

@@ -18,10 +18,10 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.ReverseMappingMethod;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -81,6 +81,6 @@ public interface SourceTargetMapper {
     @Mapping( source = "localTime", dateFormat = LOCAL_TIME_FORMAT )
     Source targetToSourceLocalTimeMapped(Target target);
 
-    @ReverseMappingMethod(configuredBy = "sourceToTarget")
+    @InheritInverseConfiguration( name = "sourceToTarget" )
     Source targetToSourceDefaultMapping(Target target);
 }

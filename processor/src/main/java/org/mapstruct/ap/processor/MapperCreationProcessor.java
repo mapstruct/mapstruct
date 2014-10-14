@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -53,8 +54,8 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.prism.DecoratedWithPrism;
+import org.mapstruct.ap.prism.InheritInverseConfigurationPrism;
 import org.mapstruct.ap.prism.MapperPrism;
-import org.mapstruct.ap.prism.ReverseMappingMethodPrism;
 import org.mapstruct.ap.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
@@ -410,7 +411,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         SourceMethod result = null;
 
-        ReverseMappingMethodPrism reversePrism = ReverseMappingMethodPrism.getInstanceOn( method.getExecutable() );
+        InheritInverseConfigurationPrism reversePrism = InheritInverseConfigurationPrism.getInstanceOn( method.getExecutable() );
         if ( reversePrism != null ) {
 
             // method is configured as being reverse method, collect candidates
@@ -421,17 +422,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
             }
 
-            String configuredBy = reversePrism.configuredBy();
+            String name = reversePrism.name();
             if ( candidates.size() == 1 ) {
                 // no ambiguity: if no configuredBy is specified, or configuredBy specified and match
-                if ( configuredBy.isEmpty() ) {
+                if ( name.isEmpty() ) {
                     result = candidates.get( 0 );
                 }
-                else if ( candidates.get( 0 ).getName().equals( configuredBy ) ) {
+                else if ( candidates.get( 0 ).getName().equals( name ) ) {
                     result = candidates.get( 0 );
                 }
                 else {
-                    reportErrorWhenNonMatchingConfiguredBy( candidates.get( 0 ), method, reversePrism );
+                    reportErrorWhenNonMatchingName( candidates.get( 0 ), method, reversePrism );
                 }
             }
             else if ( candidates.size() > 1 ) {
@@ -439,7 +440,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 List<SourceMethod> nameFilteredcandidates = new ArrayList<SourceMethod>();
                 for ( SourceMethod candidate : candidates ) {
-                    if ( candidate.getName().equals( configuredBy ) ) {
+                    if ( candidate.getName().equals( name ) ) {
                         nameFilteredcandidates.add( candidate );
                     }
                 }
@@ -448,7 +449,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     result = nameFilteredcandidates.get( 0 );
                 }
                 else if ( nameFilteredcandidates.size() > 1 ) {
-                    reportErrorWhenMoreConfiguredByMatch( nameFilteredcandidates, method, reversePrism );
+                    reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, reversePrism );
                 }
 
                 if ( result == null ) {
@@ -457,21 +458,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
 
             if ( result != null ) {
-                reportErrorIfForwardMethodHasReverseMappingMethodAnnotation( result, method, reversePrism );
+                reportErrorIfForwardMethodHasInheritInverseConfigurationAnnotation( result, method, reversePrism );
             }
 
         }
         return result;
     }
 
-    private void reportErrorIfForwardMethodHasReverseMappingMethodAnnotation( SourceMethod candidate,
-            SourceMethod method, ReverseMappingMethodPrism reversePrism ) {
+    private void reportErrorIfForwardMethodHasInheritInverseConfigurationAnnotation( SourceMethod candidate,
+            SourceMethod method, InheritInverseConfigurationPrism reversePrism ) {
 
-        ReverseMappingMethodPrism candidatePrism = ReverseMappingMethodPrism.getInstanceOn( candidate.getExecutable() );
+        InheritInverseConfigurationPrism candidatePrism = InheritInverseConfigurationPrism.getInstanceOn( candidate.getExecutable() );
         if ( candidatePrism != null ) {
             messager.printMessage( Diagnostic.Kind.ERROR,
-                    String.format( "Resolved reverse mapping: \"%s\" should not carry the @ReverseMappingMethod "
-                            + "annotation itself.",
+                    String.format( "Resolved inverse mapping method %s() should not carry the "
+                            + "@InheritInverseConfiguration annotation itself.",
                             candidate.getName()
                     ),
                     method.getExecutable(),
@@ -480,49 +481,49 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenAmbigousReverseMapping( List<SourceMethod> candidates, SourceMethod method,
-            ReverseMappingMethodPrism reversePrism ) {
+                                                        InheritInverseConfigurationPrism reversePrism ) {
 
         List<String> candidateNames = new ArrayList<String>();
         for (SourceMethod candidate : candidates ) {
             candidateNames.add( candidate.getName() );
         }
 
-        String configuredBy = reversePrism.configuredBy();
-        if ( configuredBy.isEmpty() ) {
+        String name = reversePrism.name();
+        if ( name.isEmpty() ) {
             messager.printMessage( Diagnostic.Kind.ERROR,
-                    String.format( "None of the candidates \"%s\" matches. Consider specifiying 'configuredBy'.",
-                            Strings.join( candidateNames, "," )
+                    String.format( "Several matching inverse methods exist: %s(). Specify a name explicitly.",
+                            Strings.join( candidateNames, "(), " )
                     ),
                     method.getExecutable(),
                     reversePrism.mirror );
         }
         else {
             messager.printMessage( Diagnostic.Kind.ERROR,
-                    String.format( "None of the candidates \"%s\", matches configuredBy: \"blah\".",
-                            Strings.join( candidateNames, "," ), configuredBy
+                    String.format( "None of the candidates %s() matches given name: \"%s\".",
+                            Strings.join( candidateNames, "(), " ), name
                     ),
                     method.getExecutable(),
                     reversePrism.mirror );
         }
     }
 
-    private void reportErrorWhenMoreConfiguredByMatch(List<SourceMethod> candidates, SourceMethod method,
-            ReverseMappingMethodPrism reversePrism ) {
+    private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
+                                                      InheritInverseConfigurationPrism reversePrism ) {
 
             messager.printMessage( Diagnostic.Kind.ERROR,
-                    String.format( "ConfiguredBy: \"%s\" matches more candidates: \"%s\".",
-                            Strings.join( candidates, "," ), reversePrism.configuredBy()
+                    String.format( "Given name \"%s\" matches several candidate methods: %s().",
+                        reversePrism.name(), Strings.join( candidates, "(), " )
                     ),
                     method.getExecutable(),
                     reversePrism.mirror );
     }
 
-    private void reportErrorWhenNonMatchingConfiguredBy(SourceMethod onlyCandidate, SourceMethod method,
-            ReverseMappingMethodPrism reversePrism ) {
+    private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
+                                                        InheritInverseConfigurationPrism reversePrism ) {
 
             messager.printMessage( Diagnostic.Kind.ERROR,
-                    String.format( "ConfiguredBy: \"%s\" does not match the only candidate. Did you mean: \"%s\".",
-                            reversePrism.configuredBy(), onlyCandidate.getName()
+                    String.format( "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\".",
+                            reversePrism.name(), onlyCandidate.getName()
                     ),
                     method.getExecutable(),
                     reversePrism.mirror );
