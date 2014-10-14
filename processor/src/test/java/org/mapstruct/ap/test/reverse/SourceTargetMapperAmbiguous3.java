@@ -26,33 +26,31 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
-
 @Mapper
 public interface SourceTargetMapperAmbiguous3 {
 
     SourceTargetMapperAmbiguous3 INSTANCE = Mappers.getMapper( SourceTargetMapperAmbiguous3.class );
 
-    @Mappings( {
-        @Mapping( source = "stringPropX", target = "stringPropY" ),
-        @Mapping( source = "integerPropX", target = "integerPropY" ),
-        @Mapping( source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream" )
-    } )
-    Target forward( Source source );
+    @Mappings({
+        @Mapping(source = "stringPropX", target = "stringPropY"),
+        @Mapping(source = "integerPropX", target = "integerPropY"),
+        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
+    })
+    Target forward(Source source);
 
-    @Mappings( {
-        @Mapping( source = "stringPropX", target = "stringPropY" ),
-        @Mapping( source = "integerPropX", target = "integerPropY" ),
-        @Mapping( source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream" )
-    } )
-    Target forward( Source source, @MappingTarget Target target );
+    @Mappings({
+        @Mapping(source = "stringPropX", target = "stringPropY"),
+        @Mapping(source = "integerPropX", target = "integerPropY"),
+        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
+    })
+    Target forward(Source source, @MappingTarget Target target);
 
-    @InheritInverseConfiguration( name = "forward" )
-    @Mappings( {
-        @Mapping( target = "someConstantDownstream", constant = "test" ),
-        @Mapping( source = "propertyToIgnoreDownstream", ignore = true )
-    } )
-    Source reverse( Target target );
+    @InheritInverseConfiguration(name = "forward")
+    @Mappings({
+        @Mapping(target = "someConstantDownstream", constant = "test"),
+        @Mapping(source = "propertyToIgnoreDownstream", ignore = true)
+    })
+    Source reverse(Target target);
 }

@@ -19,7 +19,6 @@
 package org.mapstruct.ap.test.reverse;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class Source {
@@ -36,7 +35,7 @@ public class Source {
         return stringPropX;
     }
 
-    public void setStringPropX( String stringPropX ) {
+    public void setStringPropX(String stringPropX) {
         this.stringPropX = stringPropX;
     }
 
@@ -44,7 +43,7 @@ public class Source {
         return integerPropX;
     }
 
-    public void setIntegerPropX( Integer integerPropX ) {
+    public void setIntegerPropX(Integer integerPropX) {
         this.integerPropX = integerPropX;
     }
 
@@ -52,7 +51,7 @@ public class Source {
         return someConstantDownstream;
     }
 
-    public void setSomeConstantDownstream( String someConstantDownstream ) {
+    public void setSomeConstantDownstream(String someConstantDownstream) {
         this.someConstantDownstream = someConstantDownstream;
     }
 
@@ -60,7 +59,7 @@ public class Source {
         return propertyToIgnoreDownstream;
     }
 
-    public void setPropertyToIgnoreDownstream( String propertyToIgnoreDownstream ) {
+    public void setPropertyToIgnoreDownstream(String propertyToIgnoreDownstream) {
         this.propertyToIgnoreDownstream = propertyToIgnoreDownstream;
     }
 

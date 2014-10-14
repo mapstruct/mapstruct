@@ -25,33 +25,31 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
-
 @Mapper
 public interface SourceTargetMapperAmbiguous2 {
 
     SourceTargetMapperAmbiguous2 INSTANCE = Mappers.getMapper( SourceTargetMapperAmbiguous2.class );
 
-    @Mappings( {
-        @Mapping( source = "stringPropX", target = "stringPropY" ),
-        @Mapping( source = "integerPropX", target = "integerPropY" ),
-        @Mapping( source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream" )
-    } )
-    Target forward( Source source );
+    @Mappings({
+        @Mapping(source = "stringPropX", target = "stringPropY"),
+        @Mapping(source = "integerPropX", target = "integerPropY"),
+        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
+    })
+    Target forward(Source source);
 
-    @Mappings( {
-        @Mapping( source = "stringPropX", target = "stringPropY" ),
-        @Mapping( source = "integerPropX", target = "integerPropY" ),
-        @Mapping( source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream" )
-    } )
-    Target forwardNotToReverse( Source source );
+    @Mappings({
+        @Mapping(source = "stringPropX", target = "stringPropY"),
+        @Mapping(source = "integerPropX", target = "integerPropY"),
+        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
+    })
+    Target forwardNotToReverse(Source source);
 
-    @InheritInverseConfiguration( name = "blah" )
-    @Mappings( {
-        @Mapping( target = "someConstantDownstream", constant = "test" ),
-        @Mapping( source = "propertyToIgnoreDownstream", ignore = true )
-    } )
-    Source reverse( Target target );
+    @InheritInverseConfiguration(name = "blah")
+    @Mappings({
+        @Mapping(target = "someConstantDownstream", constant = "test"),
+        @Mapping(source = "propertyToIgnoreDownstream", ignore = true)
+    })
+    Source reverse(Target target);
 }

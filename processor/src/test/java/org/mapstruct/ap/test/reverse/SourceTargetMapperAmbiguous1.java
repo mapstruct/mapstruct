@@ -18,40 +18,38 @@
  */
 package org.mapstruct.ap.test.reverse;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
-
 @Mapper
 public interface SourceTargetMapperAmbiguous1 {
 
     SourceTargetMapperAmbiguous1 INSTANCE = Mappers.getMapper( SourceTargetMapperAmbiguous1.class );
 
-    @Mappings( {
-        @Mapping( source = "stringPropX", target = "stringPropY" ),
-        @Mapping( source = "integerPropX", target = "integerPropY" ),
-        @Mapping( source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream" )
-    } )
-    Target forward( Source source );
+    @Mappings({
+        @Mapping(source = "stringPropX", target = "stringPropY"),
+        @Mapping(source = "integerPropX", target = "integerPropY"),
+        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
+    })
+    Target forward(Source source);
 
-    @Mappings( {
-        @Mapping( source = "stringPropX", target = "stringPropY" ),
-        @Mapping( source = "integerPropX", target = "integerPropY" ),
-        @Mapping( source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream" )
-    } )
-    Target forwardNotToReverse( Source source );
+    @Mappings({
+        @Mapping(source = "stringPropX", target = "stringPropY"),
+        @Mapping(source = "integerPropX", target = "integerPropY"),
+        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
+    })
+    Target forwardNotToReverse(Source source);
 
     @InheritInverseConfiguration
-    @Mappings( {
-        @Mapping( target = "someConstantDownstream", constant = "test" ),
-        @Mapping( source = "propertyToIgnoreDownstream", ignore = true )
-    } )
-    Source reverse( Target target );
+    @Mappings({
+        @Mapping(target = "someConstantDownstream", constant = "test"),
+        @Mapping(source = "propertyToIgnoreDownstream", ignore = true)
+    })
+    Source reverse(Target target);
 }

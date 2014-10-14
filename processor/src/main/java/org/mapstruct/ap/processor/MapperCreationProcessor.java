@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -312,7 +311,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( method.isEnumMapping() ) {
 
                 EnumMappingMethod.Builder builder = new EnumMappingMethod.Builder();
-                mergeWithReverseMappings( reverseMappingMethod, method);
+                mergeWithReverseMappings( reverseMappingMethod, method );
                 if ( method.getMappings().isEmpty() ) {
                     if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
                         method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
@@ -331,7 +330,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else {
 
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
-                mergeWithReverseMappings( reverseMappingMethod, method);
+                mergeWithReverseMappings( reverseMappingMethod, method );
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
@@ -386,7 +385,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return reversed;
     }
 
-    private void mergeWithReverseMappings( SourceMethod reverseMappingMethod, SourceMethod method ) {
+    private void mergeWithReverseMappings(SourceMethod reverseMappingMethod, SourceMethod method) {
         Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();
         if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
             // define all the base mappings based on its forward counterpart
@@ -406,12 +405,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
     }
 
-
     private SourceMethod getReverseMappingMethod(List<SourceMethod> rawMethods, SourceMethod method) {
-
         SourceMethod result = null;
+        InheritInverseConfigurationPrism reversePrism = InheritInverseConfigurationPrism.getInstanceOn(
+            method.getExecutable()
+        );
 
-        InheritInverseConfigurationPrism reversePrism = InheritInverseConfigurationPrism.getInstanceOn( method.getExecutable() );
         if ( reversePrism != null ) {
 
             // method is configured as being reverse method, collect candidates
@@ -445,7 +444,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     }
                 }
 
-                if ( nameFilteredcandidates.size() ==  1 ) {
+                if ( nameFilteredcandidates.size() == 1 ) {
                     result = nameFilteredcandidates.get( 0 );
                 }
                 else if ( nameFilteredcandidates.size() > 1 ) {
@@ -458,74 +457,93 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
 
             if ( result != null ) {
-                reportErrorIfForwardMethodHasInheritInverseConfigurationAnnotation( result, method, reversePrism );
+                reportErrorIfInverseMethodHasInheritAnnotation( result, method, reversePrism );
             }
 
         }
         return result;
     }
 
-    private void reportErrorIfForwardMethodHasInheritInverseConfigurationAnnotation( SourceMethod candidate,
-            SourceMethod method, InheritInverseConfigurationPrism reversePrism ) {
+    private void reportErrorIfInverseMethodHasInheritAnnotation(SourceMethod candidate,
+                                                                SourceMethod method,
+                                                                InheritInverseConfigurationPrism reversePrism) {
 
-        InheritInverseConfigurationPrism candidatePrism = InheritInverseConfigurationPrism.getInstanceOn( candidate.getExecutable() );
+        InheritInverseConfigurationPrism candidatePrism = InheritInverseConfigurationPrism.getInstanceOn(
+            candidate.getExecutable()
+        );
+
         if ( candidatePrism != null ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                    String.format( "Resolved inverse mapping method %s() should not carry the "
-                            + "@InheritInverseConfiguration annotation itself.",
-                            candidate.getName()
-                    ),
-                    method.getExecutable(),
-                    reversePrism.mirror );
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                String.format(
+                    "Resolved inverse mapping method %s() should not carry the "
+                        + "@InheritInverseConfiguration annotation itself.",
+                    candidate.getName()
+                ),
+                method.getExecutable(),
+                reversePrism.mirror
+            );
         }
     }
 
-    private void reportErrorWhenAmbigousReverseMapping( List<SourceMethod> candidates, SourceMethod method,
-                                                        InheritInverseConfigurationPrism reversePrism ) {
+    private void reportErrorWhenAmbigousReverseMapping(List<SourceMethod> candidates, SourceMethod method,
+                                                       InheritInverseConfigurationPrism reversePrism) {
 
         List<String> candidateNames = new ArrayList<String>();
-        for (SourceMethod candidate : candidates ) {
+        for ( SourceMethod candidate : candidates ) {
             candidateNames.add( candidate.getName() );
         }
 
         String name = reversePrism.name();
         if ( name.isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                    String.format( "Several matching inverse methods exist: %s(). Specify a name explicitly.",
-                            Strings.join( candidateNames, "(), " )
-                    ),
-                    method.getExecutable(),
-                    reversePrism.mirror );
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                String.format(
+                    "Several matching inverse methods exist: %s(). Specify a name explicitly.",
+                    Strings.join( candidateNames, "(), " )
+                ),
+                method.getExecutable(),
+                reversePrism.mirror
+            );
         }
         else {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                    String.format( "None of the candidates %s() matches given name: \"%s\".",
-                            Strings.join( candidateNames, "(), " ), name
-                    ),
-                    method.getExecutable(),
-                    reversePrism.mirror );
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                String.format(
+                    "None of the candidates %s() matches given name: \"%s\".",
+                    Strings.join( candidateNames, "(), " ), name
+                ),
+                method.getExecutable(),
+                reversePrism.mirror
+            );
         }
     }
 
     private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
-                                                      InheritInverseConfigurationPrism reversePrism ) {
+                                                  InheritInverseConfigurationPrism reversePrism) {
 
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                    String.format( "Given name \"%s\" matches several candidate methods: %s().",
-                        reversePrism.name(), Strings.join( candidates, "(), " )
-                    ),
-                    method.getExecutable(),
-                    reversePrism.mirror );
+        messager.printMessage(
+            Diagnostic.Kind.ERROR,
+            String.format(
+                "Given name \"%s\" matches several candidate methods: %s().",
+                reversePrism.name(), Strings.join( candidates, "(), " )
+            ),
+            method.getExecutable(),
+            reversePrism.mirror
+        );
     }
 
     private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
-                                                        InheritInverseConfigurationPrism reversePrism ) {
+                                                InheritInverseConfigurationPrism reversePrism) {
 
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                    String.format( "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\".",
-                            reversePrism.name(), onlyCandidate.getName()
-                    ),
-                    method.getExecutable(),
-                    reversePrism.mirror );
+        messager.printMessage(
+            Diagnostic.Kind.ERROR,
+            String.format(
+                "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\".",
+                reversePrism.name(), onlyCandidate.getName()
+            ),
+            method.getExecutable(),
+            reversePrism.mirror
+        );
     }
 }

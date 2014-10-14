@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.reverse;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
@@ -31,17 +29,18 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 /**
  * @author Sjaak Derksen
- *
  */
-@IssueKey( "252" )
-@WithClasses( { Source.class, Target.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
+@IssueKey("252")
+@WithClasses({ Source.class, Target.class })
+@RunWith(AnnotationProcessorTestRunner.class)
 public class InheritInverseConfigurationTest {
 
     @Test
-    @WithClasses( { SourceTargetMapper.class } )
+    @WithClasses({ SourceTargetMapper.class })
     public void shouldInheritInverseConfigurationMultipleCandidates() {
 
         Source source = new Source();
@@ -64,92 +63,92 @@ public class InheritInverseConfigurationTest {
     }
 
     @Test
-    @WithClasses( { SourceTargetMapperAmbiguous1.class } )
+    @WithClasses({ SourceTargetMapperAmbiguous1.class })
     @ExpectedCompilationOutcome(
-             value = CompilationResult.FAILED,
-            diagnostics = {
-                @Diagnostic( type = SourceTargetMapperAmbiguous1.class,
-                        kind = Kind.ERROR,
-                        line = 51,
-                        messageRegExp = "Several matching inverse methods exist: forward\\(\\), "
-                                + "forwardNotToReverse\\(\\). Specify a name explicitly." ),
-                @Diagnostic( type = SourceTargetMapperAmbiguous1.class,
-                        kind = Kind.WARNING,
-                        line = 56,
-                        messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"" )
-            }
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
+                kind = Kind.ERROR,
+                line = 49,
+                messageRegExp = "Several matching inverse methods exist: forward\\(\\), "
+                    + "forwardNotToReverse\\(\\). Specify a name explicitly."),
+            @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
+                kind = Kind.WARNING,
+                line = 54,
+                messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
+        }
     )
     public void shouldRaiseAmbiguousReverseMethodError() {
     }
 
     @Test
-    @WithClasses( { SourceTargetMapperAmbiguous2.class } )
+    @WithClasses({ SourceTargetMapperAmbiguous2.class })
     @ExpectedCompilationOutcome(
-             value = CompilationResult.FAILED,
-            diagnostics = {
-                @Diagnostic( type = SourceTargetMapperAmbiguous2.class,
-                        kind = Kind.ERROR,
-                        line = 51,
-                        messageRegExp = "None of the candidates forward\\(\\), forwardNotToReverse\\(\\) matches given "
-                                + "name: \"blah\"." ),
-                @Diagnostic( type = SourceTargetMapperAmbiguous2.class,
-                        kind = Kind.WARNING,
-                        line = 56,
-                        messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"" )
-            }
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
+                kind = Kind.ERROR,
+                line = 49,
+                messageRegExp = "None of the candidates forward\\(\\), forwardNotToReverse\\(\\) matches given "
+                    + "name: \"blah\"."),
+            @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
+                kind = Kind.WARNING,
+                line = 54,
+                messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
+        }
     )
     public void shouldRaiseAmbiguousReverseMethodErrorWrongName() {
     }
 
     @Test
-    @WithClasses( { SourceTargetMapperAmbiguous3.class } )
+    @WithClasses({ SourceTargetMapperAmbiguous3.class })
     @ExpectedCompilationOutcome(
-             value = CompilationResult.FAILED,
-            diagnostics = {
-                @Diagnostic( type = SourceTargetMapperAmbiguous3.class,
-                        kind = Kind.ERROR,
-                        line = 52,
-                        messageRegExp = "Given name \"forward\" matches several candidate methods: .*forward.*\\(\\), "
-                                + ".*forward.*\\(\\)" ),
-                @Diagnostic( type = SourceTargetMapperAmbiguous3.class,
-                        kind = Kind.WARNING,
-                        line = 57,
-                        messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"" )
-            }
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
+                kind = Kind.ERROR,
+                line = 50,
+                messageRegExp = "Given name \"forward\" matches several candidate methods: .*forward.*\\(\\), "
+                    + ".*forward.*\\(\\)"),
+            @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
+                kind = Kind.WARNING,
+                line = 55,
+                messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
+        }
     )
     public void shouldRaiseAmbiguousReverseMethodErrorDuplicatedName() {
     }
 
     @Test
-    @WithClasses( { SourceTargetMapperErroneouslyAnnotated.class } )
+    @WithClasses({ SourceTargetMapperErroneouslyAnnotated.class })
     @ExpectedCompilationOutcome(
-             value = CompilationResult.FAILED,
-            diagnostics = {
-                @Diagnostic( type = SourceTargetMapperErroneouslyAnnotated.class,
-                        kind = Kind.ERROR,
-                        line = 51,
-                        messageRegExp = "Resolved inverse mapping method reverse\\(\\) should not carry the "
-                                + "@InheritInverseConfiguration annotation itself." )
-            }
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated.class,
+                kind = Kind.ERROR,
+                line = 49,
+                messageRegExp = "Resolved inverse mapping method reverse\\(\\) should not carry the "
+                    + "@InheritInverseConfiguration annotation itself.")
+        }
     )
     public void shouldUseWronglyAnnotatedError() {
     }
 
     @Test
-    @WithClasses( { SourceTargetMapperNonMatchingName.class } )
+    @WithClasses({ SourceTargetMapperNonMatchingName.class })
     @ExpectedCompilationOutcome(
-             value = CompilationResult.FAILED,
-            diagnostics = {
-                @Diagnostic( type = SourceTargetMapperNonMatchingName.class,
-                        kind = Kind.ERROR,
-                        line = 44,
-                        messageRegExp = "Given name \"blah\" does not match the only candidate. Did you mean: "
-                                + "\"forward\"." ),
-                @Diagnostic( type = SourceTargetMapperNonMatchingName.class,
-                        kind = Kind.WARNING,
-                        line = 49,
-                        messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"" )
-            }
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
+                kind = Kind.ERROR,
+                line = 42,
+                messageRegExp = "Given name \"blah\" does not match the only candidate. Did you mean: "
+                    + "\"forward\"."),
+            @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
+                kind = Kind.WARNING,
+                line = 47,
+                messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
+        }
     )
     public void shouldAdviseOnSpecifyingCorrectName() {
     }
