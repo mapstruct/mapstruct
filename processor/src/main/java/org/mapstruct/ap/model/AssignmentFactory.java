@@ -52,7 +52,7 @@ public class AssignmentFactory {
         return new MethodReference( method, contextParam );
     }
 
-    public static Direct createSimple(String sourceRef) {
+    public static Direct createDirect(String sourceRef) {
         return new Direct( sourceRef );
     }
 

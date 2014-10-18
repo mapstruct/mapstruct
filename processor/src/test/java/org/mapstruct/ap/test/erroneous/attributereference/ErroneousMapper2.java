@@ -16,25 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.source.expressions.java;
+package org.mapstruct.ap.test.erroneous.attributereference;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
-import org.mapstruct.factory.Mappers;
 
-/**
- * @author Sjaak Derksen
- */
-@Mapper( imports = TimeAndFormat.class )
-public interface SourceTargetMapperSeveralSources {
-
-    SourceTargetMapperSeveralSources INSTANCE = Mappers.getMapper( SourceTargetMapperSeveralSources.class );
+@Mapper
+public interface ErroneousMapper2 {
 
     @Mappings( {
-        @Mapping( target = "timeAndFormat", expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ))" ),
-        @Mapping( source = "s1.anotherProp", target = "anotherProp" )
+        @Mapping( target = "foo", ignore = true ),
+        @Mapping( target = "foo", constant = "5" )
     } )
-    Target sourceToTarget( Source s, Source2 s1 );
+    Target sourceToTarget( Source source );
+
 }

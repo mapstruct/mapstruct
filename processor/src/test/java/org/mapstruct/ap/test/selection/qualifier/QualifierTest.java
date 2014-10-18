@@ -109,8 +109,8 @@ public class QualifierTest {
                 @Diagnostic( type = ErroneousMapper.class,
                         kind = Kind.ERROR,
                         line = 42,
-                        messageRegExp = "Ambiguous mapping methods found for mapping property 'title' "
-                        + "from java.lang.String to java.lang.String.*" )
+                        messageRegExp = "Ambiguous mapping methods found for mapping property "
+                                + "\"java.lang.String title\" from java.lang.String to java.lang.String.*" )
             }
     )
     public void shouldNotProduceMatchingMethod() {

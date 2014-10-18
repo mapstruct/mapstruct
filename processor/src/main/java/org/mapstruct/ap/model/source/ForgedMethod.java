@@ -32,8 +32,6 @@ import org.mapstruct.ap.util.Strings;
 /**
  * This method will be generated in absence of a suitable abstract method to implement.
  *
- * This concerns Iterable- and MapMappingMethods.
- *
  * @author Sjaak Derksen
  */
 public class ForgedMethod implements Method {
@@ -43,8 +41,17 @@ public class ForgedMethod implements Method {
     private final String name;
     private final ExecutableElement positionHintElement;
 
+    /**
+     * Creates a new Forged Method.
+     *
+     * The name will be based on the source type name and target type name.
+     *
+     * @param sourceType the source type
+     * @param targetType the target type.
+     * @param positionHintElement element used to for reference to the position in the source file.
+     */
     public ForgedMethod( Type sourceType, Type targetType, ExecutableElement positionHintElement ) {
-        this.parameters = Arrays.asList( new Parameter("source", sourceType) );
+        this.parameters = Arrays.asList( new Parameter( Strings.decapitalize( sourceType.getName() ), sourceType ) );
         this.returnType = targetType;
 
         String fromName = getName( parameters.iterator().next().getType() );
@@ -54,10 +61,25 @@ public class ForgedMethod implements Method {
         this.positionHintElement = positionHintElement;
     }
 
+    /**
+     * Creates a new Forged Method. with the given name.
+     *
+     * @param name the (unique name) for this method
+     * @param sourceType the source type
+     * @param targetType the target type.
+     * @param positionHintElement element used to for reference to the position in the source file.
+     */
+    public ForgedMethod( String name, Type sourceType, Type targetType, ExecutableElement positionHintElement ) {
+        this.parameters = Arrays.asList( new Parameter( Strings.decapitalize( sourceType.getName() ), sourceType ) );
+        this.returnType = targetType;
+        this.name = name;
+        this.positionHintElement = positionHintElement;
+    }
+
     private String getName( Type type ) {
-        StringBuilder builder = new StringBuilder( );
+        StringBuilder builder = new StringBuilder();
         for ( Type typeParam : type.getTypeParameters() ) {
-              builder.append( typeParam.getName() );
+            builder.append( typeParam.getName() );
         }
         builder.append( type.getName() );
         return builder.toString();
@@ -73,7 +95,7 @@ public class ForgedMethod implements Method {
         if ( sourceTypes.size() == parameters.size() ) {
             return false;
         }
-        for (int i = 0; i < sourceTypes.size(); i++ ) {
+        for ( int i = 0; i < sourceTypes.size(); i++ ) {
             if ( !sourceTypes.get( i ).equals( parameters.get( i ).getType() ) ) {
                 return false;
             }
@@ -134,7 +156,7 @@ public class ForgedMethod implements Method {
 
     @Override
     public boolean overridesMethod() {
-        return  false;
+        return false;
     }
 
     @Override

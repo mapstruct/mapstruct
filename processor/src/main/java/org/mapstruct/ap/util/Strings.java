@@ -114,6 +114,23 @@ public class Strings {
         return sb.toString();
     }
 
+    public static String joinAndCamelize(Iterable<?> iterable) {
+        StringBuilder sb = new StringBuilder();
+        boolean isFirst = true;
+
+        for ( Object object : iterable ) {
+            if ( !isFirst ) {
+                sb.append( capitalize( object.toString() ) );
+            }
+            else {
+                sb.append( object );
+                isFirst = false;
+            }
+        }
+
+        return sb.toString();
+    }
+
     public static boolean isEmpty(String string) {
         return string == null || string.isEmpty();
     }

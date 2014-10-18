@@ -367,7 +367,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         if ( forwardMappingMethod != null && !forwardMappingMethod.getMappings().isEmpty() ) {
             for ( List<Mapping> mappings : forwardMappingMethod.getMappings().values() ) {
                 for ( Mapping forwardMapping : mappings ) {
-                    Mapping reversed = forwardMapping.reverse();
+                    Mapping reversed = forwardMapping.reverse( method, messager, typeFactory );
                     if ( reversed != null ) {
                         List<Mapping> mappingsOfProperty = newMappings.get( reversed.getTargetName() );
                         if ( mappingsOfProperty == null ) {

@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.processing.Messager;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
@@ -29,6 +31,8 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -64,9 +68,11 @@ public class SourceMethod implements Method {
                                                                 List<Type> exceptionTypes,
                                                                 Map<String, List<Mapping>> mappings,
                                                                 IterableMapping iterableMapping, MapMapping mapMapping,
-                                                                Types typeUtils) {
+                                                                Types typeUtils,
+                                                                Messager messager,
+                                                                TypeFactory typeFactory ) {
 
-        return new SourceMethod(
+        SourceMethod sourceMethod = new SourceMethod(
             null,
             executable,
             parameters,
@@ -75,8 +81,13 @@ public class SourceMethod implements Method {
             mappings,
             iterableMapping,
             mapMapping,
-            typeUtils
-        );
+            typeUtils );
+        for ( Map.Entry<String, List<Mapping>> entry : sourceMethod.getMappings().entrySet() ) {
+            for ( Mapping mapping : entry.getValue() ) {
+                mapping.init( sourceMethod, messager, typeFactory );
+            }
+        }
+        return sourceMethod;
     }
 
     public static SourceMethod forReferencedMethod(Type declaringMapper, ExecutableElement executable,
@@ -299,14 +310,28 @@ public class SourceMethod implements Method {
 
     /**
      * Returns the {@link Mapping}s for the given source property.
+     * @param sourcePropertyName the source property name
+     * @return list of mappings
      */
     public List<Mapping> getMappingBySourcePropertyName(String sourcePropertyName) {
         List<Mapping> mappingsOfSourceProperty = new ArrayList<Mapping>();
 
         for ( List<Mapping> mappingOfProperty : mappings.values() ) {
             for ( Mapping mapping : mappingOfProperty ) {
-                if ( mapping.getSourcePropertyName().equals( sourcePropertyName ) ) {
-                    mappingsOfSourceProperty.add( mapping );
+
+                if ( isEnumMapping() ) {
+                    if ( mapping.getSourceName().equals( sourcePropertyName ) ) {
+                        mappingsOfSourceProperty.add( mapping );
+                    }
+                }
+                else {
+                    List<PropertyEntry> sourceEntries = mapping.getSourceReference().getPropertyEntries();
+
+                    // there can only be a mapping if there's only one entry for a source property, so: param.property.
+                    // There can be no mapping if there are more entries. So: param.property.property2
+                    if ( sourceEntries.size() == 1 && sourcePropertyName.equals( sourceEntries.get( 0 ).getName() ) ) {
+                        mappingsOfSourceProperty.add( mapping );
+                    }
                 }
             }
         }

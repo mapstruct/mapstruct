@@ -35,13 +35,15 @@ import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.ForgedMethod;
-import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.util.Executables;
 
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+import org.mapstruct.ap.model.source.SourceReference;
+import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
+import org.mapstruct.ap.util.Strings;
 
 
 /**
@@ -63,11 +65,14 @@ public class PropertyMapping extends ModelElement {
 
     public static class PropertyMappingBuilder {
 
+        // initial properties
         private MappingBuilderContext ctx;
         private SourceMethod method;
         private ExecutableElement targetAccessor;
         private String targetPropertyName;
-        private Parameter parameter;
+        private String dateFormat;
+        private List<TypeMirror> qualifiers;
+        private SourceReference sourceReference;
 
         public PropertyMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -89,8 +94,18 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public PropertyMappingBuilder parameter(Parameter parameter) {
-            this.parameter = parameter;
+        public PropertyMappingBuilder sourceReference(SourceReference sourceReference) {
+            this.sourceReference = sourceReference;
+            return this;
+        }
+
+        public PropertyMappingBuilder qualifiers( List<TypeMirror> qualifiers ) {
+            this.qualifiers = qualifiers;
+            return this;
+        }
+
+        public PropertyMappingBuilder dateFormat( String dateFormat ) {
+            this.dateFormat = dateFormat;
             return this;
         }
 
@@ -103,78 +118,45 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMapping build() {
 
-            // check if there's a mapping defined
-            Mapping mapping = method.getSingleMappingByTargetPropertyName( targetPropertyName );
-            String dateFormat = null;
-            List<TypeMirror> qualifiers = null;
-            String sourcePropertyName;
-            if ( mapping != null ) {
-                dateFormat = mapping.getDateFormat();
-                qualifiers = mapping.getQualifiers();
-                sourcePropertyName =
-                    mapping.getSourcePropertyName() == null ? targetPropertyName : mapping.getSourcePropertyName();
+            // handle target
+            TargetAccessorType targetAccessorType = getTargetAcccessorType();
+            Type targetType = getTargetType( targetAccessorType );
+
+            // handle source
+            String sourceElement = getSourceElement();
+            Type sourceType = getSourceType();
+            String sourceRefStr;
+            if ( targetAccessorType == TargetAccessorType.ADDER && sourceType.isCollectionType() ) {
+                // handle adder, if source is collection then use iterator element type as source type.
+                // sourceRef becomes a local variable in the itereation.
+                sourceType = sourceType.getTypeParameters().get( 0 );
+                sourceRefStr = Executables.getElementNameForAdder( targetAccessor );
             }
             else {
-                sourcePropertyName = targetPropertyName;
+                sourceRefStr = getSourceRef();
             }
 
-            List<ExecutableElement> sourceGetters = parameter.getType().getGetters();
+            return getPropertyMapping( sourceType, targetType, targetAccessorType, sourceRefStr, sourceElement );
 
-            // then iterate over source accessors (assuming the source is a bean)
-            for ( ExecutableElement sourceAccessor : sourceGetters ) {
-                if ( Executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) ) {
-                    return getPropertyMapping( sourceAccessor, dateFormat, qualifiers );
-                }
-            }
-            return null;
         }
 
-        private PropertyMapping getPropertyMapping(ExecutableElement sourceAccessor,
-                                                   String dateFormat,
-                                                   List<TypeMirror> qualifiers) {
-
-            Type sourceType;
-            Type targetType;
-            TargetAccessorType targetAccessorType;
-            String sourceReference = parameter.getName() + "." + sourceAccessor.getSimpleName().toString() + "()";
-            String iteratorReference = null;
-            boolean sourceIsCollection = false;
-            if ( Executables.isSetterMethod( targetAccessor ) ) {
-                sourceType = ctx.getTypeFactory().getReturnType( sourceAccessor );
-                targetType = ctx.getTypeFactory().getSingleParameter( targetAccessor ).getType();
-                targetAccessorType = TargetAccessorType.SETTER;
-            }
-            else if ( Executables.isAdderMethod( targetAccessor ) ) {
-                sourceType = ctx.getTypeFactory().getReturnType( sourceAccessor );
-                if ( sourceType.isCollectionType() ) {
-                    sourceIsCollection = true;
-                    sourceType = sourceType.getTypeParameters().get( 0 );
-                    iteratorReference = Executables.getElementNameForAdder( targetAccessor );
-                }
-                targetType = ctx.getTypeFactory().getSingleParameter( targetAccessor ).getType();
-                targetAccessorType = TargetAccessorType.ADDER;
-            }
-            else {
-                sourceType = ctx.getTypeFactory().getReturnType( sourceAccessor );
-                targetType = ctx.getTypeFactory().getReturnType( targetAccessor );
-                targetAccessorType = TargetAccessorType.GETTER;
-            }
-            String sourcePropertyName = Executables.getPropertyName( sourceAccessor );
-            String mappedElement = "property '" + sourcePropertyName + "'";
+        private PropertyMapping getPropertyMapping(Type sourceType, Type targetType,
+                TargetAccessorType targetAccessorType, String sourceRefStr, String sourceElement) {
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
-                mappedElement,
+                sourceElement,
                 sourceType,
                 targetType,
                 targetPropertyName,
                 dateFormat,
                 qualifiers,
-                iteratorReference != null ? iteratorReference : sourceReference
+                sourceRefStr
             );
 
+            // No mapping found. Try to forge a mapping
             if ( assignment == null ) {
-                assignment = forgeMapping( sourceType, targetType, sourceReference, method.getExecutable() );
+                assignment = forgeMapOrIterableMapping( sourceType, targetType, sourceRefStr, method.getExecutable() );
             }
 
             if ( assignment != null ) {
@@ -232,11 +214,11 @@ public class PropertyMapping extends ModelElement {
                     }
                     else {
                         // TargetAccessorType must be ADDER
-                        if ( sourceIsCollection ) {
+                        if ( getSourceType().isCollectionType() ) {
                             assignment = new AdderWrapper(
                                 assignment,
                                 method.getThrownTypes(),
-                                sourceReference,
+                                getSourceRef(),
                                 sourceType
                             );
                         }
@@ -252,24 +234,121 @@ public class PropertyMapping extends ModelElement {
                 ctx.getMessager().printMessage(
                     Diagnostic.Kind.ERROR,
                     String.format(
-                        "Can't map property \"%s %s\" to \"%s %s\".",
-                        sourceType,
-                        sourcePropertyName,
-                        targetType,
-                        targetPropertyName
+                            "Can't map %s to \"%s %s\".",
+                            sourceElement,
+                            targetType,
+                            targetPropertyName
                     ),
                     method.getExecutable()
                 );
             }
             return new PropertyMapping(
-                parameter.getName(),
+                sourceReference.getParameter().getName(),
                 targetAccessor.getSimpleName().toString(),
                 targetType,
                 assignment
             );
         }
 
-        private Assignment forgeMapping(Type sourceType, Type targetType, String sourceReference,
+        private Type getSourceType() {
+
+            Parameter sourceParam = sourceReference.getParameter();
+            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+            if ( propertyEntries.isEmpty() ) {
+                return sourceParam.getType();
+            }
+            else if ( propertyEntries.size() == 1 ) {
+                PropertyEntry propertyEntry = propertyEntries.get( 0 );
+                return propertyEntry.getType();
+            }
+            else {
+                PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
+                return lastPropertyEntry.getType();
+            }
+        }
+
+
+        private String getSourceRef() {
+
+            Parameter sourceParam = sourceReference.getParameter();
+            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+            if ( propertyEntries.isEmpty() ) {
+                return sourceParam.getName();
+            }
+            else if ( propertyEntries.size() == 1 ) {
+                PropertyEntry propertyEntry = propertyEntries.get( 0 );
+                return sourceParam.getName() + "." + propertyEntry.getAccessor().getSimpleName() + "()";
+            }
+            else {
+                PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
+
+                // forge a method from the parameter type to the last entry type.
+                String forgedMethodName = Strings.joinAndCamelize( sourceReference.getElementNames() );
+                ForgedMethod methodToGenerate = new ForgedMethod(
+                        forgedMethodName,
+                        sourceReference.getParameter().getType(),
+                        lastPropertyEntry.getType(),
+                        method.getExecutable()
+                );
+                NestedPropertyMappingMethod.Builder builder = new NestedPropertyMappingMethod.Builder();
+                NestedPropertyMappingMethod nestedPropertyMapping = builder
+                        .method( methodToGenerate )
+                        .propertyEntries( sourceReference.getPropertyEntries() )
+                        .build();
+
+                // add if not yet existing
+                if ( !ctx.getMappingsToGenerate().contains( nestedPropertyMapping ) ) {
+                    ctx.getMappingsToGenerate().add( nestedPropertyMapping );
+                }
+
+                return forgedMethodName + "( " + sourceParam.getName() + " )";
+            }
+        }
+
+        private String getSourceElement() {
+
+            Parameter sourceParam = sourceReference.getParameter();
+            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+            if ( propertyEntries.isEmpty() ) {
+                return String.format( "parameter \"%s %s\"", sourceParam.getType(), sourceParam.getName() );
+            }
+            else if ( propertyEntries.size() == 1 ) {
+                PropertyEntry propertyEntry = propertyEntries.get( 0 );
+                return String.format( "property \"%s %s\"", propertyEntry.getType(), propertyEntry.getName() );
+            }
+            else {
+                PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
+                return String.format( "property \"%s %s\"",
+                        lastPropertyEntry.getType(),
+                        Strings.join( sourceReference.getElementNames(), "." )
+                );
+            }
+        }
+
+        private TargetAccessorType getTargetAcccessorType() {
+            if ( Executables.isSetterMethod( targetAccessor ) ) {
+                return TargetAccessorType.SETTER;
+            }
+            else if ( Executables.isAdderMethod( targetAccessor ) ) {
+                return TargetAccessorType.ADDER;
+            }
+            else {
+                return TargetAccessorType.GETTER;
+            }
+        }
+
+        private Type getTargetType( TargetAccessorType targetAccessorType) {
+            switch ( targetAccessorType ) {
+                case ADDER:
+                case SETTER:
+                    return ctx.getTypeFactory().getSingleParameter( targetAccessor ).getType();
+                case GETTER:
+                default:
+                    return ctx.getTypeFactory().getReturnType( targetAccessor );
+            }
+        }
+
+        private Assignment forgeMapOrIterableMapping(Type sourceType, Type targetType, String sourceReference,
                                         ExecutableElement element) {
 
             Assignment assignment = null;
@@ -288,7 +367,7 @@ public class PropertyMapping extends ModelElement {
                     ctx.getMappingsToGenerate().add( iterableMappingMethod );
                 }
                 assignment = AssignmentFactory.createMethodReference( methodToGenerate, null, targetType );
-                assignment.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
+                assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
 
             }
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
@@ -305,7 +384,7 @@ public class PropertyMapping extends ModelElement {
                     ctx.getMappingsToGenerate().add( mapMappingMethod );
                 }
                 assignment = AssignmentFactory.createMethodReference( methodToGenerate, null, targetType );
-                assignment.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
+                assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
             }
             return assignment;
         }
@@ -435,7 +514,7 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMapping build() {
 
-            Assignment assignment = AssignmentFactory.createSimple( javaExpression );
+            Assignment assignment = AssignmentFactory.createDirect( javaExpression );
             assignment = new SetterWrapper( assignment, method.getThrownTypes() );
 
             Type targetType;

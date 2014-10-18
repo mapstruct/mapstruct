@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
@@ -35,10 +34,10 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
+import org.mapstruct.ap.model.common.TypeFactory;
 
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
-import org.mapstruct.ap.util.AnnotationProcessingException;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.
@@ -50,8 +49,6 @@ public class Mapping {
     private static final Pattern JAVA_EXPRESSION = Pattern.compile( "^java\\((.*)\\)$" );
 
     private final String sourceName;
-    private final String sourceParameterName;
-    private final String sourcePropertyName;
     private final String constant;
     private final String javaExpression;
     private final String targetName;
@@ -63,6 +60,7 @@ public class Mapping {
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
+    private SourceReference sourceReference;
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
                                                                ExecutableElement method,
@@ -100,12 +98,6 @@ public class Mapping {
 
 
     public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element, Messager messager) {
-        String[] sourceNameParts = getSourceNameParts(
-            mappingPrism.source(),
-            element,
-            mappingPrism.mirror,
-            mappingPrism.values.source()
-        );
 
         if ( mappingPrism.target().isEmpty() ) {
             messager.printMessage(
@@ -144,16 +136,16 @@ public class Mapping {
         }
 
         String source = mappingPrism.source().isEmpty() ? null : mappingPrism.source();
+        String constant = mappingPrism.constant().isEmpty() ? null : mappingPrism.constant();
         String expression = getExpression( mappingPrism, element, messager );
+        String dateFormat = mappingPrism.dateFormat().isEmpty() ? null : mappingPrism.dateFormat();
 
         return new Mapping(
             source,
-            sourceNameParts != null ? sourceNameParts[0] : null,
-            sourceNameParts != null ? sourceNameParts[1] : source,
-            mappingPrism.constant().isEmpty() ? null : mappingPrism.constant(),
+            constant,
             expression,
             mappingPrism.target(),
-            mappingPrism.dateFormat().isEmpty() ? null : mappingPrism.dateFormat(),
+            dateFormat,
             mappingPrism.qualifiedBy(),
             mappingPrism.ignore(),
             false,
@@ -184,34 +176,12 @@ public class Mapping {
         return javaExpressionMatcher.group( 1 ).trim();
     }
 
-    private static String[] getSourceNameParts(String sourceName, Element element, AnnotationMirror annotationMirror,
-                                               AnnotationValue annotationValue) {
-        if ( !sourceName.contains( "." ) ) {
-            return null;
-        }
-
-        String[] parts = sourceName.split( "\\." );
-        if ( parts.length != 2 ) {
-            throw new AnnotationProcessingException(
-                "Mapping of nested attributes not supported yet.",
-                element,
-                annotationMirror,
-                annotationValue
-            );
-        }
-
-        return parts;
-    }
-
     //CHECKSTYLE:OFF
-    private Mapping(String sourceName, String sourceParameterName, String sourcePropertyName, String constant,
-                    String javaExpression, String targetName, String dateFormat, List<TypeMirror> qualifiers,
+    private Mapping(String sourceName, String constant,  String javaExpression, String targetName,
+                    String dateFormat, List<TypeMirror> qualifiers,
                     boolean isIgnored, boolean isInheritedFromInverseMethod, AnnotationMirror mirror,
-                    AnnotationValue sourceAnnotationValue,
-                    AnnotationValue targetAnnotationValue) {
+                    AnnotationValue sourceAnnotationValue,  AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
-        this.sourceParameterName = sourceParameterName;
-        this.sourcePropertyName = sourcePropertyName;
         this.constant = constant;
         this.javaExpression = javaExpression;
         this.targetName = targetName;
@@ -225,6 +195,18 @@ public class Mapping {
     }
     //CHECKSTYLE:ON
 
+    public void init( SourceMethod method, Messager messager, TypeFactory typeFactory ) {
+
+        if ( !method.isEnumMapping() ) {
+            sourceReference = new SourceReference.BuilderFromMapping()
+                    .mapping( this )
+                    .method( method )
+                    .messager( messager )
+                    .typeFactory( typeFactory )
+                    .build();
+        }
+    }
+
     /**
      * Returns the complete source name of this mapping, either a qualified (e.g. {@code parameter1.foo}) or
      * unqualified (e.g. {@code foo}) property reference.
@@ -233,24 +215,6 @@ public class Mapping {
      */
     public String getSourceName() {
         return sourceName;
-    }
-
-    /**
-     * Returns the unqualified name of the source property (i.e. without the parameter name if given) of this mapping.
-     *
-     * @return The unqualified name of the source property of this mapping.
-     */
-    public String getSourcePropertyName() {
-        return sourcePropertyName;
-    }
-
-    /**
-     * Returns the name of the source parameter of this mapping if the source name is qualified.
-     *
-     * @return The name of the source parameter of this mapping if given, {@code null} otherwise.
-     */
-    public String getSourceParameterName() {
-        return sourceParameterName;
     }
 
     public String getConstant() {
@@ -296,28 +260,35 @@ public class Mapping {
         return targetAnnotationValue;
     }
 
-    public Mapping reverse() {
+    public SourceReference getSourceReference() {
+        return sourceReference;
+    }
+
+    public Mapping reverse(SourceMethod method, Messager messager, TypeFactory typeFactory) {
+
         // mapping can only be reversed if the source was not a constant nor an expression
         if ( constant != null || javaExpression != null ) {
             return null;
         }
 
-        return new Mapping(
-            sourceName != null ? targetName : null,
-            null,
-            sourceName != null ? targetName : null,
-            constant,
-            javaExpression,
-            sourceName != null ? sourceName : targetName,
-            dateFormat,
-            qualifiers,
-            isIgnored,
-            true,
-            mirror,
-            sourceAnnotationValue,
-            targetAnnotationValue
-        );
+        Mapping reverse = new Mapping(
+                sourceName != null ? targetName : null,
+                null, // constant
+                null, // expression
+                sourceName != null ? sourceName : targetName,
+                dateFormat,
+                qualifiers,
+                isIgnored,
+                true,
+                mirror,
+                sourceAnnotationValue,
+                targetAnnotationValue
+            );
+
+        reverse.init( method, messager, typeFactory );
+        return reverse;
     }
+
 
     @Override
     public String toString() {

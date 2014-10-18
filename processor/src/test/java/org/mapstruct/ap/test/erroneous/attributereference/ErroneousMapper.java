@@ -28,8 +28,7 @@ public interface ErroneousMapper {
     @Mappings({
         @Mapping(source = "bar", target = "foo"),
         @Mapping(source = "source1.foo", target = "foo"),
-        @Mapping(source = "foo", target = "bar"),
-        @Mapping(source = "source.foobar", target = "foo")
+        @Mapping(source = "foo", target = "bar")
     })
     Target sourceToTarget(Source source);
 

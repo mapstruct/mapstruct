@@ -34,12 +34,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  *
  * @author Gunnar Morling
  */
-@WithClasses({ ErroneousMapper.class, Source.class, Target.class, AnotherTarget.class })
+@WithClasses({ Source.class, Target.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class ErroneousMappingsTest {
 
     @Test
     @IssueKey("11")
+    @WithClasses( { ErroneousMapper.class, AnotherTarget.class } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
@@ -50,25 +51,49 @@ public class ErroneousMappingsTest {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 30,
-                messageRegExp = "Method has no parameter named \"source1\""),
+                messageRegExp = "No property named \"source1.foo\" exists in source parameter\\(s\\)"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 31,
                 messageRegExp = "Unknown property \"bar\" in return type"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 34,
+                line = 33,
                 messageRegExp = "Target property \"foo\" must not be mapped more than once"),
             @Diagnostic(type = ErroneousMapper.class,
-                kind = Kind.ERROR,
-                line = 32,
-                messageRegExp = "The type of parameter \"source\" has no property named \"foobar\""),
-            @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.WARNING,
-                line = 36,
+                line = 35,
                 messageRegExp = "Unmapped target property: \"bar\"")
         }
     )
     public void shouldFailToGenerateMappings() {
+    }
+
+    @Test
+    @WithClasses( { ErroneousMapper1.class, DummySource.class } )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapper1.class,
+                kind = Kind.ERROR,
+                line = 29,
+                messageRegExp = "The type of parameter \"source\" has no property named \"foobar\"")
+        }
+    )
+    public void shouldFailToGenerateMappingsErrorOnMandatoryParameterName() {
+    }
+
+    @Test
+    @WithClasses( { ErroneousMapper2.class } )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapper2.class,
+                kind = Kind.ERROR,
+                line = 32,
+                messageRegExp = "Target property \"foo\" must not be mapped more than once" )
+        }
+    )
+    public void shouldFailToGenerateMappingsErrorOnDuplicateTarget() {
     }
 }

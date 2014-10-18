@@ -20,6 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,10 +39,15 @@ import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
 
+import org.mapstruct.ap.model.PropertyMapping.PropertyMappingBuilder;
+import org.mapstruct.ap.model.PropertyMapping.ConstantMappingBuilder;
+import org.mapstruct.ap.model.PropertyMapping.JavaExpressionMappingBuilder;
+import org.mapstruct.ap.model.source.SourceReference;
+
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one
- * bean type to another, optionally configured by one or more
- * {@link PropertyMapping}s.
+ bean sourceParameter to another, optionally configured by one or more
+ {@link PropertyMapping}s.
  *
  * @author Gunnar Morling
  */
@@ -54,10 +60,15 @@ public class BeanMappingMethod extends MappingMethod {
 
     private final FactoryMethod factoryMethod;
 
+
     public static class Builder {
 
         private MappingBuilderContext ctx;
         private SourceMethod method;
+
+        private final Map<String, TargetProperty> remainingTargetProperties = new HashMap<String, TargetProperty>();
+        private final List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
+
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -71,33 +82,43 @@ public class BeanMappingMethod extends MappingMethod {
 
         public BeanMappingMethod build() {
 
-            // fetch settings from element to implement
-            ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy();
-            CollectionMappingStrategy cmStrategy = getEffectiveCollectionMappingStrategy();
+            // init all non ignored targetAccessors
+            initTargetPropertyAccessors();
 
-            List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
-            Set<String> mappedTargetProperties = new HashSet<String>();
-            Set<String> ignoredTargetProperties = new HashSet<String>();
-
-            if ( !reportErrorIfMappedPropertiesDontExist() ) {
+            // map properties with mapping
+            boolean mappingErrorOccured = handleDefinedSourceMappings();
+            if ( mappingErrorOccured ) {
                 return null;
             }
 
-            // collect all target accessors
-            List<ExecutableElement> targetAccessors = new ArrayList<ExecutableElement>();
-            targetAccessors.addAll( method.getResultType().getSetters() );
-            targetAccessors.addAll( method.getResultType().getAlternativeTargetAccessors() );
+            // map properties without a mapping
+            applyPropertyNameBasedMapping();
 
-            for ( ExecutableElement targetAccessor : targetAccessors ) {
+            // report errors on unmapped properties
+            reportErrorForUnmappedTargetPropertiesIfRequired(  );
 
-                String targetPropertyName = Executables.getPropertyName( targetAccessor );
 
-                Mapping mapping = method.getSingleMappingByTargetPropertyName( targetPropertyName );
+            FactoryMethod factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
+            return new BeanMappingMethod( method, propertyMappings, factoryMethod );
+        }
 
-                if ( mapping != null && mapping.isIgnored() ) {
-                    ignoredTargetProperties.add( targetPropertyName );
-                    continue;
-                }
+
+        /**
+         * This method builds the list of target accessors.
+         */
+        private void initTargetPropertyAccessors() {
+
+            // fetch settings from element to implement
+            CollectionMappingStrategy cmStrategy = getEffectiveCollectionMappingStrategy();
+
+            // collect all candidate target accessors
+            List<ExecutableElement> candidates = new ArrayList<ExecutableElement>();
+            candidates.addAll( method.getResultType().getSetters() );
+            candidates.addAll( method.getResultType().getAlternativeTargetAccessors() );
+
+            for ( ExecutableElement candidate : candidates ) {
+
+                String targetPropertyName = Executables.getPropertyName( candidate );
 
                 // A target access is in general a setter method on the target object. However, in case of collections,
                 // the current target accessor can also be a getter method.
@@ -107,90 +128,197 @@ public class BeanMappingMethod extends MappingMethod {
 
                     // first check if there's a setter method.
                     ExecutableElement adderMethod = null;
-                    if ( Executables.isSetterMethod( targetAccessor ) ) {
-                        Type targetType = ctx.getTypeFactory().getSingleParameter( targetAccessor ).getType();
+                    if ( Executables.isSetterMethod( candidate ) ) {
+                        Type targetType = ctx.getTypeFactory().getSingleParameter( candidate ).getType();
                         // ok, the current accessor is a setter. So now the strategy determines what to use
                         if ( cmStrategy == CollectionMappingStrategy.ADDER_PREFERRED ) {
                             adderMethod = method.getResultType().getAdderForType( targetType, targetPropertyName );
                         }
                     }
-                    else if ( Executables.isGetterMethod( targetAccessor ) ) {
+                    else if ( Executables.isGetterMethod( candidate ) ) {
                         // the current accessor is a getter (no setter available). But still, an add method is according
                         // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
-                        Type targetType = ctx.getTypeFactory().getReturnType( targetAccessor );
+                        Type targetType = ctx.getTypeFactory().getReturnType( candidate );
                         adderMethod = method.getResultType().getAdderForType( targetType, targetPropertyName );
                     }
                     if ( adderMethod != null ) {
                         // an adder has been found (according strategy) so overrule current choice.
-                        targetAccessor = adderMethod;
+                        candidate = adderMethod;
                     }
                 }
 
-                PropertyMapping propertyMapping = null;
-                if ( mapping != null ) {
+                remainingTargetProperties.put( targetPropertyName, new TargetProperty(targetPropertyName, candidate ) );
+            }
+        }
 
-                    if ( mapping.getSourceParameterName() != null ) {
-                        // this is a parameterized property, so sourceParameter.property
-                        Parameter parameter = method.getSourceParameter( mapping.getSourceParameterName() );
+        /**
+         * Iterates over all defined mapping methods (@Mappings, @Mapping), either direct or via
+         *
+         * @InheritInverseConfiguration.
+         *
+         * If a match is found between a defined source (constant, expression, ignore or source, the mapping is
+         * removed from the remain target properties.
+         *
+         * This method should check if the mappings are defined correctly. When an error occurs, the method continues in
+         * search of more problems.
+         */
+        private boolean handleDefinedSourceMappings() {
 
-                        PropertyMapping.PropertyMappingBuilder builder = new PropertyMapping.PropertyMappingBuilder();
-                        propertyMapping = builder
-                            .mappingContext( ctx )
-                            .souceMethod( method )
-                            .targetAccessor( targetAccessor )
-                            .targetPropertyName( targetPropertyName )
-                            .parameter( parameter )
-                            .build();
+            boolean errorOccurred = false;
+
+            Set<String> handledTargets = new HashSet<String>();
+
+            for ( Map.Entry<String, List<Mapping>> entry : method.getMappings().entrySet() ) {
+                for ( Mapping mapping : entry.getValue() ) {
+
+                    PropertyMapping propertyMapping = null;
+
+                    // fetch the target property
+                    TargetProperty targetProperty = remainingTargetProperties.get( mapping.getTargetName() );
+                    if ( targetProperty == null ) {
+                        ctx.getMessager().printMessage(
+                                Diagnostic.Kind.ERROR,
+                                String.format( "Unknown property \"%s\" in return type.",
+                                        mapping.getTargetName()
+                                ),
+                                method.getExecutable(),
+                                mapping.getMirror(),
+                                mapping.getSourceAnnotationValue()
+                        );
+                        errorOccurred = true;
+                    }
+
+
+                    // check the mapping options
+                    // its an ignored property mapping
+                    if ( mapping.isIgnored() ) {
+                        propertyMapping = null;
+                        handledTargets.add( mapping.getTargetName() );
+                    }
+
+                    // its a plain-old property mapping
+                    else if ( mapping.getSourceName() != null ) {
+
+                        // determine source parameter
+                        SourceReference sourceRef = mapping.getSourceReference();
+                        if ( sourceRef.isValid() ) {
+
+                            if ( targetProperty != null ) {
+
+                                // targetProperty == null can occur: we arrived here because we want as many errors
+                                // as possible before we stop analysing
+                                propertyMapping = new PropertyMappingBuilder()
+                                        .mappingContext( ctx )
+                                        .souceMethod( method )
+                                        .targetAccessor( targetProperty.getAccessor() )
+                                        .targetPropertyName( targetProperty.getName() )
+                                        .sourceReference( sourceRef )
+                                        .qualifiers( mapping.getQualifiers() )
+                                        .dateFormat( mapping.getDateFormat() )
+                                        .build();
+                                handledTargets.add( mapping.getTargetName() );
+                            }
+                        }
+                        else {
+                            errorOccurred = true;
+                        }
 
                     }
-                    else if ( Executables.isSetterMethod( targetAccessor )
-                        || Executables.isGetterMethod( targetAccessor ) ) {
 
-                        if ( mapping.getConstant() != null ) {
-                            // its a constant
-                            PropertyMapping.ConstantMappingBuilder builder =
-                                new PropertyMapping.ConstantMappingBuilder();
-                            propertyMapping = builder
+                    // its a constant
+                    else if ( mapping.getConstant() != null && targetProperty != null ) {
+
+                        propertyMapping = new ConstantMappingBuilder()
                                 .mappingContext( ctx )
                                 .sourceMethod( method )
                                 .constantExpression( "\"" + mapping.getConstant() + "\"" )
-                                .targetAccessor( targetAccessor )
+                                .targetAccessor( targetProperty.getAccessor() )
                                 .dateFormat( mapping.getDateFormat() )
                                 .qualifiers( mapping.getQualifiers() )
                                 .build();
-                        }
+                        handledTargets.add( mapping.getTargetName() );
+                    }
 
-                        else if ( mapping.getJavaExpression() != null ) {
-                            // its an expression
-                            PropertyMapping.JavaExpressionMappingBuilder builder =
-                                new PropertyMapping.JavaExpressionMappingBuilder();
-                            propertyMapping = builder
+                    // its an expression
+                    else if ( mapping.getJavaExpression() != null && targetProperty != null ) {
+
+                        propertyMapping = new JavaExpressionMappingBuilder()
                                 .mappingContext( ctx )
                                 .souceMethod( method )
                                 .javaExpression( mapping.getJavaExpression() )
-                                .targetAccessor( targetAccessor )
+                                .targetAccessor( targetProperty.getAccessor() )
                                 .build();
-                        }
+                        handledTargets.add( mapping.getTargetName() );
+                    }
+
+                    // remaining are the mappings without a 'source' so, 'only' a date format or qualifiers
+
+                    if ( propertyMapping != null ) {
+                        propertyMappings.add( propertyMapping );
                     }
                 }
+            }
 
+            for ( String handledTarget : handledTargets ) {
+                // In order to avoid: "Unknown property <> in return sourceParameter" in case of duplicate
+                // target mappings
+                remainingTargetProperties.remove( handledTarget );
+            }
+
+            return errorOccurred;
+        }
+
+
+        /**
+         * Iterates over all target properties and all source parameters.
+         *
+         * When a property name match occurs, the remainder will be checked for duplicates. Matches will
+         * be removed from the set of remaining target properties.
+         */
+        private void applyPropertyNameBasedMapping() {
+
+            Collection<TargetProperty> targetProperties = remainingTargetProperties.values();
+            for ( TargetProperty targetProperty : new ArrayList<TargetProperty>( targetProperties ) ) {
+
+                PropertyMapping propertyMapping = null;
                 if ( propertyMapping == null ) {
                     for ( Parameter sourceParameter : method.getSourceParameters() ) {
-                        PropertyMapping.PropertyMappingBuilder builder = new PropertyMapping.PropertyMappingBuilder();
-                        PropertyMapping newPropertyMapping = builder
-                            .mappingContext( ctx )
-                            .souceMethod( method )
-                            .targetAccessor( targetAccessor )
-                            .targetPropertyName( targetPropertyName )
-                            .parameter( sourceParameter )
-                            .build();
+
+                        PropertyMapping newPropertyMapping = null;
+                        for ( ExecutableElement sourceAccessor : sourceParameter.getType().getGetters() ) {
+                            String sourcePropertyName = Executables.getPropertyName( sourceAccessor );
+                            if ( sourcePropertyName.equals( targetProperty.getName() ) ) {
+
+                                Mapping mapping = method.getSingleMappingByTargetPropertyName( sourcePropertyName );
+
+                                SourceReference sourceRef = new SourceReference.BuilderFromProperty()
+                                        .sourceParameter( sourceParameter )
+                                        .type( ctx.getTypeFactory().getReturnType( sourceAccessor ) )
+                                        .accessor( sourceAccessor )
+                                        .name( sourcePropertyName )
+                                        .build();
+
+                                newPropertyMapping = new PropertyMappingBuilder()
+                                        .mappingContext( ctx )
+                                        .souceMethod( method )
+                                        .targetAccessor( targetProperty.getAccessor() )
+                                        .targetPropertyName( targetProperty.getName() )
+                                        .sourceReference( sourceRef )
+                                        .qualifiers( mapping != null ? mapping.getQualifiers() : null )
+                                        .dateFormat( mapping != null ? mapping.getDateFormat() : null )
+                                        .build();
+                                break;
+                            }
+                        }
 
                         if ( propertyMapping != null && newPropertyMapping != null ) {
+                            // TODO improve error message
                             ctx.getMessager().printMessage(
-                                Diagnostic.Kind.ERROR,
-                                "Several possible source properties for target property \"" + targetPropertyName +
-                                    "\".",
-                                method.getExecutable()
+                                    Diagnostic.Kind.ERROR,
+                                    "Several possible source properties for target property \""
+                                    + targetProperty.getName()
+                                    + "\".",
+                                    method.getExecutable()
                             );
                             break;
                         }
@@ -202,30 +330,18 @@ public class BeanMappingMethod extends MappingMethod {
 
                 if ( propertyMapping != null ) {
                     propertyMappings.add( propertyMapping );
-                    mappedTargetProperties.add( targetPropertyName );
+                    remainingTargetProperties.remove( targetProperty.getName() );
                 }
             }
-
-            Set<String> targetProperties = Executables.getPropertyNames( targetAccessors );
-
-            reportErrorForUnmappedTargetPropertiesIfRequired(
-                method,
-                unmappedTargetPolicy,
-                targetProperties,
-                mappedTargetProperties,
-                ignoredTargetProperties
-            );
-            FactoryMethod factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
-            return new BeanMappingMethod( method, propertyMappings, factoryMethod );
         }
 
-        /**
+       /**
          * Returns the effective policy for reporting unmapped getReturnType properties. If explicitly set via
          * {@code Mapper}, this value will be returned. Otherwise the value from the corresponding processor option will
          * be returned. If that is not set either, the default value from {@code Mapper#unmappedTargetPolicy()} will be
          * returned.
          *
-         * @param element The type declaring the generated mapper type
+         * @param element The sourceParameter declaring the generated mapper sourceParameter
          *
          * @return The effective policy for reporting unmapped getReturnType properties.
          */
@@ -248,132 +364,25 @@ public class BeanMappingMethod extends MappingMethod {
             return mapperSettings.getCollectionMappingStrategy();
         }
 
-        private boolean reportErrorIfMappedPropertiesDontExist() {
-            // collect all target accessors
-            List<ExecutableElement> targetAccessors = new ArrayList<ExecutableElement>();
-            targetAccessors.addAll( method.getResultType().getSetters() );
-            targetAccessors.addAll( method.getResultType().getAlternativeTargetAccessors() );
 
-            Set<String> targetProperties = Executables.getPropertyNames( targetAccessors );
 
-            boolean foundUnmappedProperty = false;
+        private void reportErrorForUnmappedTargetPropertiesIfRequired( ) {
 
-            for ( List<Mapping> mappedProperties : method.getMappings().values() ) {
-                for ( Mapping mappedProperty : mappedProperties ) {
-                    // only report errors if this mapping is not inherited
-                    if ( mappedProperty.isInheritedFromInverseMethod() ) {
-                        continue;
-                    }
+            // fetch settings from element to implement
+            ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy();
 
-                    if ( mappedProperty.getSourceParameterName() != null ) {
-                        Parameter sourceParameter = method.getSourceParameter(
-                            mappedProperty.getSourceParameterName()
-                        );
+            if ( !remainingTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
 
-                        if ( sourceParameter == null ) {
-                            ctx.getMessager().printMessage(
-                                Diagnostic.Kind.ERROR,
-                                String.format(
-                                    "Method has no parameter named \"%s\".",
-                                    mappedProperty.getSourceParameterName()
-                                ),
-                                method.getExecutable(),
-                                mappedProperty.getMirror(),
-                                mappedProperty.getSourceAnnotationValue()
-                            );
-                            foundUnmappedProperty = true;
-                        }
-                        else {
-                            if ( !hasSourceProperty( sourceParameter, mappedProperty.getSourcePropertyName() ) ) {
-                                ctx.getMessager().printMessage(
-                                    Diagnostic.Kind.ERROR,
-                                    String.format(
-                                        "The type of parameter \"%s\" has no property named \"%s\".",
-                                        mappedProperty.getSourceParameterName(),
-                                        mappedProperty.getSourcePropertyName()
-                                    ),
-                                    method.getExecutable(),
-                                    mappedProperty.getMirror(),
-                                    mappedProperty.getSourceAnnotationValue()
-                                );
-                                foundUnmappedProperty = true;
-                            }
-                        }
-
-                    }
-                    else if ( mappedProperty.getSourcePropertyName() != null
-                        && !hasSourceProperty( mappedProperty.getSourcePropertyName() ) ) {
-                        ctx.getMessager().printMessage(
-                            Diagnostic.Kind.ERROR,
-                            String.format(
-                                "No property named \"%s\" exists in source parameter(s).",
-                                mappedProperty.getSourceName()
-                            ),
-                            method.getExecutable(),
-                            mappedProperty.getMirror(),
-                            mappedProperty.getSourceAnnotationValue()
-                        );
-                        foundUnmappedProperty = true;
-                    }
-                    if ( !targetProperties.contains( mappedProperty.getTargetName() ) ) {
-                        ctx.getMessager().printMessage(
-                            Diagnostic.Kind.ERROR,
-                            String.format(
-                                "Unknown property \"%s\" in return type %s.",
-                                mappedProperty.getTargetName(),
-                                method.getResultType()
-                            ),
-                            method.getExecutable(),
-                            mappedProperty.getMirror(),
-                            mappedProperty.getTargetAnnotationValue()
-                        );
-                        foundUnmappedProperty = true;
-                    }
-                }
-            }
-            return !foundUnmappedProperty;
-        }
-
-        private void reportErrorForUnmappedTargetPropertiesIfRequired(SourceMethod method,
-                                                                      ReportingPolicy unmappedTargetPolicy,
-                                                                      Set<String> targetProperties,
-                                                                      Set<String> mappedTargetProperties,
-                                                                      Set<String> ignoredTargetProperties) {
-
-            Set<String> unmappedTargetProperties = new HashSet<String>();
-
-            for ( String property : targetProperties ) {
-                if ( !mappedTargetProperties.contains( property ) && !ignoredTargetProperties.contains( property ) ) {
-                    unmappedTargetProperties.add( property );
-                }
-            }
-
-            if ( !unmappedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
                 ctx.getMessager().printMessage(
-                    unmappedTargetPolicy.getDiagnosticKind(),
-                    MessageFormat.format(
-                        "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
-                        unmappedTargetProperties.size(),
-                        Strings.join( unmappedTargetProperties, ", " )
-                    ),
-                    method.getExecutable()
+                        unmappedTargetPolicy.getDiagnosticKind(),
+                        MessageFormat.format(
+                                "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
+                                remainingTargetProperties.size(),
+                                Strings.join( remainingTargetProperties.keySet(), ", " )
+                        ),
+                        method.getExecutable()
                 );
             }
-        }
-
-        private boolean hasSourceProperty(String propertyName) {
-            for ( Parameter parameter : method.getSourceParameters() ) {
-                if ( hasSourceProperty( parameter, propertyName ) ) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private boolean hasSourceProperty(Parameter parameter, String propertyName) {
-            List<ExecutableElement> getters = parameter.getType().getGetters();
-            return Executables.getPropertyNames( getters ).contains( propertyName );
         }
 
     }
@@ -428,4 +437,25 @@ public class BeanMappingMethod extends MappingMethod {
     public FactoryMethod getFactoryMethod() {
         return this.factoryMethod;
     }
+
+
+    public static class TargetProperty {
+
+        private final String name;
+        private final ExecutableElement accessor;
+
+        public TargetProperty( String name, ExecutableElement accessor ) {
+            this.name = name;
+            this.accessor = accessor;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public ExecutableElement getAccessor() {
+            return accessor;
+        }
+    }
+
 }

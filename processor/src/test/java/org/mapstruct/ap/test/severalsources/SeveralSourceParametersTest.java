@@ -112,12 +112,12 @@ public class SeveralSourceParametersTest {
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 29,
-                messageRegExp = "Several possible source properties for target property \"zipCode\".",
-                javaVersions = { SourceVersion.RELEASE_6 } ),
+                messageRegExp = "Several possible source properties for target property \"zipCode\".") ,
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 29,
-                messageRegExp = "Several possible source properties for target property \"street\".")
+                messageRegExp = "Several possible source properties for target property \"street\".",
+                javaVersions = { SourceVersion.RELEASE_6 } )
     })
 
     public void shouldFailToGenerateMappingsForAmbigiousSourceProperty() {
