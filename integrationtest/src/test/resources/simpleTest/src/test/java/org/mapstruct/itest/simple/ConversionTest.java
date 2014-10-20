@@ -93,4 +93,19 @@ public class ConversionTest {
         assertThat( source.getBaz() ).isEqualTo( 42 );
         assertThat( source.getQax() ).isEqualTo( 23 );
     }
+
+    @Test
+    public void shouldWorkWithAbstractClass() {
+        Source source = new Source();
+        source.setFoo( 42 );
+        source.setBar( 23L );
+        source.setZip( 73 );
+
+        Target target = SourceTargetAbstractMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 42 ) );
+        assertThat( target.getBar() ).isEqualTo( 23 );
+        assertThat( target.getZip() ).isEqualTo( "73" );
+    }
 }

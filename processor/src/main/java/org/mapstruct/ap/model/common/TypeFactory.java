@@ -123,9 +123,10 @@ public class TypeFactory {
 
         Type implementationType = getImplementationType( mirror );
 
-        boolean isIterableType = TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, iterableType );
-        boolean isCollectionType = TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, collectionType );
-        boolean isMapType = TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, mapType );
+        boolean isVoid = mirror.getKind() == TypeKind.VOID;
+        boolean isIterableType = !isVoid && TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, iterableType );
+        boolean isCollectionType = !isVoid && TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, collectionType );
+        boolean isMapType = !isVoid && TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, mapType );
 
         boolean isEnumType;
         boolean isInterface;

@@ -106,7 +106,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isCollectionType = isCollectionType;
         this.isMapType = isMapType;
         this.isImported = isImported;
-        this.isVoid = typeMirror.getKind().equals(  TypeKind.VOID );
+        this.isVoid = typeMirror.getKind() == TypeKind.VOID;
 
         if ( isEnumType ) {
             enumConstants = new ArrayList<String>();
