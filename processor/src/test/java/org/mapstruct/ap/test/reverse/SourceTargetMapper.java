@@ -49,7 +49,7 @@ public interface SourceTargetMapper {
     @InheritInverseConfiguration(name = "forward")
     @Mappings({
         @Mapping(target = "someConstantDownstream", constant = "test"),
-        @Mapping(source = "propertyToIgnoreDownstream", ignore = true)
+        @Mapping(target = "propertyToIgnoreDownstream", ignore = true)
     })
     Source reverse(Target target);
 }
