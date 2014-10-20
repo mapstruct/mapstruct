@@ -312,12 +312,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 EnumMappingMethod.Builder builder = new EnumMappingMethod.Builder();
                 mergeWithReverseMappings( reverseMappingMethod, method );
-                if ( method.getMappings().isEmpty() ) {
-                    if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
-                        method.setMappings( reverse( reverseMappingMethod.getMappings() ) );
-                    }
-                }
-
                 MappingMethod enumMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
@@ -388,8 +382,19 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private void mergeWithReverseMappings(SourceMethod reverseMappingMethod, SourceMethod method) {
         Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();
         if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
-            // define all the base mappings based on its forward counterpart
-            newMappings.putAll( reverse( reverseMappingMethod.getMappings() ) );
+            // define all the base mappings based on its forward counterpart.
+            // however, remove the mappings that are designated as constant, expression or ignore.
+            // They are characterized by the key ""
+
+            Map<String, List<Mapping>> reverseMappings = new HashMap<String, List<Mapping>>();
+            reverseMappings.putAll( reverseMappingMethod.getMappings() );
+            List<Mapping> nonSourceMappings =  method.getMappings().get( "" );
+            if (nonSourceMappings != null ) {
+                for (Mapping nonSourceMapping : nonSourceMappings) {
+                    reverseMappings.remove( nonSourceMapping.getTargetName() );
+                }
+            }
+            newMappings.putAll( reverse( reverseMappings ) );
         }
 
         if ( method.getMappings().isEmpty() ) {
