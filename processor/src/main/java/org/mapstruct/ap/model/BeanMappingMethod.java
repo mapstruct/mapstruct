@@ -102,15 +102,15 @@ public class BeanMappingMethod extends MappingMethod {
                 // A target access is in general a setter method on the target object. However, in case of collections,
                 // the current target accessor can also be a getter method.
                 // The following if block, checks if the target accessor should be overruled by an add method.
-                if ( cmStrategy.equals( CollectionMappingStrategy.SETTER_PREFERRED )
-                    || cmStrategy.equals( CollectionMappingStrategy.ADDER_PREFERRED ) ) {
+                if ( cmStrategy == CollectionMappingStrategy.SETTER_PREFERRED
+                    || cmStrategy == CollectionMappingStrategy.ADDER_PREFERRED ) {
 
                     // first check if there's a setter method.
                     ExecutableElement adderMethod = null;
                     if ( Executables.isSetterMethod( targetAccessor ) ) {
                         Type targetType = ctx.getTypeFactory().getSingleParameter( targetAccessor ).getType();
                         // ok, the current accessor is a setter. So now the strategy determines what to use
-                        if ( cmStrategy.equals( CollectionMappingStrategy.ADDER_PREFERRED ) ) {
+                        if ( cmStrategy == CollectionMappingStrategy.ADDER_PREFERRED ) {
                             adderMethod = method.getResultType().getAdderForType( targetType, targetPropertyName );
                         }
                     }
