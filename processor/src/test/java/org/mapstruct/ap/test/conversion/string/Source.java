@@ -36,6 +36,7 @@ public class Source {
     private Boolean boolBool;
     private char c;
     private Character cc;
+    private Object object;
 
     public byte getB() {
         return b;
@@ -163,5 +164,13 @@ public class Source {
 
     public void setCc(Character cc) {
         this.cc = cc;
+    }
+
+    public Object getObject() {
+        return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
     }
 }

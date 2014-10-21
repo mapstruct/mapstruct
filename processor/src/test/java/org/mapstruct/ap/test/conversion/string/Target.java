@@ -36,6 +36,7 @@ public class Target {
     private String boolBool;
     private String c;
     private String cc;
+    private String object;
 
     public String getB() {
         return b;
@@ -165,4 +166,11 @@ public class Target {
         this.cc = cc;
     }
 
+    public String getObject() {
+        return object;
+    }
+
+    public void setObject(String object) {
+        this.object = object;
+    }
 }

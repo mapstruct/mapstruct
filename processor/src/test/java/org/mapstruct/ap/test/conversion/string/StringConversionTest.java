@@ -18,12 +18,13 @@
  */
 package org.mapstruct.ap.test.conversion.string;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 @WithClasses({
     Source.class,
@@ -32,6 +33,8 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class StringConversionTest {
+
+    private static final String STRING_CONTANT = "String contant";
 
     @Test
     public void shouldApplyStringConversions() {
@@ -113,5 +116,17 @@ public class StringConversionTest {
         assertThat( source.getBoolBool() ).isEqualTo( true );
         assertThat( source.getC() ).isEqualTo( 'G' );
         assertThat( source.getCc() ).isEqualTo( 'H' );
+    }
+
+    @Test
+    @IssueKey( "328" )
+    public void stringShouldBeMappedToObjectByReference() {
+        Target target = new Target();
+        target.setObject( STRING_CONTANT );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        // no conversion, no built-in method
+        assertThat( source.getObject() ).isSameAs( STRING_CONTANT );
     }
 }

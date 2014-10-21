@@ -178,10 +178,9 @@ public class MappingResolverImpl implements MappingResolver {
         private Assignment getTargetAssignment(Type sourceType, Type targetType) {
 
             // first simple mapping method
-            Assignment referencedMethod = resolveViaMethod( sourceType, targetType );
+            Assignment referencedMethod = resolveViaMethod( sourceType, targetType, false );
             if ( referencedMethod != null ) {
                 referencedMethod.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
-                usedVirtualMappings.addAll( virtualMethodCandidates );
                 return referencedMethod;
             }
 
@@ -198,21 +197,29 @@ public class MappingResolverImpl implements MappingResolver {
                 return conversion;
             }
 
-            // 2 step method, first: method(method(souurce))
+            // check for a built-in method
+            Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
+            if ( builtInMethod != null ) {
+                builtInMethod.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
+                usedVirtualMappings.addAll( virtualMethodCandidates );
+                return builtInMethod;
+            }
+
+            // 2 step method, first: method(method(source))
             referencedMethod = resolveViaMethodAndMethod( sourceType, targetType );
             if ( referencedMethod != null ) {
                 usedVirtualMappings.addAll( virtualMethodCandidates );
                 return referencedMethod;
             }
 
-            // 2 step method, then: method(conversion(souurce))
+            // 2 step method, then: method(conversion(source))
             referencedMethod = resolveViaConversionAndMethod( sourceType, targetType );
             if ( referencedMethod != null ) {
                 usedVirtualMappings.addAll( virtualMethodCandidates );
                 return referencedMethod;
             }
 
-            // 2 step method, finally: conversion(method(souurce))
+            // 2 step method, finally: conversion(method(source))
             conversion = resolveViaMethodAndConversion( sourceType, targetType );
             if ( conversion != null ) {
                 usedVirtualMappings.addAll( virtualMethodCandidates );
@@ -239,7 +246,7 @@ public class MappingResolverImpl implements MappingResolver {
          * Returns a reference to a method mapping the given source type to the given target type, if such a method
          * exists.
          */
-        private Assignment resolveViaMethod(Type sourceType, Type targetType) {
+        private Assignment resolveViaMethod(Type sourceType, Type targetType, boolean considerBuiltInMethods) {
 
             // first try to find a matching source method
             SourceMethod matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
@@ -248,14 +255,20 @@ public class MappingResolverImpl implements MappingResolver {
                 return getMappingMethodReference( matchingSourceMethod, targetType );
             }
 
-            // then a matching built-in method
+            if ( considerBuiltInMethods ) {
+                return resolveViaBuiltInMethod( sourceType, targetType );
+            }
+
+            return null;
+        }
+
+        private Assignment resolveViaBuiltInMethod(Type sourceType, Type targetType) {
             BuiltInMethod matchingBuiltInMethod =
                 getBestMatch( builtInMethods.getBuiltInMethods(), sourceType, targetType );
 
             if ( matchingBuiltInMethod != null ) {
                 virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod ) );
-                ConversionContext ctx =
-                    new DefaultConversionContext( typeFactory, targetType, dateFormat );
+                ConversionContext ctx = new DefaultConversionContext( typeFactory, targetType, dateFormat );
                 Assignment methodReference = AssignmentFactory.createMethodReference( matchingBuiltInMethod, ctx );
                 methodReference.setAssignment( AssignmentFactory.createSimple( sourceReference ) );
                 return methodReference;
@@ -291,12 +304,14 @@ public class MappingResolverImpl implements MappingResolver {
                 if ( methodYCandidate.getSourceParameters().size() == 1 ) {
                     methodRefY = resolveViaMethod(
                         methodYCandidate.getSourceParameters().get( 0 ).getType(),
-                        targetType
+                        targetType,
+                        true
                     );
                     if ( methodRefY != null ) {
                         Assignment methodRefX = resolveViaMethod(
                             sourceType,
-                            methodYCandidate.getSourceParameters().get( 0 ).getType()
+                            methodYCandidate.getSourceParameters().get( 0 ).getType(),
+                            true
                         );
                         if ( methodRefX != null ) {
                             methodRefY.setAssignment( methodRefX );
@@ -333,7 +348,8 @@ public class MappingResolverImpl implements MappingResolver {
                 if ( methodYCandidate.getSourceParameters().size() == 1 ) {
                     methodRefY = resolveViaMethod(
                         methodYCandidate.getSourceParameters().get( 0 ).getType(),
-                        targetType
+                        targetType,
+                        true
                     );
                     if ( methodRefY != null ) {
                         Assignment conversionXRef = resolveViaConversion(
@@ -376,7 +392,8 @@ public class MappingResolverImpl implements MappingResolver {
                 if ( methodXCandidate.getSourceParameters().size() == 1 ) {
                     Assignment methodRefX = resolveViaMethod(
                         sourceType,
-                        methodXCandidate.getReturnType()
+                        methodXCandidate.getReturnType(),
+                        true
                     );
                     if ( methodRefX != null ) {
                         conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );

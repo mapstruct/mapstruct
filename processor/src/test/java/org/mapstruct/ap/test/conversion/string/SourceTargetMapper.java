@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.conversion.string;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -26,6 +27,7 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
+    @Mapping( source = "object", ignore = true )
     Target sourceToTarget(Source source);
 
     Source targetToSource(Target target);
