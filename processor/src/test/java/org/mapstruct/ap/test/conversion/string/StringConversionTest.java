@@ -34,7 +34,7 @@ import static org.fest.assertions.Assertions.assertThat;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class StringConversionTest {
 
-    private static final String STRING_CONTANT = "String contant";
+    private static final String STRING_CONSTANT = "String constant";
 
     @Test
     public void shouldApplyStringConversions() {
@@ -122,11 +122,11 @@ public class StringConversionTest {
     @IssueKey( "328" )
     public void stringShouldBeMappedToObjectByReference() {
         Target target = new Target();
-        target.setObject( STRING_CONTANT );
+        target.setObject( STRING_CONSTANT );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         // no conversion, no built-in method
-        assertThat( source.getObject() ).isSameAs( STRING_CONTANT );
+        assertThat( source.getObject() ).isSameAs( STRING_CONSTANT );
     }
 }
