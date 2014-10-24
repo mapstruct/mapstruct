@@ -22,14 +22,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import org.mapstruct.Qualifier;
+
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.prism.QualifierPrism;
 
 /**
  * This selector selects a best match based on qualifiers name.
@@ -39,12 +41,10 @@ import org.mapstruct.ap.model.source.SourceMethod;
 public class QualifierSelector implements MethodSelector {
 
     private final Types typeUtils;
-    private final TypeMirror qualifierType;
 
 
     public QualifierSelector( Types typeUtils, Elements elementUtils ) {
         this.typeUtils = typeUtils;
-        qualifierType = elementUtils.getTypeElement( Qualifier.class.getCanonicalName() ).asType();
     }
 
     @Override
@@ -108,17 +108,9 @@ public class QualifierSelector implements MethodSelector {
     }
 
     private void addOnlyWhenQualifier( Set<TypeMirror> annotationSet, AnnotationMirror candidate ) {
-
-        // get all the annotations of the candidate annotation
-        List<? extends AnnotationMirror> annotationsOfCandidate
-                = candidate.getAnnotationType().asElement().getAnnotationMirrors();
-
         // only add the candidate annotation when the candidate itself has the annotation 'Qualifier'
-        for ( AnnotationMirror annotationOfCandidate : annotationsOfCandidate ) {
-            if ( typeUtils.isSameType( annotationOfCandidate.getAnnotationType(), qualifierType ) ) {
-                annotationSet.add( candidate.getAnnotationType() );
-                break;
-            }
+        if ( QualifierPrism.getInstanceOn( candidate.getAnnotationType().asElement() ) != null ) {
+            annotationSet.add( candidate.getAnnotationType() );
         }
     }
 }
