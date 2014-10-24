@@ -51,7 +51,9 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.prism.MappingTargetPrism;
 import org.mapstruct.ap.prism.TargetTypePrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
-import org.mapstruct.ap.util.TypeUtilsJDK6Fix;
+import org.mapstruct.ap.util.SpecificCompilerWorkarounds;
+
+import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.erasure;
 
 /**
  * Factory creating {@link Type} instances.
@@ -74,12 +76,10 @@ public class TypeFactory {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
 
-        iterableType = typeUtils.erasure( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
-        collectionType = typeUtils.erasure(
-            elementUtils.getTypeElement( Collection.class.getCanonicalName() )
-                .asType()
-        );
-        mapType = typeUtils.erasure( elementUtils.getTypeElement( Map.class.getCanonicalName() ).asType() );
+        iterableType = erasure( typeUtils, elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
+        collectionType =
+            erasure( typeUtils, elementUtils.getTypeElement( Collection.class.getCanonicalName() ).asType() );
+        mapType = erasure( typeUtils, elementUtils.getTypeElement( Map.class.getCanonicalName() ).asType() );
 
         implementationTypes.put( Iterable.class.getName(), getType( ArrayList.class ) );
         implementationTypes.put( Collection.class.getName(), getType( ArrayList.class ) );
@@ -123,10 +123,9 @@ public class TypeFactory {
 
         Type implementationType = getImplementationType( mirror );
 
-        boolean isVoid = mirror.getKind() == TypeKind.VOID;
-        boolean isIterableType = !isVoid && TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, iterableType );
-        boolean isCollectionType = !isVoid && TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, collectionType );
-        boolean isMapType = !isVoid && TypeUtilsJDK6Fix.isSubType( typeUtils, mirror, mapType );
+        boolean isIterableType = SpecificCompilerWorkarounds.isSubType( typeUtils, mirror, iterableType );
+        boolean isCollectionType = SpecificCompilerWorkarounds.isSubType( typeUtils, mirror, collectionType );
+        boolean isMapType = SpecificCompilerWorkarounds.isSubType( typeUtils, mirror, mapType );
 
         boolean isEnumType;
         boolean isInterface;

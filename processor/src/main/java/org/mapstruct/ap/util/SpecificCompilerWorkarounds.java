@@ -19,20 +19,25 @@
 
 package org.mapstruct.ap.util;
 
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
 /**
- * Work-around for a bug related to sub-typing in the Eclipse JSR 269 implementation.
+ * Contains workarounds for various quirks in specific compilers.
+ *
  * @author Sjaak Derksen
+ * @author Andreas Gudian
  */
-public class TypeUtilsJDK6Fix {
+public class SpecificCompilerWorkarounds {
 
-    private TypeUtilsJDK6Fix() { }
+    private SpecificCompilerWorkarounds() { }
 
     /**
      * Tests whether one type is a subtype of another. Any type is considered to be a subtype of itself. Also see <a
      * href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html">JLS section 4.10, Subtyping</a>.
+     * <p />
+     * Work-around for a bug related to sub-typing in the Eclipse JSR 269 implementation.
      *
      * @param types the type utils
      * @param t1 the first type
@@ -41,6 +46,31 @@ public class TypeUtilsJDK6Fix {
      * @throws IllegalArgumentException if given an executable or package type
      */
     public static boolean isSubType(Types types, TypeMirror t1, TypeMirror t2) {
-        return types.isSubtype( types.erasure( t1 ), types.erasure( t2 ) );
+        if ( t1.getKind() == TypeKind.VOID ) {
+            return false;
+        }
+
+        return types.isSubtype( erasure( types, t1 ), erasure( types, t2 ) );
+    }
+
+    /**
+     * Returns the erasure of a type.
+     * <p/>
+     * Performs an additional test on the given type to check if it is not void. Calling
+     * {@link Types#erasure(TypeMirror)} with a void kind type will create a ClassCastException in Eclipse JDT.
+     *
+     * @param types the type utils
+     * @param t the type to be erased
+     * @return the erasure of the given type
+     * @throws IllegalArgumentException if given a package type
+     * @jls 4.6 Type Erasure
+     */
+    public static TypeMirror erasure(Types types, TypeMirror t) {
+        if ( t.getKind() == TypeKind.VOID ) {
+            return t;
+        }
+        else {
+            return types.erasure( t );
+        }
     }
 }
