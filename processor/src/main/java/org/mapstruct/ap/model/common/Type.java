@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -40,7 +41,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.Nouns;
-import org.mapstruct.ap.util.TypeUtilsJDK6Fix;
+import org.mapstruct.ap.util.SpecificCompilerWorkarounds;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -239,7 +240,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         return new Type(
             typeUtils,
             elementUtils,
-            typeUtils.erasure( typeMirror ),
+            SpecificCompilerWorkarounds.erasure( typeUtils, typeMirror ),
             typeElement,
             typeParameters,
             implementationType,
@@ -429,8 +430,9 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private boolean isSubType(TypeMirror candidate, Class<?> clazz) {
         String className = clazz.getCanonicalName();
-        TypeMirror classType = typeUtils.erasure( elementUtils.getTypeElement( className ).asType() );
-        return TypeUtilsJDK6Fix.isSubType( typeUtils, candidate, classType );
+        TypeMirror classType =
+            SpecificCompilerWorkarounds.erasure( typeUtils, elementUtils.getTypeElement( className ).asType() );
+        return SpecificCompilerWorkarounds.isSubType( typeUtils, candidate, classType );
     }
 
     /**
