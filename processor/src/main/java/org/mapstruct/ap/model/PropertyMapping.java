@@ -111,7 +111,8 @@ public class PropertyMapping extends ModelElement {
             if ( mapping != null ) {
                 dateFormat = mapping.getDateFormat();
                 qualifiers = mapping.getQualifiers();
-                sourcePropertyName = mapping.getSourcePropertyName();
+                sourcePropertyName =
+                    mapping.getSourcePropertyName() == null ? targetPropertyName : mapping.getSourcePropertyName();
             }
             else {
                 sourcePropertyName = targetPropertyName;
@@ -121,18 +122,7 @@ public class PropertyMapping extends ModelElement {
 
             // then iterate over source accessors (assuming the source is a bean)
             for ( ExecutableElement sourceAccessor : sourceGetters ) {
-
-                List<Mapping> sourceMappings = method.getMappings().get( sourcePropertyName );
-                if ( method.getMappings().containsKey( sourcePropertyName ) ) {
-                    for ( Mapping sourceMapping : sourceMappings ) {
-                        boolean mapsToOtherTarget = !sourceMapping.getTargetName().equals( targetPropertyName );
-                        if ( Executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName )
-                            && !mapsToOtherTarget ) {
-                            return getPropertyMapping( sourceAccessor, dateFormat, qualifiers );
-                        }
-                    }
-                }
-                else if ( Executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) ) {
+                if ( Executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) ) {
                     return getPropertyMapping( sourceAccessor, dateFormat, qualifiers );
                 }
             }

@@ -18,12 +18,12 @@
  */
 package org.mapstruct.ap.test.selection.qualifier;
 
-import org.mapstruct.ap.test.selection.qualifier.bean.GermanRelease;
-import org.mapstruct.ap.test.selection.qualifier.bean.OriginalRelease;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotated;
+import org.mapstruct.ap.test.selection.qualifier.bean.GermanRelease;
+import org.mapstruct.ap.test.selection.qualifier.bean.OriginalRelease;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.SomeOtherMapper;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.YetAnotherMapper;
 import org.mapstruct.factory.Mappers;
@@ -38,7 +38,7 @@ public interface ErroneousMapper {
     ErroneousMapper INSTANCE = Mappers.getMapper( ErroneousMapper.class );
 
     @Mappings( {
-        @Mapping( source = "title", qualifiedBy = { NonQualifierAnnotated.class } ), } )
+        @Mapping( target = "title", qualifiedBy = { NonQualifierAnnotated.class } ), } )
     GermanRelease toGerman( OriginalRelease movies );
 
 }

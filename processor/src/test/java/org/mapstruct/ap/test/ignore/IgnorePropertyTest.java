@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.test.ignore;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for ignoring properties during the mapping.
@@ -34,18 +34,6 @@ import static org.fest.assertions.Assertions.assertThat;
 @WithClasses({ Animal.class, AnimalDto.class, AnimalMapper.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class IgnorePropertyTest {
-
-    @Test
-    @IssueKey("72")
-    public void shouldNotPropagateIgnoredPropertyGivenViaSourceAttribute() {
-        Animal animal = new Animal( "Bruno", 100, 23 );
-
-        AnimalDto animalDto = AnimalMapper.INSTANCE.animalToDto( animal );
-
-        assertThat( animalDto ).isNotNull();
-        assertThat( animalDto.getName() ).isEqualTo( "Bruno" );
-        assertThat( animalDto.getSize() ).isNull();
-    }
 
     @Test
     @IssueKey("72")

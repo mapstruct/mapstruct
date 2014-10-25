@@ -29,35 +29,40 @@ import java.util.Date;
 
 /**
  * Configures the mapping of one bean attribute or enum constant.
+ * <p>
+ * The name of the mapped attribute or constant is to be specified via {@link #target()}. For mapped bean attributes it
+ * is assumed by default that the attribute has the same name in the source bean. Alternatively, one of
+ * {@link #source()}, {@link #expression()} or {@link #constant()} can be specified to define the property source.
+ * <p>
+ * In addition, the attributes {@link #dateFormat()} and {@link #qualifiedBy()} may be used to further define the
+ * mapping.
  *
  * @author Gunnar Morling
  */
-@Retention( RetentionPolicy.SOURCE )
-@Target( ElementType.METHOD )
-@Repeatable( Mappings.class )
+@Repeatable(Mappings.class)
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.METHOD)
 public @interface Mapping {
 
     /**
-     * The source to use for this Mapping. This can either be:
+     * The target name of the configured property as defined by the JavaBeans specification. If used to map an enum
+     * constant, the name of the constant member is to be given.
+     *
+     * @return The target name of the configured property or enum constant
+     */
+    String target();
+
+    /**
+     * The source to use for this mapping. This can either be:
      * <ol>
      * <li>The source name of the configured property as defined by the JavaBeans specification.</li>
      * <li>When used to map an enum constant, the name of the constant member is to be given.</li>
      * </ol>
-     * Either this attribute or {@link #constant()} or {@link #expression()} may be specified for a given mapping, but
-     * not two at the same time. If this attribute is given, the target property must be specified via
-     * {@link #target()}.
+     * Either this attribute or {@link #constant()} or {@link #expression()} may be specified for a given mapping.
      *
      * @return The source name of the configured property or enum constant.
      */
     String source() default "";
-
-    /**
-     * The target name of the configured property as defined by the JavaBeans specification. Defaults to the source name
-     * if not given. If used to map an enum constant, the name of the constant member is to be given.
-     *
-     * @return The target name of the configured property or enum constant
-     */
-    String target() default "";
 
     /**
      * A format string as processable by {@link SimpleDateFormat} if the attribute is mapped from {@code String} to
@@ -72,32 +77,29 @@ public @interface Mapping {
      * property is not of type {@code String}, the value will be converted by applying a matching conversion method or
      * built-in conversion.
      * <p>
-     * Either this attribute or {@link #source()} or {@link #expression()} may be specified for a given mapping, but not
-     * two at the same time. If this attribute is given, the target property must be specified via {@link #target()}.
+     * Either this attribute or {@link #source()} or {@link #expression()} may be specified for a given mapping.
      *
      * @return A constant {@code String} constant specifying the value for the designated target property
      */
     String constant() default "";
 
     /**
-     * An expression {@link String} based on which the specified target property is to be set.
-     *
-     * The format is determined by a type of expression. For instance:
+     * An expression {@link String} based on which the specified target property is to be set. The format is determined
+     * by a type of expression. For instance:
      * {@code expression = "java(new org.example.TimeAndFormat( s.getTime(), s.getFormat() ))")} will insert the java
      * expression in the designated {@link #target()} property.
      * <p>
-     * Either this attribute or {@link #source()} or {@link #constant()} may be specified for a given mapping, but not
-     * two at the same time. If this attribute is given, the target property must be specified via {@link #target()}.
+     * Either this attribute or {@link #source()} or {@link #constant()} may be specified for a given mapping.
      *
      * @return A constant {@code String} constant specifying the value for the designated target property
      */
     String expression() default "";
 
     /**
-     * Whether the property specified via {@link #source()} or {@link #target()} should be ignored by the generated
-     * mapping method or not. This can be useful when certain attributes should not be propagated from source or target
-     * or when properties in the target object are populated using a decorator and thus would be reported as unmapped
-     * target property by default.
+     * Whether the property specified via {@link #target()} should be ignored by the generated mapping method or not.
+     * This can be useful when certain attributes should not be propagated from source or target or when properties in
+     * the target object are populated using a decorator and thus would be reported as unmapped target property by
+     * default.
      *
      * @return {@code true} if the given property should be ignored, {@code false} otherwise
      */
@@ -105,9 +107,8 @@ public @interface Mapping {
 
     /**
      * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple
-     * mappers (hand written of internal) qualify and result in an 'Ambiguous mapping methods found' error.
-     *
-     * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
+     * mapping methods (hand written or generated) qualify and thus would result in an 'Ambiguous mapping methods found'
+     * error. A qualifier is a custom annotation and can be placed on a hand written mapper class or a method.
      *
      * @return the qualifiers
      */

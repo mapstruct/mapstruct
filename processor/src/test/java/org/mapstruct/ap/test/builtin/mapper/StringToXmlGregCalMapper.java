@@ -31,7 +31,7 @@ public interface StringToXmlGregCalMapper {
 
     XmlGregorianCalendarProperty map(StringProperty source);
 
-    @Mapping(source = "prop", dateFormat = "dd.MM.yyyy")
+    @Mapping(target = "prop", dateFormat = "dd.MM.yyyy")
     XmlGregorianCalendarProperty mapAndFormat(StringProperty source);
 
 }

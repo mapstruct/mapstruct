@@ -305,8 +305,7 @@ public class BeanMappingMethod extends MappingMethod {
                         }
 
                     }
-                    else if ( mappedProperty.getConstant().isEmpty()
-                        && mappedProperty.getJavaExpression().isEmpty()
+                    else if ( mappedProperty.getSourcePropertyName() != null
                         && !hasSourceProperty( mappedProperty.getSourcePropertyName() ) ) {
                         ctx.getMessager().printMessage(
                             Diagnostic.Kind.ERROR,

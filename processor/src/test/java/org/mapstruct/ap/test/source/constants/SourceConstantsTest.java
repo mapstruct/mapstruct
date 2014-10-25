@@ -18,10 +18,13 @@
  */
 package org.mapstruct.ap.test.source.constants;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
@@ -32,8 +35,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
@@ -158,31 +159,6 @@ public class SourceConstantsTest {
     )
     public void errorOnSourceAndExpression() throws ParseException {
     }
-
-    @Test
-    @IssueKey("187")
-    @WithClasses({
-        Source.class,
-        Target.class,
-        ErroneousMapper2.class,
-        StringListMapper.class
-    })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousMapper2.class,
-                kind = Kind.ERROR,
-                line = 41,
-                messageRegExp = "Either define a source, a constant or an expression in a Mapping"),
-            @Diagnostic(type = ErroneousMapper2.class,
-                kind = Kind.WARNING,
-                line = 41,
-                messageRegExp = "Unmapped target property: \"integerConstant\"")
-        }
-    )
-    public void errorOnNeitherSourceNorExpression() throws ParseException {
-    }
-
 
     @Test
     @IssueKey("255")

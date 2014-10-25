@@ -21,10 +21,10 @@ package org.mapstruct.ap.test.conversion.date;
 import java.util.Date;
 import java.util.List;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -32,13 +32,15 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping(source = "date", dateFormat = "dd.MM.yyyy")
+    @Mapping(target = "date", dateFormat = "dd.MM.yyyy")
     Target sourceToTarget(Source source);
+
     @InheritInverseConfiguration
     Source targetToSource(Target target);
 
     @IterableMapping(dateFormat = "dd.MM.yyyy")
     List<String> stringListToDateList(List<Date> dates);
+
     @InheritInverseConfiguration
     List<Date> dateListToStringList(List<String> strings);
 }

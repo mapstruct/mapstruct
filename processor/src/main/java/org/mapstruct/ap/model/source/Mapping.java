@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -53,7 +52,7 @@ public class Mapping {
     private final String javaExpression;
     private final String targetName;
     private final String dateFormat;
-    private final List<TypeMirror>  qualifiers;
+    private final List<TypeMirror> qualifiers;
     private final boolean isIgnored;
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -85,18 +84,7 @@ public class Mapping {
             mappingPrism.values.source()
         );
 
-        if ( mappingPrism.source().isEmpty() &&
-            mappingPrism.constant().isEmpty() &&
-            mappingPrism.expression().isEmpty() &&
-            !mappingPrism.ignore() ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                "Either define a source, a constant or an expression in a Mapping",
-                element
-            );
-            return null;
-        }
-        else if ( !mappingPrism.source().isEmpty() && !mappingPrism.constant().isEmpty() ) {
+        if ( !mappingPrism.source().isEmpty() && !mappingPrism.constant().isEmpty() ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
                 "Source and constant are both defined in Mapping, either define a source or a constant",
@@ -120,10 +108,12 @@ public class Mapping {
             );
             return null;
         }
+
+        String source = mappingPrism.source().isEmpty() ? null : mappingPrism.source();
         return new Mapping(
-            mappingPrism.source(),
+            source,
             sourceNameParts != null ? sourceNameParts[0] : null,
-            sourceNameParts != null ? sourceNameParts[1] : mappingPrism.source(),
+            sourceNameParts != null ? sourceNameParts[1] : source,
             mappingPrism.constant(),
             mappingPrism.expression(),
             mappingPrism.target(),
@@ -156,8 +146,8 @@ public class Mapping {
     }
 
     //CHECKSTYLE:OFF
-    private Mapping( String sourceName, String sourceParameterName, String sourcePropertyName, String constant,
-                    String expression, String targetName, String dateFormat, List<TypeMirror>  qualifiers,
+    private Mapping(String sourceName, String sourceParameterName, String sourcePropertyName, String constant,
+                    String expression, String targetName, String dateFormat, List<TypeMirror> qualifiers,
                     boolean isIgnored, AnnotationMirror mirror, AnnotationValue sourceAnnotationValue,
                     AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
@@ -167,7 +157,7 @@ public class Mapping {
         this.expression = expression;
         Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( expression );
         this.javaExpression = javaExpressionMatcher.matches() ? javaExpressionMatcher.group( 1 ).trim() : "";
-        this.targetName = targetName.equals( "" ) ? sourceName : targetName;
+        this.targetName = targetName;
         this.dateFormat = dateFormat;
         this.qualifiers = qualifiers;
         this.isIgnored = isIgnored;
@@ -246,12 +236,12 @@ public class Mapping {
         // mapping can only be reversed if the source was not a constant nor an expression
         if ( constant.isEmpty() && expression.isEmpty() ) {
             reverse = new Mapping(
-                targetName,
+                sourceName != null ? targetName : null,
                 null,
-                targetName,
+                sourceName != null ? targetName : null,
                 constant,
                 expression,
-                sourceName,
+                sourceName != null ? sourceName : targetName,
                 dateFormat,
                 qualifiers,
                 isIgnored,

@@ -18,10 +18,9 @@
  */
 package org.mapstruct.ap.test.ignore;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -29,11 +28,9 @@ public interface AnimalMapper {
 
     AnimalMapper INSTANCE = Mappers.getMapper( AnimalMapper.class );
 
-    @Mappings({
-        @Mapping(source = "size", ignore = true),
-        @Mapping(target = "age", ignore = true)
-    })
+    @Mapping(target = "age", ignore = true)
     AnimalDto animalToDto(Animal animal);
+
     @InheritInverseConfiguration
     Animal animalDtoToAnimal(AnimalDto animalDto);
 }
