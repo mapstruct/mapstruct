@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -121,8 +120,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     /**
      * @param executable the executable to check
+     *
      * @return <code>true</code>, iff the executable does not represent {@link java.lang.Object#equals(Object)} or an
-     *         overridden version of it
+     * overridden version of it
      */
     private boolean isNotObjectEquals(ExecutableElement executable) {
         if ( "equals".equals( executable.getSimpleName().toString() )
@@ -135,8 +135,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     /**
      * @param methods the list of already collected methods of one type hierarchy (order is from sub-types to
-     *            super-types)
+     * super-types)
      * @param executable the method to check
+     *
      * @return <code>true</code>, iff the given executable was not yet overridden by a method in the given list.
      */
     private boolean wasNotYetOverridden(List<SourceMethod> methods, ExecutableElement executable) {
@@ -412,7 +413,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      *
      * @param method The method of interest
      *
-     * @return The mappings for the given method, keyed by source property name
+     * @return The mappings for the given method, keyed by target property name
      */
     private Map<String, List<Mapping>> getMappings(ExecutableElement method) {
         Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
@@ -421,12 +422,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         MappingsPrism mappingsAnnotation = MappingsPrism.getInstanceOn( method );
 
         if ( mappingAnnotation != null ) {
-            if ( !mappings.containsKey( mappingAnnotation.source() ) ) {
-                mappings.put( mappingAnnotation.source(), new ArrayList<Mapping>() );
+            if ( !mappings.containsKey( mappingAnnotation.target() ) ) {
+                mappings.put( mappingAnnotation.target(), new ArrayList<Mapping>() );
             }
-            Mapping mapping =  Mapping.fromMappingPrism( mappingAnnotation, method, messager );
+            Mapping mapping = Mapping.fromMappingPrism( mappingAnnotation, method, messager );
             if ( mapping != null ) {
-                mappings.get( mappingAnnotation.source() ).add( mapping );
+                mappings.get( mappingAnnotation.target() ).add( mapping );
             }
         }
 

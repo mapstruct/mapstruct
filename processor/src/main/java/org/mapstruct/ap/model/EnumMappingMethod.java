@@ -20,8 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.common.Parameter;
@@ -67,12 +66,11 @@ public class EnumMappingMethod extends MappingMethod {
 
             List<String> sourceEnumConstants
                     = method.getSourceParameters().iterator().next().getType().getEnumConstants();
-            Map<String, List<Mapping>> mappings = method.getMappings();
 
             for ( String enumConstant : sourceEnumConstants ) {
-                List<Mapping> mappedConstants = mappings.get( enumConstant );
+                List<Mapping> mappedConstants = method.getMappingBySourcePropertyName( enumConstant );
 
-                if ( mappedConstants == null ) {
+                if ( mappedConstants.isEmpty() ) {
                     enumMappings.add( new EnumMapping( enumConstant, enumConstant ) );
                 }
                 else if ( mappedConstants.size() == 1 ) {
@@ -172,12 +170,11 @@ public class EnumMappingMethod extends MappingMethod {
             List<String> sourceEnumConstants =
                     method.getSourceParameters().iterator().next().getType().getEnumConstants();
             List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
-            Set<String> mappedSourceEnumConstants = method.getMappings().keySet();
             List<String> unmappedSourceEnumConstants = new ArrayList<String>();
 
             for ( String sourceEnumConstant : sourceEnumConstants ) {
                 if ( !targetEnumConstants.contains( sourceEnumConstant )
-                        && !mappedSourceEnumConstants.contains( sourceEnumConstant ) ) {
+                        && method.getMappingBySourcePropertyName( sourceEnumConstant ).isEmpty() ) {
                     unmappedSourceEnumConstants.add( sourceEnumConstant );
                 }
             }

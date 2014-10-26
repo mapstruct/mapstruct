@@ -28,8 +28,13 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
@@ -59,24 +64,42 @@ public class Mapping {
     private final AnnotationValue targetAnnotationValue;
 
 
-    public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation, Element element,
+    public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
+                                                               ExecutableElement method,
                                                                Messager messager) {
         Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
-            if ( !mappings.containsKey( mappingPrism.source() ) ) {
-                mappings.put( mappingPrism.source(), new ArrayList<Mapping>() );
-            }
-            Mapping mapping = fromMappingPrism( mappingPrism, element, messager );
+            Mapping mapping = fromMappingPrism( mappingPrism, method, messager );
             if ( mapping != null ) {
-                mappings.get( mappingPrism.source() ).add( mapping );
+                List<Mapping> mappingsOfProperty = mappings.get( mappingPrism.target() );
+                if ( mappingsOfProperty == null ) {
+                    mappingsOfProperty = new ArrayList<Mapping>();
+                    mappings.put( mappingPrism.target(), mappingsOfProperty );
+                }
+
+                mappingsOfProperty.add( mapping );
+
+                if ( mappingsOfProperty.size() > 1 && !isEnumType( method.getReturnType() ) ) {
+                    messager.printMessage(
+                        Kind.ERROR,
+                        "Target property \"" + mappingPrism.target() + "\" must not be mapped more than once.",
+                        method
+                    );
+                }
             }
         }
 
         return mappings;
     }
 
-    public static Mapping fromMappingPrism(MappingPrism mappingPrism, Element element, Messager messager) {
+    private static boolean isEnumType(TypeMirror mirror) {
+        return mirror.getKind() == TypeKind.DECLARED &&
+            ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
+    }
+
+
+    public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element, Messager messager) {
         String[] sourceNameParts = getSourceNameParts(
             mappingPrism.source(),
             element,
@@ -84,10 +107,21 @@ public class Mapping {
             mappingPrism.values.source()
         );
 
+        if ( mappingPrism.target().isEmpty() ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Target must not be empty in @Mapping",
+                element,
+                mappingPrism.mirror,
+                mappingPrism.values.target()
+            );
+            return null;
+        }
+
         if ( !mappingPrism.source().isEmpty() && !mappingPrism.constant().isEmpty() ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "Source and constant are both defined in Mapping, either define a source or a constant",
+                "Source and constant are both defined in @Mapping, either define a source or a constant",
                 element
             );
             return null;
@@ -95,7 +129,7 @@ public class Mapping {
         else if ( !mappingPrism.source().isEmpty() && !mappingPrism.expression().isEmpty() ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "Source and expression are both defined in Mapping, either define a source or an expression",
+                "Source and expression are both defined in @Mapping, either define a source or an expression",
                 element
             );
             return null;
@@ -103,21 +137,22 @@ public class Mapping {
         else if ( !mappingPrism.expression().isEmpty() && !mappingPrism.constant().isEmpty() ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "Expression and constant are both defined in Mapping, either define an expression or a constant",
+                "Expression and constant are both defined in @Mapping, either define an expression or a constant",
                 element
             );
             return null;
         }
 
         String source = mappingPrism.source().isEmpty() ? null : mappingPrism.source();
+
         return new Mapping(
             source,
             sourceNameParts != null ? sourceNameParts[0] : null,
             sourceNameParts != null ? sourceNameParts[1] : source,
-            mappingPrism.constant(),
-            mappingPrism.expression(),
+            mappingPrism.constant().isEmpty() ? null : mappingPrism.constant(),
+            mappingPrism.expression().isEmpty() ? null : mappingPrism.expression(),
             mappingPrism.target(),
-            mappingPrism.dateFormat(),
+            mappingPrism.dateFormat().isEmpty() ? null : mappingPrism.dateFormat(),
             mappingPrism.qualifiedBy(),
             mappingPrism.ignore(),
             mappingPrism.mirror,
@@ -155,8 +190,13 @@ public class Mapping {
         this.sourcePropertyName = sourcePropertyName;
         this.constant = constant;
         this.expression = expression;
-        Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( expression );
-        this.javaExpression = javaExpressionMatcher.matches() ? javaExpressionMatcher.group( 1 ).trim() : "";
+        if ( expression != null ) {
+            Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( expression );
+            this.javaExpression = javaExpressionMatcher.matches() ? javaExpressionMatcher.group( 1 ).trim() : null;
+        }
+        else {
+            this.javaExpression = null;
+        }
         this.targetName = targetName;
         this.dateFormat = dateFormat;
         this.qualifiers = qualifiers;
@@ -234,7 +274,7 @@ public class Mapping {
     public Mapping reverse() {
         Mapping reverse = null;
         // mapping can only be reversed if the source was not a constant nor an expression
-        if ( constant.isEmpty() && expression.isEmpty() ) {
+        if ( constant == null && expression == null ) {
             reverse = new Mapping(
                 sourceName != null ? targetName : null,
                 null,

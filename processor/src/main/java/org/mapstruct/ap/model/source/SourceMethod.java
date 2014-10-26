@@ -146,6 +146,7 @@ public class SourceMethod implements Method {
         return declaringMapper;
     }
 
+    @Override
     public ExecutableElement getExecutable() {
         return executable;
     }
@@ -212,10 +213,16 @@ public class SourceMethod implements Method {
     }
 
     /**
-     * @return the {@link Mapping}s configured for this method, keyed by source property name.
+     * @return the {@link Mapping}s configured for this method, keyed by target property name. Only for enum mapping
+     *         methods a target will be mapped by several sources.
      */
     public Map<String, List<Mapping>> getMappings() {
         return mappings;
+    }
+
+    public Mapping getSingleMappingByTargetPropertyName(String targetPropertyName) {
+        List<Mapping> all = mappings.get( targetPropertyName );
+        return all != null ? all.iterator().next() : null;
     }
 
     public void setMappings(Map<String, List<Mapping>> mappings) {
@@ -298,17 +305,20 @@ public class SourceMethod implements Method {
     }
 
     /**
-     * Returns the {@link Mapping} for the given target property. May return {@code null}.
+     * Returns the {@link Mapping}s for the given source property.
      */
-    public Mapping getMappingByTargetPropertyName(String targetPropertyName) {
-        for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
-            for ( Mapping mapping : entry.getValue() ) {
-                if ( mapping.getTargetName().equals( targetPropertyName ) ) {
-                    return mapping;
+    public List<Mapping> getMappingBySourcePropertyName(String sourcePropertyName) {
+        List<Mapping> mappingsOfSourceProperty = new ArrayList<Mapping>();
+
+        for ( List<Mapping> mappingOfProperty : mappings.values() ) {
+            for ( Mapping mapping : mappingOfProperty ) {
+                if ( mapping.getSourcePropertyName().equals( sourcePropertyName ) ) {
+                    mappingsOfSourceProperty.add( mapping );
                 }
             }
         }
-        return null;
+
+        return mappingsOfSourceProperty;
     }
 
     public Parameter getSourceParameter(String sourceParameterName) {

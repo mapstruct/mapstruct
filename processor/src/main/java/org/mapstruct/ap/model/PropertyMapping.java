@@ -104,7 +104,7 @@ public class PropertyMapping extends ModelElement {
         public PropertyMapping build() {
 
             // check if there's a mapping defined
-            Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
+            Mapping mapping = method.getSingleMappingByTargetPropertyName( targetPropertyName );
             String dateFormat = null;
             List<TypeMirror> qualifiers = null;
             String sourcePropertyName;

@@ -361,40 +361,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
     }
 
-    private Map<String, List<Mapping>> reverse(Map<String, List<Mapping>> mappings) {
-        Map<String, List<Mapping>> reversed = new HashMap<String, List<Mapping>>();
-
-        for ( List<Mapping> mappingList : mappings.values() ) {
-            for ( Mapping mapping : mappingList ) {
-
-                Mapping reverseMapping = mapping.reverse();
-                if ( reverseMapping != null ) {
-                    if ( !reversed.containsKey( mapping.getTargetName() ) ) {
-                        reversed.put( mapping.getTargetName(), new ArrayList<Mapping>() );
-                    }
-                    reversed.get( mapping.getTargetName() ).add( reverseMapping );
-                }
-            }
-        }
-        return reversed;
-    }
-
-    private void mergeWithReverseMappings(SourceMethod reverseMappingMethod, SourceMethod method) {
+    private void mergeWithReverseMappings(SourceMethod forwardMappingMethod, SourceMethod method) {
         Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();
-        if ( reverseMappingMethod != null && !reverseMappingMethod.getMappings().isEmpty() ) {
-            // define all the base mappings based on its forward counterpart.
-            // however, remove the mappings that are designated as constant, expression or ignore.
-            // They are characterized by the key ""
 
-            Map<String, List<Mapping>> reverseMappings = new HashMap<String, List<Mapping>>();
-            reverseMappings.putAll( reverseMappingMethod.getMappings() );
-            List<Mapping> nonSourceMappings =  method.getMappings().get( "" );
-            if (nonSourceMappings != null ) {
-                for (Mapping nonSourceMapping : nonSourceMappings) {
-                    reverseMappings.remove( nonSourceMapping.getTargetName() );
+        if ( forwardMappingMethod != null && !forwardMappingMethod.getMappings().isEmpty() ) {
+            for ( List<Mapping> mappings : forwardMappingMethod.getMappings().values() ) {
+                for ( Mapping forwardMapping : mappings ) {
+                    Mapping reversed = forwardMapping.reverse();
+                    if ( reversed != null ) {
+                        List<Mapping> mappingsOfProperty = newMappings.get( reversed.getTargetName() );
+                        if ( mappingsOfProperty == null ) {
+                            mappingsOfProperty = new ArrayList<Mapping>();
+                            newMappings.put( reversed.getTargetName(), mappingsOfProperty );
+                        }
+                        mappingsOfProperty.add( reversed );
+                    }
                 }
             }
-            newMappings.putAll( reverse( reverseMappings ) );
         }
 
         if ( method.getMappings().isEmpty() ) {

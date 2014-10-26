@@ -99,7 +99,7 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.ERROR,
                 line = 41,
-                messageRegExp = "Source and constant are both defined in Mapping, either define a source or a "
+                messageRegExp = "Source and constant are both defined in @Mapping, either define a source or a "
                     + "constant"),
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.WARNING,
@@ -124,7 +124,7 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.ERROR,
                 line = 41,
-                messageRegExp = "Expression and constant are both defined in Mapping, either define an expression or a "
+                messageRegExp = "Expression and constant are both defined in @Mapping, either define an expression or a "
                     + "constant"),
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.WARNING,
@@ -149,7 +149,7 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.ERROR,
                 line = 41,
-                messageRegExp = "Source and expression are both defined in Mapping, either define a source or an "
+                messageRegExp = "Source and expression are both defined in @Mapping, either define a source or an "
                     + "expression"),
             @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.WARNING,

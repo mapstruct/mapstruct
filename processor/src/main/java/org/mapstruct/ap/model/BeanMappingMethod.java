@@ -92,7 +92,7 @@ public class BeanMappingMethod extends MappingMethod {
 
                 String targetPropertyName = Executables.getPropertyName( targetAccessor );
 
-                Mapping mapping = method.getMappingByTargetPropertyName( targetPropertyName );
+                Mapping mapping = method.getSingleMappingByTargetPropertyName( targetPropertyName );
 
                 if ( mapping != null && mapping.isIgnored() ) {
                     ignoredTargetProperties.add( targetPropertyName );
@@ -146,7 +146,7 @@ public class BeanMappingMethod extends MappingMethod {
                     else if ( Executables.isSetterMethod( targetAccessor )
                         || Executables.isGetterMethod( targetAccessor ) ) {
 
-                        if ( !mapping.getConstant().isEmpty() ) {
+                        if ( mapping.getConstant() != null ) {
                             // its a constant
                             PropertyMapping.ConstantMappingBuilder builder =
                                 new PropertyMapping.ConstantMappingBuilder();
@@ -160,7 +160,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .build();
                         }
 
-                        else if ( !mapping.getJavaExpression().isEmpty() ) {
+                        else if ( mapping.getJavaExpression() != null ) {
                             // its an expression
                             PropertyMapping.JavaExpressionMappingBuilder builder =
                                 new PropertyMapping.JavaExpressionMappingBuilder();
