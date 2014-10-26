@@ -18,13 +18,10 @@
  */
 package org.mapstruct.ap.test.source.constants;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
@@ -35,6 +32,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
@@ -124,8 +123,9 @@ public class SourceConstantsTest {
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.ERROR,
                 line = 41,
-                messageRegExp = "Expression and constant are both defined in @Mapping, either define an expression or a "
-                    + "constant"),
+                messageRegExp =
+                    "Expression and constant are both defined in @Mapping, either define an expression or a "
+                        + "constant"),
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.WARNING,
                 line = 41,

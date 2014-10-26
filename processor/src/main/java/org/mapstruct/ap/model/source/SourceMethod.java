@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
@@ -76,7 +75,8 @@ public class SourceMethod implements Method {
             mappings,
             iterableMapping,
             mapMapping,
-            typeUtils );
+            typeUtils
+        );
     }
 
     public static SourceMethod forReferencedMethod(Type declaringMapper, ExecutableElement executable,
@@ -89,10 +89,11 @@ public class SourceMethod implements Method {
             parameters,
             returnType,
             exceptionTypes,
-            Collections.<String, List<Mapping>> emptyMap(),
+            Collections.<String, List<Mapping>>emptyMap(),
             null,
             null,
-            typeUtils );
+            typeUtils
+        );
     }
 
     public static SourceMethod forFactoryMethod(Type declaringMapper, ExecutableElement executable, Type returnType,
@@ -101,13 +102,14 @@ public class SourceMethod implements Method {
         return new SourceMethod(
             declaringMapper,
             executable,
-            Collections.<Parameter> emptyList(),
+            Collections.<Parameter>emptyList(),
             returnType,
             exceptionTypes,
-            Collections.<String, List<Mapping>> emptyMap(),
+            Collections.<String, List<Mapping>>emptyMap(),
             null,
             null,
-            typeUtils );
+            typeUtils
+        );
     }
 
     private SourceMethod(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
@@ -214,7 +216,7 @@ public class SourceMethod implements Method {
 
     /**
      * @return the {@link Mapping}s configured for this method, keyed by target property name. Only for enum mapping
-     *         methods a target will be mapped by several sources.
+     * methods a target will be mapped by several sources.
      */
     public Map<String, List<Mapping>> getMappings() {
         return mappings;
@@ -352,6 +354,7 @@ public class SourceMethod implements Method {
 
     /**
      * @param parameters the parameter list to check
+     *
      * @return <code>true</code>, iff the parameter list contains a parameter annotated with {@code @TargetType}
      */
     public static boolean containsTargetTypeParameter(List<Parameter> parameters) {
