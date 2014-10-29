@@ -53,16 +53,16 @@ public class Mapping {
     private final String sourceParameterName;
     private final String sourcePropertyName;
     private final String constant;
-    private final String expression;
     private final String javaExpression;
     private final String targetName;
     private final String dateFormat;
     private final List<TypeMirror> qualifiers;
     private final boolean isIgnored;
+    private final boolean isInheritedFromInverseMethod;
+
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
-
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
                                                                ExecutableElement method,
@@ -144,21 +144,44 @@ public class Mapping {
         }
 
         String source = mappingPrism.source().isEmpty() ? null : mappingPrism.source();
+        String expression = getExpression( mappingPrism, element, messager );
 
         return new Mapping(
             source,
             sourceNameParts != null ? sourceNameParts[0] : null,
             sourceNameParts != null ? sourceNameParts[1] : source,
             mappingPrism.constant().isEmpty() ? null : mappingPrism.constant(),
-            mappingPrism.expression().isEmpty() ? null : mappingPrism.expression(),
+            expression,
             mappingPrism.target(),
             mappingPrism.dateFormat().isEmpty() ? null : mappingPrism.dateFormat(),
             mappingPrism.qualifiedBy(),
             mappingPrism.ignore(),
+            false,
             mappingPrism.mirror,
             mappingPrism.values.source(),
             mappingPrism.values.target()
         );
+    }
+
+    private static String getExpression(MappingPrism mappingPrism, ExecutableElement element, Messager messager) {
+        if ( mappingPrism.expression().isEmpty() ) {
+            return null;
+        }
+
+        Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( mappingPrism.expression() );
+
+        if ( !javaExpressionMatcher.matches() ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Value must be given in the form \"java(<EXPRESSION>)\"",
+                element,
+                mappingPrism.mirror,
+                mappingPrism.values.expression()
+            );
+            return null;
+        }
+
+        return javaExpressionMatcher.group( 1 ).trim();
     }
 
     private static String[] getSourceNameParts(String sourceName, Element element, AnnotationMirror annotationMirror,
@@ -182,25 +205,20 @@ public class Mapping {
 
     //CHECKSTYLE:OFF
     private Mapping(String sourceName, String sourceParameterName, String sourcePropertyName, String constant,
-                    String expression, String targetName, String dateFormat, List<TypeMirror> qualifiers,
-                    boolean isIgnored, AnnotationMirror mirror, AnnotationValue sourceAnnotationValue,
+                    String javaExpression, String targetName, String dateFormat, List<TypeMirror> qualifiers,
+                    boolean isIgnored, boolean isInheritedFromInverseMethod, AnnotationMirror mirror,
+                    AnnotationValue sourceAnnotationValue,
                     AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
         this.sourceParameterName = sourceParameterName;
         this.sourcePropertyName = sourcePropertyName;
         this.constant = constant;
-        this.expression = expression;
-        if ( expression != null ) {
-            Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( expression );
-            this.javaExpression = javaExpressionMatcher.matches() ? javaExpressionMatcher.group( 1 ).trim() : null;
-        }
-        else {
-            this.javaExpression = null;
-        }
+        this.javaExpression = javaExpression;
         this.targetName = targetName;
         this.dateFormat = dateFormat;
         this.qualifiers = qualifiers;
         this.isIgnored = isIgnored;
+        this.isInheritedFromInverseMethod = isInheritedFromInverseMethod;
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
@@ -259,6 +277,13 @@ public class Mapping {
         return isIgnored;
     }
 
+    /**
+     * Whether this mapping originates from the inverse mapping method.
+     */
+    public boolean isInheritedFromInverseMethod() {
+        return isInheritedFromInverseMethod;
+    }
+
     public AnnotationMirror getMirror() {
         return mirror;
     }
@@ -272,25 +297,26 @@ public class Mapping {
     }
 
     public Mapping reverse() {
-        Mapping reverse = null;
         // mapping can only be reversed if the source was not a constant nor an expression
-        if ( constant == null && expression == null ) {
-            reverse = new Mapping(
-                sourceName != null ? targetName : null,
-                null,
-                sourceName != null ? targetName : null,
-                constant,
-                expression,
-                sourceName != null ? sourceName : targetName,
-                dateFormat,
-                qualifiers,
-                isIgnored,
-                mirror,
-                sourceAnnotationValue,
-                targetAnnotationValue
-            );
+        if ( constant != null || javaExpression != null ) {
+            return null;
         }
-        return reverse;
+
+        return new Mapping(
+            sourceName != null ? targetName : null,
+            null,
+            sourceName != null ? targetName : null,
+            constant,
+            javaExpression,
+            sourceName != null ? sourceName : targetName,
+            dateFormat,
+            qualifiers,
+            isIgnored,
+            true,
+            mirror,
+            sourceAnnotationValue,
+            targetAnnotationValue
+        );
     }
 
     @Override

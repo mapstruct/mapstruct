@@ -249,11 +249,6 @@ public class BeanMappingMethod extends MappingMethod {
         }
 
         private boolean reportErrorIfMappedPropertiesDontExist() {
-            // only report errors if this method itself is configured
-            if ( method.isConfiguredByReverseMappingMethod() ) {
-                return true;
-            }
-
             // collect all target accessors
             List<ExecutableElement> targetAccessors = new ArrayList<ExecutableElement>();
             targetAccessors.addAll( method.getResultType().getSetters() );
@@ -265,7 +260,8 @@ public class BeanMappingMethod extends MappingMethod {
 
             for ( List<Mapping> mappedProperties : method.getMappings().values() ) {
                 for ( Mapping mappedProperty : mappedProperties ) {
-                    if ( mappedProperty.isIgnored() ) {
+                    // only report errors if this mapping is not inherited
+                    if ( mappedProperty.isInheritedFromInverseMethod() ) {
                         continue;
                     }
 

@@ -101,11 +101,6 @@ public class EnumMappingMethod extends MappingMethod {
         }
 
         private boolean reportErrorIfMappedEnumConstantsDontExist(SourceMethod method) {
-            // only report errors if this method itself is configured
-            if ( method.isConfiguredByReverseMappingMethod() ) {
-                return true;
-            }
-
             List<String> sourceEnumConstants =
                 method.getSourceParameters().iterator().next().getType().getEnumConstants();
             List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
@@ -114,6 +109,11 @@ public class EnumMappingMethod extends MappingMethod {
 
             for ( List<Mapping> mappedConstants : method.getMappings().values() ) {
                 for ( Mapping mappedConstant : mappedConstants ) {
+                    // only report errors if this mapping is not inherited
+                    if ( mappedConstant.isInheritedFromInverseMethod() ) {
+                        continue;
+                    }
+
                     if ( mappedConstant.getSourceName() == null ) {
                         ctx.getMessager().printMessage(
                             Diagnostic.Kind.ERROR,

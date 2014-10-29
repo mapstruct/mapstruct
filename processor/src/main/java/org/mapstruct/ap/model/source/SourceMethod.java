@@ -279,15 +279,6 @@ public class SourceMethod implements Method {
             && getResultType().isEnumType();
     }
 
-    /**
-     * Whether this method is configured by itself or by the corresponding reverse mapping method.
-     *
-     * @return {@code true} if this method is configured by itself, {@code false} otherwise.
-     */
-    public boolean isConfiguredByReverseMappingMethod() {
-        return configuredByReverseMappingMethod;
-    }
-
     private boolean equals(Object o1, Object o2) {
         return ( o1 == null && o2 == null ) || ( o1 != null ) && o1.equals( o2 );
     }
