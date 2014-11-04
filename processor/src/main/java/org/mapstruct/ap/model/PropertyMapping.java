@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
@@ -118,15 +119,46 @@ public class PropertyMapping extends ModelElement {
                 sourcePropertyName = targetPropertyName;
             }
 
-            List<ExecutableElement> sourceGetters = parameter.getType().getGetters();
+            // usually there should be only one getter; only for Boolean there may be two: isFoo() and getFoo()
+            List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( 2 );
 
             // then iterate over source accessors (assuming the source is a bean)
-            for ( ExecutableElement sourceAccessor : sourceGetters ) {
+            for ( ExecutableElement sourceAccessor : parameter.getType().getGetters() ) {
                 if ( Executables.getPropertyName( sourceAccessor ).equals( sourcePropertyName ) ) {
-                    return getPropertyMapping( sourceAccessor, dateFormat, qualifiers );
+                    candidates.add( sourceAccessor );
                 }
             }
-            return null;
+
+            ExecutableElement sourceAccessor = getSourceAccessor( sourcePropertyName, candidates );
+            return sourceAccessor != null ? getPropertyMapping( sourceAccessor, dateFormat, qualifiers ) : null;
+        }
+
+        private ExecutableElement getSourceAccessor(String sourcePropertyName, List<ExecutableElement> candidates) {
+            if ( candidates.isEmpty() ) {
+                return null;
+            }
+            else if ( candidates.size() == 1 ) {
+                return candidates.get( 0 );
+            }
+            // can only be the case for Booleans: isFoo() and getFoo(); The latter is preferred then
+            else if ( candidates.size() == 2 ) {
+                if ( candidates.get( 0 ).getSimpleName().toString().startsWith( "get" ) ) {
+                    return candidates.get( 0 );
+                }
+                else {
+                    return candidates.get( 1 );
+                }
+            }
+            // Should never really happen
+            else {
+                ctx.getMessager().printMessage(
+                    Diagnostic.Kind.ERROR,
+                    String.format( "Found several matching getters for property \"%s\"", sourcePropertyName ),
+                    method.getExecutable()
+                );
+
+                return null;
+            }
         }
 
         private PropertyMapping getPropertyMapping(ExecutableElement sourceAccessor,

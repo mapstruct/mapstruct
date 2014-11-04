@@ -34,7 +34,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
- * Test for aming of variables/members which conflict with keywords or parameter names.
+ * Test for naming of variables/members which conflict with keywords or parameter names.
  *
  * @author Gunnar Morling
  */
