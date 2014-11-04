@@ -22,9 +22,15 @@ import java.beans.Introspector;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleElementVisitor6;
+import javax.lang.model.util.SimpleTypeVisitor6;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.
@@ -51,11 +57,13 @@ public class Executables {
 
     private static boolean isBooleanGetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
+        boolean returnTypeIsBoolean = method.getReturnType().getKind() == TypeKind.BOOLEAN ||
+            "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) );
 
         return method.getParameters().isEmpty() &&
             name.startsWith( "is" ) &&
             name.length() > 2 &&
-            method.getReturnType().getKind() == TypeKind.BOOLEAN;
+            returnTypeIsBoolean;
     }
 
     public static boolean isSetterMethod(ExecutableElement method) {
@@ -73,8 +81,8 @@ public class Executables {
         String name = method.getSimpleName().toString();
 
         return isPublic( method ) &&
-               name.startsWith( "add" ) && name.length() > 3 &&
-               method.getParameters().size() == 1;
+            name.startsWith( "add" ) && name.length() > 3 &&
+            method.getParameters().size() == 1;
 
     }
 
@@ -124,5 +132,33 @@ public class Executables {
         }
 
         return propertyNames;
+    }
+
+    private static String getQualifiedName(TypeMirror type) {
+        DeclaredType declaredType = type.accept(
+            new SimpleTypeVisitor6<DeclaredType, Void>() {
+                @Override
+                public DeclaredType visitDeclared(DeclaredType t, Void p) {
+                    return t;
+                }
+            },
+            null
+        );
+
+        if ( declaredType == null ) {
+            return null;
+        }
+
+        TypeElement typeElement = declaredType.asElement().accept(
+            new SimpleElementVisitor6<TypeElement, Void>() {
+                @Override
+                public TypeElement visitType(TypeElement e, Void p) {
+                    return e;
+                }
+            },
+            null
+        );
+
+        return typeElement != null ? typeElement.getQualifiedName().toString() : null;
     }
 }

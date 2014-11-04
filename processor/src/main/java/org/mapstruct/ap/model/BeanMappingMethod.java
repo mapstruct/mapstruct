@@ -267,39 +267,52 @@ public class BeanMappingMethod extends MappingMethod {
             Iterator<Entry<String, ExecutableElement>> targetProperties =
                             unprocessedTargetProperties.entrySet().iterator();
 
+            // usually there should be only one getter; only for Boolean there may be two: isFoo() and getFoo()
+            List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( 2 );
+
             while ( targetProperties.hasNext() ) {
                 Entry<String, ExecutableElement> targetProperty = targetProperties.next();
 
                 PropertyMapping propertyMapping = null;
+
                 if ( propertyMapping == null ) {
+
                     for ( Parameter sourceParameter : method.getSourceParameters() ) {
 
-                        PropertyMapping newPropertyMapping = null;
                         for ( ExecutableElement sourceAccessor : sourceParameter.getType().getGetters() ) {
                             String sourcePropertyName = Executables.getPropertyName( sourceAccessor );
+
                             if ( sourcePropertyName.equals( targetProperty.getKey() ) ) {
-
-                                Mapping mapping = method.getSingleMappingByTargetPropertyName( sourcePropertyName );
-
-                                SourceReference sourceRef = new SourceReference.BuilderFromProperty()
-                                        .sourceParameter( sourceParameter )
-                                        .type( ctx.getTypeFactory().getReturnType( sourceAccessor ) )
-                                        .accessor( sourceAccessor )
-                                        .name( sourcePropertyName )
-                                        .build();
-
-                                newPropertyMapping = new PropertyMappingBuilder()
-                                        .mappingContext( ctx )
-                                        .souceMethod( method )
-                                        .targetAccessor( targetProperty.getValue() )
-                                        .targetPropertyName( targetProperty.getKey() )
-                                        .sourceReference( sourceRef )
-                                        .qualifiers( mapping != null ? mapping.getQualifiers() : null )
-                                        .dateFormat( mapping != null ? mapping.getDateFormat() : null )
-                                        .build();
-                                break;
+                                candidates.add( sourceAccessor );
                             }
                         }
+
+                        PropertyMapping newPropertyMapping = null;
+                        ExecutableElement sourceAccessor = getSourceAccessor( targetProperty.getKey(), candidates );
+                        if ( sourceAccessor != null ) {
+                            Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
+
+                            SourceReference sourceRef = new SourceReference.BuilderFromProperty()
+                                    .sourceParameter( sourceParameter )
+                                    .type( ctx.getTypeFactory().getReturnType( sourceAccessor ) )
+                                    .accessor( sourceAccessor )
+                                    .name( targetProperty.getKey() )
+                                    .build();
+
+                            newPropertyMapping = new PropertyMappingBuilder()
+                                    .mappingContext( ctx )
+                                    .souceMethod( method )
+                                    .targetAccessor( targetProperty.getValue() )
+                                    .targetPropertyName( targetProperty.getKey() )
+                                    .sourceReference( sourceRef )
+                                    .qualifiers( mapping != null ? mapping.getQualifiers() : null )
+                                    .dateFormat( mapping != null ? mapping.getDateFormat() : null )
+                                    .build();
+
+                            // candidates are handled
+                            candidates.clear();
+                        }
+
 
                         if ( propertyMapping != null && newPropertyMapping != null ) {
                             // TODO improve error message
@@ -322,6 +335,34 @@ public class BeanMappingMethod extends MappingMethod {
                     propertyMappings.add( propertyMapping );
                     targetProperties.remove();
                 }
+            }
+        }
+
+        private ExecutableElement getSourceAccessor(String sourcePropertyName, List<ExecutableElement> candidates) {
+            if ( candidates.isEmpty() ) {
+                return null;
+            }
+            else if ( candidates.size() == 1 ) {
+                return candidates.get( 0 );
+            }
+            // can only be the case for Booleans: isFoo() and getFoo(); The latter is preferred then
+            else if ( candidates.size() == 2 ) {
+                if ( candidates.get( 0 ).getSimpleName().toString().startsWith( "get" ) ) {
+                    return candidates.get( 0 );
+                }
+                else {
+                    return candidates.get( 1 );
+                }
+            }
+            // Should never really happen
+            else {
+                ctx.getMessager().printMessage(
+                    Diagnostic.Kind.ERROR,
+                    String.format( "Found several matching getters for property \"%s\"", sourcePropertyName ),
+                    method.getExecutable()
+                );
+
+                return null;
             }
         }
 
