@@ -42,6 +42,4 @@ public class Label {
     public void setStudio( Studio studio ) {
         this.studio = studio;
     }
-
-
 }

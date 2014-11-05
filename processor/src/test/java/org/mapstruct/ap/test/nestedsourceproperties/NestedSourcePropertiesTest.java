@@ -18,19 +18,21 @@
  */
 package org.mapstruct.ap.test.nestedsourceproperties;
 
-import java.util.Arrays;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Label;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Artist;
-import org.mapstruct.ap.test.nestedsourceproperties.target.ChartEntry;
+
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Artist;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Label;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
 import org.mapstruct.ap.test.nestedsourceproperties.target.AdderUsageObserver;
+import org.mapstruct.ap.test.nestedsourceproperties.target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties.target.ChartPositions;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -74,9 +76,7 @@ public class NestedSourcePropertiesTest {
         assertThat( chartEntry.getPosition() ).isEqualTo( 0 );
         assertThat( chartEntry.getRecordedAt() ).isEqualTo( "Abbey Road" );
         assertThat( chartEntry.getTitle() ).isEqualTo( "A Hard Day's Night" );
-
     }
-
 
     @Test
     @WithClasses( { ArtistToChartEntry.class } )
@@ -111,12 +111,11 @@ public class NestedSourcePropertiesTest {
         assertThat( chartEntry.getPosition() ).isEqualTo( 1 );
         assertThat( chartEntry.getRecordedAt() ).isEqualTo( "Abbey Road" );
         assertThat( chartEntry.getTitle() ).isEqualTo( "A Hard Day's Night" );
-
     }
 
     @Test
     @WithClasses( { ArtistToChartEntry.class } )
-    public void shouldPickPropertyNameIsoParameterName() {
+    public void shouldPickPropertyNameOverParameterName() {
 
         Chart chart = new Chart();
         chart.setName( "Billboard" );
@@ -131,7 +130,6 @@ public class NestedSourcePropertiesTest {
         assertThat( chartEntry.getPosition() ).isEqualTo( 0 );
         assertThat( chartEntry.getRecordedAt() ).isNull();
         assertThat( chartEntry.getTitle() ).isNull();
-
     }
 
     @Test
@@ -150,7 +148,6 @@ public class NestedSourcePropertiesTest {
         assertThat( positions.getPositions() ).containsExactly( 3L, 5L );
 
         assertTrue( AdderUsageObserver.isUsed() );
-
     }
 
     @Test
@@ -169,7 +166,5 @@ public class NestedSourcePropertiesTest {
         assertThat( positions.getPositions() ).containsExactly( 3L, 5L );
 
         assertFalse( AdderUsageObserver.isUsed() );
-
     }
-
 }

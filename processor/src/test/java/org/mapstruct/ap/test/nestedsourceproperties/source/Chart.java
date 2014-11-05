@@ -51,7 +51,4 @@ public class Chart {
     public void setSong( Song song ) {
         this.song = song;
     }
-
-
-
 }

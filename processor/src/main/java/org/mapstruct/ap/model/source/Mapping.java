@@ -34,8 +34,8 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
-import org.mapstruct.ap.model.common.TypeFactory;
 
+import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
 
@@ -177,10 +177,10 @@ public class Mapping {
     }
 
     //CHECKSTYLE:OFF
-    private Mapping(String sourceName, String constant,  String javaExpression, String targetName,
+    private Mapping(String sourceName, String constant, String javaExpression, String targetName,
                     String dateFormat, List<TypeMirror> qualifiers,
                     boolean isIgnored, boolean isInheritedFromInverseMethod, AnnotationMirror mirror,
-                    AnnotationValue sourceAnnotationValue,  AnnotationValue targetAnnotationValue) {
+                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -195,15 +195,15 @@ public class Mapping {
     }
     //CHECKSTYLE:ON
 
-    public void init( SourceMethod method, Messager messager, TypeFactory typeFactory ) {
+    public void init(SourceMethod method, Messager messager, TypeFactory typeFactory) {
 
         if ( !method.isEnumMapping() ) {
             sourceReference = new SourceReference.BuilderFromMapping()
-                    .mapping( this )
-                    .method( method )
-                    .messager( messager )
-                    .typeFactory( typeFactory )
-                    .build();
+                .mapping( this )
+                .method( method )
+                .messager( messager )
+                .typeFactory( typeFactory )
+                .build();
         }
     }
 
@@ -272,23 +272,22 @@ public class Mapping {
         }
 
         Mapping reverse = new Mapping(
-                sourceName != null ? targetName : null,
-                null, // constant
-                null, // expression
-                sourceName != null ? sourceName : targetName,
-                dateFormat,
-                qualifiers,
-                isIgnored,
-                true,
-                mirror,
-                sourceAnnotationValue,
-                targetAnnotationValue
-            );
+            sourceName != null ? targetName : null,
+            null, // constant
+            null, // expression
+            sourceName != null ? sourceName : targetName,
+            dateFormat,
+            qualifiers,
+            isIgnored,
+            true,
+            mirror,
+            sourceAnnotationValue,
+            targetAnnotationValue
+        );
 
         reverse.init( method, messager, typeFactory );
         return reverse;
     }
-
 
     @Override
     public String toString() {

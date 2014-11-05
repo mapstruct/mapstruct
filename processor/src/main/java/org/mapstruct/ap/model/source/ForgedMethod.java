@@ -21,7 +21,6 @@ package org.mapstruct.ap.model.source;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.model.common.Accessibility;
@@ -42,15 +41,15 @@ public class ForgedMethod implements Method {
     private final ExecutableElement positionHintElement;
 
     /**
-     * Creates a new Forged Method.
-     *
+     * Creates a new forged method.
+     * <p>
      * The name will be based on the source type name and target type name.
      *
      * @param sourceType the source type
      * @param targetType the target type.
      * @param positionHintElement element used to for reference to the position in the source file.
      */
-    public ForgedMethod( Type sourceType, Type targetType, ExecutableElement positionHintElement ) {
+    public ForgedMethod(Type sourceType, Type targetType, ExecutableElement positionHintElement) {
         this.parameters = Arrays.asList( new Parameter( Strings.decapitalize( sourceType.getName() ), sourceType ) );
         this.returnType = targetType;
 
@@ -62,21 +61,21 @@ public class ForgedMethod implements Method {
     }
 
     /**
-     * Creates a new Forged Method. with the given name.
+     * Creates a new forged method with the given name.
      *
      * @param name the (unique name) for this method
      * @param sourceType the source type
      * @param targetType the target type.
      * @param positionHintElement element used to for reference to the position in the source file.
      */
-    public ForgedMethod( String name, Type sourceType, Type targetType, ExecutableElement positionHintElement ) {
+    public ForgedMethod(String name, Type sourceType, Type targetType, ExecutableElement positionHintElement) {
         this.parameters = Arrays.asList( new Parameter( Strings.decapitalize( sourceType.getName() ), sourceType ) );
         this.returnType = targetType;
         this.name = name;
         this.positionHintElement = positionHintElement;
     }
 
-    private String getName( Type type ) {
+    private String getName(Type type) {
         StringBuilder builder = new StringBuilder();
         for ( Type typeParam : type.getTypeParameters() ) {
             builder.append( typeParam.getName() );
@@ -86,7 +85,7 @@ public class ForgedMethod implements Method {
     }
 
     @Override
-    public boolean matches( List<Type> sourceTypes, Type targetType ) {
+    public boolean matches(List<Type> sourceTypes, Type targetType) {
 
         if ( !targetType.equals( returnType ) ) {
             return false;

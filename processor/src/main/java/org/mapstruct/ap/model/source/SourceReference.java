@@ -24,6 +24,7 @@ import java.util.List;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.tools.Diagnostic;
+
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -32,12 +33,15 @@ import org.mapstruct.ap.util.Strings;
 
 /**
  * This class describes the source side of a property mapping.
- *
- * It contains the source parameter, and all individual (nested) PropertyEntries. So consider the following
+ * <p>
+ * It contains the source parameter, and all individual (nested) property entries. So consider the following
  * mapping method:
+ *
  * {@code
- *    @Mapping( source = "in.propA.propB" target = "propC" )
- *    TypeB mappingMethod ( TypeA in );
+ *
+ * @author Sjaak Derksen
+ * @Mapping( source = "in.propA.propB" target = "propC" )
+ * TypeB mappingMethod ( TypeA in );
  * }
  *
  * Then:
@@ -47,9 +51,7 @@ import org.mapstruct.ap.util.Strings;
  * <li>{@link #propertyEntries[1]} will describe {@code propB}</li>
  * </ol>
  *
- * After building, the {@link #isValid} will be true when when no problems are detected during building.
- *
- * @author Sjaak Derksen
+ * After building, {@link #isValid()} will return true when when no problems are detected during building.
  */
 public class SourceReference {
 
@@ -67,22 +69,22 @@ public class SourceReference {
         private Messager messager;
         private TypeFactory typeFactory;
 
-        public BuilderFromMapping messager( Messager messager ) {
+        public BuilderFromMapping messager(Messager messager) {
             this.messager = messager;
             return this;
         }
 
-        public BuilderFromMapping mapping( Mapping mapping ) {
+        public BuilderFromMapping mapping(Mapping mapping) {
             this.mapping = mapping;
             return this;
         }
 
-        public BuilderFromMapping method( SourceMethod method ) {
+        public BuilderFromMapping method(SourceMethod method) {
             this.method = method;
             return this;
         }
 
-        public BuilderFromMapping typeFactory( TypeFactory typeFactory ) {
+        public BuilderFromMapping typeFactory(TypeFactory typeFactory) {
             this.typeFactory = typeFactory;
             return this;
         }
@@ -98,7 +100,7 @@ public class SourceReference {
             boolean isValid = true;
             boolean foundEntryMatch;
 
-            String[] sourcePropertyNames = new String[ 0 ];
+            String[] sourcePropertyNames = new String[0];
             String[] segments = sourceName.split( "\\." );
             Parameter parameter = null;
 
@@ -152,15 +154,15 @@ public class SourceReference {
 
                 if ( parameter != null ) {
                     reportMappingError(
-                            "The type of parameter \"%s\" has no property named \"%s\".",
-                            parameter.getName(),
-                            Strings.join( Arrays.asList( sourcePropertyNames ), "." )
+                        "The type of parameter \"%s\" has no property named \"%s\".",
+                        parameter.getName(),
+                        Strings.join( Arrays.asList( sourcePropertyNames ), "." )
                     );
                 }
                 else {
                     reportMappingError(
-                            "No property named \"%s\" exists in source parameter(s).",
-                            mapping.getSourceName()
+                        "No property named \"%s\" exists in source parameter(s).",
+                        mapping.getSourceName()
                     );
                 }
                 isValid = false;
@@ -169,7 +171,7 @@ public class SourceReference {
             return new SourceReference( parameter, entries, isValid );
         }
 
-        private List<PropertyEntry> getSourceEntries( Type type, String[] entryNames ) {
+        private List<PropertyEntry> getSourceEntries(Type type, String[] entryNames) {
             List<PropertyEntry> sourceEntries = new ArrayList<PropertyEntry>();
             Type newType = type;
             for ( String entryName : entryNames ) {
@@ -190,12 +192,12 @@ public class SourceReference {
             return sourceEntries;
         }
 
-        private void reportMappingError( String message, Object... objects ) {
+        private void reportMappingError(String message, Object... objects) {
             messager.printMessage(
-                    Diagnostic.Kind.ERROR,
-                    String.format( message, objects ),
-                    method.getExecutable(), mapping.getMirror(),
-                    mapping.getSourceAnnotationValue()
+                Diagnostic.Kind.ERROR,
+                String.format( message, objects ),
+                method.getExecutable(), mapping.getMirror(),
+                mapping.getSourceAnnotationValue()
             );
         }
     }
@@ -210,33 +212,33 @@ public class SourceReference {
         private Type type;
         private Parameter sourceParameter;
 
-        public BuilderFromProperty name( String name ) {
+        public BuilderFromProperty name(String name) {
             this.name = name;
             return this;
         }
 
-        public BuilderFromProperty accessor( ExecutableElement accessor ) {
+        public BuilderFromProperty accessor(ExecutableElement accessor) {
             this.accessor = accessor;
             return this;
         }
 
-        public BuilderFromProperty type( Type type ) {
+        public BuilderFromProperty type(Type type) {
             this.type = type;
             return this;
         }
 
-         public BuilderFromProperty sourceParameter( Parameter sourceParameter ) {
+        public BuilderFromProperty sourceParameter(Parameter sourceParameter) {
             this.sourceParameter = sourceParameter;
             return this;
         }
 
         public SourceReference build() {
-            List<PropertyEntry> sourcePropertyEntries = Arrays.asList( new PropertyEntry(name, accessor, type) );
-            return new SourceReference(sourceParameter, sourcePropertyEntries, true );
+            List<PropertyEntry> sourcePropertyEntries = Arrays.asList( new PropertyEntry( name, accessor, type ) );
+            return new SourceReference( sourceParameter, sourcePropertyEntries, true );
         }
     }
 
-    private SourceReference( Parameter sourceParameter, List<PropertyEntry> sourcePropertyEntries, boolean isValid ) {
+    private SourceReference(Parameter sourceParameter, List<PropertyEntry> sourcePropertyEntries, boolean isValid) {
         this.parameter = sourceParameter;
         this.propertyEntries = sourcePropertyEntries;
         this.isValid = isValid;
@@ -264,7 +266,7 @@ public class SourceReference {
     }
 
     /**
-     *  A PropertyEntry contains information on the name, accessor and return type of a property.
+     * A PropertyEntry contains information on the name, accessor and return type of a property.
      */
     public static class PropertyEntry {
 
@@ -272,7 +274,7 @@ public class SourceReference {
         private final ExecutableElement accessor;
         private final Type type;
 
-        public PropertyEntry( String name, ExecutableElement accessor, Type type ) {
+        public PropertyEntry(String name, ExecutableElement accessor, Type type) {
             this.name = name;
             this.accessor = accessor;
             this.type = type;

@@ -24,7 +24,6 @@ package org.mapstruct.ap.test.nestedsourceproperties.target;
  */
 public class ChartEntry {
 
-
     private String chartName;
     private String title;
     private String artistName;
@@ -79,7 +78,4 @@ public class ChartEntry {
     public void setPosition( int position ) {
         this.position = position;
     }
-
-
-
 }

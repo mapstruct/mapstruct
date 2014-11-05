@@ -54,7 +54,4 @@ public class Song {
     public void setPositions( List<Integer> positions ) {
         this.positions = positions;
     }
-
-
-
 }

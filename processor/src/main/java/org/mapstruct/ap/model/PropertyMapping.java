@@ -36,15 +36,14 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.ForgedMethod;
 import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.model.source.SourceReference;
+import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
 import org.mapstruct.ap.util.Executables;
+import org.mapstruct.ap.util.Strings;
 
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
-import org.mapstruct.ap.model.source.SourceReference;
-import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
-import org.mapstruct.ap.util.Strings;
-
 
 /**
  * Represents the mapping between a source and target property, e.g. from
@@ -57,10 +56,8 @@ import org.mapstruct.ap.util.Strings;
 public class PropertyMapping extends ModelElement {
 
     private final String sourceBeanName;
-
     private final String targetAccessorName;
     private final Type targetType;
-
     private final Assignment assignment;
 
     public static class PropertyMappingBuilder {
@@ -99,12 +96,12 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public PropertyMappingBuilder qualifiers( List<TypeMirror> qualifiers ) {
+        public PropertyMappingBuilder qualifiers(List<TypeMirror> qualifiers) {
             this.qualifiers = qualifiers;
             return this;
         }
 
-        public PropertyMappingBuilder dateFormat( String dateFormat ) {
+        public PropertyMappingBuilder dateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
             return this;
         }
@@ -141,7 +138,8 @@ public class PropertyMapping extends ModelElement {
         }
 
         private PropertyMapping getPropertyMapping(Type sourceType, Type targetType,
-                TargetAccessorType targetAccessorType, String sourceRefStr, String sourceElement) {
+                                                   TargetAccessorType targetAccessorType, String sourceRefStr,
+                                                   String sourceElement) {
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
@@ -234,10 +232,10 @@ public class PropertyMapping extends ModelElement {
                 ctx.getMessager().printMessage(
                     Diagnostic.Kind.ERROR,
                     String.format(
-                            "Can't map %s to \"%s %s\".",
-                            sourceElement,
-                            targetType,
-                            targetPropertyName
+                        "Can't map %s to \"%s %s\".",
+                        sourceElement,
+                        targetType,
+                        targetPropertyName
                     ),
                     method.getExecutable()
                 );
@@ -267,34 +265,36 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-
         private String getSourceRef() {
-
             Parameter sourceParam = sourceReference.getParameter();
             List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+
+            // parameter reference
             if ( propertyEntries.isEmpty() ) {
                 return sourceParam.getName();
             }
+            // simple property
             else if ( propertyEntries.size() == 1 ) {
                 PropertyEntry propertyEntry = propertyEntries.get( 0 );
                 return sourceParam.getName() + "." + propertyEntry.getAccessor().getSimpleName() + "()";
             }
+            // nested property given as dot path
             else {
                 PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
 
                 // forge a method from the parameter type to the last entry type.
                 String forgedMethodName = Strings.joinAndCamelize( sourceReference.getElementNames() );
                 ForgedMethod methodToGenerate = new ForgedMethod(
-                        forgedMethodName,
-                        sourceReference.getParameter().getType(),
-                        lastPropertyEntry.getType(),
-                        method.getExecutable()
+                    forgedMethodName,
+                    sourceReference.getParameter().getType(),
+                    lastPropertyEntry.getType(),
+                    method.getExecutable()
                 );
                 NestedPropertyMappingMethod.Builder builder = new NestedPropertyMappingMethod.Builder();
                 NestedPropertyMappingMethod nestedPropertyMapping = builder
-                        .method( methodToGenerate )
-                        .propertyEntries( sourceReference.getPropertyEntries() )
-                        .build();
+                    .method( methodToGenerate )
+                    .propertyEntries( sourceReference.getPropertyEntries() )
+                    .build();
 
                 // add if not yet existing
                 if ( !ctx.getMappingsToGenerate().contains( nestedPropertyMapping ) ) {
@@ -318,9 +318,10 @@ public class PropertyMapping extends ModelElement {
             }
             else {
                 PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
-                return String.format( "property \"%s %s\"",
-                        lastPropertyEntry.getType(),
-                        Strings.join( sourceReference.getElementNames(), "." )
+                return String.format(
+                    "property \"%s %s\"",
+                    lastPropertyEntry.getType(),
+                    Strings.join( sourceReference.getElementNames(), "." )
                 );
             }
         }
@@ -337,7 +338,7 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private Type getTargetType( TargetAccessorType targetAccessorType) {
+        private Type getTargetType(TargetAccessorType targetAccessorType) {
             switch ( targetAccessorType ) {
                 case ADDER:
                 case SETTER:
@@ -349,7 +350,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment forgeMapOrIterableMapping(Type sourceType, Type targetType, String sourceReference,
-                                        ExecutableElement element) {
+                                                     ExecutableElement element) {
 
             Assignment assignment = null;
             if ( sourceType.isCollectionType() && targetType.isCollectionType() ) {
