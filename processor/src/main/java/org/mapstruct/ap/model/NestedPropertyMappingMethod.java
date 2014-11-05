@@ -21,6 +21,7 @@ package org.mapstruct.ap.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
@@ -30,7 +31,7 @@ import org.mapstruct.ap.util.Strings;
 /**
  * This method is used to convert the nested properties as listed in propertyEntries into a method
  * that creates a mapping from the start of this list to the end of the list.
- *
+ * <p>
  * So, say that the start of the list is of TypeA and the end of the list is of TypeB than the forged method
  * will create a forged mapping method: TypeB methodName( TypeA in ).
  *
