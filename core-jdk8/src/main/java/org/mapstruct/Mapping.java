@@ -45,8 +45,11 @@ import java.util.Date;
 public @interface Mapping {
 
     /**
-     * The target name of the configured property as defined by the JavaBeans specification. If used to map an enum
-     * constant, the name of the constant member is to be given.
+     * The target name of the configured property as defined by the JavaBeans specification. The same target property
+     * must not be mapped more than once.
+     * <p>
+     * If used to map an enum constant, the name of the constant member is to be given. In this case, several values
+     * from the source enum may be mapped to the same value of the target enum.
      *
      * @return The target name of the configured property or enum constant
      */
@@ -55,7 +58,11 @@ public @interface Mapping {
     /**
      * The source to use for this mapping. This can either be:
      * <ol>
-     * <li>The source name of the configured property as defined by the JavaBeans specification.</li>
+     * <li>The source name of the configured property as defined by the JavaBeans specification.
+     * <p>
+     * This may either be a simple property name (e.g. "address") or a dot-separated property path (e.g. "address.city"
+     * or "address.city.name"). In case the annotated method has several source parameters, the property name must
+     * qualified with the parameter name, e.g. "addressParam.city".</li>
      * <li>When used to map an enum constant, the name of the constant member is to be given.</li>
      * </ol>
      * Either this attribute or {@link #constant()} or {@link #expression()} may be specified for a given mapping.
