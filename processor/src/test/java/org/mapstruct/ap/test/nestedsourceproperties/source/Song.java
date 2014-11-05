@@ -22,7 +22,6 @@ import java.util.List;
 
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class Song {
@@ -35,7 +34,7 @@ public class Song {
         return artist;
     }
 
-    public void setArtist( Artist artist ) {
+    public void setArtist(Artist artist) {
         this.artist = artist;
     }
 
@@ -43,7 +42,7 @@ public class Song {
         return title;
     }
 
-    public void setTitle( String title ) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -51,7 +50,7 @@ public class Song {
         return positions;
     }
 
-    public void setPositions( List<Integer> positions ) {
+    public void setPositions(List<Integer> positions) {
         this.positions = positions;
     }
 }

@@ -19,23 +19,23 @@
 package org.mapstruct.ap.test.nestedsourceproperties;
 
 import org.mapstruct.CollectionMappingStrategy;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
 import org.mapstruct.ap.test.nestedsourceproperties.target.ChartPositions;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
-@Mapper( collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED )
+@Mapper(collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
 public interface ArtistToChartEntryAdder {
 
     ArtistToChartEntryAdder MAPPER = Mappers.getMapper( ArtistToChartEntryAdder.class );
 
-    @Mappings( {
-        @Mapping( target = "positions", source = "chart.song.positions" ), } )
-    ChartPositions map( Chart chart );
+    @Mappings({
+        @Mapping(target = "positions", source = "chart.song.positions"),
+    })
+    ChartPositions map(Chart chart);
 }

@@ -18,16 +18,15 @@
  */
 package org.mapstruct.ap.test.nestedsourceproperties;
 
-import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
-import org.mapstruct.ap.test.nestedsourceproperties.target.ChartEntry;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
+import org.mapstruct.ap.test.nestedsourceproperties.target.ChartEntry;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Sjaak Derksen
  */
 @Mapper
@@ -35,34 +34,34 @@ public interface ArtistToChartEntry {
 
     ArtistToChartEntry MAPPER = Mappers.getMapper( ArtistToChartEntry.class );
 
-    @Mappings( {
-        @Mapping( target = "chartName", source = "chart.name" ),
-        @Mapping( target = "title", source = "song.title" ),
-        @Mapping( target = "artistName", source = "song.artist.name" ),
-        @Mapping( target = "recordedAt", source = "song.artist.label.studio.name" ),
-        @Mapping( target = "city", source = "song.artist.label.studio.city" ),
-        @Mapping( target = "position", source = "position" )
-    } )
-    ChartEntry map( Chart chart, Song song, Integer position );
+    @Mappings({
+        @Mapping(target = "chartName", source = "chart.name"),
+        @Mapping(target = "title", source = "song.title"),
+        @Mapping(target = "artistName", source = "song.artist.name"),
+        @Mapping(target = "recordedAt", source = "song.artist.label.studio.name"),
+        @Mapping(target = "city", source = "song.artist.label.studio.city"),
+        @Mapping(target = "position", source = "position")
+    })
+    ChartEntry map(Chart chart, Song song, Integer position);
 
-    @Mappings( {
-        @Mapping( target = "chartName", ignore = true ),
-        @Mapping( target = "title", source = "title" ),
-        @Mapping( target = "artistName", source = "artist.name" ),
-        @Mapping( target = "recordedAt", source = "artist.label.studio.name" ),
-        @Mapping( target = "city", source = "artist.label.studio.city" ),
-        @Mapping( target = "position", ignore = true )
-    } )
-    ChartEntry map( Song song );
+    @Mappings({
+        @Mapping(target = "chartName", ignore = true),
+        @Mapping(target = "title", source = "title"),
+        @Mapping(target = "artistName", source = "artist.name"),
+        @Mapping(target = "recordedAt", source = "artist.label.studio.name"),
+        @Mapping(target = "city", source = "artist.label.studio.city"),
+        @Mapping(target = "position", ignore = true)
+    })
+    ChartEntry map(Song song);
 
-    @Mappings( {
-        @Mapping( target = "chartName", source = "name"  ),
-        @Mapping( target = "title",  ignore = true  ),
-        @Mapping( target = "artistName",  ignore = true  ),
-        @Mapping( target = "recordedAt",  ignore = true  ),
-        @Mapping( target = "city",  ignore = true  ),
-        @Mapping( target = "position", ignore = true )
-    } )
-    ChartEntry map( Chart name );
+    @Mappings({
+        @Mapping(target = "chartName", source = "name"),
+        @Mapping(target = "title", ignore = true),
+        @Mapping(target = "artistName", ignore = true),
+        @Mapping(target = "recordedAt", ignore = true),
+        @Mapping(target = "city", ignore = true),
+        @Mapping(target = "position", ignore = true)
+    })
+    ChartEntry map(Chart name);
 
 }

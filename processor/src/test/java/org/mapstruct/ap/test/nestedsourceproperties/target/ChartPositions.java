@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class ChartPositions {
@@ -30,7 +29,7 @@ public class ChartPositions {
         return positions;
     }
 
-    public Long addPosition( Long position ) {
+    public Long addPosition(Long position) {
         AdderUsageObserver.setUsed( true );
         positions.add( position );
         return position;

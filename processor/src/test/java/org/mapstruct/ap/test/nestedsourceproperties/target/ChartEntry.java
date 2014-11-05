@@ -19,7 +19,6 @@
 package org.mapstruct.ap.test.nestedsourceproperties.target;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class ChartEntry {
@@ -35,7 +34,7 @@ public class ChartEntry {
         return chartName;
     }
 
-    public void setChartName( String chartName ) {
+    public void setChartName(String chartName) {
         this.chartName = chartName;
     }
 
@@ -43,7 +42,7 @@ public class ChartEntry {
         return title;
     }
 
-    public void setTitle( String title ) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -51,7 +50,7 @@ public class ChartEntry {
         return artistName;
     }
 
-    public void setArtistName( String artistName ) {
+    public void setArtistName(String artistName) {
         this.artistName = artistName;
     }
 
@@ -59,7 +58,7 @@ public class ChartEntry {
         return recordedAt;
     }
 
-    public void setRecordedAt( String recordedAt ) {
+    public void setRecordedAt(String recordedAt) {
         this.recordedAt = recordedAt;
     }
 
@@ -67,7 +66,7 @@ public class ChartEntry {
         return city;
     }
 
-    public void setCity( String city ) {
+    public void setCity(String city) {
         this.city = city;
     }
 
@@ -75,7 +74,7 @@ public class ChartEntry {
         return position;
     }
 
-    public void setPosition( int position ) {
+    public void setPosition(int position) {
         this.position = position;
     }
 }

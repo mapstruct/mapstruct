@@ -18,10 +18,6 @@
  */
 package org.mapstruct.ap.test.nestedsourceproperties;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -38,17 +34,20 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
- *
  * @author Sjaak Derksen
  */
-@WithClasses( { Song.class, Artist.class, Chart.class, Label.class, Studio.class, ChartEntry.class } )
-@IssueKey( "65" )
-@RunWith( AnnotationProcessorTestRunner.class )
+@WithClasses({ Song.class, Artist.class, Chart.class, Label.class, Studio.class, ChartEntry.class })
+@IssueKey("65")
+@RunWith(AnnotationProcessorTestRunner.class)
 public class NestedSourcePropertiesTest {
 
-  @Test
-    @WithClasses( { ArtistToChartEntry.class } )
+    @Test
+    @WithClasses({ ArtistToChartEntry.class })
     public void shouldGenerateImplementationForPropertyNamesOnly() {
 
         Studio studio = new Studio();
@@ -79,7 +78,7 @@ public class NestedSourcePropertiesTest {
     }
 
     @Test
-    @WithClasses( { ArtistToChartEntry.class } )
+    @WithClasses({ ArtistToChartEntry.class })
     public void shouldGenerateImplementationForMultipleParam() {
 
         Studio studio = new Studio();
@@ -114,7 +113,7 @@ public class NestedSourcePropertiesTest {
     }
 
     @Test
-    @WithClasses( { ArtistToChartEntry.class } )
+    @WithClasses({ ArtistToChartEntry.class })
     public void shouldPickPropertyNameOverParameterName() {
 
         Chart chart = new Chart();
@@ -133,12 +132,12 @@ public class NestedSourcePropertiesTest {
     }
 
     @Test
-    @WithClasses( { ArtistToChartEntryAdder.class, ChartPositions.class, AdderUsageObserver.class } )
+    @WithClasses({ ArtistToChartEntryAdder.class, ChartPositions.class, AdderUsageObserver.class })
     public void shouldUseAddAsTargetAccessor() {
 
         AdderUsageObserver.setUsed( false );
         Song song = new Song();
-        song.setPositions( Arrays.asList( 3, 5) );
+        song.setPositions( Arrays.asList( 3, 5 ) );
 
         Chart chart = new Chart();
         chart.setSong( song );
@@ -151,12 +150,12 @@ public class NestedSourcePropertiesTest {
     }
 
     @Test
-    @WithClasses( { ArtistToChartEntryGetter.class, ChartPositions.class, AdderUsageObserver.class } )
+    @WithClasses({ ArtistToChartEntryGetter.class, ChartPositions.class, AdderUsageObserver.class })
     public void shouldUseGetAsTargetAccessor() {
 
         AdderUsageObserver.setUsed( false );
         Song song = new Song();
-        song.setPositions( Arrays.asList( 3, 5) );
+        song.setPositions( Arrays.asList( 3, 5 ) );
 
         Chart chart = new Chart();
         chart.setSong( song );

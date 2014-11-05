@@ -19,7 +19,6 @@
 package org.mapstruct.ap.test.nestedsourceproperties.source;
 
 /**
- *
  * @author Sjaak Derksen
  */
 public class Label {
@@ -31,7 +30,7 @@ public class Label {
         return name;
     }
 
-    public void setName( String name ) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -39,7 +38,7 @@ public class Label {
         return studio;
     }
 
-    public void setStudio( Studio studio ) {
+    public void setStudio(Studio studio) {
         this.studio = studio;
     }
 }
