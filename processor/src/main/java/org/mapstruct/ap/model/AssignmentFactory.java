@@ -18,10 +18,12 @@
  */
 package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.model.assignment.Assignment;
 import java.util.List;
 import java.util.Set;
+
 import javax.tools.Diagnostic;
+
+import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
@@ -56,8 +58,8 @@ public class AssignmentFactory {
         return new Direct( sourceRef );
     }
 
-    public static FactoryMethod createFactoryMethod( Type returnType, MappingBuilderContext ctx ) {
-        FactoryMethod result = null;
+    public static MethodReference createFactoryMethod( Type returnType, MappingBuilderContext ctx ) {
+        MethodReference result = null;
         for ( SourceMethod method : ctx.getSourceModel() ) {
             if ( !method.overridesMethod() && !method.isIterableMapping() && !method.isMapMapping()
                     && method.getSourceParameters().isEmpty() ) {

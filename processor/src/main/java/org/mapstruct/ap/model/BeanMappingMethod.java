@@ -26,28 +26,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.CollectionMappingStrategy;
+import org.mapstruct.ap.model.PropertyMapping.ConstantMappingBuilder;
+import org.mapstruct.ap.model.PropertyMapping.JavaExpressionMappingBuilder;
+import org.mapstruct.ap.model.PropertyMapping.PropertyMappingBuilder;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.model.source.SourceReference;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
 
-import org.mapstruct.ap.model.PropertyMapping.PropertyMappingBuilder;
-import org.mapstruct.ap.model.PropertyMapping.ConstantMappingBuilder;
-import org.mapstruct.ap.model.PropertyMapping.JavaExpressionMappingBuilder;
-import org.mapstruct.ap.model.source.SourceReference;
-
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one
- bean sourceParameter to another, optionally configured by one or more
- {@link PropertyMapping}s.
+ * bean sourceParameter to another, optionally configured by one or more
+ * {@link PropertyMapping}s.
  *
  * @author Gunnar Morling
  */
@@ -56,10 +56,7 @@ public class BeanMappingMethod extends MappingMethod {
     private final List<PropertyMapping> propertyMappings;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
-
-
-    private final FactoryMethod factoryMethod;
-
+    private final MethodReference factoryMethod;
 
     public static class Builder {
 
@@ -98,10 +95,9 @@ public class BeanMappingMethod extends MappingMethod {
             reportErrorForUnmappedTargetPropertiesIfRequired(  );
 
 
-            FactoryMethod factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
+            MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
             return new BeanMappingMethod( method, propertyMappings, factoryMethod );
         }
-
 
         /**
          * This method builds the list of target accessors.
@@ -384,12 +380,11 @@ public class BeanMappingMethod extends MappingMethod {
                 );
             }
         }
-
     }
 
     private BeanMappingMethod(SourceMethod method,
                               List<PropertyMapping> propertyMappings,
-                              FactoryMethod factoryMethod) {
+                              MethodReference factoryMethod) {
         super( method );
         this.propertyMappings = propertyMappings;
 
@@ -434,7 +429,7 @@ public class BeanMappingMethod extends MappingMethod {
         return types;
     }
 
-    public FactoryMethod getFactoryMethod() {
+    public MethodReference getFactoryMethod() {
         return this.factoryMethod;
     }
 

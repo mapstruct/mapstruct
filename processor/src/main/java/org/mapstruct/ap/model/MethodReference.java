@@ -18,12 +18,13 @@
  */
 package org.mapstruct.ap.model;
 
-import org.mapstruct.ap.model.assignment.Assignment;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -31,11 +32,12 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 
 /**
- * Represents a reference to {@link MappingMethod}.
+ * Represents a reference to another method, e.g. used to map a bean property from source to target type or to
+ * instantiate the return value of a mapping method (rather than calling the {@code new} operator).
  *
  * @author Gunnar Morling
  */
-public class MethodReference extends MappingMethod implements Assignment, FactoryMethod {
+public class MethodReference extends MappingMethod implements Assignment {
 
     private final MapperReference declaringMapper;
     private final Set<Type> importTypes;
@@ -54,7 +56,7 @@ public class MethodReference extends MappingMethod implements Assignment, Factor
      * {@code JAXBElement<Bar>} to {@code Foo} to for which a nested method call will be generated:
      * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}
      *
-     * If there's no nested typeConversion or other mapping method, this will be a {@link Simple} assignment.
+     * If there's no nested typeConversion or other mapping method, this will be a {@link Direct} assignment.
      */
     private Assignment assignment;
 

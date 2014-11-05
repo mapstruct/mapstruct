@@ -20,6 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
@@ -40,7 +41,7 @@ public class MapMappingMethod extends MappingMethod {
 
     private final Assignment keyAssignment;
     private final Assignment valueAssignment;
-    private final FactoryMethod factoryMethod;
+    private final MethodReference factoryMethod;
     private final boolean overridden;
 
     public static class Builder {
@@ -133,18 +134,17 @@ public class MapMappingMethod extends MappingMethod {
                 ctx.getMessager().printMessage( Diagnostic.Kind.ERROR, message, method.getExecutable() );
             }
 
-            FactoryMethod factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
+            MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes() );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes() );
 
             return new MapMappingMethod( method, keyAssignment, valueAssignment, factoryMethod );
         }
-
     }
 
     private MapMappingMethod(Method method, Assignment keyAssignment, Assignment valueAssignment,
-                             FactoryMethod factoryMethod) {
+                             MethodReference factoryMethod) {
         super( method );
 
         this.keyAssignment = keyAssignment;
@@ -206,7 +206,7 @@ public class MapMappingMethod extends MappingMethod {
         );
     }
 
-    public FactoryMethod getFactoryMethod() {
+    public MethodReference getFactoryMethod() {
         return this.factoryMethod;
     }
 

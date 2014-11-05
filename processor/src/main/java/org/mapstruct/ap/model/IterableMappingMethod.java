@@ -20,6 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
@@ -39,7 +40,7 @@ import org.mapstruct.ap.util.Strings;
 public class IterableMappingMethod extends MappingMethod {
 
     private final Assignment elementAssignment;
-    private final FactoryMethod factoryMethod;
+    private final MethodReference factoryMethod;
     private final boolean overridden;
 
     public static class Builder {
@@ -101,13 +102,13 @@ public class IterableMappingMethod extends MappingMethod {
             // target accessor is setter, so decorate assignment as setter
             assignment = new SetterWrapper( assignment, method.getThrownTypes() );
 
-            FactoryMethod factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
+            MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
             return new IterableMappingMethod( method, assignment, factoryMethod );
         }
     }
 
 
-    private IterableMappingMethod(Method method, Assignment parameterAssignment, FactoryMethod factoryMethod) {
+    private IterableMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod) {
         super( method );
         this.elementAssignment = parameterAssignment;
         this.factoryMethod = factoryMethod;
@@ -146,7 +147,7 @@ public class IterableMappingMethod extends MappingMethod {
         );
     }
 
-    public FactoryMethod getFactoryMethod() {
+    public MethodReference getFactoryMethod() {
         return this.factoryMethod;
     }
 
