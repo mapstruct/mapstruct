@@ -56,7 +56,9 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
         DefaultModelElementWriterContext context = createContext( params );
 
         try {
-            modelElement.write( context, env.getOut() );
+            if ( modelElement != null ) {
+                modelElement.write( context, env.getOut() );
+            }
         }
         catch ( TemplateException te ) {
             throw te;
@@ -83,13 +85,11 @@ public class ModelIncludeDirective implements TemplateDirectiveModel {
         BeanModel objectModel = (BeanModel) params.get( "object" );
 
         if ( objectModel == null ) {
-            throw new IllegalArgumentException(
-                "Object passed to this directive via the 'object' parameter must not be null"
-            );
+            return null;
         }
 
         if ( !( objectModel.getWrappedObject() instanceof Writable ) ) {
-            throw new IllegalArgumentException( "Given object isn't a ModelElement:" + objectModel.getWrappedObject() );
+            throw new IllegalArgumentException( "Given object isn't a Writable:" + objectModel.getWrappedObject() );
         }
 
         return (Writable) objectModel.getWrappedObject();
