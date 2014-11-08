@@ -20,10 +20,12 @@ package org.mapstruct.ap.model;
 
 import java.util.List;
 import java.util.Set;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.assignment.Assignment;
+import org.mapstruct.ap.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -74,13 +76,21 @@ public class IterableMappingMethod extends MappingMethod {
         }
 
         public IterableMappingMethod build() {
-            Type sourceElementType =
-                method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
-            Type targetElementType =
-                method.getResultType().getTypeParameters().get( 0 );
-            String loopVariableName =
-                Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
+            Type sourceParameterType = method.getSourceParameters().iterator().next().getType();
+            Type resultType = method.getResultType();
 
+            Type sourceElementType = sourceParameterType.isArrayType() ? sourceParameterType.getComponentType() :
+                    sourceParameterType.getTypeParameters().get( 0 );
+            Type targetElementType = resultType.isArrayType() ? resultType.getComponentType() :
+                    resultType.getTypeParameters().get( 0 );
+
+
+            String elementTypeName = sourceParameterType.isArrayType() ?
+                        sourceParameterType.getComponentType().getName() :
+                        sourceParameterType.getTypeParameters().get( 0 ).getName();
+
+            String loopVariableName =
+                Strings.getSaveVariableName( elementTypeName, method.getParameterNames() );
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
@@ -103,21 +113,25 @@ public class IterableMappingMethod extends MappingMethod {
             }
 
             // target accessor is setter, so decorate assignment as setter
-            assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-
+            if ( resultType.isArrayType() ) {
+                assignment = new LocalVarWrapper( assignment, method.getThrownTypes() );
+            }
+            else {
+                assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+            }
             // mapNullToDefault
             NullValueMappingPrism prism = NullValueMappingPrism.getInstanceOn( method.getExecutable() );
             boolean mapNullToDefault
                 = MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 
             MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
+
             return new IterableMappingMethod(
-                method,
-                assignment,
-                factoryMethod,
-                mapNullToDefault,
-                loopVariableName
-            );
+                    method,
+                    assignment,
+                    factoryMethod,
+                    mapNullToDefault,
+                    loopVariableName );
         }
     }
 
@@ -149,7 +163,6 @@ public class IterableMappingMethod extends MappingMethod {
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = super.getImportTypes();
-
         if ( elementAssignment != null ) {
             types.addAll( elementAssignment.getImportTypes() );
         }
@@ -169,8 +182,57 @@ public class IterableMappingMethod extends MappingMethod {
         return loopVariableName;
     }
 
+    public String getDefaultValue() {
+        TypeKind kind = getResultElementType().getTypeMirror().getKind();
+        switch ( kind ) {
+            case BOOLEAN:
+                return "false";
+            case BYTE:
+            case SHORT:
+            case INT:
+            case CHAR:  /*"'\u0000'" would have been better, but depends on platformencoding */
+                return "0";
+            case LONG:
+                return "0L";
+            case FLOAT:
+                return "0.0f";
+            case DOUBLE:
+                return "0.0d";
+            default:
+                return "null";
+        }
+    }
+
     public MethodReference getFactoryMethod() {
         return this.factoryMethod;
+    }
+
+    public Type getSourceElementType() {
+        Type sourceParameterType = getSourceParameter().getType();
+
+        if ( sourceParameterType.isArrayType() ) {
+            return sourceParameterType.getComponentType();
+        }
+        else {
+            return sourceParameterType.getTypeParameters().get( 0 );
+        }
+    }
+
+    public Type getResultElementType() {
+        if ( getResultType().isArrayType() ) {
+            return getResultType().getComponentType();
+        }
+        else {
+            return getResultType().getTypeParameters().get( 0 );
+        }
+    }
+
+    public String getIndex1Name() {
+        return Strings.getSaveVariableName( "i", loopVariableName, getSourceParameter().getName(), getResultName() );
+    }
+
+    public String getIndex2Name() {
+        return Strings.getSaveVariableName( "j", loopVariableName, getSourceParameter().getName(), getResultName() );
     }
 
     @Override

@@ -22,30 +22,59 @@
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
     if ( ${sourceParameter.name} == null ) {
         <#if !mapNullToDefault>
+            <#-- returned target type starts to miss-align here with target handed via param, TODO is this right? -->
             return<#if returnType.name != "void"> null</#if>;
         <#else>
-            <#if existingInstanceMapping>
-                 ${resultName}.clear();
-                 return<#if returnType.name != "void"> ${resultName} </#if>;
+            <#if resultType.arrayType>
+                <#if existingInstanceMapping>
+                    <#-- we can't clear an existing array, so we've got to clear by setting values to default -->
+                    for (int ${index2Name} = 0; ${index2Name} < ${resultName}.length; ${index2Name}++ ) {
+                        ${resultName}[${index2Name}] = ${defaultValue};
+                    }
+                    return<#if returnType.name != "void"> ${resultName}</#if>;
+                <#else>
+                    return new <@includeModel object=resultElementType/>[];
+                </#if>
             <#else>
-                 return <@returnObjectCreation/>;
+                <#if existingInstanceMapping>
+                    ${resultName}.clear();
+                    return<#if returnType.name != "void"> ${resultName}</#if>;
+                <#else>
+                    return <@iterableCreation/>;
+                </#if>
             </#if>
         </#if>
     }
 
-    <#if existingInstanceMapping>
-        ${resultName}.clear();
+    <#if resultType.arrayType>
+        <#if !existingInstanceMapping>
+            <@includeModel object=resultElementType/>[] ${resultName} = new <@includeModel object=resultElementType/>[ <@iterableSize/> ];
+        </#if>
+        int ${index1Name} = 0;
+        for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {
+            <#if existingInstanceMapping>
+            if ( ( ${index1Name} >= ${resultName}.length ) || ( ${index1Name} >= <@iterableSize/> ) ) {
+                break;
+            }
+            </#if>
+            <@includeModel object=elementAssignment targetAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
+            ${index1Name}++;
+        }
     <#else>
-    <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
-        <@localVarDefinition/> = <@returnObjectCreation/>;
-   </#if>
+        <#if existingInstanceMapping>
+            ${resultName}.clear();
+        <#else>
+            <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
+            <@iterableLocalVarDef/> ${resultName} = <@iterableCreation/>;
+        </#if>
 
-    for ( <@includeModel object=sourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${sourceParameter.name} ) {
-     <@includeModel object=elementAssignment targetBeanName=resultName targetAccessorName="add" targetType=resultType.typeParameters[0]/>
-    }
+        for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {
+            <@includeModel object=elementAssignment targetBeanName=resultName targetAccessorName="add" targetType=resultElementType/>
+        }
+    </#if>
+
     <#if returnType.name != "void">
-
-    return ${resultName};
+        return ${resultName};
     </#if>
 }
 <#macro throws>
@@ -57,16 +86,25 @@
         </#list>
     </@compress>
 </#macro>
-<#macro localVarDefinition>
+<#macro iterableSize>
+    <@compress single_line=true>
+        <#if sourceParameter.type.arrayType>
+           ${sourceParameter.name}.length
+        <#else>
+           ${sourceParameter.name}.size()
+        </#if>
+    </@compress>
+</#macro>
+<#macro iterableLocalVarDef>
     <@compress single_line=true>
         <#if resultType.fullyQualifiedName == "java.lang.Iterable">
             <@includeModel object=resultType.implementationType/>
         <#else>
             <@includeModel object=resultType/>
-        </#if> ${resultName}
+        </#if>
     </@compress>
 </#macro>
-<#macro returnObjectCreation>
+<#macro iterableCreation>
     <@compress single_line=true>
         <#if factoryMethod??>
             <@includeModel object=factoryMethod/>

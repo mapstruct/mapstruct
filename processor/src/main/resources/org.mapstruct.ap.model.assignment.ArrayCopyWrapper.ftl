@@ -18,26 +18,20 @@
      limitations under the License.
 
 -->
-package ${packageName};
-
-<#list importTypes as importedType>
-import ${importedType.importName};
-</#list>
-
-@Generated(
-    value = "org.mapstruct.ap.MappingProcessor"<#if suppressGeneratorTimestamp == false>,
-    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
-)
-<#list annotations as annotation>
-<#nt><@includeModel object=annotation/>
-</#list>
-<#lt>${accessibility.keyword} class ${name}<#if superClassName??> extends ${superClassName}</#if><#if interfaceName??> implements ${interfaceName}</#if> {
-<#list fields as field>
-
-<#nt>    <@includeModel object=field/>
-</#list>
-<#list methods as method>
-
-<#nt>    <@includeModel object=method/>
-</#list>
-}
+<#if (exceptionTypes?size == 0) >
+    <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
+    ${ext.targetBeanName}.${ext.targetAccessorName}( Arrays.copyOf( ${localVarName}, ${localVarName}.length ) );
+<#else>
+    try {
+        <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
+        ${ext.targetBeanName}.${ext.targetAccessorName}( Arrays.copyOf( ${localVarName}, ${localVarName}.length ) );
+    }
+    <#list exceptionTypes as exceptionType>
+    catch ( <@includeModel object=exceptionType/> e ) {
+        throw new RuntimeException( e );
+    }
+    </#list>
+</#if>
+<#macro _assignment>
+    <@includeModel object=assignment raw=ext.raw targetType=ext.targetType/>
+</#macro>
