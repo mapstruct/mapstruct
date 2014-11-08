@@ -62,6 +62,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final List<Type> typeParameters;
 
     private final Type implementationType;
+    private final Type componentType;
 
     private final String packageName;
     private final String name;
@@ -85,7 +86,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, Elements elementUtils, TypeMirror typeMirror, TypeElement typeElement,
-                List<Type> typeParameters, Type implementationType, String packageName, String name,
+                List<Type> typeParameters, Type implementationType, Type componentType, String packageName, String name,
                 String qualifiedName, boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isImported) {
 
@@ -95,6 +96,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.typeMirror = typeMirror;
         this.typeElement = typeElement;
         this.typeParameters = typeParameters;
+        this.componentType = componentType;
         this.implementationType = implementationType;
 
         this.packageName = packageName;
@@ -147,6 +149,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return typeParameters;
     }
 
+    public Type getComponentType() {
+        return componentType;
+    }
+
     public boolean isPrimitive() {
         return typeMirror.getKind().isPrimitive();
     }
@@ -182,8 +188,13 @@ public class Type extends ModelElement implements Comparable<Type> {
         return implementationType;
     }
 
+    /**
+     * Whether this type is a sub-type of {@link Iterable} or an array type.
+     *
+     * @return {@code true} if this type is a sub-type of {@link Iterable} or an array type, {@code false} otherwise.
+     */
     public boolean isIterableType() {
-        return isIterableType;
+        return isIterableType || isArrayType();
     }
 
     public boolean isCollectionType() {
@@ -198,13 +209,32 @@ public class Type extends ModelElement implements Comparable<Type> {
         return isCollectionType || isMapType;
     }
 
+    public boolean isArrayType() {
+        return componentType != null;
+    }
+
     public String getFullyQualifiedName() {
         return qualifiedName;
     }
 
+    /**
+     * The name of this type as to be used within import statements.
+     */
+    public String getImportName() {
+        return isArrayType() ? qualifiedName.substring( 0, qualifiedName.length() - 2 ) : qualifiedName;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
-        return implementationType != null ? Collections.singleton( implementationType ) : Collections.<Type>emptySet();
+        if ( implementationType != null ) {
+            return Collections.singleton( implementationType );
+        }
+        else if ( componentType != null ) {
+            return Collections.singleton( componentType );
+        }
+        else {
+            return Collections.<Type>emptySet();
+        }
     }
 
     /**
@@ -244,6 +274,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             typeElement,
             typeParameters,
             implementationType,
+            componentType,
             packageName,
             name,
             qualifiedName,

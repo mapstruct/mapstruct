@@ -93,6 +93,20 @@ public class DateConversionTest {
     }
 
     @Test
+    public void shouldApplyStringConversionForArrayMethod() {
+        List<Date> dates = Arrays.asList(
+            new GregorianCalendar( 2013, 6, 6 ).getTime(),
+            new GregorianCalendar( 2013, 1, 14 ).getTime(),
+            new GregorianCalendar( 2013, 3, 11 ).getTime()
+        );
+
+        String[] stringDates = SourceTargetMapper.INSTANCE.stringListToDateArray( dates );
+
+        assertThat( stringDates ).isNotNull();
+        assertThat( stringDates ).isEqualTo( new String[]{ "06.07.2013", "14.02.2013", "11.04.2013" } );
+    }
+
+    @Test
     public void shouldApplyStringConversionForReverseIterableMethod() {
         List<String> stringDates = Arrays.asList( "06.07.2013", "14.02.2013", "11.04.2013" );
 
@@ -104,5 +118,47 @@ public class DateConversionTest {
             new GregorianCalendar( 2013, 1, 14 ).getTime(),
             new GregorianCalendar( 2013, 3, 11 ).getTime()
         );
+    }
+
+    @Test
+    public void shouldApplyStringConversionForReverseArrayMethod() {
+        String[] stringDates = new String[]{ "06.07.2013", "14.02.2013", "11.04.2013" };
+
+        List<Date> dates = SourceTargetMapper.INSTANCE.stringArrayToDateList( stringDates );
+
+        assertThat( dates ).isNotNull();
+        assertThat( dates ).containsExactly(
+            new GregorianCalendar( 2013, 6, 6 ).getTime(),
+            new GregorianCalendar( 2013, 1, 14 ).getTime(),
+            new GregorianCalendar( 2013, 3, 11 ).getTime()
+        );
+    }
+
+
+    @Test
+    public void shouldApplyStringConversionForReverseArrayArrayMethod() {
+         Date[] dates = new Date[]{
+            new GregorianCalendar( 2013, 6, 6 ).getTime(),
+            new GregorianCalendar( 2013, 1, 14 ).getTime(),
+            new GregorianCalendar( 2013, 3, 11 ).getTime()
+         };
+        String[] stringDates = SourceTargetMapper.INSTANCE.dateArrayToStringArray( dates );
+
+        assertThat( stringDates ).isNotNull();
+        assertThat( stringDates ).isEqualTo( new String[]{ "06.07.2013", "14.02.2013", "11.04.2013" } );
+    }
+
+    @Test
+    public void shouldApplyDateConversionForReverseArrayArrayMethod() {
+
+        String[] stringDates = new String[]{ "06.07.2013", "14.02.2013", "11.04.2013" };
+        Date[] dates = SourceTargetMapper.INSTANCE.stringArrayToDateArray( stringDates );
+
+        assertThat( dates ).isNotNull();
+        assertThat( dates ).isEqualTo( new Date[] {
+            new GregorianCalendar( 2013, 6, 6 ).getTime(),
+            new GregorianCalendar( 2013, 1, 14 ).getTime(),
+            new GregorianCalendar( 2013, 3, 11 ).getTime()
+        } );
     }
 }

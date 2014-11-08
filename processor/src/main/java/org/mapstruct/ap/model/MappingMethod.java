@@ -28,7 +28,8 @@ import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.util.Strings;
+import static org.mapstruct.ap.util.Strings.getSaveVariableName;
+import static org.mapstruct.ap.util.Strings.join;
 
 /**
  * A method implemented or referenced by a {@link Mapper} class.
@@ -78,8 +79,15 @@ public abstract class MappingMethod extends ModelElement {
     }
 
     public String getResultName() {
-        return targetParameter != null ? targetParameter.getName() :
-            Strings.getSaveVariableName( getResultType().getName(), getParameterNames() );
+        if ( targetParameter != null ) {
+            return targetParameter.getName();
+        }
+        else if ( getResultType().isArrayType() ) {
+            return getSaveVariableName( getResultType().getComponentType().getName() + "Tmp", getParameterNames() );
+        }
+        else {
+            return getSaveVariableName( getResultType().getName(), getParameterNames() );
+        }
     }
 
     public Type getReturnType() {
@@ -124,6 +132,6 @@ public abstract class MappingMethod extends ModelElement {
 
     @Override
     public String toString() {
-        return returnType + " " + getName() + "(" + Strings.join( parameters, ", " ) + ")";
+        return returnType + " " + getName() + "(" + join( parameters, ", " ) + ")";
     }
 }

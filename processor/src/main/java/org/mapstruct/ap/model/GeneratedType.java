@@ -155,7 +155,13 @@ public abstract class GeneratedType extends ModelElement {
             typeToAdd.getPackageName() != null &&
             !typeToAdd.getPackageName().equals( packageName ) &&
             !typeToAdd.getPackageName().startsWith( "java.lang" ) ) {
-            collection.add( typeToAdd );
+
+            if ( typeToAdd.isArrayType() ) {
+                collection.add( typeToAdd.getComponentType() );
+            }
+            else {
+                collection.add( typeToAdd );
+            }
         }
 
         addWithDependents( collection, typeToAdd.getImplementationType() );

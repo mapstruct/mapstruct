@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.model.common;
 
+import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.erasure;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,6 +42,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
@@ -52,8 +55,6 @@ import org.mapstruct.ap.prism.MappingTargetPrism;
 import org.mapstruct.ap.prism.TargetTypePrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.SpecificCompilerWorkarounds;
-
-import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.erasure;
 
 /**
  * Factory creating {@link Type} instances.
@@ -131,12 +132,14 @@ public class TypeFactory {
         boolean isInterface;
         String name;
         String packageName;
-        TypeElement typeElement;
         String qualifiedName;
+        TypeElement typeElement;
+        Type componentType;
 
-        DeclaredType declaredType = mirror.getKind() == TypeKind.DECLARED ? (DeclaredType) mirror : null;
 
-        if ( declaredType != null ) {
+        if ( mirror.getKind() == TypeKind.DECLARED ) {
+            DeclaredType declaredType = (DeclaredType) mirror;
+
             isEnumType = declaredType.asElement().getKind() == ElementKind.ENUM;
             isInterface = declaredType.asElement().getKind() == ElementKind.INTERFACE;
             name = declaredType.asElement().getSimpleName().toString();
@@ -151,14 +154,40 @@ public class TypeFactory {
                 packageName = null;
                 qualifiedName = name;
             }
+
+            componentType = null;
+        }
+        else if ( mirror.getKind() == TypeKind.ARRAY ) {
+            TypeMirror componentTypeMirror = getComponentType( mirror );
+
+            if ( componentTypeMirror.getKind() == TypeKind.DECLARED ) {
+                DeclaredType declaredType = (DeclaredType) componentTypeMirror;
+                TypeElement componentTypeElement =
+                        declaredType.asElement().accept( new TypeElementRetrievalVisitor(), null );
+
+                name = componentTypeElement.getSimpleName().toString() + "[]";
+                packageName = elementUtils.getPackageOf( componentTypeElement ).getQualifiedName().toString();
+                qualifiedName = componentTypeElement.getQualifiedName().toString() + "[]";
+            }
+            else {
+                name = mirror.toString();
+                packageName = null;
+                qualifiedName = name;
+            }
+
+            isEnumType = false;
+            isInterface = false;
+            typeElement = null;
+            componentType = getType( componentTypeMirror );
         }
         else {
             isEnumType = false;
             isInterface = false;
-            typeElement = null;
             name = mirror.toString();
             packageName = null;
             qualifiedName = name;
+            typeElement = null;
+            componentType = null;
         }
 
         return new Type(
@@ -167,6 +196,7 @@ public class TypeFactory {
             typeElement,
             getTypeParameters( mirror ),
             implementationType,
+            componentType,
             packageName,
             name,
             qualifiedName,
@@ -303,6 +333,7 @@ public class TypeFactory {
                 implementationType.getTypeElement(),
                 getTypeParameters( mirror ),
                 null,
+                null,
                 implementationType.getPackageName(),
                 implementationType.getName(),
                 implementationType.getFullyQualifiedName(),
@@ -316,6 +347,15 @@ public class TypeFactory {
         }
 
         return null;
+    }
+
+    private TypeMirror getComponentType(TypeMirror mirror) {
+        if ( mirror.getKind() != TypeKind.ARRAY ) {
+            return null;
+        }
+
+        ArrayType arrayType = (ArrayType) mirror;
+        return arrayType.getComponentType();
     }
 
     private boolean isImported(String name, String qualifiedName) {
