@@ -16,25 +16,34 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.ignore;
+package org.mapstruct.ap.test.nestedsourceproperties;
 
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.test.nestedsourceproperties.target.ChartEntry;
 import org.mapstruct.factory.Mappers;
 
+/**
+ * @author Sjaak Derksen
+ */
 @Mapper
-public interface AnimalMapper {
+public interface ArtistToChartEntryErroneous {
 
-    AnimalMapper INSTANCE = Mappers.getMapper( AnimalMapper.class );
+    ArtistToChartEntryErroneous MAPPER = Mappers.getMapper( ArtistToChartEntryErroneous.class );
 
     @Mappings({
-        @Mapping(target = "age", ignore = true),
-        @Mapping(target = "color", source = "colour", ignore = true)
-    })
-    AnimalDto animalToDto(Animal animal);
+        @Mapping(target = "chartName", ignore = true),
+        @Mapping(target = "songTitle", ignore = true),
+        @Mapping(target = "artistName", ignore = true),
+        @Mapping(target = "recordedAt", ignore = true),
+        @Mapping(target = "city", ignore = true),
+        @Mapping(target = "position", source = "position")
+    } )
+    ChartEntry forward(Integer position);
 
     @InheritInverseConfiguration
-    Animal animalDtoToAnimal(AnimalDto animalDto);
+    Integer reverse(ChartEntry position);
+
 }
