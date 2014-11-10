@@ -36,6 +36,7 @@ import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotate
 import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.Facts;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.PlotWords;
+import org.mapstruct.ap.test.selection.qualifier.handwritten.Reverse;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.SomeOtherMapper;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.YetAnotherMapper;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -116,4 +117,24 @@ public class QualifierTest {
     public void shouldNotProduceMatchingMethod() {
     }
 
+
+    @Test
+    @WithClasses( {
+        MapperWithoutQualifiedBy.class,
+        Facts.class,
+        EnglishToGerman.class,
+        Reverse.class
+    } )
+    @IssueKey( "341" )
+    public void shouldNotUseQualifierAnnotatedMethod() {
+
+
+        OriginalRelease foreignMovies = new OriginalRelease();
+        foreignMovies.setTitle( "Sixth Sense, The" );
+
+        GermanRelease result = MapperWithoutQualifiedBy.INSTANCE.map( foreignMovies );
+        assertThat( result ).isNotNull();
+        assertThat( result.getTitle() ).isEqualTo( "ehT ,esneS htxiS");
+
+    }
 }

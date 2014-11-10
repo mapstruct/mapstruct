@@ -36,6 +36,19 @@ import org.mapstruct.ap.prism.QualifierPrism;
 /**
  * This selector selects a best match based on qualifiers name.
  *
+ * <p>
+ * A method is said to be marked with a qualifier annotation if the class in which it resides is annotated with a
+ * qualifier annotation or if the method itself is annotated with a qualifier annotation or both.
+ * </p>
+ *
+ * <p>
+ * Rules:
+ * <ol>
+ * <li> 1. If a method is marked with a qualifier annotation, it does not contribute to a match otherwise and
+ * is hence removed from the list of potential mapping methods</li>
+ * <li> 2. If multiple qualifiers (qualifedBy) are specified, all should match to make a match.</li>
+ * </ol>
+ * </p>
  * @author Sjaak Derksen
  */
 public class QualifierSelector implements MethodSelector {
@@ -52,59 +65,84 @@ public class QualifierSelector implements MethodSelector {
                                                          Type parameterType, Type returnType,
                                                          List<TypeMirror> qualifiers,
                                                          String targetPropertyName) {
-        List<T> matches = new ArrayList<T>();
 
         if ( qualifiers == null || qualifiers.isEmpty() ) {
-            return methods;
-        }
+            // remove the method marked as qualifier from the list
+            List<T> nonQualiferAnnotatedMethods = new ArrayList<T>();
+            for ( T candidate : methods ) {
 
-        for ( T candidate : methods ) {
-
-            if ( !( candidate instanceof SourceMethod ) ) {
-                continue;
-            }
-
-            // retrieve annotations
-            Set<TypeMirror> combinedAnnotations = new HashSet<TypeMirror>();
-
-            // first from the method itself
-            SourceMethod candidateSM = (SourceMethod) candidate;
-            List<? extends AnnotationMirror> methodAnnotations = candidateSM.getExecutable().getAnnotationMirrors();
-            for ( AnnotationMirror methodAnnotation : methodAnnotations ) {
-                addOnlyWhenQualifier( combinedAnnotations, methodAnnotation );
-            }
-
-            // then from the mapper (if declared)
-            Type mapper = candidate.getDeclaringMapper();
-            if ( mapper != null ) {
-                List<? extends AnnotationMirror> mapperAnnotations = mapper.getTypeElement().getAnnotationMirrors();
-                for ( AnnotationMirror mapperAnnotation : mapperAnnotations ) {
-                    addOnlyWhenQualifier( combinedAnnotations, mapperAnnotation );
-                }
-            }
-
-            // now count if all qualifiers are machted
-            int matchingQualifierCounter = 0;
-            for ( TypeMirror qualifier : qualifiers) {
-                for ( TypeMirror annotationType : combinedAnnotations ) {
-                    if ( typeUtils.isSameType( qualifier, annotationType ) ) {
-                        matchingQualifierCounter++;
-                        break;
+                if ( candidate instanceof SourceMethod ) {
+                    Set<TypeMirror> qualifierAnnotations = getQualifierAnnotations( candidate );
+                    if ( qualifierAnnotations.isEmpty() ) {
+                        nonQualiferAnnotatedMethods.add( candidate );
                     }
                 }
-            }
+                else {
+                    nonQualiferAnnotatedMethods.add( candidate );
+                }
 
-            if ( matchingQualifierCounter == qualifiers.size() ) {
-                // all qualifiers are matched with a qualifying annotation, add candidate
-                matches.add( candidate );
             }
-        }
-        if ( !matches.isEmpty() ) {
-            return matches;
+            return nonQualiferAnnotatedMethods;
         }
         else {
-            return methods;
+
+            List<T> matches = new ArrayList<T>();
+            for ( T candidate : methods ) {
+
+                if ( !( candidate instanceof SourceMethod ) ) {
+                    continue;
+                }
+
+                // retrieve annotations
+                Set<TypeMirror> qualifierAnnotations = getQualifierAnnotations( candidate );
+
+                // now count if all qualifiers are matched
+                int matchingQualifierCounter = 0;
+                for ( TypeMirror qualifier : qualifiers ) {
+                    for ( TypeMirror annotationType : qualifierAnnotations ) {
+                        if ( typeUtils.isSameType( qualifier, annotationType ) ) {
+                            matchingQualifierCounter++;
+                            break;
+                        }
+                    }
+                }
+
+                if ( matchingQualifierCounter == qualifiers.size() ) {
+                    // all qualifiers are matched with a qualifying annotation, add candidate
+                    matches.add( candidate );
+                }
+            }
+            if ( !matches.isEmpty() ) {
+                return matches;
+            }
+            else {
+                return methods;
+            }
         }
+    }
+
+    private Set<TypeMirror> getQualifierAnnotations( Method candidate ) {
+
+        // retrieve annotations
+        Set<TypeMirror> qualiferAnnotations = new HashSet<TypeMirror>();
+
+        // first from the method itself
+        SourceMethod candidateSM = (SourceMethod) candidate;
+        List<? extends AnnotationMirror> methodAnnotations = candidateSM.getExecutable().getAnnotationMirrors();
+        for ( AnnotationMirror methodAnnotation : methodAnnotations ) {
+            addOnlyWhenQualifier( qualiferAnnotations, methodAnnotation );
+        }
+
+        // then from the mapper (if declared)
+        Type mapper = candidate.getDeclaringMapper();
+        if ( mapper != null ) {
+            List<? extends AnnotationMirror> mapperAnnotations = mapper.getTypeElement().getAnnotationMirrors();
+            for ( AnnotationMirror mapperAnnotation : mapperAnnotations ) {
+                addOnlyWhenQualifier( qualiferAnnotations, mapperAnnotation );
+            }
+        }
+
+        return qualiferAnnotations;
     }
 
     private void addOnlyWhenQualifier( Set<TypeMirror> annotationSet, AnnotationMirror candidate ) {
@@ -113,5 +151,6 @@ public class QualifierSelector implements MethodSelector {
             annotationSet.add( candidate.getAnnotationType() );
         }
     }
+
 }
 
