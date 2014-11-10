@@ -128,11 +128,7 @@ public class InheritInverseConfigurationTest {
                 kind = Kind.ERROR,
                 line = 49,
                 messageRegExp = "Resolved inverse mapping method reverse\\(\\) should not carry the "
-                    + "@InheritInverseConfiguration annotation itself."),
-            @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated.class,
-                kind = Kind.ERROR,
-                line = 55,
-                messageRegExp = "Unknown property \"propertyToIgnoreDownstream\" in return type.")
+                    + "@InheritInverseConfiguration annotation itself.")
         }
     )
     public void shouldUseWronglyAnnotatedError() {

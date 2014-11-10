@@ -23,14 +23,16 @@ public class Animal {
     private String name;
     private int size;
     private Integer age;
+    private String colour;
 
     public Animal() {
     }
 
-    public Animal(String name, int size, Integer age) {
+    public Animal(String name, int size, Integer age, String colour) {
         this.name = name;
         this.size = size;
         this.age = age;
+        this.colour = colour;
     }
 
     public String getName() {
@@ -56,4 +58,13 @@ public class Animal {
     public void setAge(Integer age) {
         this.age = age;
     }
+
+    public String getColour() {
+        return colour;
+    }
+
+    public void setColour( String colour ) {
+        this.colour = colour;
+    }
+
 }

@@ -60,7 +60,6 @@ public class SourceMethod implements Method {
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
 
-    private boolean configuredByReverseMappingMethod = false;
 
     public static SourceMethod forMethodRequiringImplementation(ExecutableElement executable,
                                                                 List<Parameter> parameters,
@@ -240,7 +239,6 @@ public class SourceMethod implements Method {
 
     public void setMappings(Map<String, List<Mapping>> mappings) {
         this.mappings = mappings;
-        this.configuredByReverseMappingMethod = true;
     }
 
     public IterableMapping getIterableMapping() {
@@ -249,7 +247,6 @@ public class SourceMethod implements Method {
 
     public void setIterableMapping(IterableMapping iterableMapping) {
         this.iterableMapping = iterableMapping;
-        this.configuredByReverseMappingMethod = true;
     }
 
     public MapMapping getMapMapping() {
@@ -258,7 +255,6 @@ public class SourceMethod implements Method {
 
     public void setMapMapping(MapMapping mapMapping) {
         this.mapMapping = mapMapping;
-        this.configuredByReverseMappingMethod = true;
     }
 
     public boolean reverses(SourceMethod method) {

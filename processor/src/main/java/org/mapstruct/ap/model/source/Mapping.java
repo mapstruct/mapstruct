@@ -38,6 +38,7 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
+import org.mapstruct.ap.util.Executables;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.
@@ -55,7 +56,6 @@ public class Mapping {
     private final String dateFormat;
     private final List<TypeMirror> qualifiers;
     private final boolean isIgnored;
-    private final boolean isInheritedFromInverseMethod;
 
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -148,7 +148,6 @@ public class Mapping {
             dateFormat,
             mappingPrism.qualifiedBy(),
             mappingPrism.ignore(),
-            false,
             mappingPrism.mirror,
             mappingPrism.values.source(),
             mappingPrism.values.target()
@@ -176,10 +175,9 @@ public class Mapping {
         return javaExpressionMatcher.group( 1 ).trim();
     }
 
-    //CHECKSTYLE:OFF
     private Mapping(String sourceName, String constant, String javaExpression, String targetName,
                     String dateFormat, List<TypeMirror> qualifiers,
-                    boolean isIgnored, boolean isInheritedFromInverseMethod, AnnotationMirror mirror,
+                    boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
         this.sourceName = sourceName;
         this.constant = constant;
@@ -188,12 +186,10 @@ public class Mapping {
         this.dateFormat = dateFormat;
         this.qualifiers = qualifiers;
         this.isIgnored = isIgnored;
-        this.isInheritedFromInverseMethod = isInheritedFromInverseMethod;
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
     }
-    //CHECKSTYLE:ON
 
     public void init(SourceMethod method, Messager messager, TypeFactory typeFactory) {
 
@@ -241,13 +237,6 @@ public class Mapping {
         return isIgnored;
     }
 
-    /**
-     * Whether this mapping originates from the inverse mapping method.
-     */
-    public boolean isInheritedFromInverseMethod() {
-        return isInheritedFromInverseMethod;
-    }
-
     public AnnotationMirror getMirror() {
         return mirror;
     }
@@ -264,10 +253,51 @@ public class Mapping {
         return sourceReference;
     }
 
+    private boolean hasPropertyInReverseMethod( String name, SourceMethod method ) {
+        boolean match = false;
+        for ( ExecutableElement getter : method.getResultType().getGetters() ) {
+            if ( Executables.getPropertyName( getter ).equals( name ) ) {
+                match = true;
+                break;
+            }
+        }
+        for ( ExecutableElement getter : method.getResultType().getAlternativeTargetAccessors() ) {
+            if ( Executables.getPropertyName( getter ).equals( name ) ) {
+                match = true;
+                break;
+            }
+        }
+        return match;
+    }
+
     public Mapping reverse(SourceMethod method, Messager messager, TypeFactory typeFactory) {
 
-        // mapping can only be reversed if the source was not a constant nor an expression
+        // mapping can only be reversed if the source was not a constant nor an expression nor a nested property
         if ( constant != null || javaExpression != null ) {
+            return null;
+        }
+
+        // should only ignore a property when 1) there is a sourceName defined or 2) there's a name match
+        if ( isIgnored ) {
+            if ( sourceName == null && !hasPropertyInReverseMethod( targetName, method ) ) {
+                return null;
+            }
+        }
+
+        // should not reverse a nested property
+        if (sourceReference != null && sourceReference.getPropertyEntries().size() > 1 ) {
+            return null;
+        }
+
+        // should generate error when parameter
+        if (sourceReference != null && sourceReference.getPropertyEntries().isEmpty() ) {
+            // parameter mapping only, apparantly the @InheritReverseConfiguration is intentional
+            // but erroneous. Lets raise an error to warn.
+            messager.printMessage(
+                    Diagnostic.Kind.ERROR,
+                    String.format( "Parameter %s cannot be reversed", sourceReference.getParameter() ),
+                    method.getExecutable()
+            );
             return null;
         }
 
@@ -279,7 +309,6 @@ public class Mapping {
             dateFormat,
             qualifiers,
             isIgnored,
-            true,
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue
