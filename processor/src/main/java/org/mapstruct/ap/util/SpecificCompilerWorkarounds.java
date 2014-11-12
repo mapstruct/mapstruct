@@ -66,7 +66,7 @@ public class SpecificCompilerWorkarounds {
      * @jls 4.6 Type Erasure
      */
     public static TypeMirror erasure(Types types, TypeMirror t) {
-        if ( t.getKind() == TypeKind.VOID ) {
+        if ( t.getKind() == TypeKind.VOID || t.getKind() == TypeKind.NULL ) {
             return t;
         }
         else {
