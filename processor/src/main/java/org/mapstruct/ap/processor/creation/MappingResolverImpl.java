@@ -164,12 +164,23 @@ public class MappingResolverImpl implements MappingResolver {
                                  String sourceReference) {
             this.mappingMethod = mappingMethod;
             this.mappedElement = mappedElement;
-            this.methods = sourceModel;
+            this.methods = filterPossibleCandidateMethods( sourceModel );
             this.targetPropertyName = targetPropertyName;
             this.dateFormat = dateFormat;
             this.qualifiers = qualifiers;
             this.sourceReference = sourceReference;
             this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
+        }
+
+        private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods) {
+            List<T> result = new ArrayList<T>( candidateMethods.size() );
+            for ( T candidate : candidateMethods ) {
+                if ( isCandidateForMapping( candidate ) ) {
+                    result.add( candidate );
+                }
+            }
+
+            return result;
         }
 
         private Assignment getTargetAssignment(Type sourceType, Type targetType) {
@@ -298,28 +309,21 @@ public class MappingResolverImpl implements MappingResolver {
             // sourceMethod or builtIn that fits the signature B to C. Only then there is a match. If we have a match
             // a nested method call can be called. so C = methodY( methodX (A) )
             for ( Method methodYCandidate : methodYCandidates ) {
-                if ( methodYCandidate.getSourceParameters().size() == 1 ) {
-                    methodRefY = resolveViaMethod(
-                        methodYCandidate.getSourceParameters().get( 0 ).getType(),
-                        targetType,
-                        true
-                    );
-                    if ( methodRefY != null ) {
-                        Assignment methodRefX = resolveViaMethod(
-                            sourceType,
-                            methodYCandidate.getSourceParameters().get( 0 ).getType(),
-                            true
-                        );
-                        if ( methodRefX != null ) {
-                            methodRefY.setAssignment( methodRefX );
-                            methodRefX.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
-                            break;
-                        }
-                        else {
-                            // both should match;
-                            virtualMethodCandidates.clear();
-                            methodRefY = null;
-                        }
+                methodRefY =
+                    resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
+
+                if ( methodRefY != null ) {
+                    Assignment methodRefX =
+                        resolveViaMethod( sourceType, methodYCandidate.getSourceParameters().get( 0 ).getType(), true );
+                    if ( methodRefX != null ) {
+                        methodRefY.setAssignment( methodRefX );
+                        methodRefX.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                        break;
+                    }
+                    else {
+                        // both should match;
+                        virtualMethodCandidates.clear();
+                        methodRefY = null;
                     }
                 }
             }
@@ -342,27 +346,21 @@ public class MappingResolverImpl implements MappingResolver {
             Assignment methodRefY = null;
 
             for ( Method methodYCandidate : methodYCandidates ) {
-                if ( methodYCandidate.getSourceParameters().size() == 1 ) {
-                    methodRefY = resolveViaMethod(
-                        methodYCandidate.getSourceParameters().get( 0 ).getType(),
-                        targetType,
-                        true
-                    );
-                    if ( methodRefY != null ) {
-                        Assignment conversionXRef = resolveViaConversion(
-                            sourceType,
-                            methodYCandidate.getSourceParameters().get( 0 ).getType()
-                        );
-                        if ( conversionXRef != null ) {
-                            methodRefY.setAssignment( conversionXRef );
-                            conversionXRef.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
-                            break;
-                        }
-                        else {
-                            // both should match
-                            virtualMethodCandidates.clear();
-                            methodRefY = null;
-                        }
+                methodRefY =
+                    resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
+
+                if ( methodRefY != null ) {
+                    Assignment conversionXRef =
+                        resolveViaConversion( sourceType, methodYCandidate.getSourceParameters().get( 0 ).getType() );
+                    if ( conversionXRef != null ) {
+                        methodRefY.setAssignment( conversionXRef );
+                        conversionXRef.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                        break;
+                    }
+                    else {
+                        // both should match
+                        virtualMethodCandidates.clear();
+                        methodRefY = null;
                     }
                 }
             }
@@ -386,28 +384,32 @@ public class MappingResolverImpl implements MappingResolver {
 
             // search the other way around
             for ( Method methodXCandidate : methodXCandidates ) {
-                if ( methodXCandidate.getSourceParameters().size() == 1 ) {
-                    Assignment methodRefX = resolveViaMethod(
-                        sourceType,
-                        methodXCandidate.getReturnType(),
-                        true
-                    );
-                    if ( methodRefX != null ) {
-                        conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
-                        if ( conversionYRef != null ) {
-                            conversionYRef.setAssignment( methodRefX );
-                            methodRefX.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
-                            break;
-                        }
-                        else {
-                            // both should match;
-                            virtualMethodCandidates.clear();
-                            conversionYRef = null;
-                        }
+                Assignment methodRefX = resolveViaMethod(
+                    sourceType,
+                    methodXCandidate.getReturnType(),
+                    true
+                );
+                if ( methodRefX != null ) {
+                    conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
+                    if ( conversionYRef != null ) {
+                        conversionYRef.setAssignment( methodRefX );
+                        methodRefX.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                        break;
+                    }
+                    else {
+                        // both should match;
+                        virtualMethodCandidates.clear();
+                        conversionYRef = null;
                     }
                 }
             }
             return conversionYRef;
+        }
+
+        private boolean isCandidateForMapping(Method methodCandidate) {
+            return methodCandidate.getSourceParameters().size() == 1 && !methodCandidate.getReturnType().isVoid()
+                && methodCandidate.getTargetParameter() == null; // @MappingTarget is not yet supported for property
+                                                                 // mappings
         }
 
         private <T extends Method> T getBestMatch(List<T> methods, Type sourceType, Type returnType) {
