@@ -25,6 +25,7 @@ public class Source {
     private int qax;
     private Long baz;
     private int zip;
+    private String someType;
 
     public int getFoo() {
         return foo;
@@ -64,5 +65,13 @@ public class Source {
 
     public void setZip(int zip) {
         this.zip = zip;
+    }
+
+    public String getSomeType() {
+        return someType;
+    }
+
+    public void setSomeType(String someType) {
+        this.someType = someType;
     }
 }

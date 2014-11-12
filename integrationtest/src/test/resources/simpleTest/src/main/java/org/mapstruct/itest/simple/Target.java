@@ -18,6 +18,8 @@
  */
 package org.mapstruct.itest.simple;
 
+import org.mapstruct.itest.simple.SomeType;
+
 public class Target {
 
     private Long foo;
@@ -25,6 +27,7 @@ public class Target {
     private Long baz;
     private int qax;
     private String zip;
+    private SomeType someType;
 
     public Long getFoo() {
         return foo;
@@ -64,5 +67,13 @@ public class Target {
 
     public void setZip(String zip) {
         this.zip = zip;
+    }
+
+    public SomeType getSomeType() {
+        return someType;
+    }
+
+    public void setSomeType(SomeType someType) {
+        this.someType = someType;
     }
 }

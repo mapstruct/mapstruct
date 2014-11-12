@@ -18,23 +18,10 @@
  */
 package org.mapstruct.itest.simple;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.InheritInverseConfiguration;
-import org.mapstruct.factory.Mappers;
+/**
+ * @author Andreas Gudian
+ *
+ */
+public class BaseType {
 
-@Mapper(uses = ReferencedCustomMapper.class)
-public interface SourceTargetMapper {
-
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    @Mappings({
-        @Mapping(source = "qax", target = "baz"),
-        @Mapping(source = "baz", target = "qax")
-    })
-    Target sourceToTarget(Source source);
-
-    @InheritInverseConfiguration
-    Source targetToSource(Target target);
 }
