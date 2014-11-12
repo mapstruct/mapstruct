@@ -133,14 +133,6 @@ public class PropertyMapping extends ModelElement {
                 sourceRefStr = getSourceRef();
             }
 
-            return getPropertyMapping( sourceType, targetType, targetAccessorType, sourceRefStr, sourceElement );
-
-        }
-
-        private PropertyMapping getPropertyMapping(Type sourceType, Type targetType,
-                                                   TargetAccessorType targetAccessorType, String sourceRefStr,
-                                                   String sourceElement) {
-
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 sourceElement,
@@ -158,74 +150,11 @@ public class PropertyMapping extends ModelElement {
             }
 
             if ( assignment != null ) {
-
                 if ( targetType.isCollectionOrMapType() ) {
-
-                    // wrap the setter in the collection / map initializers
-                    if ( targetAccessorType == TargetAccessorType.SETTER ) {
-
-                        // wrap the assignment in a new Map or Collection implementation if this is not done in a
-                        // mapping method. Note, typeconversons do not apply to collections or maps
-                        Assignment newCollectionOrMap = null;
-                        if ( assignment.getType() == DIRECT ) {
-                            newCollectionOrMap =
-                                new NewCollectionOrMapWrapper( assignment, targetType.getImportTypes() );
-                            newCollectionOrMap = new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
-                        }
-
-                        // wrap the assignment in the setter method
-                        assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-
-                        // target accessor is setter, so wrap the setter in setter map/ collection handling
-                        assignment = new SetterCollectionOrMapWrapper(
-                            assignment,
-                            targetAccessor.getSimpleName().toString(),
-                            newCollectionOrMap
-                        );
-                    }
-                    else {
-                        // wrap the assignment in the setter method
-                        assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-
-                        // target accessor is getter, so wrap the setter in getter map/ collection handling
-                        assignment = new GetterCollectionOrMapWrapper( assignment );
-                    }
-
-                    // For collections and maps include a null check, when the assignment type is DIRECT.
-                    // for mapping methods (builtin / custom), the mapping method is responsible for the
-                    // null check. Typeconversions do not apply to collections and maps.
-                    if ( assignment.getType() == DIRECT ) {
-                        assignment = new NullCheckWrapper( assignment );
-                    }
+                    assignment = assignCollection( targetType, targetAccessorType, assignment );
                 }
                 else {
-                    if ( targetAccessorType == TargetAccessorType.SETTER ) {
-                        assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-                        if ( !sourceType.isPrimitive()
-                            && ( assignment.getType() == TYPE_CONVERTED
-                            || assignment.getType() == TYPE_CONVERTED_MAPPED
-                            || assignment.getType() == DIRECT && targetType.isPrimitive() ) ) {
-                            // for primitive types null check is not possible at all, but a conversion needs
-                            // a null check.
-                            assignment = new NullCheckWrapper( assignment );
-                        }
-                    }
-                    else {
-                        // TargetAccessorType must be ADDER
-                        if ( getSourceType().isCollectionType() ) {
-                            assignment = new AdderWrapper(
-                                assignment,
-                                method.getThrownTypes(),
-                                getSourceRef(),
-                                sourceType
-                            );
-                        }
-                        else {
-                            // Possibly adding null to a target collection. So should be surrounded by an null check.
-                            assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-                            assignment = new NullCheckWrapper( assignment );
-                        }
-                    }
+                    assignment = assignObject( sourceType, targetType, targetAccessorType, assignment );
                 }
             }
             else {
@@ -243,6 +172,7 @@ public class PropertyMapping extends ModelElement {
                     method.getExecutable()
                 );
             }
+
             return new PropertyMapping(
                 sourceReference.getParameter().getName(),
                 targetAccessor.getSimpleName().toString(),
@@ -250,6 +180,86 @@ public class PropertyMapping extends ModelElement {
                 assignment
             );
         }
+
+        private Assignment assignObject(Type sourceType, Type targetType, TargetAccessorType targetAccessorType,
+                Assignment rhs ) {
+
+            Assignment result = rhs;
+
+            if ( targetAccessorType == TargetAccessorType.SETTER ) {
+                result = new SetterWrapper( result, method.getThrownTypes() );
+                if ( !sourceType.isPrimitive()
+                        && ( result.getType() == TYPE_CONVERTED
+                        || result.getType() == TYPE_CONVERTED_MAPPED
+                        || result.getType() == DIRECT && targetType.isPrimitive() ) ) {
+                            // for primitive types null check is not possible at all, but a conversion needs
+                    // a null check.
+                    result = new NullCheckWrapper( result );
+                }
+            }
+            else {
+                // TargetAccessorType must be ADDER
+                if ( getSourceType().isCollectionType() ) {
+                    result = new AdderWrapper(
+                            result,
+                            method.getThrownTypes(),
+                            getSourceRef(),
+                            sourceType
+                    );
+                }
+                else {
+                    // Possibly adding null to a target collection. So should be surrounded by an null check.
+                    result = new SetterWrapper( result, method.getThrownTypes() );
+                    result = new NullCheckWrapper( result );
+                }
+            }
+            return result;
+
+        }
+
+        private Assignment assignCollection( Type targetType, TargetAccessorType targetAccessorType, Assignment rhs ) {
+
+            Assignment result = rhs;
+
+            // wrap the setter in the collection / map initializers
+            if ( targetAccessorType == TargetAccessorType.SETTER ) {
+
+                // wrap the assignment in a new Map or Collection implementation if this is not done in a
+                // mapping method. Note, typeconversons do not apply to collections or maps
+                Assignment newCollectionOrMap = null;
+                if ( result.getType() == DIRECT ) {
+                    newCollectionOrMap = new NewCollectionOrMapWrapper( result, targetType.getImportTypes() );
+                    newCollectionOrMap = new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
+                }
+
+                // wrap the assignment in the setter method
+                result = new SetterWrapper( result, method.getThrownTypes() );
+
+                // target accessor is setter, so wrap the setter in setter map/ collection handling
+                result = new SetterCollectionOrMapWrapper(
+                        result,
+                        targetAccessor.getSimpleName().toString(),
+                        newCollectionOrMap
+                );
+            }
+            else {
+                // wrap the assignment in the setter method
+                result = new SetterWrapper( result, method.getThrownTypes() );
+
+                // target accessor is getter, so wrap the setter in getter map/ collection handling
+                result = new GetterCollectionOrMapWrapper( result );
+            }
+
+            // For collections and maps include a null check, when the assignment type is DIRECT.
+            // for mapping methods (builtin / custom), the mapping method is responsible for the
+            // null check. Typeconversions do not apply to collections and maps.
+            if ( result.getType() == DIRECT ) {
+                result = new NullCheckWrapper( result );
+            }
+
+            return result;
+        }
+
 
         private Type getSourceType() {
 
