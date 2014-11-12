@@ -36,7 +36,8 @@ import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.util.SpecificCompilerWorkarounds;
+
+import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.isSubType;
 
 /**
  * SourceMethodMatcher $8.4 of the JavaLanguage specification describes a method body as such:
@@ -222,8 +223,10 @@ public class MethodMatcher {
             }
             else {
                 // check if types are in bound
-                if ( SpecificCompilerWorkarounds.isSubType( typeUtils, t.getLowerBound(), p ) &&
-                    SpecificCompilerWorkarounds.isSubType( typeUtils, p, t.getUpperBound() ) ) {
+                TypeMirror lowerBound = t.getLowerBound();
+                TypeMirror upperBound = t.getUpperBound();
+                if ( ( isNullType( lowerBound ) || isSubType( typeUtils, lowerBound, p ) )
+                    && ( isNullType( upperBound ) || isSubType( typeUtils, p, upperBound ) ) ) {
                     genericTypesMap.put( t, p );
                     return Boolean.TRUE;
                 }
@@ -233,17 +236,21 @@ public class MethodMatcher {
             }
         }
 
+        private boolean isNullType(TypeMirror type) {
+            return type == null || type.getKind() == TypeKind.NULL;
+        }
+
         @Override
         public Boolean visitWildcard(WildcardType t, TypeMirror p) {
 
             // check extends bound
             TypeMirror extendsBound = t.getExtendsBound();
-            if ( extendsBound != null ) {
+            if ( !isNullType( extendsBound ) ) {
                 switch ( extendsBound.getKind() ) {
                     case DECLARED:
                         // for example method: String method(? extends String)
                         // isSubType checks range [subtype, type], e.g. isSubtype [Object, String]==true
-                        return SpecificCompilerWorkarounds.isSubType( typeUtils, p, extendsBound );
+                        return isSubType( typeUtils, p, extendsBound );
 
                     case TYPEVAR:
                         // for example method: <T extends String & Serializable> T method(? extends T)
@@ -259,14 +266,13 @@ public class MethodMatcher {
 
             // check super bound
             TypeMirror superBound = t.getSuperBound();
-            if ( superBound != null ) {
+            if ( !isNullType( superBound ) ) {
                 switch ( superBound.getKind() ) {
                     case DECLARED:
                         // for example method: String method(? super String)
                         // to check super type, we can simply reverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
-                        return SpecificCompilerWorkarounds.isSubType( typeUtils, superBound, p ) ||
-                            typeUtils.isSameType( p, superBound );
+                        return isSubType( typeUtils, superBound, p ) || typeUtils.isSameType( p, superBound );
 
                     case TYPEVAR:
 
@@ -284,8 +290,9 @@ public class MethodMatcher {
                         // to check super type, we can simply reverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
                         TypeMirror superBoundAsDeclared = typeParameter.getBounds().get( 0 );
-                        return ( SpecificCompilerWorkarounds.isSubType( typeUtils, superBoundAsDeclared, p ) ||
-                            typeUtils.isSameType( p, superBoundAsDeclared ) );
+                        return ( isSubType( typeUtils, superBoundAsDeclared, p ) || typeUtils.isSameType(
+                            p,
+                            superBoundAsDeclared ) );
                     default:
                         // does this situation occur?
                         return Boolean.FALSE;
@@ -324,8 +331,7 @@ public class MethodMatcher {
         List<? extends TypeMirror> bounds = tpe.getBounds();
         if ( t != null && bounds != null ) {
             for ( TypeMirror bound : bounds ) {
-                if ( !( bound.getKind().equals( TypeKind.DECLARED ) &&
-                    SpecificCompilerWorkarounds.isSubType( typeUtils, t, bound ) ) ) {
+                if ( !( bound.getKind() == TypeKind.DECLARED && isSubType( typeUtils, t, bound ) ) ) {
                     return false;
                 }
             }
