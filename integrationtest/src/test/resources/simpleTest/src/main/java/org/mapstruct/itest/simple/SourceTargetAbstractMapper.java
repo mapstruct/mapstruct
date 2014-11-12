@@ -23,7 +23,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper( uses = ReferencedCustomMapper.class )
 public abstract class SourceTargetAbstractMapper {
 
     public static SourceTargetAbstractMapper INSTANCE = Mappers.getMapper( SourceTargetAbstractMapper.class );
