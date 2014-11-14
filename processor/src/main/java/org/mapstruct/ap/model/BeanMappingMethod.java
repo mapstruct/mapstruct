@@ -309,10 +309,9 @@ public class BeanMappingMethod extends MappingMethod {
                                     .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                                     .build();
 
-                            // candidates are handled
-                            candidates.clear();
                         }
-
+                        // candidates are handled
+                        candidates.clear();
 
                         if ( propertyMapping != null && newPropertyMapping != null ) {
                             // TODO improve error message
