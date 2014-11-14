@@ -19,7 +19,9 @@
 package org.mapstruct.ap.test.mapnulltodefault;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import static org.fest.assertions.Assertions.assertThat;
 
 
@@ -113,6 +115,30 @@ public class CarMapperTest {
        //then
        assertThat( carDtos2 ).isNotNull();
        assertThat( carDtos2.isEmpty() ).isTrue();
+
+    }
+
+    @Test
+    public void shouldMapMapWithNullArg() {
+
+        //given
+        Car car = new Car( "Morris", 2 );
+        Map carMap = new HashMap();
+        carMap.put( 1, car);
+
+        //when
+        Map<Integer, CarDto> carDtoMap1 = CarMapper.INSTANCE.carsToCarDtoMap( carMap );
+
+       //then
+       assertThat( carDtoMap1 ).isNotNull();
+       assertThat( carDtoMap1.size() ).isEqualTo( 1 );
+
+       //when
+       Map<Integer, CarDto> carDtoMap2 = CarMapper.INSTANCE.carsToCarDtoMap( null );
+
+       //then
+       assertThat( carDtoMap2 ).isNotNull();
+       assertThat( carDtoMap2.isEmpty() ).isTrue();
 
     }
 }

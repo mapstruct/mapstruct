@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.mapnulltodefault;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.mapstruct.Mapper;
@@ -54,4 +55,7 @@ public interface CarMapper {
     @MapNullToDefault
     List<CarDto> carsToCarDtos(List<Car> cars);
 
+
+    @MapNullToDefault
+    Map<Integer, CarDto> carsToCarDtoMap(Map<Integer, Car> cars);
 }

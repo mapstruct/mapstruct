@@ -21,7 +21,11 @@
 <#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
     if ( ${sourceParameter.name} == null ) {
+        <#if !mapNullToDefault>
         return<#if returnType.name != "void"> null</#if>;
+        <#else>
+        return Collections.<${resultType.typeParameters[0].name}, ${resultType.typeParameters[1].name}>emptyMap();
+        </#if>
     }
 
     <#if existingInstanceMapping>
