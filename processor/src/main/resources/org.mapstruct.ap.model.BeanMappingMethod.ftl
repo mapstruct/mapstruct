@@ -20,9 +20,11 @@
 -->
 @Override
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
+    <#if !mapNullToDefault>
     if ( <#list sourceParametersExcludingPrimitives as sourceParam>${sourceParam.name} == null<#if sourceParam_has_next> && </#if></#list> ) {
         return<#if returnType.name != "void"> null</#if>;
     }
+    </#if>
 
     <#if !existingInstanceMapping><@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType raw=true/><#else>new <@includeModel object=resultType/>()</#if>;</#if>
     <#if (sourceParameters?size > 1)>
@@ -43,9 +45,11 @@
             </#if>
         </#list>
     <#else>
+        <#if mapNullToDefault>if ( ${sourceParameters[0].name} != null ) {</#if>
         <#list propertyMappingsByParameter[sourceParameters[0].name] as propertyMapping>
             <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
         </#list>
+        <#if mapNullToDefault>}</#if>
     </#if>
     <#list constantMappings as constantMapping>
          <@includeModel object=constantMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>

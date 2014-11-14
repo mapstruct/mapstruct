@@ -40,6 +40,7 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.SourceReference;
 import org.mapstruct.ap.option.ReportingPolicy;
+import org.mapstruct.ap.prism.MapNullToDefaultPrism;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
@@ -58,6 +59,7 @@ public class BeanMappingMethod extends MappingMethod {
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
     private final MethodReference factoryMethod;
+    private final boolean mapNullToDefault;
 
     public static class Builder {
 
@@ -97,8 +99,12 @@ public class BeanMappingMethod extends MappingMethod {
             // report errors on unmapped properties
             reportErrorForUnmappedTargetPropertiesIfRequired();
 
+            // mapNullToDefault
+            MapNullToDefaultPrism prism = MapNullToDefaultPrism.getInstanceOn( method.getExecutable() );
+            boolean mapNullToDefault = ( prism != null ) && prism.value();
+
             MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
-            return new BeanMappingMethod( method, propertyMappings, factoryMethod );
+            return new BeanMappingMethod( method, propertyMappings, factoryMethod, mapNullToDefault );
         }
 
         /**
@@ -472,7 +478,8 @@ public class BeanMappingMethod extends MappingMethod {
 
     private BeanMappingMethod(SourceMethod method,
                               List<PropertyMapping> propertyMappings,
-                              MethodReference factoryMethod) {
+                              MethodReference factoryMethod,
+                              boolean mapNullToDefault ) {
         super( method );
         this.propertyMappings = propertyMappings;
 
@@ -491,6 +498,7 @@ public class BeanMappingMethod extends MappingMethod {
             }
         }
         this.factoryMethod = factoryMethod;
+        this.mapNullToDefault = mapNullToDefault;
     }
 
     public List<PropertyMapping> getPropertyMappings() {
@@ -503,6 +511,10 @@ public class BeanMappingMethod extends MappingMethod {
 
     public Map<String, List<PropertyMapping>> getPropertyMappingsByParameter() {
         return mappingsByParameter;
+    }
+
+    public boolean isMapNullToDefault() {
+        return mapNullToDefault;
     }
 
     @Override
