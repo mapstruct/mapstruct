@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,9 @@ import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.prism.MapNullToDefaultPrism;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -42,6 +45,8 @@ public class IterableMappingMethod extends MappingMethod {
     private final Assignment elementAssignment;
     private final MethodReference factoryMethod;
     private final boolean overridden;
+    private final boolean mapNullToDefault;
+    private final TypeFactory typeFactory;
 
     public static class Builder {
 
@@ -102,17 +107,30 @@ public class IterableMappingMethod extends MappingMethod {
             // target accessor is setter, so decorate assignment as setter
             assignment = new SetterWrapper( assignment, method.getThrownTypes() );
 
+            // mapNullToDefault
+            MapNullToDefaultPrism prism = MapNullToDefaultPrism.getInstanceOn( method.getExecutable() );
+            boolean mapNullToDefault = ( prism != null ) && prism.value();
+
             MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
-            return new IterableMappingMethod( method, assignment, factoryMethod );
+            return new IterableMappingMethod(
+                    method,
+                    assignment,
+                    factoryMethod,
+                    mapNullToDefault,
+                    ctx.getTypeFactory()
+            );
         }
     }
 
 
-    private IterableMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod) {
+    private IterableMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
+            boolean mapNullToDefault, TypeFactory typeFactory ) {
         super( method );
         this.elementAssignment = parameterAssignment;
         this.factoryMethod = factoryMethod;
         this.overridden = method.overridesMethod();
+        this.mapNullToDefault = mapNullToDefault;
+        this.typeFactory = typeFactory;
     }
 
     public Parameter getSourceParameter() {
@@ -137,7 +155,19 @@ public class IterableMappingMethod extends MappingMethod {
             types.addAll( elementAssignment.getImportTypes() );
         }
 
+        if (mapNullToDefault) {
+            types.add( typeFactory.getType( Collections.class ) );
+        }
+
         return types;
+    }
+
+    public boolean isMapNullToDefault() {
+        return mapNullToDefault;
+    }
+
+    public boolean isOverridden() {
+        return overridden;
     }
 
     public String getLoopVariableName() {
@@ -190,7 +220,4 @@ public class IterableMappingMethod extends MappingMethod {
         return true;
     }
 
-    public boolean isOverridden() {
-        return overridden;
-    }
 }

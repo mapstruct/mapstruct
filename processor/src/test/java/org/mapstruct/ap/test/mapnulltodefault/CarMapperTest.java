@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.mapnulltodefault;
 
+import java.util.Arrays;
+import java.util.List;
 import static org.fest.assertions.Assertions.assertThat;
 
 
@@ -67,7 +69,7 @@ public class CarMapperTest {
         assertThat( carDto2.getCatalogId() ).isNotEmpty();
     }
 
-   @Test
+    @Test
     public void shouldMapExpressionAndConstantRegardlessNullArgSeveralSources() {
         //given
         Car car = new Car( "Morris", 2 );
@@ -92,4 +94,25 @@ public class CarMapperTest {
         assertThat( carDto2.getCatalogId() ).isNotEmpty();
     }
 
+    @Test
+    public void shouldMapIterableWithNullArg() {
+
+        //given
+        Car car = new Car( "Morris", 2 );
+
+        //when
+        List<CarDto> carDtos1 = CarMapper.INSTANCE.carsToCarDtos( Arrays.asList( car ) );
+
+       //then
+       assertThat( carDtos1 ).isNotNull();
+       assertThat( carDtos1.size() ).isEqualTo( 1 );
+
+       //when
+       List<CarDto> carDtos2 = CarMapper.INSTANCE.carsToCarDtos( null );
+
+       //then
+       assertThat( carDtos2 ).isNotNull();
+       assertThat( carDtos2.isEmpty() ).isTrue();
+
+    }
 }
