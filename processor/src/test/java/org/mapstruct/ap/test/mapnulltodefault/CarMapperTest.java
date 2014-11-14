@@ -35,7 +35,10 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @WithClasses({
     Car.class,
     CarDto.class,
-    CarMapper.class
+    CarMapper.class,
+    CarMapperSettingOnMapper.class,
+    CentralConfig.class,
+    CarMapperSettingOnConfig.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class CarMapperTest {
@@ -139,6 +142,81 @@ public class CarMapperTest {
        //then
        assertThat( carDtoMap2 ).isNotNull();
        assertThat( carDtoMap2.isEmpty() ).isTrue();
+
+    }
+
+    @Test
+    public void shouldMapExpressionAndConstantRegardlessNullArgOnMapper() {
+
+        //when
+        CarDto carDto = CarMapperSettingOnMapper.INSTANCE.carToCarDto( null );
+
+        //then
+        assertThat( carDto ).isNotNull();
+        assertThat( carDto.getMake() ).isNull();
+        assertThat( carDto.getSeatCount() ).isEqualTo( 0 );
+        assertThat( carDto.getModel() ).isEqualTo( "ModelT" );
+        assertThat( carDto.getCatalogId() ).isNotEmpty();
+    }
+
+    @Test
+    public void shouldMapIterableWithNullArgOnMapper() {
+
+       //when
+       List<CarDto> carDtos = CarMapperSettingOnMapper.INSTANCE.carsToCarDtos( null );
+
+       //then
+       assertThat( carDtos ).isNotNull();
+       assertThat( carDtos.isEmpty() ).isTrue();
+
+    }
+
+    @Test
+    public void shouldMapMapWithNullArgOnMapper() {
+
+       //when
+       Map<Integer, CarDto> carDtoMap = CarMapperSettingOnMapper.INSTANCE.carsToCarDtoMap( null );
+
+       //then
+       assertThat( carDtoMap ).isNull();
+
+    }
+
+    @Test
+    public void shouldMapExpressionAndConstantRegardlessNullArgOnConfig() {
+
+        //when
+        CarDto carDto = CarMapperSettingOnConfig.INSTANCE.carToCarDto( null );
+
+        //then
+        assertThat( carDto ).isNotNull();
+        assertThat( carDto.getMake() ).isNull();
+        assertThat( carDto.getSeatCount() ).isEqualTo( 0 );
+        assertThat( carDto.getModel() ).isEqualTo( "ModelT" );
+        assertThat( carDto.getCatalogId() ).isNotEmpty();
+    }
+
+
+    @Test
+    public void shouldMapIterableWithNullArgOnConfig() {
+
+       //when
+       List<CarDto> carDtos = CarMapperSettingOnConfig.INSTANCE.carsToCarDtos( null );
+
+       //then
+       assertThat( carDtos ).isNotNull();
+       assertThat( carDtos.isEmpty() ).isTrue();
+
+    }
+
+    @Test
+    public void shouldMapMapWithNullArgOnConfig() {
+
+       //when
+       Map<Integer, CarDto> carDtoMap = CarMapperSettingOnConfig.INSTANCE.carsToCarDtoMap( null );
+
+       //then
+       assertThat( carDtoMap ).isNull();
 
     }
 }

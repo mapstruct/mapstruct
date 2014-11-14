@@ -26,6 +26,8 @@ import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 
 import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.MapNullToDefaultStrategy;
+import org.mapstruct.ap.prism.MapNullToDefaultStrategyPrism;
 
 /**
  * Test for manually created prisms on enumeration types
@@ -37,6 +39,12 @@ public class EnumPrismsTest {
     public void collectionMappingStrategyPrismIsCorrect() {
         assertThat( namesOf( CollectionMappingStrategy.values() ) ).isEqualTo(
             namesOf( CollectionMappingStrategyPrism.values() ) );
+    }
+
+    @Test
+    public void mapNullToDefaultStrategyPrismIsCorrect() {
+        assertThat( namesOf( MapNullToDefaultStrategy.values() ) ).isEqualTo(
+            namesOf( MapNullToDefaultStrategyPrism.values() ) );
     }
 
     private static List<String> namesOf(Enum<?>[] values) {

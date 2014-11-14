@@ -81,4 +81,11 @@ public @interface MapperConfig {
      * @return The strategy applied when propagating the value of collection-typed properties.
      */
     CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.DEFAULT;
+
+    /**
+     * The strategy to be applied when for returning a target when the source equals null.
+     *
+     * @return The strategy applied when determining whether to return null or an empty object, list or map.
+     */
+    MapNullToDefaultStrategy mapNullToDefaultStrategy() default MapNullToDefaultStrategy.DEFAULT;
 }

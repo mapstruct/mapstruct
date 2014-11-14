@@ -24,16 +24,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Advises the code generator to apply all the {@link Mapping}s from an inverse mapping method to the annotated method
- * as well. An inverse mapping method is a method which has the annotated method's source type as target type (return
- * type or indicated through a parameter annotated with {@link MappingTarget}) and the annotated method's target type as
- * source type.
+ * Determines what kind to return in case of a null source argument.
  * <p>
- * Any mappings given on the annotated method itself are added to those mappings inherited from the inverse method. In
- * case of a conflict local mappings take precedence over inherited mappings.
- * <p>
- * If more than one matching inverse method exists, the name of the method to inherit the configuration from must be
- * specified via {@link #name()}
+ * For:
+ * <ol>
+ * <li>Bean Mapping: an 'empty' target bean, except for expressions and constants</li>
+ * <li>Iterable Mapping: an 'empty' list</li>
+ * <li>Map Mapping: an 'empty' map</li>
+ * </ol>
+ *
+ * The user has a choice to use this annotation. When its used, it is used to either override a more global
+ * setting, or in the most common case, to set the specific behavior to map null to default
  *
  * @author Sjaak Derksen
  */
@@ -41,5 +42,5 @@ import java.lang.annotation.Target;
 @Retention( RetentionPolicy.SOURCE )
 public @interface MapNullToDefault {
 
-    boolean value() default true;
+    MapNullToDefaultStrategy value() default MapNullToDefaultStrategy.MAP_NULL_TO_DEFAULT;
 }
