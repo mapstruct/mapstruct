@@ -19,9 +19,9 @@
 
 -->
 <#if (exceptionTypes?size == 0) >
-    ${ext.targetType} ${ext.targetAccessorName} = <@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>;
+    ${ext.targetType.name} ${ext.targetAccessorName} = <@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>;
 <#else>
-    ${ext.targetType} ${ext.targetAccessorName};
+    ${ext.targetType.name} ${ext.targetAccessorName};
     try {
         ${ext.targetAccessorName} = <@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>;
     }
