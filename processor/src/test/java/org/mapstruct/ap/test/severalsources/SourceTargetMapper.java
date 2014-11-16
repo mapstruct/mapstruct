@@ -41,4 +41,9 @@ public interface SourceTargetMapper {
     })
     void personAndAddressToDeliveryAddress(Person person, Address address,
                                            @MappingTarget DeliveryAddress deliveryAddress);
+
+    @Mapping( target = "description", source = "person.description")
+    DeliveryAddress personAndAddressToDeliveryAddress(Person person, Integer houseNumber, int zipCode,
+            String street);
+
 }

@@ -61,6 +61,7 @@ public @interface Mapping {
      * This may either be a simple property name (e.g. "address") or a dot-separated property path (e.g. "address.city"
      * or "address.city.name"). In case the annotated method has several source parameters, the property name must
      * qualified with the parameter name, e.g. "addressParam.city".</li>
+     * <li>When no matching property is found, MapStruct looks for a matching parameter name instead.</li>
      * <li>When used to map an enum constant, the name of the constant member is to be given.</li>
      * </ol>
      * Either this attribute or {@link #constant()} or {@link #expression()} may be specified for a given mapping.
