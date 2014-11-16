@@ -233,7 +233,10 @@ public class SourceReference {
         }
 
         public SourceReference build() {
-            List<PropertyEntry> sourcePropertyEntries = Arrays.asList( new PropertyEntry( name, accessor, type ) );
+            List<PropertyEntry> sourcePropertyEntries = new ArrayList<PropertyEntry>();
+            if ( accessor != null ) {
+                sourcePropertyEntries.add( new PropertyEntry( name, accessor, type ) );
+            }
             return new SourceReference( sourceParameter, sourcePropertyEntries, true );
         }
     }

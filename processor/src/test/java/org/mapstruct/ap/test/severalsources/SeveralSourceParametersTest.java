@@ -99,6 +99,21 @@ public class SeveralSourceParametersTest {
     }
 
     @Test
+    @WithClasses({ Person.class, Address.class, DeliveryAddress.class, SourceTargetMapper.class })
+    public void shouldMapSeveralSourceAttributesAndParameters() {
+        Person person = new Person( "Bob", "Garner", 181, "An actor" );
+
+        DeliveryAddress deliveryAddress =
+                SourceTargetMapper.INSTANCE.personAndAddressToDeliveryAddress( person, 42, 12345, "Main street" );
+
+        assertThat( deliveryAddress.getLastName() ).isEqualTo( "Garner" );
+        assertThat( deliveryAddress.getZipCode() ).isEqualTo( 12345 );
+        assertThat( deliveryAddress.getHouseNumber() ).isEqualTo( 42 );
+        assertThat( deliveryAddress.getDescription() ).isEqualTo( "An actor" );
+        assertThat( deliveryAddress.getStreet()).isEqualTo( "Main street" );
+    }
+
+    @Test
     @WithClasses({ ErroneousSourceTargetMapper.class, Address.class, DeliveryAddress.class })
     @ProcessorOption(name = "unmappedTargetPolicy", value = "IGNORE")
     @ExpectedCompilationOutcome(

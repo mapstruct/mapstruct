@@ -20,19 +20,26 @@
 -->
 @Override
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
-    if ( <#list sourceParameters as sourceParam>${sourceParam.name} == null<#if sourceParam_has_next> && </#if></#list> ) {
+    if ( <#list sourceParametersExcludingPrimitives as sourceParam>${sourceParam.name} == null<#if sourceParam_has_next> && </#if></#list> ) {
         return<#if returnType.name != "void"> null</#if>;
     }
 
     <#if !existingInstanceMapping><@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType raw=true/><#else>new <@includeModel object=resultType/>()</#if>;</#if>
     <#if (sourceParameters?size > 1)>
-        <#list sourceParameters as sourceParam>
+        <#list sourceParametersExcludingPrimitives as sourceParam>
             <#if (propertyMappingsByParameter[sourceParam.name]?size > 0)>
                 if ( ${sourceParam.name} != null ) {
                     <#list propertyMappingsByParameter[sourceParam.name] as propertyMapping>
                         <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
                     </#list>
                 }
+            </#if>
+        </#list>
+        <#list sourcePrimitiveParameters as sourceParam>
+            <#if (propertyMappingsByParameter[sourceParam.name]?size > 0)>
+                <#list propertyMappingsByParameter[sourceParam.name] as propertyMapping>
+                    <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping/>
+                </#list>
             </#if>
         </#list>
     <#else>
