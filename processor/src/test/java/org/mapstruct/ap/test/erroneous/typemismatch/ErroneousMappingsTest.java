@@ -46,11 +46,13 @@ public class ErroneousMappingsTest {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 27,
-                messageRegExp = "Can't map property \"boolean foo\" to \"int foo\"\\."),
+                messageRegExp = "Can't map property \"boolean foo\" to \"int foo\". Consider to declare/implement a "
+                        + "mapping method: \"int map\\(boolean value\\)\"."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 29,
-                messageRegExp = "Can't map property \"int foo\" to \"boolean foo\"\\."),
+                messageRegExp = "Can't map property \"int foo\" to \"boolean foo\". Consider to declare/implement a "
+                        + "mapping method: \"boolean map\\(int value\\)\"."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 31,

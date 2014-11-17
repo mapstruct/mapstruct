@@ -232,10 +232,13 @@ public class PropertyMapping extends ModelElement {
                 ctx.getMessager().printMessage(
                     Diagnostic.Kind.ERROR,
                     String.format(
-                        "Can't map %s to \"%s %s\".",
+                        "Can't map %s to \"%s %s\". "
+                                + "Consider to declare/implement a mapping method: \"%s map(%s value)\".",
                         sourceElement,
                         targetType,
-                        targetPropertyName
+                        targetPropertyName,
+                        targetType,
+                        getSourceType() /* original source type */
                     ),
                     method.getExecutable()
                 );
