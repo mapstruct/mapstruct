@@ -84,7 +84,7 @@ public class ComplexInheritanceTest {
             line = 32,
             messageRegExp =
                 "Ambiguous mapping methods found for mapping property "
-                    + "\"org.mapstruct.ap.test.inheritance.complex.SourceExt prop1\" from .*SourceExt to .*Reference: "
+                    + "\"org.mapstruct.ap.test.inheritance.complex.SourceExt prop1\" to .*Reference: "
                     + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*SourceBase source\\), "
                     + ".*Reference .*AdditionalMappingHelper\\.asReference\\(.*AdditionalFooSource source\\)"))
     public void ambiguousMappingMethodsReportError() {

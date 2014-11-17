@@ -110,7 +110,7 @@ public class QualifierTest {
                         kind = Kind.ERROR,
                         line = 42,
                         messageRegExp = "Ambiguous mapping methods found for mapping property "
-                                + "\"java.lang.String title\" from java.lang.String to java.lang.String.*" )
+                                + "\"java.lang.String title\" to java.lang.String.*" )
             }
     )
     public void shouldNotProduceMatchingMethod() {

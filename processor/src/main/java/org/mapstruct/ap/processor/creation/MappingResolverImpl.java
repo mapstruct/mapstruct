@@ -426,8 +426,7 @@ public class MappingResolverImpl implements MappingResolver {
             if ( candidates.size() > 1 ) {
 
                 String errorMsg = String.format(
-                    "Ambiguous mapping methods found for mapping " + mappedElement + " from %s to %s: %s.",
-                    sourceType,
+                    "Ambiguous mapping methods found for mapping " + mappedElement + " to %s: %s.",
                     returnType,
                     Strings.join( candidates, ", " )
                 );
