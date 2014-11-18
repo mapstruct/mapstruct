@@ -19,6 +19,7 @@
 package org.mapstruct.ap.util;
 
 import java.beans.Introspector;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,8 +30,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
+
+import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.
@@ -161,4 +165,107 @@ public class Executables {
 
         return typeElement != null ? typeElement.getQualifiedName().toString() : null;
     }
+
+    /**
+     * @param mirror the type mirror
+     * @return the corresponding type element
+     */
+    private static TypeElement asTypeElement(TypeMirror mirror) {
+        return (TypeElement) ( (DeclaredType) mirror ).asElement();
+    }
+
+    /**
+     * Finds all executable elements within the given type element, including executable elements defined in super
+     * classes and implemented interfaces. Methods defined in {@link java.lang.Object} are ignored, as well as
+     * implementations of {@link java.lang.Object#equals(Object)}.
+     *
+     * @param elementUtils element helper
+     * @param element the element to inspect
+     * @return the executable elements usable in the type
+     */
+    public static List<ExecutableElement> getAllEnclosingExecutableElements(
+        Elements elementUtils, TypeElement element) {
+        List<ExecutableElement> enclosedElements = new ArrayList<ExecutableElement>();
+
+        addEnclosingElementsIncludingSuper( elementUtils, enclosedElements, element );
+
+        return enclosedElements;
+    }
+
+    private static void addEnclosingElementsIncludingSuper(Elements elementUtils,
+                                                                              List<ExecutableElement> alreadyAdded,
+                                                                              TypeElement element) {
+
+        addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ) );
+
+        if ( hasNonObjectSuperclass( element ) ) {
+            addEnclosingElementsIncludingSuper( elementUtils, alreadyAdded, asTypeElement( element.getSuperclass() ) );
+        }
+
+        for ( TypeMirror interfaceType : element.getInterfaces() ) {
+            addEnclosingElementsIncludingSuper( elementUtils, alreadyAdded, asTypeElement( interfaceType ) );
+        }
+
+    }
+
+    /**
+     * @param alreadyCollected methods that have already been collected and to which the not-yet-overridden methods will
+     *            be added
+     * @param methodsToAdd methods to add to alreadyAdded, if they are not yet overridden by an element in the list
+     */
+    private static void addNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyCollected,
+                                           List<ExecutableElement> methodsToAdd) {
+
+        List<ExecutableElement> safeToAdd = new ArrayList<ExecutableElement>( methodsToAdd.size() );
+        for ( ExecutableElement toAdd : methodsToAdd ) {
+            if ( isNotObjectEquals( toAdd ) && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd ) ) {
+                safeToAdd.add( toAdd );
+            }
+        }
+
+        alreadyCollected.addAll( safeToAdd );
+    }
+
+    /**
+     * @param executable the executable to check
+     * @return <code>true</code>, iff the executable does not represent {@link java.lang.Object#equals(Object)} or an
+     *         overridden version of it
+     */
+    private static boolean isNotObjectEquals(ExecutableElement executable) {
+        if ( executable.getSimpleName().contentEquals( "equals" ) && executable.getParameters().size() == 1
+            && asTypeElement( executable.getParameters().get( 0 ).asType() ).getQualifiedName().contentEquals(
+                "java.lang.Object" ) ) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param elementUtils the elementUtils
+     * @param methods the list of already collected methods of one type hierarchy (order is from sub-types to
+     *            super-types)
+     * @param executable the method to check
+     * @return <code>true</code>, iff the given executable was not yet overridden by a method in the given list.
+     */
+    private static boolean wasNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyAdded,
+                                               ExecutableElement executable) {
+        for ( ExecutableElement executableInSubtype : alreadyAdded ) {
+            TypeElement declaringType = (TypeElement) executableInSubtype.getEnclosingElement();
+
+            if ( elementUtils.overrides( executableInSubtype, executable, declaringType ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param element the type element to check
+     * @return <code>true</code>, iff the type has a super-class that is not java.lang.Object
+     */
+    private static boolean hasNonObjectSuperclass(TypeElement element) {
+        return element.getSuperclass().getKind() == TypeKind.DECLARED
+            && asTypeElement( element.getSuperclass() ).getSuperclass().getKind() == TypeKind.DECLARED;
+    }
+
 }

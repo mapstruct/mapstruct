@@ -35,7 +35,10 @@ import static org.fest.assertions.Assertions.assertThat;
     BaseMapperInterface.class,
     ReferencedMapper.class,
     AbstractReferencedMapper.class,
-    ReferencedMapperInterface.class } )
+    ReferencedMapperInterface.class,
+    AbstractDto.class,
+    Identifiable.class,
+    Measurable.class } )
 @RunWith( AnnotationProcessorTestRunner.class )
 public class AbstractClassTest {
 
@@ -69,5 +72,6 @@ public class AbstractClassTest {
         assertThat( target.getBirthday() ).isEqualTo( "Birthday: 26.04.1948" );
         assertThat( target.getManuallyConverted() ).isEqualTo( 42 );
         assertThat( target.isNotAttractingEqualsMethod() ).isTrue();
+        assertThat( target.getId() ).isEqualTo( 42L );
     }
 }

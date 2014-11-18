@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.processing.Messager;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -48,7 +48,7 @@ import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.MapperConfig;
 
-import static javax.lang.model.util.ElementFilter.methodsIn;
+import static org.mapstruct.ap.util.Executables.getAllEnclosingExecutableElements;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -64,7 +64,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private TypeFactory typeFactory;
     private Types typeUtils;
     private Elements elementUtils;
-    private TypeMirror javaLangObjectTypeMirror;
 
     @Override
     public List<SourceMethod> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
@@ -72,7 +71,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.typeFactory = context.getTypeFactory();
         this.typeUtils = context.getTypeUtils();
         this.elementUtils = context.getElementUtils();
-        this.javaLangObjectTypeMirror = typeFactory.getType( Object.class ).getTypeMirror();
         return retrieveMethods( mapperTypeElement, mapperTypeElement );
     }
 
@@ -92,12 +90,10 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement) {
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
 
-        for ( ExecutableElement executable : methodsIn( allEnclosingElementsIncludeSuper( usedMapper ) ) ) {
-            if ( isNotObjectEquals( executable ) && wasNotYetOverridden( methods, executable ) ) {
-                SourceMethod method = getMethod( usedMapper, executable, mapperToImplement );
-                if ( method != null ) {
-                    methods.add( method );
-                }
+        for ( ExecutableElement executable : getAllEnclosingExecutableElements( elementUtils, usedMapper ) ) {
+            SourceMethod method = getMethod( usedMapper, executable, mapperToImplement );
+            if ( method != null ) {
+                methods.add( method );
             }
         }
 
@@ -118,65 +114,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return methods;
     }
 
-    /**
-     * @param executable the executable to check
-     *
-     * @return <code>true</code>, iff the executable does not represent {@link java.lang.Object#equals(Object)} or an
-     * overridden version of it
-     */
-    private boolean isNotObjectEquals(ExecutableElement executable) {
-        if ( "equals".equals( executable.getSimpleName().toString() )
-            && executable.getParameters().size() == 1
-            && executable.getParameters().get( 0 ).asType().equals( javaLangObjectTypeMirror ) ) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * @param methods the list of already collected methods of one type hierarchy (order is from sub-types to
-     * super-types)
-     * @param executable the method to check
-     *
-     * @return <code>true</code>, iff the given executable was not yet overridden by a method in the given list.
-     */
-    private boolean wasNotYetOverridden(List<SourceMethod> methods, ExecutableElement executable) {
-        for ( SourceMethod alreadyAdded : methods ) {
-            ExecutableElement executableInSubtype = alreadyAdded.getExecutable();
-            TypeElement declaringType = (TypeElement) executableInSubtype.getEnclosingElement();
-
-            if ( elementUtils.overrides( executableInSubtype, executable, declaringType ) ) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private TypeElement asTypeElement(TypeMirror usedMapper) {
         return (TypeElement) ( (DeclaredType) usedMapper ).asElement();
-    }
-
-    private List<Element> allEnclosingElementsIncludeSuper(TypeElement element) {
-        List<Element> enclosedElements = new ArrayList<Element>( element.getEnclosedElements() );
-        for ( TypeMirror interfaceType : element.getInterfaces() ) {
-            enclosedElements.addAll( allEnclosingElementsIncludeSuper( asTypeElement( interfaceType ) ) );
-        }
-
-        if ( hasNonObjectSuperclass( element ) ) {
-            enclosedElements.addAll( allEnclosingElementsIncludeSuper( asTypeElement( element.getSuperclass() ) ) );
-        }
-
-        return enclosedElements;
-    }
-
-    /**
-     * @param element the type element to check
-     *
-     * @return <code>true</code>, iff the type has a super-class that is not java.lang.Object
-     */
-    private boolean hasNonObjectSuperclass(TypeElement element) {
-        return element.getSuperclass().getKind() == TypeKind.DECLARED
-            && asTypeElement( element.getSuperclass() ).getSuperclass().getKind() == TypeKind.DECLARED;
     }
 
     private SourceMethod getMethod(TypeElement usedMapper,

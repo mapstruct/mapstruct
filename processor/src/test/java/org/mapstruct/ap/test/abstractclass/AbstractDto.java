@@ -18,38 +18,20 @@
  */
 package org.mapstruct.ap.test.abstractclass;
 
-import java.util.Calendar;
+/**
+ * @author Andreas Gudian
+ *
+ */
+public class AbstractDto implements Identifiable {
+    private Long id = 1L;
 
-import javax.xml.ws.Holder;
-
-public class Source extends AbstractDto {
-
-    private final int size;
-    private final Calendar birthday;
-    private final String notAttractingEqualsMethod = "no way";
-    private final Holder<String> manuallyConverted = new Holder<String>("What is the answer?");
-
-    public Source() {
-        size = 181;
-        birthday = Calendar.getInstance();
-        birthday.set( 1948, 3, 26 );
-
-        super.setId( 42L );
+    @Override
+    public Long getId() {
+        return id;
     }
 
-    public int getSize() {
-        return size;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Calendar getBirthday() {
-        return birthday;
-    }
-
-    public String getNotAttractingEqualsMethod() {
-        return notAttractingEqualsMethod;
-    }
-
-    public Holder<String> getManuallyConverted() {
-        return manuallyConverted;
-    }
 }

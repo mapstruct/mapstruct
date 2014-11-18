@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.abstractclass;
 
-public class Target {
+public class Target extends AbstractDto {
 
     private Long size;
     private String birthday;

@@ -78,6 +78,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private final List<String> enumConstants;
 
+    private List<ExecutableElement> allExecutables = null;
     private List<ExecutableElement> getters = null;
     private List<ExecutableElement> setters = null;
     private List<ExecutableElement> adders = null;
@@ -280,10 +281,17 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     public List<ExecutableElement> getGetters() {
         if ( getters == null ) {
-            List<? extends Element> members = elementUtils.getAllMembers( typeElement );
-            getters = Collections.unmodifiableList( Filters.getterMethodsIn( members ) );
+            getters = Collections.unmodifiableList( Filters.getterMethodsIn( getAllExecutables() ) );
         }
         return getters;
+    }
+
+    private List<ExecutableElement> getAllExecutables() {
+        if ( allExecutables == null ) {
+            allExecutables = Executables.getAllEnclosingExecutableElements( elementUtils, typeElement );
+        }
+
+        return allExecutables;
     }
 
     /**
@@ -349,8 +357,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     public List<ExecutableElement> getSetters() {
         if ( setters == null ) {
-            List<? extends Element> members = elementUtils.getAllMembers( typeElement );
-            setters = Collections.unmodifiableList( Filters.setterMethodsIn( members ) );
+            setters = Collections.unmodifiableList( Filters.setterMethodsIn( getAllExecutables() ) );
         }
         return setters;
     }
@@ -365,8 +372,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     private List<ExecutableElement> getAdders() {
         if ( adders == null ) {
-            List<? extends Element> members = elementUtils.getAllMembers( typeElement );
-            adders = Collections.unmodifiableList( Filters.adderMethodsIn( members ) );
+            adders = Collections.unmodifiableList( Filters.adderMethodsIn( getAllExecutables() ) );
         }
         return adders;
     }

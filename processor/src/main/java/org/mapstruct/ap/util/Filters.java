@@ -20,10 +20,9 @@ package org.mapstruct.ap.util;
 
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-
-import static javax.lang.model.util.ElementFilter.methodsIn;
 
 /**
  * Filter methods for working with {@link Element} collections.
@@ -35,10 +34,10 @@ public class Filters {
     private Filters() {
     }
 
-    public static List<ExecutableElement> getterMethodsIn(Iterable<? extends Element> elements) {
+    public static List<ExecutableElement> getterMethodsIn(Iterable<ExecutableElement> elements) {
         List<ExecutableElement> getterMethods = new LinkedList<ExecutableElement>();
 
-        for ( ExecutableElement method : methodsIn( elements ) ) {
+        for ( ExecutableElement method : elements ) {
             if ( Executables.isGetterMethod( method ) ) {
                 getterMethods.add( method );
             }
@@ -47,10 +46,10 @@ public class Filters {
         return getterMethods;
     }
 
-    public static List<ExecutableElement> setterMethodsIn(Iterable<? extends Element> elements) {
+    public static List<ExecutableElement> setterMethodsIn(Iterable<ExecutableElement> elements) {
         List<ExecutableElement> setterMethods = new LinkedList<ExecutableElement>();
 
-        for ( ExecutableElement method : methodsIn( elements ) ) {
+        for ( ExecutableElement method : elements ) {
             if ( Executables.isSetterMethod( method ) ) {
                 setterMethods.add( method );
             }
@@ -58,10 +57,10 @@ public class Filters {
         return setterMethods;
     }
 
-    public static List<ExecutableElement> adderMethodsIn(Iterable<? extends Element> elements) {
+    public static List<ExecutableElement> adderMethodsIn(Iterable<ExecutableElement> elements) {
         List<ExecutableElement> adderMethods = new LinkedList<ExecutableElement>();
 
-        for ( ExecutableElement method : methodsIn( elements ) ) {
+        for ( ExecutableElement method : elements ) {
             if ( Executables.isAdderMethod( method ) ) {
                 adderMethods.add( method );
             }
