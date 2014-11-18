@@ -31,19 +31,21 @@ import static org.fest.assertions.Assertions.assertThat;
  *
  * @author Gunnar Morling
  */
-@WithClasses( { Source.class, Target.class, SourceTargetMapper.class, AbstractBaseMapper.class,
+@WithClasses({
+    Source.class, Target.class, SourceTargetMapper.class, AbstractBaseMapper.class,
     BaseMapperInterface.class,
     ReferencedMapper.class,
     AbstractReferencedMapper.class,
     ReferencedMapperInterface.class,
     AbstractDto.class,
     Identifiable.class,
-    Measurable.class } )
-@RunWith( AnnotationProcessorTestRunner.class )
+    Measurable.class
+})
+@RunWith(AnnotationProcessorTestRunner.class)
 public class AbstractClassTest {
 
     @Test
-    @IssueKey( "64" )
+    @IssueKey("64")
     public void shouldCreateImplementationOfAbstractMethod() {
         Source source = new Source();
 
@@ -51,7 +53,7 @@ public class AbstractClassTest {
     }
 
     @Test
-    @IssueKey( "165" )
+    @IssueKey("165")
     public void shouldCreateImplementationOfMethodFromSuper() {
         Source source = new Source();
 
@@ -59,7 +61,7 @@ public class AbstractClassTest {
     }
 
     @Test
-    @IssueKey( "165" )
+    @IssueKey("165")
     public void shouldCreateImplementationOfMethodFromInterface() {
         Source source = new Source();
 

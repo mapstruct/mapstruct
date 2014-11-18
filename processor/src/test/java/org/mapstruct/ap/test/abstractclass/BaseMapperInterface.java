@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.abstractclass;
 
 /**
  * @author Andreas Gudian
- *
  */
 public interface BaseMapperInterface {
     Target sourceToTargetFromBaseMapperInterface(Source source);

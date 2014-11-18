@@ -19,7 +19,6 @@
 package org.mapstruct.ap.test.abstractclass;
 
 import java.util.Calendar;
-
 import javax.xml.ws.Holder;
 
 public class Source extends AbstractDto {
@@ -27,7 +26,7 @@ public class Source extends AbstractDto {
     private final int size;
     private final Calendar birthday;
     private final String notAttractingEqualsMethod = "no way";
-    private final Holder<String> manuallyConverted = new Holder<String>("What is the answer?");
+    private final Holder<String> manuallyConverted = new Holder<String>( "What is the answer?" );
 
     public Source() {
         size = 181;

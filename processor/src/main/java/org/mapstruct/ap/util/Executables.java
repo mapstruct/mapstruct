@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -168,6 +167,7 @@ public class Executables {
 
     /**
      * @param mirror the type mirror
+     *
      * @return the corresponding type element
      */
     private static TypeElement asTypeElement(TypeMirror mirror) {
@@ -181,21 +181,18 @@ public class Executables {
      *
      * @param elementUtils element helper
      * @param element the element to inspect
+     *
      * @return the executable elements usable in the type
      */
-    public static List<ExecutableElement> getAllEnclosingExecutableElements(
-        Elements elementUtils, TypeElement element) {
+    public static List<ExecutableElement> getAllEnclosedExecutableElements(Elements elementUtils, TypeElement element) {
         List<ExecutableElement> enclosedElements = new ArrayList<ExecutableElement>();
-
         addEnclosingElementsIncludingSuper( elementUtils, enclosedElements, element );
 
         return enclosedElements;
     }
 
-    private static void addEnclosingElementsIncludingSuper(Elements elementUtils,
-                                                                              List<ExecutableElement> alreadyAdded,
-                                                                              TypeElement element) {
-
+    private static void addEnclosingElementsIncludingSuper(Elements elementUtils, List<ExecutableElement> alreadyAdded,
+                                                           TypeElement element) {
         addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ) );
 
         if ( hasNonObjectSuperclass( element ) ) {
@@ -210,12 +207,11 @@ public class Executables {
 
     /**
      * @param alreadyCollected methods that have already been collected and to which the not-yet-overridden methods will
-     *            be added
+     * be added
      * @param methodsToAdd methods to add to alreadyAdded, if they are not yet overridden by an element in the list
      */
     private static void addNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyCollected,
-                                           List<ExecutableElement> methodsToAdd) {
-
+                                            List<ExecutableElement> methodsToAdd) {
         List<ExecutableElement> safeToAdd = new ArrayList<ExecutableElement>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
             if ( isNotObjectEquals( toAdd ) && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd ) ) {
@@ -228,13 +224,15 @@ public class Executables {
 
     /**
      * @param executable the executable to check
-     * @return <code>true</code>, iff the executable does not represent {@link java.lang.Object#equals(Object)} or an
-     *         overridden version of it
+     *
+     * @return {@code true}, iff the executable does not represent {@link java.lang.Object#equals(Object)} or an
+     * overridden version of it
      */
     private static boolean isNotObjectEquals(ExecutableElement executable) {
         if ( executable.getSimpleName().contentEquals( "equals" ) && executable.getParameters().size() == 1
             && asTypeElement( executable.getParameters().get( 0 ).asType() ).getQualifiedName().contentEquals(
-                "java.lang.Object" ) ) {
+            "java.lang.Object"
+        ) ) {
             return false;
         }
         return true;
@@ -243,9 +241,10 @@ public class Executables {
     /**
      * @param elementUtils the elementUtils
      * @param methods the list of already collected methods of one type hierarchy (order is from sub-types to
-     *            super-types)
+     * super-types)
      * @param executable the method to check
-     * @return <code>true</code>, iff the given executable was not yet overridden by a method in the given list.
+     *
+     * @return {@code true}, iff the given executable was not yet overridden by a method in the given list.
      */
     private static boolean wasNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyAdded,
                                                ExecutableElement executable) {
@@ -261,11 +260,11 @@ public class Executables {
 
     /**
      * @param element the type element to check
-     * @return <code>true</code>, iff the type has a super-class that is not java.lang.Object
+     *
+     * @return {@code true}, iff the type has a super-class that is not java.lang.Object
      */
     private static boolean hasNonObjectSuperclass(TypeElement element) {
         return element.getSuperclass().getKind() == TypeKind.DECLARED
             && asTypeElement( element.getSuperclass() ).getSuperclass().getKind() == TypeKind.DECLARED;
     }
-
 }

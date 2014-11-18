@@ -25,7 +25,7 @@ import java.util.Calendar;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper( uses = ReferencedMapper.class )
+@Mapper(uses = ReferencedMapper.class)
 public abstract class SourceTargetMapper extends AbstractBaseMapper {
 
     public static final SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );

@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -288,7 +287,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<ExecutableElement> getAllExecutables() {
         if ( allExecutables == null ) {
-            allExecutables = Executables.getAllEnclosingExecutableElements( elementUtils, typeElement );
+            allExecutables = Executables.getAllEnclosedExecutableElements( elementUtils, typeElement );
         }
 
         return allExecutables;

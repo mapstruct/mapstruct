@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.abstractclass;
 
 /**
  * @author Andreas Gudian
- *
  */
 public class AbstractDto implements Identifiable {
     private Long id = 1L;

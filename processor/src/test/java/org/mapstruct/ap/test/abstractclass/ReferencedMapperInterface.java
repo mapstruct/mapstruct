@@ -22,7 +22,6 @@ import javax.xml.ws.Holder;
 
 /**
  * @author Andreas Gudian
- *
  */
 public interface ReferencedMapperInterface {
     int holderToInt(Holder<String> holder);

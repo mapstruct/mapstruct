@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.abstractclass;
 
 /**
  * @author Andreas Gudian
- *
  */
 public interface Identifiable {
     Long getId();

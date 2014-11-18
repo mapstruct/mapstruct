@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -48,7 +47,7 @@ import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.MapperConfig;
 
-import static org.mapstruct.ap.util.Executables.getAllEnclosingExecutableElements;
+import static org.mapstruct.ap.util.Executables.getAllEnclosedExecutableElements;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -90,7 +89,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement) {
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
 
-        for ( ExecutableElement executable : getAllEnclosingExecutableElements( elementUtils, usedMapper ) ) {
+        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper ) ) {
             SourceMethod method = getMethod( usedMapper, executable, mapperToImplement );
             if ( method != null ) {
                 methods.add( method );

@@ -22,7 +22,6 @@ import javax.xml.ws.Holder;
 
 /**
  * @author Andreas Gudian
- *
  */
 public class ReferencedMapper extends AbstractReferencedMapper {
     @Override

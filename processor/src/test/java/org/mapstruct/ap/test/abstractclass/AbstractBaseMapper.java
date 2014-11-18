@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.abstractclass;
 
 /**
  * @author Andreas Gudian
- *
  */
 public abstract class AbstractBaseMapper implements BaseMapperInterface {
     public abstract Target sourceToTargetFromBaseMapper(Source source);
