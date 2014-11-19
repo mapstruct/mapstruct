@@ -91,12 +91,6 @@ public class Mapping {
         return mappings;
     }
 
-    private static boolean isEnumType(TypeMirror mirror) {
-        return mirror.getKind() == TypeKind.DECLARED &&
-            ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
-    }
-
-
     public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element, Messager messager) {
 
         if ( mappingPrism.target().isEmpty() ) {
@@ -154,6 +148,22 @@ public class Mapping {
         );
     }
 
+    private Mapping(String sourceName, String constant, String javaExpression, String targetName,
+                    String dateFormat, List<TypeMirror> qualifiers,
+                    boolean isIgnored, AnnotationMirror mirror,
+                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
+        this.sourceName = sourceName;
+        this.constant = constant;
+        this.javaExpression = javaExpression;
+        this.targetName = targetName;
+        this.dateFormat = dateFormat;
+        this.qualifiers = qualifiers;
+        this.isIgnored = isIgnored;
+        this.mirror = mirror;
+        this.sourceAnnotationValue = sourceAnnotationValue;
+        this.targetAnnotationValue = targetAnnotationValue;
+    }
+
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element, Messager messager) {
         if ( mappingPrism.expression().isEmpty() ) {
             return null;
@@ -175,20 +185,9 @@ public class Mapping {
         return javaExpressionMatcher.group( 1 ).trim();
     }
 
-    private Mapping(String sourceName, String constant, String javaExpression, String targetName,
-                    String dateFormat, List<TypeMirror> qualifiers,
-                    boolean isIgnored, AnnotationMirror mirror,
-                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
-        this.sourceName = sourceName;
-        this.constant = constant;
-        this.javaExpression = javaExpression;
-        this.targetName = targetName;
-        this.dateFormat = dateFormat;
-        this.qualifiers = qualifiers;
-        this.isIgnored = isIgnored;
-        this.mirror = mirror;
-        this.sourceAnnotationValue = sourceAnnotationValue;
-        this.targetAnnotationValue = targetAnnotationValue;
+    private static boolean isEnumType(TypeMirror mirror) {
+        return mirror.getKind() == TypeKind.DECLARED &&
+            ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
     }
 
     public void init(SourceMethod method, Messager messager, TypeFactory typeFactory) {
@@ -253,21 +252,20 @@ public class Mapping {
         return sourceReference;
     }
 
-    private boolean hasPropertyInReverseMethod( String name, SourceMethod method ) {
-        boolean match = false;
+    private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
         for ( ExecutableElement getter : method.getResultType().getGetters() ) {
             if ( Executables.getPropertyName( getter ).equals( name ) ) {
-                match = true;
-                break;
+                return true;
             }
         }
+
         for ( ExecutableElement getter : method.getResultType().getAlternativeTargetAccessors() ) {
             if ( Executables.getPropertyName( getter ).equals( name ) ) {
-                match = true;
-                break;
+                return true;
             }
         }
-        return match;
+
+        return false;
     }
 
     public Mapping reverse(SourceMethod method, Messager messager, TypeFactory typeFactory) {
@@ -285,18 +283,18 @@ public class Mapping {
         }
 
         // should not reverse a nested property
-        if (sourceReference != null && sourceReference.getPropertyEntries().size() > 1 ) {
+        if ( sourceReference != null && sourceReference.getPropertyEntries().size() > 1 ) {
             return null;
         }
 
         // should generate error when parameter
-        if (sourceReference != null && sourceReference.getPropertyEntries().isEmpty() ) {
-            // parameter mapping only, apparantly the @InheritReverseConfiguration is intentional
+        if ( sourceReference != null && sourceReference.getPropertyEntries().isEmpty() ) {
+            // parameter mapping only, apparently the @InheritReverseConfiguration is intentional
             // but erroneous. Lets raise an error to warn.
             messager.printMessage(
-                    Diagnostic.Kind.ERROR,
-                    String.format( "Parameter %s cannot be reversed", sourceReference.getParameter() ),
-                    method.getExecutable()
+                Diagnostic.Kind.ERROR,
+                String.format( "Parameter %s cannot be reversed", sourceReference.getParameter() ),
+                method.getExecutable()
             );
             return null;
         }

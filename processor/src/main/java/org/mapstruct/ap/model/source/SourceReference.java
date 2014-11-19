@@ -21,6 +21,7 @@ package org.mapstruct.ap.model.source;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.tools.Diagnostic;
@@ -38,8 +39,6 @@ import org.mapstruct.ap.util.Strings;
  * mapping method:
  *
  * {@code
- *
- * @author Sjaak Derksen
  * @Mapping( source = "in.propA.propB" target = "propC" )
  * TypeB mappingMethod ( TypeA in );
  * }
@@ -52,6 +51,8 @@ import org.mapstruct.ap.util.Strings;
  * </ol>
  *
  * After building, {@link #isValid()} will return true when when no problems are detected during building.
+ *
+ * @author Sjaak Derksen
  */
 public class SourceReference {
 

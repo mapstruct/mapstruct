@@ -19,10 +19,8 @@
 package org.mapstruct.ap.processor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.processing.Messager;
@@ -49,7 +47,6 @@ import org.mapstruct.ap.model.MappingBuilderContext;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
-import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.prism.DecoratedWithPrism;
@@ -249,15 +246,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 continue;
             }
 
-            SourceMethod reverseMappingMethod = getReverseMappingMethod( methods, method );
+            SourceMethod inverseMappingMethod = getInverseMappingMethod( methods, method );
 
             boolean hasFactoryMethod = false;
             if ( method.isIterableMapping() ) {
 
                 IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
-                if ( method.getIterableMapping() == null && reverseMappingMethod != null &&
-                    reverseMappingMethod.getIterableMapping() != null ) {
-                    method.setIterableMapping( reverseMappingMethod.getIterableMapping() );
+                if ( method.getIterableMapping() == null && inverseMappingMethod != null &&
+                    inverseMappingMethod.getIterableMapping() != null ) {
+                    method.setIterableMapping( inverseMappingMethod.getIterableMapping() );
                 }
 
                 String dateFormat = null;
@@ -281,9 +278,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
 
-                if ( method.getMapMapping() == null && reverseMappingMethod != null &&
-                    reverseMappingMethod.getMapMapping() != null ) {
-                    method.setMapMapping( reverseMappingMethod.getMapMapping() );
+                if ( method.getMapMapping() == null && inverseMappingMethod != null &&
+                    inverseMappingMethod.getMapMapping() != null ) {
+                    method.setMapMapping( inverseMappingMethod.getMapMapping() );
                 }
                 String keyDateFormat = null;
                 String valueDateFormat = null;
@@ -311,7 +308,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( method.isEnumMapping() ) {
 
                 EnumMappingMethod.Builder builder = new EnumMappingMethod.Builder();
-                mergeWithReverseMappings( reverseMappingMethod, method );
+                method.mergeWithInverseMappings( inverseMappingMethod );
                 MappingMethod enumMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
@@ -324,7 +321,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else {
 
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
-                mergeWithReverseMappings( reverseMappingMethod, method );
+                method.mergeWithInverseMappings( inverseMappingMethod );
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
@@ -361,39 +358,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
     }
 
-    private void mergeWithReverseMappings(SourceMethod forwardMappingMethod, SourceMethod method) {
-        Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();
-
-        if ( forwardMappingMethod != null && !forwardMappingMethod.getMappings().isEmpty() ) {
-            for ( List<Mapping> mappings : forwardMappingMethod.getMappings().values() ) {
-                for ( Mapping forwardMapping : mappings ) {
-                    Mapping reversed = forwardMapping.reverse( method, messager, typeFactory );
-                    if ( reversed != null ) {
-                        List<Mapping> mappingsOfProperty = newMappings.get( reversed.getTargetName() );
-                        if ( mappingsOfProperty == null ) {
-                            mappingsOfProperty = new ArrayList<Mapping>();
-                            newMappings.put( reversed.getTargetName(), mappingsOfProperty );
-                        }
-                        mappingsOfProperty.add( reversed );
-                    }
-                }
-            }
-        }
-
-        if ( method.getMappings().isEmpty() ) {
-            // the mapping method is configuredByReverseMappingMethod, see SourceMethod#setMappings()
-            method.setMappings( newMappings );
-        }
-        else {
-            // now add all of its own mappings
-            newMappings.putAll( method.getMappings() );
-            method.getMappings().clear();
-            // the mapping method is NOT configuredByReverseMappingMethod,
-            method.getMappings().putAll( newMappings );
-        }
-    }
-
-    private SourceMethod getReverseMappingMethod(List<SourceMethod> rawMethods, SourceMethod method) {
+    /**
+     * Returns the configuring inverse method in case the given method is annotated with
+     * {@code @InheritInverseConfiguration} and exactly one such configuring method can unambiguously be selected (as
+     * per the source/target type and optionally the name given via {@code @InheritInverseConfiguration}).
+     */
+    private SourceMethod getInverseMappingMethod(List<SourceMethod> rawMethods, SourceMethod method) {
         SourceMethod result = null;
         InheritInverseConfigurationPrism reversePrism = InheritInverseConfigurationPrism.getInstanceOn(
             method.getExecutable()

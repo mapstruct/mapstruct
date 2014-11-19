@@ -20,10 +20,11 @@ package org.mapstruct.ap.model.source;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.processing.Messager;
 
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
@@ -47,19 +48,21 @@ import org.mapstruct.ap.util.Strings;
  */
 public class SourceMethod implements Method {
 
+    private final Types typeUtils;
+    private final TypeFactory typeFactory;
+    private final Messager messager;
+
     private final Type declaringMapper;
     private final ExecutableElement executable;
     private final List<Parameter> parameters;
     private final Parameter targetParameter;
     private final Type returnType;
     private final Accessibility accessibility;
-    private final Types typeUtils;
     private final List<Type> exceptionTypes;
 
     private Map<String, List<Mapping>> mappings;
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
-
 
     public static SourceMethod forMethodRequiringImplementation(ExecutableElement executable,
                                                                 List<Parameter> parameters,
@@ -69,7 +72,7 @@ public class SourceMethod implements Method {
                                                                 IterableMapping iterableMapping, MapMapping mapMapping,
                                                                 Types typeUtils,
                                                                 Messager messager,
-                                                                TypeFactory typeFactory ) {
+                                                                TypeFactory typeFactory) {
 
         SourceMethod sourceMethod = new SourceMethod(
             null,
@@ -80,7 +83,11 @@ public class SourceMethod implements Method {
             mappings,
             iterableMapping,
             mapMapping,
-            typeUtils );
+            typeUtils,
+            typeFactory,
+            messager
+        );
+
         for ( Map.Entry<String, List<Mapping>> entry : sourceMethod.getMappings().entrySet() ) {
             for ( Mapping mapping : entry.getValue() ) {
                 mapping.init( sourceMethod, messager, typeFactory );
@@ -102,7 +109,9 @@ public class SourceMethod implements Method {
             Collections.<String, List<Mapping>>emptyMap(),
             null,
             null,
-            typeUtils
+            typeUtils,
+            null,
+            null
         );
     }
 
@@ -118,13 +127,17 @@ public class SourceMethod implements Method {
             Collections.<String, List<Mapping>>emptyMap(),
             null,
             null,
-            typeUtils
+            typeUtils,
+            null,
+            null
         );
     }
 
+    //CHECKSTYLE:OFF
     private SourceMethod(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
                          Type returnType, List<Type> exceptionTypes, Map<String, List<Mapping>> mappings,
-                         IterableMapping iterableMapping, MapMapping mapMapping, Types typeUtils) {
+                         IterableMapping iterableMapping, MapMapping mapMapping, Types typeUtils,
+                         TypeFactory typeFactory, Messager messager) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
@@ -138,7 +151,10 @@ public class SourceMethod implements Method {
         this.targetParameter = determineTargetParameter( parameters );
 
         this.typeUtils = typeUtils;
+        this.typeFactory = typeFactory;
+        this.messager = messager;
     }
+    //CHECKSTYLE:ON
 
     private Parameter determineTargetParameter(Iterable<Parameter> parameters) {
         for ( Parameter parameter : parameters ) {
@@ -306,7 +322,9 @@ public class SourceMethod implements Method {
 
     /**
      * Returns the {@link Mapping}s for the given source property.
+     *
      * @param sourcePropertyName the source property name
+     *
      * @return list of mappings
      */
     public List<Mapping> getMappingBySourcePropertyName(String sourcePropertyName) {
@@ -367,7 +385,7 @@ public class SourceMethod implements Method {
     /**
      * @param parameters the parameter list to check
      *
-     * @return <code>true</code>, iff the parameter list contains a parameter annotated with {@code @TargetType}
+     * @return {@code true} if the parameter list contains a parameter annotated with {@code @TargetType}
      */
     public static boolean containsTargetTypeParameter(List<Parameter> parameters) {
         for ( Parameter param : parameters ) {
@@ -382,5 +400,41 @@ public class SourceMethod implements Method {
     @Override
     public List<Type> getThrownTypes() {
         return exceptionTypes;
+    }
+
+    /**
+     * Merges in all the mappings configured via the given inverse mapping method, giving the locally defined mappings
+     * precedence.
+     */
+    public void mergeWithInverseMappings(SourceMethod inverseMethod) {
+        Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();
+
+        if ( inverseMethod != null && !inverseMethod.getMappings().isEmpty() ) {
+            for ( List<Mapping> mappings : inverseMethod.getMappings().values() ) {
+                for ( Mapping inverseMapping : mappings ) {
+                    Mapping reversed = inverseMapping.reverse( this, messager, typeFactory );
+                    if ( reversed != null ) {
+                        List<Mapping> mappingsOfProperty = newMappings.get( reversed.getTargetName() );
+                        if ( mappingsOfProperty == null ) {
+                            mappingsOfProperty = new ArrayList<Mapping>();
+                            newMappings.put( reversed.getTargetName(), mappingsOfProperty );
+                        }
+                        mappingsOfProperty.add( reversed );
+                    }
+                }
+            }
+        }
+
+        if ( getMappings().isEmpty() ) {
+            // the mapping method is configuredByReverseMappingMethod, see SourceMethod#setMappings()
+            setMappings( newMappings );
+        }
+        else {
+            // now add all of its own mappings
+            newMappings.putAll( getMappings() );
+            getMappings().clear();
+            // the mapping method is NOT configuredByReverseMappingMethod,
+            getMappings().putAll( newMappings );
+        }
     }
 }
