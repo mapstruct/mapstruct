@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.nestedsourceproperties;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -36,7 +37,7 @@ public interface ArtistToChartEntry {
 
     @Mappings({
         @Mapping(target = "chartName", source = "chart.name"),
-        @Mapping(target = "title", source = "song.title"),
+        @Mapping(target = "songTitle", source = "song.title"),
         @Mapping(target = "artistName", source = "song.artist.name"),
         @Mapping(target = "recordedAt", source = "song.artist.label.studio.name"),
         @Mapping(target = "city", source = "song.artist.label.studio.city"),
@@ -46,7 +47,7 @@ public interface ArtistToChartEntry {
 
     @Mappings({
         @Mapping(target = "chartName", ignore = true),
-        @Mapping(target = "title", source = "title"),
+        @Mapping(target = "songTitle", source = "title"),
         @Mapping(target = "artistName", source = "artist.name"),
         @Mapping(target = "recordedAt", source = "artist.label.studio.name"),
         @Mapping(target = "city", source = "artist.label.studio.city"),
@@ -54,9 +55,17 @@ public interface ArtistToChartEntry {
     })
     ChartEntry map(Song song);
 
+    @InheritInverseConfiguration
+    @Mappings({
+        @Mapping(target = "artist", ignore = true),
+        @Mapping(target = "positions", ignore = true)
+    })
+    Song map(ChartEntry song);
+
+
     @Mappings({
         @Mapping(target = "chartName", source = "name"),
-        @Mapping(target = "title", ignore = true),
+        @Mapping(target = "songTitle", ignore = true),
         @Mapping(target = "artistName", ignore = true),
         @Mapping(target = "recordedAt", ignore = true),
         @Mapping(target = "city", ignore = true),

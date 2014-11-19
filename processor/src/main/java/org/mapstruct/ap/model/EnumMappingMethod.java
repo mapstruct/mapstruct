@@ -109,10 +109,6 @@ public class EnumMappingMethod extends MappingMethod {
 
             for ( List<Mapping> mappedConstants : method.getMappings().values() ) {
                 for ( Mapping mappedConstant : mappedConstants ) {
-                    // only report errors if this mapping is not inherited
-                    if ( mappedConstant.isInheritedFromInverseMethod() ) {
-                        continue;
-                    }
 
                     if ( mappedConstant.getSourceName() == null ) {
                         ctx.getMessager().printMessage(

@@ -23,15 +23,17 @@ public class AnimalDto {
     private String name;
     private Integer size;
     private Integer age;
+    private String color;
 
     public AnimalDto() {
 
     }
 
-    public AnimalDto(String name, Integer size, Integer age) {
+    public AnimalDto(String name, Integer size, Integer age, String color) {
         this.name = name;
         this.size = size;
         this.age = age;
+        this.color = color;
     }
 
     public String getName() {
@@ -57,4 +59,13 @@ public class AnimalDto {
     public void setAge(Integer age) {
         this.age = age;
     }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor( String color ) {
+        this.color = color;
+    }
+
 }

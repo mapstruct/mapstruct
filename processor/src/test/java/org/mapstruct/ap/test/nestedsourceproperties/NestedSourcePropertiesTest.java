@@ -37,6 +37,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 /**
  * @author Sjaak Derksen
@@ -74,7 +77,7 @@ public class NestedSourcePropertiesTest {
         assertThat( chartEntry.getCity() ).isEqualTo( "London" );
         assertThat( chartEntry.getPosition() ).isEqualTo( 0 );
         assertThat( chartEntry.getRecordedAt() ).isEqualTo( "Abbey Road" );
-        assertThat( chartEntry.getTitle() ).isEqualTo( "A Hard Day's Night" );
+        assertThat( chartEntry.getSongTitle() ).isEqualTo( "A Hard Day's Night" );
     }
 
     @Test
@@ -109,7 +112,7 @@ public class NestedSourcePropertiesTest {
         assertThat( chartEntry.getCity() ).isEqualTo( "London" );
         assertThat( chartEntry.getPosition() ).isEqualTo( 1 );
         assertThat( chartEntry.getRecordedAt() ).isEqualTo( "Abbey Road" );
-        assertThat( chartEntry.getTitle() ).isEqualTo( "A Hard Day's Night" );
+        assertThat( chartEntry.getSongTitle() ).isEqualTo( "A Hard Day's Night" );
     }
 
     @Test
@@ -128,7 +131,7 @@ public class NestedSourcePropertiesTest {
         assertThat( chartEntry.getCity() ).isNull();
         assertThat( chartEntry.getPosition() ).isEqualTo( 0 );
         assertThat( chartEntry.getRecordedAt() ).isNull();
-        assertThat( chartEntry.getTitle() ).isNull();
+        assertThat( chartEntry.getSongTitle() ).isNull();
     }
 
     @Test
@@ -165,5 +168,34 @@ public class NestedSourcePropertiesTest {
         assertThat( positions.getPositions() ).containsExactly( 3L, 5L );
 
         assertFalse( AdderUsageObserver.isUsed() );
+    }
+
+
+    @Test
+    @IssueKey("337")
+    @WithClasses({ ArtistToChartEntry.class })
+    public void reverseShouldIgnoreNestedProperties() {
+
+        ChartEntry entry = new ChartEntry();
+        entry.setSongTitle( "Another brick in the wall" );
+
+        Song song = ArtistToChartEntry.MAPPER.map( entry );
+        assertThat( song ).isNotNull();
+        assertThat( song.getTitle() ).isEqualTo( "Another brick in the wall" );
+    }
+
+    @Test
+    @IssueKey( "337" )
+    @ExpectedCompilationOutcome(
+             value = CompilationResult.FAILED,
+            diagnostics = {
+                @Diagnostic( type = ArtistToChartEntryErroneous.class,
+                        kind = javax.tools.Diagnostic.Kind.ERROR,
+                        line = 47,
+                        messageRegExp = "Parameter java.lang.Integer position cannot be reversed" )
+            }
+    )
+    @WithClasses({ ArtistToChartEntryErroneous.class })
+    public void reverseShouldIgnoreParameter() {
     }
 }
