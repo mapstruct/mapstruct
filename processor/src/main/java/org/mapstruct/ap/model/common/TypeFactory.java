@@ -18,10 +18,13 @@
  */
 package org.mapstruct.ap.model.common;
 
+import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.erasure;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -41,19 +44,19 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
+import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.prism.MappingTargetPrism;
 import org.mapstruct.ap.prism.TargetTypePrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.SpecificCompilerWorkarounds;
-
-import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.erasure;
 
 /**
  * Factory creating {@link Type} instances.
@@ -206,6 +209,20 @@ public class TypeFactory {
         return getType( typeUtils.getDeclaredType( elementUtils.getTypeElement( "java.lang.Class" ), typeToUse ) );
     }
 
+    /**
+     * Get the ExecutableType for given method as part of usedMapper. Possibly parameterized types in method declaration
+     * will be evaluated to concrete types then.
+     *
+     * @param usedMapper
+     * @param method
+     * @return the ExecutableType representing the method as part of usedMapper
+     */
+    public ExecutableType getMethodType(TypeElement usedMapper, ExecutableElement method) {
+        TypeMirror asMemberOf = typeUtils.asMemberOf( (DeclaredType) usedMapper.asType(), method );
+        ExecutableType methodType = asMemberOf.accept( new ExecutableTypeRetrievalVisitor(), null );
+        return methodType;
+    }
+
     public Parameter getSingleParameter(ExecutableElement method) {
         List<? extends VariableElement> parameters = method.getParameters();
 
@@ -241,13 +258,47 @@ public class TypeFactory {
         return result;
     }
 
+    public List<Parameter> getParameters(ExecutableType methodType, ExecutableElement method) {
+        List<? extends TypeMirror> parameterTypes = methodType.getParameterTypes();
+        List<? extends VariableElement> parameters = method.getParameters();
+        List<Parameter> result = new ArrayList<Parameter>( parameters.size() );
+
+        Iterator<? extends VariableElement> varIt = parameters.iterator();
+        Iterator<? extends TypeMirror> typesIt = parameterTypes.iterator();
+
+        for ( ; varIt.hasNext(); ) {
+            VariableElement parameter = varIt.next();
+            TypeMirror parameterType = typesIt.next();
+
+            result.add( new Parameter(
+                parameter.getSimpleName().toString(),
+                getType( parameterType ),
+                MappingTargetPrism.getInstanceOn( parameter ) != null,
+                TargetTypePrism.getInstanceOn( parameter ) != null ) );
+        }
+
+        return result;
+    }
+
     public Type getReturnType(ExecutableElement method) {
+        return getType( method.getReturnType() );
+    }
+
+    public Type getReturnType(ExecutableType method) {
         return getType( method.getReturnType() );
     }
 
     public List<Type> getThrownTypes(ExecutableElement method) {
         List<Type> thrownTypes = new ArrayList<Type>();
         for (TypeMirror exceptionType : method.getThrownTypes() ) {
+            thrownTypes.add( getType( exceptionType ) );
+        }
+        return thrownTypes;
+    }
+
+    public List<Type> getThrownTypes(ExecutableType method) {
+        List<Type> thrownTypes = new ArrayList<Type>();
+        for ( TypeMirror exceptionType : method.getThrownTypes() ) {
             thrownTypes.add( getType( exceptionType ) );
         }
         return thrownTypes;
@@ -338,6 +389,13 @@ public class TypeFactory {
         @Override
         public TypeElement visitType(TypeElement e, Void p) {
             return e;
+        }
+    }
+
+    private static class ExecutableTypeRetrievalVisitor extends SimpleTypeVisitor6<ExecutableType, Void> {
+        @Override
+        public ExecutableType visitExecutable(ExecutableType t, Void p) {
+            return t;
         }
     }
 }
