@@ -18,15 +18,19 @@
  */
 package org.mapstruct.ap.processor;
 
+import static org.mapstruct.ap.util.Executables.getAllEnclosedExecutableElements;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -46,8 +50,6 @@ import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.MapperConfig;
-
-import static org.mapstruct.ap.util.Executables.getAllEnclosedExecutableElements;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -120,28 +122,30 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private SourceMethod getMethod(TypeElement usedMapper,
                                    ExecutableElement method,
                                    TypeElement mapperToImplement) {
-        List<Parameter> parameters = typeFactory.getParameters( method );
 
+        ExecutableType methodType = typeFactory.getMethodType( usedMapper, method );
+        List<Parameter> parameters = typeFactory.getParameters( methodType, method );
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
         boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
 
         //add method with property mappings if an implementation needs to be generated
         if ( ( usedMapper.equals( mapperToImplement ) ) && methodRequiresImplementation ) {
-            return getMethodRequiringImplementation( method, parameters, containsTargetTypeParameter );
+            return getMethodRequiringImplementation( methodType, method, parameters, containsTargetTypeParameter );
         }
         //otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( parameters ) ) {
-            return getReferencedMethod( usedMapper, method, mapperToImplement, parameters );
+            return getReferencedMethod( usedMapper, methodType, method, mapperToImplement, parameters );
         }
         else {
             return null;
         }
     }
 
-    private SourceMethod getMethodRequiringImplementation(ExecutableElement method, List<Parameter> parameters,
+    private SourceMethod getMethodRequiringImplementation(ExecutableType methodType, ExecutableElement method,
+                                                          List<Parameter> parameters,
                                                           boolean containsTargetTypeParameter) {
-        Type returnType = typeFactory.getReturnType( method );
-        List<Type> exceptionTypes = typeFactory.getThrownTypes( method );
+        Type returnType = typeFactory.getReturnType( methodType );
+        List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
         List<Parameter> sourceParameters = extractSourceParameters( parameters );
         Parameter targetParameter = extractTargetParameter( parameters );
         Type resultType = selectResultType( returnType, targetParameter );
@@ -173,10 +177,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         );
     }
 
-    private SourceMethod getReferencedMethod(TypeElement usedMapper, ExecutableElement method,
-                                             TypeElement mapperToImplement, List<Parameter> parameters) {
-        Type returnType = typeFactory.getReturnType( method );
-        List<Type> exceptionTypes = typeFactory.getThrownTypes( method );
+    private SourceMethod getReferencedMethod(TypeElement usedMapper, ExecutableType methodType,
+                                             ExecutableElement method, TypeElement mapperToImplement,
+                                             List<Parameter> parameters) {
+        Type returnType = typeFactory.getReturnType( methodType );
+        List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
         Type usedMapperAsType = typeFactory.getType( usedMapper );
         Type mapperToImplementAsType = typeFactory.getType( mapperToImplement );
 
