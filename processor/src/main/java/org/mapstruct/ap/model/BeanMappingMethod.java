@@ -31,7 +31,6 @@ import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 import javax.tools.Diagnostic;
 
-import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.ap.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.model.PropertyMapping.PropertyMappingBuilder;
@@ -41,6 +40,7 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.SourceReference;
 import org.mapstruct.ap.option.ReportingPolicy;
+import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
@@ -99,7 +99,7 @@ public class BeanMappingMethod extends MappingMethod {
          */
         private Map<String, ExecutableElement> initTargetPropertyAccessors() {
             // fetch settings from element to implement
-            CollectionMappingStrategy cmStrategy = getEffectiveCollectionMappingStrategy();
+            CollectionMappingStrategyPrism cmStrategy = getEffectiveCollectionMappingStrategy();
 
             // collect all candidate target accessors
             List<ExecutableElement> candidates = new ArrayList<ExecutableElement>();
@@ -114,15 +114,15 @@ public class BeanMappingMethod extends MappingMethod {
                 // A target access is in general a setter method on the target object. However, in case of collections,
                 // the current target accessor can also be a getter method.
                 // The following if block, checks if the target accessor should be overruled by an add method.
-                if ( cmStrategy == CollectionMappingStrategy.SETTER_PREFERRED
-                    || cmStrategy == CollectionMappingStrategy.ADDER_PREFERRED ) {
+                if ( cmStrategy == CollectionMappingStrategyPrism.SETTER_PREFERRED
+                    || cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
 
                     // first check if there's a setter method.
                     ExecutableElement adderMethod = null;
                     if ( Executables.isSetterMethod( candidate ) ) {
                         Type targetType = ctx.getTypeFactory().getSingleParameter( candidate ).getType();
                         // ok, the current accessor is a setter. So now the strategy determines what to use
-                        if ( cmStrategy == CollectionMappingStrategy.ADDER_PREFERRED ) {
+                        if ( cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
                             adderMethod = method.getResultType().getAdderForType( targetType, targetPropertyName );
                         }
                     }
@@ -389,7 +389,7 @@ public class BeanMappingMethod extends MappingMethod {
             }
         }
 
-        private CollectionMappingStrategy getEffectiveCollectionMappingStrategy() {
+        private CollectionMappingStrategyPrism getEffectiveCollectionMappingStrategy() {
             MapperConfig mapperSettings = MapperConfig.getInstanceOn( ctx.getMapperTypeElement() );
             return mapperSettings.getCollectionMappingStrategy();
         }

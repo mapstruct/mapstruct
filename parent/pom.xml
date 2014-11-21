@@ -239,7 +239,7 @@
                         <failsOnError>true</failsOnError>
                         <violationSeverity>error</violationSeverity>
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
-
+                      <propertyExpansion>basedir=${basedir}</propertyExpansion>
                         <!--
                             Excluding generated sources; Not required for the Maven build, but the Eclipse CS plug-in
                             would check the generated files without these exclusions; Note that the exclusions must be
@@ -455,7 +455,8 @@
                     <strictCheck>true</strictCheck>
                     <excludes>
                         <exclude>.idea/**</exclude>
-                        <exclude>**/checkstyle.xml</exclude>
+                        <exclude>**/build-config/checkstyle.xml</exclude>
+                        <exclude>**/build-config/import-control.xml</exclude>
                         <exclude>copyright.txt</exclude>
                         <exclude>**/license.txt</exclude>
                         <exclude>**/mapstruct.xml</exclude>

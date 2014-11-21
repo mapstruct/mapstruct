@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE import-control PUBLIC 
+    "-//Puppy Crawl//DTD Import Control 1.1//EN" 
+    "http://www.puppycrawl.com/dtds/import_control_1_1.dtd">
+<import-control pkg="org.mapstruct">
+
+    <allow pkg=".*" regex="true" />
+
+    <subpackage name="ap">
+        <!-- the annotation processor may not use the annotations or enums specified in org.mapstruct directly... -->
+        <disallow pkg="org.mapstruct" exact-match="true" />
+
+        <subpackage name="prism">
+            <!-- ... with exception to the package org.mapstruct.ap.prism -->
+            <allow pkg=".*" regex="true" /> 
+        </subpackage>
+        <subpackage name="test">
+            <allow pkg=".*" regex="true" />
+        </subpackage>
+        <subpackage name="testutil">
+            <allow pkg=".*" regex="true" />
+        </subpackage>
+    </subpackage>
+</import-control>

@@ -22,18 +22,19 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.ap.option.ReportingPolicy;
+import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.MapperConfigPrism;
 import org.mapstruct.ap.prism.MapperPrism;
 
-import static org.mapstruct.CollectionMappingStrategy.valueOf;
+import static org.mapstruct.ap.prism.CollectionMappingStrategyPrism.valueOf;
 
 /**
  * Class decorating the {@link MapperPrism} with the 'default' configuration.
@@ -97,23 +98,23 @@ public class MapperConfig {
         }
     }
 
-    public CollectionMappingStrategy getCollectionMappingStrategy() {
-        CollectionMappingStrategy mapperPolicy = valueOf( mapperPrism.collectionMappingStrategy() );
+    public CollectionMappingStrategyPrism getCollectionMappingStrategy() {
+        CollectionMappingStrategyPrism mapperPolicy = valueOf( mapperPrism.collectionMappingStrategy() );
 
-        if ( !mapperPolicy.equals( CollectionMappingStrategy.DEFAULT ) ) {
+        if ( mapperPolicy != CollectionMappingStrategyPrism.DEFAULT ) {
             // it is not the default mapper configuration, so return the mapper configured value
             return mapperPolicy;
         }
         else if ( mapperConfigPrism != null ) {
             // try the config mapper configuration
-            CollectionMappingStrategy configPolicy = valueOf( mapperConfigPrism.collectionMappingStrategy() );
-            if ( !configPolicy.equals( CollectionMappingStrategy.DEFAULT ) ) {
+            CollectionMappingStrategyPrism configPolicy = valueOf( mapperConfigPrism.collectionMappingStrategy() );
+            if ( configPolicy != CollectionMappingStrategyPrism.DEFAULT ) {
                 // its not the default configuration, so return the mapper config configured value
                 return configPolicy;
             }
         }
         // when nothing specified, return ACCESSOR_ONLY (default option)
-        return CollectionMappingStrategy.ACCESSOR_ONLY;
+        return CollectionMappingStrategyPrism.ACCESSOR_ONLY;
     }
 
     public String componentModel() {
