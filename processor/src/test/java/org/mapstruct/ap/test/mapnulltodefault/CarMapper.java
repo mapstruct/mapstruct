@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.MapNullToDefault;
+import org.mapstruct.NullValueMapping;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ap.test.mapnulltodefault.source.Car;
@@ -35,7 +35,7 @@ public interface CarMapper {
 
     CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
-    @MapNullToDefault
+    @NullValueMapping
     @Mappings({
         @Mapping(target = "seatCount", source = "numberOfSeats"),
         @Mapping(target = "model", constant = "ModelT"),
@@ -43,7 +43,7 @@ public interface CarMapper {
     })
     CarDto carToCarDto(Car car);
 
-    @MapNullToDefault
+    @NullValueMapping
     @Mappings({
         @Mapping(target = "seatCount", source = "car.numberOfSeats"),
         @Mapping(target = "model", source = "model"), // TODO,  should not be needed, must be made based on name only
@@ -52,10 +52,10 @@ public interface CarMapper {
     CarDto carToCarDto(Car car, String model);
 
 
-    @MapNullToDefault
+    @NullValueMapping
     List<CarDto> carsToCarDtos(List<Car> cars);
 
 
-    @MapNullToDefault
+    @NullValueMapping
     Map<Integer, CarDto> carsToCarDtoMap(Map<Integer, Car> cars);
 }

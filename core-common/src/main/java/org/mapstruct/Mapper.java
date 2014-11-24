@@ -109,5 +109,5 @@ public @interface Mapper {
      *
      * @return The strategy applied when determining whether to return null or an empty object, list or map.
      */
-    MapNullToDefaultStrategy mapNullToDefaultStrategy() default MapNullToDefaultStrategy.DEFAULT;
+    NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.DEFAULT;
 }

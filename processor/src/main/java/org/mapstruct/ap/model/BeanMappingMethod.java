@@ -40,7 +40,7 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.SourceReference;
 import org.mapstruct.ap.option.ReportingPolicy;
-import org.mapstruct.ap.prism.MapNullToDefaultPrism;
+import org.mapstruct.ap.prism.NullValueMappingPrism;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
@@ -100,7 +100,7 @@ public class BeanMappingMethod extends MappingMethod {
             reportErrorForUnmappedTargetPropertiesIfRequired();
 
             // mapNullToDefault
-            MapNullToDefaultPrism prism = MapNullToDefaultPrism.getInstanceOn( method.getExecutable() );
+            NullValueMappingPrism prism = NullValueMappingPrism.getInstanceOn( method.getExecutable() );
             boolean mapNullToDefault =
                     MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 

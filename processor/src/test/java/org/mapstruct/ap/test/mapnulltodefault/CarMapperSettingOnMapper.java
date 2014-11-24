@@ -23,15 +23,15 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.MapNullToDefault;
-import org.mapstruct.MapNullToDefaultStrategy;
+import org.mapstruct.NullValueMapping;
+import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ap.test.mapnulltodefault.source.Car;
 import org.mapstruct.ap.test.mapnulltodefault.target.CarDto;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(imports = UUID.class, mapNullToDefaultStrategy = MapNullToDefaultStrategy.MAP_NULL_TO_DEFAULT )
+@Mapper(imports = UUID.class, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT )
 public interface CarMapperSettingOnMapper {
 
     CarMapperSettingOnMapper INSTANCE = Mappers.getMapper( CarMapperSettingOnMapper.class );
@@ -44,10 +44,10 @@ public interface CarMapperSettingOnMapper {
     CarDto carToCarDto(Car car);
 
 
-    @MapNullToDefault(MapNullToDefaultStrategy.DEFAULT)
+    @NullValueMapping(NullValueMappingStrategy.RETURN_DEFAULT)
     List<CarDto> carsToCarDtos(List<Car> cars);
 
 
-    @MapNullToDefault(MapNullToDefaultStrategy.MAP_NULL_TO_NULL)
+    @NullValueMapping(NullValueMappingStrategy.RETURN_NULL)
     Map<Integer, CarDto> carsToCarDtoMap(Map<Integer, Car> cars);
 }

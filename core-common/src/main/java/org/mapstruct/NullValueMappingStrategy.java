@@ -23,12 +23,12 @@ package org.mapstruct;
  *
  * @author Sjaak Derksen
  */
-public enum MapNullToDefaultStrategy {
+public enum NullValueMappingStrategy {
 
     /**
      * A null source argument of a mapping method will be mapped to a null target result
      */
-    MAP_NULL_TO_NULL,
+    RETURN_NULL,
 
     /**
      * A null source argument of a mapping method will be mapped to a default target result
@@ -40,17 +40,16 @@ public enum MapNullToDefaultStrategy {
      * <li>For an map mapping this means a {@link java.util.Collections#emptyMap() } will be returned<\li>
      * </ol>
      */
-    MAP_NULL_TO_DEFAULT,
+    RETURN_DEFAULT,
 
     /**
-     * When given via {@link Mapper#mapNullToDefaultStrategy()}, causes the setting specified via
-     * {@link MapperConfig#mapNullToDefaultStrategy()} to be applied, if present.
+     * When given via {@link Mapper#nullValueMappingStrategy() ()}, causes the setting specified via
+     * {@link MapperConfig#nullValueMappingStrategy() ()} to be applied, if present.
      * <p>
-     * When given via {@link MapNullToDefault#mapNullToDefaultStrategy()}, causes the setting specified via
-     * {@link Mapper#mapNullToDefaultStrategy()} to be applied, if present.
+     * When given via {@link NullValueMapping#value() ()}, causes the setting specified via
+     * {@link Mapper#nullValueMappingStrategy() ()} to be applied, if present.
      * <p>
-     * Otherwise causes
-     * {@link #MAP_NULL_TO_NULL} to be applied.
+     * Otherwise causes {@link #RETURN_NULL} to be applied.
      */
     DEFAULT;
 }

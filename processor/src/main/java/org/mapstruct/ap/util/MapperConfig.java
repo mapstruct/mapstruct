@@ -29,8 +29,8 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.ap.prism.MapNullToDefaultStrategyPrism;
-import org.mapstruct.ap.prism.MapNullToDefaultPrism;
+import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.prism.NullValueMappingPrism;
 
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
@@ -119,37 +119,37 @@ public class MapperConfig {
         return CollectionMappingStrategyPrism.ACCESSOR_ONLY;
     }
 
-    public boolean isMapToDefault(MapNullToDefaultPrism mapNullToDefault) {
+    public boolean isMapToDefault(NullValueMappingPrism mapNullToDefault) {
 
         // check on method level
         if ( mapNullToDefault != null ) {
-            MapNullToDefaultStrategyPrism methodPolicy
-                    = MapNullToDefaultStrategyPrism.valueOf( mapNullToDefault.value() );
-            if ( methodPolicy != MapNullToDefaultStrategyPrism.DEFAULT ) {
-                return methodPolicy == MapNullToDefaultStrategyPrism.MAP_NULL_TO_DEFAULT;
+            NullValueMappingStrategyPrism methodPolicy
+                    = NullValueMappingStrategyPrism.valueOf( mapNullToDefault.value() );
+            if ( methodPolicy != NullValueMappingStrategyPrism.DEFAULT ) {
+                return methodPolicy == NullValueMappingStrategyPrism.RETURN_DEFAULT;
             }
         }
 
         // check on mapper level
-        MapNullToDefaultStrategyPrism mapperPolicy =
-                MapNullToDefaultStrategyPrism.valueOf( mapperPrism.mapNullToDefaultStrategy() );
+        NullValueMappingStrategyPrism mapperPolicy =
+                NullValueMappingStrategyPrism.valueOf( mapperPrism.nullValueMappingStrategy() );
 
-        if ( mapperPolicy != MapNullToDefaultStrategyPrism.DEFAULT ) {
+        if ( mapperPolicy != NullValueMappingStrategyPrism.DEFAULT ) {
             // it is not the default mapper configuration, so return the mapper configured value
-            return mapperPolicy == MapNullToDefaultStrategyPrism.MAP_NULL_TO_DEFAULT;
+            return mapperPolicy == NullValueMappingStrategyPrism.RETURN_DEFAULT;
         }
 
         // check on mapping config level
         else if ( mapperConfigPrism != null ) {
             // try the config mapper configuration
-            MapNullToDefaultStrategyPrism configPolicy =
-                    MapNullToDefaultStrategyPrism.valueOf( mapperConfigPrism.mapNullToDefaultStrategy() );
-            if ( configPolicy != MapNullToDefaultStrategyPrism.DEFAULT )  {
+            NullValueMappingStrategyPrism configPolicy =
+                    NullValueMappingStrategyPrism.valueOf( mapperConfigPrism.nullValueMappingStrategy() );
+            if ( configPolicy != NullValueMappingStrategyPrism.DEFAULT )  {
                 // its not the default configuration, so return the mapper config configured value
-                return configPolicy == MapNullToDefaultStrategyPrism.MAP_NULL_TO_DEFAULT;
+                return configPolicy == NullValueMappingStrategyPrism.RETURN_DEFAULT;
             }
         }
-        // when nothing specified, return MAP_NULL_TO_NULL (default option)
+        // when nothing specified, return RETURN_NULL (default option)
         return false;
     }
 

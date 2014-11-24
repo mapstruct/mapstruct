@@ -38,9 +38,9 @@ import java.lang.annotation.Target;
  *
  * @author Sjaak Derksen
  */
-@Target( { ElementType.METHOD, ElementType.TYPE } )
+@Target( { ElementType.METHOD } )
 @Retention( RetentionPolicy.SOURCE )
-public @interface MapNullToDefault {
+public @interface NullValueMapping {
 
-    MapNullToDefaultStrategy value() default MapNullToDefaultStrategy.MAP_NULL_TO_DEFAULT;
+    NullValueMappingStrategy value() default NullValueMappingStrategy.RETURN_DEFAULT;
 }

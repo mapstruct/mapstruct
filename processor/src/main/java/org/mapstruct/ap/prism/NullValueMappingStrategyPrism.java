@@ -23,9 +23,9 @@ package org.mapstruct.ap.prism;
  *
  * @author Sjaak Derksen
  */
-public enum MapNullToDefaultStrategyPrism {
+public enum NullValueMappingStrategyPrism {
 
-    MAP_NULL_TO_NULL,
-    MAP_NULL_TO_DEFAULT,
+    RETURN_NULL,
+    RETURN_DEFAULT,
     DEFAULT;
 }
