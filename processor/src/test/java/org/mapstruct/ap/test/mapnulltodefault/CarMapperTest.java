@@ -122,6 +122,7 @@ public class CarMapperTest {
     }
 
     @Test
+    @SuppressWarnings( { "rawtypes", "unchecked" } )
     public void shouldMapMapWithNullArg() {
 
         //given

@@ -105,9 +105,11 @@ public @interface Mapper {
     CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.DEFAULT;
 
     /**
-     * The strategy to be applied when for returning a target when the source equals null.
+     * The strategy to be applied when {@code null} is passed as source value to the methods of this mapper. If no
+     * strategy is configured, the strategy given via {@link MapperConfig#nullValueMappingStrategy()} will be applied,
+     * using {@link NullValueMappingStrategy#RETURN_NULL} by default.
      *
-     * @return The strategy applied when determining whether to return null or an empty object, list or map.
+     * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapper.
      */
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.DEFAULT;
 }

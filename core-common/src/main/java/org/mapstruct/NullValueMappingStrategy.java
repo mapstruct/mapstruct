@@ -19,34 +19,35 @@
 package org.mapstruct;
 
 /**
- * Strategy for propagating the value of collection-typed properties from source to target.
+ * Strategy for dealing with {@code null} values passed to mapping methods.
  *
  * @author Sjaak Derksen
  */
 public enum NullValueMappingStrategy {
 
     /**
-     * A null source argument of a mapping method will be mapped to a null target result
+     * If {@code null} is passed to a mapping method, {@code null} will be returned. That's the default behavior if no
+     * alternative strategy is configured globally, for given mapper or method.
      */
     RETURN_NULL,
 
     /**
-     * A null source argument of a mapping method will be mapped to a default target result
-     * <p>
-     * <ol>
-     * <li>For a bean mapping this means a target object will be returned. {@link Mapping#expression()} and
-     * {@link Mapping#constant()} will be added to the target<\li>
-     * <li>For an iterable mapping this means a {@link java.util.Collections#emptyList() } will be returned<\li>
-     * <li>For an map mapping this means a {@link java.util.Collections#emptyMap() } will be returned<\li>
-     * </ol>
+     * If {@code null} is passed to a mapping method, a default value will be returned. The value depends on the kind of
+     * the annotated method:
+     * <ul>
+     * <li>For bean mapping method the target type will be instantiated and returned. {@link Mapping#expression()} and
+     * {@link Mapping#constant()} will be added to the target</li>
+     * <li>For iterable mapping methods an immutable empty collection will be returned.</li>
+     * <li>For map mapping methods an immutable empty map will be returned.</li>
+     * </ul>
      */
     RETURN_DEFAULT,
 
     /**
-     * When given via {@link Mapper#nullValueMappingStrategy() ()}, causes the setting specified via
-     * {@link MapperConfig#nullValueMappingStrategy() ()} to be applied, if present.
+     * When given via {@link Mapper#nullValueMappingStrategy()}, causes the setting specified via
+     * {@link MapperConfig#nullValueMappingStrategy()} to be applied, if present.
      * <p>
-     * When given via {@link NullValueMapping#value() ()}, causes the setting specified via
+     * When given via {@link NullValueMapping#value()}, causes the setting specified via
      * {@link Mapper#nullValueMappingStrategy() ()} to be applied, if present.
      * <p>
      * Otherwise causes {@link #RETURN_NULL} to be applied.

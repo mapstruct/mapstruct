@@ -18,14 +18,16 @@
  */
 package org.mapstruct.ap.test.mapnulltodefault;
 
+import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.NullValueMapping;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.NullValueMapping;
 import org.mapstruct.ap.test.mapnulltodefault.source.Car;
 import org.mapstruct.ap.test.mapnulltodefault.target.CarDto;
 import org.mapstruct.factory.Mappers;
@@ -35,7 +37,7 @@ public interface CarMapper {
 
     CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
-    @NullValueMapping
+    @NullValueMapping(RETURN_DEFAULT)
     @Mappings({
         @Mapping(target = "seatCount", source = "numberOfSeats"),
         @Mapping(target = "model", constant = "ModelT"),
@@ -43,7 +45,7 @@ public interface CarMapper {
     })
     CarDto carToCarDto(Car car);
 
-    @NullValueMapping
+    @NullValueMapping(RETURN_DEFAULT)
     @Mappings({
         @Mapping(target = "seatCount", source = "car.numberOfSeats"),
         @Mapping(target = "model", source = "model"), // TODO,  should not be needed, must be made based on name only
@@ -52,10 +54,9 @@ public interface CarMapper {
     CarDto carToCarDto(Car car, String model);
 
 
-    @NullValueMapping
+    @NullValueMapping(RETURN_DEFAULT)
     List<CarDto> carsToCarDtos(List<Car> cars);
 
-
-    @NullValueMapping
+    @NullValueMapping(RETURN_DEFAULT)
     Map<Integer, CarDto> carsToCarDtoMap(Map<Integer, Car> cars);
 }

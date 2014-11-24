@@ -24,17 +24,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Determines what kind to return in case of a null source argument.
+ * Specifies how the annotated method should deal with {@code null} values.
  * <p>
- * For:
- * <ol>
- * <li>Bean Mapping: an 'empty' target bean, except for expressions and constants</li>
- * <li>Iterable Mapping: an 'empty' list</li>
- * <li>Map Mapping: an 'empty' map</li>
- * </ol>
- *
- * The user has a choice to use this annotation. When its used, it is used to either override a more global
- * setting, or in the most common case, to set the specific behavior to map null to default
+ * If no strategy is configured explicitly for a given method, the configuration from the enclosing mapper will be
+ * applied, using {@link NullValueMappingStrategy#RETURN_NULL} by default.
  *
  * @author Sjaak Derksen
  */
@@ -42,5 +35,10 @@ import java.lang.annotation.Target;
 @Retention( RetentionPolicy.SOURCE )
 public @interface NullValueMapping {
 
-    NullValueMappingStrategy value() default NullValueMappingStrategy.RETURN_DEFAULT;
+    /**
+     * The strategy for mapping null values.
+     *
+     * @return The strategy for mapping null values
+     */
+    NullValueMappingStrategy value();
 }
