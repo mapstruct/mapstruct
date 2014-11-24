@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.mapnulltodefault;
+package org.mapstruct.ap.test.nullvaluemapping;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.mapnulltodefault.source.Car;
-import org.mapstruct.ap.test.mapnulltodefault.target.CarDto;
+import org.mapstruct.ap.test.nullvaluemapping.source.Car;
+import org.mapstruct.ap.test.nullvaluemapping.target.CarDto;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 

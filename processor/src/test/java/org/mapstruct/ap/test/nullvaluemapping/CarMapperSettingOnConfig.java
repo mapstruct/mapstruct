@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.mapnulltodefault;
+package org.mapstruct.ap.test.nullvaluemapping;
 
 import java.util.List;
 import java.util.Map;
@@ -27,8 +27,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.NullValueMapping;
 import org.mapstruct.NullValueMappingStrategy;
-import org.mapstruct.ap.test.mapnulltodefault.source.Car;
-import org.mapstruct.ap.test.mapnulltodefault.target.CarDto;
+import org.mapstruct.ap.test.nullvaluemapping.source.Car;
+import org.mapstruct.ap.test.nullvaluemapping.target.CarDto;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(imports = UUID.class, config = CentralConfig.class)

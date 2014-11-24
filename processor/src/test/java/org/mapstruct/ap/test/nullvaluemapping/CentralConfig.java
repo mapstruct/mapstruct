@@ -16,38 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.mapnulltodefault.source;
+package org.mapstruct.ap.test.nullvaluemapping;
 
+import org.mapstruct.MapperConfig;
+import org.mapstruct.NullValueMappingStrategy;
 
-public class Car {
-
-    private String make;
-    private int numberOfSeats;
-
-
-    public Car() {
-    }
-
-    public Car(String make, int numberOfSeats) {
-        this.make = make;
-        this.numberOfSeats = numberOfSeats;
-
-    }
-
-    public String getMake() {
-        return make;
-    }
-
-    public void setMake(String make) {
-        this.make = make;
-    }
-
-    public int getNumberOfSeats() {
-        return numberOfSeats;
-    }
-
-    public void setNumberOfSeats(int numberOfSeats) {
-        this.numberOfSeats = numberOfSeats;
-    }
+/**
+ * @author Sjaak Derksen
+ */
+@MapperConfig(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+public class CentralConfig {
 
 }

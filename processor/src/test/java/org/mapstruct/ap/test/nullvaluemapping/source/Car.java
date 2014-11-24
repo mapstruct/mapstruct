@@ -16,22 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.mapnulltodefault.target;
+package org.mapstruct.ap.test.nullvaluemapping.source;
 
-public class CarDto {
+
+public class Car {
 
     private String make;
-    private int seatCount;
-    private String model;
-    private String catalogId;
+    private int numberOfSeats;
 
 
-    public CarDto() {
+    public Car() {
     }
 
-    public CarDto(String make, int seatCount) {
+    public Car(String make, int numberOfSeats) {
         this.make = make;
-        this.seatCount = seatCount;
+        this.numberOfSeats = numberOfSeats;
+
     }
 
     public String getMake() {
@@ -42,28 +42,12 @@ public class CarDto {
         this.make = make;
     }
 
-    public int getSeatCount() {
-        return seatCount;
+    public int getNumberOfSeats() {
+        return numberOfSeats;
     }
 
-    public void setSeatCount(int seatCount) {
-        this.seatCount = seatCount;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public String getCatalogId() {
-        return catalogId;
-    }
-
-    public void setCatalogId(String catalogId) {
-        this.catalogId = catalogId;
+    public void setNumberOfSeats(int numberOfSeats) {
+        this.numberOfSeats = numberOfSeats;
     }
 
 }
