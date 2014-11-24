@@ -27,7 +27,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.NullValueMapping;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
+import org.mapstruct.ap.test.nullvaluemapping.source.Driver;
 import org.mapstruct.ap.test.nullvaluemapping.target.CarDto;
+import org.mapstruct.ap.test.nullvaluemapping.target.DriverAndCarDto;
 import org.mapstruct.factory.Mappers;
 
 import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
@@ -59,4 +61,9 @@ public interface CarMapper {
 
     @NullValueMapping(RETURN_DEFAULT)
     Map<Integer, CarDto> carsToCarDtoMap(Map<Integer, Car> cars);
+
+    @NullValueMapping(RETURN_DEFAULT)
+    DriverAndCarDto driverAndCarToDto(Driver driver, Car car);
+
+    DriverAndCarDto driverAndCarToDtoReturningNull(Driver driver, Car car);
 }

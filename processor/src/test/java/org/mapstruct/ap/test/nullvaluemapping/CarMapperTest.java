@@ -26,7 +26,9 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
+import org.mapstruct.ap.test.nullvaluemapping.source.Driver;
 import org.mapstruct.ap.test.nullvaluemapping.target.CarDto;
+import org.mapstruct.ap.test.nullvaluemapping.target.DriverAndCarDto;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
@@ -34,7 +36,9 @@ import static org.fest.assertions.Assertions.assertThat;
 
 @WithClasses({
     Car.class,
+    Driver.class,
     CarDto.class,
+    DriverAndCarDto.class,
     CarMapper.class,
     CarMapperSettingOnMapper.class,
     CentralConfig.class,
@@ -118,7 +122,6 @@ public class CarMapperTest {
         //then
         assertThat( carDtos2 ).isNotNull();
         assertThat( carDtos2.isEmpty() ).isTrue();
-
     }
 
     @Test
@@ -143,7 +146,6 @@ public class CarMapperTest {
         //then
         assertThat( carDtoMap2 ).isNotNull();
         assertThat( carDtoMap2.isEmpty() ).isTrue();
-
     }
 
     @Test
@@ -169,7 +171,6 @@ public class CarMapperTest {
         //then
         assertThat( carDtos ).isNotNull();
         assertThat( carDtos.isEmpty() ).isTrue();
-
     }
 
     @Test
@@ -180,7 +181,6 @@ public class CarMapperTest {
 
         //then
         assertThat( carDtoMap ).isNull();
-
     }
 
     @Test
@@ -197,7 +197,6 @@ public class CarMapperTest {
         assertThat( carDto.getCatalogId() ).isNotEmpty();
     }
 
-
     @Test
     public void shouldMapIterableWithNullArgOnConfig() {
 
@@ -207,7 +206,6 @@ public class CarMapperTest {
         //then
         assertThat( carDtos ).isNotNull();
         assertThat( carDtos.isEmpty() ).isTrue();
-
     }
 
     @Test
@@ -218,6 +216,22 @@ public class CarMapperTest {
 
         //then
         assertThat( carDtoMap ).isNull();
+    }
 
+    @Test
+    public void shouldApplyConfiguredStrategyForMethodWithSeveralSourceParams() {
+        //when
+        DriverAndCarDto result = CarMapper.INSTANCE.driverAndCarToDto( null, null );
+
+        //then
+        assertThat( result ).isNotNull();
+        assertThat( result.getMake() ).isNull();
+        assertThat( result.getName() ).isNull();
+
+        //when
+        result = CarMapper.INSTANCE.driverAndCarToDtoReturningNull( null, null );
+
+        //then
+        assertThat( result ).isNull();
     }
 }
