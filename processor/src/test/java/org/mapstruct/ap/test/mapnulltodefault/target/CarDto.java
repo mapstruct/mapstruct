@@ -54,7 +54,7 @@ public class CarDto {
         return model;
     }
 
-    public void setModel( String model ) {
+    public void setModel(String model) {
         this.model = model;
     }
 
@@ -62,7 +62,7 @@ public class CarDto {
         return catalogId;
     }
 
-    public void setCatalogId( String catalogId ) {
+    public void setCatalogId(String catalogId) {
         this.catalogId = catalogId;
     }
 

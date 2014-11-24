@@ -21,7 +21,6 @@ package org.mapstruct.ap.model;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
@@ -140,10 +139,10 @@ public class MapMappingMethod extends MappingMethod {
                 ctx.getMessager().printMessage( Diagnostic.Kind.ERROR, message, method.getExecutable() );
             }
 
-           // mapNullToDefault
+            // mapNullToDefault
             NullValueMappingPrism prism = NullValueMappingPrism.getInstanceOn( method.getExecutable() );
             boolean mapNullToDefault =
-                    MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
+                MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 
             MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
 
@@ -151,18 +150,18 @@ public class MapMappingMethod extends MappingMethod {
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes() );
 
             return new MapMappingMethod(
-                    method,
-                    keyAssignment,
-                    valueAssignment,
-                    factoryMethod,
-                    mapNullToDefault,
-                    ctx.getTypeFactory()
+                method,
+                keyAssignment,
+                valueAssignment,
+                factoryMethod,
+                mapNullToDefault,
+                ctx.getTypeFactory()
             );
         }
     }
 
     private MapMappingMethod(Method method, Assignment keyAssignment, Assignment valueAssignment,
-                             MethodReference factoryMethod,  boolean mapNullToDefault, TypeFactory typeFactory) {
+                             MethodReference factoryMethod, boolean mapNullToDefault, TypeFactory typeFactory) {
         super( method );
 
         this.keyAssignment = keyAssignment;
@@ -202,7 +201,7 @@ public class MapMappingMethod extends MappingMethod {
             types.addAll( valueAssignment.getImportTypes() );
         }
 
-        if (mapNullToDefault) {
+        if ( mapNullToDefault ) {
             types.add( typeFactory.getType( Collections.class ) );
         }
 

@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.mapnulltodefault;
 
-import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,6 +29,8 @@ import org.mapstruct.NullValueMapping;
 import org.mapstruct.ap.test.mapnulltodefault.source.Car;
 import org.mapstruct.ap.test.mapnulltodefault.target.CarDto;
 import org.mapstruct.factory.Mappers;
+
+import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
 
 @Mapper(imports = UUID.class)
 public interface CarMapper {

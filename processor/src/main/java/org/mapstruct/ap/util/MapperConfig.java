@@ -22,20 +22,18 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.prism.NullValueMappingPrism;
-
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.MapperConfigPrism;
 import org.mapstruct.ap.prism.MapperPrism;
+import org.mapstruct.ap.prism.NullValueMappingPrism;
+import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 
 import static org.mapstruct.ap.prism.CollectionMappingStrategyPrism.valueOf;
 
@@ -124,7 +122,7 @@ public class MapperConfig {
         // check on method level
         if ( mapNullToDefault != null ) {
             NullValueMappingStrategyPrism methodPolicy
-                    = NullValueMappingStrategyPrism.valueOf( mapNullToDefault.value() );
+                = NullValueMappingStrategyPrism.valueOf( mapNullToDefault.value() );
             if ( methodPolicy != NullValueMappingStrategyPrism.DEFAULT ) {
                 return methodPolicy == NullValueMappingStrategyPrism.RETURN_DEFAULT;
             }
@@ -132,7 +130,7 @@ public class MapperConfig {
 
         // check on mapper level
         NullValueMappingStrategyPrism mapperPolicy =
-                NullValueMappingStrategyPrism.valueOf( mapperPrism.nullValueMappingStrategy() );
+            NullValueMappingStrategyPrism.valueOf( mapperPrism.nullValueMappingStrategy() );
 
         if ( mapperPolicy != NullValueMappingStrategyPrism.DEFAULT ) {
             // it is not the default mapper configuration, so return the mapper configured value
@@ -143,8 +141,8 @@ public class MapperConfig {
         else if ( mapperConfigPrism != null ) {
             // try the config mapper configuration
             NullValueMappingStrategyPrism configPolicy =
-                    NullValueMappingStrategyPrism.valueOf( mapperConfigPrism.nullValueMappingStrategy() );
-            if ( configPolicy != NullValueMappingStrategyPrism.DEFAULT )  {
+                NullValueMappingStrategyPrism.valueOf( mapperConfigPrism.nullValueMappingStrategy() );
+            if ( configPolicy != NullValueMappingStrategyPrism.DEFAULT ) {
                 // its not the default configuration, so return the mapper config configured value
                 return configPolicy == NullValueMappingStrategyPrism.RETURN_DEFAULT;
             }

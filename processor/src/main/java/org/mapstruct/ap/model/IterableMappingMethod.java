@@ -21,7 +21,6 @@ package org.mapstruct.ap.model;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
@@ -111,22 +110,22 @@ public class IterableMappingMethod extends MappingMethod {
             // mapNullToDefault
             NullValueMappingPrism prism = NullValueMappingPrism.getInstanceOn( method.getExecutable() );
             boolean mapNullToDefault
-                    = MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
+                = MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 
             MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
             return new IterableMappingMethod(
-                    method,
-                    assignment,
-                    factoryMethod,
-                    mapNullToDefault,
-                    ctx.getTypeFactory()
+                method,
+                assignment,
+                factoryMethod,
+                mapNullToDefault,
+                ctx.getTypeFactory()
             );
         }
     }
 
 
     private IterableMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
-            boolean mapNullToDefault, TypeFactory typeFactory ) {
+                                  boolean mapNullToDefault, TypeFactory typeFactory) {
         super( method );
         this.elementAssignment = parameterAssignment;
         this.factoryMethod = factoryMethod;
@@ -157,7 +156,7 @@ public class IterableMappingMethod extends MappingMethod {
             types.addAll( elementAssignment.getImportTypes() );
         }
 
-        if (mapNullToDefault) {
+        if ( mapNullToDefault ) {
             types.add( typeFactory.getType( Collections.class ) );
         }
 

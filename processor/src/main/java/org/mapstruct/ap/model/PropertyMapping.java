@@ -162,7 +162,7 @@ public class PropertyMapping extends ModelElement {
                     Diagnostic.Kind.ERROR,
                     String.format(
                         "Can't map %s to \"%s %s\". "
-                                + "Consider to declare/implement a mapping method: \"%s map(%s value)\".",
+                            + "Consider to declare/implement a mapping method: \"%s map(%s value)\".",
                         sourceElement,
                         targetType,
                         targetPropertyName,
@@ -182,17 +182,17 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment assignObject(Type sourceType, Type targetType, TargetAccessorType targetAccessorType,
-                Assignment rhs ) {
+                                        Assignment rhs) {
 
             Assignment result = rhs;
 
             if ( targetAccessorType == TargetAccessorType.SETTER ) {
                 result = new SetterWrapper( result, method.getThrownTypes() );
                 if ( !sourceType.isPrimitive()
-                        && ( result.getType() == TYPE_CONVERTED
-                        || result.getType() == TYPE_CONVERTED_MAPPED
-                        || result.getType() == DIRECT && targetType.isPrimitive() ) ) {
-                            // for primitive types null check is not possible at all, but a conversion needs
+                    && ( result.getType() == TYPE_CONVERTED
+                    || result.getType() == TYPE_CONVERTED_MAPPED
+                    || result.getType() == DIRECT && targetType.isPrimitive() ) ) {
+                    // for primitive types null check is not possible at all, but a conversion needs
                     // a null check.
                     result = new NullCheckWrapper( result );
                 }
@@ -201,10 +201,10 @@ public class PropertyMapping extends ModelElement {
                 // TargetAccessorType must be ADDER
                 if ( getSourceType().isCollectionType() ) {
                     result = new AdderWrapper(
-                            result,
-                            method.getThrownTypes(),
-                            getSourceRef(),
-                            sourceType
+                        result,
+                        method.getThrownTypes(),
+                        getSourceRef(),
+                        sourceType
                     );
                 }
                 else {
@@ -217,7 +217,7 @@ public class PropertyMapping extends ModelElement {
 
         }
 
-        private Assignment assignCollection( Type targetType, TargetAccessorType targetAccessorType, Assignment rhs ) {
+        private Assignment assignCollection(Type targetType, TargetAccessorType targetAccessorType, Assignment rhs) {
 
             Assignment result = rhs;
 
@@ -237,9 +237,9 @@ public class PropertyMapping extends ModelElement {
 
                 // target accessor is setter, so wrap the setter in setter map/ collection handling
                 result = new SetterCollectionOrMapWrapper(
-                        result,
-                        targetAccessor.getSimpleName().toString(),
-                        newCollectionOrMap
+                    result,
+                    targetAccessor.getSimpleName().toString(),
+                    newCollectionOrMap
                 );
             }
             else {

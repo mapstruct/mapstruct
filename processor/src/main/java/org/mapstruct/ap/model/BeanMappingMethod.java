@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.tools.Diagnostic;
 
@@ -40,8 +39,8 @@ import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.SourceReference;
 import org.mapstruct.ap.option.ReportingPolicy;
-import org.mapstruct.ap.prism.NullValueMappingPrism;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.prism.NullValueMappingPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
@@ -102,7 +101,7 @@ public class BeanMappingMethod extends MappingMethod {
             // mapNullToDefault
             NullValueMappingPrism prism = NullValueMappingPrism.getInstanceOn( method.getExecutable() );
             boolean mapNullToDefault =
-                    MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
+                MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 
             MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
             return new BeanMappingMethod( method, propertyMappings, factoryMethod, mapNullToDefault );
@@ -182,13 +181,14 @@ public class BeanMappingMethod extends MappingMethod {
                     ExecutableElement targetProperty = unprocessedTargetProperties.get( mapping.getTargetName() );
                     if ( targetProperty == null ) {
                         ctx.getMessager().printMessage(
-                                Diagnostic.Kind.ERROR,
-                                String.format( "Unknown property \"%s\" in return type.",
-                                        mapping.getTargetName()
-                                ),
-                                method.getExecutable(),
-                                mapping.getMirror(),
-                                mapping.getSourceAnnotationValue()
+                            Diagnostic.Kind.ERROR,
+                            String.format(
+                                "Unknown property \"%s\" in return type.",
+                                mapping.getTargetName()
+                            ),
+                            method.getExecutable(),
+                            mapping.getMirror(),
+                            mapping.getSourceAnnotationValue()
                         );
                         errorOccurred = true;
                     }
@@ -212,14 +212,14 @@ public class BeanMappingMethod extends MappingMethod {
                                 // targetProperty == null can occur: we arrived here because we want as many errors
                                 // as possible before we stop analysing
                                 propertyMapping = new PropertyMappingBuilder()
-                                        .mappingContext( ctx )
-                                        .souceMethod( method )
-                                        .targetAccessor( targetProperty )
-                                        .targetPropertyName( mapping.getTargetName() )
-                                        .sourceReference( sourceRef )
-                                        .qualifiers( mapping.getQualifiers() )
-                                        .dateFormat( mapping.getDateFormat() )
-                                        .build();
+                                    .mappingContext( ctx )
+                                    .souceMethod( method )
+                                    .targetAccessor( targetProperty )
+                                    .targetPropertyName( mapping.getTargetName() )
+                                    .sourceReference( sourceRef )
+                                    .qualifiers( mapping.getQualifiers() )
+                                    .dateFormat( mapping.getDateFormat() )
+                                    .build();
                                 handledTargets.add( mapping.getTargetName() );
                                 unprocessedSourceParameters.remove( sourceRef.getParameter() );
                             }
@@ -233,13 +233,13 @@ public class BeanMappingMethod extends MappingMethod {
                     else if ( mapping.getConstant() != null && targetProperty != null ) {
 
                         propertyMapping = new ConstantMappingBuilder()
-                                .mappingContext( ctx )
-                                .sourceMethod( method )
-                                .constantExpression( "\"" + mapping.getConstant() + "\"" )
-                                .targetAccessor( targetProperty )
-                                .dateFormat( mapping.getDateFormat() )
-                                .qualifiers( mapping.getQualifiers() )
-                                .build();
+                            .mappingContext( ctx )
+                            .sourceMethod( method )
+                            .constantExpression( "\"" + mapping.getConstant() + "\"" )
+                            .targetAccessor( targetProperty )
+                            .dateFormat( mapping.getDateFormat() )
+                            .qualifiers( mapping.getQualifiers() )
+                            .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
 
@@ -247,11 +247,11 @@ public class BeanMappingMethod extends MappingMethod {
                     else if ( mapping.getJavaExpression() != null && targetProperty != null ) {
 
                         propertyMapping = new JavaExpressionMappingBuilder()
-                                .mappingContext( ctx )
-                                .souceMethod( method )
-                                .javaExpression( mapping.getJavaExpression() )
-                                .targetAccessor( targetProperty )
-                                .build();
+                            .mappingContext( ctx )
+                            .souceMethod( method )
+                            .javaExpression( mapping.getJavaExpression() )
+                            .targetAccessor( targetProperty )
+                            .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
 
@@ -280,7 +280,7 @@ public class BeanMappingMethod extends MappingMethod {
          */
         private void applyPropertyNameBasedMapping() {
             Iterator<Entry<String, ExecutableElement>> targetProperties =
-                            unprocessedTargetProperties.entrySet().iterator();
+                unprocessedTargetProperties.entrySet().iterator();
 
             // usually there should be only one getter; only for Boolean there may be two: isFoo() and getFoo()
             List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( 2 );
@@ -312,21 +312,21 @@ public class BeanMappingMethod extends MappingMethod {
                             Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
 
                             SourceReference sourceRef = new SourceReference.BuilderFromProperty()
-                                    .sourceParameter( sourceParameter )
-                                    .type( ctx.getTypeFactory().getReturnType( sourceAccessor ) )
-                                    .accessor( sourceAccessor )
-                                    .name( targetProperty.getKey() )
-                                    .build();
+                                .sourceParameter( sourceParameter )
+                                .type( ctx.getTypeFactory().getReturnType( sourceAccessor ) )
+                                .accessor( sourceAccessor )
+                                .name( targetProperty.getKey() )
+                                .build();
 
                             newPropertyMapping = new PropertyMappingBuilder()
-                                    .mappingContext( ctx )
-                                    .souceMethod( method )
-                                    .targetAccessor( targetProperty.getValue() )
-                                    .targetPropertyName( targetProperty.getKey() )
-                                    .sourceReference( sourceRef )
-                                    .qualifiers( mapping != null ? mapping.getQualifiers() : null )
-                                    .dateFormat( mapping != null ? mapping.getDateFormat() : null )
-                                    .build();
+                                .mappingContext( ctx )
+                                .souceMethod( method )
+                                .targetAccessor( targetProperty.getValue() )
+                                .targetPropertyName( targetProperty.getKey() )
+                                .sourceReference( sourceRef )
+                                .qualifiers( mapping != null ? mapping.getQualifiers() : null )
+                                .dateFormat( mapping != null ? mapping.getDateFormat() : null )
+                                .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
 
@@ -337,11 +337,11 @@ public class BeanMappingMethod extends MappingMethod {
                         if ( propertyMapping != null && newPropertyMapping != null ) {
                             // TODO improve error message
                             ctx.getMessager().printMessage(
-                                    Diagnostic.Kind.ERROR,
-                                    "Several possible source properties for target property \""
+                                Diagnostic.Kind.ERROR,
+                                "Several possible source properties for target property \""
                                     + targetProperty.getKey()
                                     + "\".",
-                                    method.getExecutable()
+                                method.getExecutable()
                             );
                             break;
                         }
@@ -361,7 +361,7 @@ public class BeanMappingMethod extends MappingMethod {
         private void applyParameterNameBasedMapping() {
 
             Iterator<Entry<String, ExecutableElement>> targetProperties =
-                    unprocessedTargetProperties.entrySet().iterator();
+                unprocessedTargetProperties.entrySet().iterator();
 
             while ( targetProperties.hasNext() ) {
 
@@ -376,19 +376,19 @@ public class BeanMappingMethod extends MappingMethod {
                         Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
 
                         SourceReference sourceRef = new SourceReference.BuilderFromProperty()
-                                .sourceParameter( sourceParameter )
-                                .name( targetProperty.getKey() )
-                                .build();
+                            .sourceParameter( sourceParameter )
+                            .name( targetProperty.getKey() )
+                            .build();
 
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
-                                .mappingContext( ctx )
-                                .souceMethod( method )
-                                .targetAccessor( targetProperty.getValue() )
-                                .targetPropertyName( targetProperty.getKey() )
-                                .sourceReference( sourceRef )
-                                .qualifiers( mapping != null ? mapping.getQualifiers() : null )
-                                .dateFormat( mapping != null ? mapping.getDateFormat() : null )
-                                .build();
+                            .mappingContext( ctx )
+                            .souceMethod( method )
+                            .targetAccessor( targetProperty.getValue() )
+                            .targetPropertyName( targetProperty.getKey() )
+                            .sourceReference( sourceRef )
+                            .qualifiers( mapping != null ? mapping.getQualifiers() : null )
+                            .dateFormat( mapping != null ? mapping.getDateFormat() : null )
+                            .build();
 
                         propertyMappings.add( propertyMapping );
                         targetProperties.remove();
@@ -426,7 +426,7 @@ public class BeanMappingMethod extends MappingMethod {
             }
         }
 
-       /**
+        /**
          * Returns the effective policy for reporting unmapped getReturnType properties. If explicitly set via
          * {@code Mapper}, this value will be returned. Otherwise the value from the corresponding processor option will
          * be returned. If that is not set either, the default value from {@code Mapper#unmappedTargetPolicy()} will be
@@ -456,8 +456,7 @@ public class BeanMappingMethod extends MappingMethod {
         }
 
 
-
-        private void reportErrorForUnmappedTargetPropertiesIfRequired( ) {
+        private void reportErrorForUnmappedTargetPropertiesIfRequired() {
 
             // fetch settings from element to implement
             ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy();
@@ -465,13 +464,13 @@ public class BeanMappingMethod extends MappingMethod {
             if ( !unprocessedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
 
                 ctx.getMessager().printMessage(
-                        unmappedTargetPolicy.getDiagnosticKind(),
-                        MessageFormat.format(
-                                "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
-                                unprocessedTargetProperties.size(),
-                                Strings.join( unprocessedTargetProperties.keySet(), ", " )
-                        ),
-                        method.getExecutable()
+                    unmappedTargetPolicy.getDiagnosticKind(),
+                    MessageFormat.format(
+                        "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
+                        unprocessedTargetProperties.size(),
+                        Strings.join( unprocessedTargetProperties.keySet(), ", " )
+                    ),
+                    method.getExecutable()
                 );
             }
         }
@@ -480,7 +479,7 @@ public class BeanMappingMethod extends MappingMethod {
     private BeanMappingMethod(SourceMethod method,
                               List<PropertyMapping> propertyMappings,
                               MethodReference factoryMethod,
-                              boolean mapNullToDefault ) {
+                              boolean mapNullToDefault) {
         super( method );
         this.propertyMappings = propertyMappings;
 
@@ -532,7 +531,7 @@ public class BeanMappingMethod extends MappingMethod {
     public List<Parameter> getSourceParametersExcludingPrimitives() {
         List<Parameter> sourceParameters = new ArrayList<Parameter>();
         for ( Parameter sourceParam : getSourceParameters() ) {
-            if (!sourceParam.getType().isPrimitive()) {
+            if ( !sourceParam.getType().isPrimitive() ) {
                 sourceParameters.add( sourceParam );
             }
         }
@@ -543,7 +542,7 @@ public class BeanMappingMethod extends MappingMethod {
     public List<Parameter> getSourcePrimitiveParameters() {
         List<Parameter> sourceParameters = new ArrayList<Parameter>();
         for ( Parameter sourceParam : getSourceParameters() ) {
-            if (sourceParam.getType().isPrimitive()) {
+            if ( sourceParam.getType().isPrimitive() ) {
                 sourceParameters.add( sourceParam );
             }
         }

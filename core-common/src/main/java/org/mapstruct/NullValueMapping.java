@@ -31,8 +31,8 @@ import java.lang.annotation.Target;
  *
  * @author Sjaak Derksen
  */
-@Target( { ElementType.METHOD } )
-@Retention( RetentionPolicy.SOURCE )
+@Target({ ElementType.METHOD })
+@Retention(RetentionPolicy.SOURCE)
 public @interface NullValueMapping {
 
     /**

@@ -18,14 +18,13 @@
  */
 package org.mapstruct.ap.test.mapnulltodefault;
 
-import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.MapperConfig;
+import org.mapstruct.NullValueMappingStrategy;
 
 /**
- *
  * @author Sjaak Derksen
  */
-@MapperConfig( nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT )
+@MapperConfig(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
 public class CentralConfig {
 
 }

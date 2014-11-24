@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static org.fest.assertions.Assertions.assertThat;
-
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +29,8 @@ import org.mapstruct.ap.test.mapnulltodefault.source.Car;
 import org.mapstruct.ap.test.mapnulltodefault.target.CarDto;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 @WithClasses({
     Car.class,
@@ -108,41 +108,41 @@ public class CarMapperTest {
         //when
         List<CarDto> carDtos1 = CarMapper.INSTANCE.carsToCarDtos( Arrays.asList( car ) );
 
-       //then
-       assertThat( carDtos1 ).isNotNull();
-       assertThat( carDtos1.size() ).isEqualTo( 1 );
+        //then
+        assertThat( carDtos1 ).isNotNull();
+        assertThat( carDtos1.size() ).isEqualTo( 1 );
 
-       //when
-       List<CarDto> carDtos2 = CarMapper.INSTANCE.carsToCarDtos( null );
+        //when
+        List<CarDto> carDtos2 = CarMapper.INSTANCE.carsToCarDtos( null );
 
-       //then
-       assertThat( carDtos2 ).isNotNull();
-       assertThat( carDtos2.isEmpty() ).isTrue();
+        //then
+        assertThat( carDtos2 ).isNotNull();
+        assertThat( carDtos2.isEmpty() ).isTrue();
 
     }
 
     @Test
-    @SuppressWarnings( { "rawtypes", "unchecked" } )
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void shouldMapMapWithNullArg() {
 
         //given
         Car car = new Car( "Morris", 2 );
         Map carMap = new HashMap();
-        carMap.put( 1, car);
+        carMap.put( 1, car );
 
         //when
         Map<Integer, CarDto> carDtoMap1 = CarMapper.INSTANCE.carsToCarDtoMap( carMap );
 
-       //then
-       assertThat( carDtoMap1 ).isNotNull();
-       assertThat( carDtoMap1.size() ).isEqualTo( 1 );
+        //then
+        assertThat( carDtoMap1 ).isNotNull();
+        assertThat( carDtoMap1.size() ).isEqualTo( 1 );
 
-       //when
-       Map<Integer, CarDto> carDtoMap2 = CarMapper.INSTANCE.carsToCarDtoMap( null );
+        //when
+        Map<Integer, CarDto> carDtoMap2 = CarMapper.INSTANCE.carsToCarDtoMap( null );
 
-       //then
-       assertThat( carDtoMap2 ).isNotNull();
-       assertThat( carDtoMap2.isEmpty() ).isTrue();
+        //then
+        assertThat( carDtoMap2 ).isNotNull();
+        assertThat( carDtoMap2.isEmpty() ).isTrue();
 
     }
 
@@ -163,23 +163,23 @@ public class CarMapperTest {
     @Test
     public void shouldMapIterableWithNullArgOnMapper() {
 
-       //when
-       List<CarDto> carDtos = CarMapperSettingOnMapper.INSTANCE.carsToCarDtos( null );
+        //when
+        List<CarDto> carDtos = CarMapperSettingOnMapper.INSTANCE.carsToCarDtos( null );
 
-       //then
-       assertThat( carDtos ).isNotNull();
-       assertThat( carDtos.isEmpty() ).isTrue();
+        //then
+        assertThat( carDtos ).isNotNull();
+        assertThat( carDtos.isEmpty() ).isTrue();
 
     }
 
     @Test
     public void shouldMapMapWithNullArgOnMapper() {
 
-       //when
-       Map<Integer, CarDto> carDtoMap = CarMapperSettingOnMapper.INSTANCE.carsToCarDtoMap( null );
+        //when
+        Map<Integer, CarDto> carDtoMap = CarMapperSettingOnMapper.INSTANCE.carsToCarDtoMap( null );
 
-       //then
-       assertThat( carDtoMap ).isNull();
+        //then
+        assertThat( carDtoMap ).isNull();
 
     }
 
@@ -201,23 +201,23 @@ public class CarMapperTest {
     @Test
     public void shouldMapIterableWithNullArgOnConfig() {
 
-       //when
-       List<CarDto> carDtos = CarMapperSettingOnConfig.INSTANCE.carsToCarDtos( null );
+        //when
+        List<CarDto> carDtos = CarMapperSettingOnConfig.INSTANCE.carsToCarDtos( null );
 
-       //then
-       assertThat( carDtos ).isNotNull();
-       assertThat( carDtos.isEmpty() ).isTrue();
+        //then
+        assertThat( carDtos ).isNotNull();
+        assertThat( carDtos.isEmpty() ).isTrue();
 
     }
 
     @Test
     public void shouldMapMapWithNullArgOnConfig() {
 
-       //when
-       Map<Integer, CarDto> carDtoMap = CarMapperSettingOnConfig.INSTANCE.carsToCarDtoMap( null );
+        //when
+        Map<Integer, CarDto> carDtoMap = CarMapperSettingOnConfig.INSTANCE.carsToCarDtoMap( null );
 
-       //then
-       assertThat( carDtoMap ).isNull();
+        //then
+        assertThat( carDtoMap ).isNull();
 
     }
 }

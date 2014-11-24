@@ -23,15 +23,15 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.NullValueMapping;
-import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.NullValueMapping;
+import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.ap.test.mapnulltodefault.source.Car;
 import org.mapstruct.ap.test.mapnulltodefault.target.CarDto;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(imports = UUID.class, config = CentralConfig.class )
+@Mapper(imports = UUID.class, config = CentralConfig.class)
 public interface CarMapperSettingOnConfig {
 
     CarMapperSettingOnConfig INSTANCE = Mappers.getMapper( CarMapperSettingOnConfig.class );
