@@ -72,12 +72,10 @@ public class Executables {
     public static boolean isSetterMethod(ExecutableElement method) {
         String name = method.getSimpleName().toString();
 
-        if ( isPublic( method ) && name.startsWith( "set" ) && name.length() > 3 && method.getParameters()
-            .size() == 1 && method.getReturnType().getKind() == TypeKind.VOID ) {
-            return true;
-        }
-
-        return false;
+        return isPublic( method ) &&
+            name.startsWith( "set" ) &&
+            name.length() > 3 &&
+            method.getParameters().size() == 1;
     }
 
     public static boolean isAdderMethod(ExecutableElement method) {
