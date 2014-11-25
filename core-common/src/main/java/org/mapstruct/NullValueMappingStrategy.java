@@ -35,10 +35,12 @@ public enum NullValueMappingStrategy {
      * If {@code null} is passed to a mapping method, a default value will be returned. The value depends on the kind of
      * the annotated method:
      * <ul>
-     * <li>For bean mapping method the target type will be instantiated and returned. {@link Mapping#expression()} and
-     * {@link Mapping#constant()} will be added to the target</li>
-     * <li>For iterable mapping methods an immutable empty collection will be returned.</li>
-     * <li>For map mapping methods an immutable empty map will be returned.</li>
+     * <li>For bean mapping methods the target type will be instantiated and returned. Any properties of the target type
+     * which are mapped via {@link Mapping#expression()} or {@link Mapping#constant()} will be populated based on the
+     * given expression or constant. Note that expressions must be prepared to deal with {@code null} values in this
+     * case.</li>
+     * <li>For iterable mapping methods an empty collection will be returned.</li>
+     * <li>For map mapping methods an empty map will be returned.</li>
      * </ul>
      */
     RETURN_DEFAULT,
