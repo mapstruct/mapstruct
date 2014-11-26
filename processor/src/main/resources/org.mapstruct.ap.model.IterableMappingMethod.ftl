@@ -22,17 +22,17 @@
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
     if ( ${sourceParameter.name} == null ) {
         <#if !mapNullToDefault>
-        return<#if returnType.name != "void"> null</#if>;
+            return<#if returnType.name != "void"> null</#if>;
         <#else>
-        return Collections.<${resultType.typeParameters[0].name}>emptyList();
+            return <@returnObjectCreation/>;
         </#if>
     }
 
     <#if existingInstanceMapping>
-    ${resultName}.clear();
+        ${resultName}.clear();
     <#else>
     <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
-    <#if resultType.fullyQualifiedName == "java.lang.Iterable"><@includeModel object=resultType.implementationType/><#else><@includeModel object=resultType/></#if> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod/><#else>new <#if resultType.implementationType??><@includeModel object=resultType.implementationType/><#else><@includeModel object=resultType/></#if>()</#if>;
+        <@localVarDefinition/> = <@returnObjectCreation/>;
    </#if>
 
     for ( <@includeModel object=sourceParameter.type.typeParameters[0]/> ${loopVariableName} : ${sourceParameter.name} ) {
@@ -50,5 +50,28 @@
             <@includeModel object=exceptionType/>
             <#if exceptionType_has_next>, </#if>
         </#list>
+    </@compress>
+</#macro>
+<#macro localVarDefinition>
+    <@compress single_line=true>
+        <#if resultType.fullyQualifiedName == "java.lang.Iterable">
+            <@includeModel object=resultType.implementationType/>
+        <#else>
+            <@includeModel object=resultType/>
+        </#if> ${resultName}
+    </@compress>
+</#macro>
+<#macro returnObjectCreation>
+    <@compress single_line=true>
+        <#if factoryMethod??>
+            <@includeModel object=factoryMethod/>
+        <#else>
+            new
+            <#if resultType.implementationType??>
+                <@includeModel object=resultType.implementationType/>
+            <#else>
+                <@includeModel object=resultType/>
+            </#if>()
+        </#if>
     </@compress>
 </#macro>

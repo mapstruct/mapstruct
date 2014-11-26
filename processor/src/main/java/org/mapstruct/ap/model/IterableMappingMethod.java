@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.model;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
@@ -154,10 +153,6 @@ public class IterableMappingMethod extends MappingMethod {
 
         if ( elementAssignment != null ) {
             types.addAll( elementAssignment.getImportTypes() );
-        }
-
-        if ( mapNullToDefault ) {
-            types.add( typeFactory.getType( Collections.class ) );
         }
 
         return types;

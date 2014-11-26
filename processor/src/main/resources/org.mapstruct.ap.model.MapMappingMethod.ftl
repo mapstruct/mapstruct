@@ -22,16 +22,16 @@
 <#lt>${accessibility.keyword} <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
     if ( ${sourceParameter.name} == null ) {
         <#if !mapNullToDefault>
-        return<#if returnType.name != "void"> null</#if>;
+            return<#if returnType.name != "void"> null</#if>;
         <#else>
-        return Collections.<${resultType.typeParameters[0].name}, ${resultType.typeParameters[1].name}>emptyMap();
+            return <@returnObjectCreation/>;
         </#if>
     }
 
     <#if existingInstanceMapping>
-    ${resultName}.clear();
+        ${resultName}.clear();
     <#else>
-    <@includeModel object=resultType /> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod/><#else>new <#if resultType.implementationType??><@includeModel object=resultType.implementationType /><#else><@includeModel object=resultType /></#if>()</#if>;
+        <@includeModel object=resultType /> ${resultName} = <@returnObjectCreation/>;
     </#if>
 
     <#-- Once #148 has been addressed, the simple name of Map.Entry can be used -->
@@ -60,5 +60,19 @@
             <@includeModel object=exceptionType/>
             <#if exceptionType_has_next>, </#if>
         </#list>
+    </@compress>
+</#macro>
+<#macro returnObjectCreation>
+    <@compress single_line=true>
+        <#if factoryMethod??>
+             <@includeModel object=factoryMethod/>
+        <#else>
+             new
+             <#if resultType.implementationType??>
+                  <@includeModel object=resultType.implementationType />
+             <#else>
+                  <@includeModel object=resultType />
+             </#if>()
+        </#if>
     </@compress>
 </#macro>
