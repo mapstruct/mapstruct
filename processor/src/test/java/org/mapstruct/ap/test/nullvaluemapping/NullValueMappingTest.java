@@ -29,11 +29,18 @@ import org.mapstruct.ap.test.nullvaluemapping.source.Car;
 import org.mapstruct.ap.test.nullvaluemapping.source.Driver;
 import org.mapstruct.ap.test.nullvaluemapping.target.CarDto;
 import org.mapstruct.ap.test.nullvaluemapping.target.DriverAndCarDto;
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+/**
+ * Tests for the strategies for mapping {@code null} values, given via {@code NullValueMapping} etc.
+ *
+ * @author Sjaak Derksen
+ */
+@IssueKey( "295" )
 @WithClasses({
     Car.class,
     Driver.class,
@@ -45,7 +52,7 @@ import static org.fest.assertions.Assertions.assertThat;
     CarMapperSettingOnConfig.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
-public class CarMapperTest {
+public class NullValueMappingTest {
 
     @Test
     public void shouldProvideMapperInstance() throws Exception {
