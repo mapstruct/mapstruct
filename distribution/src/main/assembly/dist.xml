@@ -36,13 +36,6 @@
                 <include>org.mapstruct:mapstruct-processor</include>
             </includes>
         </dependencySet>
-
-        <dependencySet>
-            <outputDirectory>lib/dependencies</outputDirectory>
-            <includes>
-                <include>org.freemarker:freemarker</include>
-            </includes>
-        </dependencySet>
     </dependencySets>
 
     <files>
@@ -55,7 +48,7 @@
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
-            <source>../license.txt</source>
+            <source>../LICENSE.txt</source>
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
@@ -75,7 +68,7 @@
             <includes>
                 <include>../CONTRIBUTING.md</include>
                 <include>../copyright.txt</include>
-                <include>../license.txt</include>
+                <include>../LICENSE.txt</include>
                 <include>../pom.xml</include>
                 <include>../readme.md</include>
                 <include>../etc/license.txt</include>

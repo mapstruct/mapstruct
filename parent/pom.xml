@@ -463,7 +463,7 @@
                         <exclude>**/build-config/checkstyle.xml</exclude>
                         <exclude>**/build-config/import-control.xml</exclude>
                         <exclude>copyright.txt</exclude>
-                        <exclude>**/license.txt</exclude>
+                        <exclude>**/LICENSE.txt</exclude>
                         <exclude>**/mapstruct.xml</exclude>
                         <exclude>**/toolchains-*.xml</exclude>
                         <exclude>**/eclipse-formatter-config.xml</exclude>
@@ -471,6 +471,8 @@
                         <exclude>readme.md</exclude>
                         <exclude>CONTRIBUTING.md</exclude>
                         <exclude>.gitattributes</exclude>
+                        <exclude>.gitignore</exclude>
+                        <exclude>.factorypath</exclude>
                     </excludes>
                 </configuration>
                 <executions>
