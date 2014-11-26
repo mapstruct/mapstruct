@@ -4,7 +4,7 @@ public class ScientistDto {
 
     private String name;
     private String[] universities;
-//    private String[] evaluations;
+    private String[] evaluations;
 
     public String getName() {
         return name;
@@ -22,11 +22,11 @@ public class ScientistDto {
         this.universities = universities;
     }
 
-//    public String[] getEvaluations() {
-//        return evaluations;
-//    }
-//
-//    public void setEvaluations(String[] evaluations) {
-//        this.evaluations = evaluations;
-//    }
+    public String[] getEvaluations() {
+        return evaluations;
+    }
+
+    public void setEvaluations(String[] evaluations) {
+        this.evaluations = evaluations;
+    }
 }

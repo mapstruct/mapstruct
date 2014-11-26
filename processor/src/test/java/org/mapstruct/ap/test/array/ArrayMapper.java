@@ -16,34 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.assignment;
+package org.mapstruct.ap.test.array;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.array.source.Scientist;
+import org.mapstruct.ap.test.array.target.ScientistDto;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Decorates the assignment as a Map or Collection constructor
  *
  * @author Sjaak Derksen
  */
-public class ArrayCopyWrapper extends AssignmentWrapper {
+@Mapper(uses = EvaluationMapper.class)
+public interface ArrayMapper {
 
-    private final TypeFactory typeFactory;
+    ArrayMapper INSTANCE = Mappers.getMapper( ArrayMapper.class );
 
-    public ArrayCopyWrapper(Assignment decoratedAssignment, TypeFactory typeFactory) {
-        super( decoratedAssignment );
-        this.typeFactory = typeFactory;
-    }
+    ScientistDto map(Scientist in);
 
-    @Override
-    public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>();
-        imported.addAll( getAssignment().getImportTypes() );
-        imported.add( typeFactory.getType( Arrays.class ) );
-        return imported;
-    }
 }

@@ -22,5 +22,5 @@
 Arrays.copyOf(
  <@includeModel object=assignment targetBeanName=ext.targetBeanName targetAccessorName=ext.targetAccessorName targetType=ext.targetType raw=ext.raw/>,
  <@includeModel object=assignment targetBeanName=ext.targetBeanName targetAccessorName=ext.targetAccessorName targetType=ext.targetType raw=ext.raw/>.length
- );
+ )
 </@compress>

@@ -156,9 +156,9 @@ public class PropertyMapping extends ModelElement {
                     assignment = assignCollection( targetType, targetAccessorType, assignment );
                 }
                 else if ( targetType.isArrayType() ) {
-                    if ( assignment.getType() == DIRECT ) {
-                        assignment = new ArrayCopyWrapper( assignment );
-                    }
+                    assignment = new ArrayCopyWrapper( assignment, ctx.getTypeFactory() );
+                    assignment = assignObject( sourceType, targetType, targetAccessorType, assignment );
+
                 }
                 else {
                     assignment = assignObject( sourceType, targetType, targetAccessorType, assignment );
