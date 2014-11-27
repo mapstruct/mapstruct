@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model.source.builtin;
 
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Set;
 
@@ -28,9 +29,8 @@ import org.mapstruct.ap.util.Collections;
 import org.mapstruct.ap.util.JavaTimeConstants;
 
 /**
- * {@link BuiltInMethod} for mapping between {@link java.util.Calendar}
- * and {@link java.time.ZonedDateTime}.
- * <br />
+ * {@link BuiltInMethod} for mapping between {@link Calendar} and {@link ZonedDateTime}.
+ * <p>
  * Template is at org.mapstruct.ap.model.builtin.ZonedDateTimeToCalendar.ftl
  */
 public class ZonedDateTimeToCalendar extends BuiltInMethod {

@@ -38,17 +38,17 @@ import org.mapstruct.ap.util.Strings;
  * It contains the source parameter, and all individual (nested) property entries. So consider the following
  * mapping method:
  *
- * {@code
- * @Mapping( source = "in.propA.propB" target = "propC" )
- * TypeB mappingMethod ( TypeA in );
- * }
+ * <pre>
+ * &#64;Mapping(source = "in.propA.propB" target = "propC")
+ * TypeB mappingMethod(TypeA in);
+ * </pre>
  *
  * Then:
- * <ol>
- * <li>{@link #parameter} will describe {@code in}</li>
- * <li>{@link #propertyEntries[0]} will describe {@code propA}</li>
- * <li>{@link #propertyEntries[1]} will describe {@code propB}</li>
- * </ol>
+ * <ul>
+ * <li>{@code parameter} will describe {@code in}</li>
+ * <li>{@code propertyEntries[0]} will describe {@code propA}</li>
+ * <li>{@code propertyEntries[1]} will describe {@code propB}</li>
+ * </ul>
  *
  * After building, {@link #isValid()} will return true when when no problems are detected during building.
  *

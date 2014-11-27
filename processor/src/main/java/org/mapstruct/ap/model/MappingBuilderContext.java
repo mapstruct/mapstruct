@@ -37,17 +37,6 @@ import org.mapstruct.ap.option.Options;
 
 /**
  * This class provides the context for the builders.
- *
- * <p>
- * The following builders make use of this context:
- * <ul>
- * <li>{@link BeanMappingMethod.Builder}</li>
- * <li>{@link PropertyMappingMethod.Builder}</li>
- * <li>{@link IterableMappingMethod.Builder}</li>
- * <li>{@link MapMappingMethod.Builder}</li>
- * <li>{@link EnumMappingMethod.Builder}</li>
- * </ul>
- * </p>
  * <p>
  * The context provides:
  * <ul>
@@ -56,7 +45,6 @@ import org.mapstruct.ap.option.Options;
  * <li>Means to harbor results produced by the builders, such as forged- and virtual mapping methods that should be
  * generated in a later stage.</li>
  * </ul>
- * </p>
  *
  * @author Sjaak Derksen
  */

@@ -36,7 +36,7 @@ public class SpecificCompilerWorkarounds {
     /**
      * Tests whether one type is a subtype of another. Any type is considered to be a subtype of itself. Also see <a
      * href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html">JLS section 4.10, Subtyping</a>.
-     * <p />
+     * <p>
      * Work-around for a bug related to sub-typing in the Eclipse JSR 269 implementation.
      *
      * @param types the type utils
@@ -55,15 +55,15 @@ public class SpecificCompilerWorkarounds {
 
     /**
      * Returns the erasure of a type.
-     * <p/>
+     * <p>
      * Performs an additional test on the given type to check if it is not void. Calling
-     * {@link Types#erasure(TypeMirror)} with a void kind type will create a ClassCastException in Eclipse JDT.
+     * {@link Types#erasure(TypeMirror)} with a void kind type will create a ClassCastException in Eclipse JDT. See the
+     * JLS, section 4.6 Type Erasure, for reference.
      *
      * @param types the type utils
      * @param t the type to be erased
      * @return the erasure of the given type
      * @throws IllegalArgumentException if given a package type
-     * @jls 4.6 Type Erasure
      */
     public static TypeMirror erasure(Types types, TypeMirror t) {
         if ( t.getKind() == TypeKind.VOID || t.getKind() == TypeKind.NULL ) {

@@ -33,6 +33,10 @@
     <packaging>jar</packaging>
     <name>MapStruct Core Common</name>
 
+    <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

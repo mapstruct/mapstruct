@@ -45,7 +45,6 @@ import org.mapstruct.ap.prism.QualifierPrism;
  * removed from the list of potential mapping methods</li>
  * <li>If multiple qualifiers (qualifedBy) are specified, all should match to make a match.</li>
  * </ol>
- * </p>
  *
  * @author Sjaak Derksen
  */

@@ -24,29 +24,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Declares a target annotation to be a qualifier.
- *
+ * Declares an annotation type to be a qualifier. Qualifier annotations allow unambiguously identify a suitable mapping
+ * method in case several methods qualify to map a bean property, iterable element etc.
  * <p>
  * For more info see:
- * <ol>
+ * <ul>
  * <li>{@link Mapping#qualifiedBy() }</li>
  * <li>{@link IterableMapping#qualifiedBy() }</li>
  * <li>{@link MapMapping#keyQualifiedBy() }</li>
  * <li>{@link MapMapping#valueQualifiedBy() }</li>
- * </p>
- * <p>
- * <code>
- * @Qualifier
- * @Target(ElementType.METHOD)
- * @Retention(RetentionPolicy.SOURCE)
- * public @interface EnglishToGerman {
- * }
- * </code>
- * </p>
+ * </ul>
+ * Example:
+ * <pre>
+ * &#64;Qualifier
+ * &#64;Target(ElementType.METHOD)
+ * &#64;Retention(RetentionPolicy.SOURCE)
+ * public &#64;interface EnglishToGerman {}
+ * </pre>
  *
  * @author Sjaak Derksen
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RetentionPolicy.CLASS)
+@Target( ElementType.ANNOTATION_TYPE )
+@Retention( RetentionPolicy.CLASS )
 public @interface Qualifier {
 }
