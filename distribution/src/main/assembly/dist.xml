@@ -55,6 +55,14 @@
             <source>../readme.md</source>
             <outputDirectory>/</outputDirectory>
         </file>
+        <file>
+            <source>target/freemarker-unpacked/META-INF/NOTICE.txt</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+        <file>
+            <source>target/freemarker-unpacked/META-INF/LICENSE.txt</source>
+            <outputDirectory>etc/freemarker</outputDirectory>
+        </file>
     </files>
 
     <fileSets>
@@ -81,5 +89,6 @@
             <directory>target/site/apidocs</directory>
             <outputDirectory>docs/api</outputDirectory>
         </fileSet>
+
     </fileSets>
 </assembly>
