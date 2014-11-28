@@ -74,6 +74,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isMapType;
     private final boolean isImported;
     private final boolean isVoid;
+    private final boolean isArrayType;
 
     private final List<String> enumConstants;
 
@@ -108,6 +109,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isMapType = isMapType;
         this.isImported = isImported;
         this.isVoid = typeMirror.getKind() == TypeKind.VOID;
+        this.isArrayType =  typeMirror.getKind() == TypeKind.ARRAY;
 
         if ( isEnumType ) {
             enumConstants = new ArrayList<String>();
@@ -161,6 +163,10 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isVoid() {
         return isVoid;
+    }
+
+    public boolean isArrayType() {
+        return isArrayType;
     }
 
     /**

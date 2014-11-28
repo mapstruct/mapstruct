@@ -18,13 +18,19 @@
  */
 package org.mapstruct.ap.model;
 
+import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
+import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.assignment.AdderWrapper;
+import org.mapstruct.ap.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.assignment.GetterCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.NewCollectionOrMapWrapper;
@@ -40,10 +46,6 @@ import org.mapstruct.ap.model.source.SourceReference;
 import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Strings;
-
-import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
-import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
 
 /**
  * Represents the mapping between a source and target property, e.g. from
@@ -152,6 +154,11 @@ public class PropertyMapping extends ModelElement {
             if ( assignment != null ) {
                 if ( targetType.isCollectionOrMapType() ) {
                     assignment = assignCollection( targetType, targetAccessorType, assignment );
+                }
+                else if ( targetType.isArrayType() ) {
+                    assignment = new ArrayCopyWrapper( assignment, ctx.getTypeFactory() );
+                    assignment = assignObject( sourceType, targetType, targetAccessorType, assignment );
+
                 }
                 else {
                     assignment = assignObject( sourceType, targetType, targetAccessorType, assignment );
