@@ -31,7 +31,7 @@
 
     <groupId>org.mapstruct</groupId>
     <artifactId>mapstruct-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0.Beta3</version>
     <packaging>pom</packaging>
 
     <name>MapStruct Parent</name>
@@ -45,7 +45,7 @@
         <org.apache.maven.plugins.enforcer.version>1.2</org.apache.maven.plugins.enforcer.version>
         <org.apache.maven.plugins.surefire.version>2.17</org.apache.maven.plugins.surefire.version>
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
-        <add.release.arguments></add.release.arguments>
+        <add.release.arguments />
         <forkCount>1</forkCount>
     </properties>
 
@@ -70,7 +70,7 @@
         <connection>scm:git:git://github.com/mapstruct/mapstruct.git</connection>
         <developerConnection>scm:git:git@github.com:mapstruct/mapstruct.git</developerConnection>
         <url>https://github.com/mapstruct/mapstruct/</url>
-      <tag>HEAD</tag>
+      <tag>1.0.0.Beta3</tag>
   </scm>
 
     <issueManagement>
