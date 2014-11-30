@@ -1,6 +1,6 @@
 # MapStruct - Java bean mappings, the easy way!
 
-_Version: 1.0.0.Beta3, November 27th 2014_
+_Version: 1.0.0.Beta3, November 30th 2014_
 
 ## What is MapStruct?
 
