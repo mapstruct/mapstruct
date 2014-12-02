@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -184,35 +185,45 @@ public class Executables {
      */
     public static List<ExecutableElement> getAllEnclosedExecutableElements(Elements elementUtils, TypeElement element) {
         List<ExecutableElement> enclosedElements = new ArrayList<ExecutableElement>();
-        addEnclosingElementsIncludingSuper( elementUtils, enclosedElements, element );
+        addEnclosingElementsIncludingSuper( elementUtils, enclosedElements, element, element );
 
         return enclosedElements;
     }
 
     private static void addEnclosingElementsIncludingSuper(Elements elementUtils, List<ExecutableElement> alreadyAdded,
-                                                           TypeElement element) {
-        addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ) );
+                                                           TypeElement element, TypeElement parentType) {
+        addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ), parentType );
 
         if ( hasNonObjectSuperclass( element ) ) {
-            addEnclosingElementsIncludingSuper( elementUtils, alreadyAdded, asTypeElement( element.getSuperclass() ) );
+            addEnclosingElementsIncludingSuper(
+                elementUtils,
+                alreadyAdded,
+                asTypeElement( element.getSuperclass() ),
+                parentType );
         }
 
         for ( TypeMirror interfaceType : element.getInterfaces() ) {
-            addEnclosingElementsIncludingSuper( elementUtils, alreadyAdded, asTypeElement( interfaceType ) );
+            addEnclosingElementsIncludingSuper(
+                elementUtils,
+                alreadyAdded,
+                asTypeElement( interfaceType ),
+                parentType );
         }
 
     }
 
     /**
      * @param alreadyCollected methods that have already been collected and to which the not-yet-overridden methods will
-     * be added
+     *            be added
      * @param methodsToAdd methods to add to alreadyAdded, if they are not yet overridden by an element in the list
+     * @param parentType the type for with elements are collected
      */
     private static void addNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyCollected,
-                                            List<ExecutableElement> methodsToAdd) {
+                                            List<ExecutableElement> methodsToAdd, TypeElement parentType) {
         List<ExecutableElement> safeToAdd = new ArrayList<ExecutableElement>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
-            if ( isNotObjectEquals( toAdd ) && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd ) ) {
+            if ( isNotObjectEquals( toAdd )
+               && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd, parentType ) ) {
                 safeToAdd.add( toAdd );
             }
         }
@@ -239,17 +250,15 @@ public class Executables {
     /**
      * @param elementUtils the elementUtils
      * @param methods the list of already collected methods of one type hierarchy (order is from sub-types to
-     * super-types)
+     *            super-types)
      * @param executable the method to check
-     *
+     * @param parentType the type for which elements are collected
      * @return {@code true}, iff the given executable was not yet overridden by a method in the given list.
      */
     private static boolean wasNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyAdded,
-                                               ExecutableElement executable) {
+                                               ExecutableElement executable, TypeElement parentType) {
         for ( ExecutableElement executableInSubtype : alreadyAdded ) {
-            TypeElement declaringType = (TypeElement) executableInSubtype.getEnclosingElement();
-
-            if ( elementUtils.overrides( executableInSubtype, executable, declaringType ) ) {
+            if ( elementUtils.overrides( executableInSubtype, executable, parentType ) ) {
                 return false;
             }
         }

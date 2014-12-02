@@ -39,6 +39,8 @@ import static org.fest.assertions.Assertions.assertThat;
     ReferencedMapperInterface.class,
     AbstractDto.class,
     Identifiable.class,
+    HasId.class,
+    AlsoHasId.class,
     Measurable.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
