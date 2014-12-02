@@ -185,17 +185,17 @@ public class Executables {
      */
     public static List<ExecutableElement> getAllEnclosedExecutableElements(Elements elementUtils, TypeElement element) {
         List<ExecutableElement> enclosedElements = new ArrayList<ExecutableElement>();
-        addEnclosingElementsIncludingSuper( elementUtils, enclosedElements, element, element );
+        addEnclosedElementsInHierarchy( elementUtils, enclosedElements, element, element );
 
         return enclosedElements;
     }
 
-    private static void addEnclosingElementsIncludingSuper(Elements elementUtils, List<ExecutableElement> alreadyAdded,
-                                                           TypeElement element, TypeElement parentType) {
+    private static void addEnclosedElementsInHierarchy(Elements elementUtils, List<ExecutableElement> alreadyAdded,
+                                                       TypeElement element, TypeElement parentType) {
         addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ), parentType );
 
         if ( hasNonObjectSuperclass( element ) ) {
-            addEnclosingElementsIncludingSuper(
+            addEnclosedElementsInHierarchy(
                 elementUtils,
                 alreadyAdded,
                 asTypeElement( element.getSuperclass() ),
@@ -203,7 +203,7 @@ public class Executables {
         }
 
         for ( TypeMirror interfaceType : element.getInterfaces() ) {
-            addEnclosingElementsIncludingSuper(
+            addEnclosedElementsInHierarchy(
                 elementUtils,
                 alreadyAdded,
                 asTypeElement( interfaceType ),
