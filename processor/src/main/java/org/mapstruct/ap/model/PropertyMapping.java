@@ -189,6 +189,7 @@ public class PropertyMapping extends ModelElement {
             if ( targetAccessorType == TargetAccessorType.SETTER ) {
                 result = new SetterWrapper( result, method.getThrownTypes() );
                 if ( !sourceType.isPrimitive()
+                    && !sourceReference.getPropertyEntries().isEmpty() /* parameter null taken care of by beanmapper */
                     && ( result.getType() == TYPE_CONVERTED
                     || result.getType() == TYPE_CONVERTED_MAPPED
                     || result.getType() == DIRECT && targetType.isPrimitive() ) ) {
