@@ -24,7 +24,12 @@
         <#if !mapNullToDefault>
             return<#if returnType.name != "void"> null</#if>;
         <#else>
-            return <@returnObjectCreation/>;
+            <#if existingInstanceMapping>
+                 ${resultName}.clear();
+                 return<#if returnType.name != "void"> ${resultName} </#if>;
+            <#else>
+                 return <@returnObjectCreation/>;
+            </#if>
         </#if>
     }
 
