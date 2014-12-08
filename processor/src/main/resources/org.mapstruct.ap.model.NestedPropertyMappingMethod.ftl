@@ -20,19 +20,16 @@
 -->
 <#lt>private <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
 
-    <#compress>
-    <@includeModel object=returnType/> ${targetLocalVariable} = null;
-    if ( ${sourceParameter.name} != null ) {
-    <#list propertyEntries as entry>
-        <@includeModel object=entry.type/> ${entry.name} = <#if entry_index == 0>${sourceParameter.name}.${entry.accessor}<#else>${propertyEntries[entry_index-1].name}.${entry.accessor}</#if>;
-        if ( ${entry.name} != null ) {
-        <#if !entry_has_next>${targetLocalVariable} = ${entry.name};</#if>
-    </#list>
-    <#list propertyEntries as entry>
-        }
-    </#list>
+    if ( ${sourceParameter.name} == null ) {
+        return null;
     }
-    return ${targetLocalVariable};
-    </#compress>
-
+    <#list propertyEntries as entry>
+    <@includeModel object=entry.type/> ${entry.name} = <#if entry_index == 0>${sourceParameter.name}.${entry.accessor}<#else>${propertyEntries[entry_index-1].name}.${entry.accessor}</#if>;
+    if ( ${entry.name} == null ) {
+        return null;
+    }
+    <#if !entry_has_next>
+    return ${entry.name};
+    </#if>
+    </#list>
 }

@@ -39,7 +39,6 @@ import org.mapstruct.ap.util.Strings;
  */
 public class NestedPropertyMappingMethod extends MappingMethod {
 
-    private final List<String> existingVariableNames;
     private final List<SafePropertyEntry> safePropertyEntries;
 
     public static class Builder {
@@ -68,15 +67,13 @@ public class NestedPropertyMappingMethod extends MappingMethod {
                 safePropertyEntries.add( new SafePropertyEntry( propertyEntry, safeName ) );
                 existingVariableNames.add( safeName );
             }
-            return new NestedPropertyMappingMethod( method, safePropertyEntries, existingVariableNames );
+            return new NestedPropertyMappingMethod( method, safePropertyEntries );
         }
     }
 
-    private NestedPropertyMappingMethod( Method method, List<SafePropertyEntry> sourcePropertyEntries,
-            List<String> existingVariableNames ) {
+    private NestedPropertyMappingMethod( Method method, List<SafePropertyEntry> sourcePropertyEntries ) {
         super( method );
         this.safePropertyEntries = sourcePropertyEntries;
-        this.existingVariableNames = existingVariableNames;
     }
 
     public Parameter getSourceParameter() {
@@ -99,10 +96,6 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             types.add( propertyEntry.getType() );
         }
         return types;
-    }
-
-    public String getTargetLocalVariable() {
-        return Strings.getSaveVariableName( getReturnType().getName(), existingVariableNames );
     }
 
     @Override
