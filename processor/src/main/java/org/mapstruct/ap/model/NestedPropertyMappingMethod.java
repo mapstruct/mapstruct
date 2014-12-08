@@ -59,9 +59,14 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
         public NestedPropertyMappingMethod build() {
             List<String> existingVariableNames = new ArrayList<String>();
+            for ( Parameter parameter : method.getSourceParameters() ) {
+                existingVariableNames.add( parameter.getName() );
+            }
             List<SafePropertyEntry> safePropertyEntries = new ArrayList<SafePropertyEntry>();
             for ( PropertyEntry propertyEntry : propertyEntries ) {
-                safePropertyEntries.add( new SafePropertyEntry( propertyEntry, existingVariableNames ) );
+                String safeName = Strings.getSaveVariableName( propertyEntry.getName(), existingVariableNames);
+                safePropertyEntries.add( new SafePropertyEntry( propertyEntry, safeName ) );
+                existingVariableNames.add( safeName );
             }
             return new NestedPropertyMappingMethod( method, safePropertyEntries, existingVariableNames );
         }
@@ -144,16 +149,16 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
     public static class SafePropertyEntry extends PropertyEntry {
 
-        private final List<String> existingVariableNames;
+        private final String safeName;
 
-        public SafePropertyEntry( PropertyEntry entry, List<String> existingVariableNames ) {
+        public SafePropertyEntry( PropertyEntry entry, String safeName ) {
             super( entry.getName(), entry.getAccessor(), entry.getType() );
-            this.existingVariableNames = existingVariableNames;
+            this.safeName = safeName;
         }
 
         @Override
         public String getName() {
-            return Strings.getSaveVariableName( super.getName(), existingVariableNames );
+            return safeName;
         }
     }
 
