@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.model.source;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +51,9 @@ public class ForgedMethod implements Method {
      * @param positionHintElement element used to for reference to the position in the source file.
      */
     public ForgedMethod(Type sourceType, Type targetType, ExecutableElement positionHintElement) {
-        this.parameters = Arrays.asList( new Parameter( Strings.decapitalize( sourceType.getName() ), sourceType ) );
+        String sourceParamName = Strings.decapitalize( sourceType.getName() );
+        String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
+        this.parameters = Arrays.asList( new Parameter( sourceParamSafeName, sourceType ) );
         this.returnType = targetType;
 
         String fromName = getName( parameters.iterator().next().getType() );
@@ -69,7 +72,9 @@ public class ForgedMethod implements Method {
      * @param positionHintElement element used to for reference to the position in the source file.
      */
     public ForgedMethod(String name, Type sourceType, Type targetType, ExecutableElement positionHintElement) {
-        this.parameters = Arrays.asList( new Parameter( Strings.decapitalize( sourceType.getName() ), sourceType ) );
+        String sourceParamName = Strings.decapitalize( sourceType.getName() );
+        String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
+        this.parameters = Arrays.asList( new Parameter( sourceParamSafeName, sourceType ) );
         this.returnType = targetType;
         this.name = name;
         this.positionHintElement = positionHintElement;
@@ -150,7 +155,11 @@ public class ForgedMethod implements Method {
 
     @Override
     public List<String> getParameterNames() {
-        return Arrays.asList( "source" );
+        List<String> parameterNames = new ArrayList<String>();
+        for ( Parameter parameter : getParameters() ) {
+            parameterNames.add( parameter.getName() );
+        }
+        return parameterNames;
     }
 
     @Override

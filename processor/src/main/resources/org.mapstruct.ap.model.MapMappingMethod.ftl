@@ -39,13 +39,11 @@
     <#-- key -->
         <@includeModel object=keyAssignment
                    targetAccessorName=keyVariableName
-                   targetType=resultType.typeParameters[0]
-                   isLocalVar=true/>
+                   targetType=resultType.typeParameters[0]/>
     <#-- value -->
         <@includeModel object=valueAssignment
                    targetAccessorName=valueVariableName
-                   targetType=resultType.typeParameters[1]
-                   isLocalVar=true/>
+                   targetType=resultType.typeParameters[1]/>
         ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
     }
     <#if returnType.name != "void">

@@ -27,7 +27,6 @@ import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
 import org.mapstruct.ap.util.MapperConfig;
@@ -45,7 +44,7 @@ public class IterableMappingMethod extends MappingMethod {
     private final MethodReference factoryMethod;
     private final boolean overridden;
     private final boolean mapNullToDefault;
-    private final TypeFactory typeFactory;
+    private final String loopVariableName;
 
     public static class Builder {
 
@@ -79,7 +78,7 @@ public class IterableMappingMethod extends MappingMethod {
                 method.getSourceParameters().iterator().next().getType().getTypeParameters().get( 0 );
             Type targetElementType =
                 method.getResultType().getTypeParameters().get( 0 );
-            String conversionStr =
+            String loopVariableName =
                 Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
 
 
@@ -91,7 +90,7 @@ public class IterableMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 dateFormat,
                 qualifiers,
-                conversionStr
+                loopVariableName
             );
 
             if ( assignment == null ) {
@@ -117,20 +116,20 @@ public class IterableMappingMethod extends MappingMethod {
                 assignment,
                 factoryMethod,
                 mapNullToDefault,
-                ctx.getTypeFactory()
+                loopVariableName
             );
         }
     }
 
 
     private IterableMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
-                                  boolean mapNullToDefault, TypeFactory typeFactory) {
+                                  boolean mapNullToDefault, String loopVariableName ) {
         super( method );
         this.elementAssignment = parameterAssignment;
         this.factoryMethod = factoryMethod;
         this.overridden = method.overridesMethod();
         this.mapNullToDefault = mapNullToDefault;
-        this.typeFactory = typeFactory;
+        this.loopVariableName = loopVariableName;
     }
 
     public Parameter getSourceParameter() {
@@ -167,10 +166,7 @@ public class IterableMappingMethod extends MappingMethod {
     }
 
     public String getLoopVariableName() {
-        return Strings.getSaveVariableName(
-            getSourceParameter().getType().getTypeParameters().get( 0 ).getName(),
-            getParameterNames()
-        );
+        return loopVariableName;
     }
 
     public MethodReference getFactoryMethod() {
