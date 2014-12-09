@@ -28,6 +28,6 @@ import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner;
  *
  */
 @RunWith( ProcessorSuiteRunner.class )
-@ProcessorSuite( baseDir = "springTest", processorTypes = ProcessorType.ALL )
+@ProcessorSuite( baseDir = "jsr330Test", processorTypes = ProcessorType.ALL )
 public class Jsr330Test {
 }
