@@ -20,7 +20,6 @@ package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
@@ -43,19 +42,18 @@ public class TypeSelector implements MethodSelector {
 
     @Override
     public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
-                                                         Type parameterType, Type returnType,
-                                                         List<TypeMirror> qualifiers,
-                                                         String targetPropertyName) {
+                                                         Type sourceType, Type targetType,
+                                                         SelectionCriteria criteria) {
 
         List<T> result = new ArrayList<T>();
         for ( T method : methods ) {
-            if ( method.getSourceParameters().size() != 1 ) {
+            if ( method.getSourceParameters().size() > 1 ) {
                 continue;
             }
 
             List<Type> parameterTypes =
-                MethodSelectors.getParameterTypes( typeFactory, method.getParameters(), parameterType, returnType );
-            if ( method.matches( parameterTypes, returnType ) ) {
+                MethodSelectors.getParameterTypes( typeFactory, method.getParameters(), sourceType, targetType );
+            if ( method.matches( parameterTypes, targetType ) ) {
                 result.add( method );
             }
         }

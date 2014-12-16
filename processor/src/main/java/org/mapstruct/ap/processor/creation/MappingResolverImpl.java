@@ -34,6 +34,7 @@ import org.mapstruct.ap.conversion.Conversions;
 import org.mapstruct.ap.model.AssignmentFactory;
 import org.mapstruct.ap.model.MapperReference;
 import org.mapstruct.ap.model.MappingBuilderContext.MappingResolver;
+import org.mapstruct.ap.model.MethodReference;
 import org.mapstruct.ap.model.VirtualMappingMethod;
 import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.common.ConversionContext;
@@ -45,6 +46,7 @@ import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.model.source.selector.MethodSelectors;
+import org.mapstruct.ap.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -138,6 +140,28 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     public Set<VirtualMappingMethod> getUsedVirtualMappings() {
         return usedVirtualMappings;
+    }
+
+    @Override
+    public MethodReference getFactoryMethod( Method mappingMethod, Type targetType ) {
+
+        ResolvingAttempt attempt = new ResolvingAttempt(
+            sourceModel,
+            mappingMethod,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+
+        SourceMethod matchingSourceMethod = attempt.getBestMatch( sourceModel, null, targetType );
+        if ( matchingSourceMethod != null ) {
+            MapperReference ref = attempt.findMapperReference( matchingSourceMethod );
+            return new MethodReference( matchingSourceMethod, ref, null );
+        }
+        return null;
+
     }
 
     private class ResolvingAttempt {
@@ -416,13 +440,13 @@ public class MappingResolverImpl implements MappingResolver {
 
         private <T extends Method> T getBestMatch(List<T> methods, Type sourceType, Type returnType) {
 
+            SelectionCriteria criteria = new SelectionCriteria( qualifiers, targetPropertyName );
             List<T> candidates = methodSelectors.getMatchingMethods(
                 mappingMethod,
                 methods,
                 sourceType,
                 returnType,
-                qualifiers,
-                targetPropertyName
+                criteria
             );
 
             // raise an error if more than one mapping method is suitable to map the given source type
@@ -430,7 +454,8 @@ public class MappingResolverImpl implements MappingResolver {
             if ( candidates.size() > 1 ) {
 
                 String errorMsg = String.format(
-                    "Ambiguous mapping methods found for mapping " + mappedElement + " to %s: %s.",
+                    "Ambiguous mapping methods found for %s %s: %s.",
+                    mappedElement != null ? "mapping " + mappedElement + " to" : "factorizing",
                     returnType,
                     Strings.join( candidates, ", " )
                 );

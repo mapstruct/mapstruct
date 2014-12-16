@@ -44,14 +44,13 @@ public class FactoryTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = BarFactory.class,
+            @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
-                messageRegExp = "Ambiguous factory methods: \"org\\.mapstruct\\.ap\\.test\\.erroneous\\."
-                    + "ambiguousfactorymethod\\.Bar createBar\\(\\)\" conflicts with "
-                    + "\"org\\.mapstruct\\.ap\\.test\\.erroneous\\.ambiguousfactorymethod\\.Bar "
-                    + "org\\.mapstruct\\.ap\\.test\\.erroneous\\.ambiguousfactorymethod"
-                    + "\\.a\\.BarFactory\\.createBar\\(\\)\"\\")
+                line = 35,
+                messageRegExp = "Ambiguous mapping methods found for factorizing "
+                        + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar: "
+                        + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar createBar\\(\\), "
+                        + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar .*BarFactory.createBar\\(\\)." )
         }
     )
     public void shouldUseTwoFactoryMethods() {

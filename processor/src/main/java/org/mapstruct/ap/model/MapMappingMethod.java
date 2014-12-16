@@ -141,7 +141,7 @@ public class MapMappingMethod extends MappingMethod {
             boolean mapNullToDefault =
                 MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 
-            MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
+            MethodReference factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType() );
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes() );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes() );

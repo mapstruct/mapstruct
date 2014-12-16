@@ -52,9 +52,8 @@ public class XmlElementDeclSelector implements MethodSelector {
 
     @Override
     public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
-                                                         Type parameterType, Type returnType,
-                                                         List<TypeMirror> qualifiers,
-                                                         String targetPropertyName) {
+                                                         Type sourceType, Type targetType,
+                                                         SelectionCriteria criteria) {
 
         // only true source methods are qualifying
         if ( !(mappingMethod instanceof SourceMethod) ) {
@@ -83,7 +82,7 @@ public class XmlElementDeclSelector implements MethodSelector {
             TypeMirror scope = xmlElememtDecl.scope();
             TypeMirror target = sourceMappingMethod.getExecutable().getReturnType();
 
-            boolean nameIsSetAndMatches = name != null && name.equals( targetPropertyName );
+            boolean nameIsSetAndMatches = name != null && name.equals( criteria.getTargetPropertyName() );
             boolean scopeIsSetAndMatches = scope != null && typeUtils.isSameType( scope, target );
 
             if ( nameIsSetAndMatches ) {

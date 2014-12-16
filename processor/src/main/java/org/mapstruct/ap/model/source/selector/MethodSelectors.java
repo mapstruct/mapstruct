@@ -21,7 +21,6 @@ package org.mapstruct.ap.model.source.selector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -51,9 +50,8 @@ public class MethodSelectors implements MethodSelector {
 
     @Override
     public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
-                                                         Type parameterType, Type returnType,
-                                                         List<TypeMirror> qualifiers,
-                                                         String targetPropertyName) {
+                                                         Type sourceType, Type targetType,
+                                                         SelectionCriteria criteria) {
 
         List<T> candidates = new ArrayList<T>( methods );
 
@@ -61,10 +59,9 @@ public class MethodSelectors implements MethodSelector {
             candidates = selector.getMatchingMethods(
                 mappingMethod,
                 candidates,
-                parameterType,
-                returnType,
-                qualifiers,
-                targetPropertyName
+                sourceType,
+                targetType,
+                criteria
             );
         }
         return candidates;
@@ -80,13 +77,16 @@ public class MethodSelectors implements MethodSelector {
      */
     public static List<Type> getParameterTypes(TypeFactory typeFactory, List<Parameter> parameters, Type sourceType,
                                                Type returnType) {
-        List<Type> result = new ArrayList<Type>( parameters.size() );
+        List<Type> result = new ArrayList<Type>();
         for ( Parameter param : parameters ) {
             if ( param.isTargetType() ) {
                 result.add( typeFactory.classTypeOf( returnType ) );
             }
             else {
-                result.add( sourceType );
+                if ( sourceType != null ) {
+                    /* for factory methods (sourceType==null), no parameter must be added */
+                    result.add( sourceType );
+                }
             }
         }
 

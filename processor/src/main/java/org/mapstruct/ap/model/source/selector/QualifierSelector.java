@@ -59,10 +59,10 @@ public class QualifierSelector implements MethodSelector {
 
     @Override
     public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
-                                                         Type parameterType, Type returnType,
-                                                         List<TypeMirror> qualifiers,
-                                                         String targetPropertyName) {
+                                                         Type sourceType, Type targetType,
+                                                         SelectionCriteria criteria) {
 
+        List<TypeMirror> qualifiers = criteria.getQualifiers();
         if ( qualifiers == null || qualifiers.isEmpty() ) {
             // remove the method marked as qualifier from the list
             List<T> nonQualiferAnnotatedMethods = new ArrayList<T>();

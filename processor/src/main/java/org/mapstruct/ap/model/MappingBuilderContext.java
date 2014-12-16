@@ -94,6 +94,17 @@ public class MappingBuilderContext {
                                        String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
                                        String sourceReference);
 
+        /**
+         * returns a no arg factory method
+         *
+         * @param mappingMethod target mapping method
+         * @param targetType return type to match
+         *
+         * @return a method reference to the factory method, or null if no suitable, or ambiguous method found
+         *
+         */
+        MethodReference getFactoryMethod(Method mappingMethod, Type targetType);
+
         Set<VirtualMappingMethod> getUsedVirtualMappings();
     }
 
@@ -190,4 +201,5 @@ public class MappingBuilderContext {
     public Set<VirtualMappingMethod> getUsedVirtualMappings() {
         return mappingResolver.getUsedVirtualMappings();
     }
+
 }

@@ -21,15 +21,12 @@ package org.mapstruct.ap.model;
 import java.util.List;
 import java.util.Set;
 
-import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
-import org.mapstruct.ap.model.source.selector.MethodSelectors;
 
 /**
  * Factory class for creating all types of assignments
@@ -56,51 +53,6 @@ public class AssignmentFactory {
 
     public static Direct createDirect(String sourceRef) {
         return new Direct( sourceRef );
-    }
-
-    public static MethodReference createFactoryMethod( Type returnType, MappingBuilderContext ctx ) {
-        MethodReference result = null;
-        for ( SourceMethod method : ctx.getSourceModel() ) {
-            if ( !method.overridesMethod() && !method.isIterableMapping() && !method.isMapMapping()
-                    && method.getSourceParameters().isEmpty() ) {
-
-                List<Type> parameterTypes = MethodSelectors.getParameterTypes(
-                        ctx.getTypeFactory(),
-                        method.getParameters(),
-                        null,
-                        returnType
-                );
-
-                if ( method.matches( parameterTypes, returnType ) ) {
-                    if ( result == null ) {
-                        MapperReference mapperReference = findMapperReference( ctx.getMapperReferences(), method );
-                        result = new MethodReference( method, mapperReference, null );
-                    }
-                    else {
-                        ctx.getMessager().printMessage(
-                                Diagnostic.Kind.ERROR,
-                                String.format(
-                                        "Ambiguous factory methods: \"%s\" conflicts with \"%s\".",
-                                        result,
-                                        method
-                                ),
-                                method.getExecutable()
-                        );
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private static MapperReference findMapperReference( List<MapperReference> mapperReferences, SourceMethod method ) {
-        for ( MapperReference ref : mapperReferences ) {
-            if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
-                ref.setUsed( !method.isStatic() );
-                return ref;
-            }
-        }
-        return null;
     }
 }
 

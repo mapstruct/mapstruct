@@ -103,7 +103,7 @@ public class BeanMappingMethod extends MappingMethod {
             boolean mapNullToDefault =
                 MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 
-            MethodReference factoryMethod = AssignmentFactory.createFactoryMethod( method.getReturnType(), ctx );
+            MethodReference factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType() );
             return new BeanMappingMethod( method, propertyMappings, factoryMethod, mapNullToDefault );
         }
 
