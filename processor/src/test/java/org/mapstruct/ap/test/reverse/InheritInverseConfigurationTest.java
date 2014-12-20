@@ -120,18 +120,43 @@ public class InheritInverseConfigurationTest {
     }
 
     @Test
-    @WithClasses({ SourceTargetMapperErroneouslyAnnotated.class })
+    @WithClasses({ SourceTargetMapperErroneouslyAnnotated1.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated.class,
+            @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated1.class,
                 kind = Kind.ERROR,
-                line = 49,
+                line = 50,
                 messageRegExp = "Resolved inverse mapping method reverse\\(\\) should not carry the "
                     + "@InheritInverseConfiguration annotation itself.")
         }
     )
-    public void shouldUseWronglyAnnotatedError() {
+    public void shouldUseWronglyAnnotatedError1() {
+    }
+
+    @Test
+    @WithClasses({ SourceTargetMapperErroneouslyAnnotated2.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+                @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated2.class,
+                        kind = Kind.WARNING,
+                        line = 45,
+                        messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX, "
+                                + "someConstantDownstream, propertyToIgnoreDownstream\""),
+                @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated2.class,
+                        kind = Kind.ERROR,
+                        line = 47,
+                        messageRegExp = "Resolved inverse mapping method forward2\\(\\) should not carry "
+                                + "the @InheritConfiguration annotation"),
+                @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated2.class,
+                        kind = Kind.WARNING,
+                        line = 48,
+                        messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, "
+                                + "propertyNotToIgnoreUpstream\"")
+            }
+    )
+    public void shouldUseWronglyAnnotatedError2() {
     }
 
     @Test
@@ -152,4 +177,5 @@ public class InheritInverseConfigurationTest {
     )
     public void shouldAdviseOnSpecifyingCorrectName() {
     }
+
 }
