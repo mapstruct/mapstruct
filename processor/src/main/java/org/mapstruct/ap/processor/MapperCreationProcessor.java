@@ -50,6 +50,7 @@ import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.prism.DecoratedWithPrism;
+import org.mapstruct.ap.prism.InheritConfigurationPrism;
 import org.mapstruct.ap.prism.InheritInverseConfigurationPrism;
 import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.processor.creation.MappingResolverImpl;
@@ -247,14 +248,19 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
 
             SourceMethod inverseMappingMethod = getInverseMappingMethod( methods, method );
+            SourceMethod templateMappingMethod = getTemplateMappingMethod( methods, method );
 
             boolean hasFactoryMethod = false;
             if ( method.isIterableMapping() ) {
 
                 IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
-                if ( method.getIterableMapping() == null && inverseMappingMethod != null &&
-                    inverseMappingMethod.getIterableMapping() != null ) {
-                    method.setIterableMapping( inverseMappingMethod.getIterableMapping() );
+                if ( method.getIterableMapping() == null ) {
+                    if ( inverseMappingMethod != null && inverseMappingMethod.getIterableMapping() != null ) {
+                        method.setIterableMapping( inverseMappingMethod.getIterableMapping() );
+                    }
+                    else if ( templateMappingMethod != null && templateMappingMethod.getIterableMapping() != null ) {
+                        method.setIterableMapping( templateMappingMethod.getIterableMapping() );
+                    }
                 }
 
                 String dateFormat = null;
@@ -278,9 +284,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
 
-                if ( method.getMapMapping() == null && inverseMappingMethod != null &&
-                    inverseMappingMethod.getMapMapping() != null ) {
-                    method.setMapMapping( inverseMappingMethod.getMapMapping() );
+                if ( method.getMapMapping() == null ) {
+                    if ( inverseMappingMethod != null && inverseMappingMethod.getMapMapping() != null ) {
+                        method.setMapMapping( inverseMappingMethod.getMapMapping() );
+                    }
+                    else if ( templateMappingMethod != null && templateMappingMethod.getMapMapping() != null ) {
+                        method.setMapMapping( templateMappingMethod.getMapMapping() );
+                    }
                 }
                 String keyDateFormat = null;
                 String valueDateFormat = null;
@@ -308,7 +318,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( method.isEnumMapping() ) {
 
                 EnumMappingMethod.Builder builder = new EnumMappingMethod.Builder();
-                method.mergeWithInverseMappings( inverseMappingMethod );
+                method.mergeWithInverseMappings( inverseMappingMethod, templateMappingMethod );
                 MappingMethod enumMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
@@ -321,7 +331,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else {
 
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
-                method.mergeWithInverseMappings( inverseMappingMethod );
+                method.mergeWithInverseMappings( inverseMappingMethod, templateMappingMethod );
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
@@ -422,6 +432,90 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return result;
     }
 
+   /**
+     * Returns the configuring forward method in case the given method is annotated with
+     * {@code @InheritConfiguration} and exactly one such configuring method can unambiguously be selected (as
+     * per the source/target type and optionally the name given via {@code @InheritConfiguration}).
+     *
+     * The method cannot be marked forward mapping itself (hence 'ohter'). And neither can it contain an
+     * {@code @InheritReverseConfiguration}
+     */
+    private SourceMethod getTemplateMappingMethod(List<SourceMethod> rawMethods, SourceMethod method) {
+        SourceMethod result = null;
+        InheritConfigurationPrism forwardPrism = InheritConfigurationPrism.getInstanceOn(
+            method.getExecutable()
+        );
+
+        if (forwardPrism != null) {
+            reportErrorWhenInheritForwardAlsoHasInheritReverseMapping( method );
+
+            // method is configured as being reverse method, collect candidates
+            List<SourceMethod> candidates = new ArrayList<SourceMethod>();
+            for ( SourceMethod oneMethod : rawMethods ) {
+                // method must be similar but not equal
+                if ( oneMethod.isSame( method ) && !( oneMethod.equals( method ) ) ) {
+                    candidates.add( oneMethod );
+                }
+            }
+
+            String name = forwardPrism.name();
+            if ( candidates.size() == 1 ) {
+                // no ambiguity: if no configuredBy is specified, or configuredBy specified and match
+                if ( name.isEmpty() ) {
+                    result = candidates.get( 0 );
+                }
+                else if ( candidates.get( 0 ).getName().equals( name ) ) {
+                    result = candidates.get( 0 );
+                }
+                else {
+                    reportErrorWhenNonMatchingName( candidates.get( 0 ), method, forwardPrism );
+                }
+            }
+            else if ( candidates.size() > 1 ) {
+                // ambiguity: find a matching method that matches configuredBy
+
+                List<SourceMethod> nameFilteredcandidates = new ArrayList<SourceMethod>();
+                for ( SourceMethod candidate : candidates ) {
+                    if ( candidate.getName().equals( name ) ) {
+                        nameFilteredcandidates.add( candidate );
+                    }
+                }
+
+                if ( nameFilteredcandidates.size() == 1 ) {
+                    result = nameFilteredcandidates.get( 0 );
+                }
+                else if ( nameFilteredcandidates.size() > 1 ) {
+                    reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, forwardPrism );
+                }
+
+                if ( result == null ) {
+                    reportErrorWhenAmbigousMapping( candidates, method, forwardPrism );
+                }
+            }
+
+            if ( result != null ) {
+                reportErrorIfMethodHasAnnotation( result, method, forwardPrism );
+            }
+
+        }
+        return result;
+    }
+
+    private void reportErrorWhenInheritForwardAlsoHasInheritReverseMapping(SourceMethod method) {
+        InheritInverseConfigurationPrism reversePrism = InheritInverseConfigurationPrism.getInstanceOn(
+                method.getExecutable()
+        );
+        if ( reversePrism != null ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "Method cannot be annotated with both a @InheritConfiguration and @InheritInverseConfiguration",
+                method.getExecutable(),
+                reversePrism.mirror
+            );
+        }
+
+    }
+
     private void reportErrorIfInverseMethodHasInheritAnnotation(SourceMethod candidate,
                                                                 SourceMethod method,
                                                                 InheritInverseConfigurationPrism reversePrism) {
@@ -436,6 +530,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 String.format(
                     "Resolved inverse mapping method %s() should not carry the "
                         + "@InheritInverseConfiguration annotation itself.",
+                    candidate.getName()
+                ),
+                method.getExecutable(),
+                reversePrism.mirror
+            );
+        }
+
+        InheritConfigurationPrism candidateTemplatePrism = InheritConfigurationPrism.getInstanceOn(
+            candidate.getExecutable()
+        );
+        if ( candidateTemplatePrism != null ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                String.format(
+                    "Resolved inverse mapping method %s() should not carry the @InheritConfiguration annotation.",
                     candidate.getName()
                 ),
                 method.getExecutable(),
@@ -492,7 +601,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
-                                                InheritInverseConfigurationPrism reversePrism) {
+            InheritInverseConfigurationPrism reversePrism) {
 
         messager.printMessage(
             Diagnostic.Kind.ERROR,
@@ -504,4 +613,104 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             reversePrism.mirror
         );
     }
+
+    private void reportErrorIfMethodHasAnnotation(SourceMethod candidate,
+            SourceMethod method,
+            InheritConfigurationPrism prism) {
+
+        InheritConfigurationPrism candidatePrism = InheritConfigurationPrism.getInstanceOn(
+            candidate.getExecutable()
+        );
+
+        if ( candidatePrism != null ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                String.format(
+                    "Resolved mapping method %s() should not carry the @InheritConfiguration annotation itself.",
+                    candidate.getName()
+                ),
+                method.getExecutable(),
+                prism.mirror
+            );
+        }
+
+        InheritInverseConfigurationPrism candidateInversePrism = InheritInverseConfigurationPrism.getInstanceOn(
+            candidate.getExecutable()
+        );
+
+        if ( candidateInversePrism != null ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                String.format(
+                    "Resolved mapping method %s() should not carry the @InheritInverseConfiguration annotation.",
+                    candidate.getName()
+                ),
+                method.getExecutable(),
+                prism.mirror
+            );
+        }
+    }
+
+    private void reportErrorWhenAmbigousMapping(List<SourceMethod> candidates, SourceMethod method,
+                                                       InheritConfigurationPrism prism) {
+
+        List<String> candidateNames = new ArrayList<String>();
+        for ( SourceMethod candidate : candidates ) {
+            candidateNames.add( candidate.getName() );
+        }
+
+        String name = prism.name();
+        if ( name.isEmpty() ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                String.format(
+                    "Several matching methods exist: %s(). Specify a name explicitly.",
+                    Strings.join( candidateNames, "(), " )
+                ),
+                method.getExecutable(),
+                prism.mirror
+            );
+        }
+        else {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                String.format(
+                    "None of the candidates %s() matches given name: \"%s\".",
+                    Strings.join( candidateNames, "(), " ), name
+                ),
+                method.getExecutable(),
+                prism.mirror
+            );
+        }
+    }
+
+    private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
+                                                  InheritConfigurationPrism prism) {
+
+        messager.printMessage(
+            Diagnostic.Kind.ERROR,
+            String.format(
+                "Given name \"%s\" matches several candidate methods: %s().",
+                prism.name(), Strings.join( candidates, "(), " )
+            ),
+            method.getExecutable(),
+            prism.mirror
+        );
+    }
+
+    private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
+                                                InheritConfigurationPrism prims) {
+
+        messager.printMessage(
+            Diagnostic.Kind.ERROR,
+            String.format(
+                "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\".",
+                prims.name(), onlyCandidate.getName()
+            ),
+            method.getExecutable(),
+            prims.mirror
+        );
+    }
+
+
 }

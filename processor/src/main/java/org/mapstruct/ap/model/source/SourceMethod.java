@@ -279,6 +279,14 @@ public class SourceMethod implements Method {
             && equals( getResultType(), method.getSourceParameters().iterator().next().getType() );
     }
 
+
+    public boolean isSame(SourceMethod method) {
+        return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
+            && equals( getSourceParameters().iterator().next().getType(),
+                    method.getSourceParameters().iterator().next().getType())
+            && equals( getResultType(), method.getResultType() );
+    }
+
     /**
      * {@inheritDoc} {@link Method}
      */
@@ -405,13 +413,15 @@ public class SourceMethod implements Method {
     /**
      * Merges in all the mappings configured via the given inverse mapping method, giving the locally defined mappings
      * precedence.
+     * @param inverseMethod
+     * @param templateMethod
      */
-    public void mergeWithInverseMappings(SourceMethod inverseMethod) {
+    public void mergeWithInverseMappings(SourceMethod inverseMethod, SourceMethod templateMethod) {
         Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();
 
         if ( inverseMethod != null && !inverseMethod.getMappings().isEmpty() ) {
-            for ( List<Mapping> mappings : inverseMethod.getMappings().values() ) {
-                for ( Mapping inverseMapping : mappings ) {
+            for ( List<Mapping> lmappings : inverseMethod.getMappings().values() ) {
+                for ( Mapping inverseMapping : lmappings ) {
                     Mapping reversed = inverseMapping.reverse( this, messager, typeFactory );
                     if ( reversed != null ) {
                         List<Mapping> mappingsOfProperty = newMappings.get( reversed.getTargetName() );
@@ -420,6 +430,21 @@ public class SourceMethod implements Method {
                             newMappings.put( reversed.getTargetName(), mappingsOfProperty );
                         }
                         mappingsOfProperty.add( reversed );
+                    }
+                }
+            }
+        }
+
+        if ( templateMethod != null && !templateMethod.getMappings().isEmpty() ) {
+            for ( List<Mapping> lmappings : templateMethod.getMappings().values() ) {
+                for ( Mapping templateMapping : lmappings ) {
+                    if ( templateMapping != null ) {
+                        List<Mapping> mappingsOfProperty = newMappings.get( templateMapping.getTargetName() );
+                        if ( mappingsOfProperty == null ) {
+                            mappingsOfProperty = new ArrayList<Mapping>();
+                            newMappings.put( templateMapping.getTargetName(), mappingsOfProperty );
+                        }
+                        mappingsOfProperty.add( templateMapping );
                     }
                 }
             }

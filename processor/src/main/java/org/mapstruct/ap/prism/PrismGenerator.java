@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import net.java.dev.hickory.prism.GeneratePrism;
 import net.java.dev.hickory.prism.GeneratePrisms;
 import org.mapstruct.DecoratedWith;
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
@@ -50,6 +51,7 @@ import org.mapstruct.TargetType;
     @GeneratePrism(value = MappingTarget.class, publicAccess = true),
     @GeneratePrism(value = DecoratedWith.class, publicAccess = true),
     @GeneratePrism(value = MapperConfig.class, publicAccess = true),
+    @GeneratePrism(value = InheritConfiguration.class, publicAccess = true),
     @GeneratePrism(value = InheritInverseConfiguration.class, publicAccess = true),
     @GeneratePrism(value = Qualifier.class, publicAccess = true),
     @GeneratePrism(value = NullValueMapping.class, publicAccess = true),

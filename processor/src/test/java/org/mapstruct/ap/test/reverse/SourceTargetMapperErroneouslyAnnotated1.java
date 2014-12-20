@@ -28,9 +28,10 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper
-public interface SourceTargetMapperErroneouslyAnnotated {
+public interface SourceTargetMapperErroneouslyAnnotated1 {
 
-    SourceTargetMapperErroneouslyAnnotated INSTANCE = Mappers.getMapper( SourceTargetMapperErroneouslyAnnotated.class );
+    SourceTargetMapperErroneouslyAnnotated1 INSTANCE =
+            Mappers.getMapper( SourceTargetMapperErroneouslyAnnotated1.class );
 
     @Mappings({
         @Mapping(source = "stringPropX", target = "stringPropY"),
