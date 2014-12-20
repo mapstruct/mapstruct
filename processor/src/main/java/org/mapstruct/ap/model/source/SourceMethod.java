@@ -287,6 +287,39 @@ public class SourceMethod implements Method {
             && equals( getResultType(), method.getResultType() );
     }
 
+    public boolean isSimilar(SourceMethod method) {
+        Map<Type, Integer> test = new HashMap<Type, Integer>();
+
+        // check how many times a type occurs
+        for (Parameter sourceParam : method.getSourceParameters() ) {
+            Type sourceType = sourceParam.getType();
+            if ( !test.containsKey( sourceType ) ) {
+                test.put( sourceType, 0 );
+            }
+            increase( sourceType, test );
+        }
+
+        // check if this method also contains the same time each parameter type.
+        for (Parameter sourceParam : getSourceParameters() ) {
+            Type sourceType = sourceParam.getType();
+            if ( !test.containsKey( sourceType ) ) {
+                // method contains a different parameter type than this
+                return false;
+            }
+            decrease( sourceType, test );
+        }
+
+        // now, if they match they should have the same source parameter types each
+        for ( Integer count : test.values() ) {
+            if ( count != 0 ) {
+                return false;
+            }
+        }
+
+        // finally check the return type.
+        return  equals( getResultType(), method.getResultType() );
+    }
+
     /**
      * {@inheritDoc} {@link Method}
      */
@@ -461,5 +494,17 @@ public class SourceMethod implements Method {
             // the mapping method is NOT configuredByReverseMappingMethod,
             getMappings().putAll( newMappings );
         }
+    }
+
+    private void increase(Type key, Map<Type, Integer> test) {
+        Integer count = test.get( key );
+        count++;
+        test.put( key, count );
+    }
+
+    private void decrease(Type key, Map<Type, Integer> test) {
+        Integer count = test.get( key );
+        count--;
+        test.put( key, count );
     }
 }

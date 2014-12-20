@@ -94,6 +94,34 @@ public class InheritConfigurationTest {
 
     }
 
+   @Test
+    @WithClasses({ SourceTargetMapperSeveralArgs.class })
+    public void shouldInheritConfigurationSeveralArgs() {
+
+        Source source = new Source();
+        source.setStringPropX( "1" );
+        source.setIntegerPropX( 2 );
+        source.setNestedSourceProp( new NestedSource("nested") );
+
+        Target createdTarget = SourceTargetMapperSeveralArgs.INSTANCE.forwardCreate( source, "constant", "expression" );
+        assertThat( createdTarget ).isNotNull();
+        assertThat( createdTarget.getStringPropY() ).isEqualTo( "1" );
+        assertThat( createdTarget.getIntegerPropY() ).isEqualTo( 2 );
+        assertThat( createdTarget.getNestedResultProp() ).isEqualTo( "nested");
+        assertThat( createdTarget.getExpressionProp() ).isEqualTo( "expression" );
+        assertThat( createdTarget.getConstantProp() ).isEqualTo( "constant" );
+
+        Target updatedTarget = new Target();
+        SourceTargetMapperSeveralArgs.INSTANCE.forwardUpdate( source, "constant", "expression", updatedTarget );
+        assertThat( updatedTarget ).isNotNull();
+        assertThat( updatedTarget.getStringPropY() ).isEqualTo( "1" );
+        assertThat( updatedTarget.getIntegerPropY() ).isEqualTo( 2 );
+        assertThat( updatedTarget.getNestedResultProp() ).isEqualTo( "nested" );
+        assertThat( updatedTarget.getExpressionProp() ).isEqualTo( "expression" );
+        assertThat( updatedTarget.getConstantProp() ).isEqualTo( "constant" );
+
+    }
+
     @Test
     @WithClasses({ SourceTargetMapperAmbiguous1.class })
     @ExpectedCompilationOutcome(

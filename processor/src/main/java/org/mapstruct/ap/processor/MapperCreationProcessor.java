@@ -453,7 +453,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             List<SourceMethod> candidates = new ArrayList<SourceMethod>();
             for ( SourceMethod oneMethod : rawMethods ) {
                 // method must be similar but not equal
-                if ( oneMethod.isSame( method ) && !( oneMethod.equals( method ) ) ) {
+                if ( oneMethod.isSimilar( method ) && !( oneMethod.equals( method ) ) ) {
                     candidates.add( oneMethod );
                 }
             }
