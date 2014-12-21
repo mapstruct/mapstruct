@@ -36,9 +36,9 @@ import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
-import org.mapstruct.ap.util.Executables;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.
@@ -61,6 +61,7 @@ public class Mapping {
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
     private SourceReference sourceReference;
+    private SourceReference targetReference;
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
                                                                ExecutableElement method,
@@ -252,20 +253,13 @@ public class Mapping {
         return sourceReference;
     }
 
+    public SourceReference getTargetReference() {
+        return targetReference;
+    }
+
     private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
-        for ( ExecutableElement getter : method.getResultType().getGetters() ) {
-            if ( Executables.getPropertyName( getter ).equals( name ) ) {
-                return true;
-            }
-        }
-
-        for ( ExecutableElement getter : method.getResultType().getAlternativeTargetAccessors() ) {
-            if ( Executables.getPropertyName( getter ).equals( name ) ) {
-                return true;
-            }
-        }
-
-        return false;
+        CollectionMappingStrategyPrism cms = method.getConfig().getCollectionMappingStrategy();
+        return method.getResultType().getTargetAccessors( cms ).containsKey( name );
     }
 
     public Mapping reverse(SourceMethod method, Messager messager, TypeFactory typeFactory) {

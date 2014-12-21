@@ -21,6 +21,7 @@ package org.mapstruct.ap.model.common;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +37,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
@@ -56,6 +58,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private final Types typeUtils;
     private final Elements elementUtils;
+    private final TypeFactory typeFactory;
 
     private final TypeMirror typeMirror;
     private final TypeElement typeElement;
@@ -85,13 +88,16 @@ public class Type extends ModelElement implements Comparable<Type> {
     private List<ExecutableElement> alternativeTargetAccessors = null;
 
     //CHECKSTYLE:OFF
-    public Type(Types typeUtils, Elements elementUtils, TypeMirror typeMirror, TypeElement typeElement,
-                List<Type> typeParameters, Type implementationType, Type componentType, String packageName, String name,
-                String qualifiedName, boolean isInterface, boolean isEnumType, boolean isIterableType,
+    public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
+                TypeMirror typeMirror, TypeElement typeElement,
+                List<Type> typeParameters, Type implementationType, Type componentType,
+                String packageName, String name, String qualifiedName,
+                boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isImported) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
+        this.typeFactory = typeFactory;
 
         this.typeMirror = typeMirror;
         this.typeElement = typeElement;
@@ -270,6 +276,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         return new Type(
             typeUtils,
             elementUtils,
+                typeFactory,
             SpecificCompilerWorkarounds.erasure( typeUtils, typeMirror ),
             typeElement,
             typeParameters,
@@ -316,6 +323,64 @@ public class Type extends ModelElement implements Comparable<Type> {
         return getters;
     }
 
+    /**
+     * getTargetAccessors returns a list of the target accessors according to the CollectionMappingStrategy. These
+     * accessors include:
+     * <p>
+     * <ul>
+     *  <li>setters, the obvious candidate :-), {@link #getSetters() }</li>
+     *  <li>getters, for collections that do not have a setter, e.g. for JAXB generated collection attributes
+     * {@link #getGetters() }</li>
+     *  <li>adders, typically for from table generated entities, {@link #getAdders() }</li>
+     * </ul>
+     * </p>
+     * @param cmStrategy
+     * @return an unmodifiable list of all getters (including 'is' for booleans).
+     */
+    public Map<String, ExecutableElement> getTargetAccessors( CollectionMappingStrategyPrism cmStrategy ) {
+
+        // collect all candidate target accessors
+        List<ExecutableElement> candidates = new ArrayList<ExecutableElement>();
+        candidates.addAll( getSetters() );
+        candidates.addAll( getAlternativeTargetAccessors() );
+
+        Map<String, ExecutableElement> result = new HashMap<String, ExecutableElement>();
+
+        for ( ExecutableElement candidate : candidates ) {
+            String targetPropertyName = Executables.getPropertyName( candidate );
+
+            // A target access is in general a setter method on the target object. However, in case of collections,
+            // the current target accessor can also be a getter method.
+            // The following if block, checks if the target accessor should be overruled by an add method.
+            if ( cmStrategy == CollectionMappingStrategyPrism.SETTER_PREFERRED
+                    || cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
+
+                // first check if there's a setter method.
+                ExecutableElement adderMethod = null;
+                if ( Executables.isSetterMethod( candidate ) ) {
+                    Type targetType = typeFactory.getSingleParameter( candidate ).getType();
+                    // ok, the current accessor is a setter. So now the strategy determines what to use
+                    if ( cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
+                        adderMethod = getAdderForType( targetType, targetPropertyName );
+                    }
+                }
+                else if ( Executables.isGetterMethod( candidate ) ) {
+                        // the current accessor is a getter (no setter available). But still, an add method is according
+                    // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
+                    Type targetType = typeFactory.getReturnType( candidate );
+                    adderMethod = getAdderForType( targetType, targetPropertyName );
+                }
+                if ( adderMethod != null ) {
+                    // an adder has been found (according strategy) so overrule current choice.
+                    candidate = adderMethod;
+                }
+            }
+
+            result.put( targetPropertyName, candidate );
+        }
+        return result;
+    }
+
     private List<ExecutableElement> getAllExecutables() {
         if ( allExecutables == null ) {
             allExecutables = Executables.getAllEnclosedExecutableElements( elementUtils, typeElement );
@@ -341,7 +406,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return corresponding adder method for getter when present
      */
-    public ExecutableElement getAdderForType(Type collectionProperty, String pluralPropertyName) {
+    private ExecutableElement getAdderForType(Type collectionProperty, String pluralPropertyName) {
 
         List<ExecutableElement> candidates = new ArrayList<ExecutableElement>();
         if ( collectionProperty.isCollectionType ) {
@@ -385,7 +450,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable list of all setters
      */
-    public List<ExecutableElement> getSetters() {
+    private List<ExecutableElement> getSetters() {
         if ( setters == null ) {
             setters = Collections.unmodifiableList( Filters.setterMethodsIn( getAllExecutables() ) );
         }
@@ -416,7 +481,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable list of alternative target accessors.
      */
-    public List<ExecutableElement> getAlternativeTargetAccessors() {
+    private List<ExecutableElement> getAlternativeTargetAccessors() {
         if ( alternativeTargetAccessors == null ) {
 
             List<ExecutableElement> result = new ArrayList<ExecutableElement>();

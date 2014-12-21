@@ -130,7 +130,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         //add method with property mappings if an implementation needs to be generated
         if ( ( usedMapper.equals( mapperToImplement ) ) && methodRequiresImplementation ) {
-            return getMethodRequiringImplementation( methodType, method, parameters, containsTargetTypeParameter );
+            return getMethodRequiringImplementation( methodType,
+                method,
+                parameters,
+                containsTargetTypeParameter,
+                mapperToImplement );
         }
         //otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( parameters ) ) {
@@ -143,7 +147,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private SourceMethod getMethodRequiringImplementation(ExecutableType methodType, ExecutableElement method,
                                                           List<Parameter> parameters,
-                                                          boolean containsTargetTypeParameter) {
+                                                          boolean containsTargetTypeParameter,
+                                                          TypeElement mapperToImplement) {
         Type returnType = typeFactory.getReturnType( methodType );
         List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
         List<Parameter> sourceParameters = extractSourceParameters( parameters );
@@ -173,7 +178,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager ),
             typeUtils,
             messager,
-            typeFactory
+            typeFactory,
+            MapperConfig.getInstanceOn( mapperToImplement )
         );
     }
 

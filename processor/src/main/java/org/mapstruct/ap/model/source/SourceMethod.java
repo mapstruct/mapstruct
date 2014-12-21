@@ -34,6 +34,7 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
+import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -59,11 +60,14 @@ public class SourceMethod implements Method {
     private final Type returnType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
+    private final MapperConfig config;
 
     private Map<String, List<Mapping>> mappings;
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
 
+    //CHECKSTYLE:OFF
+    // TODO use builder
     public static SourceMethod forMethodRequiringImplementation(ExecutableElement executable,
                                                                 List<Parameter> parameters,
                                                                 Type returnType,
@@ -72,7 +76,8 @@ public class SourceMethod implements Method {
                                                                 IterableMapping iterableMapping, MapMapping mapMapping,
                                                                 Types typeUtils,
                                                                 Messager messager,
-                                                                TypeFactory typeFactory) {
+                                                                TypeFactory typeFactory,
+                                                                MapperConfig config) {
 
         SourceMethod sourceMethod = new SourceMethod(
             null,
@@ -85,7 +90,8 @@ public class SourceMethod implements Method {
             mapMapping,
             typeUtils,
             typeFactory,
-            messager
+            messager,
+            config
         );
 
         for ( Map.Entry<String, List<Mapping>> entry : sourceMethod.getMappings().entrySet() ) {
@@ -95,6 +101,7 @@ public class SourceMethod implements Method {
         }
         return sourceMethod;
     }
+    //CHECKSTYLE:ON
 
     public static SourceMethod forReferencedMethod(Type declaringMapper, ExecutableElement executable,
                                                    List<Parameter> parameters, Type returnType,
@@ -110,6 +117,7 @@ public class SourceMethod implements Method {
             null,
             null,
             typeUtils,
+            null,
             null,
             null
         );
@@ -129,6 +137,7 @@ public class SourceMethod implements Method {
             null,
             typeUtils,
             null,
+            null,
             null
         );
     }
@@ -137,7 +146,7 @@ public class SourceMethod implements Method {
     private SourceMethod(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
                          Type returnType, List<Type> exceptionTypes, Map<String, List<Mapping>> mappings,
                          IterableMapping iterableMapping, MapMapping mapMapping, Types typeUtils,
-                         TypeFactory typeFactory, Messager messager) {
+                         TypeFactory typeFactory, Messager messager, MapperConfig config) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
@@ -153,6 +162,7 @@ public class SourceMethod implements Method {
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
         this.messager = messager;
+        this.config = config;
     }
     //CHECKSTYLE:ON
 
@@ -512,4 +522,12 @@ public class SourceMethod implements Method {
         count--;
         test.put( key, count );
     }
+    /**
+     *
+     * @return the mapper config when this method needs to be implemented
+     */
+    public MapperConfig getConfig() {
+        return config;
+    }
+
 }

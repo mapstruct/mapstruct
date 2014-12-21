@@ -75,7 +75,9 @@ public class BeanMappingMethod extends MappingMethod {
 
         public Builder souceMethod(SourceMethod sourceMethod) {
             this.method = sourceMethod;
-            this.unprocessedTargetProperties = initTargetPropertyAccessors();
+            CollectionMappingStrategyPrism cms = sourceMethod.getConfig().getCollectionMappingStrategy();
+            Map<String, ExecutableElement> accessors = method.getResultType().getTargetAccessors( cms );
+            this.unprocessedTargetProperties = new HashMap<String, ExecutableElement>( accessors );
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
             }
@@ -105,56 +107,6 @@ public class BeanMappingMethod extends MappingMethod {
 
             MethodReference factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType() );
             return new BeanMappingMethod( method, propertyMappings, factoryMethod, mapNullToDefault );
-        }
-
-        /**
-         * This method builds the list of target accessors.
-         */
-        private Map<String, ExecutableElement> initTargetPropertyAccessors() {
-            // fetch settings from element to implement
-            CollectionMappingStrategyPrism cmStrategy = getEffectiveCollectionMappingStrategy();
-
-            // collect all candidate target accessors
-            List<ExecutableElement> candidates = new ArrayList<ExecutableElement>();
-            candidates.addAll( method.getResultType().getSetters() );
-            candidates.addAll( method.getResultType().getAlternativeTargetAccessors() );
-
-            Map<String, ExecutableElement> targetProperties = new HashMap<String, ExecutableElement>();
-
-            for ( ExecutableElement candidate : candidates ) {
-                String targetPropertyName = Executables.getPropertyName( candidate );
-
-                // A target access is in general a setter method on the target object. However, in case of collections,
-                // the current target accessor can also be a getter method.
-                // The following if block, checks if the target accessor should be overruled by an add method.
-                if ( cmStrategy == CollectionMappingStrategyPrism.SETTER_PREFERRED
-                    || cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
-
-                    // first check if there's a setter method.
-                    ExecutableElement adderMethod = null;
-                    if ( Executables.isSetterMethod( candidate ) ) {
-                        Type targetType = ctx.getTypeFactory().getSingleParameter( candidate ).getType();
-                        // ok, the current accessor is a setter. So now the strategy determines what to use
-                        if ( cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
-                            adderMethod = method.getResultType().getAdderForType( targetType, targetPropertyName );
-                        }
-                    }
-                    else if ( Executables.isGetterMethod( candidate ) ) {
-                        // the current accessor is a getter (no setter available). But still, an add method is according
-                        // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
-                        Type targetType = ctx.getTypeFactory().getReturnType( candidate );
-                        adderMethod = method.getResultType().getAdderForType( targetType, targetPropertyName );
-                    }
-                    if ( adderMethod != null ) {
-                        // an adder has been found (according strategy) so overrule current choice.
-                        candidate = adderMethod;
-                    }
-                }
-
-                targetProperties.put( targetPropertyName, candidate );
-            }
-
-            return targetProperties;
         }
 
         /**
@@ -449,12 +401,6 @@ public class BeanMappingMethod extends MappingMethod {
                 return ctx.getOptions().getUnmappedTargetPolicy();
             }
         }
-
-        private CollectionMappingStrategyPrism getEffectiveCollectionMappingStrategy() {
-            MapperConfig mapperSettings = MapperConfig.getInstanceOn( ctx.getMapperTypeElement() );
-            return mapperSettings.getCollectionMappingStrategy();
-        }
-
 
         private void reportErrorForUnmappedTargetPropertiesIfRequired() {
 

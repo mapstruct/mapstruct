@@ -194,7 +194,7 @@ public class TypeFactory {
         }
 
         return new Type(
-            typeUtils, elementUtils,
+            typeUtils, elementUtils, this,
             mirror,
             typeElement,
             getTypeParameters( mirror ),
@@ -377,6 +377,7 @@ public class TypeFactory {
             return new Type(
                 typeUtils,
                 elementUtils,
+                this,
                 typeUtils.getDeclaredType(
                     implementationType.getTypeElement(),
                     declaredType.getTypeArguments().toArray( new TypeMirror[] { } )
