@@ -18,6 +18,11 @@
  */
 package org.mapstruct.ap.model.common;
 
+import org.mapstruct.ap.util.Strings;
+
+import javax.annotation.processing.Messager;
+import javax.tools.Diagnostic;
+
 /**
  * Default implementation of the {@link ConversionContext} passed to conversion providers.
  *
@@ -25,14 +30,34 @@ package org.mapstruct.ap.model.common;
  */
 public class DefaultConversionContext implements ConversionContext {
 
+    private final Messager messager;
+    private final Type sourceType;
     private final Type targetType;
-    private final String format;
+    private final String dateFormat;
     private final TypeFactory typeFactory;
 
-    public DefaultConversionContext(TypeFactory typeFactory, Type targetType, String format) {
+    public DefaultConversionContext(TypeFactory typeFactory, Messager messager, Type sourceType, Type targetType,
+                                    String dateFormat) {
         this.typeFactory = typeFactory;
+        this.messager = messager;
+        this.sourceType = sourceType;
         this.targetType = targetType;
-        this.format = format;
+        this.dateFormat = dateFormat;
+        validateDateFormat();
+    }
+
+    /**
+     * Validate the dateFormat if it is not null
+     */
+    private void validateDateFormat() {
+        if ( !Strings.isEmpty( dateFormat ) ) {
+            DateFormatValidator dateFormatValidator = DateFormatValidatorFactory.forTypes( sourceType, targetType );
+            DateFormatValidationResult validationResult = dateFormatValidator.validate( dateFormat );
+
+            if ( !validationResult.isValid() ) {
+                messager.printMessage( Diagnostic.Kind.ERROR, validationResult.validationInformation() );
+            }
+        }
     }
 
     @Override
@@ -42,11 +67,15 @@ public class DefaultConversionContext implements ConversionContext {
 
     @Override
     public String getDateFormat() {
-        return format;
+        return dateFormat;
     }
 
     @Override
     public TypeFactory getTypeFactory() {
         return typeFactory;
+    }
+
+    protected Messager getMessager() {
+        return messager;
     }
 }

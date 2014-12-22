@@ -16,24 +16,34 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
-
-import org.mapstruct.ap.util.JodaTimeConstants;
+package org.mapstruct.ap.model.common;
 
 /**
- * Conversion between {@code DateTime} and {@code String}.
- *
- * @author Timo Eckhardt
+ * Reflects the result of a date format validation
  */
-public class JodaDateTimeToStringConversion extends AbstractJodaTypeToStringConversion {
+final class DateFormatValidationResult {
 
-    @Override
-    protected String formatStyle() {
-        return JodaTimeConstants.DATE_TIME_FORMAT;
+    private final boolean isValid;
+    private final String validationInformation;
+
+    /**
+     * Create a new instance.
+     *
+     * @param isValid determines of the validation was successful.
+     * @param validationInformation a string representing the validation result
+     */
+    DateFormatValidationResult(boolean isValid, String validationInformation) {
+
+        this.isValid = isValid;
+        this.validationInformation = validationInformation;
     }
 
-    @Override
-    protected String parseMethod() {
-        return "parseDateTime";
+    public boolean isValid() {
+        return isValid;
     }
+
+    public String validationInformation() {
+        return validationInformation;
+    }
+
 }
