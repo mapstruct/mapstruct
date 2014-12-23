@@ -16,20 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.map.targets;
+package org.mapstruct.ap.test.bugs._394.source;
 
 public class AnotherCar {
 
     private String make;
-    private int seatCount;
-    private Long price;
+    private int numberOfSeats;
+    private int price;
 
     public AnotherCar() {
     }
 
-    public AnotherCar(String make, int seatCount) {
+    public AnotherCar(String make, int numberOfSeats) {
         this.make = make;
-        this.seatCount = seatCount;
+        this.numberOfSeats = numberOfSeats;
     }
 
     public String getMake() {
@@ -40,20 +40,20 @@ public class AnotherCar {
         this.make = make;
     }
 
-    public int getSeatCount() {
-        return seatCount;
+    public int getNumberOfSeats() {
+        return numberOfSeats;
     }
 
-    public void setSeatCount(int seatCount) {
-        this.seatCount = seatCount;
+    public void setNumberOfSeats(int numberOfSeats) {
+        this.numberOfSeats = numberOfSeats;
     }
 
-    public Long getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(int price) {
         this.price = price;
     }
-}
 
+}

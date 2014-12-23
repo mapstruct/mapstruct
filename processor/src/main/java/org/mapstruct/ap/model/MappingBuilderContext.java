@@ -168,6 +168,25 @@ public class MappingBuilderContext {
         return mappingsToGenerate;
     }
 
+    public List<String> getNamesOfMappingsToGenerate() {
+        List<String> nameList = new ArrayList<String>();
+        for ( MappingMethod method : mappingsToGenerate ) {
+            nameList.add( method.getName() );
+        }
+        return nameList;
+    }
+
+    public MappingMethod getExistingMappingMethod(MappingMethod newMappingMethod) {
+        MappingMethod existingMappingMethod = null;
+        for ( MappingMethod mappingMethod : mappingsToGenerate ) {
+            if ( newMappingMethod.equals( mappingMethod ) ) {
+                existingMappingMethod = mappingMethod;
+                break;
+            }
+        }
+        return existingMappingMethod;
+    }
+
     public Set<VirtualMappingMethod> getUsedVirtualMappings() {
         return mappingResolver.getUsedVirtualMappings();
     }

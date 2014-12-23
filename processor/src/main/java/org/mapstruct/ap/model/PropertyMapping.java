@@ -48,10 +48,9 @@ import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_C
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
 
 /**
- * Represents the mapping between a source and target property, e.g. from
- * {@code String Source#foo} to {@code int Target#bar}. Name and type of source
- * and target property can differ. If they have different types, the mapping
- * must either refer to a mapping method or a conversion.
+ * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
+ * {@code int Target#bar}. Name and type of source and target property can differ. If they have different types, the
+ * mapping must either refer to a mapping method or a conversion.
  *
  * @author Gunnar Morling
  */
@@ -169,7 +168,7 @@ public class PropertyMapping extends ModelElement {
                     Diagnostic.Kind.ERROR,
                     String.format(
                         "Can't map %s to \"%s %s\". "
-                            + "Consider to declare/implement a mapping method: \"%s map(%s value)\".",
+                        + "Consider to declare/implement a mapping method: \"%s map(%s value)\".",
                         sourceElement,
                         targetType,
                         targetPropertyName,
@@ -268,7 +267,6 @@ public class PropertyMapping extends ModelElement {
             return result;
         }
 
-
         private Type getSourceType() {
 
             Parameter sourceParam = sourceReference.getParameter();
@@ -304,16 +302,17 @@ public class PropertyMapping extends ModelElement {
                 PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
 
                 // forge a method from the parameter type to the last entry type.
-                String forgedMethodName = Strings.joinAndCamelize( sourceReference.getElementNames() );
-                ForgedMethod methodToGenerate = new ForgedMethod(
-                    forgedMethodName,
+                String forgedName = Strings.joinAndCamelize( sourceReference.getElementNames() );
+                forgedName = Strings.getSaveVariableName( forgedName, ctx.getNamesOfMappingsToGenerate() );
+                ForgedMethod methodRef = new ForgedMethod(
+                    forgedName,
                     sourceReference.getParameter().getType(),
                     lastPropertyEntry.getType(),
                     method.getExecutable()
                 );
                 NestedPropertyMappingMethod.Builder builder = new NestedPropertyMappingMethod.Builder();
                 NestedPropertyMappingMethod nestedPropertyMapping = builder
-                    .method( methodToGenerate )
+                    .method( methodRef )
                     .propertyEntries( sourceReference.getPropertyEntries() )
                     .build();
 
@@ -321,8 +320,11 @@ public class PropertyMapping extends ModelElement {
                 if ( !ctx.getMappingsToGenerate().contains( nestedPropertyMapping ) ) {
                     ctx.getMappingsToGenerate().add( nestedPropertyMapping );
                 }
+                else {
+                    forgedName = ctx.getExistingMappingMethod( nestedPropertyMapping ).getName();
+                }
 
-                return forgedMethodName + "( " + sourceParam.getName() + " )";
+                return forgedName + "( " + sourceParam.getName() + " )";
             }
         }
 
@@ -374,42 +376,69 @@ public class PropertyMapping extends ModelElement {
                                                      ExecutableElement element) {
 
             Assignment assignment = null;
-            if ( ( sourceType.isCollectionType() || sourceType.isArrayType() )
-                   && ( targetType.isCollectionType() || targetType.isArrayType() ) ) {
 
-                ForgedMethod methodToGenerate = new ForgedMethod( sourceType, targetType, element );
+            String name = getName( sourceType, targetType );
+            name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
+
+            if ( (sourceType.isCollectionType() || sourceType.isArrayType())
+                && (targetType.isCollectionType() || targetType.isArrayType()) ) {
+
+                ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, element );
                 IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
-
 
                 IterableMappingMethod iterableMappingMethod = builder
                     .mappingContext( ctx )
-                    .method( methodToGenerate )
+                    .method( methodRef )
                     .build();
 
                 if ( !ctx.getMappingsToGenerate().contains( iterableMappingMethod ) ) {
                     ctx.getMappingsToGenerate().add( iterableMappingMethod );
                 }
-                assignment = AssignmentFactory.createMethodReference( methodToGenerate, null, targetType );
+                else {
+                    String existingName = ctx.getExistingMappingMethod( iterableMappingMethod ).getName();
+                    methodRef = new ForgedMethod( existingName, methodRef );
+                }
+
+                assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
                 assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
 
             }
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
 
-                ForgedMethod methodToGenerate = new ForgedMethod( sourceType, targetType, element );
+                ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, element );
 
                 MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
                 MapMappingMethod mapMappingMethod = builder
                     .mappingContext( ctx )
-                    .method( methodToGenerate )
+                    .method( methodRef )
                     .build();
 
                 if ( !ctx.getMappingsToGenerate().contains( mapMappingMethod ) ) {
                     ctx.getMappingsToGenerate().add( mapMappingMethod );
                 }
-                assignment = AssignmentFactory.createMethodReference( methodToGenerate, null, targetType );
+                else {
+                    String existingName = ctx.getExistingMappingMethod( mapMappingMethod ).getName();
+                    methodRef = new ForgedMethod( existingName, methodRef );
+                }
+                assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
                 assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
             }
             return assignment;
+        }
+
+        private String getName(Type sourceType, Type targetType) {
+            String fromName = getName( sourceType );
+            String toName = getName( targetType );
+            return Strings.decapitalize( fromName + "To" + toName );
+        }
+
+        private String getName(Type type) {
+            StringBuilder builder = new StringBuilder();
+            for ( Type typeParam : type.getTypeParameters() ) {
+                builder.append( typeParam.getName().replace( "[]", "Array" ) );
+            }
+            builder.append( type.getName().replace( "[]", "Array" ) );
+            return builder.toString();
         }
     }
 
@@ -554,9 +583,7 @@ public class PropertyMapping extends ModelElement {
             return new PropertyMapping( targetAccessor.getSimpleName().toString(), targetType, assignment );
         }
 
-
     }
-
 
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String targetAccessorName, Type targetType, Assignment propertyAssignment) {
@@ -596,10 +623,10 @@ public class PropertyMapping extends ModelElement {
 
     @Override
     public String toString() {
-        return "PropertyMapping {" +
-            "\n    targetName='" + targetAccessorName + "\'," +
-            "\n    targetType=" + targetType + "," +
-            "\n    propertyAssignment=" + assignment +
-            "\n}";
+        return "PropertyMapping {"
+            + "\n    targetName='" + targetAccessorName + "\',"
+            + "\n    targetType=" + targetType + ","
+            + "\n    propertyAssignment=" + assignment
+            + "\n}";
     }
 }

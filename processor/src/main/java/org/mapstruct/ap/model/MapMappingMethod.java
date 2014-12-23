@@ -27,7 +27,6 @@ import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
 import org.mapstruct.ap.util.MapperConfig;
@@ -46,7 +45,6 @@ public class MapMappingMethod extends MappingMethod {
     private final MethodReference factoryMethod;
     private final boolean overridden;
     private final boolean mapNullToDefault;
-    private final TypeFactory typeFactory;
 
     public static class Builder {
 
@@ -153,14 +151,13 @@ public class MapMappingMethod extends MappingMethod {
                 keyAssignment,
                 valueAssignment,
                 factoryMethod,
-                mapNullToDefault,
-                ctx.getTypeFactory()
+                mapNullToDefault
             );
         }
     }
 
     private MapMappingMethod(Method method, Assignment keyAssignment, Assignment valueAssignment,
-                             MethodReference factoryMethod, boolean mapNullToDefault, TypeFactory typeFactory) {
+                             MethodReference factoryMethod, boolean mapNullToDefault) {
         super( method );
 
         this.keyAssignment = keyAssignment;
@@ -168,7 +165,6 @@ public class MapMappingMethod extends MappingMethod {
         this.factoryMethod = factoryMethod;
         this.overridden = method.overridesMethod();
         this.mapNullToDefault = mapNullToDefault;
-        this.typeFactory = typeFactory;
     }
 
     public Parameter getSourceParameter() {

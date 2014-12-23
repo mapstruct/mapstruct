@@ -19,9 +19,9 @@
 
 -->
 <#if (exceptionTypes?size == 0) >
-    <#if !ext.isTargetDefined?? >${ext.targetType.name}</#if> ${ext.targetAccessorName} = <@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>;
+    <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/></#if> ${ext.targetAccessorName} = <@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>;
 <#else>
-    <#if !ext.isTargetDefined?? >${ext.targetType.name} ${ext.targetAccessorName};</#if>
+    <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/> ${ext.targetAccessorName};</#if>
     try {
         ${ext.targetAccessorName} = <@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>;
     }

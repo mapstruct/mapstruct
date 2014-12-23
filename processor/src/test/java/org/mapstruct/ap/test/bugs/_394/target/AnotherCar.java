@@ -16,18 +16,44 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.map.targets;
+package org.mapstruct.ap.test.bugs._394.target;
 
-import java.util.Map;
+public class AnotherCar {
 
-public class Cars {
-    private Map<String, AnotherCar> makeToCar;
+    private String make;
+    private int seatCount;
+    private Long price;
 
-    public Map<String, AnotherCar> getMakeToCar() {
-        return makeToCar;
+    public AnotherCar() {
     }
 
-    public void setMakeToCar(Map<String, AnotherCar> makeToCar) {
-        this.makeToCar = makeToCar;
+    public AnotherCar(String make, int seatCount) {
+        this.make = make;
+        this.seatCount = seatCount;
+    }
+
+    public String getMake() {
+        return make;
+    }
+
+    public void setMake(String make) {
+        this.make = make;
+    }
+
+    public int getSeatCount() {
+        return seatCount;
+    }
+
+    public void setSeatCount(int seatCount) {
+        this.seatCount = seatCount;
+    }
+
+    public Long getPrice() {
+        return price;
+    }
+
+    public void setPrice(Long price) {
+        this.price = price;
     }
 }
+

@@ -41,29 +41,7 @@ public class ForgedMethod implements Method {
     private final String name;
     private final ExecutableElement positionHintElement;
 
-    /**
-     * Creates a new forged method.
-     * <p>
-     * The name will be based on the source type name and target type name.
-     *
-     * @param sourceType the source type
-     * @param targetType the target type.
-     * @param positionHintElement element used to for reference to the position in the source file.
-     */
-    public ForgedMethod(Type sourceType, Type targetType, ExecutableElement positionHintElement) {
-        String sourceParamName = Strings.decapitalize( sourceType.getName().replace( "[]", "" ) );
-        String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
-        this.parameters = Arrays.asList( new Parameter( sourceParamSafeName, sourceType ) );
-        this.returnType = targetType;
-
-        String fromName = getName( parameters.iterator().next().getType() );
-        String toName = getName( returnType );
-        name = Strings.decapitalize( fromName + "To" + toName );
-
-        this.positionHintElement = positionHintElement;
-    }
-
-    /**
+     /**
      * Creates a new forged method with the given name.
      *
      * @param name the (unique name) for this method
@@ -80,14 +58,16 @@ public class ForgedMethod implements Method {
         this.positionHintElement = positionHintElement;
     }
 
-    private String getName(Type type) {
-        StringBuilder builder = new StringBuilder();
-        for ( Type typeParam : type.getTypeParameters() ) {
-
-            builder.append( typeParam.getName().replace( "[]", "Array" ) );
-        }
-        builder.append( type.getName().replace( "[]", "Array" ) );
-        return builder.toString();
+    /**
+     * creates a new ForgedMethod with the same arguments but with a new name
+     * @param name the new name
+     * @param forgedMethod existing forge method
+     */
+    public ForgedMethod(String name, ForgedMethod forgedMethod) {
+        this.parameters = forgedMethod.parameters;
+        this.returnType = forgedMethod.returnType;
+        this.positionHintElement = forgedMethod.positionHintElement;
+        this.name = name;
     }
 
     @Override

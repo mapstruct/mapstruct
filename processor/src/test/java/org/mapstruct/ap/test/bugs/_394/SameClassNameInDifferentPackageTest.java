@@ -16,12 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.map;
+package org.mapstruct.ap.test.bugs._394;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.collection.map.source.AnotherCar;
-import org.mapstruct.ap.test.collection.map.source.Cars;
+import org.mapstruct.ap.test.bugs._394.source.AnotherCar;
+import org.mapstruct.ap.test.bugs._394.source.Cars;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -31,31 +31,31 @@ import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-@WithClasses({ SameNameForSourceAndTargetCarsMapper.class, Cars.class, org.mapstruct.ap.test.collection.map.targets.Cars
-        .class, AnotherCar.class, org.mapstruct.ap.test.collection.map.targets.AnotherCar.class })
+@WithClasses( {
+    SameNameForSourceAndTargetCarsMapper.class,
+    Cars.class,
+    org.mapstruct.ap.test.bugs._394.target.Cars.class,
+    AnotherCar.class,
+    org.mapstruct.ap.test.bugs._394.target.AnotherCar.class
+} )
 @IssueKey("394")
 @RunWith(AnnotationProcessorTestRunner.class)
 public class SameClassNameInDifferentPackageTest {
+
     @Test
     public void shouldCreateMapMethodImplementation() {
         Map<String, AnotherCar> values = new HashMap<String, AnotherCar>();
         //given
-        AnotherCar honda = new AnotherCar(
-                "Honda",
-                2
-        );
-        AnotherCar toyota = new AnotherCar(
-                "Toyota",
-                2
-        );
-        values.put("Honda", honda);
-        values.put("Toyota", toyota);
+        AnotherCar honda = new AnotherCar( "Honda", 2 );
+        AnotherCar toyota = new AnotherCar( "Toyota", 2);
+        values.put( "Honda", honda );
+        values.put( "Toyota", toyota );
 
         Cars cars = new Cars();
-        cars.setMakeToCar(values);
-        org.mapstruct.ap.test.collection.map.targets.Cars targetCars = SameNameForSourceAndTargetCarsMapper.INSTANCE
-                .sourceCarsToTargetCars(cars);
-        assertThat(targetCars).isNotNull();
-        assertThat(targetCars.getMakeToCar()).hasSize(2);
+        cars.setMakeToCar( values );
+        org.mapstruct.ap.test.bugs._394.target.Cars targetCars = SameNameForSourceAndTargetCarsMapper.INSTANCE
+                .sourceCarsToTargetCars( cars );
+        assertThat( targetCars ).isNotNull();
+        assertThat( targetCars.getMakeToCar() ).hasSize( 2 );
     }
 }

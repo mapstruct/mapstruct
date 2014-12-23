@@ -16,27 +16,39 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.map;
+package org.mapstruct.ap.test.bugs._394;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.ap.test.collection.map.source.Cars;
-import org.mapstruct.ap.test.collection.map.targets.AnotherCar;
+import org.mapstruct.ap.test.bugs._394.source.Cars;
+import org.mapstruct.ap.test.bugs._394.target.AnotherCar;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import org.mapstruct.InheritInverseConfiguration;
 
 @Mapper
 public interface SameNameForSourceAndTargetCarsMapper {
 
-    SameNameForSourceAndTargetCarsMapper INSTANCE = Mappers.getMapper(SameNameForSourceAndTargetCarsMapper.class);
+    SameNameForSourceAndTargetCarsMapper INSTANCE = Mappers.getMapper( SameNameForSourceAndTargetCarsMapper.class );
 
     @Mappings({
-            @Mapping(source = "numberOfSeats", target = "seatCount")
+        @Mapping(source = "numberOfSeats", target = "seatCount")
     })
-    AnotherCar carToCarDto(org.mapstruct.ap.test.collection.map.source.AnotherCar car);
+    AnotherCar sourceCarToTargetCar(org.mapstruct.ap.test.bugs._394.source.AnotherCar car);
 
-    List<AnotherCar> carsToCarDtos(List<org.mapstruct.ap.test.collection.map.source.AnotherCar> cars);
-    org.mapstruct.ap.test.collection.map.targets.Cars sourceCarsToTargetCars(Cars source);
+    List<AnotherCar> sourceCarListToTargetCarList(List<org.mapstruct.ap.test.bugs._394.source.AnotherCar> cars);
+
+    org.mapstruct.ap.test.bugs._394.target.Cars sourceCarsToTargetCars(Cars source);
+
+    // Reverse mehtods
+
+    @InheritInverseConfiguration
+    org.mapstruct.ap.test.bugs._394.source.AnotherCar targetCarToSourceCar(AnotherCar car);
+
+    List<org.mapstruct.ap.test.bugs._394.source.AnotherCar> targetCarListToSourceCarList(List<AnotherCar> cars);
+
+    Cars targetCarsToSourceCars(org.mapstruct.ap.test.bugs._394.target.Cars source);
+
 }
