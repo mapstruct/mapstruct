@@ -168,19 +168,21 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return null;
         }
 
-        return SourceMethod.forMethodRequiringImplementation(
-            method,
-            parameters,
-            returnType,
-            exceptionTypes,
-            getMappings( method ),
-            IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ), method, messager ),
-            MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager ),
-            typeUtils,
-            messager,
-            typeFactory,
-            MapperConfig.getInstanceOn( mapperToImplement )
-        );
+        return new SourceMethod.Builder()
+                .setExecutable( method )
+                .setParameters( parameters )
+                .setReturnType( returnType )
+                .setExceptionTypes( exceptionTypes )
+                .setMappings( getMappings( method) )
+                .setIterableMapping( IterableMapping.fromPrism(
+                    IterableMappingPrism.getInstanceOn( method ), method, messager ) )
+                .setMapMapping(
+                    MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager ) )
+                .setTypeUtils( typeUtils )
+                .setMessager( messager )
+                .setTypeFactory( typeFactory )
+                .setMapperConfig( MapperConfig.getInstanceOn( mapperToImplement ) )
+                .createSourceMethod();
     }
 
     private SourceMethod getReferencedMethod(TypeElement usedMapper, ExecutableType methodType,
@@ -195,16 +197,15 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return null;
         }
 
-        return SourceMethod.forReferencedMethod(
-            usedMapper.equals( mapperToImplement ) ? null : usedMapperAsType,
-            method,
-            parameters,
-            returnType,
-            exceptionTypes,
-            typeUtils
-        );
+        return new SourceMethod.Builder()
+                .setDeclaringMapper( usedMapper.equals( mapperToImplement ) ? null : usedMapperAsType )
+                .setExecutable( method )
+                .setParameters( parameters )
+                .setReturnType( returnType )
+                .setExceptionTypes( exceptionTypes )
+                .setTypeUtils( typeUtils )
+                .createSourceMethod();
     }
-
 
     private boolean isValidReferencedMethod(List<Parameter> parameters) {
         return isValidReferencedOrFactoryMethod( 1, parameters );

@@ -19,7 +19,6 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,84 +65,113 @@ public class SourceMethod implements Method {
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
 
-    //CHECKSTYLE:OFF
-    // TODO use builder
-    public static SourceMethod forMethodRequiringImplementation(ExecutableElement executable,
-                                                                List<Parameter> parameters,
-                                                                Type returnType,
-                                                                List<Type> exceptionTypes,
-                                                                Map<String, List<Mapping>> mappings,
-                                                                IterableMapping iterableMapping, MapMapping mapMapping,
-                                                                Types typeUtils,
-                                                                Messager messager,
-                                                                TypeFactory typeFactory,
-                                                                MapperConfig config) {
+    public static class Builder {
 
-        SourceMethod sourceMethod = new SourceMethod(
-            null,
-            executable,
-            parameters,
-            returnType,
-            exceptionTypes,
-            mappings,
-            iterableMapping,
-            mapMapping,
-            typeUtils,
-            typeFactory,
-            messager,
-            config
-        );
+        private Type declaringMapper = null;
+        private ExecutableElement executable;
+        private List<Parameter> parameters;
+        private Type returnType = null;
+        private List<Type> exceptionTypes;
+        private Map<String, List<Mapping>> mappings;
+        private IterableMapping iterableMapping = null;
+        private MapMapping mapMapping = null;
+        private Types typeUtils;
+        private TypeFactory typeFactory = null;
+        private Messager messager = null;
+        private MapperConfig mapperConfig = null;
 
-        for ( Map.Entry<String, List<Mapping>> entry : sourceMethod.getMappings().entrySet() ) {
-            for ( Mapping mapping : entry.getValue() ) {
-                mapping.init( sourceMethod, messager, typeFactory );
-            }
+        public Builder() {
         }
-        return sourceMethod;
-    }
-    //CHECKSTYLE:ON
 
-    public static SourceMethod forReferencedMethod(Type declaringMapper, ExecutableElement executable,
-                                                   List<Parameter> parameters, Type returnType,
-                                                   List<Type> exceptionTypes, Types typeUtils) {
+        public Builder setDeclaringMapper(Type declaringMapper) {
+            this.declaringMapper = declaringMapper;
+            return this;
+        }
 
-        return new SourceMethod(
-            declaringMapper,
-            executable,
-            parameters,
-            returnType,
-            exceptionTypes,
-            Collections.<String, List<Mapping>>emptyMap(),
-            null,
-            null,
-            typeUtils,
-            null,
-            null,
-            null
-        );
-    }
+        public Builder setExecutable(ExecutableElement executable) {
+            this.executable = executable;
+            return this;
+        }
 
-    public static SourceMethod forFactoryMethod(Type declaringMapper, ExecutableElement executable, Type returnType,
-                                                List<Type> exceptionTypes, Types typeUtils) {
+        public Builder setParameters(List<Parameter> parameters) {
+            this.parameters = parameters;
+            return this;
+        }
 
-        return new SourceMethod(
-            declaringMapper,
-            executable,
-            Collections.<Parameter>emptyList(),
-            returnType,
-            exceptionTypes,
-            Collections.<String, List<Mapping>>emptyMap(),
-            null,
-            null,
-            typeUtils,
-            null,
-            null,
-            null
-        );
+        public Builder setReturnType(Type returnType) {
+            this.returnType = returnType;
+            return this;
+        }
+
+        public Builder setExceptionTypes(List<Type> exceptionTypes) {
+            this.exceptionTypes = exceptionTypes;
+            return this;
+        }
+
+        public Builder setMappings(Map<String, List<Mapping>> mappings) {
+            this.mappings = mappings;
+            return this;
+        }
+
+        public Builder setIterableMapping(IterableMapping iterableMapping) {
+            this.iterableMapping = iterableMapping;
+            return this;
+        }
+
+        public Builder setMapMapping(MapMapping mapMapping) {
+            this.mapMapping = mapMapping;
+            return this;
+        }
+
+        public Builder setTypeUtils(Types typeUtils) {
+            this.typeUtils = typeUtils;
+            return this;
+        }
+
+        public Builder setTypeFactory(TypeFactory typeFactory) {
+            this.typeFactory = typeFactory;
+            return this;
+        }
+
+        public Builder setMessager(Messager messager) {
+            this.messager = messager;
+            return this;
+        }
+
+        public Builder setMapperConfig(MapperConfig mapperConfig) {
+            this.mapperConfig = mapperConfig;
+            return this;
+        }
+
+        public SourceMethod createSourceMethod() {
+            SourceMethod sourceMethod = new SourceMethod(
+                    declaringMapper,
+                    executable,
+                    parameters,
+                    returnType,
+                    exceptionTypes,
+                    mappings,
+                    iterableMapping,
+                    mapMapping,
+                    typeUtils,
+                    typeFactory,
+                    messager,
+                    mapperConfig
+            );
+
+            if ( mappings != null ) {
+                for ( Map.Entry<String, List<Mapping>> entry : sourceMethod.getMappings().entrySet() ) {
+                    for ( Mapping mapping : entry.getValue() ) {
+                        mapping.init( sourceMethod, messager, typeFactory );
+                    }
+                }
+            }
+            return sourceMethod;
+        }
     }
 
     //CHECKSTYLE:OFF
-    private SourceMethod(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
+    private SourceMethod( Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
                          Type returnType, List<Type> exceptionTypes, Map<String, List<Mapping>> mappings,
                          IterableMapping iterableMapping, MapMapping mapMapping, Types typeUtils,
                          TypeFactory typeFactory, Messager messager, MapperConfig config) {
