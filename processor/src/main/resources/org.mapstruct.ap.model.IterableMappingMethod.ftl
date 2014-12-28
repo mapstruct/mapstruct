@@ -19,7 +19,7 @@
 
 -->
 <#if overridden>@Override</#if>
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
+<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     if ( ${sourceParameter.name} == null ) {
         <#if !mapNullToDefault>
             <#-- returned target type starts to miss-align here with target handed via param, TODO is this right? -->
@@ -48,7 +48,7 @@
 
     <#if resultType.arrayType>
         <#if !existingInstanceMapping>
-            <@includeModel object=resultElementType/>[] ${resultName} = new <@includeModel object=resultElementType/>[ <@iterableSize/> ];
+            <@includeModel object=resultElementType/>[] ${resultName} = new <@includeModel object=resultElementType/>[<@iterableSize/>];
         </#if>
         int ${index1Name} = 0;
         for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {
@@ -79,7 +79,7 @@
 }
 <#macro throws>
     <@compress single_line=true>
-        <#if (thrownTypes?size > 0)>throws </#if>
+        <#if (thrownTypes?size > 0)> throws </#if>
         <#list thrownTypes as exceptionType>
             <@includeModel object=exceptionType/>
             <#if exceptionType_has_next>, </#if>

@@ -37,7 +37,6 @@ import ${importedType.importName};
 <#nt>    <@includeModel object=field/>
 </#list>
 <#list methods as method>
-
 <#nt>    <@includeModel object=method/>
 </#list>
 }
