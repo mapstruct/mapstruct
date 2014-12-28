@@ -51,7 +51,7 @@ public class ForgedMethod implements Method {
      * @param positionHintElement element used to for reference to the position in the source file.
      */
     public ForgedMethod(Type sourceType, Type targetType, ExecutableElement positionHintElement) {
-        String sourceParamName = Strings.decapitalize( sourceType.getName() );
+        String sourceParamName = Strings.decapitalize( sourceType.getName().replace( "[]", "" ) );
         String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
         this.parameters = Arrays.asList( new Parameter( sourceParamSafeName, sourceType ) );
         this.returnType = targetType;
@@ -72,7 +72,7 @@ public class ForgedMethod implements Method {
      * @param positionHintElement element used to for reference to the position in the source file.
      */
     public ForgedMethod(String name, Type sourceType, Type targetType, ExecutableElement positionHintElement) {
-        String sourceParamName = Strings.decapitalize( sourceType.getName() );
+        String sourceParamName = Strings.decapitalize( sourceType.getName().replace( "[]", "" ) );
         String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
         this.parameters = Arrays.asList( new Parameter( sourceParamSafeName, sourceType ) );
         this.returnType = targetType;
@@ -83,9 +83,10 @@ public class ForgedMethod implements Method {
     private String getName(Type type) {
         StringBuilder builder = new StringBuilder();
         for ( Type typeParam : type.getTypeParameters() ) {
-            builder.append( typeParam.getName() );
+
+            builder.append( typeParam.getName().replace( "[]", "Array" ) );
         }
-        builder.append( type.getName() );
+        builder.append( type.getName().replace( "[]", "Array" ) );
         return builder.toString();
     }
 

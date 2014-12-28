@@ -41,6 +41,18 @@ public interface SourceTargetMapper {
     @IterableMapping(dateFormat = "dd.MM.yyyy")
     List<String> stringListToDateList(List<Date> dates);
 
+    @IterableMapping(dateFormat = "dd.MM.yyyy")
+    String[] stringListToDateArray(List<Date> dates);
+
     @InheritInverseConfiguration
     List<Date> dateListToStringList(List<String> strings);
+
+    @InheritInverseConfiguration
+    List<Date> stringArrayToDateList(String[] dates);
+
+    @IterableMapping(dateFormat = "dd.MM.yyyy")
+    String[] dateArrayToStringArray(Date[] dates);
+
+    @InheritInverseConfiguration
+    Date[] stringArrayToDateArray(String[] dates);
 }
