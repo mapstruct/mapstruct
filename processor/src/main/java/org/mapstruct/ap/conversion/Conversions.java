@@ -29,6 +29,7 @@ import java.util.Map;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.util.JavaTimeConstants;
+import org.mapstruct.ap.util.JodaTimeConstants;
 import org.mapstruct.ap.util.NativeTypes;
 
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;

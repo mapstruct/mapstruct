@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.util.JodaTimeConstants;
 import org.mapstruct.ap.util.Strings;
 
 import static org.mapstruct.ap.util.Collections.asSet;

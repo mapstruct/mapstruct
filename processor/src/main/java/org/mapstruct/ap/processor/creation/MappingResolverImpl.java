@@ -246,7 +246,7 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             ConversionContext ctx =
-                new DefaultConversionContext( typeFactory, targetType, dateFormat );
+                new DefaultConversionContext( typeFactory, messager, sourceType, targetType, dateFormat );
             return conversionProvider.to( ctx );
         }
 
@@ -276,7 +276,9 @@ public class MappingResolverImpl implements MappingResolver {
 
             if ( matchingBuiltInMethod != null ) {
                 virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod ) );
-                ConversionContext ctx = new DefaultConversionContext( typeFactory, targetType, dateFormat );
+                ConversionContext ctx = new DefaultConversionContext( typeFactory, messager,
+                                                                      sourceType,
+                                                                      targetType, dateFormat );
                 Assignment methodReference = AssignmentFactory.createMethodReference( matchingBuiltInMethod, ctx );
                 methodReference.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
                 return methodReference;

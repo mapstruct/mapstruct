@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.conversion;
 
+import org.mapstruct.ap.util.JodaTimeConstants;
+
 /**
  * Conversion between {@code LocalDateTime} and {@code String}.
  *

@@ -16,24 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
-
-import org.mapstruct.ap.util.JodaTimeConstants;
+package org.mapstruct.ap.util;
 
 /**
- * Conversion between {@code DateTime} and {@code String}.
+ * Helper holding constants for working with Joda-Time.
  *
  * @author Timo Eckhardt
  */
-public class JodaDateTimeToStringConversion extends AbstractJodaTypeToStringConversion {
+public final class JodaTimeConstants {
 
-    @Override
-    protected String formatStyle() {
-        return JodaTimeConstants.DATE_TIME_FORMAT;
+    private JodaTimeConstants() {
     }
 
-    @Override
-    protected String parseMethod() {
-        return "parseDateTime";
-    }
+    public static final String DATE_TIME_FQN = "org.joda.time.DateTime";
+
+    public static final String LOCAL_DATE_TIME_FQN = "org.joda.time.LocalDateTime";
+
+    public static final String LOCAL_DATE_FQN = "org.joda.time.LocalDate";
+
+    public static final String LOCAL_TIME_FQN = "org.joda.time.LocalTime";
+
+    public static final String DATE_TIME_FORMAT_FQN = "org.joda.time.format.DateTimeFormat";
+
+    public static final String DATE_TIME_FORMAT = "LL";
 }

@@ -16,27 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.conversion;
+package org.mapstruct.ap.model.common;
 
 /**
- * Helper holding constants for working with Joda-Time.
- *
- * @author Timo Eckhardt
+ * An abstraction for validating {@link ConversionContext#getDateFormat()}. There are implementers for different date
+ * types such as Joda Time, Java8 Time and java.util.Date.
  */
-public final class JodaTimeConstants {
+interface DateFormatValidator {
 
-    private JodaTimeConstants() {
-    }
+    /**
+     * Validate the given dateFormat.
+     *
+     * @param dateFormat string supposed to be used for date formatting and parsing.
+     *
+     * @return {@link DateFormatValidationResult} representing the validation result.
+     */
+    DateFormatValidationResult validate(String dateFormat);
 
-    public static final String DATE_TIME_FQN = "org.joda.time.DateTime";
-
-    public static final String LOCAL_DATE_TIME_FQN = "org.joda.time.LocalDateTime";
-
-    public static final String LOCAL_DATE_FQN = "org.joda.time.LocalDate";
-
-    public static final String LOCAL_TIME_FQN = "org.joda.time.LocalTime";
-
-    public static final String DATE_TIME_FORMAT_FQN = "org.joda.time.format.DateTimeFormat";
-
-    public static final String DATE_TIME_FORMAT = "LL";
 }
