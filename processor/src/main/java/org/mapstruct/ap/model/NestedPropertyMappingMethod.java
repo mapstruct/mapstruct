@@ -153,6 +153,10 @@ public class NestedPropertyMappingMethod extends MappingMethod {
         public String getName() {
             return safeName;
         }
+
+        public String getAccessorName() {
+            return getAccessor().getSimpleName().toString();
+        }
     }
 
 }

@@ -28,6 +28,7 @@ public class Target {
     private int qax;
     private String zip;
     private SomeType someType;
+    private String fromNested;
 
     public Long getFoo() {
         return foo;
@@ -75,5 +76,13 @@ public class Target {
 
     public void setSomeType(SomeType someType) {
         this.someType = someType;
+    }
+
+    public String getFormNested() {
+        return fromNested;
+    }
+
+    public void setFromNested(String fromNested) {
+        this.fromNested = fromNested;
     }
 }
