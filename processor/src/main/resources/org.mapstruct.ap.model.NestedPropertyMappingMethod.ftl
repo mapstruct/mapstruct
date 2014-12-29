@@ -24,7 +24,7 @@
         return ${returnType.null};
     }
     <#list propertyEntries as entry>
-    <@includeModel object=entry.type/> ${entry.name} = <#if entry_index == 0>${sourceParameter.name}.${entry.accessor}<#else>${propertyEntries[entry_index-1].name}.${entry.accessor}</#if>;
+    <@includeModel object=entry.type/> ${entry.name} = <#if entry_index == 0>${sourceParameter.name}.${entry.accessorName}()<#else>${propertyEntries[entry_index-1].name}.${entry.accessorName}()</#if>;
     <#if !entry.type.primitive>
     if ( ${entry.name} == null ) {
         return ${returnType.null};

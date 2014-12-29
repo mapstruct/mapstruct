@@ -26,6 +26,7 @@ public class Source {
     private Long baz;
     private int zip;
     private String someType;
+    private SomeType forNested;
 
     public int getFoo() {
         return foo;
@@ -73,5 +74,13 @@ public class Source {
 
     public void setSomeType(String someType) {
         this.someType = someType;
+    }
+
+    public SomeType getForNested() {
+        return forNested;
+    }
+
+    public void setForNested(SomeType forNested) {
+        this.forNested = forNested;
     }
 }
