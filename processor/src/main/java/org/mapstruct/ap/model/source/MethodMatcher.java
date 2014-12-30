@@ -127,6 +127,17 @@ public class MethodMatcher {
                     return false;
                 }
             }
+            else if ( candidateReturnType.getKind().isPrimitive() ) {
+                TypeMirror boxedCandidateReturnType =
+                    typeUtils.boxedClass( (PrimitiveType) candidateReturnType ).asType();
+                TypeMatcher boxedReturnTypeMatcher =
+                    new TypeMatcher( Assignability.VISITED_ASSIGNABLE_TO, genericTypesMap );
+
+                if ( !boxedReturnTypeMatcher.visit( boxedCandidateReturnType, targetType.getTypeMirror() ) ) {
+                    return false;
+                }
+
+            }
             else {
                 return false;
             }

@@ -21,7 +21,7 @@ package org.mapstruct.ap.test.bool;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper( uses = YesNoMapper.class )
 public interface PersonMapper {
 
     PersonMapper INSTANCE = Mappers.getMapper( PersonMapper.class );

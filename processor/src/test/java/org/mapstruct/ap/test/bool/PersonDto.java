@@ -22,6 +22,8 @@ public class PersonDto {
 
     private String married;
     private String engaged;
+    private String divorced;
+    private Boolean widowed;
 
     public String getMarried() {
         return married;
@@ -38,4 +40,21 @@ public class PersonDto {
     public void setEngaged(String engaged) {
         this.engaged = engaged;
     }
+
+    public String getDivorced() {
+        return divorced;
+    }
+
+    public void setDivorced(String divorced) {
+        this.divorced = divorced;
+    }
+
+    public Boolean getWidowed() {
+        return widowed;
+    }
+
+    public void setWidowed(Boolean widowed) {
+        this.widowed = widowed;
+    }
+
 }

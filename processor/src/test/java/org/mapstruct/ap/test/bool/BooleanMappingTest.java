@@ -28,7 +28,9 @@ import static org.fest.assertions.Assertions.assertThat;
 @WithClasses({
     Person.class,
     PersonDto.class,
-    PersonMapper.class
+    YesNo.class,
+    PersonMapper.class,
+    YesNoMapper.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class BooleanMappingTest {
@@ -57,5 +59,20 @@ public class BooleanMappingTest {
 
         //then
         assertThat( personDto.getEngaged() ).isEqualTo( "true" );
+    }
+
+    @Test
+    public void shouldMapBooleanPropertyWithPropertyMappingMethod() {
+        // given
+        Person person = new Person();
+        person.setDivorced( new YesNo( true ) );
+        person.setWidowed( new YesNo( true ) );
+
+        // when
+        PersonDto personDto = PersonMapper.INSTANCE.personToDto( person );
+
+        // then
+        assertThat( personDto.getDivorced() ).isEqualTo( "yes" );
+        assertThat( personDto.getWidowed() ).isEqualTo( Boolean.TRUE );
     }
 }

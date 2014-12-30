@@ -37,7 +37,7 @@ public class ConversionTest {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 42 ) );
+        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 43 ) );
         assertThat( target.getBar() ).isEqualTo( 23 );
         assertThat( target.getZip() ).isEqualTo( "73" );
     }
@@ -48,7 +48,7 @@ public class ConversionTest {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 0 ) );
+        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 1 ) );
         assertThat( target.getBar() ).isEqualTo( 0 );
         assertThat( target.getZip() ).isEqualTo( "0" );
     }
@@ -62,7 +62,7 @@ public class ConversionTest {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getBaz() ).isEqualTo( Long.valueOf( 42 ) );
+        assertThat( target.getBaz() ).isEqualTo( Long.valueOf( 43 ) );
         assertThat( target.getQax() ).isEqualTo( 23 );
     }
 
@@ -77,7 +77,7 @@ public class ConversionTest {
 
         assertThat( source ).isNotNull();
         assertThat( source.getFoo() ).isEqualTo( 42 );
-        assertThat( source.getBar() ).isEqualTo( 23 );
+        assertThat( source.getBar() ).isEqualTo( 24 );
         assertThat( source.getZip() ).isEqualTo( 73 );
     }
 
@@ -90,7 +90,7 @@ public class ConversionTest {
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getBaz() ).isEqualTo( 42 );
+        assertThat( source.getBaz() ).isEqualTo( 43 );
         assertThat( source.getQax() ).isEqualTo( 23 );
     }
 
@@ -104,7 +104,7 @@ public class ConversionTest {
         Target target = SourceTargetAbstractMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 42 ) );
+        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 43 ) );
         assertThat( target.getBar() ).isEqualTo( 23 );
         assertThat( target.getZip() ).isEqualTo( "73" );
     }

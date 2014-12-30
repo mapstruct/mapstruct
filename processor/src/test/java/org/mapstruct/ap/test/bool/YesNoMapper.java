@@ -18,46 +18,20 @@
  */
 package org.mapstruct.ap.test.bool;
 
-public class Person {
+/**
+ * @author Andreas Gudian
+ *
+ */
+public class YesNoMapper {
+    public String toString(YesNo yesNo) {
+        if ( null != yesNo && yesNo.isYes() ) {
+            return "yes";
+        }
 
-    private Boolean married;
-    private Boolean engaged;
-    private YesNo divorced;
-    private YesNo widowed;
-
-    public Boolean isMarried() {
-        return married;
+        return "no";
     }
 
-    public void setMarried(Boolean married) {
-        this.married = married;
-    }
-
-    public Boolean isEngaged() {
-        return engaged != null && !engaged;
-    }
-
-    public Boolean getEngaged() {
-        return engaged;
-    }
-
-    public void setEngaged(Boolean engaged) {
-        this.engaged = engaged;
-    }
-
-    public YesNo getDivorced() {
-        return divorced;
-    }
-
-    public void setDivorced(YesNo divorced) {
-        this.divorced = divorced;
-    }
-
-    public YesNo getWidowed() {
-        return widowed;
-    }
-
-    public void setWidowed(YesNo widowed) {
-        this.widowed = widowed;
+    public boolean toBool(YesNo yesNo) {
+        return ( null != yesNo && yesNo.isYes() );
     }
 }
