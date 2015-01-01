@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
@@ -94,20 +95,24 @@ class CompilingStatement extends Statement {
         "joda-time.jar"
     );
 
-    private final Statement next;
+    private Statement next;
     private final FrameworkMethod method;
-    private final ModifiableURLClassLoader classloader;
 
     private JavaCompiler compiler;
     private String sourceDir;
     private String classOutputDir;
     private String sourceOutputDir;
     private List<File> classPath;
+    private CompilationRequest compilationRequest;
 
-    public CompilingStatement(Statement next, FrameworkMethod method, ModifiableURLClassLoader classloader) {
-        this.next = next;
+    public CompilingStatement(FrameworkMethod method) {
         this.method = method;
-        this.classloader = classloader;
+
+        this.compilationRequest = new CompilationRequest( getTestClasses(), getProcessorOptions() );
+    }
+
+    public void setNextStatement(Statement next) {
+        this.next = next;
     }
 
     @Override
@@ -141,11 +146,11 @@ class CompilingStatement extends Statement {
 
         createOutputDirs();
 
-        classloader.addOutputDir( classOutputDir );
+        ( (ModifiableURLClassLoader) Thread.currentThread().getContextClassLoader() ).addOutputDir( classOutputDir );
     }
 
     protected void generateMapperImplementation() throws Exception {
-        CompilationResultHolder compilationResult = compile( getTestClasses(), getProcessorOptions() );
+        CompilationResultHolder compilationResult = compile();
 
         CompilationOutcomeDescriptor actualResult =
             CompilationOutcomeDescriptor.forResult(
@@ -285,12 +290,11 @@ class CompilingStatement extends Statement {
         return sourceFiles;
     }
 
-    private CompilationResultHolder compile(Set<Class<?>> sourceClasses, List<String> processorOptions)
+    private CompilationResultHolder compile()
         throws Exception {
-        CompilationRequest request = new CompilationRequest( sourceClasses, processorOptions );
 
         CompilationCache cache = COMPILATION_CACHE.get();
-        if ( request.equals( cache.lastRequest ) ) {
+        if ( !needsRecompilation() ) {
             return cache.lastResult;
         }
 
@@ -301,7 +305,7 @@ class CompilingStatement extends Statement {
         StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, null );
 
         Iterable<? extends JavaFileObject> compilationUnits =
-            fileManager.getJavaFileObjectsFromFiles( getSourceFiles( sourceClasses ) );
+            fileManager.getJavaFileObjectsFromFiles( getSourceFiles( compilationRequest.sourceClasses ) );
 
         try {
             fileManager.setLocation( StandardLocation.CLASS_PATH, classPath );
@@ -313,14 +317,25 @@ class CompilingStatement extends Statement {
         }
 
         CompilationTask task =
-            compiler.getTask( null, fileManager, diagnostics, processorOptions, null, compilationUnits );
+            compiler.getTask(
+                null,
+                fileManager,
+                diagnostics,
+                compilationRequest.processorOptions,
+                null,
+                compilationUnits );
+
         task.setProcessors( Arrays.asList( new MappingProcessor() ) );
 
         CompilationResultHolder resultHolder = new CompilationResultHolder( diagnostics, task.call() );
 
-        cache.lastRequest = request;
+        cache.lastRequest = compilationRequest;
         cache.lastResult = resultHolder;
         return resultHolder;
+    }
+
+    public boolean needsRecompilation() {
+        return !compilationRequest.equals( COMPILATION_CACHE.get().lastRequest );
     }
 
     private String getBasePath() {
