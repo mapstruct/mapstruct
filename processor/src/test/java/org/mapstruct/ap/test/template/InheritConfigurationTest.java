@@ -20,16 +20,17 @@ package org.mapstruct.ap.test.template;
 
 
 import javax.tools.Diagnostic.Kind;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
@@ -67,7 +68,7 @@ public class InheritConfigurationTest {
     }
 
     @Test
-    @WithClasses({ SourceTargetMapperMultiple.class })
+    @WithClasses( { SourceTargetMapperMultiple.class } )
     public void shouldInheritConfigurationMultipleCandidates() {
 
         Source source = new Source();
@@ -75,7 +76,7 @@ public class InheritConfigurationTest {
         source.setIntegerPropX( 2 );
         source.setNestedSourceProp( new NestedSource("nested") );
 
-        Target createdTarget = SourceTargetMapperSingle.INSTANCE.forwardCreate( source );
+        Target createdTarget = SourceTargetMapperMultiple.INSTANCE.forwardCreate( source );
         assertThat( createdTarget ).isNotNull();
         assertThat( createdTarget.getStringPropY() ).isEqualTo( "1" );
         assertThat( createdTarget.getIntegerPropY() ).isEqualTo( 2 );
@@ -84,7 +85,7 @@ public class InheritConfigurationTest {
         assertThat( createdTarget.getConstantProp() ).isEqualTo( "constant" );
 
         Target updatedTarget = new Target();
-        SourceTargetMapperSingle.INSTANCE.forwardUpdate( source, updatedTarget );
+        SourceTargetMapperMultiple.INSTANCE.forwardUpdate( source, updatedTarget );
         assertThat( updatedTarget ).isNotNull();
         assertThat( updatedTarget.getStringPropY() ).isEqualTo( "1" );
         assertThat( updatedTarget.getIntegerPropY() ).isEqualTo( 2 );
