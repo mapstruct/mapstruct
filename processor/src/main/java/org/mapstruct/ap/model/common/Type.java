@@ -523,6 +523,40 @@ public class Type extends ModelElement implements Comparable<Type> {
         return true;
     }
 
+    /**
+     * A valid Java expression most suitable for representing null - useful for dealing with primitives from FTL.
+     */
+    public String getNull() {
+        if ( !isPrimitive() || isArrayType() ) {
+            return "null";
+        }
+        if ( "boolean".equals( getName() ) ) {
+            return "false";
+        }
+        if ( "byte".equals( getName() ) ) {
+            return "0";
+        }
+        if ( "char".equals( getName() ) ) {
+            return "'\\u0000'";
+        }
+        if ( "double".equals( getName() ) ) {
+            return "0.0";
+        }
+        if ( "float".equals( getName() ) ) {
+            return "0.0f";
+        }
+        if ( "int".equals( getName() ) ) {
+            return "0";
+        }
+        if ( "long".equals( getName() ) ) {
+            return "0L";
+        }
+        if ( "short".equals( getName() ) ) {
+            return "0";
+        }
+        throw new UnsupportedOperationException( getName() );
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
