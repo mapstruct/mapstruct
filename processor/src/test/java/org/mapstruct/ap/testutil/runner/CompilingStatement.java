@@ -65,7 +65,10 @@ class CompilingStatement extends Statement {
     private static final String TARGET_COMPILATION_TESTS = "/target/"
         + System.getProperty( MAPPER_TEST_OUTPUT_DIR_PROPERTY, "compilation-tests" ) + "_thread-";
 
+    private static final String SOURCE_DIR = getBasePath() + "/src/test/java";
+
     private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
+
     private static final DiagnosticDescriptorComparator COMPARATOR = new DiagnosticDescriptorComparator();
 
     private static final ThreadLocal<Integer> THREAD_NUMBER = new ThreadLocal<Integer>() {
@@ -99,7 +102,6 @@ class CompilingStatement extends Statement {
     private final FrameworkMethod method;
 
     private JavaCompiler compiler;
-    private String sourceDir;
     private String classOutputDir;
     private String sourceOutputDir;
     private List<File> classPath;
@@ -133,7 +135,6 @@ class CompilingStatement extends Statement {
 
         Integer i = THREAD_NUMBER.get();
 
-        sourceDir = basePath + "/src/test/java";
         classOutputDir = basePath + TARGET_COMPILATION_TESTS + i + "/classes";
         sourceOutputDir = basePath + TARGET_COMPILATION_TESTS + i + "/generated-sources/mapping";
 
@@ -154,7 +155,7 @@ class CompilingStatement extends Statement {
 
         CompilationOutcomeDescriptor actualResult =
             CompilationOutcomeDescriptor.forResult(
-                sourceDir,
+                SOURCE_DIR,
                 compilationResult.compilationSuccessful,
                 compilationResult.diagnostics.getDiagnostics()
             );
@@ -281,7 +282,7 @@ class CompilingStatement extends Statement {
         for ( Class<?> clazz : classes ) {
             sourceFiles.add(
                 new File(
-                    sourceDir + File.separator + clazz.getName().replace( ".", File.separator )
+                    SOURCE_DIR + File.separator + clazz.getName().replace( ".", File.separator )
                         + ".java"
                 )
             );
@@ -338,7 +339,7 @@ class CompilingStatement extends Statement {
         return !compilationRequest.equals( COMPILATION_CACHE.get().lastRequest );
     }
 
-    private String getBasePath() {
+    private static String getBasePath() {
         try {
             return new File( "." ).getCanonicalPath();
         }
