@@ -25,7 +25,7 @@
         <#list parameters as param>
             <#if param.targetType>
                 <#-- a class is passed on for casting, see @TargetType -->
-                <@includeModel object=ext.targetType/>.class
+                <@includeModel object=ext.targetType raw=true/>.class
             <#else>
                 <@includeModel object=assignment targetType=singleSourceParameterType raw=ext.raw/>
             </#if>

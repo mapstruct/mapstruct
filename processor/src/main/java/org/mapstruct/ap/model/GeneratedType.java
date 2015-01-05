@@ -164,8 +164,6 @@ public abstract class GeneratedType extends ModelElement {
             }
         }
 
-        addWithDependents( collection, typeToAdd.getImplementationType() );
-
         for ( Type type : typeToAdd.getTypeParameters() ) {
             addWithDependents( collection, type );
         }
