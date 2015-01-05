@@ -195,6 +195,9 @@ public class MapMappingMethod extends MappingMethod {
         if ( valueAssignment != null ) {
             types.addAll( valueAssignment.getImportTypes() );
         }
+        if ( factoryMethod == null ) {
+            types.addAll( getReturnType().getImportTypes() );
+        }
 
         return types;
     }

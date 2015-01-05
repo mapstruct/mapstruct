@@ -68,7 +68,7 @@
 <#macro returnObjectCreation>
     <@compress single_line=true>
         <#if factoryMethod??>
-             <@includeModel object=factoryMethod/>
+             <@includeModel object=factoryMethod targetType=resultType raw=true/>
         <#else>
              new
              <#if resultType.implementationType??>

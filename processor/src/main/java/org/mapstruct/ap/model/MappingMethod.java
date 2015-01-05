@@ -111,7 +111,6 @@ public abstract class MappingMethod extends ModelElement {
         }
 
         types.add( getReturnType() );
-        types.addAll( getReturnType().getImportTypes() );
         types.addAll( thrownTypes );
         return types;
     }
