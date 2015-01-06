@@ -4,6 +4,7 @@ Contributors
 Andreas Gudian
 Christian Schuster
 Dilip Krishnan
+Ewald Volkert
 Gunnar Morling
 Sebastian Hasait
 Sjaak Derksen
