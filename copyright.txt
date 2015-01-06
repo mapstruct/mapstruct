@@ -3,6 +3,8 @@ Contributors
 
 Andreas Gudian
 Christian Schuster
+Dilip Krishnan
 Gunnar Morling
+Sebastian Hasait
 Sjaak Derksen
 Timo Eckhardt
