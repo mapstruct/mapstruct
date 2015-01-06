@@ -23,6 +23,7 @@ import java.net.URL;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.junit.runners.model.TestClass;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
@@ -45,6 +46,9 @@ import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
  */
 public class AnnotationProcessorTestRunner extends BlockJUnit4ClassRunner {
     static final ModifiableURLClassLoader TEST_CLASS_LOADER = new ModifiableURLClassLoader();
+    private final Class<?> klass;
+    private Class<?> klassToUse;
+    private ReplacableTestClass replacableTestClass;
 
     /**
      * @param klass the test class
@@ -52,7 +56,8 @@ public class AnnotationProcessorTestRunner extends BlockJUnit4ClassRunner {
      * @throws Exception see {@link BlockJUnit4ClassRunner#BlockJUnit4ClassRunner(Class)}
      */
     public AnnotationProcessorTestRunner(Class<?> klass) throws Exception {
-        super( replaceClassLoaderAndClass( klass ) );
+        super( klass );
+        this.klass = klass;
     }
 
     /**
@@ -63,17 +68,10 @@ public class AnnotationProcessorTestRunner extends BlockJUnit4ClassRunner {
      * @return the class loaded with the test class loader
      */
     private static Class<?> replaceClassLoaderAndClass(Class<?> klass) {
-        String classFileName = klass.getName().replace( ".", "/" ) + ".class";
-        URL classResource = klass.getClassLoader().getResource( classFileName );
-        String fullyQualifiedUrl = classResource.toExternalForm();
-        String basePath = fullyQualifiedUrl.substring( 0, fullyQualifiedUrl.length() - classFileName.length() );
-
-        TEST_CLASS_LOADER.addURL( basePath );
-
-        Thread.currentThread().setContextClassLoader( TEST_CLASS_LOADER );
+        replaceContextClassLoader( klass );
 
         try {
-            return TEST_CLASS_LOADER.loadClass( klass.getName() );
+            return Thread.currentThread().getContextClassLoader().loadClass( klass.getName() );
         }
         catch ( ClassNotFoundException e ) {
             throw new RuntimeException( e );
@@ -81,10 +79,48 @@ public class AnnotationProcessorTestRunner extends BlockJUnit4ClassRunner {
 
     }
 
+    private static void replaceContextClassLoader(Class<?> klass) {
+        String classFileName = klass.getName().replace( ".", "/" ) + ".class";
+        URL classResource = klass.getClassLoader().getResource( classFileName );
+        String fullyQualifiedUrl = classResource.toExternalForm();
+        String basePath = fullyQualifiedUrl.substring( 0, fullyQualifiedUrl.length() - classFileName.length() );
+
+        ModifiableURLClassLoader testClassLoader = new ModifiableURLClassLoader();
+        testClassLoader.addURL( basePath );
+
+        Thread.currentThread().setContextClassLoader( testClassLoader );
+    }
+
+    @Override
+    protected TestClass createTestClass(final Class<?> testClass) {
+        replacableTestClass = new ReplacableTestClass( testClass );
+        return replacableTestClass;
+    }
+
+    private FrameworkMethod replaceFrameworkMethod(FrameworkMethod m) {
+        try {
+            return new FrameworkMethod(
+                klassToUse.getDeclaredMethod( m.getName(), m.getMethod().getParameterTypes() ) );
+        }
+        catch ( NoSuchMethodException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
     @Override
     protected Statement methodBlock(FrameworkMethod method) {
-        Statement statement = super.methodBlock( method );
-        statement = new CompilingStatement( statement, method, TEST_CLASS_LOADER );
+        CompilingStatement statement = new CompilingStatement( method );
+        if ( statement.needsRecompilation() ) {
+            klassToUse = replaceClassLoaderAndClass( klass );
+
+            replacableTestClass.replaceClass( klassToUse );
+        }
+
+        method = replaceFrameworkMethod( method );
+
+        Statement next = super.methodBlock( method );
+
+        statement.setNextStatement( next );
 
         return statement;
     }
