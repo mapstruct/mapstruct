@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2014 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -16,7 +16,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package org.mapstruct.ap.test.nestedmethodcall;
 
 import org.mapstruct.Mapper;
