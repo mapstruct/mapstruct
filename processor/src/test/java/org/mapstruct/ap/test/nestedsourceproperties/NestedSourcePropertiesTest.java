@@ -22,21 +22,23 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.nestedsourceproperties._target.AdderUsageObserver;
+import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
+import org.mapstruct.ap.test.nestedsourceproperties._target.ChartPositions;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Artist;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Label;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
-import org.mapstruct.ap.test.nestedsourceproperties.target.AdderUsageObserver;
-import org.mapstruct.ap.test.nestedsourceproperties.target.ChartEntry;
-import org.mapstruct.ap.test.nestedsourceproperties.target.ChartPositions;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.fest.assertions.Assertions.assertThat;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;

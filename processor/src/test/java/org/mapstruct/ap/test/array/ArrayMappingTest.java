@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.array._target.ScientistDto;
 import org.mapstruct.ap.test.array.source.Scientist;
-import org.mapstruct.ap.test.array.target.ScientistDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;

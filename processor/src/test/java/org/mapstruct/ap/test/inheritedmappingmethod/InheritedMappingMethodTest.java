@@ -22,10 +22,10 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.inheritedmappingmethod._target.CarDto;
+import org.mapstruct.ap.test.inheritedmappingmethod._target.FastCarDto;
 import org.mapstruct.ap.test.inheritedmappingmethod.source.Car;
 import org.mapstruct.ap.test.inheritedmappingmethod.source.FastCar;
-import org.mapstruct.ap.test.inheritedmappingmethod.target.CarDto;
-import org.mapstruct.ap.test.inheritedmappingmethod.target.FastCarDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;

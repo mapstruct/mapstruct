@@ -34,9 +34,9 @@ import static org.fest.assertions.Assertions.assertThat;
 @WithClasses( {
     SameNameForSourceAndTargetCarsMapper.class,
     Cars.class,
-    org.mapstruct.ap.test.bugs._394.target.Cars.class,
+    org.mapstruct.ap.test.bugs._394._target.Cars.class,
     AnotherCar.class,
-    org.mapstruct.ap.test.bugs._394.target.AnotherCar.class
+    org.mapstruct.ap.test.bugs._394._target.AnotherCar.class
 } )
 @IssueKey("394")
 @RunWith(AnnotationProcessorTestRunner.class)
@@ -53,7 +53,7 @@ public class SameClassNameInDifferentPackageTest {
 
         Cars cars = new Cars();
         cars.setMakeToCar( values );
-        org.mapstruct.ap.test.bugs._394.target.Cars targetCars = SameNameForSourceAndTargetCarsMapper.INSTANCE
+        org.mapstruct.ap.test.bugs._394._target.Cars targetCars = SameNameForSourceAndTargetCarsMapper.INSTANCE
                 .sourceCarsToTargetCars( cars );
         assertThat( targetCars ).isNotNull();
         assertThat( targetCars.getMakeToCar() ).hasSize( 2 );

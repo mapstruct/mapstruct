@@ -19,8 +19,8 @@
 package org.mapstruct.ap.test.builtin.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.builtin._target.TargetWithSqlDate;
 import org.mapstruct.ap.test.builtin.source.SourceWithDate;
-import org.mapstruct.ap.test.builtin.target.TargetWithSqlDate;
 import org.mapstruct.factory.Mappers;
 
 /**

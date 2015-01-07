@@ -52,6 +52,12 @@
         <property name="message" value="Line has trailing spaces"/>
     </module>
 
+    <module name="RegexpSingleline">
+        <!-- do not allow a package declaration that contains ".target." or "target;"  -->
+        <property name="format" value="^package .*\.target[\.;]"/>
+        <property name="message" value="Do not use &quot;target&quot; as package name element"/>
+    </module>
+
     <module name="TreeWalker">
 
         <property name="cacheFile" value="${checkstyle.cache.file}"/>

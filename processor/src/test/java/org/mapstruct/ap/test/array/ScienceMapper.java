@@ -24,8 +24,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueMapping;
 import org.mapstruct.NullValueMappingStrategy;
+import org.mapstruct.ap.test.array._target.ScientistDto;
 import org.mapstruct.ap.test.array.source.Scientist;
-import org.mapstruct.ap.test.array.target.ScientistDto;
 import org.mapstruct.factory.Mappers;
 
 @Mapper

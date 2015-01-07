@@ -22,9 +22,9 @@ import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
-import org.mapstruct.ap.test.nestedsourceproperties.target.ChartEntry;
 import org.mapstruct.factory.Mappers;
 
 /**

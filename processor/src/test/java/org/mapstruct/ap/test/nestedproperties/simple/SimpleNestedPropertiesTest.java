@@ -26,9 +26,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.nestedproperties.simple._target.TargetObject;
 import org.mapstruct.ap.test.nestedproperties.simple.source.SourceProps;
 import org.mapstruct.ap.test.nestedproperties.simple.source.SourceRoot;
-import org.mapstruct.ap.test.nestedproperties.simple.target.TargetObject;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;

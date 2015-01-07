@@ -18,8 +18,8 @@
  */
 package org.mapstruct.ap.test.builtin;
 
-import org.mapstruct.ap.test.builtin.target.TargetWithSqlDate;
 import org.mapstruct.ap.test.builtin.mapper.SourceTargetWithSqlDateMapper;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,6 +31,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -41,6 +42,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.builtin._target.IterableTarget;
+import org.mapstruct.ap.test.builtin._target.MapTarget;
+import org.mapstruct.ap.test.builtin._target.TargetWithDate;
+import org.mapstruct.ap.test.builtin._target.TargetWithSqlDate;
 import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
 import org.mapstruct.ap.test.builtin.bean.DateProperty;
 import org.mapstruct.ap.test.builtin.bean.JaxbElementListProperty;
@@ -66,9 +71,6 @@ import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToStringMapper;
 import org.mapstruct.ap.test.builtin.source.IterableSource;
 import org.mapstruct.ap.test.builtin.source.MapSource;
 import org.mapstruct.ap.test.builtin.source.SourceWithDate;
-import org.mapstruct.ap.test.builtin.target.IterableTarget;
-import org.mapstruct.ap.test.builtin.target.MapTarget;
-import org.mapstruct.ap.test.builtin.target.TargetWithDate;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;

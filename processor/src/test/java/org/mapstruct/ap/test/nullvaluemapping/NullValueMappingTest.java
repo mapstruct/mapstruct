@@ -25,10 +25,10 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.nullvaluemapping._target.CarDto;
+import org.mapstruct.ap.test.nullvaluemapping._target.DriverAndCarDto;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
 import org.mapstruct.ap.test.nullvaluemapping.source.Driver;
-import org.mapstruct.ap.test.nullvaluemapping.target.CarDto;
-import org.mapstruct.ap.test.nullvaluemapping.target.DriverAndCarDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;

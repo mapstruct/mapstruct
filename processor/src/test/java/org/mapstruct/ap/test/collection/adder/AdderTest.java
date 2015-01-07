@@ -20,32 +20,34 @@ package org.mapstruct.ap.test.collection.adder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.collection.adder._target.AdderUsageObserver;
+import org.mapstruct.ap.test.collection.adder._target.IndoorPet;
+import org.mapstruct.ap.test.collection.adder._target.OutdoorPet;
+import org.mapstruct.ap.test.collection.adder._target.Pet;
+import org.mapstruct.ap.test.collection.adder._target.Target;
+import org.mapstruct.ap.test.collection.adder._target.Target2;
+import org.mapstruct.ap.test.collection.adder._target.TargetDali;
+import org.mapstruct.ap.test.collection.adder._target.TargetHuman;
+import org.mapstruct.ap.test.collection.adder._target.TargetOnlyGetter;
+import org.mapstruct.ap.test.collection.adder._target.TargetViaTargetType;
+import org.mapstruct.ap.test.collection.adder._target.TargetWithoutSetter;
 import org.mapstruct.ap.test.collection.adder.source.SingleElementSource;
 import org.mapstruct.ap.test.collection.adder.source.Source;
 import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
-import org.mapstruct.ap.test.collection.adder.target.AdderUsageObserver;
-import org.mapstruct.ap.test.collection.adder.target.IndoorPet;
-import org.mapstruct.ap.test.collection.adder.target.OutdoorPet;
-import org.mapstruct.ap.test.collection.adder.target.Pet;
-import org.mapstruct.ap.test.collection.adder.target.Target;
-import org.mapstruct.ap.test.collection.adder.target.TargetDali;
-import org.mapstruct.ap.test.collection.adder.target.TargetHuman;
-import org.mapstruct.ap.test.collection.adder.target.TargetOnlyGetter;
-import org.mapstruct.ap.test.collection.adder.target.TargetViaTargetType;
-import org.mapstruct.ap.test.collection.adder.target.TargetWithoutSetter;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import org.mapstruct.ap.test.collection.adder.source.Foo;
 import org.mapstruct.ap.test.collection.adder.source.Source2;
-import org.mapstruct.ap.test.collection.adder.target.Target2;
 
 /**
  * @author Sjaak Derksen

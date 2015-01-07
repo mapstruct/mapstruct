@@ -20,8 +20,8 @@ package org.mapstruct.ap.test.collection.adder;
 
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.collection.adder._target.TargetWithoutSetter;
 import org.mapstruct.ap.test.collection.adder.source.Source;
-import org.mapstruct.ap.test.collection.adder.target.TargetWithoutSetter;
 import org.mapstruct.factory.Mappers;
 
 /**

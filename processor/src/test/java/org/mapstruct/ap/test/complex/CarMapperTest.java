@@ -27,12 +27,12 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.complex._target.CarDto;
+import org.mapstruct.ap.test.complex._target.PersonDto;
 import org.mapstruct.ap.test.complex.other.DateMapper;
 import org.mapstruct.ap.test.complex.source.Car;
 import org.mapstruct.ap.test.complex.source.Category;
 import org.mapstruct.ap.test.complex.source.Person;
-import org.mapstruct.ap.test.complex.target.CarDto;
-import org.mapstruct.ap.test.complex.target.PersonDto;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 

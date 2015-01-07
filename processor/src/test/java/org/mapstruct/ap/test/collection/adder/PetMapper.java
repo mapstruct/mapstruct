@@ -23,10 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+
 import org.mapstruct.TargetType;
-import org.mapstruct.ap.test.collection.adder.target.IndoorPet;
-import org.mapstruct.ap.test.collection.adder.target.OutdoorPet;
-import org.mapstruct.ap.test.collection.adder.target.Pet;
+import org.mapstruct.ap.test.collection.adder._target.IndoorPet;
+import org.mapstruct.ap.test.collection.adder._target.OutdoorPet;
+import org.mapstruct.ap.test.collection.adder._target.Pet;
 
 /**
  * @author Sjaak Derksen

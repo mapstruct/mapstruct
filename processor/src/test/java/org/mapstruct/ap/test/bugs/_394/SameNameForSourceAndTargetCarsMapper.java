@@ -21,11 +21,12 @@ package org.mapstruct.ap.test.bugs._394;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.test.bugs._394._target.AnotherCar;
 import org.mapstruct.ap.test.bugs._394.source.Cars;
-import org.mapstruct.ap.test.bugs._394.target.AnotherCar;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+
 import org.mapstruct.InheritInverseConfiguration;
 
 @Mapper
@@ -40,7 +41,7 @@ public interface SameNameForSourceAndTargetCarsMapper {
 
     List<AnotherCar> sourceCarListToTargetCarList(List<org.mapstruct.ap.test.bugs._394.source.AnotherCar> cars);
 
-    org.mapstruct.ap.test.bugs._394.target.Cars sourceCarsToTargetCars(Cars source);
+    org.mapstruct.ap.test.bugs._394._target.Cars sourceCarsToTargetCars(Cars source);
 
     // Reverse mehtods
 
@@ -49,6 +50,6 @@ public interface SameNameForSourceAndTargetCarsMapper {
 
     List<org.mapstruct.ap.test.bugs._394.source.AnotherCar> targetCarListToSourceCarList(List<AnotherCar> cars);
 
-    Cars targetCarsToSourceCars(org.mapstruct.ap.test.bugs._394.target.Cars source);
+    Cars targetCarsToSourceCars(org.mapstruct.ap.test.bugs._394._target.Cars source);
 
 }

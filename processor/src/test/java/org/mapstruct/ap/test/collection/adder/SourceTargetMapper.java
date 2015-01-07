@@ -22,14 +22,14 @@ import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ap.test.collection.adder._target.Target;
+import org.mapstruct.ap.test.collection.adder._target.TargetDali;
+import org.mapstruct.ap.test.collection.adder._target.TargetHuman;
+import org.mapstruct.ap.test.collection.adder._target.TargetOnlyGetter;
+import org.mapstruct.ap.test.collection.adder._target.TargetViaTargetType;
 import org.mapstruct.ap.test.collection.adder.source.SingleElementSource;
 import org.mapstruct.ap.test.collection.adder.source.Source;
 import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
-import org.mapstruct.ap.test.collection.adder.target.Target;
-import org.mapstruct.ap.test.collection.adder.target.TargetDali;
-import org.mapstruct.ap.test.collection.adder.target.TargetHuman;
-import org.mapstruct.ap.test.collection.adder.target.TargetOnlyGetter;
-import org.mapstruct.ap.test.collection.adder.target.TargetViaTargetType;
 import org.mapstruct.factory.Mappers;
 
 /**

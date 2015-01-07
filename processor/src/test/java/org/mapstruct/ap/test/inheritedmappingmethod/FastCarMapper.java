@@ -19,8 +19,8 @@
 package org.mapstruct.ap.test.inheritedmappingmethod;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.inheritedmappingmethod._target.FastCarDto;
 import org.mapstruct.ap.test.inheritedmappingmethod.source.FastCar;
-import org.mapstruct.ap.test.inheritedmappingmethod.target.FastCarDto;
 import org.mapstruct.factory.Mappers;
 
 //CHECKSTYLE:OFF

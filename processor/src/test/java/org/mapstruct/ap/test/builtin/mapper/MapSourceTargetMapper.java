@@ -18,8 +18,9 @@
  */
 package org.mapstruct.ap.test.builtin.mapper;
 
-import org.mapstruct.ap.test.builtin.target.MapTarget;
+import org.mapstruct.ap.test.builtin._target.MapTarget;
 import org.mapstruct.ap.test.builtin.source.MapSource;
+
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;

@@ -19,8 +19,8 @@
 package org.mapstruct.ap.test.inheritedmappingmethod;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.inheritedmappingmethod._target.CarDto;
 import org.mapstruct.ap.test.inheritedmappingmethod.source.Car;
-import org.mapstruct.ap.test.inheritedmappingmethod.target.CarDto;
 import org.mapstruct.factory.Mappers;
 
 //CHECKSTYLE:OFF

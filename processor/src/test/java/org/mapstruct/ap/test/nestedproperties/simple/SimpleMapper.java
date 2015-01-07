@@ -21,8 +21,8 @@ package org.mapstruct.ap.test.nestedproperties.simple;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.test.nestedproperties.simple._target.TargetObject;
 import org.mapstruct.ap.test.nestedproperties.simple.source.SourceRoot;
-import org.mapstruct.ap.test.nestedproperties.simple.target.TargetObject;
 import org.mapstruct.factory.Mappers;
 
 @Mapper

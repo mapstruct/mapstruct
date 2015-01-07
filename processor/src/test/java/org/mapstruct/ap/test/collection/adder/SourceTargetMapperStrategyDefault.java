@@ -19,8 +19,8 @@
 package org.mapstruct.ap.test.collection.adder;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.collection.adder._target.Target;
 import org.mapstruct.ap.test.collection.adder.source.Source;
-import org.mapstruct.ap.test.collection.adder.target.Target;
 import org.mapstruct.factory.Mappers;
 
 /**

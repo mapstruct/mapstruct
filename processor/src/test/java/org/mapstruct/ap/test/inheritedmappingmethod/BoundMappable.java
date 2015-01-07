@@ -18,8 +18,8 @@
  */
 package org.mapstruct.ap.test.inheritedmappingmethod;
 
+import org.mapstruct.ap.test.inheritedmappingmethod._target.CarDto;
 import org.mapstruct.ap.test.inheritedmappingmethod.source.Car;
-import org.mapstruct.ap.test.inheritedmappingmethod.target.CarDto;
 
 public interface BoundMappable<DTO extends CarDto, ENTITY extends Car> {
     ENTITY from(DTO dto);

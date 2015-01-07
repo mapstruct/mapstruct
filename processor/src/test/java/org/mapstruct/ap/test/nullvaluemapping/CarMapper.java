@@ -26,10 +26,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.NullValueMapping;
+import org.mapstruct.ap.test.nullvaluemapping._target.CarDto;
+import org.mapstruct.ap.test.nullvaluemapping._target.DriverAndCarDto;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
 import org.mapstruct.ap.test.nullvaluemapping.source.Driver;
-import org.mapstruct.ap.test.nullvaluemapping.target.CarDto;
-import org.mapstruct.ap.test.nullvaluemapping.target.DriverAndCarDto;
 import org.mapstruct.factory.Mappers;
 
 import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
