@@ -47,6 +47,7 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.model.source.selector.SelectionCriteria;
+import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -124,14 +125,15 @@ public class MappingResolverImpl implements MappingResolver {
         List<TypeMirror> qualifiers,
         String sourceReference) {
 
+        SelectionCriteria criteria = new SelectionCriteria(qualifiers, targetPropertyName, null );
+
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
             mappingMethod,
             mappedElement,
-            targetPropertyName,
             dateFormat,
-            qualifiers,
-            sourceReference
+            sourceReference,
+            criteria
         );
 
         return attempt.getTargetAssignment( sourceType, targetType );
@@ -145,14 +147,20 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     public MethodReference getFactoryMethod( Method mappingMethod, Type targetType ) {
 
+        TypeMirror qualifyingResultTypeMirror = null;
+        BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( mappingMethod.getExecutable() );
+        if ( beanMappingPrism != null ) {
+            qualifyingResultTypeMirror = beanMappingPrism.resultType();
+        }
+        SelectionCriteria criteria = new SelectionCriteria(null, null, qualifyingResultTypeMirror );
+
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
             mappingMethod,
             null,
             null,
             null,
-            null,
-            null
+            criteria
         );
 
         SourceMethod matchingSourceMethod = attempt.getBestMatch( sourceModel, null, targetType );
@@ -169,9 +177,8 @@ public class MappingResolverImpl implements MappingResolver {
         private final Method mappingMethod;
         private final String mappedElement;
         private final List<SourceMethod> methods;
-        private final String targetPropertyName;
         private final String dateFormat;
-        private final List<TypeMirror> qualifiers;
+        private final SelectionCriteria selectionCriteria;
         private final String sourceReference;
 
         // resolving via 2 steps creates the possibillity of wrong matches, first builtin method matches,
@@ -182,18 +189,16 @@ public class MappingResolverImpl implements MappingResolver {
         private ResolvingAttempt(List<SourceMethod> sourceModel,
                                  Method mappingMethod,
                                  String mappedElement,
-                                 String targetPropertyName,
                                  String dateFormat,
-                                 List<TypeMirror> qualifiers,
-                                 String sourceReference) {
+                                 String sourceReference,
+                                 SelectionCriteria criteria) {
             this.mappingMethod = mappingMethod;
             this.mappedElement = mappedElement;
             this.methods = filterPossibleCandidateMethods( sourceModel );
-            this.targetPropertyName = targetPropertyName;
             this.dateFormat = dateFormat;
-            this.qualifiers = qualifiers;
             this.sourceReference = sourceReference;
             this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
+            this.selectionCriteria = criteria;
         }
 
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods) {
@@ -440,13 +445,12 @@ public class MappingResolverImpl implements MappingResolver {
 
         private <T extends Method> T getBestMatch(List<T> methods, Type sourceType, Type returnType) {
 
-            SelectionCriteria criteria = new SelectionCriteria( qualifiers, targetPropertyName );
             List<T> candidates = methodSelectors.getMatchingMethods(
                 mappingMethod,
                 methods,
                 sourceType,
                 returnType,
-                criteria
+                selectionCriteria
             );
 
             // raise an error if more than one mapping method is suitable to map the given source type

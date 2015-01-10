@@ -42,9 +42,10 @@ public class MethodSelectors implements MethodSelector {
         selectors =
             Arrays.<MethodSelector>asList(
                 new TypeSelector( typeFactory ),
-                new InheritanceSelector(),
+                new QualifierSelector( typeUtils, elementUtils ),
+                new TargetTypeSelector( typeUtils, elementUtils ),
                 new XmlElementDeclSelector( typeUtils ),
-                new QualifierSelector( typeUtils, elementUtils )
+                new InheritanceSelector()
             );
     }
 

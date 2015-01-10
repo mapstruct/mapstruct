@@ -16,37 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.source.selector;
-
-import java.util.List;
-import javax.lang.model.type.TypeMirror;
+package org.mapstruct.ap.test.selection.inheritance;
 
 /**
- * This class groups the selection criteria in one class
  *
  * @author Sjaak Derksen
  */
-public class SelectionCriteria {
+public class Fruit {
 
-    private final List<TypeMirror> qualifiers;
-    private final String targetPropertyName;
-    private final TypeMirror qualifyingResultType;
+    private String type;
 
-    public SelectionCriteria(List<TypeMirror> qualifiers, String targetPropertyName, TypeMirror qualifyingResultType) {
-        this.qualifiers = qualifiers;
-        this.targetPropertyName = targetPropertyName;
-        this.qualifyingResultType = qualifyingResultType;
+    public Fruit(String type) {
+        this.type = type;
     }
 
-    public List<TypeMirror> getQualifiers() {
-        return qualifiers;
+    public String getType() {
+        return type;
     }
 
-    public String getTargetPropertyName() {
-        return targetPropertyName;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public TypeMirror getQualifyingResultType() {
-        return qualifyingResultType;
-    }
+
 }
