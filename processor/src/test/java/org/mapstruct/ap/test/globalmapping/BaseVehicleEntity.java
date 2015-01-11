@@ -16,26 +16,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.mapstruct.ap.test.globalmapping;
 
 /**
- * Configures the mappings of several bean attributes.
+ * @author Andreas Gudian
  *
- * @author Gunnar Morling
  */
-@Retention(RetentionPolicy.CLASS)
-@Target(ElementType.METHOD)
-public @interface Mappings {
+public abstract class BaseVehicleEntity {
+    private long primaryKey;
+    private String auditTrail;
 
-    /**
-     * The configuration of the bean attributes.
-     *
-     * @return The configuration of the bean attributes.
-     */
-    Mapping[] value();
+    public long getPrimaryKey() {
+        return primaryKey;
+    }
+
+    public void setPrimaryKey(long primaryKey) {
+        this.primaryKey = primaryKey;
+    }
+
+    public String getAuditTrail() {
+        return auditTrail;
+    }
+
+    public void setAuditTrail(String auditTrail) {
+        this.auditTrail = auditTrail;
+    }
 }

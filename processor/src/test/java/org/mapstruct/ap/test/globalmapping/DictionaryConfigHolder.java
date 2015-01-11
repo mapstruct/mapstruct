@@ -16,26 +16,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
+package org.mapstruct.ap.test.globalmapping;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.mapstruct.GlobalMapping;
+import org.mapstruct.MapperConfig;
+import org.mapstruct.Mapping;
 
 /**
- * Configures the mappings of several bean attributes.
+ * Provides a global dictionary for British English to American English
  *
- * @author Gunnar Morling
+ * @author Andreas Gudian
  */
-@Retention(RetentionPolicy.CLASS)
-@Target(ElementType.METHOD)
-public @interface Mappings {
+@MapperConfig(
+    globalMappings = {
+        @GlobalMapping(
+            targetType = BaseVehicleEntity.class,
+            mappings = { @Mapping( source = "colour", target = "color" ) }
+        )
+    }
+)
+public class DictionaryConfigHolder {
 
-    /**
-     * The configuration of the bean attributes.
-     *
-     * @return The configuration of the bean attributes.
-     */
-    Mapping[] value();
 }

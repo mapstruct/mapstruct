@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -37,7 +38,6 @@ import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.prism.MappingPrism;
-import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.Executables;
 
 /**
@@ -62,12 +62,15 @@ public class Mapping {
     private final AnnotationValue targetAnnotationValue;
     private SourceReference sourceReference;
 
-    public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
+    public static Map<String, List<Mapping>> fromMappingPrisms(List<MappingPrism> mappingPrisms,
                                                                ExecutableElement method,
                                                                Messager messager) {
         Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
-        for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
+        for ( MappingPrism mappingPrism : mappingPrisms ) {
+            if ( !mappings.containsKey( mappingPrism.target() ) ) {
+                mappings.put( mappingPrism.target(), new ArrayList<Mapping>() );
+            }
             Mapping mapping = fromMappingPrism( mappingPrism, method, messager );
             if ( mapping != null ) {
                 List<Mapping> mappingsOfProperty = mappings.get( mappingPrism.target() );

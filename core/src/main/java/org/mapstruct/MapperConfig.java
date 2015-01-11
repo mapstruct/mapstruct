@@ -26,14 +26,16 @@ import java.lang.annotation.Target;
 import org.mapstruct.factory.Mappers;
 
 /**
- * Marks an interface as mapper interface and activates the generation of a
- * mapper implementation for that interface.
+ * Marks a class-, interface-, enum declaration as (common) configuration.
  *
- * @author Gunnar Morling
+ * The {@link #unmappedTargetPolicy() } and {@link #componentModel() } can be overruled by a specific {@link Mapper}
+ * annotation. {@link #uses() } will be used in addition to what is specified in the {@link Mapper} annotation.
+ *
+ * @author Sjaak Derksen
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
-public @interface Mapper {
+public @interface MapperConfig {
 
     /**
      * The mapper types used by this mapper.
@@ -43,22 +45,12 @@ public @interface Mapper {
     Class<?>[] uses() default { };
 
     /**
-     * Additional types for which an import statement is to be added to the generated mapper implementation class.
-     * This allows to refer to those types from within mapping expressions given via {@link Mapping#expression()} using
-     * their simple name rather than their fully-qualified name.
-     *
-     * @return classes to add in the imports of the generated implementation.
-     */
-    Class<?>[] imports() default { };
-
-    /**
      * How unmapped properties of the target type of a mapping should be
-     * reported. The method overrides an unmappedTargetPolicy set in a central
-     * configuration set by {@link #config() }
+     * reported.
      *
      * @return The reporting policy for unmapped target properties.
      */
-    ReportingPolicy unmappedTargetPolicy() default ReportingPolicy.DEFAULT;
+    ReportingPolicy unmappedTargetPolicy() default ReportingPolicy.WARN;
 
     /**
      * Specifies the component model to which the generated mapper should
@@ -76,40 +68,34 @@ public @interface Mapper {
      * {@code jsr330}: the generated mapper is annotated with {@code @Named} and
      * can be retrieved via {@code @Inject}</li>
      * </ul>
-     * The method overrides an unmappedTargetPolicy set in a central configuration set
-     * by {@link #config() }
      *
      * @return The component model for the generated mapper.
      */
     String componentModel() default "default";
 
     /**
-     * A class annotated with {@link MapperConfig} which should be used as configuration template. Any settings given
-     * via {@link Mapper} will take precedence over the settings from the referenced configuration source. The list of
-     * referenced mappers will contain all mappers given via {@link Mapper#uses()} and {@link MapperConfig#uses()}.
-     *
-     * @return A class which should be used as configuration template.
-     */
-    Class<?> config() default void.class;
-
-    /**
      * The strategy to be applied when propagating the value of collection-typed properties. By default, only JavaBeans
      * accessor methods (setters or getters) will be used, but it is also possible to invoke a corresponding adder
      * method for each element of the source collection (e.g. {@code orderDto.addOrderLine()}).
-     * <p>
-     * Any setting given for this attribute will take precedence over {@link MapperConfig#collectionMappingStrategy()},
-     * if present.
      *
      * @return The strategy applied when propagating the value of collection-typed properties.
      */
     CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.DEFAULT;
 
     /**
-     * The strategy to be applied when {@code null} is passed as source value to the methods of this mapper. If no
-     * strategy is configured, the strategy given via {@link MapperConfig#nullValueMappingStrategy()} will be applied,
-     * using {@link NullValueMappingStrategy#RETURN_NULL} by default.
+     * The strategy to be applied when {@code null} is passed as source value to mapping methods. If no strategy is
+     * configured, {@link NullValueMappingStrategy#RETURN_NULL} will be used by default.
      *
-     * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapper.
+     * @return The strategy to be applied when {@code null} is passed as source value to mapping methods.
      */
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.DEFAULT;
+
+    /**
+     * Global mappings can be used to define mapping configurations for mapping methods that fulfill certain source
+     * and/or target type criteria without having to repeat the same &#64;{@link Mapping} annotations for those methods.
+     *
+     * @return The global mapping configuration for mapping methods within all mappers that are configured with this
+     *         mapper config.
+     */
+    GlobalMapping[] globalMappings() default { };
 }

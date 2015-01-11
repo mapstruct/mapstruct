@@ -18,12 +18,11 @@
  */
 package org.mapstruct.ap.processor;
 
-import static org.mapstruct.ap.util.Executables.getAllEnclosedExecutableElements;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
@@ -44,12 +43,15 @@ import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.MapMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.prism.GlobalMappingPrism;
 import org.mapstruct.ap.prism.IterableMappingPrism;
 import org.mapstruct.ap.prism.MapMappingPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.MapperConfig;
+
+import static org.mapstruct.ap.util.Executables.getAllEnclosedExecutableElements;
 
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -72,6 +74,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.typeFactory = context.getTypeFactory();
         this.typeUtils = context.getTypeUtils();
         this.elementUtils = context.getElementUtils();
+
         return retrieveMethods( mapperTypeElement, mapperTypeElement );
     }
 
@@ -91,8 +94,23 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement) {
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
 
+        MapperConfig mapperSettings;
+        if ( usedMapper.equals( mapperToImplement ) ) {
+            mapperSettings = MapperConfig.getInstanceOn( usedMapper );
+
+            if ( !mapperSettings.isValid() ) {
+                throw new AnnotationProcessingException(
+                    "Couldn't retrieve @Mapper annotation",
+                    usedMapper,
+                    mapperSettings.getAnnotationMirror() );
+            }
+        }
+        else {
+            mapperSettings = null;
+        }
+
         for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper ) ) {
-            SourceMethod method = getMethod( usedMapper, executable, mapperToImplement );
+            SourceMethod method = getMethod( usedMapper, executable, mapperToImplement, mapperSettings );
             if ( method != null ) {
                 methods.add( method );
             }
@@ -100,13 +118,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         //Add all methods of used mappers in order to reference them in the aggregated model
         if ( usedMapper.equals( mapperToImplement ) ) {
-            MapperConfig mapperSettings = MapperConfig.getInstanceOn( usedMapper );
-            if ( !mapperSettings.isValid() ) {
-                throw new AnnotationProcessingException(
-                    "Couldn't retrieve @Mapper annotation", usedMapper, mapperSettings.getAnnotationMirror()
-                );
-            }
-
             for ( TypeMirror mapper : mapperSettings.uses() ) {
                 methods.addAll( retrieveMethods( asTypeElement( mapper ), mapperToImplement ) );
             }
@@ -121,16 +132,23 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private SourceMethod getMethod(TypeElement usedMapper,
                                    ExecutableElement method,
-                                   TypeElement mapperToImplement) {
+ TypeElement mapperToImplement,
+                                   MapperConfig mapperSettings) {
 
         ExecutableType methodType = typeFactory.getMethodType( usedMapper, method );
         List<Parameter> parameters = typeFactory.getParameters( methodType, method );
+
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
         boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
 
         //add method with property mappings if an implementation needs to be generated
         if ( ( usedMapper.equals( mapperToImplement ) ) && methodRequiresImplementation ) {
-            return getMethodRequiringImplementation( methodType, method, parameters, containsTargetTypeParameter );
+            return getMethodRequiringImplementation(
+                methodType,
+                method,
+                parameters,
+                containsTargetTypeParameter,
+                mapperSettings );
         }
         //otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( parameters ) ) {
@@ -143,7 +161,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     private SourceMethod getMethodRequiringImplementation(ExecutableType methodType, ExecutableElement method,
                                                           List<Parameter> parameters,
-                                                          boolean containsTargetTypeParameter) {
+                                                          boolean containsTargetTypeParameter,
+                                                          MapperConfig mapperSettings) {
         Type returnType = typeFactory.getReturnType( methodType );
         List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
         List<Parameter> sourceParameters = extractSourceParameters( parameters );
@@ -168,7 +187,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             parameters,
             returnType,
             exceptionTypes,
-            getMappings( method ),
+            getMappings( method, findApplicableGlobalMappings( mapperSettings, sourceParameters, resultType ) ),
             IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ) ),
             MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ) ),
             typeUtils,
@@ -353,14 +372,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     /**
-     * Retrieves the mappings configured via {@code @Mapping} from the given
-     * method.
+     * Retrieves the mappings configured via {@code @Mapping} from the given method.
      *
      * @param method The method of interest
-     *
-     * @return The mappings for the given method, keyed by target property name
+     * @param globalMappings any globally configured mappings that are applicable for this method
+     * @return The mappings for the given method, keyed by source property name
      */
-    private Map<String, List<Mapping>> getMappings(ExecutableElement method) {
+    private Map<String, List<Mapping>> getMappings(ExecutableElement method, List<MappingPrism> globalMappings) {
         Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         MappingPrism mappingAnnotation = MappingPrism.getInstanceOn( method );
@@ -377,9 +395,60 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         if ( mappingsAnnotation != null ) {
-            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager ) );
+            mergeIntoMap( mappings, Mapping.fromMappingPrisms( mappingsAnnotation.value(), method, messager ) );
         }
 
+        mergeIntoMap( mappings, Mapping.fromMappingPrisms( globalMappings, method, messager ) );
+
         return mappings;
+    }
+
+    private void mergeIntoMap(Map<String, List<Mapping>> mappings, Map<String, List<Mapping>> mappingsForSource) {
+        for ( Entry<String, List<Mapping>> entry : mappingsForSource.entrySet() ) {
+            List<Mapping> list = mappings.get( entry.getKey() );
+
+            if ( list == null ) {
+                list = new ArrayList<Mapping>();
+                mappings.put( entry.getKey(), list );
+            }
+
+            list.addAll( entry.getValue() );
+        }
+    }
+
+    /**
+     * @return the mapping prisms from the applicable global mapping configuration
+     */
+    private List<MappingPrism> findApplicableGlobalMappings(MapperConfig mapperSettings,
+                                                            List<Parameter> sourceParameters, Type resultType) {
+        List<MappingPrism> result = new ArrayList<MappingPrism>();
+
+        if ( mapperSettings != null ) {
+            for ( GlobalMappingPrism global : mapperSettings.globalMappings() ) {
+                if ( isSourceTypeMathing( sourceParameters, global.sourceType() )
+                    && isTargetTypeMatching( resultType, global.targetType() ) ) {
+                    result.addAll( global.mappings() );
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private boolean isTargetTypeMatching(Type resultType, TypeMirror targetType) {
+        return typeUtils.isAssignable( resultType.getTypeMirror(), targetType );
+    }
+
+    private boolean isSourceTypeMathing(List<Parameter> sourceParameters, TypeMirror sourceType) {
+        return hasMatchingParameterType( sourceParameters, sourceType );
+    }
+
+    private boolean hasMatchingParameterType(List<Parameter> sourceParameters, TypeMirror sourceType) {
+        for ( Parameter parameter : sourceParameters ) {
+            if ( typeUtils.isAssignable( parameter.getType().getTypeMirror(), sourceType ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 }
