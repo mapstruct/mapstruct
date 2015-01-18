@@ -41,7 +41,7 @@ public @interface IterableMapping {
      *
      * @return A date format string as processable by {@link SimpleDateFormat}.
      */
-    String dateFormat();
+    String dateFormat() default "";
 
     /**
      * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple
