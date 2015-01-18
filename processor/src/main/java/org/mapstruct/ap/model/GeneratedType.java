@@ -18,11 +18,15 @@
  */
 package org.mapstruct.ap.model;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.jar.Manifest;
 import javax.annotation.Generated;
 
 import org.mapstruct.ap.model.common.Accessibility;
@@ -36,6 +40,9 @@ import org.mapstruct.ap.model.common.TypeFactory;
  * @author Gunnar Morling
  */
 public abstract class GeneratedType extends ModelElement {
+
+    private static final String COMMENT_TAG = "Implementation-Version";
+    private static final String COMMENTS = initComment();
 
     private final String packageName;
     private final String name;
@@ -118,6 +125,10 @@ public abstract class GeneratedType extends ModelElement {
         return accessibility;
     }
 
+    public String getComments() {
+        return COMMENTS;
+    }
+
     @Override
     public SortedSet<Type> getImportTypes() {
         SortedSet<Type> importedTypes = new TreeSet<Type>();
@@ -167,5 +178,24 @@ public abstract class GeneratedType extends ModelElement {
         for ( Type type : typeToAdd.getTypeParameters() ) {
             addWithDependents( collection, type );
         }
+    }
+
+    private static String initComment() {
+        String result = null;
+        try {
+            Enumeration<URL> resources = GeneratedType.class.getClassLoader().getResources( "META-INF/MANIFEST.MF" );
+            while ( resources.hasMoreElements() ) {
+                Manifest manifest = new Manifest( resources.nextElement().openStream() );
+                String resultValue = manifest.getMainAttributes().getValue( COMMENT_TAG );
+                if (resultValue != null ) {
+                    result = COMMENT_TAG + ": " + resultValue;
+                    break;
+                }
+            }
+        }
+        catch ( IOException ex ) {
+            return result;
+        }
+        return result;
     }
 }

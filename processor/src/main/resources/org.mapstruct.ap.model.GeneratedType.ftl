@@ -26,7 +26,8 @@ import ${importedType.importName};
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor"<#if suppressGeneratorTimestamp == false>,
-    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if>
+    date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if><#if comments??>,
+    comments = "${comments}"</#if>
 )
 <#list annotations as annotation>
 <#nt><@includeModel object=annotation/>

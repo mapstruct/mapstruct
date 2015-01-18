@@ -45,8 +45,8 @@
         </dependency>
 
         <!-- Compile-only; Using "provided" scope as there is no such scope in Maven;
-             these dependencies are not required at runtime, only for prism generation
-             and tests -->
+        these dependencies are not required at runtime, only for prism generation
+        and tests -->
         <dependency>
             <groupId>com.jolira</groupId>
             <artifactId>hickory</artifactId>
@@ -90,6 +90,17 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
