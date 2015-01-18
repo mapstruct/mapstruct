@@ -56,4 +56,35 @@ public class ErroneousCollectionMappingTest {
     public void shouldFailToGenerateImplementationBetweenCollectionAndNonCollection() {
     }
 
+    @Test
+    @IssueKey("417")
+    @WithClasses({ EmptyItererableMappingMapper.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = EmptyItererableMappingMapper.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = "'dateformat' and 'qualifiedBy' are are are undefined in @IterableMapping, "
+                    + "define at least one of them.")
+        }
+    )
+    public void shouldFailOnEmptyIterableAnnotation() {
+    }
+
+    @Test
+    @IssueKey("417")
+    @WithClasses({ EmptyMapMappingMapper.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = EmptyMapMappingMapper.class,
+                kind = Kind.ERROR,
+                line = 34,
+                messageRegExp = "'keyDateFormat', 'keyQualifiedBy', 'valueDateFormat' and 'valueQualfiedBy' are all "
+                    + "undefined in @MapMapping, define at least one of them.")
+        }
+    )
+    public void shouldFailOnEmptyMapAnnotation() {
+    }
 }
