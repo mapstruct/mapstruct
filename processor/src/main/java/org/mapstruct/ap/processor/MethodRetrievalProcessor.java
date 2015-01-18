@@ -169,8 +169,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             returnType,
             exceptionTypes,
             getMappings( method ),
-            IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ) ),
-            MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ) ),
+            IterableMapping.fromPrism( IterableMappingPrism.getInstanceOn( method ), method, messager ),
+            MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager ),
             typeUtils,
             messager,
             typeFactory

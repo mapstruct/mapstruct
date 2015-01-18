@@ -19,8 +19,11 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.List;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
+import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.prism.MapMappingPrism;
 
@@ -37,10 +40,23 @@ public class MapMapping {
     private final List<TypeMirror> valueQualifiers;
     private final AnnotationMirror mirror;
 
-    public static MapMapping fromPrism(MapMappingPrism mapMapping) {
+    public static MapMapping fromPrism(MapMappingPrism mapMapping, ExecutableElement method, Messager messager) {
         if ( mapMapping == null ) {
             return null;
         }
+
+        if ( mapMapping.keyDateFormat().isEmpty()
+            && mapMapping.keyQualifiedBy().isEmpty()
+            && mapMapping.valueDateFormat().isEmpty()
+            && mapMapping.valueQualifiedBy().isEmpty() ) {
+            messager.printMessage(
+                Diagnostic.Kind.ERROR,
+                "'keyDateFormat', 'keyQualifiedBy', 'valueDateFormat' and 'valueQualfiedBy' are all undefined in "
+                    + "@MapMapping, define at least one of them.",
+                method
+            );
+        }
+
 
         return new MapMapping(
             mapMapping.keyDateFormat(),
