@@ -18,5 +18,5 @@
      limitations under the License.
 
 -->
-<#nt><@includeModel object=annotation/>
-private <@includeModel object=type/> ${variableName};
+<#if used><#nt><@includeModel object=annotation/>
+private <@includeModel object=type/> ${variableName};</#if>

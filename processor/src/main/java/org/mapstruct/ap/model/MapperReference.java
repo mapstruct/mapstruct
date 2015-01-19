@@ -30,4 +30,8 @@ public abstract class MapperReference extends Field {
     public MapperReference(Type type, String variableName) {
         super( type, variableName );
     }
+
+    public MapperReference(Type type, String variableName, boolean isUsed) {
+        super( type, variableName, isUsed );
+    }
 }

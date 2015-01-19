@@ -70,7 +70,7 @@ public class Decorator extends GeneratedType {
             mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
             methods,
             Arrays.asList(
-                new Field( typeFactory.getType( mapperElement ), "delegate" ),
+                new Field( typeFactory.getType( mapperElement ), "delegate", true ),
                 new DecoratorConstructor(
                     mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
                     mapperElement.getSimpleName().toString() + "Impl_",

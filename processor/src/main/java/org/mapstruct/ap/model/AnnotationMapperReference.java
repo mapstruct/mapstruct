@@ -33,8 +33,8 @@ public class AnnotationMapperReference extends MapperReference {
 
     private final Annotation annotation;
 
-    public AnnotationMapperReference(Type type, String variableName, Annotation annotation) {
-        super( type, variableName );
+    public AnnotationMapperReference(Type type, String variableName, Annotation annotation, boolean isUsed) {
+        super( type, variableName, isUsed );
         this.annotation = annotation;
     }
 

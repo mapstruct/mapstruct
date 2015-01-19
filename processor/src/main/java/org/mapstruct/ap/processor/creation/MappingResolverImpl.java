@@ -459,6 +459,7 @@ public class MappingResolverImpl implements MappingResolver {
         private MapperReference findMapperReference(SourceMethod method) {
             for ( MapperReference ref : mapperReferences ) {
                 if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
+                    ref.setUsed( !method.isStatic() );
                     return ref;
                 }
             }

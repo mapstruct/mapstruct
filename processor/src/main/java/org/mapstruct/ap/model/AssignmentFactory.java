@@ -96,6 +96,7 @@ public class AssignmentFactory {
     private static MapperReference findMapperReference( List<MapperReference> mapperReferences, SourceMethod method ) {
         for ( MapperReference ref : mapperReferences ) {
             if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
+                ref.setUsed( !method.isStatic() );
                 return ref;
             }
         }
