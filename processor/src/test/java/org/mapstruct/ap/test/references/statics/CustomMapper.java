@@ -22,8 +22,10 @@ package org.mapstruct.ap.test.references.statics;
  *
  * @author Sjaak Derksen
  */
-//@CHECKSTYLE:OFF
 public class CustomMapper {
+
+    private CustomMapper() {
+    }
 
     public static Category toCategory(float in) {
 

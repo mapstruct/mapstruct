@@ -33,10 +33,17 @@ public class Field extends ModelElement {
 
     private final Type type;
     private final String variableName;
+    private boolean used;
 
+    public Field(Type type, String variableName, boolean used) {
+        this.type = type;
+        this.variableName = variableName;
+        this.used = used;
+    }
     public Field(Type type, String variableName) {
         this.type = type;
         this.variableName = variableName;
+        this.used = false;
     }
 
     /**
@@ -51,7 +58,7 @@ public class Field extends ModelElement {
     /**
      * Returns the variable name of this field.
      *
-     * @return the variable name of this referfieldence
+     * @return the variable name of this reference
      */
     public String getVariableName() {
         return variableName;
@@ -61,4 +68,21 @@ public class Field extends ModelElement {
     public Set<Type> getImportTypes() {
         return Collections.emptySet();
     }
+
+    /**
+     * indicates whether the field is indeed used
+     * @return true when field is used
+     */
+    public boolean isUsed() {
+        return used;
+    }
+
+    /**
+     * sets the field as being used
+     * @param isUsed must be true when being used.
+     */
+    public void setUsed(boolean isUsed) {
+        this.used = isUsed;
+    }
+
 }

@@ -76,7 +76,8 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         return new AnnotationMapperReference(
             originalReference.getType(),
             originalReference.getVariableName(),
-            getMapperReferenceAnnotation()
+            getMapperReferenceAnnotation(),
+            originalReference.isUsed()
         );
     }
 
