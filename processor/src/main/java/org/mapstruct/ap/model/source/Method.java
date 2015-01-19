@@ -130,4 +130,11 @@ public interface Method {
     boolean overridesMethod();
 
     ExecutableElement getExecutable();
+
+    /**
+     * Whether this method is static or an instance method
+     *
+     * @return true when static.
+     */
+    boolean isStatic();
 }

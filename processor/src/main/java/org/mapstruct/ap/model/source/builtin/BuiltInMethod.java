@@ -222,4 +222,10 @@ public abstract class BuiltInMethod implements Method {
     public ExecutableElement getExecutable() {
         return null;
     }
+
+    @Override
+    public boolean isStatic() {
+        return false;
+    }
+
 }
