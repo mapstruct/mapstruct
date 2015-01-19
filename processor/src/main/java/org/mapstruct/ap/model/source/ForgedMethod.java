@@ -162,4 +162,10 @@ public class ForgedMethod implements Method {
 
         return sb.toString();
     }
+
+    @Override
+    public boolean isStatic() {
+        return false;
+    }
+
 }

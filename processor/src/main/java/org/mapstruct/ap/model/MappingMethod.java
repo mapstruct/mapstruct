@@ -44,6 +44,7 @@ public abstract class MappingMethod extends ModelElement {
     private final Parameter targetParameter;
     private final Accessibility accessibility;
     private final List<Type> thrownTypes;
+    private final boolean isStatic;
 
     protected MappingMethod(Method method) {
         this.name = method.getName();
@@ -52,6 +53,7 @@ public abstract class MappingMethod extends ModelElement {
         this.targetParameter = method.getTargetParameter();
         this.accessibility = method.getAccessibility();
         this.thrownTypes = method.getThrownTypes();
+        this.isStatic = method.isStatic();
     }
 
     public String getName() {
@@ -100,6 +102,10 @@ public abstract class MappingMethod extends ModelElement {
 
     public boolean isExistingInstanceMapping() {
         return targetParameter != null;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
     }
 
     @Override

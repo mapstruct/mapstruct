@@ -496,6 +496,11 @@ public class SourceMethod implements Method {
         }
     }
 
+    @Override
+    public boolean isStatic() {
+        return executable.getModifiers().contains( Modifier.STATIC );
+    }
+
     private void increase(Type key, Map<Type, Integer> test) {
         Integer count = test.get( key );
         count++;
