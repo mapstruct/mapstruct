@@ -24,20 +24,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Configures the mapping between two bean types
+ * Configures the mapping between two bean types.
  *
  * @author Sjaak Derksen
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
+@Target( ElementType.METHOD )
+@Retention( RetentionPolicy.SOURCE )
 public @interface BeanMapping {
 
-
     /**
-     * Specifies the result type of the method to select in case ambiguous mappings / factory methods.
-     *
+     * Specifies the result type of the factory method to be used in case several factory methods qualify.
      *
      * @return the resultType to select
      */
-    Class resultType() default void.class;
+    Class<?> resultType() default void.class;
 }
