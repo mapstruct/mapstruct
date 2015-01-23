@@ -46,6 +46,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOptions;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
 
@@ -262,14 +263,35 @@ class CompilingStatement extends Statement {
      * @return A list containing the processor options to be used for this test
      */
     private List<String> getProcessorOptions() {
-        ProcessorOption processorOption = method.getAnnotation( ProcessorOption.class );
+        List<ProcessorOption> processorOptions =
+            getProcessorOptions(
+                method.getAnnotation( ProcessorOptions.class ),
+                method.getAnnotation( ProcessorOption.class ) );
 
-        if ( processorOption == null ) {
-            processorOption = method.getMethod().getDeclaringClass().getAnnotation( ProcessorOption.class );
+        if ( processorOptions.isEmpty() ) {
+            processorOptions =
+                getProcessorOptions(
+                    method.getMethod().getDeclaringClass().getAnnotation( ProcessorOptions.class ),
+                    method.getMethod().getDeclaringClass().getAnnotation( ProcessorOption.class ) );
         }
 
-        return processorOption != null ? Arrays.asList( asOptionString( processorOption ) )
-            : Collections.<String>emptyList();
+        List<String> result = new ArrayList<String>( processorOptions.size() );
+        for ( ProcessorOption option : processorOptions ) {
+            result.add( asOptionString( option ) );
+        }
+
+        return result;
+    }
+
+    private List<ProcessorOption> getProcessorOptions(ProcessorOptions options, ProcessorOption option) {
+        if ( options != null ) {
+            return Arrays.asList( options.value() );
+        }
+        else if ( option != null ) {
+            return Arrays.asList( option );
+        }
+
+        return Collections.emptyList();
     }
 
     private String asOptionString(ProcessorOption processorOption) {

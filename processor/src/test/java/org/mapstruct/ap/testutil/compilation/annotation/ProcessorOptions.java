@@ -19,33 +19,17 @@
 package org.mapstruct.ap.testutil.compilation.annotation;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation processor option to be used for a test. Will be passed in the
- * form {@code -Aname=value} to the compiler.
+ * Contains multiple {@link ProcessorOption} annotations
  *
- * @author Gunnar Morling
+ * @author Andreas Gudian
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD })
-@Repeatable( ProcessorOptions.class )
-public @interface ProcessorOption {
-
-    /**
-     * The name of the processor option.
-     *
-     * @return The name of the processor option.
-     */
-    String name();
-
-    /**
-     * The value of the processor option.
-     *
-     * @return The value of the processor option.
-     */
-    String value();
+@Retention( RetentionPolicy.RUNTIME )
+@Target( { ElementType.TYPE, ElementType.METHOD } )
+public @interface ProcessorOptions {
+    ProcessorOption[] value();
 }
