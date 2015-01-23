@@ -27,6 +27,7 @@ import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.option.Options;
+import org.mapstruct.ap.version.VersionInformation;
 
 /**
  * A processor which performs one task of the mapper generation, e.g. retrieving
@@ -61,6 +62,8 @@ public interface ModelElementProcessor<P, R> {
         Messager getMessager();
 
         Options getOptions();
+
+        VersionInformation getVersionInformation();
 
         /**
          * Whether the currently processed mapper type is erroneous which is the

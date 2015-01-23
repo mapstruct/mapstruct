@@ -83,6 +83,7 @@ import org.mapstruct.ap.util.AnnotationProcessingException;
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
 @SupportedOptions({
     MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,
+    MappingProcessor.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT,
     MappingProcessor.UNMAPPED_TARGET_POLICY,
     MappingProcessor.DEFAULT_COMPONENT_MODEL
 })
@@ -94,6 +95,8 @@ public class MappingProcessor extends AbstractProcessor {
     private static final boolean ANNOTATIONS_CLAIMED_EXCLUSIVELY = false;
 
     protected static final String SUPPRESS_GENERATOR_TIMESTAMP = "mapstruct.suppressGeneratorTimestamp";
+    protected static final String SUPPRESS_GENERATOR_VERSION_INFO_COMMENT =
+        "mapstruct.suppressGeneratorVersionInfoComment";
     protected static final String UNMAPPED_TARGET_POLICY = "mapstruct.unmappedTargetPolicy";
     protected static final String DEFAULT_COMPONENT_MODEL = "mapstruct.defaultComponentModel";
 
@@ -111,6 +114,7 @@ public class MappingProcessor extends AbstractProcessor {
 
         return new Options(
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
+            Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
             unmappedTargetPolicy != null ? ReportingPolicy.valueOf( unmappedTargetPolicy ) : null,
             processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL )
         );

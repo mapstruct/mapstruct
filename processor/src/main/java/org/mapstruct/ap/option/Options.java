@@ -27,18 +27,25 @@ package org.mapstruct.ap.option;
  */
 public class Options {
     private final boolean suppressGeneratorTimestamp;
+    private final boolean suppressGeneratorVersionComment;
     private final ReportingPolicy unmappedTargetPolicy;
     private final String defaultComponentModel;
 
-    public Options(boolean suppressGeneratorTimestamp, ReportingPolicy unmappedTargetPolicy,
+    public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
+                   ReportingPolicy unmappedTargetPolicy,
                    String defaultComponentModel) {
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
+        this.suppressGeneratorVersionComment = suppressGeneratorVersionComment;
         this.unmappedTargetPolicy = unmappedTargetPolicy;
         this.defaultComponentModel = defaultComponentModel;
     }
 
     public boolean isSuppressGeneratorTimestamp() {
         return suppressGeneratorTimestamp;
+    }
+
+    public boolean isSuppressGeneratorVersionComment() {
+        return suppressGeneratorVersionComment;
     }
 
     public ReportingPolicy getUnmappedTargetPolicy() {

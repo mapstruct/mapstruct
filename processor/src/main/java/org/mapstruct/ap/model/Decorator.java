@@ -21,14 +21,18 @@ package org.mapstruct.ap.model;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
+
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.prism.DecoratedWithPrism;
+import org.mapstruct.ap.version.VersionInformation;
 
 /**
  * Represents a decorator applied to a generated mapper type.
@@ -41,7 +45,7 @@ public class Decorator extends GeneratedType {
 
     private Decorator(TypeFactory typeFactory, String packageName, String name, String superClassName,
                       String interfaceName, List<MappingMethod> methods, List<? extends ModelElement> fields,
-                      boolean suppressGeneratorTimestamp, Accessibility accessibility ) {
+                      Options options, VersionInformation versionInformation, Accessibility accessibility) {
         super(
             typeFactory,
             packageName,
@@ -50,7 +54,8 @@ public class Decorator extends GeneratedType {
             interfaceName,
             methods,
             fields,
-            suppressGeneratorTimestamp,
+            options,
+            versionInformation,
             accessibility,
             new TreeSet<Type>()
         );
@@ -58,8 +63,8 @@ public class Decorator extends GeneratedType {
 
     public static Decorator getInstance(Elements elementUtils, TypeFactory typeFactory, TypeElement mapperElement,
                                         DecoratedWithPrism decoratorPrism, List<MappingMethod> methods,
-                                        boolean hasDelegateConstructor,
-                                        boolean suppressGeneratorTimestamp) {
+                                        boolean hasDelegateConstructor, Options options,
+                                        VersionInformation versionInformation) {
         Type decoratorType = typeFactory.getType( decoratorPrism.value() );
 
         return new Decorator(
@@ -77,7 +82,8 @@ public class Decorator extends GeneratedType {
                     hasDelegateConstructor
                 )
             ),
-            suppressGeneratorTimestamp,
+            options,
+            versionInformation,
             Accessibility.fromModifiers( mapperElement.getModifiers() )
         );
     }

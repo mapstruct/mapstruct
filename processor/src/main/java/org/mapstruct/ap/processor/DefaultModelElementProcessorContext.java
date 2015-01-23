@@ -30,18 +30,21 @@ import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.option.Options;
+import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
+import org.mapstruct.ap.version.VersionInformation;
 
 /**
  * Default implementation of the processor context.
  *
  * @author Gunnar Morling
  */
-public class DefaultModelElementProcessorContext implements ModelElementProcessor.ProcessorContext {
+public class DefaultModelElementProcessorContext implements ProcessorContext {
 
     private final ProcessingEnvironment processingEnvironment;
     private final DelegatingMessager messager;
     private final Options options;
     private final TypeFactory typeFactory;
+    private final VersionInformation versionInformation;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options) {
         this.processingEnvironment = processingEnvironment;
@@ -51,6 +54,7 @@ public class DefaultModelElementProcessorContext implements ModelElementProcesso
             processingEnvironment.getTypeUtils()
         );
         this.options = options;
+        this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
     }
 
     @Override
@@ -81,6 +85,11 @@ public class DefaultModelElementProcessorContext implements ModelElementProcesso
     @Override
     public Options getOptions() {
         return options;
+    }
+
+    @Override
+    public VersionInformation getVersionInformation() {
+        return versionInformation;
     }
 
     @Override

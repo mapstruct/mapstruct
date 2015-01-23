@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -56,6 +57,7 @@ import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
+import org.mapstruct.ap.version.VersionInformation;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -69,6 +71,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private Types typeUtils;
     private Messager messager;
     private Options options;
+    private VersionInformation versionInformation;
     private TypeFactory typeFactory;
     private MappingBuilderContext mappingContext;
 
@@ -78,6 +81,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.typeUtils = context.getTypeUtils();
         this.messager = context.getMessager();
         this.options = context.getOptions();
+        this.versionInformation = context.getVersionInformation();
         this.typeFactory = context.getTypeFactory();
 
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement );
@@ -140,7 +144,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .element( element )
             .mappingMethods( mappingMethods )
             .mapperReferences( mapperReferences )
-            .suppressGeneratorTimestamp( options.isSuppressGeneratorTimestamp() )
+            .options( options )
+            .versionInformation( versionInformation )
             .decorator( getDecorator( element, methods ) )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
@@ -221,7 +226,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             decoratorPrism,
             mappingMethods,
             hasDelegateConstructor,
-            options.isSuppressGeneratorTimestamp()
+            options,
+            versionInformation
         );
     }
 

@@ -20,12 +20,16 @@ package org.mapstruct.ap.model;
 
 import java.util.List;
 import java.util.SortedSet;
+
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.option.Options;
+import org.mapstruct.ap.version.VersionInformation;
 
 /**
  * Represents a type implementing a mapper interface (annotated with {@code @Mapper}). This is the root object of the
@@ -41,10 +45,11 @@ public class Mapper extends GeneratedType {
     private final List<MapperReference> referencedMappers;
     private final Decorator decorator;
 
-    //CHECKSTYLE:OFF
+    @SuppressWarnings( "checkstyle:parameternumber" )
     private Mapper(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                   String interfaceName, List<MappingMethod> methods, boolean suppressGeneratorTimestamp,
-                   Accessibility accessibility, List<MapperReference> referencedMappers, Decorator decorator,
+                   String interfaceName, List<MappingMethod> methods, Options options,
+                   VersionInformation versionInformation, Accessibility accessibility,
+                   List<MapperReference> referencedMappers, Decorator decorator,
                    SortedSet<Type> extraImportedTypes ) {
 
         super(
@@ -55,7 +60,8 @@ public class Mapper extends GeneratedType {
             interfaceName,
             methods,
             referencedMappers,
-            suppressGeneratorTimestamp,
+            options,
+            versionInformation,
             accessibility,
             extraImportedTypes
         );
@@ -73,7 +79,8 @@ public class Mapper extends GeneratedType {
         private SortedSet<Type> extraImportedTypes;
 
         private Elements elementUtils;
-        private boolean suppressGeneratorTimestamp;
+        private Options options;
+        private VersionInformation versionInformation;
         private Decorator decorator;
 
         public Builder element(TypeElement element) {
@@ -91,8 +98,13 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
-        public Builder suppressGeneratorTimestamp(boolean suppressGeneratorTimestamp) {
-            this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
+        public Builder options(Options options) {
+            this.options = options;
+            return this;
+        }
+
+        public Builder versionInformation(VersionInformation versionInformation) {
+            this.versionInformation = versionInformation;
             return this;
         }
 
@@ -127,7 +139,8 @@ public class Mapper extends GeneratedType {
                 element.getKind() != ElementKind.INTERFACE ? element.getSimpleName().toString() : null,
                 element.getKind() == ElementKind.INTERFACE ? element.getSimpleName().toString() : null,
                 mappingMethods,
-                suppressGeneratorTimestamp,
+                options,
+                versionInformation,
                 Accessibility.fromModifiers( element.getModifiers() ),
                 mapperReferences,
                 decorator,
