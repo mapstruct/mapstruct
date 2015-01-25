@@ -27,6 +27,8 @@ import java.lang.annotation.Target;
 /**
  * Configures the mapping between two bean types.
  *
+ * <p>Note: either @BeanMapping#resultType or @BeanMapping#qualifiedBy must be specified</p>
+ *
  * @author Sjaak Derksen
  */
 @Target( ElementType.METHOD )

@@ -186,7 +186,7 @@ public class QualifierTest {
                 @Diagnostic( type = ErroneousMovieFactoryMapper.class,
                         kind = Kind.ERROR,
                         line = 37,
-                        messageRegExp = "'resultType' and 'qualifiedBy' are are are undefined in @BeanMapping, "
+                        messageRegExp = "'resultType' and 'qualifiedBy' are undefined in @BeanMapping, "
                 + "define at least one of them." )
             }
     )

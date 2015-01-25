@@ -46,7 +46,7 @@ public class BeanMapping {
         if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "'resultType' and 'qualifiedBy' are are are undefined in @BeanMapping, "
+                "'resultType' and 'qualifiedBy' are undefined in @BeanMapping, "
                 + "define at least one of them.",
                 method
             );

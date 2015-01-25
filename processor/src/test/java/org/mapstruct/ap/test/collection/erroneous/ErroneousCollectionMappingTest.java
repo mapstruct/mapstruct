@@ -65,7 +65,7 @@ public class ErroneousCollectionMappingTest {
             @Diagnostic(type = EmptyItererableMappingMapper.class,
                 kind = Kind.ERROR,
                 line = 35,
-                messageRegExp = "'dateformat' and 'qualifiedBy' are are are undefined in @IterableMapping, "
+                messageRegExp = "'dateformat' and 'qualifiedBy' are undefined in @IterableMapping, "
                     + "define at least one of them.")
         }
     )
