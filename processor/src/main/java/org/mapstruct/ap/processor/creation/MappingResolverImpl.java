@@ -41,6 +41,7 @@ import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.DefaultConversionContext;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.model.source.BeanMapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.builtin.BuiltInMappingMethods;
@@ -147,12 +148,15 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     public MethodReference getFactoryMethod( Method mappingMethod, Type targetType ) {
 
-        TypeMirror qualifyingResultTypeMirror = null;
+        TypeMirror resultType = null;
+        List<TypeMirror> qualifiers = null;
         BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( mappingMethod.getExecutable() );
-        if ( beanMappingPrism != null ) {
-            qualifyingResultTypeMirror = beanMappingPrism.resultType();
+        BeanMapping beanMapping = BeanMapping.fromPrism( beanMappingPrism, mappingMethod.getExecutable(), messager );
+        if ( beanMapping != null ) {
+            resultType = beanMapping.getResultType();
+            qualifiers = beanMapping.getQualifiers();
         }
-        SelectionCriteria criteria = new SelectionCriteria(null, null, qualifyingResultTypeMirror );
+        SelectionCriteria criteria = new SelectionCriteria(qualifiers, null, resultType );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,

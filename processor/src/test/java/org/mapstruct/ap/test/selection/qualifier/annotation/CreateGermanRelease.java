@@ -16,38 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
+package org.mapstruct.ap.test.selection.qualifier.annotation;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.mapstruct.Qualifier;
 
 /**
- * Configures the mapping between two bean types.
  *
  * @author Sjaak Derksen
  */
-@Target( ElementType.METHOD )
-@Retention( RetentionPolicy.SOURCE )
-public @interface BeanMapping {
-
-    /**
-     * Specifies the result type of the factory method to be used in case several factory methods qualify.
-     *
-     * @return the resultType to select
-     */
-    Class<?> resultType() default void.class;
-
-   /**
-     * A qualifier can be specified to aid the selection process of a suitable factory method. This is useful in
-     * case multiple factory method (hand written of internal) qualify and result in an 'Ambiguous factory methods'
-     * error.
-     *
-     * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
-     *
-     * @return the qualifiers
-     */
-    Class<? extends Annotation>[] qualifiedBy() default { };
+@Qualifier
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.SOURCE)
+public @interface CreateGermanRelease {
 }

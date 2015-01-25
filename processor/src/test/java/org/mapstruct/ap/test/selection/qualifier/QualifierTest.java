@@ -31,9 +31,11 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.MapAssert.entry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.selection.qualifier.annotation.CreateGermanRelease;
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotated;
 import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
+import org.mapstruct.ap.test.selection.qualifier.bean.ReleaseFactory;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.Facts;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.PlotWords;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.Reverse;
@@ -136,5 +138,58 @@ public class QualifierTest {
         assertThat( result ).isNotNull();
         assertThat( result.getTitle() ).isEqualTo( "ehT ,esneS htxiS");
 
+    }
+
+    @Test
+    @WithClasses( {
+        MovieFactoryMapper.class,
+        ReleaseFactory.class,
+        CreateGermanRelease.class
+    })
+    @IssueKey( "342")
+    public void testFactorySelectionWithQualifier() {
+
+        OriginalRelease foreignMovies = new OriginalRelease();
+        foreignMovies.setTitle( "Sixth Sense, The" );
+        foreignMovies.setKeyWords( Arrays.asList( "evergreen", "magnificent" ) );
+        Map<String, List<String>> facts = new HashMap<String, List<String>>();
+        facts.put( "director", Arrays.asList( "M. Night Shyamalan" ) );
+        facts.put( "cast", Arrays.asList( "Bruce Willis", "Haley Joel Osment", "Toni Collette" ) );
+        facts.put( "plot keywords", Arrays.asList( "boy", "child psychologist", "I see dead people" ) );
+        foreignMovies.setFacts( facts );
+
+        AbstractEntry abstractEntry = MovieFactoryMapper.INSTANCE.toGerman( foreignMovies );
+        assertThat( abstractEntry ).isNotNull();
+        assertThat( abstractEntry ).isInstanceOf( GermanRelease.class );
+        assertThat( abstractEntry.getTitle() ).isEqualTo( "Sixth Sense, The" );
+        assertThat( abstractEntry.getKeyWords() ).isNotNull();
+        assertThat( abstractEntry.getKeyWords().size() ).isEqualTo( 2 );
+        assertThat( abstractEntry.getKeyWords() ).containsSequence( "evergreen", "magnificent" );
+
+        assertThat( abstractEntry.getFacts() ).isNotNull();
+        assertThat( abstractEntry.getFacts() ).hasSize( 3 );
+        assertThat( abstractEntry.getFacts() ).includes(
+                entry( "director", Arrays.asList( "M. Night Shyamalan" ) ),
+                entry( "cast", Arrays.asList( "Bruce Willis", "Haley Joel Osment", "Toni Collette" ) ),
+                entry( "plot keywords", Arrays.asList( "boy", "child psychologist", "I see dead people" ) )
+        );
+    }
+
+    @Test
+    @IssueKey( "342")
+    @WithClasses( {
+        ErroneousMovieFactoryMapper.class
+    } )
+    @ExpectedCompilationOutcome(
+             value = CompilationResult.FAILED,
+            diagnostics = {
+                @Diagnostic( type = ErroneousMovieFactoryMapper.class,
+                        kind = Kind.ERROR,
+                        line = 37,
+                        messageRegExp = "'resultType' and 'qualifiedBy' are are are undefined in @BeanMapping, "
+                + "define at least one of them." )
+            }
+    )
+    public void testEmptyBeanMapping() {
     }
 }
