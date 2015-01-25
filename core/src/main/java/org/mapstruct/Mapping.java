@@ -90,14 +90,29 @@ public @interface Mapping {
     String constant() default "";
 
     /**
-     * An expression {@link String} based on which the specified target property is to be set. The format is determined
-     * by a type of expression. For instance:
-     * {@code expression = "java(new org.example.TimeAndFormat( s.getTime(), s.getFormat() ))")} will insert the java
-     * expression in the designated {@link #target()} property.
+     * An expression {@link String} based on which the specified target property is to be set.
      * <p>
-     * Either this attribute or {@link #source()} or {@link #constant()} may be specified for a given mapping.
+     * Currently, Java is the only supported "expression language" and expressions must be given in form of Java
+     * expressions using the following format: {@code java(<EXPRESSION>)}. For instance the mapping
+     * <p>
      *
-     * @return A constant {@code String} constant specifying the value for the designated target property
+     * <pre>
+     * {@code @Mapping(
+     *     target = "someProp",
+     *     expression = "java(new TimeAndFormat( s.getTime(), s.getFormat() ))"
+     * )}
+     * </pre>
+     * <p>
+     * will cause the following target property assignment to be generated:
+     * <p>
+     * {@code targetBean.setSomeProp( new TimeAndFormat( s.getTime(), s.getFormat() ) )}.
+     * <p>
+     * Any types referenced in expressions must be given via their fully-qualified name. Alternatively, types can be
+     * imported via {@link Mapper#imports()}.
+     * <p>
+     * Either this attribute, {@link #source()} or {@link #constant()} may be specified for a given mapping.
+     *
+     * @return An expression specifying the value for the designated target property
      */
     String expression() default "";
 
