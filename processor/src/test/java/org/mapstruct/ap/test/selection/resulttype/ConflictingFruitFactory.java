@@ -16,27 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.selection.inheritance;
+package org.mapstruct.ap.test.selection.resulttype;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class Fruit {
+public class ConflictingFruitFactory {
 
-    private String type;
-
-    public Fruit(String type) {
-        this.type = type;
+    public Apple createApple() {
+        return new Apple( "apple" );
     }
 
-    public String getType() {
-        return type;
+    public Banana createBanana() {
+        return new Banana( "banana" );
     }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
 
 }

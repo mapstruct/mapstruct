@@ -70,6 +70,7 @@ public class PropertyMapping extends ModelElement {
         private String targetPropertyName;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
+        private TypeMirror resultType;
         private SourceReference sourceReference;
 
         public PropertyMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
@@ -99,6 +100,11 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder qualifiers(List<TypeMirror> qualifiers) {
             this.qualifiers = qualifiers;
+            return this;
+        }
+
+        public PropertyMappingBuilder resultType(TypeMirror resultType) {
+            this.resultType = resultType;
             return this;
         }
 
@@ -142,6 +148,7 @@ public class PropertyMapping extends ModelElement {
                 targetPropertyName,
                 dateFormat,
                 qualifiers,
+                resultType,
                 sourceRefStr
             );
 
@@ -450,6 +457,7 @@ public class PropertyMapping extends ModelElement {
         private ExecutableElement targetAccessor;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
+        private TypeMirror resultType;
 
         public ConstantMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -481,6 +489,11 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
+        public ConstantMappingBuilder resultType(TypeMirror resultType) {
+            this.resultType = resultType;
+            return this;
+        }
+
         public PropertyMapping build() {
 
             // source
@@ -506,6 +519,7 @@ public class PropertyMapping extends ModelElement {
                 targetPropertyName,
                 dateFormat,
                 qualifiers,
+                resultType,
                 constantExpression
             );
 

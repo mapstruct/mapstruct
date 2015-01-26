@@ -55,6 +55,7 @@ public class Mapping {
     private final String targetName;
     private final String dateFormat;
     private final List<TypeMirror> qualifiers;
+    private final TypeMirror resultType;
     private final boolean isIgnored;
 
     private final AnnotationMirror mirror;
@@ -135,6 +136,9 @@ public class Mapping {
         String expression = getExpression( mappingPrism, element, messager );
         String dateFormat = mappingPrism.dateFormat().isEmpty() ? null : mappingPrism.dateFormat();
 
+        boolean resultTypeIsDefined = !TypeKind.VOID.equals( mappingPrism.resultType().getKind() );
+        TypeMirror resultType = resultTypeIsDefined ? mappingPrism.resultType() : null;
+
         return new Mapping(
             source,
             constant,
@@ -145,14 +149,17 @@ public class Mapping {
             mappingPrism.ignore(),
             mappingPrism.mirror,
             mappingPrism.values.source(),
-            mappingPrism.values.target()
+            mappingPrism.values.target(),
+            resultType
         );
     }
 
+    @SuppressWarnings( "checkstyle:parameternumber" )
     private Mapping(String sourceName, String constant, String javaExpression, String targetName,
                     String dateFormat, List<TypeMirror> qualifiers,
                     boolean isIgnored, AnnotationMirror mirror,
-                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue) {
+                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
+                    TypeMirror resultType ) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -163,6 +170,7 @@ public class Mapping {
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
+        this.resultType = resultType;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element, Messager messager) {
@@ -257,6 +265,10 @@ public class Mapping {
         return targetReference;
     }
 
+    public TypeMirror getResultType() {
+        return resultType;
+    }
+
     private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
         CollectionMappingStrategyPrism cms = method.getConfig().getCollectionMappingStrategy();
         return method.getResultType().getTargetAccessors( cms ).containsKey( name );
@@ -303,7 +315,8 @@ public class Mapping {
             isIgnored,
             mirror,
             sourceAnnotationValue,
-            targetAnnotationValue
+            targetAnnotationValue,
+            null
         );
 
         reverse.init( method, messager, typeFactory );

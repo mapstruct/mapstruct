@@ -16,27 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.selection.inheritance;
+package org.mapstruct.ap.test.selection.resulttype;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class FruitDto {
+public class AppleFamilyDto {
 
-    private String type;
+    private AppleDto apple;
 
-    public FruitDto(String type) {
-        this.type = type;
+    public AppleDto getApple() {
+        return apple;
     }
 
-    public String getType() {
-        return type;
+    public void setApple(AppleDto apple) {
+        this.apple = apple;
     }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
 
 }

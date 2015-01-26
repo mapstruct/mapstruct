@@ -100,6 +100,7 @@ public class IterableMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 dateFormat,
                 qualifiers,
+                null, // resulttype does not seem to make sense
                 loopVariableName
             );
 

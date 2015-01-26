@@ -16,25 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.selection.inheritance;
-
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+package org.mapstruct.ap.test.selection.resulttype;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@Mapper(uses = ConflictingFruitFactory.class)
+public class AppleFamily {
 
-public interface TargetTypeSelectingFruitMapper {
+    private Apple apple;
 
-    TargetTypeSelectingFruitMapper INSTANCE = Mappers.getMapper( TargetTypeSelectingFruitMapper.class );
+    public Apple getApple() {
+        return apple;
+    }
 
-    @BeanMapping(resultType = Apple.class)
-    @Mapping(target = "type", ignore = true)
-    Fruit map(FruitDto source);
+    public void setApple(Apple apple) {
+        this.apple = apple;
+    }
 
 }

@@ -102,6 +102,7 @@ public class MapMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 keyDateFormat,
                 keyQualifiers,
+                null, // resulttype does not seem to make sense
                 "entry.getKey()"
             );
 
@@ -125,6 +126,7 @@ public class MapMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 valueDateFormat,
                 valueQualifiers,
+                null, // resulttype does not seem to make sense
                 "entry.getValue()"
             );
 

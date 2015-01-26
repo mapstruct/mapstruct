@@ -124,9 +124,10 @@ public class MappingResolverImpl implements MappingResolver {
         String targetPropertyName,
         String dateFormat,
         List<TypeMirror> qualifiers,
+        TypeMirror resultType,
         String sourceReference) {
 
-        SelectionCriteria criteria = new SelectionCriteria(qualifiers, targetPropertyName, null );
+        SelectionCriteria criteria = new SelectionCriteria(qualifiers, targetPropertyName, resultType );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,

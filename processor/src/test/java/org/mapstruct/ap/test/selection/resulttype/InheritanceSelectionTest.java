@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.selection.inheritance;
+package org.mapstruct.ap.test.selection.resulttype;
 
 import javax.tools.Diagnostic.Kind;
 import static org.fest.assertions.Assertions.assertThat;
@@ -68,6 +68,30 @@ public class InheritanceSelectionTest {
         Fruit fruit = TargetTypeSelectingFruitMapper.INSTANCE.map( fruitDto );
         assertThat( fruit ).isNotNull();
         assertThat( fruit.getType() ).isEqualTo( "apple" );
+
+    }
+
+    @Test
+    @IssueKey("433")
+    @WithClasses( {
+        FruitFamilyMapper.class,
+        GoldenDeliciousDto.class,
+        GoldenDelicious.class,
+        AppleFamily.class,
+        AppleFamilyDto.class,
+        AppleFactory.class,
+        Banana.class
+    } )
+    public void testShouldSelectResultTypeInCaseOfAmbiguity() {
+
+        AppleFamilyDto appleFamilyDto = new AppleFamilyDto();
+        appleFamilyDto.setApple( new AppleDto("AppleDto") );
+
+        AppleFamily result = FruitFamilyMapper.INSTANCE.map( appleFamilyDto );
+        assertThat( result ).isNotNull();
+        assertThat( result.getApple() ).isNotNull();
+        assertThat( result.getApple() ).isInstanceOf( GoldenDelicious.class );
+        assertThat( result.getApple().getType() ).isEqualTo( "AppleDto" );
 
     }
 

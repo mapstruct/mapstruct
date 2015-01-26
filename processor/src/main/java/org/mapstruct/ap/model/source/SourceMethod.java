@@ -170,7 +170,7 @@ public class SourceMethod implements Method {
         }
     }
 
-    //CHECKSTYLE:OFF
+    @SuppressWarnings( "checkstyle:parameternumber" )
     private SourceMethod( Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
                          Type returnType, List<Type> exceptionTypes, Map<String, List<Mapping>> mappings,
                          IterableMapping iterableMapping, MapMapping mapMapping, Types typeUtils,
@@ -192,7 +192,6 @@ public class SourceMethod implements Method {
         this.messager = messager;
         this.config = config;
     }
-    //CHECKSTYLE:ON
 
     private Parameter determineTargetParameter(Iterable<Parameter> parameters) {
         for ( Parameter parameter : parameters ) {

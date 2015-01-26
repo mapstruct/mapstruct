@@ -16,23 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.selection.inheritance;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+package org.mapstruct.ap.test.selection.resulttype;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@Mapper(uses = ConflictingFruitFactory.class)
+public class BananaDto extends FruitDto {
 
-public interface ErroneousFruitMapper {
-
-    ErroneousFruitMapper INSTANCE = Mappers.getMapper( ErroneousFruitMapper.class );
-
-    @Mapping(target = "type", ignore = true)
-    Fruit map(FruitDto source);
+    public BananaDto(String type) {
+        super( type );
+    }
 
 }

@@ -170,6 +170,7 @@ public class BeanMappingMethod extends MappingMethod {
                                     .targetPropertyName( mapping.getTargetName() )
                                     .sourceReference( sourceRef )
                                     .qualifiers( mapping.getQualifiers() )
+                                    .resultType( mapping.getResultType() )
                                     .dateFormat( mapping.getDateFormat() )
                                     .build();
                                 handledTargets.add( mapping.getTargetName() );
@@ -191,6 +192,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .targetAccessor( targetProperty )
                             .dateFormat( mapping.getDateFormat() )
                             .qualifiers( mapping.getQualifiers() )
+                            .resultType( mapping.getResultType() )
                             .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
@@ -277,6 +279,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .targetPropertyName( targetProperty.getKey() )
                                 .sourceReference( sourceRef )
                                 .qualifiers( mapping != null ? mapping.getQualifiers() : null )
+                                .resultType( mapping != null ? mapping.getResultType() : null )
                                 .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                                 .build();
 
@@ -339,6 +342,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .targetPropertyName( targetProperty.getKey() )
                             .sourceReference( sourceRef )
                             .qualifiers( mapping != null ? mapping.getQualifiers() : null )
+                            .resultType( mapping != null ? mapping.getResultType() : null )
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                             .build();
 

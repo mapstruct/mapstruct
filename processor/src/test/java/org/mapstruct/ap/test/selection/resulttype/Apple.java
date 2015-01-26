@@ -16,15 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.selection.inheritance;
+package org.mapstruct.ap.test.selection.resulttype;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class BananaDto extends FruitDto {
+public class Apple extends Fruit {
 
-    public BananaDto(String type) {
+    public Apple(String type) {
         super( type );
     }
 

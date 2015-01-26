@@ -80,6 +80,7 @@ public class MappingBuilderContext {
          * @param targetPropertyName name of the target property
          * @param dateFormat used for formatting dates in build in methods that need context information
          * @param qualifiers used for further select the appropriate mapping method based on class and name
+         * @param resultType used for further select the appropriate mapping method based on class and name
          * @param sourceReference call to source type as string
          *
          * @return an assignment to a method parameter, which can either be:
@@ -92,7 +93,7 @@ public class MappingBuilderContext {
          */
         Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
                                        String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
-                                       String sourceReference);
+                                       TypeMirror resultType, String sourceReference);
 
         /**
          * returns a no arg factory method

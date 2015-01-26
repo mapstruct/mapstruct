@@ -134,4 +134,11 @@ public @interface Mapping {
      * @return the qualifiers
      */
     Class<? extends Annotation>[] qualifiedBy() default { };
+
+    /**
+     * Specifies the result type of the mapping method to be used in case multiple mapping methods qualify.
+     *
+     * @return the resultType to select
+     */
+    Class<?> resultType() default void.class;
 }
