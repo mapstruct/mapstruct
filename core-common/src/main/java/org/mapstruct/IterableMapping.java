@@ -29,6 +29,9 @@ import java.util.Date;
 /**
  * Configures the mapping between two iterable types, e.g. {@code List<String>} and {@code List<Date>}.
  *
+ * <p>Note: either  @IterableMapping#dateFormat, @IterableMapping#resultType or @IterableMapping#qualifiedBy
+ * must be specified</p>
+ *
  * @author Gunnar Morling
  */
 @Target(ElementType.METHOD)
@@ -52,4 +55,12 @@ public @interface IterableMapping {
      * @return the qualifiers
      */
     Class<? extends Annotation>[] qualifiedBy() default { };
+
+    /**
+     * Specifies the type of the element to be used in the result of the mapping method in case multiple mapping
+     * methods qualify.
+     *
+     * @return the elementTargetType to select
+     */
+    Class<?> elementTargetType() default void.class;
 }

@@ -23,6 +23,7 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
@@ -37,6 +38,7 @@ public class IterableMapping {
 
     private final String dateFormat;
     private final List<TypeMirror> qualifiers;
+    private final TypeMirror qualifyingElementTargetType;
     private final AnnotationMirror mirror;
     private final AnnotationValue dateFormatAnnotationValue;
 
@@ -46,10 +48,13 @@ public class IterableMapping {
             return null;
         }
 
-        if ( iterableMapping.dateFormat().isEmpty() && iterableMapping.qualifiedBy().isEmpty() ) {
+        boolean elementTargetTypeIsDefined = !TypeKind.VOID.equals( iterableMapping.elementTargetType().getKind() );
+        if ( !elementTargetTypeIsDefined
+            && iterableMapping.dateFormat().isEmpty()
+            && iterableMapping.qualifiedBy().isEmpty() ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "'dateformat' and 'qualifiedBy' are undefined in @IterableMapping, "
+                "'dateformat', 'qualifiedBy' and 'elementTargetType' are undefined in @IterableMapping, "
                     + "define at least one of them.",
                 method
             );
@@ -58,6 +63,7 @@ public class IterableMapping {
         return new IterableMapping(
             iterableMapping.dateFormat(),
             iterableMapping.qualifiedBy(),
+            elementTargetTypeIsDefined ? iterableMapping.elementTargetType() : null,
             iterableMapping.mirror,
             iterableMapping.values.dateFormat()
         );
@@ -66,10 +72,12 @@ public class IterableMapping {
     private IterableMapping(
             String dateFormat,
             List<TypeMirror> qualifiers,
+            TypeMirror resultType,
             AnnotationMirror mirror,
-            AnnotationValue dateFormatAnnotationValue) {
+            AnnotationValue dateFormatAnnotationValue ) {
         this.dateFormat = dateFormat;
         this.qualifiers = qualifiers;
+        this.qualifyingElementTargetType = resultType;
         this.mirror = mirror;
         this.dateFormatAnnotationValue = dateFormatAnnotationValue;
     }
@@ -80,6 +88,10 @@ public class IterableMapping {
 
     public List<TypeMirror> getQualifiers() {
         return qualifiers;
+    }
+
+    public TypeMirror getQualifyingElementTargetType() {
+        return qualifyingElementTargetType;
     }
 
     public AnnotationMirror getMirror() {

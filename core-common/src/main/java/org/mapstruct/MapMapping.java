@@ -29,6 +29,8 @@ import java.util.Date;
 /**
  * Configures the mapping between two map types, e.g. {@code Map<String, String>} and {@code Map<Long, Date>}.
  *
+ * <p>Note: at least one element needs to be specified</p>
+ *
  * @author Gunnar Morling
  */
 @Target(ElementType.METHOD)
@@ -73,4 +75,20 @@ public @interface MapMapping {
      * @return the qualifiers
      */
     Class<? extends Annotation>[] valueQualifiedBy() default { };
+
+    /**
+     * Specifies the type of the key to be used in the result of the mapping method in case multiple mapping
+     * methods qualify.
+     *     *
+     * @return the resultType to select
+     */
+    Class<?> keyTargetType() default void.class;
+
+    /**
+     * Specifies the type of the value to be used in the result of the mapping method in case multiple mapping
+     * methods qualify.
+     *     *
+     * @return the resultType to select
+     */
+    Class<?> valueTargetType() default void.class;
 }

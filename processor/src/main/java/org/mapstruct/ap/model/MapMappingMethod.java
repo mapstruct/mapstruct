@@ -52,6 +52,8 @@ public class MapMappingMethod extends MappingMethod {
         private String valueDateFormat;
         private List<TypeMirror> keyQualifiers;
         private List<TypeMirror> valueQualifiers;
+        private TypeMirror keyQualifyingTargetType;
+        private TypeMirror valueQualifyingTargetType;
         private Method method;
         private MappingBuilderContext ctx;
 
@@ -85,6 +87,16 @@ public class MapMappingMethod extends MappingMethod {
             return this;
         }
 
+        public Builder keyQualifyingTargetType(TypeMirror keyQualifyingTargetType) {
+            this.keyQualifyingTargetType = keyQualifyingTargetType;
+            return this;
+        }
+
+        public Builder valueQualifyingTargetType(TypeMirror valueQualifyingTargetType) {
+            this.valueQualifyingTargetType = valueQualifyingTargetType;
+            return this;
+        }
+
         public MapMappingMethod build() {
 
             List<Type> sourceTypeParams = method.getSourceParameters().iterator().next().getType().getTypeParameters();
@@ -102,7 +114,7 @@ public class MapMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 keyDateFormat,
                 keyQualifiers,
-                null, // resulttype does not seem to make sense
+                keyQualifyingTargetType,
                 "entry.getKey()"
             );
 
@@ -126,7 +138,7 @@ public class MapMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 valueDateFormat,
                 valueQualifiers,
-                null, // resulttype does not seem to make sense
+                valueQualifyingTargetType,
                 "entry.getValue()"
             );
 

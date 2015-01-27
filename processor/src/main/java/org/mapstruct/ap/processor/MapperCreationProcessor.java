@@ -271,9 +271,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 String dateFormat = null;
                 List<TypeMirror> qualifiers = null;
+                TypeMirror qualifyingElementTargetType = null;
                 if ( method.getIterableMapping() != null ) {
                     dateFormat = method.getIterableMapping().getDateFormat();
                     qualifiers = method.getIterableMapping().getQualifiers();
+                    qualifyingElementTargetType = method.getIterableMapping().getQualifyingElementTargetType();
                 }
 
                 IterableMappingMethod iterableMappingMethod = builder
@@ -281,6 +283,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .method( method )
                     .dateFormat( dateFormat )
                     .qualifiers( qualifiers )
+                    .qualifyingElementTargetType( qualifyingElementTargetType )
                     .build();
 
                 hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;
@@ -302,11 +305,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 String valueDateFormat = null;
                 List<TypeMirror> keyQualifiers = null;
                 List<TypeMirror> valueQualifiers = null;
+                TypeMirror keyQualifyingTargetType = null;
+                TypeMirror valueQualifyingTargetType = null;
                 if ( method.getMapMapping() != null ) {
                     keyDateFormat = method.getMapMapping().getKeyFormat();
                     valueDateFormat = method.getMapMapping().getValueFormat();
                     keyQualifiers = method.getMapMapping().getKeyQualifiers();
                     valueQualifiers = method.getMapMapping().getValueQualifiers();
+                    keyQualifyingTargetType = method.getMapMapping().getKeyQualifyingTargetType();
+                    valueQualifyingTargetType = method.getMapMapping().getValueQualifyingTargetType();
                 }
 
                 MapMappingMethod mapMappingMethod = builder
@@ -316,6 +323,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .valueDateFormat( valueDateFormat )
                     .keyQualifiers( keyQualifiers )
                     .valueQualifiers( valueQualifiers )
+                    .keyQualifyingTargetType( keyQualifyingTargetType )
+                    .valueQualifyingTargetType( valueQualifyingTargetType )
                     .build();
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;

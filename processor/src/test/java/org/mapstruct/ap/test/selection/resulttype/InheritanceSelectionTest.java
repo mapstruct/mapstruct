@@ -18,6 +18,10 @@
  */
 package org.mapstruct.ap.test.selection.resulttype;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.tools.Diagnostic.Kind;
 import static org.fest.assertions.Assertions.assertThat;
 import org.junit.Test;
@@ -95,4 +99,53 @@ public class InheritanceSelectionTest {
 
     }
 
+    @Test
+    @IssueKey("433")
+    @WithClasses( {
+        FruitFamilyMapper.class,
+        GoldenDeliciousDto.class,
+        GoldenDelicious.class,
+        AppleFamily.class,
+        AppleFamilyDto.class,
+        AppleFactory.class,
+        Banana.class
+    } )
+    public void testShouldSelectResultTypeInCaseOfAmbiguityForIterable() {
+
+        List<AppleDto> source = Arrays.asList( new AppleDto( "AppleDto" ) );
+
+        List<Apple> result = FruitFamilyMapper.INSTANCE.mapToGoldenDeliciousList( source );
+        assertThat( result ).isNotNull();
+        assertThat( result ).isNotEmpty();
+        assertThat( result.get( 0 ) ).isInstanceOf( GoldenDelicious.class );
+        assertThat( result.get( 0 ).getType() ).isEqualTo( "AppleDto" );
+    }
+
+    @Test
+    @IssueKey("433")
+    @WithClasses( {
+        FruitFamilyMapper.class,
+        GoldenDeliciousDto.class,
+        GoldenDelicious.class,
+        AppleFamily.class,
+        AppleFamilyDto.class,
+        AppleFactory.class,
+        Banana.class
+    } )
+    public void testShouldSelectResultTypeInCaseOfAmbiguityForMap() {
+
+        Map<AppleDto, AppleDto> source = new HashMap<AppleDto, AppleDto>();
+        source.put( new AppleDto( "GoldenDelicious" ), new AppleDto( "AppleDto" ) );
+
+        Map<Apple, Apple> result = FruitFamilyMapper.INSTANCE.mapToGoldenDeliciousMap( source );
+        assertThat( result ).isNotNull();
+        assertThat( result ).isNotEmpty();
+        Map.Entry<Apple, Apple> entry = result.entrySet().iterator().next();
+
+        assertThat( entry.getKey() ).isInstanceOf( GoldenDelicious.class );
+        assertThat( entry.getKey().getType() ).isEqualTo( "GoldenDelicious" );
+        assertThat( entry.getValue() ).isInstanceOf( Apple.class );
+        assertThat( entry.getValue().getType() ).isEqualTo( "AppleDto" );
+
+    }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
@@ -39,20 +40,26 @@ public class MapMapping {
     private final String valueFormat;
     private final List<TypeMirror> valueQualifiers;
     private final AnnotationMirror mirror;
+    private final TypeMirror keyQualifyingTargetType;
+    private final TypeMirror valueQualifyingTargetType;
 
     public static MapMapping fromPrism(MapMappingPrism mapMapping, ExecutableElement method, Messager messager) {
         if ( mapMapping == null ) {
             return null;
         }
 
+        boolean keyTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.keyTargetType().getKind() );
+        boolean valueTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.valueTargetType().getKind() );
         if ( mapMapping.keyDateFormat().isEmpty()
             && mapMapping.keyQualifiedBy().isEmpty()
             && mapMapping.valueDateFormat().isEmpty()
-            && mapMapping.valueQualifiedBy().isEmpty() ) {
+            && mapMapping.valueQualifiedBy().isEmpty()
+            && !keyTargetTypeIsDefined
+            && !valueTargetTypeIsDefined ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "'keyDateFormat', 'keyQualifiedBy', 'valueDateFormat' and 'valueQualfiedBy' are all undefined in "
-                    + "@MapMapping, define at least one of them.",
+                "'keyDateFormat', 'keyQualifiedBy', 'keyTargetType', 'valueDateFormat', 'valueQualfiedBy' and "
+                    + "'valueTargetType' are all undefined in @MapMapping, define at least one of them.",
                 method
             );
         }
@@ -61,8 +68,10 @@ public class MapMapping {
         return new MapMapping(
             mapMapping.keyDateFormat(),
             mapMapping.keyQualifiedBy(),
+            keyTargetTypeIsDefined ? mapMapping.keyTargetType() : null,
             mapMapping.valueDateFormat(),
             mapMapping.valueQualifiedBy(),
+            valueTargetTypeIsDefined ? mapMapping.valueTargetType() : null,
             mapMapping.mirror
         );
     }
@@ -70,13 +79,17 @@ public class MapMapping {
     private MapMapping(
             String keyFormat,
             List<TypeMirror> keyQualifiers,
+            TypeMirror keyResultType,
             String valueFormat,
             List<TypeMirror> valueQualifiers,
-            AnnotationMirror mirror) {
+            TypeMirror valueResultType,
+            AnnotationMirror mirror ) {
         this.keyFormat = keyFormat;
         this.keyQualifiers = keyQualifiers;
+        this.keyQualifyingTargetType = keyResultType;
         this.valueFormat = valueFormat;
         this.valueQualifiers = valueQualifiers;
+        this.valueQualifyingTargetType = valueResultType;
         this.mirror = mirror;
     }
 
@@ -88,12 +101,20 @@ public class MapMapping {
         return keyQualifiers;
     }
 
+    public TypeMirror getKeyQualifyingTargetType() {
+        return keyQualifyingTargetType;
+    }
+
     public String getValueFormat() {
         return valueFormat;
     }
 
     public List<TypeMirror>  getValueQualifiers() {
         return valueQualifiers;
+    }
+
+    public TypeMirror getValueQualifyingTargetType() {
+        return valueQualifyingTargetType;
     }
 
     public AnnotationMirror getMirror() {

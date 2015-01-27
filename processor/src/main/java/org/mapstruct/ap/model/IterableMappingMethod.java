@@ -54,6 +54,7 @@ public class IterableMappingMethod extends MappingMethod {
         private MappingBuilderContext ctx;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
+        private TypeMirror qualifyingElementTargetType;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -72,6 +73,11 @@ public class IterableMappingMethod extends MappingMethod {
 
         public Builder qualifiers(List<TypeMirror> qualifiers) {
             this.qualifiers = qualifiers;
+            return this;
+        }
+
+        public Builder qualifyingElementTargetType(TypeMirror qualifyingElementTargetType) {
+            this.qualifyingElementTargetType = qualifyingElementTargetType;
             return this;
         }
 
@@ -100,7 +106,7 @@ public class IterableMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 dateFormat,
                 qualifiers,
-                null, // resulttype does not seem to make sense
+                qualifyingElementTargetType,
                 loopVariableName
             );
 
