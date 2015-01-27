@@ -49,7 +49,7 @@ public class IterableMapping {
         if ( iterableMapping.dateFormat().isEmpty() && iterableMapping.qualifiedBy().isEmpty() ) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                "'dateformat' and 'qualifiedBy' are are are undefined in @IterableMapping, "
+                "'dateformat' and 'qualifiedBy' are undefined in @IterableMapping, "
                     + "define at least one of them.",
                 method
             );
