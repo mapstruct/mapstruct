@@ -27,14 +27,13 @@ import org.mapstruct.factory.Mappers;
  *
  * @author Sjaak Derksen
  */
-@Mapper(uses = ConflictingFruitFactory.class)
+@Mapper
+public interface ErroneousFruitMapper2 {
 
-public interface TargetTypeSelectingFruitMapper {
+    ErroneousFruitMapper2 INSTANCE = Mappers.getMapper( ErroneousFruitMapper2.class );
 
-    TargetTypeSelectingFruitMapper INSTANCE = Mappers.getMapper( TargetTypeSelectingFruitMapper.class );
-
-    @BeanMapping(resultType = Apple.class)
+    @BeanMapping(resultType = Banana.class)
     @Mapping(target = "type", ignore = true)
-    Fruit map(FruitDto source);
+    Apple map(AppleDto source);
 
 }

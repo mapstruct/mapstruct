@@ -18,19 +18,22 @@
  */
 package org.mapstruct.ap.test.selection.resulttype;
 
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
 /**
  *
  * @author Sjaak Derksen
  */
-public class Apple extends Fruit {
+@Mapper(uses = ConflictingFruitFactory.class)
+public interface ResultTypeSelectingFruitMapper {
 
+    ResultTypeSelectingFruitMapper INSTANCE = Mappers.getMapper( ResultTypeSelectingFruitMapper.class );
 
-    public Apple() {
-        super( "constructed-by-constructor" );
-    }
-
-    public Apple(String type) {
-        super( type );
-    }
+    @BeanMapping(resultType = Apple.class)
+    @Mapping(target = "type", ignore = true)
+    Fruit map(FruitDto source);
 
 }

@@ -65,14 +65,40 @@ public class InheritanceSelectionTest {
     }
 
     @Test
-    @WithClasses( { ConflictingFruitFactory.class, TargetTypeSelectingFruitMapper.class, Banana.class } )
-    public void testForkedInheritanceHierarchyButDefinedTargetType() {
+    @WithClasses( { ConflictingFruitFactory.class, ResultTypeSelectingFruitMapper.class, Banana.class } )
+    public void testResultTypeBasedFactoryMethodSelection() {
 
         FruitDto fruitDto = new FruitDto( null );
-        Fruit fruit = TargetTypeSelectingFruitMapper.INSTANCE.map( fruitDto );
+        Fruit fruit = ResultTypeSelectingFruitMapper.INSTANCE.map( fruitDto );
         assertThat( fruit ).isNotNull();
         assertThat( fruit.getType() ).isEqualTo( "apple" );
 
+    }
+
+    @Test
+    @IssueKey("434")
+    @WithClasses( { ResultTypeConstructingFruitMapper.class } )
+    public void testResultTypeBasedConstructionOfResult() {
+
+        FruitDto fruitDto = new FruitDto( null );
+        Fruit fruit = ResultTypeConstructingFruitMapper.INSTANCE.map( fruitDto );
+        assertThat( fruit ).isNotNull();
+        assertThat( fruit.getType() ).isEqualTo( "constructed-by-constructor" );
+    }
+
+    @Test
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousFruitMapper2.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = ".*\\.Banana not assignable to: .*\\.Apple.")
+        }
+    )
+    @IssueKey("434")
+    @WithClasses( { ErroneousFruitMapper2.class, Banana.class } )
+    public void testResultTypeBasedConstructionOfResultNonAssignable() {
     }
 
     @Test

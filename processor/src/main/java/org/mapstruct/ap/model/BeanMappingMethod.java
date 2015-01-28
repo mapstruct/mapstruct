@@ -35,10 +35,12 @@ import org.mapstruct.ap.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.model.PropertyMapping.PropertyMappingBuilder;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.source.BeanMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.SourceReference;
 import org.mapstruct.ap.option.ReportingPolicy;
+import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
 import org.mapstruct.ap.util.Executables;
@@ -59,6 +61,7 @@ public class BeanMappingMethod extends MappingMethod {
     private final List<PropertyMapping> constantMappings;
     private final MethodReference factoryMethod;
     private final boolean mapNullToDefault;
+    private final Type resultType;
 
     public static class Builder {
 
@@ -106,7 +109,26 @@ public class BeanMappingMethod extends MappingMethod {
                 MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 
             MethodReference factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType() );
-            return new BeanMappingMethod( method, propertyMappings, factoryMethod, mapNullToDefault );
+
+            // if there's no factory method, try the resultType in the @BeanMapping
+            Type resultType = null;
+            if ( factoryMethod == null ) {
+                BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
+                BeanMapping beanMapping
+                    = BeanMapping.fromPrism( beanMappingPrism, method.getExecutable(), ctx.getMessager() );
+                if ( beanMapping != null && beanMapping.getResultType() != null ) {
+                    resultType = ctx.getTypeFactory().getType( beanMapping.getResultType() );
+                    if ( !resultType.isAssignableTo( method.getResultType() ) ) {
+                        ctx.getMessager().printMessage(
+                            Diagnostic.Kind.ERROR,
+                            String.format( "%s not assignable to: %s.", resultType, method.getResultType() ),
+                            method.getExecutable(),
+                            beanMappingPrism.mirror );
+                    }
+                }
+            }
+
+            return new BeanMappingMethod( method, propertyMappings, factoryMethod, mapNullToDefault, resultType );
         }
 
         /**
@@ -429,7 +451,8 @@ public class BeanMappingMethod extends MappingMethod {
     private BeanMappingMethod(SourceMethod method,
                               List<PropertyMapping> propertyMappings,
                               MethodReference factoryMethod,
-                              boolean mapNullToDefault) {
+                              boolean mapNullToDefault,
+                              Type resultType ) {
         super( method );
         this.propertyMappings = propertyMappings;
 
@@ -449,6 +472,7 @@ public class BeanMappingMethod extends MappingMethod {
         }
         this.factoryMethod = factoryMethod;
         this.mapNullToDefault = mapNullToDefault;
+        this.resultType = resultType;
     }
 
     public List<PropertyMapping> getPropertyMappings() {
@@ -465,6 +489,16 @@ public class BeanMappingMethod extends MappingMethod {
 
     public boolean isMapNullToDefault() {
         return mapNullToDefault;
+    }
+
+    @Override
+    public Type getResultType() {
+        if ( resultType == null ) {
+            return super.getResultType();
+        }
+        else {
+            return resultType;
+        }
     }
 
     @Override
