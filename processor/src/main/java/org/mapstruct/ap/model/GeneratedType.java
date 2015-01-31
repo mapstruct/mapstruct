@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.jar.Manifest;
+
 import javax.annotation.Generated;
 
 import org.mapstruct.ap.model.common.Accessibility;
@@ -43,6 +44,7 @@ public abstract class GeneratedType extends ModelElement {
 
     private static final String COMMENT_TAG = "Implementation-Version";
     private static final String COMMENTS = initComment();
+    private static final String JAVA_LANG_PACKAGE = "java.lang";
 
     private final String packageName;
     private final String name;
@@ -162,11 +164,7 @@ public abstract class GeneratedType extends ModelElement {
             return;
         }
 
-        if ( typeToAdd.isImported() &&
-            typeToAdd.getPackageName() != null &&
-            !typeToAdd.getPackageName().equals( packageName ) &&
-            !typeToAdd.getPackageName().startsWith( "java.lang" ) ) {
-
+        if ( needsImportDeclaration( typeToAdd ) ) {
             if ( typeToAdd.isArrayType() ) {
                 collection.add( typeToAdd.getComponentType() );
             }
@@ -178,6 +176,28 @@ public abstract class GeneratedType extends ModelElement {
         for ( Type type : typeToAdd.getTypeParameters() ) {
             addWithDependents( collection, type );
         }
+    }
+
+    private boolean needsImportDeclaration(Type typeToAdd) {
+        if ( !typeToAdd.isImported() ) {
+            return false;
+        }
+
+        if ( typeToAdd.getPackageName() == null ) {
+            return false;
+        }
+
+        if ( typeToAdd.getPackageName().startsWith( JAVA_LANG_PACKAGE ) ) {
+            return false;
+        }
+
+        if ( typeToAdd.getPackageName().equals( packageName ) ) {
+            if ( !typeToAdd.getTypeElement().getNestingKind().isNested() ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static String initComment() {
