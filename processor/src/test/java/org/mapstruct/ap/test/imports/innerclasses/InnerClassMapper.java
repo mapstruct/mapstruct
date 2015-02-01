@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.imports.innerclasses;
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.imports.innerclasses.SourceWithInnerClass.SourceInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass.TargetInnerClass;
+import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass.TargetInnerClass.TargetInnerInnerClass;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -31,5 +32,7 @@ public interface InnerClassMapper {
     TargetWithInnerClass sourceToTarget(SourceWithInnerClass source);
 
     TargetInnerClass innerSourceToInnerTarget(SourceInnerClass source);
+
+    TargetInnerInnerClass innerSourceToInnerInnerTarget(SourceInnerClass source);
 
 }

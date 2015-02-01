@@ -32,6 +32,7 @@ import org.mapstruct.ap.test.imports.innerclasses.SourceWithInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.SourceWithInnerClass.SourceInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass;
 import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass.TargetInnerClass;
+import org.mapstruct.ap.test.imports.innerclasses.TargetWithInnerClass.TargetInnerClass.TargetInnerInnerClass;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -68,6 +69,20 @@ public class InnerClassesImportsTest {
         assertThat( target.getInnerClassMember().getValue() ).isEqualTo( 412 );
         generatedSource.forMapper( InnerClassMapper.class ).containsImportFor( SourceInnerClass.class );
         generatedSource.forMapper( InnerClassMapper.class ).containsImportFor( TargetInnerClass.class );
+    }
+
+    @Test
+    @IssueKey( "412" )
+    public void mapperRequiresInnerInnerClassImports() {
+        SourceInnerClass source = new SourceInnerClass();
+        source.setValue( 412 );
+
+        TargetInnerInnerClass target = InnerClassMapper.INSTANCE.innerSourceToInnerInnerTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getValue() ).isEqualTo( 412 );
+        generatedSource.forMapper( InnerClassMapper.class ).containsImportFor( SourceInnerClass.class );
+        generatedSource.forMapper( InnerClassMapper.class ).containsImportFor( TargetInnerInnerClass.class );
     }
 
     @Test
