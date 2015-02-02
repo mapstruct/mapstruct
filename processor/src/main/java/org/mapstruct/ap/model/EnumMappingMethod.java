@@ -27,6 +27,7 @@ import org.mapstruct.ap.model.source.EnumMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -84,15 +85,11 @@ public class EnumMappingMethod extends MappingMethod {
                     for ( Mapping mapping : mappedConstants ) {
                         targetConstants.add( mapping.getTargetName() );
                     }
-                    ctx.getMessager().printMessage(
-                        Diagnostic.Kind.ERROR,
-                        String.format(
-                            "One enum constant must not be mapped to more than one target constant, "
-                                + "but constant %s is mapped to %s.",
-                            enumConstant,
-                            Strings.join( targetConstants, ", " )
-                        ),
-                        method.getExecutable()
+                    ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
+                        method.getExecutable(),
+                        Message.enummapping_multipletargets,
+                        enumConstant,
+                        Strings.join( targetConstants, ", " )
                     );
                 }
             }
@@ -111,48 +108,40 @@ public class EnumMappingMethod extends MappingMethod {
                 for ( Mapping mappedConstant : mappedConstants ) {
 
                     if ( mappedConstant.getSourceName() == null ) {
-                        ctx.getMessager().printMessage(
-                            Diagnostic.Kind.ERROR,
-                            "A source constant must be specified for mappings of an enum mapping method.",
+                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
                             method.getExecutable(),
-                            mappedConstant.getMirror()
+                            mappedConstant.getMirror(),
+                            Message.enummapping_undefinedsource
                         );
                         foundIncorrectMapping = true;
                     }
                     else if ( !sourceEnumConstants.contains( mappedConstant.getSourceName() ) ) {
-                        ctx.getMessager().printMessage(
-                            Diagnostic.Kind.ERROR,
-                            String.format(
-                                "Constant %s doesn't exist in enum type %s.",
-                                mappedConstant.getSourceName(),
-                                method.getSourceParameters().iterator().next().getType()
-                            ),
+                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
                             method.getExecutable(),
                             mappedConstant.getMirror(),
-                            mappedConstant.getSourceAnnotationValue()
+                            mappedConstant.getSourceAnnotationValue(),
+                            Message.enummapping_nonexistingconstant,
+                            mappedConstant.getSourceName(),
+                            method.getSourceParameters().iterator().next().getType()
                         );
                         foundIncorrectMapping = true;
                     }
                     if ( mappedConstant.getTargetName() == null ) {
-                        ctx.getMessager().printMessage(
-                            Diagnostic.Kind.ERROR,
-                            "A target constant must be specified for mappings of an enum mapping method.",
+                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
                             method.getExecutable(),
-                            mappedConstant.getMirror()
+                            mappedConstant.getMirror(),
+                            Message.enummapping_undefinedtarget
                         );
                         foundIncorrectMapping = true;
                     }
                     else if ( !targetEnumConstants.contains( mappedConstant.getTargetName() ) ) {
-                        ctx.getMessager().printMessage(
-                            Diagnostic.Kind.ERROR,
-                            String.format(
-                                "Constant %s doesn't exist in enum type %s.",
-                                mappedConstant.getTargetName(),
-                                method.getReturnType()
-                            ),
+                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
                             method.getExecutable(),
                             mappedConstant.getMirror(),
-                            mappedConstant.getTargetAnnotationValue()
+                            mappedConstant.getTargetAnnotationValue(),
+                            Message.enummapping_nonexistingconstant,
+                            mappedConstant.getTargetName(),
+                            method.getReturnType()
                         );
                         foundIncorrectMapping = true;
                     }
@@ -178,14 +167,10 @@ public class EnumMappingMethod extends MappingMethod {
             }
 
             if ( !unmappedSourceEnumConstants.isEmpty() ) {
-                ctx.getMessager().printMessage(
-                    Diagnostic.Kind.ERROR,
-                    String.format(
-                        "The following constants from the source enum have no corresponding constant in the "
-                            + "target enum and must be be mapped via @Mapping: %s",
-                        Strings.join( unmappedSourceEnumConstants, ", " )
-                    ),
-                    method.getExecutable()
+                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
+                    method.getExecutable(),
+                    Message.enummapping_unmappedtargets,
+                    Strings.join( unmappedSourceEnumConstants, ", " )
                 );
             }
 

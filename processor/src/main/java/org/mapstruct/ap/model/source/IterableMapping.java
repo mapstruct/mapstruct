@@ -19,7 +19,7 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.List;
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
@@ -28,6 +28,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.prism.IterableMappingPrism;
+import org.mapstruct.ap.util.Message;
 
 /**
  * Represents an iterable mapping as configured via {@code @IterableMapping}.
@@ -43,7 +44,7 @@ public class IterableMapping {
     private final AnnotationValue dateFormatAnnotationValue;
 
     public static IterableMapping fromPrism(IterableMappingPrism iterableMapping, ExecutableElement method,
-                                            Messager messager) {
+                                            FormattingMessager messager) {
         if ( iterableMapping == null ) {
             return null;
         }
@@ -52,12 +53,7 @@ public class IterableMapping {
         if ( !elementTargetTypeIsDefined
             && iterableMapping.dateFormat().isEmpty()
             && iterableMapping.qualifiedBy().isEmpty() ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                "'dateformat', 'qualifiedBy' and 'elementTargetType' are undefined in @IterableMapping, "
-                    + "define at least one of them.",
-                method
-            );
+            messager.printMessage( Diagnostic.Kind.ERROR, method, Message.iterablemapping_noelements );
         }
 
         return new IterableMapping(

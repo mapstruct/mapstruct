@@ -19,7 +19,7 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.List;
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
@@ -27,6 +27,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.prism.MapMappingPrism;
+import org.mapstruct.ap.util.Message;
 
 /**
  * Represents a map mapping as configured via {@code @MapMapping}.
@@ -43,7 +44,8 @@ public class MapMapping {
     private final TypeMirror keyQualifyingTargetType;
     private final TypeMirror valueQualifyingTargetType;
 
-    public static MapMapping fromPrism(MapMappingPrism mapMapping, ExecutableElement method, Messager messager) {
+    public static MapMapping fromPrism(MapMappingPrism mapMapping, ExecutableElement method,
+                                       FormattingMessager messager) {
         if ( mapMapping == null ) {
             return null;
         }
@@ -56,12 +58,7 @@ public class MapMapping {
             && mapMapping.valueQualifiedBy().isEmpty()
             && !keyTargetTypeIsDefined
             && !valueTargetTypeIsDefined ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                "'keyDateFormat', 'keyQualifiedBy', 'keyTargetType', 'valueDateFormat', 'valueQualfiedBy' and "
-                    + "'valueTargetType' are all undefined in @MapMapping, define at least one of them.",
-                method
-            );
+            messager.printMessage( Diagnostic.Kind.ERROR,  method, Message.mapmapping_noelements );
         }
 
 

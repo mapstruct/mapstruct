@@ -22,13 +22,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.ExecutableElement;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Strings;
 
@@ -67,10 +68,10 @@ public class SourceReference {
 
         private Mapping mapping;
         private SourceMethod method;
-        private Messager messager;
+        private FormattingMessager messager;
         private TypeFactory typeFactory;
 
-        public BuilderFromMapping messager(Messager messager) {
+        public BuilderFromMapping messager(FormattingMessager messager) {
             this.messager = messager;
             return this;
         }
@@ -114,7 +115,7 @@ public class SourceReference {
                     String sourceParameterName = segments[0];
                     parameter = method.getSourceParameter( sourceParameterName );
                     if ( parameter == null ) {
-                        reportMappingError( "Method has no parameter named \"%s\".", sourceParameterName );
+                        reportMappingError( Message.propertymapping_invalidparametername, sourceParameterName );
                         isValid = false;
                     }
                 }
@@ -154,15 +155,13 @@ public class SourceReference {
             if ( !foundEntryMatch ) {
 
                 if ( parameter != null ) {
-                    reportMappingError(
-                        "The type of parameter \"%s\" has no property named \"%s\".",
+                    reportMappingError( Message.propertymapping_nopropertyinparameter,
                         parameter.getName(),
                         Strings.join( Arrays.asList( sourcePropertyNames ), "." )
                     );
                 }
                 else {
-                    reportMappingError(
-                        "No property named \"%s\" exists in source parameter(s).",
+                    reportMappingError( Message.propertymapping_invalidpropertyname,
                         mapping.getSourceName()
                     );
                 }
@@ -193,12 +192,14 @@ public class SourceReference {
             return sourceEntries;
         }
 
-        private void reportMappingError(String message, Object... objects) {
+        private void reportMappingError(Message msg, Object... objects) {
             messager.printMessage(
                 Diagnostic.Kind.ERROR,
-                String.format( message, objects ),
-                method.getExecutable(), mapping.getMirror(),
-                mapping.getSourceAnnotationValue()
+                method.getExecutable(),
+                mapping.getMirror(),
+                mapping.getSourceAnnotationValue(),
+                msg,
+                objects
             );
         }
     }

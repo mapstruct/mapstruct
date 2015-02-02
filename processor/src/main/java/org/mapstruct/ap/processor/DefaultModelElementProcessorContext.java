@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.processor;
 
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -31,6 +32,7 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.version.VersionInformation;
 
 /**
@@ -78,7 +80,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     }
 
     @Override
-    public Messager getMessager() {
+    public FormattingMessager getMessager() {
         return messager;
     }
 
@@ -97,7 +99,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         return messager.isErroneous();
     }
 
-    private static class DelegatingMessager implements Messager {
+    private static class DelegatingMessager implements FormattingMessager {
 
         private final Messager delegate;
         private boolean isErroneous = false;
@@ -107,32 +109,37 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         }
 
         @Override
-        public void printMessage(Kind kind, CharSequence msg) {
-            delegate.printMessage( kind, msg );
+        public void printMessage( Kind kind, Message msg, Object... args) {
+            String message = String.format( msg.getDescription(), args );
+            delegate.printMessage( kind, message);
             if ( kind == Kind.ERROR ) {
                 isErroneous = true;
             }
         }
 
         @Override
-        public void printMessage(Kind kind, CharSequence msg, Element e) {
-            delegate.printMessage( kind, msg, e );
+        public void printMessage( Kind kind, Element e, Message msg, Object... args) {
+            String message = String.format( msg.getDescription(), args );
+            delegate.printMessage( kind, message, e );
             if ( kind == Kind.ERROR ) {
                 isErroneous = true;
             }
         }
 
         @Override
-        public void printMessage(Kind kind, CharSequence msg, Element e, AnnotationMirror a) {
-            delegate.printMessage( kind, msg, e, a );
+        public void printMessage( Kind kind, Element e, AnnotationMirror a, Message msg, Object... args) {
+            String message = String.format( msg.getDescription(), args );
+            delegate.printMessage( kind, message, e, a );
             if ( kind == Kind.ERROR ) {
                 isErroneous = true;
             }
         }
 
         @Override
-        public void printMessage(Kind kind, CharSequence msg, Element e, AnnotationMirror a, AnnotationValue v) {
-            delegate.printMessage( kind, msg, e, a, v );
+        public void printMessage( Kind kind, Element e, AnnotationMirror a, AnnotationValue v, Message msg,
+                                 Object... args) {
+            String message = String.format( msg.getDescription(), args );
+            delegate.printMessage( kind, message, e, a, v );
             if ( kind == Kind.ERROR ) {
                 isErroneous = true;
             }
@@ -141,5 +148,6 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         public boolean isErroneous() {
             return isErroneous;
         }
+
     }
 }

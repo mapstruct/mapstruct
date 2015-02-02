@@ -20,8 +20,7 @@ package org.mapstruct.ap.model.common;
 
 import org.mapstruct.ap.util.Strings;
 
-import javax.annotation.processing.Messager;
-import javax.tools.Diagnostic;
+import org.mapstruct.ap.util.FormattingMessager;
 
 /**
  * Default implementation of the {@link ConversionContext} passed to conversion providers.
@@ -30,14 +29,14 @@ import javax.tools.Diagnostic;
  */
 public class DefaultConversionContext implements ConversionContext {
 
-    private final Messager messager;
+    private final FormattingMessager messager;
     private final Type sourceType;
     private final Type targetType;
     private final String dateFormat;
     private final TypeFactory typeFactory;
 
-    public DefaultConversionContext(TypeFactory typeFactory, Messager messager, Type sourceType, Type targetType,
-                                    String dateFormat) {
+    public DefaultConversionContext(TypeFactory typeFactory, FormattingMessager messager, Type sourceType,
+                                    Type targetType, String dateFormat) {
         this.typeFactory = typeFactory;
         this.messager = messager;
         this.sourceType = sourceType;
@@ -55,7 +54,7 @@ public class DefaultConversionContext implements ConversionContext {
             DateFormatValidationResult validationResult = dateFormatValidator.validate( dateFormat );
 
             if ( !validationResult.isValid() ) {
-                messager.printMessage( Diagnostic.Kind.ERROR, validationResult.validationInformation() );
+                validationResult.printErrorMessage( messager );
             }
         }
     }
@@ -75,7 +74,7 @@ public class DefaultConversionContext implements ConversionContext {
         return typeFactory;
     }
 
-    protected Messager getMessager() {
+    protected FormattingMessager getMessager() {
         return messager;
     }
 }

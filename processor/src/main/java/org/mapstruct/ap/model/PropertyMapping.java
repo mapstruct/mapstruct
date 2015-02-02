@@ -46,6 +46,7 @@ import org.mapstruct.ap.util.Strings;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+import org.mapstruct.ap.util.Message;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -171,18 +172,14 @@ public class PropertyMapping extends ModelElement {
                 }
             }
             else {
-                ctx.getMessager().printMessage(
-                    Diagnostic.Kind.ERROR,
-                    String.format(
-                        "Can't map %s to \"%s %s\". "
-                        + "Consider to declare/implement a mapping method: \"%s map(%s value)\".",
-                        sourceElement,
-                        targetType,
-                        targetPropertyName,
-                        targetType,
-                        getSourceType() /* original source type */
-                    ),
-                    method.getExecutable()
+                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
+                    method.getExecutable(),
+                    Message.propertymapping_mappingnotfound,
+                    sourceElement,
+                    targetType,
+                    targetPropertyName,
+                    targetType,
+                    getSourceType() /* original source type */
                 );
             }
 
@@ -534,16 +531,13 @@ public class PropertyMapping extends ModelElement {
                 }
             }
             else {
-                ctx.getMessager().printMessage(
-                    Diagnostic.Kind.ERROR,
-                    String.format(
-                        "Can't map \"%s %s\" to \"%s %s\".",
-                        sourceType,
-                        constantExpression,
-                        targetType,
-                        targetPropertyName
-                    ),
-                    method.getExecutable()
+                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
+                    method.getExecutable(),
+                    Message.constantmapping_mappingnotfound,
+                    sourceType,
+                    constantExpression,
+                    targetType,
+                    targetPropertyName
                 );
             }
 

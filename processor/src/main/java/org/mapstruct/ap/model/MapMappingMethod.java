@@ -29,6 +29,7 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
 
@@ -119,11 +120,8 @@ public class MapMappingMethod extends MappingMethod {
             );
 
             if ( keyAssignment == null ) {
-                String message = String.format(
-                    "Can't create implementation of method %s. Found no method nor "
-                        + "built-in conversion for mapping source key type to target key type.", method
-                );
-                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR, message, method.getExecutable() );
+                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,  method.getExecutable(),
+                                                Message.mapmapping_key_mappingnotfound );
             }
 
             // find mapping method or conversion for value
@@ -143,11 +141,8 @@ public class MapMappingMethod extends MappingMethod {
             );
 
             if ( valueAssignment == null ) {
-                String message = String.format(
-                    "Can't create implementation of method %s. Found no method nor "
-                        + "built-in conversion for mapping source value type to target value type.", method
-                );
-                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR, message, method.getExecutable() );
+                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR, method.getExecutable(),
+                                                Message.mapmapping_value_mappingnotfound );
             }
 
             // mapNullToDefault

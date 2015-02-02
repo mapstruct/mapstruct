@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -49,6 +49,7 @@ import org.mapstruct.ap.prism.MapMappingPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.MapperConfig;
 
 /**
@@ -61,7 +62,7 @@ import org.mapstruct.ap.util.MapperConfig;
  */
 public class MethodRetrievalProcessor implements ModelElementProcessor<Void, List<SourceMethod>> {
 
-    private Messager messager;
+    private FormattingMessager messager;
     private TypeFactory typeFactory;
     private Types typeUtils;
     private Elements elementUtils;
@@ -271,88 +272,60 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                 Parameter targetParameter, Type resultType, Type returnType,
                                                 boolean containsTargetTypeParameter) {
         if ( sourceParameters.isEmpty() ) {
-            messager.printMessage( Kind.ERROR, "Can't generate mapping method with no input arguments.", method );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_noinputargs );
             return false;
         }
 
         if ( targetParameter != null && ( sourceParameters.size() + 1 != method.getParameters().size() ) ) {
-            messager.printMessage(
-                Kind.ERROR,
-                "Can't generate mapping method with more than one @MappingTarget parameter.",
-                method
-            );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_duplicatemappingtargets );
             return false;
         }
 
         if ( resultType.getTypeMirror().getKind() == TypeKind.VOID ) {
-            messager.printMessage( Kind.ERROR, "Can't generate mapping method with return type void.", method );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_voidmappingmethod );
             return false;
         }
 
         if ( returnType.getTypeMirror().getKind() != TypeKind.VOID &&
             !resultType.isAssignableTo( returnType ) ) {
-            messager.printMessage(
-                Kind.ERROR,
-                "The result type is not assignable to the the return type.",
-                method
-            );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_nonassignableresulttype );
             return false;
         }
 
         Type parameterType = sourceParameters.get( 0 ).getType();
 
         if ( parameterType.isIterableType() && !resultType.isIterableType() ) {
-            messager.printMessage(
-                Kind.ERROR,
-                "Can't generate mapping method from iterable type to non-iterable type.",
-                method
-            );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_iterabletononiterable );
             return false;
         }
 
         if ( containsTargetTypeParameter ) {
-            messager.printMessage(
-                Kind.ERROR,
-                "Can't generate mapping method that has a parameter annotated with @TargetType.",
-                method
-            );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_mappinghastargettypeparameter );
             return false;
         }
 
         if ( !parameterType.isIterableType() && resultType.isIterableType() ) {
-            messager.printMessage(
-                Kind.ERROR,
-                "Can't generate mapping method from non-iterable type to iterable type.",
-                method
-            );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_noniterabletoiterable );
             return false;
         }
 
         if ( parameterType.isPrimitive() ) {
-            messager.printMessage( Kind.ERROR, "Can't generate mapping method with primitive parameter type.", method );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_primitiveparameter );
             return false;
         }
 
         if ( resultType.isPrimitive() ) {
-            messager.printMessage( Kind.ERROR, "Can't generate mapping method with primitive return type.", method );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_primitivereturn );
             return false;
         }
 
         if ( parameterType.isEnumType() && !resultType.isEnumType() ) {
-            messager.printMessage(
-                Kind.ERROR,
-                "Can't generate mapping method from enum type to non-enum type.",
-                method
-            );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_enumtononenum );
             return false;
         }
 
         if ( !parameterType.isEnumType() && resultType.isEnumType() ) {
-            messager.printMessage(
-                Kind.ERROR,
-                "Can't generate mapping method from non-enum type to enum type.",
-                method
-            );
+            messager.printMessage( Kind.ERROR, method, Message.retrieval_nonenumtoenum );
             return false;
         }
 

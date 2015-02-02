@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.util.JavaTimeConstants;
 
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -34,6 +33,8 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
+import org.mapstruct.ap.util.Message;
+import org.mapstruct.ap.util.FormattingMessager;
 
 /**
  * Testing DefaultConversionContext for dateFormat
@@ -119,26 +120,26 @@ public class DefaultConversionContextTest {
                         false );
     }
 
-    private static class StatefulMessagerMock implements Messager {
+    private static class StatefulMessagerMock implements FormattingMessager {
 
         private Diagnostic.Kind lastKindPrinted;
 
         @Override
-        public void printMessage(Diagnostic.Kind kind, CharSequence msg) {
+        public void printMessage( Diagnostic.Kind kind, Message msg, Object... arg) {
             lastKindPrinted = kind;
         }
 
         @Override
-        public void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e) {
+        public void printMessage( Diagnostic.Kind kind, Element e, Message msg, Object... arg) {
         }
 
         @Override
-        public void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e, AnnotationMirror a) {
+        public void printMessage( Diagnostic.Kind kind, Element e, AnnotationMirror a, Message msg, Object... arg) {
         }
 
         @Override
-        public void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e, AnnotationMirror a,
-                                 AnnotationValue v) {
+        public void printMessage( Diagnostic.Kind kind, Element e, AnnotationMirror a, AnnotationValue v,
+                                 Message msg, Object... arg) {
         }
 
         public Diagnostic.Kind getLastKindPrinted() {

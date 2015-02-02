@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.util;
 
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -26,7 +25,7 @@ import javax.lang.model.element.Element;
 /**
  * Indicates an error during annotation processing. Should only be thrown in non-recoverable situations such as errors
  * due to incomplete compilations etc. Expected errors to be propagated to the user of the annotation processor should
- * be raised using the {@link Messager} API instead.
+ * be raised using the {@link FormattingMessager} API instead.
  *
  * @author Gunnar Morling
  */

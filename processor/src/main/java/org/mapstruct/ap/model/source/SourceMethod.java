@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
@@ -50,7 +50,7 @@ public class SourceMethod implements Method {
 
     private final Types typeUtils;
     private final TypeFactory typeFactory;
-    private final Messager messager;
+    private final FormattingMessager messager;
 
     private final Type declaringMapper;
     private final ExecutableElement executable;
@@ -77,7 +77,7 @@ public class SourceMethod implements Method {
         private MapMapping mapMapping = null;
         private Types typeUtils;
         private TypeFactory typeFactory = null;
-        private Messager messager = null;
+        private FormattingMessager messager = null;
         private MapperConfig mapperConfig = null;
 
         public Builder() {
@@ -133,7 +133,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMessager(Messager messager) {
+        public Builder setMessager(FormattingMessager messager) {
             this.messager = messager;
             return this;
         }
@@ -174,7 +174,7 @@ public class SourceMethod implements Method {
     private SourceMethod( Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
                          Type returnType, List<Type> exceptionTypes, Map<String, List<Mapping>> mappings,
                          IterableMapping iterableMapping, MapMapping mapMapping, Types typeUtils,
-                         TypeFactory typeFactory, Messager messager, MapperConfig config) {
+                         TypeFactory typeFactory, FormattingMessager messager, MapperConfig config) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;

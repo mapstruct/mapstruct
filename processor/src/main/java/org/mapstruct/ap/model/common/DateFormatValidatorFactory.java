@@ -24,6 +24,7 @@ import org.mapstruct.ap.util.JodaTimeConstants;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import org.mapstruct.ap.util.Message;
 
 /**
  * Factory for {@link DateFormatValidator}. <p> Based on the types of source / target type  a specific {@link
@@ -73,9 +74,8 @@ final class DateFormatValidatorFactory {
             dateFormatValidator = new DateFormatValidator() {
                 @Override
                 public DateFormatValidationResult validate(String dateFormat) {
-                    return new DateFormatValidationResult(
-                                    true, String.format(
-                                    "No dateFormat cheeck is supported for types %s, %s", sourceType, targetType ) );
+                    return new DateFormatValidationResult( true, Message.general_unsupporteddateformatcheck,
+                                                           sourceType, targetType );
                 }
             };
         }
@@ -179,14 +179,10 @@ final class DateFormatValidatorFactory {
     }
 
     private static DateFormatValidationResult validDateFormat(String dateFormat) {
-        return new DateFormatValidationResult(
-                        true, String.format(
-                        "given date format \"%s\" is valid.", dateFormat ) );
+        return new DateFormatValidationResult( true, Message.general_validdate, dateFormat );
     }
 
     private static DateFormatValidationResult invalidDateFormat(String dateFormat, Throwable e) {
-        return new DateFormatValidationResult(
-                        false, String.format(
-                        "given date format \"%s\" is invalid. Message: \"%s\"", dateFormat, e.getMessage() ) );
+        return new DateFormatValidationResult( false, Message.general_invaliddate, dateFormat, e.getMessage() );
     }
 }

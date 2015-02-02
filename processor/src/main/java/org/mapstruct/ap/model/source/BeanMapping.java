@@ -19,12 +19,13 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.List;
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import org.mapstruct.ap.prism.BeanMappingPrism;
+import org.mapstruct.ap.util.Message;
 
 
 /**
@@ -37,19 +38,15 @@ public class BeanMapping {
     private final List<TypeMirror> qualifiers;
     private final TypeMirror resultType;
 
-    public static BeanMapping fromPrism( BeanMappingPrism beanMapping, ExecutableElement method, Messager messager ) {
+    public static BeanMapping fromPrism( BeanMappingPrism beanMapping, ExecutableElement method,
+                                         FormattingMessager messager ) {
         if ( beanMapping == null ) {
             return null;
         }
 
         boolean resultTypeIsDefined = !TypeKind.VOID.equals( beanMapping.resultType().getKind() );
         if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                "'resultType' and 'qualifiedBy' are undefined in @BeanMapping, "
-                + "define at least one of them.",
-                method
-            );
+            messager.printMessage( Diagnostic.Kind.ERROR, method, Message.beanmapping_noelements );
         }
 
         return new BeanMapping(
@@ -58,9 +55,7 @@ public class BeanMapping {
         );
     }
 
-    private BeanMapping(
-            List<TypeMirror> qualifiers,
-            TypeMirror mirror) {
+    private BeanMapping( List<TypeMirror> qualifiers, TypeMirror mirror) {
         this.qualifiers = qualifiers;
         this.resultType = mirror;
     }

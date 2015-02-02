@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -112,7 +112,7 @@ public class MappingBuilderContext {
     private final TypeFactory typeFactory;
     private final Elements elementUtils;
     private final Types typeUtils;
-    private final Messager messager;
+    private final FormattingMessager messager;
     private final Options options;
     private final TypeElement mapperTypeElement;
     private final List<SourceMethod> sourceModel;
@@ -123,7 +123,7 @@ public class MappingBuilderContext {
     public MappingBuilderContext(TypeFactory typeFactory,
                           Elements elementUtils,
                           Types typeUtils,
-                          Messager messager,
+                          FormattingMessager messager,
                           Options options,
                           MappingResolver mappingResolver,
                           TypeElement mapper,
@@ -164,7 +164,7 @@ public class MappingBuilderContext {
         return typeUtils;
     }
 
-    public Messager getMessager() {
+    public FormattingMessager getMessager() {
         return messager;
     }
 

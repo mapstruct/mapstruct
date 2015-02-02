@@ -43,6 +43,7 @@ import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
@@ -119,11 +120,10 @@ public class BeanMappingMethod extends MappingMethod {
                 if ( beanMapping != null && beanMapping.getResultType() != null ) {
                     resultType = ctx.getTypeFactory().getType( beanMapping.getResultType() );
                     if ( !resultType.isAssignableTo( method.getResultType() ) ) {
-                        ctx.getMessager().printMessage(
-                            Diagnostic.Kind.ERROR,
-                            String.format( "%s not assignable to: %s.", resultType, method.getResultType() ),
+                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
                             method.getExecutable(),
-                            beanMappingPrism.mirror );
+                            beanMappingPrism.mirror,
+                            Message.beanmapping_notassignable, resultType, method.getResultType());
                     }
                 }
             }
@@ -154,15 +154,12 @@ public class BeanMappingMethod extends MappingMethod {
                     // fetch the target property
                     ExecutableElement targetProperty = unprocessedTargetProperties.get( mapping.getTargetName() );
                     if ( targetProperty == null ) {
-                        ctx.getMessager().printMessage(
-                            Diagnostic.Kind.ERROR,
-                            String.format(
-                                "Unknown property \"%s\" in return type.",
-                                mapping.getTargetName()
-                            ),
+                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
                             method.getExecutable(),
                             mapping.getMirror(),
-                            mapping.getSourceAnnotationValue()
+                            mapping.getSourceAnnotationValue(),
+                            Message.beanmapping_unknownpropertyinreturntype,
+                            mapping.getTargetName()
                         );
                         errorOccurred = true;
                     }
@@ -313,12 +310,10 @@ public class BeanMappingMethod extends MappingMethod {
 
                         if ( propertyMapping != null && newPropertyMapping != null ) {
                             // TODO improve error message
-                            ctx.getMessager().printMessage(
-                                Diagnostic.Kind.ERROR,
-                                "Several possible source properties for target property \""
-                                    + targetProperty.getKey()
-                                    + "\".",
-                                method.getExecutable()
+                            ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
+                                method.getExecutable(),
+                                Message.beanmapping_severalpossiblesources,
+                                targetProperty.getKey()
                             );
                             break;
                         }
@@ -394,10 +389,10 @@ public class BeanMappingMethod extends MappingMethod {
             }
             // Should never really happen
             else {
-                ctx.getMessager().printMessage(
-                    Diagnostic.Kind.ERROR,
-                    String.format( "Found several matching getters for property \"%s\"", sourcePropertyName ),
-                    method.getExecutable()
+                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
+                    method.getExecutable(),
+                    Message.beanmapping_severalpossibletargetaccessors,
+                    sourcePropertyName
                 );
 
                 return null;
@@ -435,14 +430,14 @@ public class BeanMappingMethod extends MappingMethod {
 
             if ( !unprocessedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
 
-                ctx.getMessager().printMessage(
-                    unmappedTargetPolicy.getDiagnosticKind(),
+                ctx.getMessager().printMessage( unmappedTargetPolicy.getDiagnosticKind(),
+                    method.getExecutable(),
+                    Message.beanmapping_unmappedtargets,
                     MessageFormat.format(
-                        "Unmapped target {0,choice,1#property|1<properties}: \"{1}\"",
+                        "{0,choice,1#property|1<properties}: \"{1}\"",
                         unprocessedTargetProperties.size(),
                         Strings.join( unprocessedTargetProperties.keySet(), ", " )
-                    ),
-                    method.getExecutable()
+                    )
                 );
             }
         }

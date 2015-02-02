@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -49,6 +49,7 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.prism.BeanMappingPrism;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -60,7 +61,7 @@ import org.mapstruct.ap.util.Strings;
  */
 public class MappingResolverImpl implements MappingResolver {
 
-    private final Messager messager;
+    private final FormattingMessager messager;
     private final Types typeUtils;
     private final TypeFactory typeFactory;
 
@@ -77,8 +78,9 @@ public class MappingResolverImpl implements MappingResolver {
      */
     private final Set<VirtualMappingMethod> usedVirtualMappings = new HashSet<VirtualMappingMethod>();
 
-    public MappingResolverImpl(Messager messager, Elements elementUtils, Types typeUtils, TypeFactory typeFactory,
-                               List<SourceMethod> sourceModel, List<MapperReference> mapperReferences) {
+    public MappingResolverImpl(FormattingMessager messager, Elements elementUtils, Types typeUtils,
+                               TypeFactory typeFactory, List<SourceMethod> sourceModel,
+                               List<MapperReference> mapperReferences) {
         this.messager = messager;
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
@@ -462,14 +464,23 @@ public class MappingResolverImpl implements MappingResolver {
             // into the target type
             if ( candidates.size() > 1 ) {
 
-                String errorMsg = String.format(
-                    "Ambiguous mapping methods found for %s %s: %s.",
-                    mappedElement != null ? "mapping " + mappedElement + " to" : "factorizing",
-                    returnType,
-                    Strings.join( candidates, ", " )
-                );
-
-                messager.printMessage( Diagnostic.Kind.ERROR, errorMsg, mappingMethod.getExecutable() );
+                if ( mappedElement != null ) {
+                    messager.printMessage( Diagnostic.Kind.ERROR,
+                        mappingMethod.getExecutable(),
+                        Message.general_ambigiousmappingmethod,
+                        mappedElement,
+                        returnType,
+                        Strings.join( candidates, ", " )
+                    );
+                }
+                else {
+                    messager.printMessage( Diagnostic.Kind.ERROR,
+                        mappingMethod.getExecutable(),
+                        Message.general_ambigiousfactorymethod,
+                        returnType,
+                        Strings.join( candidates, ", " )
+                    );
+                }
             }
 
             if ( !candidates.isEmpty() ) {

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
@@ -39,6 +39,7 @@ import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
+import org.mapstruct.ap.util.Message;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.
@@ -66,7 +67,7 @@ public class Mapping {
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
                                                                ExecutableElement method,
-                                                               Messager messager) {
+                                                               FormattingMessager messager) {
         Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
@@ -81,10 +82,10 @@ public class Mapping {
                 mappingsOfProperty.add( mapping );
 
                 if ( mappingsOfProperty.size() > 1 && !isEnumType( method.getReturnType() ) ) {
-                    messager.printMessage(
-                        Kind.ERROR,
-                        "Target property \"" + mappingPrism.target() + "\" must not be mapped more than once.",
-                        method
+                    messager.printMessage( Kind.ERROR,
+                        method,
+                        Message.propertymapping_duplicatetargets,
+                        mappingPrism.target()
                     );
                 }
             }
@@ -93,40 +94,37 @@ public class Mapping {
         return mappings;
     }
 
-    public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element, Messager messager) {
+    public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element,
+                                           FormattingMessager messager) {
 
         if ( mappingPrism.target().isEmpty() ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                "Target must not be empty in @Mapping",
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 element,
                 mappingPrism.mirror,
-                mappingPrism.values.target()
+                mappingPrism.values.target(),
+                Message.propertymapping_emptytarget
             );
             return null;
         }
 
         if ( !mappingPrism.source().isEmpty() && !mappingPrism.constant().isEmpty() ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                "Source and constant are both defined in @Mapping, either define a source or a constant",
-                element
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                element,
+                Message.propertymapping_sourceandconstantbothdefined
             );
             return null;
         }
         else if ( !mappingPrism.source().isEmpty() && !mappingPrism.expression().isEmpty() ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                "Source and expression are both defined in @Mapping, either define a source or an expression",
-                element
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                element,
+                Message.propertymapping_sourceandexpressionbothdefined
             );
             return null;
         }
         else if ( !mappingPrism.expression().isEmpty() && !mappingPrism.constant().isEmpty() ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                "Expression and constant are both defined in @Mapping, either define an expression or a constant",
-                element
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                element,
+                Message.propertymapping_expressionandconstantbothdefined
             );
             return null;
         }
@@ -173,7 +171,8 @@ public class Mapping {
         this.resultType = resultType;
     }
 
-    private static String getExpression(MappingPrism mappingPrism, ExecutableElement element, Messager messager) {
+    private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
+                                        FormattingMessager messager) {
         if ( mappingPrism.expression().isEmpty() ) {
             return null;
         }
@@ -181,12 +180,11 @@ public class Mapping {
         Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( mappingPrism.expression() );
 
         if ( !javaExpressionMatcher.matches() ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                "Value must be given in the form \"java(<EXPRESSION>)\"",
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 element,
                 mappingPrism.mirror,
-                mappingPrism.values.expression()
+                mappingPrism.values.expression(),
+                Message.propertymapping_invalidexpression
             );
             return null;
         }
@@ -199,7 +197,7 @@ public class Mapping {
             ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
     }
 
-    public void init(SourceMethod method, Messager messager, TypeFactory typeFactory) {
+    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
 
         if ( !method.isEnumMapping() ) {
             sourceReference = new SourceReference.BuilderFromMapping()
@@ -274,7 +272,7 @@ public class Mapping {
         return method.getResultType().getTargetAccessors( cms ).containsKey( name );
     }
 
-    public Mapping reverse(SourceMethod method, Messager messager, TypeFactory typeFactory) {
+    public Mapping reverse(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
 
         // mapping can only be reversed if the source was not a constant nor an expression nor a nested property
         if ( constant != null || javaExpression != null ) {
@@ -297,10 +295,10 @@ public class Mapping {
         if ( sourceReference != null && sourceReference.getPropertyEntries().isEmpty() ) {
             // parameter mapping only, apparently the @InheritReverseConfiguration is intentional
             // but erroneous. Lets raise an error to warn.
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format( "Parameter %s cannot be reversed", sourceReference.getParameter() ),
-                method.getExecutable()
+            messager.printMessage( Diagnostic.Kind.ERROR,
+                method.getExecutable(),
+                Message.propertymapping_reversalproblem,
+                sourceReference.getParameter()
             );
             return null;
         }

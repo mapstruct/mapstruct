@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
@@ -55,6 +55,7 @@ import org.mapstruct.ap.prism.InheritConfigurationPrism;
 import org.mapstruct.ap.prism.InheritInverseConfigurationPrism;
 import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.processor.creation.MappingResolverImpl;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
 import org.mapstruct.ap.version.VersionInformation;
@@ -69,7 +70,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private Elements elementUtils;
     private Types typeUtils;
-    private Messager messager;
+    private FormattingMessager messager;
     private Options options;
     private VersionInformation versionInformation;
     private TypeFactory typeFactory;
@@ -93,7 +94,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             messager,
             options,
             new MappingResolverImpl(
-                context.getMessager(),
+                messager,
                 elementUtils,
                 typeUtils,
                 typeFactory,
@@ -165,12 +166,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         TypeElement decoratorElement = (TypeElement) typeUtils.asElement( decoratorPrism.value() );
 
         if ( !typeUtils.isAssignable( decoratorElement.asType(), element.asType() ) ) {
-            messager.printMessage(
-                Kind.ERROR,
-                String.format( "Specified decorator type is no subtype of the annotated mapper type." ),
-                element,
-                decoratorPrism.mirror
-            );
+            messager.printMessage( Kind.ERROR, element, decoratorPrism.mirror, Message.decorator_nosubtype);
         }
 
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>( methods.size() );
@@ -208,15 +204,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         if ( !hasDelegateConstructor && !hasDefaultConstructor ) {
-            messager.printMessage(
-                Kind.ERROR,
-                String.format(
-                    "Specified decorator type has no default constructor nor a constructor with a single " +
-                        "parameter accepting the decorated mapper type."
-                ),
-                element,
-                decoratorPrism.mirror
-            );
+            messager.printMessage( Kind.ERROR, element, decoratorPrism.mirror, Message.decorator_constructor );
         }
 
         return Decorator.getInstance(
@@ -372,13 +360,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         if ( method.getReturnType().getTypeMirror().getKind() != TypeKind.VOID &&
             method.getReturnType().isInterface() &&
             method.getReturnType().getImplementationType() == null ) {
-            messager.printMessage(
-                Kind.ERROR,
-                String.format(
-                    "No implementation type is registered for return type %s.",
-                    method.getReturnType()
-                ),
-                method.getExecutable()
+            messager.printMessage( Kind.ERROR,
+                method.getExecutable(),
+                Message.general_noimplementation,
+                method.getReturnType()
             );
         }
     }
@@ -521,11 +506,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 method.getExecutable()
         );
         if ( reversePrism != null ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                "Method cannot be annotated with both a @InheritConfiguration and @InheritInverseConfiguration",
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 method.getExecutable(),
-                reversePrism.mirror
+                reversePrism.mirror,
+                Message.inheritconfiguration_both
             );
         }
 
@@ -540,15 +524,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( candidatePrism != null ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format(
-                    "Resolved inverse mapping method %s() should not carry the "
-                        + "@InheritInverseConfiguration annotation itself.",
-                    candidate.getName()
-                ),
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 method.getExecutable(),
-                reversePrism.mirror
+                reversePrism.mirror,
+                Message.inheritinverseconfiguration_referencehasinverse,
+                candidate.getName()
             );
         }
 
@@ -556,14 +536,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             candidate.getExecutable()
         );
         if ( candidateTemplatePrism != null ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format(
-                    "Resolved inverse mapping method %s() should not carry the @InheritConfiguration annotation.",
-                    candidate.getName()
-                ),
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 method.getExecutable(),
-                reversePrism.mirror
+                reversePrism.mirror,
+                Message.inheritinverseconfiguration_referencehasforward,
+                candidate.getName()
             );
         }
     }
@@ -578,25 +555,22 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         String name = reversePrism.name();
         if ( name.isEmpty() ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format(
-                    "Several matching inverse methods exist: %s(). Specify a name explicitly.",
-                    Strings.join( candidateNames, "(), " )
-                ),
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 method.getExecutable(),
-                reversePrism.mirror
+                reversePrism.mirror,
+                Message.inheritinverseconfiguration_duplicates,
+                Strings.join( candidateNames, "(), " )
+
             );
         }
         else {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format(
-                    "None of the candidates %s() matches given name: \"%s\".",
-                    Strings.join( candidateNames, "(), " ), name
-                ),
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 method.getExecutable(),
-                reversePrism.mirror
+                reversePrism.mirror,
+                Message.inheritinverseconfiguration_invalidname,
+                Strings.join( candidateNames, "(), " ),
+                name
+
             );
         }
     }
@@ -604,28 +578,25 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
                                                   InheritInverseConfigurationPrism reversePrism) {
 
-        messager.printMessage(
-            Diagnostic.Kind.ERROR,
-            String.format(
-                "Given name \"%s\" matches several candidate methods: %s().",
-                reversePrism.name(), Strings.join( candidates, "(), " )
-            ),
+        messager.printMessage( Diagnostic.Kind.ERROR,
             method.getExecutable(),
-            reversePrism.mirror
+            reversePrism.mirror,
+            Message.inheritinverseconfiguration_duplicatematches,
+            reversePrism.name(),
+            Strings.join( candidates, "(), " )
+
         );
     }
 
     private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
             InheritInverseConfigurationPrism reversePrism) {
 
-        messager.printMessage(
-            Diagnostic.Kind.ERROR,
-            String.format(
-                "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\".",
-                reversePrism.name(), onlyCandidate.getName()
-            ),
+        messager.printMessage( Diagnostic.Kind.ERROR,
             method.getExecutable(),
-            reversePrism.mirror
+            reversePrism.mirror,
+            Message.inheritinverseconfiguration_nonamematch,
+            reversePrism.name(),
+            onlyCandidate.getName()
         );
     }
 
@@ -638,14 +609,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( candidatePrism != null ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format(
-                    "Resolved mapping method %s() should not carry the @InheritConfiguration annotation itself.",
-                    candidate.getName()
-                ),
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 method.getExecutable(),
-                prism.mirror
+                prism.mirror,
+                Message.inheritconfiguration_referencehasforward,
+                candidate.getName()
             );
         }
 
@@ -654,14 +622,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( candidateInversePrism != null ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format(
-                    "Resolved mapping method %s() should not carry the @InheritInverseConfiguration annotation.",
-                    candidate.getName()
-                ),
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 method.getExecutable(),
-                prism.mirror
+                prism.mirror,
+                Message.inheritconfiguration_referencehasinverse,
+                candidate.getName()
             );
         }
     }
@@ -676,25 +641,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         String name = prism.name();
         if ( name.isEmpty() ) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format(
-                    "Several matching methods exist: %s(). Specify a name explicitly.",
-                    Strings.join( candidateNames, "(), " )
-                ),
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 method.getExecutable(),
-                prism.mirror
+                prism.mirror,
+                Message.inheritconfiguration_duplicates,
+                Strings.join( candidateNames, "(), " )
             );
         }
         else {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format(
-                    "None of the candidates %s() matches given name: \"%s\".",
-                    Strings.join( candidateNames, "(), " ), name
-                ),
+            messager.printMessage( Diagnostic.Kind.ERROR,
                 method.getExecutable(),
-                prism.mirror
+                prism.mirror,
+                Message.inheritconfiguration_invalidname,
+                Strings.join( candidateNames, "(), " ),
+                name
             );
         }
     }
@@ -702,30 +662,24 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
                                                   InheritConfigurationPrism prism) {
 
-        messager.printMessage(
-            Diagnostic.Kind.ERROR,
-            String.format(
-                "Given name \"%s\" matches several candidate methods: %s().",
-                prism.name(), Strings.join( candidates, "(), " )
-            ),
+        messager.printMessage( Diagnostic.Kind.ERROR,
             method.getExecutable(),
-            prism.mirror
+            prism.mirror,
+            Message.inheritconfiguration_duplicatematches,
+            prism.name(),
+            Strings.join( candidates, "(), " )
         );
     }
 
     private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
                                                 InheritConfigurationPrism prims) {
 
-        messager.printMessage(
-            Diagnostic.Kind.ERROR,
-            String.format(
-                "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\".",
-                prims.name(), onlyCandidate.getName()
-            ),
+        messager.printMessage( Diagnostic.Kind.ERROR,
             method.getExecutable(),
-            prims.mirror
+            prims.mirror,
+            Message.inheritconfiguration_nonamematch,
+            prims.name(),
+            onlyCandidate.getName()
         );
     }
-
-
 }

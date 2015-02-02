@@ -18,13 +18,18 @@
  */
 package org.mapstruct.ap.model.common;
 
+import javax.tools.Diagnostic;
+import org.mapstruct.ap.util.Message;
+import org.mapstruct.ap.util.FormattingMessager;
+
 /**
  * Reflects the result of a date format validation
  */
 final class DateFormatValidationResult {
 
     private final boolean isValid;
-    private final String validationInformation;
+    private final Message validationInfo;
+    private final Object[] validationInfoArgs;
 
     /**
      * Create a new instance.
@@ -32,18 +37,19 @@ final class DateFormatValidationResult {
      * @param isValid determines of the validation was successful.
      * @param validationInformation a string representing the validation result
      */
-    DateFormatValidationResult(boolean isValid, String validationInformation) {
+    DateFormatValidationResult(boolean isValid, Message validationInformation, Object... infoArgs) {
 
         this.isValid = isValid;
-        this.validationInformation = validationInformation;
+        this.validationInfo = validationInformation;
+        this.validationInfoArgs = infoArgs;
     }
 
     public boolean isValid() {
         return isValid;
     }
 
-    public String validationInformation() {
-        return validationInformation;
+    public void printErrorMessage(FormattingMessager messager) {
+        messager.printMessage( Diagnostic.Kind.ERROR, validationInfo, validationInfoArgs );
     }
 
 }

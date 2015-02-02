@@ -19,7 +19,7 @@
 package org.mapstruct.ap.processor;
 
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
+import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -59,7 +59,7 @@ public interface ModelElementProcessor<P, R> {
 
         TypeFactory getTypeFactory();
 
-        Messager getMessager();
+        FormattingMessager getMessager();
 
         Options getOptions();
 
