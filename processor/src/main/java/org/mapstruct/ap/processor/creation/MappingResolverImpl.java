@@ -502,6 +502,7 @@ public class MappingResolverImpl implements MappingResolver {
             for ( MapperReference ref : mapperReferences ) {
                 if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
                     ref.setUsed( !method.isStatic() );
+                    ref.setTypeRequiresImport( true );
                     return ref;
                 }
             }

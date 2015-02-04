@@ -18,4 +18,4 @@
      limitations under the License.
 
 -->
-<#if used>private final <@includeModel object=type/> ${variableName};</#if>
+private final <@includeModel object=type/> ${variableName};

@@ -34,9 +34,10 @@ import ${importedType.importName};
 </#list>
 <#lt>${accessibility.keyword} class ${name}<#if superClassName??> extends ${superClassName}</#if><#if interfaceName??> implements ${interfaceName}</#if> {
 
-<#list fields as field>
-<#nt>    <@includeModel object=field/>
-</#list>
+<#list fields as field><#if field.used><#nt>    <@includeModel object=field/>
+</#if></#list>
+
+<#if constructor??><#nt>    <@includeModel object=constructor/></#if>
 
 <#list methods as method>
 <#nt>    <@includeModel object=method/>

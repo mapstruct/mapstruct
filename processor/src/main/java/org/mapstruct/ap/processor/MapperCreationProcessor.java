@@ -205,16 +205,18 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             messager.printMessage( element, decoratorPrism.mirror, Message.DECORATOR_CONSTRUCTOR );
         }
 
-        return Decorator.getInstance(
-            elementUtils,
-            typeFactory,
-            element,
-            decoratorPrism,
-            mappingMethods,
-            hasDelegateConstructor,
-            options,
-            versionInformation
-        );
+        Decorator decorator = new Decorator.Builder()
+             .elementUtils( elementUtils )
+             .typeFactory( typeFactory )
+             .mapperElement( element )
+             .decoratorPrism( decoratorPrism )
+             .methods( mappingMethods )
+             .hasDelegateConstructor( hasDelegateConstructor )
+             .options( options )
+             .versionInformation( versionInformation )
+             .build();
+
+        return decorator;
     }
 
     private SortedSet<Type> getExtraImports(TypeElement element) {

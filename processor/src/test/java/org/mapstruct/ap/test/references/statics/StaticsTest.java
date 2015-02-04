@@ -23,18 +23,29 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import static org.fest.assertions.Assertions.assertThat;
+import org.junit.Rule;
 import org.junit.Test;
+import org.mapstruct.ap.test.references.statics.nonused.NonUsedMapper;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  *
  * @author Sjaak Derksen
  */
 @IssueKey( "410" )
-@WithClasses( { Beer.class, BeerDto.class, BeerMapper.class, Category.class, CustomMapper.class } )
+@WithClasses( { Beer.class, BeerDto.class, Category.class } )
 @RunWith(AnnotationProcessorTestRunner.class)
 public class StaticsTest {
 
+    private final GeneratedSource generatedSource = new GeneratedSource();
+
+    @Rule
+    public GeneratedSource getGeneratedSource() {
+        return generatedSource;
+    }
+
     @Test
+    @WithClasses( {  BeerMapper.class, CustomMapper.class } )
     public void shouldUseStaticMethod() {
 
         Beer beer = new Beer(); // what the heck, open another one..
@@ -43,5 +54,20 @@ public class StaticsTest {
         BeerDto result = BeerMapper.INSTANCE.mapBeer( beer );
         assertThat( result ).isNotNull();
         assertThat( result.getCategory() ).isEqualTo( Category.STRONG ); // why settle for less?
+    }
+
+    @Test
+    @WithClasses( {  BeerMapperWithNonUsedMapper.class, NonUsedMapper.class } )
+    public void shouldNotImportNonUsed() {
+
+        Beer beer = new Beer(); // what the heck, open another one..
+        beer.setPercentage( 7 );
+
+        BeerDto result = BeerMapperWithNonUsedMapper.INSTANCE.mapBeer( beer );
+        assertThat( result ).isNotNull();
+        assertThat( result.getCategory() ).isEqualTo( Category.STRONG ); // I could shurly use one now..
+        generatedSource.forMapper( BeerMapperWithNonUsedMapper.class ).containsNoImportFor( NonUsedMapper.class );
+
+
     }
 }

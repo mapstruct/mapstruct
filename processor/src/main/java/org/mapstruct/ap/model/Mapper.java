@@ -63,7 +63,8 @@ public class Mapper extends GeneratedType {
             options,
             versionInformation,
             accessibility,
-            extraImportedTypes
+            extraImportedTypes,
+            null
         );
 
         this.referencedMappers = referencedMappers;

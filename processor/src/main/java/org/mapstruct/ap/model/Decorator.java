@@ -27,7 +27,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 import org.mapstruct.ap.model.common.Accessibility;
-import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.option.Options;
@@ -43,9 +42,86 @@ public class Decorator extends GeneratedType {
 
     private static final String IMPLEMENTATION_SUFFIX = "Impl";
 
+    public static class Builder {
+
+        private Elements elementUtils;
+        private TypeFactory typeFactory;
+        private TypeElement mapperElement;
+        private DecoratedWithPrism decoratorPrism;
+        private List<MappingMethod> methods;
+        private Options options;
+        private VersionInformation versionInformation;
+        private boolean hasDelegateConstructor;
+
+        public Builder elementUtils(Elements elementUtils) {
+            this.elementUtils = elementUtils;
+            return this;
+        }
+
+        public Builder typeFactory(TypeFactory typeFactory) {
+            this.typeFactory = typeFactory;
+            return this;
+        }
+
+        public Builder mapperElement(TypeElement mapperElement) {
+            this.mapperElement = mapperElement;
+            return this;
+        }
+
+        public Builder decoratorPrism(DecoratedWithPrism decoratorPrism) {
+            this.decoratorPrism = decoratorPrism;
+            return this;
+        }
+
+        public Builder methods(List<MappingMethod> methods) {
+            this.methods = methods;
+            return this;
+        }
+
+        public Builder options(Options options) {
+            this.options = options;
+            return this;
+        }
+
+        public Builder versionInformation(VersionInformation versionInformation) {
+            this.versionInformation = versionInformation;
+            return this;
+        }
+
+        public Builder hasDelegateConstructor(boolean hasDelegateConstructor) {
+            this.hasDelegateConstructor = hasDelegateConstructor;
+            return this;
+        }
+
+        public Decorator build() {
+            Type decoratorType = typeFactory.getType( decoratorPrism.value() );
+            DecoratorConstructor decoratorConstructor = new DecoratorConstructor(
+                        mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
+                        mapperElement.getSimpleName().toString() + "Impl_",
+                        hasDelegateConstructor );
+
+
+            return new Decorator(
+                typeFactory,
+                elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString(),
+                mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
+                decoratorType.getName(),
+                mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
+                methods,
+                Arrays.asList(  new Field( typeFactory.getType( mapperElement ), "delegate", true ) ) ,
+                options,
+                versionInformation,
+                Accessibility.fromModifiers( mapperElement.getModifiers() ),
+                decoratorConstructor
+            );
+        }
+    }
+
+    @SuppressWarnings( "checkstyle:parameternumber" )
     private Decorator(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                      String interfaceName, List<MappingMethod> methods, List<? extends ModelElement> fields,
-                      Options options, VersionInformation versionInformation, Accessibility accessibility) {
+                     String interfaceName, List<MappingMethod> methods, List<? extends Field> fields,
+                     Options options, VersionInformation versionInformation, Accessibility accessibility,
+                     DecoratorConstructor decoratorConstructor) {
         super(
             typeFactory,
             packageName,
@@ -57,34 +133,8 @@ public class Decorator extends GeneratedType {
             options,
             versionInformation,
             accessibility,
-            new TreeSet<Type>()
-        );
-    }
-
-    public static Decorator getInstance(Elements elementUtils, TypeFactory typeFactory, TypeElement mapperElement,
-                                        DecoratedWithPrism decoratorPrism, List<MappingMethod> methods,
-                                        boolean hasDelegateConstructor, Options options,
-                                        VersionInformation versionInformation) {
-        Type decoratorType = typeFactory.getType( decoratorPrism.value() );
-
-        return new Decorator(
-            typeFactory,
-            elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString(),
-            mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
-            decoratorType.getName(),
-            mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
-            methods,
-            Arrays.asList(
-                new Field( typeFactory.getType( mapperElement ), "delegate", true ),
-                new DecoratorConstructor(
-                    mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
-                    mapperElement.getSimpleName().toString() + "Impl_",
-                    hasDelegateConstructor
-                )
-            ),
-            options,
-            versionInformation,
-            Accessibility.fromModifiers( mapperElement.getModifiers() )
+            new TreeSet<Type>(),
+            decoratorConstructor
         );
     }
 

@@ -20,8 +20,8 @@ package org.mapstruct.ap.model;
 
 import java.util.Collections;
 import java.util.Set;
-
 import org.mapstruct.ap.model.common.ModelElement;
+
 import org.mapstruct.ap.model.common.Type;
 
 /**
@@ -29,7 +29,7 @@ import org.mapstruct.ap.model.common.Type;
  *
  * @author Gunnar Morling
  */
-public class DecoratorConstructor extends ModelElement {
+public class DecoratorConstructor extends ModelElement implements Constructor {
 
     private final String name;
     private final String delegateName;
@@ -46,6 +46,7 @@ public class DecoratorConstructor extends ModelElement {
         return Collections.emptySet();
     }
 
+    @Override
     public String getName() {
         return name;
     }

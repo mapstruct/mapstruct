@@ -49,13 +49,14 @@ public abstract class GeneratedType extends ModelElement {
 
     private final List<Annotation> annotations;
     private final List<MappingMethod> methods;
-    private final List<? extends ModelElement> fields;
+    private final List<? extends Field> fields;
     private final SortedSet<Type> extraImportedTypes;
 
     private final boolean suppressGeneratorTimestamp;
     private final boolean suppressGeneratorVersionComment;
     private final VersionInformation versionInformation;
     private final Accessibility accessibility;
+    private final Constructor constructor;
 
     /**
      * Type representing the {@code @Generated} annotation
@@ -66,11 +67,12 @@ public abstract class GeneratedType extends ModelElement {
     protected GeneratedType(TypeFactory typeFactory, String packageName, String name, String superClassName,
                             String interfaceName,
                             List<MappingMethod> methods,
-                            List<? extends ModelElement> fields,
+                            List<? extends Field> fields,
                             Options options,
                             VersionInformation versionInformation,
                             Accessibility accessibility,
-                            SortedSet<Type> extraImportedTypes) {
+                            SortedSet<Type> extraImportedTypes,
+                            Constructor constructor ) {
         this.packageName = packageName;
         this.name = name;
         this.superClassName = superClassName;
@@ -87,6 +89,7 @@ public abstract class GeneratedType extends ModelElement {
         this.accessibility = accessibility;
 
         this.generatedType = typeFactory.getType( Generated.class );
+        this.constructor = constructor;
     }
 
     // CHECKSTYLE:ON
@@ -150,9 +153,11 @@ public abstract class GeneratedType extends ModelElement {
             }
         }
 
-        for ( ModelElement field : fields ) {
-            for ( Type type : field.getImportTypes() ) {
-                addWithDependents( importedTypes, type );
+        for ( Field field : fields ) {
+            if ( field.isTypeRequiresImport() ) {
+                for ( Type type : field.getImportTypes() ) {
+                    addWithDependents( importedTypes, type );
+                }
             }
         }
 
@@ -165,6 +170,10 @@ public abstract class GeneratedType extends ModelElement {
         }
 
         return importedTypes;
+    }
+
+    public Constructor getConstructor() {
+        return constructor;
     }
 
     private void addWithDependents(Collection<Type> collection, Type typeToAdd) {

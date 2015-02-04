@@ -34,16 +34,19 @@ public class Field extends ModelElement {
     private final Type type;
     private final String variableName;
     private boolean used;
+    private boolean typeRequiresImport;
 
     public Field(Type type, String variableName, boolean used) {
         this.type = type;
         this.variableName = variableName;
         this.used = used;
+        this.typeRequiresImport = used;
     }
     public Field(Type type, String variableName) {
         this.type = type;
         this.variableName = variableName;
         this.used = false;
+        this.typeRequiresImport = false;
     }
 
     /**
@@ -83,6 +86,22 @@ public class Field extends ModelElement {
      */
     public void setUsed(boolean isUsed) {
         this.used = isUsed;
+    }
+
+    /**
+     * field needs to be imported
+     * @return true if the type should be included in the import of the generated type
+     */
+    public boolean isTypeRequiresImport() {
+        return typeRequiresImport;
+    }
+
+    /**
+     * set field needs to be imported
+     * @param typeRequiresImport needs to be imported
+     */
+    public void setTypeRequiresImport(boolean typeRequiresImport) {
+        this.typeRequiresImport = typeRequiresImport;
     }
 
 }
