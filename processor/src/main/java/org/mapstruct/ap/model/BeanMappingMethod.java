@@ -120,10 +120,9 @@ public class BeanMappingMethod extends MappingMethod {
                 if ( beanMapping != null && beanMapping.getResultType() != null ) {
                     resultType = ctx.getTypeFactory().getType( beanMapping.getResultType() );
                     if ( !resultType.isAssignableTo( method.getResultType() ) ) {
-                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                            method.getExecutable(),
+                        ctx.getMessager().printMessage( method.getExecutable(),
                             beanMappingPrism.mirror,
-                            Message.beanmapping_notassignable, resultType, method.getResultType());
+                            Message.BEANMAPPING_NOT_ASSIGNABLE, resultType, method.getResultType());
                     }
                 }
             }
@@ -154,11 +153,10 @@ public class BeanMappingMethod extends MappingMethod {
                     // fetch the target property
                     ExecutableElement targetProperty = unprocessedTargetProperties.get( mapping.getTargetName() );
                     if ( targetProperty == null ) {
-                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                            method.getExecutable(),
+                        ctx.getMessager().printMessage( method.getExecutable(),
                             mapping.getMirror(),
                             mapping.getSourceAnnotationValue(),
-                            Message.beanmapping_unknownpropertyinreturntype,
+                            Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE,
                             mapping.getTargetName()
                         );
                         errorOccurred = true;
@@ -310,9 +308,8 @@ public class BeanMappingMethod extends MappingMethod {
 
                         if ( propertyMapping != null && newPropertyMapping != null ) {
                             // TODO improve error message
-                            ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                                method.getExecutable(),
-                                Message.beanmapping_severalpossiblesources,
+                            ctx.getMessager().printMessage( method.getExecutable(),
+                                Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
                                 targetProperty.getKey()
                             );
                             break;
@@ -389,9 +386,8 @@ public class BeanMappingMethod extends MappingMethod {
             }
             // Should never really happen
             else {
-                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                    method.getExecutable(),
-                    Message.beanmapping_severalpossibletargetaccessors,
+                ctx.getMessager().printMessage( method.getExecutable(),
+                    Message.BEANMAPPING_SEVERAL_POSSIBLE_TARGET_ACCESSORS,
                     sourcePropertyName
                 );
 
@@ -430,9 +426,11 @@ public class BeanMappingMethod extends MappingMethod {
 
             if ( !unprocessedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
 
-                ctx.getMessager().printMessage( unmappedTargetPolicy.getDiagnosticKind(),
-                    method.getExecutable(),
-                    Message.beanmapping_unmappedtargets,
+                Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
+                    Message.BEANMAPPING_UNMAPPED_TARGETS_ERROR : Message.BEANMAPPING_UNMAPPED_TARGETS_WARNING;
+
+                ctx.getMessager().printMessage( method.getExecutable(),
+                    msg,
                     MessageFormat.format(
                         "{0,choice,1#property|1<properties}: \"{1}\"",
                         unprocessedTargetProperties.size(),

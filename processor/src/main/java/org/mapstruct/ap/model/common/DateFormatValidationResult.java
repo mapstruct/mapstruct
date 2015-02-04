@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.model.common;
 
-import javax.tools.Diagnostic;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.FormattingMessager;
 
@@ -49,7 +48,7 @@ final class DateFormatValidationResult {
     }
 
     public void printErrorMessage(FormattingMessager messager) {
-        messager.printMessage( Diagnostic.Kind.ERROR, validationInfo, validationInfoArgs );
+        messager.printMessage( validationInfo, validationInfoArgs );
     }
 
 }

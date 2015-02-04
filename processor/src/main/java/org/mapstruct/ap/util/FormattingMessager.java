@@ -21,37 +21,33 @@ package org.mapstruct.ap.util;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.tools.Diagnostic;
 
 public interface FormattingMessager {
 
     /**
      * Prints a message of the specified kind.
      *
-     * @param kind the kind of message
      * @param msg  the message
      * @param args Arguments referenced by the format specifiers in the format string. If there are more arguments
      * than format specifiers, the extra arguments are ignored
      */
-    void printMessage( Diagnostic.Kind kind, Message msg, Object... args);
+    void printMessage(Message msg, Object... args);
 
     /**
      * Prints a message of the specified kind at the location of the
      * element.
      *
-     * @param kind the kind of message
      * @param e    the element to use as a position hint
      * @param msg  the message
      * @param args Arguments referenced by the format specifiers in the format string. If there are more arguments
      * than format specifiers, the extra arguments are ignored
      */
-    void printMessage( Diagnostic.Kind kind, Element e, Message msg, Object... args);
+    void printMessage(Element e, Message msg, Object... args);
 
     /**
      * Prints a message of the specified kind at the location of the
      * annotation mirror of the annotated element.
      *
-     * @param kind the kind of message
      * @param e    the annotated element
      * @param a    the annotation to use as a position hint
      * @param msg  the message
@@ -59,14 +55,13 @@ public interface FormattingMessager {
      * than format specifiers, the extra arguments are ignored
      *
      */
-    void printMessage( Diagnostic.Kind kind, Element e, AnnotationMirror a, Message msg, Object... args);
+    void printMessage(Element e, AnnotationMirror a, Message msg, Object... args);
 
     /**
      * Prints a message of the specified kind at the location of the
      * annotation value inside the annotation mirror of the annotated
      * element.
      *
-     * @param kind the kind of message
      * @param e    the annotated element
      * @param a    the annotation containing the annotation value
      * @param v    the annotation value to use as a position hint
@@ -74,8 +69,7 @@ public interface FormattingMessager {
      * @param args Arguments referenced by the format specifiers in the format string. If there are more arguments
      * than format specifiers, the extra arguments are ignored
      */
-    void printMessage( Diagnostic.Kind kind,
-                      Element e,
+    void printMessage(Element e,
                       AnnotationMirror a,
                       AnnotationValue v,
                       Message msg,

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.assignment.LocalVarWrapper;
@@ -112,8 +111,7 @@ public class IterableMappingMethod extends MappingMethod {
             );
 
             if ( assignment == null ) {
-                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR, method.getExecutable(),
-                                                Message.iterablemapping_mappingnotfound );
+                ctx.getMessager().printMessage( method.getExecutable(), Message.ITERABLEMAPPING_MAPPING_NOT_FOUND );
             }
 
             // target accessor is setter, so decorate assignment as setter

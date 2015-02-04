@@ -20,7 +20,6 @@ package org.mapstruct.ap.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.source.EnumMapping;
@@ -85,9 +84,8 @@ public class EnumMappingMethod extends MappingMethod {
                     for ( Mapping mapping : mappedConstants ) {
                         targetConstants.add( mapping.getTargetName() );
                     }
-                    ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                        method.getExecutable(),
-                        Message.enummapping_multipletargets,
+                    ctx.getMessager().printMessage( method.getExecutable(),
+                        Message.ENUMMAPPING_MULTIPLE_TARGETS,
                         enumConstant,
                         Strings.join( targetConstants, ", " )
                     );
@@ -108,38 +106,34 @@ public class EnumMappingMethod extends MappingMethod {
                 for ( Mapping mappedConstant : mappedConstants ) {
 
                     if ( mappedConstant.getSourceName() == null ) {
-                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                            method.getExecutable(),
+                        ctx.getMessager().printMessage( method.getExecutable(),
                             mappedConstant.getMirror(),
-                            Message.enummapping_undefinedsource
+                            Message.ENUMMAPPING_UNDEFINED_SOURCE
                         );
                         foundIncorrectMapping = true;
                     }
                     else if ( !sourceEnumConstants.contains( mappedConstant.getSourceName() ) ) {
-                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                            method.getExecutable(),
+                        ctx.getMessager().printMessage( method.getExecutable(),
                             mappedConstant.getMirror(),
                             mappedConstant.getSourceAnnotationValue(),
-                            Message.enummapping_nonexistingconstant,
+                            Message.ENUMMAPPING_NON_EXISTING_CONSTANT,
                             mappedConstant.getSourceName(),
                             method.getSourceParameters().iterator().next().getType()
                         );
                         foundIncorrectMapping = true;
                     }
                     if ( mappedConstant.getTargetName() == null ) {
-                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                            method.getExecutable(),
+                        ctx.getMessager().printMessage( method.getExecutable(),
                             mappedConstant.getMirror(),
-                            Message.enummapping_undefinedtarget
+                            Message.ENUMMAPPING_UNDEFINED_TARGET
                         );
                         foundIncorrectMapping = true;
                     }
                     else if ( !targetEnumConstants.contains( mappedConstant.getTargetName() ) ) {
-                        ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                            method.getExecutable(),
+                        ctx.getMessager().printMessage( method.getExecutable(),
                             mappedConstant.getMirror(),
                             mappedConstant.getTargetAnnotationValue(),
-                            Message.enummapping_nonexistingconstant,
+                            Message.ENUMMAPPING_NON_EXISTING_CONSTANT,
                             mappedConstant.getTargetName(),
                             method.getReturnType()
                         );
@@ -167,9 +161,8 @@ public class EnumMappingMethod extends MappingMethod {
             }
 
             if ( !unmappedSourceEnumConstants.isEmpty() ) {
-                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                    method.getExecutable(),
-                    Message.enummapping_unmappedtargets,
+                ctx.getMessager().printMessage( method.getExecutable(),
+                    Message.ENUMMAPPING_UNMAPPED_TARGETS,
                     Strings.join( unmappedSourceEnumConstants, ", " )
                 );
             }

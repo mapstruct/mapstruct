@@ -23,7 +23,6 @@ import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.util.Message;
 
@@ -46,7 +45,7 @@ public class BeanMapping {
 
         boolean resultTypeIsDefined = !TypeKind.VOID.equals( beanMapping.resultType().getKind() );
         if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR, method, Message.beanmapping_noelements );
+            messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
         }
 
         return new BeanMapping(

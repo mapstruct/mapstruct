@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.assignment.AdderWrapper;
 import org.mapstruct.ap.model.assignment.ArrayCopyWrapper;
@@ -172,9 +171,8 @@ public class PropertyMapping extends ModelElement {
                 }
             }
             else {
-                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                    method.getExecutable(),
-                    Message.propertymapping_mappingnotfound,
+                ctx.getMessager().printMessage( method.getExecutable(),
+                    Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
                     sourceElement,
                     targetType,
                     targetPropertyName,
@@ -531,9 +529,8 @@ public class PropertyMapping extends ModelElement {
                 }
             }
             else {
-                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,
-                    method.getExecutable(),
-                    Message.constantmapping_mappingnotfound,
+                ctx.getMessager().printMessage( method.getExecutable(),
+                    Message.CONSTANTMAPPING_MAPPING_NOT_FOUND,
                     sourceType,
                     constantExpression,
                     targetType,

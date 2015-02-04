@@ -32,8 +32,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic;
-import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.BeanMappingMethod;
 import org.mapstruct.ap.model.Decorator;
@@ -166,7 +164,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         TypeElement decoratorElement = (TypeElement) typeUtils.asElement( decoratorPrism.value() );
 
         if ( !typeUtils.isAssignable( decoratorElement.asType(), element.asType() ) ) {
-            messager.printMessage( Kind.ERROR, element, decoratorPrism.mirror, Message.decorator_nosubtype);
+            messager.printMessage( element, decoratorPrism.mirror, Message.DECORATOR_NO_SUBTYPE);
         }
 
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>( methods.size() );
@@ -204,7 +202,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         if ( !hasDelegateConstructor && !hasDefaultConstructor ) {
-            messager.printMessage( Kind.ERROR, element, decoratorPrism.mirror, Message.decorator_constructor );
+            messager.printMessage( element, decoratorPrism.mirror, Message.DECORATOR_CONSTRUCTOR );
         }
 
         return Decorator.getInstance(
@@ -360,11 +358,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         if ( method.getReturnType().getTypeMirror().getKind() != TypeKind.VOID &&
             method.getReturnType().isInterface() &&
             method.getReturnType().getImplementationType() == null ) {
-            messager.printMessage( Kind.ERROR,
-                method.getExecutable(),
-                Message.general_noimplementation,
-                method.getReturnType()
-            );
+            messager.printMessage( method.getExecutable(), Message.GENERAL_NO_IMPLEMENTATION, method.getReturnType() );
         }
     }
 
@@ -506,11 +500,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 method.getExecutable()
         );
         if ( reversePrism != null ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                method.getExecutable(),
-                reversePrism.mirror,
-                Message.inheritconfiguration_both
-            );
+            messager.printMessage( method.getExecutable(), reversePrism.mirror, Message.INHERITCONFIGURATION_BOTH );
         }
 
     }
@@ -524,10 +514,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( candidatePrism != null ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                method.getExecutable(),
+            messager.printMessage( method.getExecutable(),
                 reversePrism.mirror,
-                Message.inheritinverseconfiguration_referencehasinverse,
+                Message.INHERITINVERSECONFIGURATION_REFERENCE_HAS_INVERSE,
                 candidate.getName()
             );
         }
@@ -536,10 +525,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             candidate.getExecutable()
         );
         if ( candidateTemplatePrism != null ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                method.getExecutable(),
+            messager.printMessage(  method.getExecutable(),
                 reversePrism.mirror,
-                Message.inheritinverseconfiguration_referencehasforward,
+                Message.INHERITINVERSECONFIGURATION_REFERENCE_HAS_FORWARD,
                 candidate.getName()
             );
         }
@@ -555,19 +543,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         String name = reversePrism.name();
         if ( name.isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                method.getExecutable(),
+            messager.printMessage( method.getExecutable(),
                 reversePrism.mirror,
-                Message.inheritinverseconfiguration_duplicates,
+                Message.INHERITINVERSECONFIGURATION_DUPLICATES,
                 Strings.join( candidateNames, "(), " )
 
             );
         }
         else {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                method.getExecutable(),
+            messager.printMessage( method.getExecutable(),
                 reversePrism.mirror,
-                Message.inheritinverseconfiguration_invalidname,
+                Message.INHERITINVERSECONFIGURATION_INVALID_NAME,
                 Strings.join( candidateNames, "(), " ),
                 name
 
@@ -578,10 +564,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
                                                   InheritInverseConfigurationPrism reversePrism) {
 
-        messager.printMessage( Diagnostic.Kind.ERROR,
-            method.getExecutable(),
+        messager.printMessage( method.getExecutable(),
             reversePrism.mirror,
-            Message.inheritinverseconfiguration_duplicatematches,
+            Message.INHERITINVERSECONFIGURATION_DUPLICATE_MATCHES,
             reversePrism.name(),
             Strings.join( candidates, "(), " )
 
@@ -591,10 +576,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
             InheritInverseConfigurationPrism reversePrism) {
 
-        messager.printMessage( Diagnostic.Kind.ERROR,
-            method.getExecutable(),
+        messager.printMessage( method.getExecutable(),
             reversePrism.mirror,
-            Message.inheritinverseconfiguration_nonamematch,
+            Message.INHERITINVERSECONFIGURATION_NO_NAME_MATCH,
             reversePrism.name(),
             onlyCandidate.getName()
         );
@@ -609,10 +593,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( candidatePrism != null ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                method.getExecutable(),
+            messager.printMessage( method.getExecutable(),
                 prism.mirror,
-                Message.inheritconfiguration_referencehasforward,
+                Message.INHERITCONFIGURATION_REFERENCE_HAS_FORWARD,
                 candidate.getName()
             );
         }
@@ -622,10 +605,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( candidateInversePrism != null ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                method.getExecutable(),
+            messager.printMessage( method.getExecutable(),
                 prism.mirror,
-                Message.inheritconfiguration_referencehasinverse,
+                Message.INHERITCONFIGURATION_REFERENCE_HAS_INVERSE,
                 candidate.getName()
             );
         }
@@ -641,18 +623,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         String name = prism.name();
         if ( name.isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                method.getExecutable(),
+            messager.printMessage( method.getExecutable(),
                 prism.mirror,
-                Message.inheritconfiguration_duplicates,
+                Message.INHERITCONFIGURATION_DUPLICATES,
                 Strings.join( candidateNames, "(), " )
             );
         }
         else {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                method.getExecutable(),
+            messager.printMessage( method.getExecutable(),
                 prism.mirror,
-                Message.inheritconfiguration_invalidname,
+                Message.INHERITCONFIGURATION_INVALIDNAME,
                 Strings.join( candidateNames, "(), " ),
                 name
             );
@@ -662,10 +642,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
                                                   InheritConfigurationPrism prism) {
 
-        messager.printMessage( Diagnostic.Kind.ERROR,
-            method.getExecutable(),
+        messager.printMessage( method.getExecutable(),
             prism.mirror,
-            Message.inheritconfiguration_duplicatematches,
+            Message.INHERITCONFIGURATION_DUPLICATE_MATCHES,
             prism.name(),
             Strings.join( candidates, "(), " )
         );
@@ -674,10 +653,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private void reportErrorWhenNonMatchingName(SourceMethod onlyCandidate, SourceMethod method,
                                                 InheritConfigurationPrism prims) {
 
-        messager.printMessage( Diagnostic.Kind.ERROR,
-            method.getExecutable(),
+        messager.printMessage( method.getExecutable(),
             prims.mirror,
-            Message.inheritconfiguration_nonamematch,
+            Message.INHERITCONFIGURATION_NO_NAME_MATCH,
             prims.name(),
             onlyCandidate.getName()
         );

@@ -35,7 +35,6 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -272,60 +271,60 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                 Parameter targetParameter, Type resultType, Type returnType,
                                                 boolean containsTargetTypeParameter) {
         if ( sourceParameters.isEmpty() ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_noinputargs );
+            messager.printMessage( method, Message.RETRIEVAL_NO_INPUT_ARGS );
             return false;
         }
 
         if ( targetParameter != null && ( sourceParameters.size() + 1 != method.getParameters().size() ) ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_duplicatemappingtargets );
+            messager.printMessage( method, Message.RETRIEVAL_DUPLICATE_MAPPING_TARGETS );
             return false;
         }
 
         if ( resultType.getTypeMirror().getKind() == TypeKind.VOID ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_voidmappingmethod );
+            messager.printMessage( method, Message.RETRIEVAL_VOID_MAPPING_METHOD );
             return false;
         }
 
         if ( returnType.getTypeMirror().getKind() != TypeKind.VOID &&
             !resultType.isAssignableTo( returnType ) ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_nonassignableresulttype );
+            messager.printMessage( method, Message.RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE );
             return false;
         }
 
         Type parameterType = sourceParameters.get( 0 ).getType();
 
         if ( parameterType.isIterableType() && !resultType.isIterableType() ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_iterabletononiterable );
+            messager.printMessage( method, Message.RETRIEVAL_ITERABLE_TO_NON_ITERABLE );
             return false;
         }
 
         if ( containsTargetTypeParameter ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_mappinghastargettypeparameter );
+            messager.printMessage( method, Message.RETRIEVAL_MAPPING_HAS_TARGET_TYPE_PARAMETER );
             return false;
         }
 
         if ( !parameterType.isIterableType() && resultType.isIterableType() ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_noniterabletoiterable );
+            messager.printMessage( method, Message.RETRIEVAL_NON_ITERABLE_TO_ITERABLE );
             return false;
         }
 
         if ( parameterType.isPrimitive() ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_primitiveparameter );
+            messager.printMessage( method, Message.RETRIEVAL_PRIMITIVE_PARAMETER );
             return false;
         }
 
         if ( resultType.isPrimitive() ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_primitivereturn );
+            messager.printMessage( method, Message.RETRIEVAL_PRIMITIVE_RETURN );
             return false;
         }
 
         if ( parameterType.isEnumType() && !resultType.isEnumType() ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_enumtononenum );
+            messager.printMessage( method, Message.RETRIEVAL_ENUM_TO_NON_ENUM );
             return false;
         }
 
         if ( !parameterType.isEnumType() && resultType.isEnumType() ) {
-            messager.printMessage( Kind.ERROR, method, Message.retrieval_nonenumtoenum );
+            messager.printMessage( method, Message.RETRIEVAL_NON_ENUM_TO_ENUM );
             return false;
         }
 

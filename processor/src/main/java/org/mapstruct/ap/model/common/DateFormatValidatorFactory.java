@@ -74,7 +74,7 @@ final class DateFormatValidatorFactory {
             dateFormatValidator = new DateFormatValidator() {
                 @Override
                 public DateFormatValidationResult validate(String dateFormat) {
-                    return new DateFormatValidationResult( true, Message.general_unsupporteddateformatcheck,
+                    return new DateFormatValidationResult( true, Message.GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK,
                                                            sourceType, targetType );
                 }
             };
@@ -179,10 +179,10 @@ final class DateFormatValidatorFactory {
     }
 
     private static DateFormatValidationResult validDateFormat(String dateFormat) {
-        return new DateFormatValidationResult( true, Message.general_validdate, dateFormat );
+        return new DateFormatValidationResult( true, Message.GENERAL_VALID_DATE, dateFormat );
     }
 
     private static DateFormatValidationResult invalidDateFormat(String dateFormat, Throwable e) {
-        return new DateFormatValidationResult( false, Message.general_invaliddate, dateFormat, e.getMessage() );
+        return new DateFormatValidationResult( false, Message.GENERAL_INVALID_DATE, dateFormat, e.getMessage() );
     }
 }

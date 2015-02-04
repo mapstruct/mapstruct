@@ -109,38 +109,38 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         }
 
         @Override
-        public void printMessage( Kind kind, Message msg, Object... args) {
+        public void printMessage(Message msg, Object... args) {
             String message = String.format( msg.getDescription(), args );
-            delegate.printMessage( kind, message);
-            if ( kind == Kind.ERROR ) {
+            delegate.printMessage( msg.getDiagnosticKind(), message);
+            if ( msg.getDiagnosticKind() == Kind.ERROR ) {
                 isErroneous = true;
             }
         }
 
         @Override
-        public void printMessage( Kind kind, Element e, Message msg, Object... args) {
+        public void printMessage(Element e, Message msg, Object... args) {
             String message = String.format( msg.getDescription(), args );
-            delegate.printMessage( kind, message, e );
-            if ( kind == Kind.ERROR ) {
+            delegate.printMessage( msg.getDiagnosticKind(), message, e );
+            if ( msg.getDiagnosticKind() == Kind.ERROR ) {
                 isErroneous = true;
             }
         }
 
         @Override
-        public void printMessage( Kind kind, Element e, AnnotationMirror a, Message msg, Object... args) {
+        public void printMessage(Element e, AnnotationMirror a, Message msg, Object... args) {
             String message = String.format( msg.getDescription(), args );
-            delegate.printMessage( kind, message, e, a );
-            if ( kind == Kind.ERROR ) {
+            delegate.printMessage( msg.getDiagnosticKind(), message, e, a );
+            if ( msg.getDiagnosticKind() == Kind.ERROR ) {
                 isErroneous = true;
             }
         }
 
         @Override
-        public void printMessage( Kind kind, Element e, AnnotationMirror a, AnnotationValue v, Message msg,
+        public void printMessage(Element e, AnnotationMirror a, AnnotationValue v, Message msg,
                                  Object... args) {
             String message = String.format( msg.getDescription(), args );
-            delegate.printMessage( kind, message, e, a, v );
-            if ( kind == Kind.ERROR ) {
+            delegate.printMessage( msg.getDiagnosticKind(), message, e, a, v );
+            if ( msg.getDiagnosticKind() == Kind.ERROR ) {
                 isErroneous = true;
             }
         }

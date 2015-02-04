@@ -24,7 +24,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.prism.MapMappingPrism;
 import org.mapstruct.ap.util.Message;
@@ -58,7 +57,7 @@ public class MapMapping {
             && mapMapping.valueQualifiedBy().isEmpty()
             && !keyTargetTypeIsDefined
             && !valueTargetTypeIsDefined ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,  method, Message.mapmapping_noelements );
+            messager.printMessage( method, Message.MAPMAPPING_NO_ELEMENTS );
         }
 
 

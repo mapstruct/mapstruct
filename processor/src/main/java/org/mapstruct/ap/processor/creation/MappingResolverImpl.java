@@ -27,7 +27,6 @@ import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.conversion.ConversionProvider;
 import org.mapstruct.ap.conversion.Conversions;
@@ -465,18 +464,16 @@ public class MappingResolverImpl implements MappingResolver {
             if ( candidates.size() > 1 ) {
 
                 if ( mappedElement != null ) {
-                    messager.printMessage( Diagnostic.Kind.ERROR,
-                        mappingMethod.getExecutable(),
-                        Message.general_ambigiousmappingmethod,
+                    messager.printMessage( mappingMethod.getExecutable(),
+                        Message.GENERAL_AMBIGIOUS_MAPPING_METHOD,
                         mappedElement,
                         returnType,
                         Strings.join( candidates, ", " )
                     );
                 }
                 else {
-                    messager.printMessage( Diagnostic.Kind.ERROR,
-                        mappingMethod.getExecutable(),
-                        Message.general_ambigiousfactorymethod,
+                    messager.printMessage( mappingMethod.getExecutable(),
+                        Message.GENERAL_AMBIGIOUSFACTORY_METHOD,
                         returnType,
                         Strings.join( candidates, ", " )
                     );

@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.ExecutableElement;
-import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -115,7 +114,7 @@ public class SourceReference {
                     String sourceParameterName = segments[0];
                     parameter = method.getSourceParameter( sourceParameterName );
                     if ( parameter == null ) {
-                        reportMappingError( Message.propertymapping_invalidparametername, sourceParameterName );
+                        reportMappingError( Message.PROPERTYMAPPING_INVALID_PARAMETER_NAME, sourceParameterName );
                         isValid = false;
                     }
                 }
@@ -155,15 +154,11 @@ public class SourceReference {
             if ( !foundEntryMatch ) {
 
                 if ( parameter != null ) {
-                    reportMappingError( Message.propertymapping_nopropertyinparameter,
-                        parameter.getName(),
-                        Strings.join( Arrays.asList( sourcePropertyNames ), "." )
-                    );
+                    reportMappingError( Message.PROPERTYMAPPING_NO_PROPERTY_IN_PARAMETER, parameter.getName(),
+                                        Strings.join( Arrays.asList( sourcePropertyNames ), "." ) );
                 }
                 else {
-                    reportMappingError( Message.propertymapping_invalidpropertyname,
-                        mapping.getSourceName()
-                    );
+                    reportMappingError( Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName() );
                 }
                 isValid = false;
             }
@@ -193,14 +188,8 @@ public class SourceReference {
         }
 
         private void reportMappingError(Message msg, Object... objects) {
-            messager.printMessage(
-                Diagnostic.Kind.ERROR,
-                method.getExecutable(),
-                mapping.getMirror(),
-                mapping.getSourceAnnotationValue(),
-                msg,
-                objects
-            );
+            messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
+                                   msg, objects );
         }
     }
 

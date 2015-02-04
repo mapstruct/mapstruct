@@ -125,21 +125,20 @@ public class DefaultConversionContextTest {
         private Diagnostic.Kind lastKindPrinted;
 
         @Override
-        public void printMessage( Diagnostic.Kind kind, Message msg, Object... arg) {
-            lastKindPrinted = kind;
+        public void printMessage(Message msg, Object... arg) {
+            lastKindPrinted = msg.getDiagnosticKind();
         }
 
         @Override
-        public void printMessage( Diagnostic.Kind kind, Element e, Message msg, Object... arg) {
+        public void printMessage(Element e, Message msg, Object... arg) {
         }
 
         @Override
-        public void printMessage( Diagnostic.Kind kind, Element e, AnnotationMirror a, Message msg, Object... arg) {
+        public void printMessage(Element e, AnnotationMirror a, Message msg, Object... arg) {
         }
 
         @Override
-        public void printMessage( Diagnostic.Kind kind, Element e, AnnotationMirror a, AnnotationValue v,
-                                 Message msg, Object... arg) {
+        public void printMessage(Element e, AnnotationMirror a, AnnotationValue v, Message msg, Object... arg) {
         }
 
         public Diagnostic.Kind getLastKindPrinted() {

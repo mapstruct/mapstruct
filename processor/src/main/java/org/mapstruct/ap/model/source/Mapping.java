@@ -32,8 +32,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
-import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
@@ -82,11 +80,7 @@ public class Mapping {
                 mappingsOfProperty.add( mapping );
 
                 if ( mappingsOfProperty.size() > 1 && !isEnumType( method.getReturnType() ) ) {
-                    messager.printMessage( Kind.ERROR,
-                        method,
-                        Message.propertymapping_duplicatetargets,
-                        mappingPrism.target()
-                    );
+                    messager.printMessage( method,  Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mappingPrism.target() );
                 }
             }
         }
@@ -98,34 +92,24 @@ public class Mapping {
                                            FormattingMessager messager) {
 
         if ( mappingPrism.target().isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                element,
+            messager.printMessage( element,
                 mappingPrism.mirror,
                 mappingPrism.values.target(),
-                Message.propertymapping_emptytarget
+                Message.PROPERTYMAPPING_EMPTY_TARGET
             );
             return null;
         }
 
         if ( !mappingPrism.source().isEmpty() && !mappingPrism.constant().isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                element,
-                Message.propertymapping_sourceandconstantbothdefined
-            );
+            messager.printMessage( element, Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED );
             return null;
         }
         else if ( !mappingPrism.source().isEmpty() && !mappingPrism.expression().isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                element,
-                Message.propertymapping_sourceandexpressionbothdefined
-            );
+            messager.printMessage( element, Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED );
             return null;
         }
         else if ( !mappingPrism.expression().isEmpty() && !mappingPrism.constant().isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                element,
-                Message.propertymapping_expressionandconstantbothdefined
-            );
+            messager.printMessage( element, Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED );
             return null;
         }
 
@@ -180,12 +164,8 @@ public class Mapping {
         Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( mappingPrism.expression() );
 
         if ( !javaExpressionMatcher.matches() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                element,
-                mappingPrism.mirror,
-                mappingPrism.values.expression(),
-                Message.propertymapping_invalidexpression
-            );
+            messager.printMessage( element, mappingPrism.mirror, mappingPrism.values.expression(),
+                                   Message.PROPERTYMAPPING_INVALID_EXPRESSION );
             return null;
         }
 
@@ -295,11 +275,8 @@ public class Mapping {
         if ( sourceReference != null && sourceReference.getPropertyEntries().isEmpty() ) {
             // parameter mapping only, apparently the @InheritReverseConfiguration is intentional
             // but erroneous. Lets raise an error to warn.
-            messager.printMessage( Diagnostic.Kind.ERROR,
-                method.getExecutable(),
-                Message.propertymapping_reversalproblem,
-                sourceReference.getParameter()
-            );
+            messager.printMessage(  method.getExecutable(), Message.PROPERTYMAPPING_REVERSAL_PROBLEM,
+                                    sourceReference.getParameter() );
             return null;
         }
 

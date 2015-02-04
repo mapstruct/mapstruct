@@ -25,7 +25,6 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.prism.IterableMappingPrism;
 import org.mapstruct.ap.util.Message;
@@ -53,7 +52,7 @@ public class IterableMapping {
         if ( !elementTargetTypeIsDefined
             && iterableMapping.dateFormat().isEmpty()
             && iterableMapping.qualifiedBy().isEmpty() ) {
-            messager.printMessage( Diagnostic.Kind.ERROR, method, Message.iterablemapping_noelements );
+            messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
         }
 
         return new IterableMapping(

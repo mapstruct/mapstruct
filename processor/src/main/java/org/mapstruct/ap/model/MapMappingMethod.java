@@ -21,7 +21,6 @@ package org.mapstruct.ap.model;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.assignment.LocalVarWrapper;
@@ -120,8 +119,7 @@ public class MapMappingMethod extends MappingMethod {
             );
 
             if ( keyAssignment == null ) {
-                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR,  method.getExecutable(),
-                                                Message.mapmapping_key_mappingnotfound );
+                ctx.getMessager().printMessage( method.getExecutable(), Message.MAPMAPPING_KEY_MAPPING_NOT_FOUND );
             }
 
             // find mapping method or conversion for value
@@ -141,8 +139,7 @@ public class MapMappingMethod extends MappingMethod {
             );
 
             if ( valueAssignment == null ) {
-                ctx.getMessager().printMessage( Diagnostic.Kind.ERROR, method.getExecutable(),
-                                                Message.mapmapping_value_mappingnotfound );
+                ctx.getMessager().printMessage( method.getExecutable(), Message.MAPMAPPING_VALUE_MAPPING_NOT_FOUND );
             }
 
             // mapNullToDefault
