@@ -22,6 +22,12 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 
+/**
+ * Prints out diagnostics raised by the annotation processor. Messages are Java format strings taking the given
+ * arguments for interpolation.
+ *
+ * @author Sjaak Derksen
+ */
 public interface FormattingMessager {
 
     /**

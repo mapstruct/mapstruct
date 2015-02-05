@@ -473,7 +473,7 @@ public class MappingResolverImpl implements MappingResolver {
                 }
                 else {
                     messager.printMessage( mappingMethod.getExecutable(),
-                        Message.GENERAL_AMBIGIOUSFACTORY_METHOD,
+                        Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
                         returnType,
                         Strings.join( candidates, ", " )
                     );
