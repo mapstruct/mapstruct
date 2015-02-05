@@ -165,12 +165,24 @@ public class BuiltInTest {
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp().toString() ).isEqualTo( "1999-07-05T00:00:00.000+02:00" );
 
-        source.setProp( createLocaleDate( "31-08-1982 10:20:56" ) );
-
+        // direct,via lexical representation
+        source.setProp( "2000-03-04T23:00:00+03:00" );
         target = StringToXmlGregCalMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp().toString() ).isEqualTo( "1982-08-31T10:20:00.000+02:00" );
+        assertThat( target.getProp().toString() ).isEqualTo( "2000-03-04T23:00:00+03:00" );
+
+        // empty string
+        source.setProp( " " );
+        target = StringToXmlGregCalMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNull();
+
+        // null string
+        source.setProp( null );
+        target = StringToXmlGregCalMapper.INSTANCE.map( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getProp() ).isNull();
 
     }
 
