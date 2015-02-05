@@ -114,6 +114,7 @@ public class BuiltInTest {
     }
 
     @Test
+    @IssueKey( "141" )
     @WithClasses({ JaxbElementListProperty.class, StringListProperty.class, JaxbListMapper.class })
     public void shouldApplyBuiltInOnJAXBElementList() throws ParseException, DatatypeConfigurationException {
 
