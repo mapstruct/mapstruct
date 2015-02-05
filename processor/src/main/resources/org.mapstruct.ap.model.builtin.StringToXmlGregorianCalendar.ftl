@@ -24,10 +24,15 @@ private XMLGregorianCalendar ${name}( String date, String dateFormat ) {
     }
 
     try {
-        DateFormat df = dateFormat != null ? new SimpleDateFormat( dateFormat ) : SimpleDateFormat.getInstance();
-        GregorianCalendar c = new GregorianCalendar();
-        c.setTime( df.parse( date ) );
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar( c );
+        if ( dateFormat != null ) {
+            DateFormat df = new SimpleDateFormat( dateFormat );
+            GregorianCalendar c = new GregorianCalendar();
+            c.setTime( df.parse( date ) );
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar( c );
+        }
+        else {
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar( date );
+        }
     }
     catch ( DatatypeConfigurationException ex ) {
         throw new RuntimeException( ex );
