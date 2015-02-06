@@ -37,7 +37,6 @@ public class BuiltInMappingMethods {
     public BuiltInMappingMethods(TypeFactory typeFactory) {
         builtInMethods = Collections.newArrayList(
             new JaxbElemToValue( typeFactory ),
-            new ListOfJaxbElemToListOfValue( typeFactory ),
             new DateToXmlGregorianCalendar( typeFactory ),
             new XmlGregorianCalendarToDate( typeFactory ),
             new StringToXmlGregorianCalendar( typeFactory ),
