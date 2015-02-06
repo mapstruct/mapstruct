@@ -70,7 +70,7 @@ public enum Message {
     GENERAL_AMBIGIOUS_MAPPING_METHOD( "Ambiguous mapping methods found for mapping %s to %s: %s." ),
     GENERAL_AMBIGIOUS_FACTORY_METHOD( "Ambiguous mapping methods found for factorizing %s: %s." ),
     GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK( "No dateFormat check is supported for types %s, %s" ),
-    GENERAL_VALID_DATE( "Given date format \"%s\" is valid." ),
+    GENERAL_VALID_DATE( "Given date format \"%s\" is valid.", Diagnostic.Kind.NOTE ),
     GENERAL_INVALID_DATE( "Given date format \"%s\" is invalid. Message: \"%s\"." ),
 
     RETRIEVAL_NO_INPUT_ARGS( "Can't generate mapping method with no input arguments." ),
