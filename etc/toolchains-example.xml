@@ -33,4 +33,15 @@
             <jdkHome>C:\Program Files\Java\jdk1.8.0_11</jdkHome>
         </configuration>
     </toolchain>
+    <toolchain>
+        <type>jdk</type>
+        <provides>
+            <version>1.9.0</version>
+            <vendor>oracle</vendor>
+            <id>jdk1.9</id>
+        </provides>
+        <configuration>
+            <jdkHome>C:\Program Files\Java\jdk1.9.0</jdkHome>
+        </configuration>
+    </toolchain>
 </toolchains>
