@@ -65,6 +65,11 @@ public @interface ProcessorSuite {
         ORACLE_JAVA_8( null, "javac", "1.8" ),
 
         /**
+         * Use an Oracle JDK 1.9 (or 1.9.x) via toolchain support to perform the processing
+         */
+        ORACLE_JAVA_9( "oracle-[1.9,1.10)", "javac", "1.9" ),
+
+        /**
          * Use the eclipse compiler with 1.7 source/target level from tycho-compiler-jdt to perform the build and
          * processing
          */
@@ -77,12 +82,6 @@ public @interface ProcessorSuite {
         ECLIPSE_JDT_JAVA_8( null, "jdt", "1.8" ),
 
         /**
-         * Use the maven-processor-plugin with 1.7 source/target level with the same JDK that runs the mvn build to
-         * perform the processing
-         */
-        PROCESSOR_PLUGIN_JAVA_7( null, null, "1.7" ),
-
-        /**
          * Use the maven-processor-plugin with 1.8 source/target level with the same JDK that runs the mvn build to
          * perform the processing
          */
@@ -91,8 +90,8 @@ public @interface ProcessorSuite {
         /**
          * Use all available processing variants
          */
-        ALL( ORACLE_JAVA_6, ORACLE_JAVA_7, ORACLE_JAVA_8, ECLIPSE_JDT_JAVA_7, ECLIPSE_JDT_JAVA_8,
-            PROCESSOR_PLUGIN_JAVA_7, PROCESSOR_PLUGIN_JAVA_8 ),
+        ALL( ORACLE_JAVA_6, ORACLE_JAVA_7, ORACLE_JAVA_8, ORACLE_JAVA_9, ECLIPSE_JDT_JAVA_7, ECLIPSE_JDT_JAVA_8,
+            PROCESSOR_PLUGIN_JAVA_8 ),
 
         /**
          * Use all JDK8 compatible processing variants

@@ -57,6 +57,8 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
      */
     public static final String SYS_PROP_DEBUG = "processorIntegrationTest.debug";
 
+    public static final String SYS_PROP_CAN_USE_JDK_9 = "processorIntegrationTest.canUseJdk9";
+
     public static final class ProcessorTestCase {
         private final String baseDir;
         private final ProcessorType processor;
@@ -65,12 +67,15 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
         public ProcessorTestCase(String baseDir, ProcessorType processor) {
             this.baseDir = baseDir;
             this.processor = processor;
-            this.ignored = !TOOLCHAINS_ENABLED && processor.getToolchain() != null;
+            this.ignored =
+                ( !TOOLCHAINS_ENABLED && processor.getToolchain() != null )
+                    || ( processor == ProcessorType.ORACLE_JAVA_9 && !CAN_USE_JDK_9 );
         }
     }
 
     private static final File SPECIFIED_TOOLCHAINS_FILE = getSpecifiedToolchainsFile();
     private static final boolean TOOLCHAINS_ENABLED = toolchainsFileExists();
+    private static final boolean CAN_USE_JDK_9 = canUseJdk9();
 
     private final List<ProcessorTestCase> methods;
 
@@ -184,7 +189,8 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
 
             verifier.addCliOption( "-Dcompiler-source-target-version=" + child.processor.getSourceTargetVersion() );
 
-            if ( "1.8".equals( child.processor.getSourceTargetVersion() ) ) {
+            if ( "1.8".equals( child.processor.getSourceTargetVersion() )
+                || "1.9".equals( child.processor.getSourceTargetVersion() ) ) {
                 verifier.addCliOption( "-Dmapstruct-artifact-id=mapstruct-jdk8" );
             }
             else {
@@ -273,6 +279,10 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
         }
 
         return null;
+    }
+
+    private static boolean canUseJdk9() {
+        return Boolean.parseBoolean( System.getProperty( SYS_PROP_CAN_USE_JDK_9, "true" ) );
     }
 
     private static boolean toolchainsFileExists() {
