@@ -22,5 +22,6 @@
                targetBeanName=ext.targetBeanName
                raw=ext.raw
                existingInstanceMapping=ext.existingInstanceMapping
-               targetAccessorName=targetAccessorName
+               targetReadAccessorName=targetReadAccessorName
+               targetWriteAccessorName=targetWriteAccessorName
                targetType=targetType/>

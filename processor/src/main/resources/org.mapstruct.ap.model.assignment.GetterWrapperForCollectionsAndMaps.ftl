@@ -18,9 +18,9 @@
      limitations under the License.
 
 -->
-if ( ${ext.targetBeanName}.${ext.targetAccessorName}() != null ) {
+if ( ${ext.targetBeanName}.${ext.targetWriteAccessorName}() != null ) {
     <#if ext.existingInstanceMapping>
-        ${ext.targetBeanName}.${ext.targetAccessorName}().clear();
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}().clear();
     </#if>
     <#if (exceptionTypes?size == 0) >
         <@_assignmentLine/>
@@ -38,7 +38,7 @@ if ( ${ext.targetBeanName}.${ext.targetAccessorName}() != null ) {
 <#macro _assignmentLine>
      <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
     if ( ${localVarName} != null ) {
-        ${ext.targetBeanName}.${ext.targetAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
     }
 </#macro>
 <#macro _assignment>

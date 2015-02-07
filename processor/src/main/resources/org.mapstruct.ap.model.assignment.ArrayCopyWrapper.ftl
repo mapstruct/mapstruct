@@ -20,11 +20,11 @@
 -->
 <#if (exceptionTypes?size == 0) >
     <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
-    ${ext.targetBeanName}.${ext.targetAccessorName}( Arrays.copyOf( ${localVarName}, ${localVarName}.length ) );
+    ${ext.targetBeanName}.${ext.targetWriteAccessorName}( Arrays.copyOf( ${localVarName}, ${localVarName}.length ) );
 <#else>
     try {
         <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
-        ${ext.targetBeanName}.${ext.targetAccessorName}( Arrays.copyOf( ${localVarName}, ${localVarName}.length ) );
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( Arrays.copyOf( ${localVarName}, ${localVarName}.length ) );
     }
     <#list exceptionTypes as exceptionType>
     catch ( <@includeModel object=exceptionType/> e ) {
@@ -33,5 +33,11 @@
     </#list>
 </#if>
 <#macro _assignment>
-    <@includeModel object=assignment raw=ext.raw targetType=ext.targetType/>
+    <@includeModel object=assignment
+               targetBeanName=ext.targetBeanName
+               raw=ext.raw
+               existingInstanceMapping=ext.existingInstanceMapping
+               targetReadAccessorName=ext.targetReadAccessorName
+               targetWriteAccessorName=ext.targetWriteAccessorName
+               targetType=ext.targetType/>
 </#macro>

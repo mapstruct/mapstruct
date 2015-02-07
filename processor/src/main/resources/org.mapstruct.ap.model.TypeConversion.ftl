@@ -18,4 +18,15 @@
      limitations under the License.
 
 -->
-${openExpression}<@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>${closeExpression}
+<@compress single_line=true>
+${openExpression}<@_assignment/>${closeExpression}
+<#macro _assignment>
+    <@includeModel object=assignment
+               targetBeanName=ext.targetBeanName
+               raw=ext.raw
+               existingInstanceMapping=ext.existingInstanceMapping
+               targetReadAccessorName=ext.targetReadAccessorName
+               targetWriteAccessorName=ext.targetWriteAccessorName
+               targetType=ext.targetType/>
+</#macro>
+</@compress>

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,8 +82,9 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private final List<String> enumConstants;
 
+    private Map<String, ExecutableElement> getters = null;
+
     private List<ExecutableElement> allExecutables = null;
-    private List<ExecutableElement> getters = null;
     private List<ExecutableElement> setters = null;
     private List<ExecutableElement> adders = null;
     private List<ExecutableElement> alternativeTargetAccessors = null;
@@ -312,32 +314,38 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * getGetters
+     * getPropertyReadAccessors
      *
-     * @return an unmodifiable list of all getters (including 'is' for booleans).
+     * @return an unmodifiable map of all read accessors (including 'is' for booleans), indexed by property name
      */
-    public List<ExecutableElement> getGetters() {
+    public Map<String, ExecutableElement> getPropertyReadAccessors() {
         if ( getters == null ) {
-            getters = Collections.unmodifiableList( Filters.getterMethodsIn( getAllExecutables() ) );
+            List<ExecutableElement> getterList = Filters.getterMethodsIn( getAllExecutables() );
+            Map<String, ExecutableElement> modifiableGetters = new LinkedHashMap<String, ExecutableElement>();
+            for (ExecutableElement getter : getterList) {
+                modifiableGetters.put( Executables.getPropertyName( getter ), getter );
+            }
+            getters = Collections.unmodifiableMap( modifiableGetters );
         }
         return getters;
     }
 
     /**
-     * getTargetAccessors returns a list of the target accessors according to the CollectionMappingStrategy. These
-     * accessors include:
+     * getPropertyWriteAccessors returns a map of the write accessors according to the CollectionMappingStrategy.
+     *
+     * These accessors include:
      * <p>
      * <ul>
      *  <li>setters, the obvious candidate :-), {@link #getSetters() }</li>
      *  <li>getters, for collections that do not have a setter, e.g. for JAXB generated collection attributes
-     * {@link #getGetters() }</li>
+     * {@link #getPropertyReadAccessors() }</li>
      *  <li>adders, typically for from table generated entities, {@link #getAdders() }</li>
      * </ul>
      * </p>
      * @param cmStrategy
-     * @return an unmodifiable list of all getters (including 'is' for booleans).
+     * @return an unmodifiable map of all write accessors indexed by property name
      */
-    public Map<String, ExecutableElement> getTargetAccessors( CollectionMappingStrategyPrism cmStrategy ) {
+    public Map<String, ExecutableElement> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
 
         // collect all candidate target accessors
         List<ExecutableElement> candidates = new ArrayList<ExecutableElement>();
@@ -482,11 +490,12 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable list of alternative target accessors.
      */
     private List<ExecutableElement> getAlternativeTargetAccessors() {
+
         if ( alternativeTargetAccessors == null ) {
 
             List<ExecutableElement> result = new ArrayList<ExecutableElement>();
             List<ExecutableElement> setterMethods = getSetters();
-            List<ExecutableElement> getterMethods = getGetters();
+            List<ExecutableElement> getterMethods = new ArrayList( getPropertyReadAccessors().values() );
 
             // there could be a getter method for a list/map that is not present as setter.
             // a getter could substitute the setter in that case and act as setter.

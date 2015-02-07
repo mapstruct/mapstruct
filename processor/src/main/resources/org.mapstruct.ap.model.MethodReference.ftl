@@ -26,12 +26,23 @@
             <#if param.targetType>
                 <#-- a class is passed on for casting, see @TargetType -->
                 <@includeModel object=ext.targetType raw=true/>.class
+            <#elseif param.mappingTarget>
+                 ${ext.targetBeanName}.${ext.targetReadAccessorName}()
             <#else>
-                <@includeModel object=assignment targetType=singleSourceParameterType raw=ext.raw/>
+                <@_assignment/>
             </#if>
             <#if param_has_next>, </#if>
         </#list>
         <#-- context parameter, e.g. for builtin methods concerning date conversion -->
         <#if contextParam??>, ${contextParam}</#if>
+    </#macro>
+    <#macro _assignment>
+        <@includeModel object=assignment
+               targetBeanName=ext.targetBeanName
+               raw=ext.raw
+               existingInstanceMapping=ext.existingInstanceMapping
+               targetReadAccessorName=ext.targetReadAccessorName
+               targetWriteAccessorName=ext.targetWriteAccessorName
+               targetType=singleSourceParameterType/>
     </#macro>
 </@compress>

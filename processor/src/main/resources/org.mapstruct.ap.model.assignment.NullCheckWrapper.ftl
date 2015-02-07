@@ -23,6 +23,7 @@ if ( ${sourceReference} != null ) {
                 targetBeanName=ext.targetBeanName
                 raw=ext.raw
                 existingInstanceMapping=ext.existingInstanceMapping
-                targetAccessorName=ext.targetAccessorName
+                targetReadAccessorName=ext.targetReadAccessorName
+                targetWriteAccessorName=ext.targetWriteAccessorName
                 targetType=ext.targetType/>
 }

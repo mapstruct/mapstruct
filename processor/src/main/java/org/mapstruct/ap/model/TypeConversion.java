@@ -92,13 +92,13 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
-    public AssignmentType getType() {
+    public Assignment.AssignmentType getType() {
 
         switch ( assignment.getType() ) {
             case DIRECT:
-                return AssignmentType.TYPE_CONVERTED;
+                return Assignment.AssignmentType.TYPE_CONVERTED;
             case MAPPED:
-                return AssignmentType.MAPPED_TYPE_CONVERTED;
+                return Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
             default:
                 return null;
         }

@@ -21,13 +21,13 @@ package org.mapstruct.ap.model.source;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
-import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
@@ -173,11 +173,11 @@ public class SourceReference {
             Type newType = type;
             for ( String entryName : entryNames ) {
                 boolean matchFound = false;
-                List<ExecutableElement> getters = newType.getGetters();
-                for ( ExecutableElement getter : getters ) {
-                    if ( Executables.getPropertyName( getter ).equals( entryName ) ) {
-                        newType = typeFactory.getType( getter.getReturnType() );
-                        sourceEntries.add( new PropertyEntry( entryName, getter, newType ) );
+                Map<String, ExecutableElement> sourceReadAccessors = newType.getPropertyReadAccessors();
+                for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
+                    if ( getter.getKey().equals( entryName ) ) {
+                        newType = typeFactory.getType( getter.getValue().getReturnType() );
+                        sourceEntries.add( new PropertyEntry( entryName, getter.getValue(), newType ) );
                         matchFound = true;
                         break;
                     }

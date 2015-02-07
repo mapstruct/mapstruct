@@ -19,11 +19,11 @@
 
 -->
 <#if (exceptionTypes?size == 0) >
-    <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/></#if> ${ext.targetAccessorName} = <@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>;
+    <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/></#if> ${ext.targetWriteAccessorName} = <@_assignment/>;
 <#else>
-    <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/> ${ext.targetAccessorName};</#if>
+    <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/> ${ext.targetWriteAccessorName};</#if>
     try {
-        ${ext.targetAccessorName} = <@includeModel object=assignment targetType=ext.targetType raw=ext.raw/>;
+        ${ext.targetWriteAccessorName} = <@_assignment/>;
     }
     <#list exceptionTypes as exceptionType>
     catch ( <@includeModel object=exceptionType/> e ) {
@@ -31,3 +31,12 @@
     }
     </#list>
 </#if>
+<#macro _assignment>
+    <@includeModel object=assignment
+               targetBeanName=ext.targetBeanName
+               raw=ext.raw
+               existingInstanceMapping=ext.existingInstanceMapping
+               targetReadAccessorName=ext.targetReadAccessorName
+               targetWriteAccessorName=ext.targetWriteAccessorName
+               targetType=ext.targetType/>
+</#macro>

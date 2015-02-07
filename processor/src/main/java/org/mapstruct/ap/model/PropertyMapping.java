@@ -61,7 +61,8 @@ public class PropertyMapping extends ModelElement {
 
     private final String name;
     private final String sourceBeanName;
-    private final String targetAccessorName;
+    private final String targetWriteAccessorName;
+    private final String targetReadAccessorName;
     private final Type targetType;
     private final Assignment assignment;
     private final List<String> dependsOn;
@@ -71,7 +72,8 @@ public class PropertyMapping extends ModelElement {
         // initial properties
         private MappingBuilderContext ctx;
         private SourceMethod method;
-        private ExecutableElement targetAccessor;
+        private ExecutableElement targetWriteAccessor;
+        private ExecutableElement targetReadAccessor;
         private String targetPropertyName;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
@@ -90,8 +92,13 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public PropertyMappingBuilder targetAccessor(ExecutableElement targetAccessor) {
-            this.targetAccessor = targetAccessor;
+        public PropertyMappingBuilder targetReadAccessor(ExecutableElement targetReadAccessor) {
+            this.targetReadAccessor = targetReadAccessor;
+            return this;
+        }
+
+        public PropertyMappingBuilder targetWriteAccessor(ExecutableElement targetWriteAccessor) {
+            this.targetWriteAccessor = targetWriteAccessor;
             return this;
         }
 
@@ -130,8 +137,7 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        private enum TargetAccessorType {
-
+        private enum TargetWriteAccessorType {
             GETTER,
             SETTER,
             ADDER
@@ -140,18 +146,18 @@ public class PropertyMapping extends ModelElement {
         public PropertyMapping build() {
 
             // handle target
-            TargetAccessorType targetAccessorType = getTargetAcccessorType();
+            TargetWriteAccessorType targetAccessorType = getTargetAcccessorType();
             Type targetType = getTargetType( targetAccessorType );
 
             // handle source
             String sourceElement = getSourceElement();
             Type sourceType = getSourceType();
             String sourceRefStr;
-            if ( targetAccessorType == TargetAccessorType.ADDER && sourceType.isCollectionType() ) {
+            if ( targetAccessorType == TargetWriteAccessorType.ADDER && sourceType.isCollectionType() ) {
                 // handle adder, if source is collection then use iterator element type as source type.
                 // sourceRef becomes a local variable in the itereation.
                 sourceType = sourceType.getTypeParameters().get( 0 );
-                sourceRefStr = Executables.getElementNameForAdder( targetAccessor );
+                sourceRefStr = Executables.getElementNameForAdder( targetWriteAccessor );
             }
             else {
                 sourceRefStr = getSourceRef();
@@ -208,19 +214,21 @@ public class PropertyMapping extends ModelElement {
             return new PropertyMapping(
                 targetPropertyName,
                 sourceReference.getParameter().getName(),
-                targetAccessor.getSimpleName().toString(),
+                targetWriteAccessor.getSimpleName().toString(),
+                targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
                 assignment,
                 dependsOn
             );
         }
 
-        private Assignment assignObject(Type sourceType, Type targetType, TargetAccessorType targetAccessorType,
+        private Assignment assignObject(Type sourceType, Type targetType, TargetWriteAccessorType targetAccessorType,
                                         Assignment rhs) {
 
             Assignment result = rhs;
 
-            if ( targetAccessorType == TargetAccessorType.SETTER ) {
+            if ( targetAccessorType == TargetWriteAccessorType.SETTER ) {
+
                 result = new SetterWrapper( result, method.getThrownTypes() );
                 if ( !sourceType.isPrimitive()
                     && !sourceReference.getPropertyEntries().isEmpty() /* parameter null taken care of by beanmapper */
@@ -252,12 +260,14 @@ public class PropertyMapping extends ModelElement {
 
         }
 
-        private Assignment assignCollection(Type targetType, TargetAccessorType targetAccessorType, Assignment rhs) {
+        private Assignment assignCollection(Type targetType,
+                                            TargetWriteAccessorType targetAccessorType,
+                                            Assignment rhs) {
 
             Assignment result = rhs;
 
             // wrap the setter in the collection / map initializers
-            if ( targetAccessorType == TargetAccessorType.SETTER ) {
+            if ( targetAccessorType == TargetWriteAccessorType.SETTER ) {
 
                 // wrap the assignment in a new Map or Collection implementation if this is not done in a
                 // mapping method. Note, typeconversons do not apply to collections or maps
@@ -273,7 +283,7 @@ public class PropertyMapping extends ModelElement {
                 // target accessor is setter, so wrap the setter in setter map/ collection handling
                 result = new SetterWrapperForCollectionsAndMaps(
                     result,
-                    targetAccessor.getSimpleName().toString(),
+                    targetWriteAccessor.getSimpleName().toString(),
                     newCollectionOrMap
                 );
             }
@@ -379,26 +389,26 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private TargetAccessorType getTargetAcccessorType() {
-            if ( Executables.isSetterMethod( targetAccessor ) ) {
-                return TargetAccessorType.SETTER;
+        private TargetWriteAccessorType getTargetAcccessorType() {
+            if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
+                return TargetWriteAccessorType.SETTER;
             }
-            else if ( Executables.isAdderMethod( targetAccessor ) ) {
-                return TargetAccessorType.ADDER;
+            else if ( Executables.isAdderMethod( targetWriteAccessor ) ) {
+                return TargetWriteAccessorType.ADDER;
             }
             else {
-                return TargetAccessorType.GETTER;
+                return TargetWriteAccessorType.GETTER;
             }
         }
 
-        private Type getTargetType(TargetAccessorType targetAccessorType) {
+        private Type getTargetType(TargetWriteAccessorType targetAccessorType) {
             switch ( targetAccessorType ) {
                 case ADDER:
                 case SETTER:
-                    return ctx.getTypeFactory().getSingleParameter( targetAccessor ).getType();
+                    return ctx.getTypeFactory().getSingleParameter( targetWriteAccessor ).getType();
                 case GETTER:
                 default:
-                    return ctx.getTypeFactory().getReturnType( targetAccessor );
+                    return ctx.getTypeFactory().getReturnType( targetWriteAccessor );
             }
         }
 
@@ -477,8 +487,9 @@ public class PropertyMapping extends ModelElement {
         private MappingBuilderContext ctx;
         private SourceMethod method;
         private String constantExpression;
-        private ExecutableElement targetAccessor;
         private String targetPropertyName;
+        private ExecutableElement targetWriteAccessor;
+        private ExecutableElement targetReadAccessor;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
@@ -500,8 +511,13 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public ConstantMappingBuilder targetAccessor(ExecutableElement targetAccessor) {
-            this.targetAccessor = targetAccessor;
+        public ConstantMappingBuilder targetWriteAccessor(ExecutableElement targetAccessor) {
+            this.targetWriteAccessor = targetAccessor;
+            return this;
+        }
+
+        public ConstantMappingBuilder targetReadAccessor(ExecutableElement targetReadAccessor) {
+            this.targetReadAccessor = targetReadAccessor;
             return this;
         }
 
@@ -543,11 +559,11 @@ public class PropertyMapping extends ModelElement {
 
             // target
             Type targetType;
-            if ( Executables.isSetterMethod( targetAccessor ) ) {
-                targetType = ctx.getTypeFactory().getSingleParameter( targetAccessor ).getType();
+            if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
+                targetType = ctx.getTypeFactory().getSingleParameter( targetWriteAccessor ).getType();
             }
             else {
-                targetType = ctx.getTypeFactory().getReturnType( targetAccessor );
+                targetType = ctx.getTypeFactory().getReturnType( targetWriteAccessor );
             }
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
@@ -564,7 +580,7 @@ public class PropertyMapping extends ModelElement {
 
             if ( assignment != null ) {
 
-                if ( Executables.isSetterMethod( targetAccessor ) ) {
+                if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
                     // target accessor is setter, so decorate assignment as setter
                     assignment = new SetterWrapper( assignment, method.getThrownTypes() );
                 }
@@ -591,7 +607,8 @@ public class PropertyMapping extends ModelElement {
 
             return new PropertyMapping(
                 targetPropertyName,
-                targetAccessor.getSimpleName().toString(),
+                targetWriteAccessor.getSimpleName().toString(),
+                targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
                 assignment,
                 dependsOn
@@ -604,10 +621,11 @@ public class PropertyMapping extends ModelElement {
         private MappingBuilderContext ctx;
         private SourceMethod method;
         private String javaExpression;
-        private ExecutableElement targetAccessor;
         private Collection<String> existingVariableNames;
         private String targetPropertyName;
         private List<String> dependsOn;
+        private ExecutableElement targetWriteAccessor;
+        private ExecutableElement targetReadAccessor;
 
         public JavaExpressionMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -624,8 +642,13 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public JavaExpressionMappingBuilder targetAccessor(ExecutableElement targetAccessor) {
-            this.targetAccessor = targetAccessor;
+        public JavaExpressionMappingBuilder targetWriteAccessor(ExecutableElement targetWriteAccessor) {
+            this.targetWriteAccessor = targetWriteAccessor;
+            return this;
+        }
+
+        public JavaExpressionMappingBuilder targetReadAccessor(ExecutableElement targetReadAccessor) {
+            this.targetReadAccessor = targetReadAccessor;
             return this;
         }
 
@@ -649,13 +672,13 @@ public class PropertyMapping extends ModelElement {
             Assignment assignment = AssignmentFactory.createDirect( javaExpression );
 
             Type targetType;
-            if ( Executables.isSetterMethod( targetAccessor ) ) {
+            if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
                 // setter, so wrap in setter
                 assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-                targetType = ctx.getTypeFactory().getSingleParameter( targetAccessor ).getType();
+                targetType = ctx.getTypeFactory().getSingleParameter( targetWriteAccessor ).getType();
             }
             else {
-                targetType = ctx.getTypeFactory().getReturnType( targetAccessor );
+                targetType = ctx.getTypeFactory().getReturnType( targetWriteAccessor );
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
                 assignment = new GetterWrapperForCollectionsAndMaps(
                     assignment,
@@ -667,7 +690,8 @@ public class PropertyMapping extends ModelElement {
 
             return new PropertyMapping(
                 targetPropertyName,
-                targetAccessor.getSimpleName().toString(),
+                targetWriteAccessor.getSimpleName().toString(),
+                targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
                 assignment,
                 dependsOn
@@ -677,16 +701,18 @@ public class PropertyMapping extends ModelElement {
     }
 
     // Constructor for creating mappings of constant expressions.
-    private PropertyMapping(String name, String targetAccessorName, Type targetType, Assignment propertyAssignment,
-                            List<String> dependsOn) {
-        this( name, null, targetAccessorName, targetType, propertyAssignment, dependsOn );
+    private PropertyMapping(String name, String targetWriteAccessorName, String targetReadAccessorName, Type targetType,
+                            Assignment propertyAssignment, List<String> dependsOn) {
+        this( name, null, targetWriteAccessorName, targetReadAccessorName, targetType, propertyAssignment, dependsOn );
     }
 
-    private PropertyMapping(String name, String sourceBeanName, String targetAccessorName, Type targetType,
-                            Assignment assignment, List<String> dependsOn) {
+    private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
+                            String targetReadAccessorName, Type targetType, Assignment assignment,
+                            List<String> dependsOn) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
-        this.targetAccessorName = targetAccessorName;
+        this.targetWriteAccessorName = targetWriteAccessorName;
+        this.targetReadAccessorName = targetReadAccessorName;
         this.targetType = targetType;
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
@@ -703,8 +729,12 @@ public class PropertyMapping extends ModelElement {
         return sourceBeanName;
     }
 
-    public String getTargetAccessorName() {
-        return targetAccessorName;
+    public String getTargetWriteAccessorName() {
+        return targetWriteAccessorName;
+    }
+
+    public String getTargetReadAccessorName() {
+        return targetReadAccessorName;
     }
 
     public Type getTargetType() {
@@ -728,6 +758,8 @@ public class PropertyMapping extends ModelElement {
     public String toString() {
         return "PropertyMapping {"
             + "\n    name='" + name + "\',"
+            + "\n    targetWriteAccessorName='" + targetWriteAccessorName + "\',"
+            + "\n    targetReadAccessorName='" + targetReadAccessorName + "\',"
             + "\n    targetType=" + targetType + ","
             + "\n    propertyAssignment=" + assignment + ","
             + "\n    dependsOn=" + dependsOn

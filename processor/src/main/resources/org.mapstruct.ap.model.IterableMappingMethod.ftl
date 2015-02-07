@@ -57,7 +57,7 @@
                 break;
             }
             </#if>
-            <@includeModel object=elementAssignment targetAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
+            <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
             ${index1Name}++;
         }
     <#else>
@@ -69,7 +69,7 @@
         </#if>
 
         for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {
-            <@includeModel object=elementAssignment targetBeanName=resultName targetAccessorName="add" targetType=resultElementType/>
+            <@includeModel object=elementAssignment targetBeanName=resultName targetWriteAccessorName="add" targetType=resultElementType/>
         }
     </#if>
 

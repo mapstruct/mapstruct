@@ -90,7 +90,7 @@ public class BeanMappingMethod extends MappingMethod {
         public Builder souceMethod(SourceMethod sourceMethod) {
             this.method = sourceMethod;
             CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
-            Map<String, ExecutableElement> accessors = method.getResultType().getTargetAccessors( cms );
+            Map<String, ExecutableElement> accessors = method.getResultType().getPropertyWriteAccessors( cms );
             this.targetProperties = accessors.keySet();
             this.unprocessedTargetProperties = new HashMap<String, ExecutableElement>( accessors );
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
@@ -237,8 +237,8 @@ public class BeanMappingMethod extends MappingMethod {
                     PropertyMapping propertyMapping = null;
 
                     // fetch the target property
-                    ExecutableElement targetProperty = unprocessedTargetProperties.get( mapping.getTargetName() );
-                    if ( targetProperty == null ) {
+                    ExecutableElement targetWriteAccessor = unprocessedTargetProperties.get( mapping.getTargetName() );
+                    if ( targetWriteAccessor == null ) {
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
                             mapping.getMirror(),
@@ -277,14 +277,15 @@ public class BeanMappingMethod extends MappingMethod {
                         SourceReference sourceRef = mapping.getSourceReference();
                         if ( sourceRef.isValid() ) {
 
-                            if ( targetProperty != null ) {
+                            if ( targetWriteAccessor != null ) {
 
                                 // targetProperty == null can occur: we arrived here because we want as many errors
                                 // as possible before we stop analysing
                                 propertyMapping = new PropertyMappingBuilder()
                                     .mappingContext( ctx )
                                     .souceMethod( method )
-                                    .targetAccessor( targetProperty )
+                                    .targetWriteAccessor( targetWriteAccessor )
+                                    .targetReadAccessor( getTargetPropertyReadAccessor( mapping.getTargetName() ) )
                                     .targetPropertyName( mapping.getTargetName() )
                                     .sourceReference( sourceRef )
                                     .qualifiers( mapping.getQualifiers() )
@@ -303,13 +304,14 @@ public class BeanMappingMethod extends MappingMethod {
                     }
 
                     // its a constant
-                    else if ( mapping.getConstant() != null && targetProperty != null ) {
+                    else if ( mapping.getConstant() != null && targetWriteAccessor != null ) {
 
                         propertyMapping = new ConstantMappingBuilder()
                             .mappingContext( ctx )
                             .sourceMethod( method )
                             .constantExpression( "\"" + mapping.getConstant() + "\"" )
-                            .targetAccessor( targetProperty )
+                            .targetWriteAccessor( targetWriteAccessor )
+                            .targetReadAccessor( getTargetPropertyReadAccessor( mapping.getTargetName() ) )
                             .targetPropertyName( mapping.getTargetName() )
                             .dateFormat( mapping.getDateFormat() )
                             .qualifiers( mapping.getQualifiers() )
@@ -321,14 +323,15 @@ public class BeanMappingMethod extends MappingMethod {
                     }
 
                     // its an expression
-                    else if ( mapping.getJavaExpression() != null && targetProperty != null ) {
+                    else if ( mapping.getJavaExpression() != null && targetWriteAccessor != null ) {
 
                         propertyMapping = new JavaExpressionMappingBuilder()
                             .mappingContext( ctx )
                             .souceMethod( method )
                             .javaExpression( mapping.getJavaExpression() )
-                            .targetAccessor( targetProperty )
                             .existingVariableNames( existingVariableNames )
+                            .targetWriteAccessor( targetWriteAccessor )
+                            .targetReadAccessor( targetWriteAccessor )
                             .targetPropertyName( mapping.getTargetName() )
                             .dependsOn( mapping.getDependsOn() )
                             .build();
@@ -378,11 +381,13 @@ public class BeanMappingMethod extends MappingMethod {
                             continue;
                         }
 
-                        for ( ExecutableElement sourceAccessor : sourceParameter.getType().getGetters() ) {
-                            String sourcePropertyName = Executables.getPropertyName( sourceAccessor );
+                        Collection<ExecutableElement> sourceReadAccessors =
+                            sourceParameter.getType().getPropertyReadAccessors().values();
+                        for ( ExecutableElement sourceReadAccessor : sourceReadAccessors ) {
+                            String sourcePropertyName = Executables.getPropertyName( sourceReadAccessor );
 
                             if ( sourcePropertyName.equals( targetProperty.getKey() ) ) {
-                                candidates.add( sourceAccessor );
+                                candidates.add( sourceReadAccessor );
                             }
                         }
 
@@ -401,7 +406,8 @@ public class BeanMappingMethod extends MappingMethod {
                             newPropertyMapping = new PropertyMappingBuilder()
                                 .mappingContext( ctx )
                                 .souceMethod( method )
-                                .targetAccessor( targetProperty.getValue() )
+                                .targetWriteAccessor( targetProperty.getValue() )
+                                .targetReadAccessor( getTargetPropertyReadAccessor( targetProperty.getKey() ) )
                                 .targetPropertyName( targetProperty.getKey() )
                                 .sourceReference( sourceRef )
                                 .qualifiers( mapping != null ? mapping.getQualifiers() : null )
@@ -464,7 +470,8 @@ public class BeanMappingMethod extends MappingMethod {
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
                             .souceMethod( method )
-                            .targetAccessor( targetProperty.getValue() )
+                            .targetWriteAccessor( targetProperty.getValue() )
+                            .targetReadAccessor( getTargetPropertyReadAccessor( targetProperty.getKey() ) )
                             .targetPropertyName( targetProperty.getKey() )
                             .sourceReference( sourceRef )
                             .qualifiers( mapping != null ? mapping.getQualifiers() : null )
@@ -508,6 +515,10 @@ public class BeanMappingMethod extends MappingMethod {
 
                 return null;
             }
+        }
+
+        private ExecutableElement getTargetPropertyReadAccessor( String propertyName ) {
+            return method.getResultType().getPropertyReadAccessors().get( propertyName );
         }
 
         /**

@@ -20,21 +20,23 @@
 -->
 <#if (exceptionTypes?size == 0) >
     for ( <@includeModel object=sourceType/> ${iteratorReference} : ${sourceReference} ) {
-        ${ext.targetBeanName}.${ext.targetAccessorName}( <@includeModel object=assignment
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@includeModel object=assignment
                 targetBeanName=ext.targetBeanName
                 raw=ext.raw
                 existingInstanceMapping=ext.existingInstanceMapping
-                targetAccessorName=ext.targetAccessorName
+                targetReadAccessorName=ext.targetReadAccessorName
+                targetWriteAccessorName=ext.targetWriteAccessorName
                 targetType=ext.targetType/> );
     }
 <#else>
     try {
         for ( <@includeModel object=sourceType/> ${iteratorReference} : ${sourceReference} ) {
-            ${ext.targetBeanName}.${ext.targetAccessorName}( <@includeModel object=assignment
+            ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@includeModel object=assignment
                     targetBeanName=ext.targetBeanName
                     raw=ext.raw
                     existingInstanceMapping=ext.existingInstanceMapping
-                    targetAccessorName=ext.targetAccessorName
+                    targetReadAccessorName=ext.targetReadAccessorName
+                    targetWriteAccessorName=ext.targetWriteAccessorName
                     targetType=ext.targetType/> );
         }
     }

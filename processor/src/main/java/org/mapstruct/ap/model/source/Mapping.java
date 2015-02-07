@@ -266,7 +266,7 @@ public class Mapping {
 
     private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
-        return method.getResultType().getTargetAccessors( cms ).containsKey( name );
+        return method.getResultType().getPropertyWriteAccessors( cms ).containsKey( name );
     }
 
     public Mapping reverse(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {

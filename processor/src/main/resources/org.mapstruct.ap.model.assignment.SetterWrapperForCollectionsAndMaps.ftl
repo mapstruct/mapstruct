@@ -26,14 +26,16 @@
                    targetBeanName=ext.targetBeanName
                    raw=ext.raw
                    existingInstanceMapping=ext.existingInstanceMapping
-                   targetAccessorName="${targetGetterName}().addAll"
+                   targetReadAccessorName=ext.targetReadAccessorName
+                   targetWriteAccessorName="${targetGetterName}().addAll"
                    targetType=ext.targetType/>
         <#else>
             <@includeModel object=assignment
                    targetBeanName=ext.targetBeanName
                    raw=ext.raw
                    existingInstanceMapping=ext.existingInstanceMapping
-                   targetAccessorName="${targetGetterName}().putAll"
+                   targetReadAccessorName=ext.targetReadAccessorName
+                   targetWriteAccessorName="${targetGetterName}().putAll"
                    targetType=ext.targetType/>
         </#if>
     }
@@ -56,7 +58,8 @@
             targetBeanName=ext.targetBeanName
             raw=ext.raw
             existingInstanceMapping=ext.existingInstanceMapping
-            targetAccessorName=ext.targetAccessorName
+            targetReadAccessorName=ext.targetReadAccessorName
+            targetWriteAccessorName=ext.targetWriteAccessorName
             targetType=ext.targetType/>
 </#macro>
 <#macro _newCollectionOrMapAssignment>
@@ -64,6 +67,7 @@
             targetBeanName=ext.targetBeanName
             raw=ext.raw
             existingInstanceMapping=ext.existingInstanceMapping
-            targetAccessorName=ext.targetAccessorName
+            targetReadAccessorName=ext.targetReadAccessorName
+            targetWriteAccessorName=ext.targetWriteAccessorName
             targetType=ext.targetType/>
 </#macro>
