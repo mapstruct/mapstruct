@@ -19,9 +19,10 @@
 package org.mapstruct.ap.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
@@ -73,7 +74,7 @@ public class MapperConfig {
     }
 
     public List<TypeMirror> uses() {
-        Set<TypeMirror> uses = new HashSet<TypeMirror>( mapperPrism.uses() );
+        Set<TypeMirror> uses = new LinkedHashSet<TypeMirror>( mapperPrism.uses() );
         if ( mapperConfigPrism != null ) {
             uses.addAll( mapperConfigPrism.uses() );
         }
