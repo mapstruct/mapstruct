@@ -115,7 +115,8 @@ public class IterableMappingMethod extends MappingMethod {
                 dateFormat,
                 qualifiers,
                 qualifyingElementTargetType,
-                loopVariableName
+                loopVariableName,
+                false
             );
 
             if ( assignment == null ) {

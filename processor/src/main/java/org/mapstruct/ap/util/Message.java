@@ -49,8 +49,10 @@ public enum Message {
     PROPERTYMAPPING_INVALID_PARAMETER_NAME( "Method has no parameter named \"%s\"." ),
     PROPERTYMAPPING_NO_PROPERTY_IN_PARAMETER( "The type of parameter \"%s\" has no property named \"%s\"." ),
     PROPERTYMAPPING_INVALID_PROPERTY_NAME( "No property named \"%s\" exists in source parameter(s)." ),
+    PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE( "No read accessor found for property \"%s\" in target type." ),
 
     CONSTANTMAPPING_MAPPING_NOT_FOUND( "Can't map \"%s %s\" to \"%s %s\"." ),
+    CONSTANTMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE( "No read accessor found for property \"%s\" in target type." ),
 
     MAPMAPPING_KEY_MAPPING_NOT_FOUND( "No implementation can be generated for this method. Found no method nor implicit conversion for mapping source key type to target key type." ),
     MAPMAPPING_VALUE_MAPPING_NOT_FOUND( "No implementation can be generated for this method. Found no method nor implicit conversion for mapping source value type to target value type." ),

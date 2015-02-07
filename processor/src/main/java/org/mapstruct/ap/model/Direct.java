@@ -62,4 +62,10 @@ public class Direct extends ModelElement implements Assignment {
     public AssignmentType getType() {
         return AssignmentType.DIRECT;
     }
+
+    @Override
+    public boolean isUpdateMethod() {
+        return false;
+    }
+
 }

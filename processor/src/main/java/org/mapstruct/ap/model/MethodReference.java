@@ -42,6 +42,7 @@ public class MethodReference extends MappingMethod implements Assignment {
     private final MapperReference declaringMapper;
     private final Set<Type> importTypes;
     private final List<Type> exceptionTypes;
+    private final boolean isUpdateMethod;
 
     /**
      * In case this reference targets a built-in method, allows to pass specific context information to the invoked
@@ -78,6 +79,7 @@ public class MethodReference extends MappingMethod implements Assignment {
         }
         this.importTypes = Collections.<Type>unmodifiableSet( imported );
         this.exceptionTypes = method.getThrownTypes();
+        this.isUpdateMethod = method.getMappingTargetParameter() != null;
    }
 
     public MethodReference(BuiltInMethod method, ConversionContext contextParam) {
@@ -86,6 +88,7 @@ public class MethodReference extends MappingMethod implements Assignment {
         this.contextParam = method.getContextParameter( contextParam );
         this.importTypes = Collections.emptySet();
         this.exceptionTypes = Collections.emptyList();
+        this.isUpdateMethod = method.getMappingTargetParameter() != null;
     }
 
     public MapperReference getDeclaringMapper() {
@@ -158,5 +161,10 @@ public class MethodReference extends MappingMethod implements Assignment {
             default:
                 return null;
         }
+    }
+
+    @Override
+    public boolean isUpdateMethod() {
+        return isUpdateMethod;
     }
 }

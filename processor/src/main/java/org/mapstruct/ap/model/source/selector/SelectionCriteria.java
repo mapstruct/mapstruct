@@ -31,11 +31,14 @@ public class SelectionCriteria {
     private final List<TypeMirror> qualifiers;
     private final String targetPropertyName;
     private final TypeMirror qualifyingResultType;
+    private boolean preferUpdateMapping;
 
-    public SelectionCriteria(List<TypeMirror> qualifiers, String targetPropertyName, TypeMirror qualifyingResultType) {
+    public SelectionCriteria(List<TypeMirror> qualifiers, String targetPropertyName, TypeMirror qualifyingResultType,
+        boolean preferUpdateMapping ) {
         this.qualifiers = qualifiers;
         this.targetPropertyName = targetPropertyName;
         this.qualifyingResultType = qualifyingResultType;
+        this.preferUpdateMapping = preferUpdateMapping;
     }
 
     public List<TypeMirror> getQualifiers() {
@@ -49,4 +52,13 @@ public class SelectionCriteria {
     public TypeMirror getQualifyingResultType() {
         return qualifyingResultType;
     }
+
+    public boolean isPreferUpdateMapping() {
+        return preferUpdateMapping;
+    }
+
+    public void setPreferUpdateMapping(boolean preferUpdateMapping) {
+        this.preferUpdateMapping = preferUpdateMapping;
+    }
+
 }

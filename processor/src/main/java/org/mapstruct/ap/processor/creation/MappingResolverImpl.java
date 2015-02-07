@@ -97,9 +97,10 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     public Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType,
         Type targetType, String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
-        TypeMirror resultType, String sourceReference) {
+        TypeMirror resultType, String sourceReference, boolean preferUpdateMapping) {
 
-        SelectionCriteria criteria = new SelectionCriteria(qualifiers, targetPropertyName, resultType );
+        SelectionCriteria criteria =
+            new SelectionCriteria(qualifiers, targetPropertyName, resultType, preferUpdateMapping );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
@@ -122,7 +123,7 @@ public class MappingResolverImpl implements MappingResolver {
     public MethodReference getFactoryMethod( Method mappingMethod, Type targetType, List<TypeMirror> qualifiers,
         TypeMirror resultType ) {
 
-        SelectionCriteria criteria = new SelectionCriteria(qualifiers, null, resultType );
+        SelectionCriteria criteria = new SelectionCriteria( qualifiers, null, resultType, false );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
@@ -150,6 +151,7 @@ public class MappingResolverImpl implements MappingResolver {
         private final String dateFormat;
         private final SelectionCriteria selectionCriteria;
         private final String sourceReference;
+        private final boolean savedPreferUpdateMapping;
 
         // resolving via 2 steps creates the possibillity of wrong matches, first builtin method matches,
         // second doesn't. In that case, the first builtin method should not lead to a virtual method
@@ -166,6 +168,7 @@ public class MappingResolverImpl implements MappingResolver {
             this.sourceReference = sourceReference;
             this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
             this.selectionCriteria = criteria;
+            this.savedPreferUpdateMapping = criteria.isPreferUpdateMapping();
         }
 
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods) {
@@ -222,6 +225,9 @@ public class MappingResolverImpl implements MappingResolver {
                 usedVirtualMappings.addAll( virtualMethodCandidates );
                 return referencedMethod;
             }
+
+            // stop here when looking for update methods.
+            selectionCriteria.setPreferUpdateMapping( false );
 
             // 2 step method, finally: conversion(method(source))
             conversion = resolveViaMethodAndConversion( sourceType, targetType );
@@ -311,8 +317,10 @@ public class MappingResolverImpl implements MappingResolver {
                     resolveViaMethod( methodYCandidate.getSourceParameters().get( 0 ).getType(), targetType, true );
 
                 if ( methodRefY != null ) {
+                    selectionCriteria.setPreferUpdateMapping( false );
                     Assignment methodRefX =
                         resolveViaMethod( sourceType, methodYCandidate.getSourceParameters().get( 0 ).getType(), true );
+                    selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
                     if ( methodRefX != null ) {
                         methodRefY.setAssignment( methodRefX );
                         methodRefX.setAssignment( AssignmentFactory.createDirect( sourceReference ) );

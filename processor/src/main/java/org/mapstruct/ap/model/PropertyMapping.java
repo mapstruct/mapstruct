@@ -35,6 +35,7 @@ import org.mapstruct.ap.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.NullCheckWrapper;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.assignment.SetterWrapperForCollectionsAndMaps;
+import org.mapstruct.ap.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -163,6 +164,16 @@ public class PropertyMapping extends ModelElement {
                 sourceRefStr = getSourceRef();
             }
 
+            // all the tricky cases will be excluded for the time being.
+            boolean preferUpdateMethods;
+            if ( targetType.isCollectionOrMapType() ||  targetType.isArrayType() ||
+                targetAccessorType == TargetWriteAccessorType.ADDER ) {
+                preferUpdateMethods = false;
+            }
+            else {
+                preferUpdateMethods = method.getMappingTargetParameter() != null;
+            }
+
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 sourceElement,
@@ -172,7 +183,8 @@ public class PropertyMapping extends ModelElement {
                 dateFormat,
                 qualifiers,
                 resultType,
-                sourceRefStr
+                sourceRefStr,
+                preferUpdateMethods
             );
 
             // No mapping found. Try to forge a mapping
@@ -198,6 +210,7 @@ public class PropertyMapping extends ModelElement {
                 else {
                     assignment = assignObject( sourceType, targetType, targetAccessorType, assignment );
                 }
+
             }
             else {
                 ctx.getMessager().printMessage(
@@ -228,8 +241,19 @@ public class PropertyMapping extends ModelElement {
             Assignment result = rhs;
 
             if ( targetAccessorType == TargetWriteAccessorType.SETTER ) {
-
-                result = new SetterWrapper( result, method.getThrownTypes() );
+                if ( result.isUpdateMethod() ) {
+                    if ( targetReadAccessor == null ) {
+                        ctx.getMessager().printMessage( method.getExecutable(),
+                            Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
+                            targetPropertyName );
+                    }
+                    Assignment factoryMethod =
+                        ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
+                    result = new UpdateWrapper( result, method.getThrownTypes(), targetType, factoryMethod );
+                }
+                else {
+                    result = new SetterWrapper( result, method.getThrownTypes() );
+                }
                 if ( !sourceType.isPrimitive()
                     && !sourceReference.getPropertyEntries().isEmpty() /* parameter null taken care of by beanmapper */
                     && ( result.getType() == TYPE_CONVERTED
@@ -575,17 +599,33 @@ public class PropertyMapping extends ModelElement {
                 dateFormat,
                 qualifiers,
                 resultType,
-                constantExpression
+                constantExpression,
+                method.getMappingTargetParameter() != null
             );
 
             if ( assignment != null ) {
 
                 if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
+
                     // target accessor is setter, so decorate assignment as setter
-                    assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+                    if ( assignment.isUpdateMethod() ) {
+                        if ( targetReadAccessor == null ) {
+                            ctx.getMessager().printMessage( method.getExecutable(),
+                                Message.CONSTANTMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
+                                targetPropertyName );
+                        }
+                        Assignment factoryMethod =
+                            ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
+                        assignment =
+                            new UpdateWrapper( assignment, method.getThrownTypes(), targetType, factoryMethod );
+                    }
+                    else {
+                        assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+                    }
                 }
                 else {
-                    // wrap when dealing with getter only on target
+
+                    // target accessor is getter, so getter map/ collection handling
                     assignment = new GetterWrapperForCollectionsAndMaps(
                         assignment,
                         method.getThrownTypes(),

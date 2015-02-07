@@ -83,6 +83,7 @@ public class MappingBuilderContext {
          * @param resultType used for further select the appropriate mapping method based on resultType (bean mapping)
          * targetType (Iterable- and MapMapping)
          * @param sourceReference call to source type as string
+         * @param preferUpdateMethods selection should prefer update methods when present.
          *
          * @return an assignment to a method parameter, which can either be:
          * <ol>
@@ -94,7 +95,7 @@ public class MappingBuilderContext {
          */
         Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
                                        String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
-                                       TypeMirror resultType, String sourceReference);
+                                       TypeMirror resultType, String sourceReference, boolean preferUpdateMethods);
 
         /**
          * returns a no arg factory method

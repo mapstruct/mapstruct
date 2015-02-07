@@ -23,12 +23,21 @@ import java.util.List;
 
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.model.source.MethodMatcher;
 
 /**
- * Selects only create method candidates (so methods not containing {@link @MappingTarget} )
- * {@link MethodMatcher}).
+ * Selection based on type of method (create - or update method).
  *
+ * <p>
+ * Prefers (when present):
+ * <ol>
+ * <li>create method candidates (methods not containing {@link @MappingTarget} ) when mapping method is
+ * a create method</li>
+ * <li>update method candidates (methods containing {@link @MappingTarget} ) when mapping method is
+ * an update method</li>
+ * </ol>
+ * When not present, the remaining (createCandidates when mapping method is update method, updateCandidates when mapping
+ * method is a create method) candidates are selected.
+ * </p>
  * @author Sjaak Derksen
  */
 public class CreateOrUpdateSelector implements MethodSelector {
@@ -38,14 +47,23 @@ public class CreateOrUpdateSelector implements MethodSelector {
                                                          Type sourceType, Type targetType,
                                                          SelectionCriteria criteria) {
 
+        boolean isCreateMethod = mappingMethod.getMappingTargetParameter() == null;
         List<T> createCandidates = new ArrayList<T>();
+        List<T> updateCandidates = new ArrayList<T>();
         for ( T method : methods ) {
             boolean isCreateCandidate = method.getMappingTargetParameter() == null;
             if ( isCreateCandidate ) {
                 createCandidates.add( method );
             }
+            else {
+                updateCandidates.add( method );
+            }
+        }
+        if ( criteria.isPreferUpdateMapping() ) {
+            if ( !updateCandidates.isEmpty() ) {
+                return updateCandidates;
+            }
         }
         return createCandidates;
-
     }
 }

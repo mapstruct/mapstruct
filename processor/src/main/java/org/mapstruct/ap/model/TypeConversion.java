@@ -103,4 +103,10 @@ public class TypeConversion extends ModelElement implements Assignment {
                 return null;
         }
     }
+
+    @Override
+    public boolean isUpdateMethod() {
+       return false;
+    }
+
 }

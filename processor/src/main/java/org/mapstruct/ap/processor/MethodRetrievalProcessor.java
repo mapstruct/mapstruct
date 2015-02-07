@@ -272,14 +272,30 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private boolean isValidReferencedMethod(List<Parameter> parameters) {
-        return isValidReferencedOrFactoryMethod( 1, parameters );
+     int validSourceParameters = 0;
+        int targetParameters = 0;
+        int targetTypeParameters = 0;
+
+        for ( Parameter param : parameters ) {
+            if ( param.isMappingTarget() ) {
+                targetParameters++;
+            }
+
+            if ( param.isTargetType() ) {
+                targetTypeParameters++;
+            }
+
+            if ( !param.isMappingTarget() && !param.isTargetType() ) {
+                validSourceParameters++;
+            }
+        }
+        return validSourceParameters == 1
+            && targetParameters <= 1
+            && targetTypeParameters <= 1
+            && parameters.size() == validSourceParameters + targetParameters + targetTypeParameters;
     }
 
     private boolean isValidFactoryMethod(List<Parameter> parameters) {
-        return isValidReferencedOrFactoryMethod( 0, parameters );
-    }
-
-    private boolean isValidReferencedOrFactoryMethod(int sourceParamCount, List<Parameter> parameters) {
         int validSourceParameters = 0;
         int targetParameters = 0;
         int targetTypeParameters = 0;
@@ -297,7 +313,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 validSourceParameters++;
             }
         }
-        return validSourceParameters == sourceParamCount && targetParameters == 0 && targetTypeParameters <= 1
+        return validSourceParameters == 0
+            && targetParameters == 0
+            && targetTypeParameters <= 1
             && parameters.size() == validSourceParameters + targetParameters + targetTypeParameters;
     }
 

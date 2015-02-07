@@ -125,7 +125,8 @@ public class MapMappingMethod extends MappingMethod {
                 keyDateFormat,
                 keyQualifiers,
                 keyQualifyingTargetType,
-                "entry.getKey()"
+                "entry.getKey()",
+                false
             );
 
             if ( keyAssignment == null ) {
@@ -145,7 +146,8 @@ public class MapMappingMethod extends MappingMethod {
                 valueDateFormat,
                 valueQualifiers,
                 valueQualifyingTargetType,
-                "entry.getValue()"
+                "entry.getValue()",
+                false
             );
 
             if ( valueAssignment == null ) {
