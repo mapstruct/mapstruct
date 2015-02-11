@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.model.common;
 
-import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.erasure;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -58,6 +56,8 @@ import org.mapstruct.ap.prism.MappingTargetPrism;
 import org.mapstruct.ap.prism.TargetTypePrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.SpecificCompilerWorkarounds;
+
+import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.erasure;
 
 /**
  * Factory creating {@link Type} instances.
@@ -114,6 +114,16 @@ public class TypeFactory {
         }
 
         return getType( typeElement );
+    }
+
+    /**
+     * Determines if the type with the given full qualified name is part of the classpath
+     *
+     * @param canonicalName Name of the type to be checked for availability
+     * @return true if the type with the given full qualified name is part of the classpath.
+     */
+    public boolean isTypeAvailable(String canonicalName) {
+        return null != elementUtils.getTypeElement( canonicalName );
     }
 
     public Type getType(TypeElement typeElement) {

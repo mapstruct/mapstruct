@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.conversion;
 
-import javax.lang.model.util.Elements;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
@@ -26,11 +25,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.lang.model.util.Elements;
+
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.util.JavaTimeConstants;
 import org.mapstruct.ap.util.JodaTimeConstants;
-import org.mapstruct.ap.util.NativeTypes;
 
 import static org.mapstruct.ap.conversion.ReverseConversion.reverse;
 
@@ -197,50 +197,18 @@ public class Conversions {
         }
 
         // Joda to String
-        register(
-            getClass( JodaTimeConstants.DATE_TIME_FQN ),
-            String.class,
-            new JodaDateTimeToStringConversion()
-        );
-        register(
-            getClass( JodaTimeConstants.LOCAL_DATE_FQN ),
-            String.class,
-            new JodaLocalDateToStringConversion()
-        );
-        register(
-            getClass( JodaTimeConstants.LOCAL_DATE_TIME_FQN ),
-            String.class,
-            new JodaLocalDateTimeToStringConversion()
-        );
-        register(
-            getClass( JodaTimeConstants.LOCAL_TIME_FQN ),
-            String.class,
-            new JodaLocalTimeToStringConversion()
-        );
+        register( JodaTimeConstants.DATE_TIME_FQN, String.class, new JodaDateTimeToStringConversion() );
+        register( JodaTimeConstants.LOCAL_DATE_FQN, String.class, new JodaLocalDateToStringConversion() );
+        register( JodaTimeConstants.LOCAL_DATE_TIME_FQN, String.class, new JodaLocalDateTimeToStringConversion() );
+        register( JodaTimeConstants.LOCAL_TIME_FQN, String.class, new JodaLocalTimeToStringConversion() );
 
         // Joda to Date
-        register(
-            getClass( JodaTimeConstants.DATE_TIME_FQN ),
-            Date.class,
-            new JodaTimeToDateConversion()
-        );
-        register(
-            getClass( JodaTimeConstants.LOCAL_DATE_FQN ),
-            Date.class,
-            new JodaTimeToDateConversion()
-        );
-        register(
-            getClass( JodaTimeConstants.LOCAL_DATE_TIME_FQN ),
-            Date.class,
-            new JodaTimeToDateConversion()
-        );
+        register( JodaTimeConstants.DATE_TIME_FQN, Date.class, new JodaTimeToDateConversion() );
+        register( JodaTimeConstants.LOCAL_DATE_FQN, Date.class, new JodaTimeToDateConversion() );
+        register( JodaTimeConstants.LOCAL_DATE_TIME_FQN, Date.class, new JodaTimeToDateConversion() );
 
         // Joda to Calendar
-        register(
-            getClass( JodaTimeConstants.DATE_TIME_FQN ),
-            Calendar.class,
-            new JodaDateTimeToCalendarConversion()
-        );
+        register( JodaTimeConstants.DATE_TIME_FQN, Calendar.class, new JodaDateTimeToCalendarConversion() );
     }
 
     private void registerJava8TimeConversions() {
@@ -249,48 +217,25 @@ public class Conversions {
         }
 
         // Java 8 time to String
-        register(
-                        getClass( JavaTimeConstants.ZONED_DATE_TIME_FQN ),
-                        String.class,
-                        new JavaZonedDateTimeToStringConversion()
-        );
-        register(
-                        getClass( JavaTimeConstants.LOCAL_DATE_FQN ),
-                        String.class,
-                        new JavaLocalDateToStringConversion()
-        );
-        register(
-                        getClass( JavaTimeConstants.LOCAL_DATE_TIME_FQN ),
-                        String.class,
-                        new JavaLocalDateTimeToStringConversion()
-        );
-        register(
-                        getClass( JavaTimeConstants.LOCAL_TIME_FQN ),
-                        String.class,
-                        new JavaLocalTimeToStringConversion()
-        );
+        register( JavaTimeConstants.ZONED_DATE_TIME_FQN, String.class, new JavaZonedDateTimeToStringConversion() );
+        register( JavaTimeConstants.LOCAL_DATE_FQN, String.class, new JavaLocalDateToStringConversion() );
+        register( JavaTimeConstants.LOCAL_DATE_TIME_FQN, String.class, new JavaLocalDateTimeToStringConversion() );
+        register( JavaTimeConstants.LOCAL_TIME_FQN, String.class, new JavaLocalTimeToStringConversion() );
 
-        // Java 8  to Date
-        register(
-                        getClass( JavaTimeConstants.ZONED_DATE_TIME_FQN ),
-                        Date.class,
-                        new JavaZonedDateTimeToDateConversion()
-        );
-
-        register(
-                        getClass( JavaTimeConstants.LOCAL_DATE_TIME_FQN ),
-                        Date.class,
-                        new JavaLocalDateTimeToDateConversion()
-        );
+        // Java 8 to Date
+        register( JavaTimeConstants.ZONED_DATE_TIME_FQN, Date.class, new JavaZonedDateTimeToDateConversion() );
+        register( JavaTimeConstants.LOCAL_DATE_TIME_FQN, Date.class, new JavaLocalDateTimeToDateConversion() );
 
     }
 
-    private static boolean isJodaTimeAvailable() {
-        return NativeTypes.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN );
+    private boolean isJodaTimeAvailable() {
+        return typeFactory.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN );
     }
-    private static boolean isJava8TimeAvailable() {
-        return NativeTypes.isTypeAvailable( JavaTimeConstants.ZONED_DATE_TIME_FQN );
+
+    private boolean isJava8TimeAvailable() {
+        return typeFactory.isTypeAvailable( JavaTimeConstants.ZONED_DATE_TIME_FQN );
     }
+
     private void registerNativeTypeConversion(Class<?> sourceType, Class<?> targetType) {
         if ( sourceType.isPrimitive() && targetType.isPrimitive() ) {
             register( sourceType, targetType, new PrimitiveToPrimitiveConversion( sourceType ) );
@@ -333,9 +278,20 @@ public class Conversions {
         }
     }
 
-    private void register(Class<?> sourceType, Class<?> targetType, ConversionProvider conversion) {
-        conversions.put( forClasses( sourceType, targetType ), conversion );
-        conversions.put( forClasses( targetType, sourceType ), reverse( conversion ) );
+    private void register(Class<?> sourceClass, Class<?> targetClass, ConversionProvider conversion) {
+        Type sourceType = typeFactory.getType( sourceClass );
+        Type targetType = typeFactory.getType( targetClass );
+
+        conversions.put( new Key( sourceType, targetType ), conversion );
+        conversions.put( new Key( targetType, sourceType ), reverse( conversion ) );
+    }
+
+    private void register(String sourceTypeName, Class<?> targetClass, ConversionProvider conversion) {
+        Type sourceType = typeFactory.getType( sourceTypeName );
+        Type targetType = typeFactory.getType( targetClass );
+
+        conversions.put( new Key( sourceType, targetType ), conversion );
+        conversions.put( new Key( targetType, sourceType ), reverse( conversion ) );
     }
 
     public ConversionProvider getConversion(Type sourceType, Type targetType) {
@@ -347,22 +303,6 @@ public class Conversions {
         }
 
         return conversions.get( new Key( sourceType, targetType ) );
-    }
-
-    private Key forClasses(Class<?> sourceClass, Class<?> targetClass) {
-        Type sourceType = typeFactory.getType( sourceClass );
-        Type targetType = typeFactory.getType( targetClass );
-
-        return new Key( sourceType, targetType );
-    }
-
-    private Class<?> getClass(String fullyQualifiedName) {
-        try {
-            return Conversions.class.getClassLoader().loadClass( fullyQualifiedName );
-        }
-        catch ( ClassNotFoundException e ) {
-            throw new RuntimeException( "Couldn't load class: " + fullyQualifiedName, e );
-        }
     }
 
     private static class Key {
