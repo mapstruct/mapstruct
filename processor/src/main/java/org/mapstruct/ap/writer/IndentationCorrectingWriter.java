@@ -36,27 +36,37 @@ import java.util.Arrays;
  */
 class IndentationCorrectingWriter extends Writer {
 
-    private enum State {
-        IN_TEXT, AFTER_LINE_BREAK;
+    private static enum State {
+        IN_TEXT, AFTER_LINE_BREAK, AFTER_BLANK_LINE;
 
         State handleCharacter(char c) {
-            if ( this == State.IN_TEXT ) {
-                if ( c == '\n' || c == '\r' ) {
-                    return State.AFTER_LINE_BREAK;
-                }
-                else {
-                    return State.IN_TEXT;
+            if ( this == IN_TEXT ) {
+                switch ( c ) {
+                    case '\n':
+                        return AFTER_LINE_BREAK;
+                    default:
+                        return IN_TEXT;
                 }
             }
-            else if ( this == State.AFTER_LINE_BREAK ) {
-                if ( c == ' ' ) {
-                    return State.AFTER_LINE_BREAK;
+            else if ( this == AFTER_LINE_BREAK ) {
+                switch ( c ) {
+                    case ' ':
+                    case '\r':
+                        return AFTER_LINE_BREAK;
+                    case '\n':
+                        return AFTER_BLANK_LINE;
+                    default:
+                        return IN_TEXT;
                 }
-                else if ( c == '\n' || c == '\r' ) {
-                    return State.AFTER_LINE_BREAK;
-                }
-                else {
-                    return State.IN_TEXT;
+            }
+            else if ( this == AFTER_BLANK_LINE ) {
+                switch ( c ) {
+                    case ' ':
+                    case '\r':
+                    case '\n':
+                        return AFTER_BLANK_LINE;
+                    default:
+                        return IN_TEXT;
                 }
             }
 
@@ -100,14 +110,19 @@ class IndentationCorrectingWriter extends Writer {
             }
             //first non-whitespace character after a line break; write out the correct indentation, discarding any
             //original leading whitespace characters
-            else if ( state == State.AFTER_LINE_BREAK && newState == State.IN_TEXT ) {
+            else if ( ( state == State.AFTER_LINE_BREAK || state == State.AFTER_BLANK_LINE )
+                && newState == State.IN_TEXT ) {
                 char[] indentation = getIndentation( indentationLevel );
                 delegate.write( indentation, 0, indentation.length );
                 start = i;
                 length = 1;
             }
             //write out line-breaks following directly to other line breaks
-            else if ( state == State.AFTER_LINE_BREAK && ( c == '\n' || c == '\r' ) ) {
+            else if ( state == State.AFTER_LINE_BREAK && isLineBreak( c ) ) {
+                    delegate.write( c );
+            }
+            //write out blank lines only if we don't create two successive blank lines
+            else if ( state == State.AFTER_BLANK_LINE && newState != State.AFTER_BLANK_LINE && isLineBreak( c ) ) {
                 delegate.write( c );
             }
 
@@ -117,6 +132,10 @@ class IndentationCorrectingWriter extends Writer {
         if ( state == State.IN_TEXT ) {
             delegate.write( cbuf, start, length );
         }
+    }
+
+    private static boolean isLineBreak(char c) {
+        return c == '\n' || c == '\r';
     }
 
     private static char[] getIndentation(int indentationLevel) {
