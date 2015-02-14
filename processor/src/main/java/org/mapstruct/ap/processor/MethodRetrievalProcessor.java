@@ -204,6 +204,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 .setReturnType( returnType )
                 .setExceptionTypes( exceptionTypes )
                 .setTypeUtils( typeUtils )
+                .setTypeFactory( typeFactory )
                 .createSourceMethod();
     }
 

@@ -50,7 +50,7 @@ public abstract class MappingMethod extends ModelElement {
         this.name = method.getName();
         this.parameters = method.getParameters();
         this.returnType = method.getReturnType();
-        this.targetParameter = method.getTargetParameter();
+        this.targetParameter = method.getMappingTargetParameter();
         this.accessibility = method.getAccessibility();
         this.thrownTypes = method.getThrownTypes();
         this.isStatic = method.isStatic();

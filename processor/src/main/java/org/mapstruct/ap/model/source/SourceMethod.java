@@ -55,7 +55,8 @@ public class SourceMethod implements Method {
     private final Type declaringMapper;
     private final ExecutableElement executable;
     private final List<Parameter> parameters;
-    private final Parameter targetParameter;
+    private final Parameter mappingTargetParameter;
+    private final Parameter targetTypeParameter;
     private final Type returnType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
@@ -185,7 +186,8 @@ public class SourceMethod implements Method {
         this.mapMapping = mapMapping;
         this.accessibility = Accessibility.fromModifiers( executable.getModifiers() );
 
-        this.targetParameter = determineTargetParameter( parameters );
+        this.mappingTargetParameter = determineMappingTargetParameter( parameters );
+        this.targetTypeParameter = determineTargetTypeParameter( parameters );
 
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
@@ -193,9 +195,19 @@ public class SourceMethod implements Method {
         this.config = config;
     }
 
-    private Parameter determineTargetParameter(Iterable<Parameter> parameters) {
+    private Parameter determineMappingTargetParameter(Iterable<Parameter> parameters) {
         for ( Parameter parameter : parameters ) {
             if ( parameter.isMappingTarget() ) {
+                return parameter;
+            }
+        }
+
+        return null;
+    }
+
+    private Parameter determineTargetTypeParameter(Iterable<Parameter> parameters) {
+        for ( Parameter parameter : parameters ) {
+            if ( parameter.isTargetType() ) {
                 return parameter;
             }
         }
@@ -261,7 +273,7 @@ public class SourceMethod implements Method {
 
     @Override
     public Type getResultType() {
-        return targetParameter != null ? targetParameter.getType() : returnType;
+        return mappingTargetParameter != null ? mappingTargetParameter.getType() : returnType;
     }
 
     /**
@@ -357,12 +369,14 @@ public class SourceMethod implements Method {
         return  equals( getResultType(), method.getResultType() );
     }
 
-    /**
-     * {@inheritDoc} {@link Method}
-     */
     @Override
-    public Parameter getTargetParameter() {
-        return targetParameter;
+    public Parameter getMappingTargetParameter() {
+        return mappingTargetParameter;
+    }
+
+    @Override
+    public Parameter getTargetTypeParameter() {
+        return targetTypeParameter;
     }
 
     public boolean isIterableMapping() {
@@ -455,9 +469,9 @@ public class SourceMethod implements Method {
      * {@inheritDoc} {@link Method}
      */
     @Override
-    public boolean matches(List<Type> sourceTypes, Type targetType) {
-        MethodMatcher matcher = new MethodMatcher( typeUtils, this );
-        return matcher.matches( sourceTypes, targetType );
+    public boolean matches(Type sourceType, Type targetType) {
+        MethodMatcher matcher = new MethodMatcher( typeUtils, typeFactory, this );
+        return matcher.matches( sourceType, targetType );
     }
 
     /**

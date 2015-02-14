@@ -71,11 +71,7 @@ public abstract class BuiltInMethod implements Method {
      * excluding generic type variables. When the implementor sees a need for this, this method can be overridden.
      */
     @Override
-    public boolean matches(List<Type> sourceTypes, Type targetType) {
-        if ( sourceTypes.size() > 1 ) {
-            return false;
-        }
-        Type sourceType = sourceTypes.iterator().next();
+    public boolean matches(Type sourceType, Type targetType) {
 
         if ( getReturnType().isAssignableTo( targetType.erasure() )
             && sourceType.erasure().isAssignableTo( getParameter().getType() ) ) {
@@ -118,12 +114,22 @@ public abstract class BuiltInMethod implements Method {
     }
 
     /**
-     * target parameter mechanism not supported for built-in methods
+     * mapping target parameter mechanism not supported for built-in methods
      *
      * @return {@code null}
      */
     @Override
-    public Parameter getTargetParameter() {
+    public Parameter getMappingTargetParameter() {
+        return null;
+    }
+
+    /**
+     * target type parameter mechanism not supported for built-in methods
+     *
+     * @return {@code null}
+     */
+    @Override
+    public Parameter getTargetTypeParameter() {
         return null;
     }
 

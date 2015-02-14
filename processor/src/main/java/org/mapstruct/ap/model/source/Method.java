@@ -40,12 +40,12 @@ public interface Method {
      * Checks whether the provided sourceType and provided targetType match with the parameter respectively return type
      * of the method. The check also should incorporate wild card and generic type variables
      *
-     * @param sourceTypes the sourceTypes to match to the parameter
+     * @param sourceType the sourceType to match to the parameter
      * @param targetType the targetType to match to the returnType
      *
      * @return true when match
      */
-    boolean matches(List<Type> sourceTypes, Type targetType);
+    boolean matches(Type sourceType, Type targetType );
 
     /**
      * Returns the mapper type declaring this method if it is not declared by the mapper interface currently processed
@@ -71,18 +71,26 @@ public interface Method {
 
     /**
      * returns the list of 'true' source parameters excluding the parameter(s) that is designated as
-     * target by means of the target annotation {@link  #getTargetParameter() }.
+     * target by means of the target annotation {@link  #getMappingTargetParameter() }.
      *
      * @return list of 'true' source parameters
      */
     List<Parameter> getSourceParameters();
 
     /**
-     * Returns the parameter designated as target parameter (if present) {@link #getSourceParameters() }
+     * Returns the parameter designated as mapping target (if present) {@link  org.mapstruct.MappingTarget }
      *
-     * @return target parameter (when present) null otherwise.
+     * @return mapping target parameter (when present) null otherwise.
      */
-    Parameter getTargetParameter();
+    Parameter getMappingTargetParameter();
+
+    /**
+     * Returns the parameter designated as target type (if present) {@link org.mapstruct.TargetType }
+     *
+     * @return target type parameter (when present) null otherwise.
+     */
+    Parameter getTargetTypeParameter();
+
 
     /**
      * Returns the {@link Accessibility} of this method.

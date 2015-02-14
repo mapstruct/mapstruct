@@ -24,7 +24,6 @@ import java.util.List;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.Method;
@@ -41,11 +40,12 @@ public class MethodSelectors implements MethodSelector {
     public MethodSelectors(Types typeUtils, Elements elementUtils, TypeFactory typeFactory) {
         selectors =
             Arrays.<MethodSelector>asList(
-                new TypeSelector( typeFactory ),
+                new TypeSelector(),
                 new QualifierSelector( typeUtils, elementUtils ),
                 new TargetTypeSelector( typeUtils, elementUtils ),
                 new XmlElementDeclSelector( typeUtils ),
-                new InheritanceSelector()
+                new InheritanceSelector(),
+                new CreateOrUpdateSelector()
             );
     }
 
@@ -66,31 +66,5 @@ public class MethodSelectors implements MethodSelector {
             );
         }
         return candidates;
-    }
-
-    /**
-     * @param typeFactory the type factory to use
-     * @param parameters the parameters to map the types for
-     * @param sourceType the source type
-     * @param returnType the return type
-     *
-     * @return the list of actual parameter types
-     */
-    public static List<Type> getParameterTypes(TypeFactory typeFactory, List<Parameter> parameters, Type sourceType,
-                                               Type returnType) {
-        List<Type> result = new ArrayList<Type>();
-        for ( Parameter param : parameters ) {
-            if ( param.isTargetType() ) {
-                result.add( typeFactory.classTypeOf( returnType ) );
-            }
-            else {
-                if ( sourceType != null ) {
-                    /* for factory methods (sourceType==null), no parameter must be added */
-                    result.add( sourceType );
-                }
-            }
-        }
-
-        return result;
     }
 }

@@ -26,24 +26,26 @@ import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.MethodMatcher;
 
 /**
- * Selects those methods from the given input set which match the given source and target types (via
+ * Selects only create method candidates (so methods not containing {@link @MappingTarget} )
  * {@link MethodMatcher}).
  *
  * @author Sjaak Derksen
  */
-public class TypeSelector implements MethodSelector {
+public class CreateOrUpdateSelector implements MethodSelector {
 
     @Override
     public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
                                                          Type sourceType, Type targetType,
                                                          SelectionCriteria criteria) {
 
-        List<T> result = new ArrayList<T>();
+        List<T> createCandidates = new ArrayList<T>();
         for ( T method : methods ) {
-            if ( method.matches( sourceType, targetType ) ) {
-                result.add( method );
+            boolean isCreateCandidate = method.getMappingTargetParameter() == null;
+            if ( isCreateCandidate ) {
+                createCandidates.add( method );
             }
         }
-        return result;
+        return createCandidates;
+
     }
 }

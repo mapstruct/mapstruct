@@ -71,19 +71,18 @@ public class ForgedMethod implements Method {
     }
 
     @Override
-    public boolean matches(List<Type> sourceTypes, Type targetType) {
+    public boolean matches(Type sourceTypes, Type targetType) {
 
         if ( !targetType.equals( returnType ) ) {
             return false;
         }
 
-        if ( sourceTypes.size() == parameters.size() ) {
+        if ( parameters.size() != 1 ) {
             return false;
         }
-        for ( int i = 0; i < sourceTypes.size(); i++ ) {
-            if ( !sourceTypes.get( i ).equals( parameters.get( i ).getType() ) ) {
-                return false;
-            }
+
+        if ( !sourceTypes.equals( parameters.get( 0 ).getType() ) ) {
+            return false;
         }
 
         return true;
@@ -110,7 +109,12 @@ public class ForgedMethod implements Method {
     }
 
     @Override
-    public Parameter getTargetParameter() {
+    public Parameter getMappingTargetParameter() {
+        return null;
+    }
+
+    @Override
+    public Parameter getTargetTypeParameter() {
         return null;
     }
 
