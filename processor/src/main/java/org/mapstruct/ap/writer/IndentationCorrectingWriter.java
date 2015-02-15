@@ -36,87 +36,55 @@ import java.util.Arrays;
  */
 class IndentationCorrectingWriter extends Writer {
 
-    private enum State {
-        IN_TEXT, AFTER_LINE_BREAK;
-
-        State handleCharacter(char c) {
-            if ( this == State.IN_TEXT ) {
-                if ( c == '\n' || c == '\r' ) {
-                    return State.AFTER_LINE_BREAK;
-                }
-                else {
-                    return State.IN_TEXT;
-                }
-            }
-            else if ( this == State.AFTER_LINE_BREAK ) {
-                if ( c == ' ' ) {
-                    return State.AFTER_LINE_BREAK;
-                }
-                else if ( c == '\n' || c == '\r' ) {
-                    return State.AFTER_LINE_BREAK;
-                }
-                else {
-                    return State.IN_TEXT;
-                }
-            }
-
-            throw new IllegalStateException( "Unexpected state or character." );
-        }
-    }
-
-    private final Writer delegate;
-    private State state = State.IN_TEXT;
-
     /**
-     * Keeps track of the current indentation level, as implied by brace characters.
+     * Set to true to enable output of written characters on the console.
      */
-    private int indentationLevel = 0;
+    private static final boolean DEBUG = false;
+    private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
+    private static final boolean IS_WINDOWS = System.getProperty( "os.name" ).startsWith( "Windows" );
+
+    private State currentState = State.IN_TEXT;
+    private final StateContext context;
 
     IndentationCorrectingWriter(Writer out) {
         super( out );
-        this.delegate = out;
+        this.context = new StateContext( out );
     }
 
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
-        int start = off;
-        int length = 0;
+        context.reset( cbuf, off );
 
         for ( int i = off; i < len; i++ ) {
             char c = cbuf[i];
-            if ( c == '{' || c == '(' ) {
-                indentationLevel++;
-            }
-            else if ( c == '}' || c == ')' ) {
-                indentationLevel--;
+
+            State newState = currentState.handleCharacter( c, context );
+
+            if ( newState != currentState ) {
+                currentState.onExit( context );
+                newState.onEntry( context );
+                currentState = newState;
             }
 
-            State newState = state.handleCharacter( c );
-            length++;
-
-            //write characters up to line-breaks
-            if ( state == State.IN_TEXT && newState == State.AFTER_LINE_BREAK ) {
-                delegate.write( cbuf, start, length );
-            }
-            //first non-whitespace character after a line break; write out the correct indentation, discarding any
-            //original leading whitespace characters
-            else if ( state == State.AFTER_LINE_BREAK && newState == State.IN_TEXT ) {
-                char[] indentation = getIndentation( indentationLevel );
-                delegate.write( indentation, 0, indentation.length );
-                start = i;
-                length = 1;
-            }
-            //write out line-breaks following directly to other line breaks
-            else if ( state == State.AFTER_LINE_BREAK && ( c == '\n' || c == '\r' ) ) {
-                delegate.write( c );
-            }
-
-            state = newState;
+            context.currentIndex++;
         }
 
-        if ( state == State.IN_TEXT ) {
-            delegate.write( cbuf, start, length );
-        }
+        currentState.onBufferFinished( context );
+    }
+
+    @Override
+    public void flush() throws IOException {
+        context.writer.flush();
+    }
+
+    @Override
+    public void close() throws IOException {
+        currentState.onExit( context );
+        context.writer.close();
+    }
+
+    private static boolean isWindows() {
+        return IS_WINDOWS;
     }
 
     private static char[] getIndentation(int indentationLevel) {
@@ -125,13 +93,194 @@ class IndentationCorrectingWriter extends Writer {
         return indentation;
     }
 
-    @Override
-    public void flush() throws IOException {
-        delegate.flush();
+    /**
+     * A state of parsing a given character buffer.
+     */
+    private enum State {
+
+        /**
+         * Within any text.
+         */
+        IN_TEXT {
+            @Override
+            State doHandleCharacter(char c, StateContext context) {
+                switch ( c ) {
+                    case '\r':
+                        return isWindows() ? IN_LINE_BREAK : AFTER_LINE_BREAK;
+                    case '\n':
+                        return AFTER_LINE_BREAK;
+                    default:
+                        return IN_TEXT;
+                }
+            }
+
+            /**
+             * Writes out leading whitespace as per the current indentation level.
+             */
+            @Override
+            void doOnEntry(StateContext context) throws IOException {
+                context.writer.write( getIndentation( context.indentationLevel ) );
+
+                if ( DEBUG ) {
+                    System.out.print( new String( getIndentation( context.indentationLevel ) ).replace( " ", "_" ) );
+                }
+            }
+
+            /**
+             * Writes out the current text.
+             */
+            @Override
+            void onExit(StateContext context) throws IOException {
+                flush( context );
+            }
+
+            /**
+             * Writes out the current text.
+             */
+            @Override
+            void onBufferFinished(StateContext context) throws IOException {
+                flush( context );
+            }
+
+            private void flush(StateContext context) throws IOException {
+                context.writer.write(
+                    context.characters,
+                    context.lastStateChange,
+                    context.currentIndex - context.lastStateChange
+                );
+
+                if ( DEBUG ) {
+                    System.out.print(
+                        new String(
+                            java.util.Arrays.copyOfRange(
+                                context.characters,
+                                context.lastStateChange,
+                                context.currentIndex
+                            )
+                        )
+                    );
+                }
+            }
+        },
+
+        /**
+         * Between \r and \n of a Windows line-break.
+         */
+        IN_LINE_BREAK {
+            @Override
+            State doHandleCharacter(char c, StateContext context) {
+                if ( c == '\n' ) {
+                    return AFTER_LINE_BREAK;
+                }
+                else {
+                    throw new IllegalArgumentException( "Unexpected character: " + c );
+                }
+            }
+        },
+
+        /**
+         * Directly after a line-break, or within leading whitespace following to a line-break.
+         */
+        AFTER_LINE_BREAK {
+            @Override
+            State doHandleCharacter(char c, StateContext context) {
+                switch ( c ) {
+                    case '\r':
+                        return isWindows() ? IN_LINE_BREAK : AFTER_LINE_BREAK;
+                    case ' ':
+                        return AFTER_LINE_BREAK;
+                    case '\n':
+                        context.consecutiveLineBreaks++;
+                        return AFTER_LINE_BREAK;
+                    default:
+                        return IN_TEXT;
+                }
+            }
+
+            /**
+             * Writes out the current line-breaks, avoiding more than one consecutive empty line
+             */
+            @Override
+            void onExit(StateContext context) throws IOException {
+                context.consecutiveLineBreaks++;
+                int lineBreaks = Math.min( context.consecutiveLineBreaks, 2 );
+
+                for ( int i = 0; i < lineBreaks; i++ ) {
+                    context.writer.append( LINE_SEPARATOR );
+
+                    if ( DEBUG ) {
+                        System.out.print( "\\n" + LINE_SEPARATOR );
+                    }
+                }
+
+                context.consecutiveLineBreaks = 0;
+            }
+        };
+
+        final State handleCharacter(char c, StateContext context) throws IOException {
+            if ( c == '{' || c == '(' ) {
+                context.indentationLevel++;
+            }
+            else if ( c == '}' || c == ')' ) {
+                context.indentationLevel--;
+            }
+
+            return doHandleCharacter( c, context );
+        }
+
+        abstract State doHandleCharacter(char c, StateContext context) throws IOException;
+
+        final void onEntry(StateContext context) throws IOException {
+            context.lastStateChange = context.currentIndex;
+            doOnEntry( context );
+        }
+
+        void doOnEntry(StateContext context) throws IOException {
+        }
+
+        void onExit(StateContext context) throws IOException {
+        }
+
+        void onBufferFinished(StateContext context) throws IOException {
+        }
     }
 
-    @Override
-    public void close() throws IOException {
-        delegate.close();
+    /**
+     * Keeps the current context of parsing the given character buffer.
+     */
+    private static class StateContext {
+        final Writer writer;
+
+        char[] characters;
+
+        /**
+         * The position at which when the current state was entered.
+         */
+        int lastStateChange;
+
+        /**
+         * The current position within the buffer.
+         */
+        int currentIndex;
+
+        /**
+         * Keeps track of the current indentation level, as implied by brace characters.
+         */
+        int indentationLevel;
+
+        /**
+         * The number of consecutive line-breaks when within {@link State#AFTER_LINE_BREAK}.
+         */
+        int consecutiveLineBreaks;
+
+        StateContext(Writer writer) {
+            this.writer = writer;
+        }
+
+        void reset(char[] characters, int off) {
+            this.characters = characters;
+            this.lastStateChange = off;
+            this.currentIndex = 0;
+        }
     }
 }
