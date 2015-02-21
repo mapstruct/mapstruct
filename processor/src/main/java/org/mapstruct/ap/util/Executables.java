@@ -35,6 +35,7 @@ import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
+import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.
@@ -185,6 +186,7 @@ public class Executables {
      */
     public static List<ExecutableElement> getAllEnclosedExecutableElements(Elements elementUtils, TypeElement element) {
         List<ExecutableElement> enclosedElements = new ArrayList<ExecutableElement>();
+        element = replaceTypeElementIfNecessary( elementUtils, element );
         addEnclosedElementsInHierarchy( elementUtils, enclosedElements, element, element );
 
         return enclosedElements;
@@ -192,6 +194,10 @@ public class Executables {
 
     private static void addEnclosedElementsInHierarchy(Elements elementUtils, List<ExecutableElement> alreadyAdded,
                                                        TypeElement element, TypeElement parentType) {
+        if ( element != parentType ) { // otherwise the element was already checked for replacement
+            element = replaceTypeElementIfNecessary( elementUtils, element );
+        }
+
         addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ), parentType );
 
         if ( hasNonObjectSuperclass( element ) ) {

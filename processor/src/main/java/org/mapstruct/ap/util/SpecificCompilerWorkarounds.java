@@ -18,8 +18,10 @@
  */
 package org.mapstruct.ap.util;
 
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /**
@@ -71,5 +73,26 @@ public class SpecificCompilerWorkarounds {
         else {
             return types.erasure( t );
         }
+    }
+
+    /**
+     * When running during Eclipse Incremental Compilation, we might get a TypeElement that has an UnresolvedTypeBinding
+     * and which is not automatically resolved. In that case, getEnclosedElements returns an empty list. We take that as
+     * a hint to check if the TypeElement resolved by FQN might have any enclosed elements and, if so, return the
+     * resolved element.
+     *
+     * @param elementUtils element utils
+     * @param element the original element
+     * @return the element freshly resolved using the qualified name, if the original element did not return any
+     *         enclosed elements, whereas the resolved element does return enclosed elements.
+     */
+    public static TypeElement replaceTypeElementIfNecessary(Elements elementUtils, TypeElement element) {
+        if ( element.getEnclosedElements().isEmpty() ) {
+            TypeElement resolvedByName = elementUtils.getTypeElement( element.getQualifiedName() );
+            if ( resolvedByName != null && !resolvedByName.getEnclosedElements().isEmpty() ) {
+                return resolvedByName;
+            }
+        }
+        return element;
     }
 }
