@@ -25,7 +25,6 @@ import java.util.Set;
 import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.util.JodaTimeConstants;
-import org.mapstruct.ap.util.Strings;
 
 import static org.mapstruct.ap.util.Collections.asSet;
 
@@ -92,7 +91,7 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
         conversionString.append( ".forPattern(" );
 
         String dateFormat = conversionContext.getDateFormat();
-        if ( Strings.isEmpty( dateFormat ) ) {
+        if ( dateFormat == null ) {
             conversionString.append( defaultDateFormatPattern() );
 
         }
@@ -102,12 +101,12 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
             conversionString.append( "\"" );
 
         }
-        conversionString.append( ")" );
+        conversionString.append( " )" );
         return conversionString.toString();
     }
 
     private String defaultDateFormatPattern() {
-        return "DateTimeFormat.patternForStyle( \"" + formatStyle() + "\", Locale.getDefault() )";
+        return " DateTimeFormat.patternForStyle( \"" + formatStyle() + "\", Locale.getDefault() )";
     }
 
     /**
