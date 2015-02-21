@@ -58,6 +58,7 @@ import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.SpecificCompilerWorkarounds;
 
 import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.erasure;
+import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
 /**
  * Factory creating {@link Type} instances.
@@ -258,7 +259,8 @@ public class TypeFactory {
      * @return the ExecutableType representing the method as part of usedMapper
      */
     public ExecutableType getMethodType(TypeElement usedMapper, ExecutableElement method) {
-        TypeMirror asMemberOf = typeUtils.asMemberOf( (DeclaredType) usedMapper.asType(), method );
+        DeclaredType asType = (DeclaredType) replaceTypeElementIfNecessary( elementUtils, usedMapper ).asType();
+        TypeMirror asMemberOf = typeUtils.asMemberOf( asType, method );
         ExecutableType methodType = asMemberOf.accept( new ExecutableTypeRetrievalVisitor(), null );
         return methodType;
     }
