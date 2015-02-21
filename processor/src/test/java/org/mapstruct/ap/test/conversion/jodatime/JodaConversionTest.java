@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.conversion.jodatime;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.joda.time.DateTime;
@@ -26,6 +27,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -43,6 +45,11 @@ import static org.fest.assertions.Assertions.assertThat;
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 @IssueKey("75")
 public class JodaConversionTest {
+
+    @Before
+    public void setDefaultLocale() {
+        Locale.setDefault( Locale.GERMAN );
+    }
 
     @Test
     public void testDateTimeToString() {
@@ -201,5 +208,17 @@ public class JodaConversionTest {
         Source mappedSource = SourceTargetMapper.INSTANCE.targetToSource( target );
         assertThat( mappedSource ).isNotNull();
         assertThat( mappedSource.getDateTimeForCalendarConversion() ).isEqualTo( dateTimeWithCalendar );
+    }
+
+    @Test
+    @WithClasses({ StringToLocalDateMapper.class, SourceWithStringDate.class, TargetWithLocalDate.class })
+    @IssueKey("456")
+    public void testStringToLocalDateUsingDefaultFormat() {
+        SourceWithStringDate source = new SourceWithStringDate();
+        source.setDate( "19. November 2014" );
+
+        TargetWithLocalDate target = StringToLocalDateMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target.getDate() ).isEqualTo( new LocalDate( 2014, 11, 19 ) );
     }
 }

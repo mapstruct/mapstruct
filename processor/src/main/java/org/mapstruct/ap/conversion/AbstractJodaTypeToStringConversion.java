@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.conversion;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
@@ -42,10 +43,18 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
 
     @Override
     protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
-        return asSet(
-            conversionContext.getTypeFactory().getType( JodaTimeConstants.DATE_TIME_FORMAT_FQN ),
-            conversionContext.getTypeFactory().getType( Locale.class )
-        );
+        if ( conversionContext.getDateFormat() != null ) {
+            return Collections.singleton(
+                conversionContext.getTypeFactory()
+                    .getType( JodaTimeConstants.DATE_TIME_FORMAT_FQN )
+            );
+        }
+        else {
+            return asSet(
+                conversionContext.getTypeFactory().getType( JodaTimeConstants.DATE_TIME_FORMAT_FQN ),
+                conversionContext.getTypeFactory().getType( Locale.class )
+            );
+        }
     }
 
     @Override
@@ -55,7 +64,18 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
-        return asSet( conversionContext.getTypeFactory().getType( JodaTimeConstants.DATE_TIME_FORMAT_FQN ) );
+        if ( conversionContext.getDateFormat() != null ) {
+            return Collections.singleton(
+                conversionContext.getTypeFactory()
+                    .getType( JodaTimeConstants.DATE_TIME_FORMAT_FQN )
+            );
+        }
+        else {
+            return asSet(
+                conversionContext.getTypeFactory().getType( JodaTimeConstants.DATE_TIME_FORMAT_FQN ),
+                conversionContext.getTypeFactory().getType( Locale.class )
+            );
+        }
     }
 
     private String conversionString(ConversionContext conversionContext, String method) {
