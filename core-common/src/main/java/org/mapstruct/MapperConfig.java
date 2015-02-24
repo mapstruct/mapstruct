@@ -26,20 +26,23 @@ import java.lang.annotation.Target;
 import org.mapstruct.factory.Mappers;
 
 /**
- * Marks a class- or interface-declaration as (common) configuration.
+ * Marks a class or interface as configuration source for generated mappers. This allows to share common configurations
+ * between several mapper classes.
  * <p>
- * The {@link #unmappedTargetPolicy() } and {@link #componentModel() } can be overruled by a specific {@link Mapper}
- * annotation. {@link #uses() } will be used in addition to what is specified in the {@link Mapper} annotation.
- * </p>
+ * Generally, any settings given via {@link Mapper} take precedence over the settings given via the referenced
+ * {@code MapperConfig}. The lists of referenced mappers given via {@link Mapper#uses()} and
+ * {@link MapperConfig#uses()} will be merged.
  * <p>
- * Mapping methods defined in the annotated type can be used as <em>prototypes</em> from which method-level annotations
- * such as {@code @Mapping}, {@code @IterableMapping}, etc. can be inherited. Depending on the configured
+ * Additionally, mapper configuration classes may declare one more <em>prototype mapping methods</em>. These methods are
+ * not meant to be invoked themselves (no implementation will generated for mapper config classes), but serve as
+ * configuration template for mapping methods declared by actual mapper classes. Depending on the configured
  * {@link #mappingInheritanceStrategy()}, the configuration can be inherited either explicitly using
  * {@link InheritConfiguration} or {@link InheritInverseConfiguration}, or automatically in case all source and target
  * types are assignable.
  * </p>
  *
  * @author Sjaak Derksen
+ * @see Mapper#config()
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)

@@ -24,14 +24,28 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Advises the code generator to apply all the {@link Mapping}s from a mapping method to the annotated method
- * as well. The method should have the same source type and target type.
+ * Advises the code generator to apply the configuration (as given via {@link Mapping}, {@link IterableMapping} etc.)
+ * from another mapping method (declared on the same mapper type) or prototype method (declared on a mapper config class
+ * referenced via {@link Mapper#config()}) to the annotated method as well.
  * <p>
- * A typical use case is annotating an update method (a method with the {@link MappingTarget} in which an existing
- * target is updated) in order to copy all defined mappings.
+ * If no method can be identified unambiguously as configuration source (i.e. several candidate methods with matching
+ * source and target type exist), the name of the method to inherit from must be specified via {@link #name()}.
  * <p>
- * If more than one matching method exists, the name of the method to inherit the configuration from must be
- * specified via {@link #name()}
+ * A typical use case is annotating an update method so it inherits all mappings from a corresponding "standard" mapping
+ * method:
+ *
+ * <pre>
+ * {@code
+ * &#64;Mapping({
+ *     &#64;Mapping(target="make", source="brand"),
+ *     &#64;Mapping(target="seatCount", source="numberOfSeats")
+ * })
+ * CarDto carToCarDto(Car car);
+ *
+ * &#64;InheritConfiguration
+ * void updateCarDto(Car car, &#64;MappingTarget CarDto carDto);
+ * }
+ * </pre>
  *
  * @author Sjaak Derksen
  */
@@ -40,8 +54,8 @@ import java.lang.annotation.Target;
 public @interface InheritConfiguration {
 
     /**
-     * The name of the mapping method to inherit the mappings from. Needs only to be specified in case more than
-     * one method with matching source and target type exists.
+     * The name of the mapping method to inherit the mappings from. Needs only to be specified in case more than one
+     * method with matching source and target type exists.
      *
      * @return The name of the mapping method to inherit the mappings from.
      */

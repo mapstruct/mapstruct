@@ -19,8 +19,8 @@
 package org.mapstruct;
 
 /**
- * The strategy to use for applying method-level configuration annotations of prototype methods in the interface
- * specified with {@link Mapper#config()}.
+ * Strategy for inheriting configurations given for methods of prototype mapping methods (declared on mapper config
+ * classes) to actual mapping methods declared on mappers referring to such config class via {@link Mapper#config()}.
  *
  * @author Andreas Gudian
  */
@@ -32,8 +32,8 @@ public enum MappingInheritanceStrategy {
     EXPLICIT,
 
     /**
-     * Apply the method-level configuration annotations if source and target types of the prototype method are
-     * assignable from the types of a given mapping method.
+     * Inherit the method-level configuration annotations automatically if source and target types of the prototype
+     * method are assignable from the types of a given mapping method.
      */
     AUTO_INHERIT_FROM_CONFIG,
 
