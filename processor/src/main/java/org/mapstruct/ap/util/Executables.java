@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.util;
 
-import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +32,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
+
+import org.mapstruct.ap.services.Services;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
@@ -52,41 +53,30 @@ public class Executables {
     }
 
     private static boolean isNonBooleanGetterMethod(ExecutableElement method) {
-        String name = method.getSimpleName().toString();
-
-        return method.getParameters().isEmpty() &&
-            name.startsWith( "get" ) &&
-            name.length() > 3 &&
-            method.getReturnType().getKind() != TypeKind.VOID;
+        return method.getParameters().isEmpty()
+            && Services.getAccessorNamingStrategy().isNonBooleanGetterName( method.getSimpleName().toString() )
+            && method.getReturnType().getKind() != TypeKind.VOID;
     }
 
     private static boolean isBooleanGetterMethod(ExecutableElement method) {
-        String name = method.getSimpleName().toString();
         boolean returnTypeIsBoolean = method.getReturnType().getKind() == TypeKind.BOOLEAN ||
             "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) );
 
-        return method.getParameters().isEmpty() &&
-            name.startsWith( "is" ) &&
-            name.length() > 2 &&
-            returnTypeIsBoolean;
+        return method.getParameters().isEmpty()
+            && Services.getAccessorNamingStrategy().isBooleanGetterName( method.getSimpleName().toString() )
+            && returnTypeIsBoolean;
     }
 
     public static boolean isSetterMethod(ExecutableElement method) {
-        String name = method.getSimpleName().toString();
-
-        return isPublic( method ) &&
-            name.startsWith( "set" ) &&
-            name.length() > 3 &&
-            method.getParameters().size() == 1;
+        return isPublic( method )
+            && Services.getAccessorNamingStrategy().isSetterName( method.getSimpleName().toString() )
+            && method.getParameters().size() == 1;
     }
 
     public static boolean isAdderMethod(ExecutableElement method) {
-        String name = method.getSimpleName().toString();
-
-        return isPublic( method ) &&
-            name.startsWith( "add" ) && name.length() > 3 &&
-            method.getParameters().size() == 1;
-
+        return isPublic( method )
+            && Services.getAccessorNamingStrategy().isAdderName( method.getSimpleName().toString() )
+            && method.getParameters().size() == 1;
     }
 
     private static boolean isPublic(ExecutableElement method) {
@@ -95,18 +85,18 @@ public class Executables {
 
     public static String getPropertyName(ExecutableElement getterOrSetterMethod) {
         if ( isNonBooleanGetterMethod( getterOrSetterMethod ) ) {
-            return Introspector.decapitalize(
-                getterOrSetterMethod.getSimpleName().toString().substring( 3 )
+            return Services.getAccessorNamingStrategy().getPropertyNameForNonBooleanGetterName(
+                getterOrSetterMethod.getSimpleName().toString()
             );
         }
         else if ( isBooleanGetterMethod( getterOrSetterMethod ) ) {
-            return Introspector.decapitalize(
-                getterOrSetterMethod.getSimpleName().toString().substring( 2 )
+            return Services.getAccessorNamingStrategy().getPropertyNameForBooleanGetterName(
+                getterOrSetterMethod.getSimpleName().toString()
             );
         }
         else if ( isSetterMethod( getterOrSetterMethod ) ) {
-            return Introspector.decapitalize(
-                getterOrSetterMethod.getSimpleName().toString().substring( 3 )
+            return Services.getAccessorNamingStrategy().getPropertyNameForSetterName(
+                getterOrSetterMethod.getSimpleName().toString()
             );
         }
 
@@ -120,8 +110,8 @@ public class Executables {
      */
     public static String getElementNameForAdder(ExecutableElement adderMethod) {
         if ( isAdderMethod( adderMethod ) ) {
-            return Introspector.decapitalize(
-                adderMethod.getSimpleName().toString().substring( 3 )
+            return Services.getAccessorNamingStrategy().getElementNameForAdderName(
+                adderMethod.getSimpleName().toString()
             );
         }
 
