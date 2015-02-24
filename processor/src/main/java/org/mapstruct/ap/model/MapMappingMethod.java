@@ -29,7 +29,7 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
-import org.mapstruct.ap.util.MapperConfig;
+import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
@@ -148,7 +148,7 @@ public class MapMappingMethod extends MappingMethod {
             // mapNullToDefault
             NullValueMappingPrism prism = NullValueMappingPrism.getInstanceOn( method.getExecutable() );
             boolean mapNullToDefault =
-                MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
+                MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 
             MethodReference factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType() );
 

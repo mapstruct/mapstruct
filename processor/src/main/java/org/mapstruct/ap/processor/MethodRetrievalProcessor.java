@@ -47,7 +47,7 @@ import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.FormattingMessager;
-import org.mapstruct.ap.util.MapperConfig;
+import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Message;
 
 import static org.mapstruct.ap.util.Executables.getAllEnclosedExecutableElements;
@@ -74,7 +74,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.typeUtils = context.getTypeUtils();
         this.elementUtils = context.getElementUtils();
 
-        MapperConfig mapperConfig = MapperConfig.getInstanceOn( mapperTypeElement );
+        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
 
         if ( !mapperConfig.isValid() ) {
             throw new AnnotationProcessingException(
@@ -93,7 +93,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return 1;
     }
 
-    private List<SourceMethod> retrievePrototypeMethods(TypeMirror typeMirror, MapperConfig mapperConfig) {
+    private List<SourceMethod> retrievePrototypeMethods(TypeMirror typeMirror, MapperConfiguration mapperConfig) {
         if ( typeMirror == null || typeMirror.getKind() == TypeKind.VOID ) {
             return Collections.emptyList();
         }
@@ -136,7 +136,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return All mapping methods declared by the given type
      */
     private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement,
-                                               MapperConfig mapperConfig, List<SourceMethod> prototypeMethods) {
+                                               MapperConfiguration mapperConfig, List<SourceMethod> prototypeMethods) {
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
 
         for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper ) ) {
@@ -173,7 +173,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private SourceMethod getMethod(TypeElement usedMapper,
                                    ExecutableElement method,
                                    TypeElement mapperToImplement,
-                                   MapperConfig mapperConfig,
+                                   MapperConfiguration mapperConfig,
                                    List<SourceMethod> prototypeMethods) {
 
         ExecutableType methodType = typeFactory.getMethodType( usedMapper, method );
@@ -202,7 +202,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private SourceMethod getMethodRequiringImplementation(ExecutableType methodType, ExecutableElement method,
                                                           List<Parameter> parameters,
                                                           boolean containsTargetTypeParameter,
-                                                          MapperConfig mapperConfig,
+                                                          MapperConfiguration mapperConfig,
                                                           List<SourceMethod> prototypeMethods) {
         Type returnType = typeFactory.getReturnType( methodType );
         List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
@@ -236,7 +236,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 .setTypeUtils( typeUtils )
                 .setMessager( messager )
                 .setTypeFactory( typeFactory )
-                .setMapperConfig( mapperConfig )
+                .setMapperConfiguration( mapperConfig )
                 .setPrototypeMethods( prototypeMethods )
                 .buildSourceMethod();
     }

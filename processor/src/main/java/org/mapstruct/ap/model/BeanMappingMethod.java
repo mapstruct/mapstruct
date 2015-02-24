@@ -45,7 +45,7 @@ import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
 import org.mapstruct.ap.util.Executables;
-import org.mapstruct.ap.util.MapperConfig;
+import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
@@ -80,7 +80,7 @@ public class BeanMappingMethod extends MappingMethod {
 
         public Builder souceMethod(SourceMethod sourceMethod) {
             this.method = sourceMethod;
-            CollectionMappingStrategyPrism cms = sourceMethod.getConfig().getCollectionMappingStrategy();
+            CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
             Map<String, ExecutableElement> accessors = method.getResultType().getTargetAccessors( cms );
             this.unprocessedTargetProperties = new HashMap<String, ExecutableElement>( accessors );
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
@@ -108,7 +108,7 @@ public class BeanMappingMethod extends MappingMethod {
             // mapNullToDefault
             NullValueMappingPrism prism = NullValueMappingPrism.getInstanceOn( method.getExecutable() );
             boolean mapNullToDefault =
-                MapperConfig.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
+                MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 
             MethodReference factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType() );
 
@@ -407,7 +407,7 @@ public class BeanMappingMethod extends MappingMethod {
          * @return The effective policy for reporting unmapped target properties.
          */
         private ReportingPolicy getEffectiveUnmappedTargetPolicy() {
-            MapperConfig mapperSettings = MapperConfig.getInstanceOn( ctx.getMapperTypeElement() );
+            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
             boolean setViaAnnotation = mapperSettings.isSetUnmappedTargetPolicy();
             ReportingPolicy annotationValue = ReportingPolicy.valueOf( mapperSettings.unmappedTargetPolicy() );
 

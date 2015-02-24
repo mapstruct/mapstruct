@@ -35,7 +35,7 @@ import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
 import org.mapstruct.ap.util.FormattingMessager;
-import org.mapstruct.ap.util.MapperConfig;
+import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Strings;
 
 import static org.mapstruct.ap.util.Collections.first;
@@ -63,7 +63,7 @@ public class SourceMethod implements Method {
     private final Type returnType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
-    private final MapperConfig config;
+    private final MapperConfiguration config;
     private final MappingOptions mappingOptions;
     private final List<SourceMethod> prototypeMethods;
 
@@ -86,7 +86,7 @@ public class SourceMethod implements Method {
         private Types typeUtils;
         private TypeFactory typeFactory = null;
         private FormattingMessager messager = null;
-        private MapperConfig mapperConfig = null;
+        private MapperConfiguration mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
 
         public Builder() {
@@ -147,7 +147,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMapperConfig(MapperConfig mapperConfig) {
+        public Builder setMapperConfiguration(MapperConfiguration mapperConfig) {
             this.mapperConfig = mapperConfig;
             return this;
         }
@@ -185,7 +185,7 @@ public class SourceMethod implements Method {
     @SuppressWarnings( "checkstyle:parameternumber" )
     private SourceMethod( Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
                          Type returnType, List<Type> exceptionTypes, MappingOptions mappingOptions, Types typeUtils,
-                         TypeFactory typeFactory, MapperConfig config, List<SourceMethod> prototypeMethods) {
+                         TypeFactory typeFactory, MapperConfiguration config, List<SourceMethod> prototypeMethods) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
@@ -506,7 +506,7 @@ public class SourceMethod implements Method {
      *
      * @return the mapper config when this method needs to be implemented
      */
-    public MapperConfig getConfig() {
+    public MapperConfiguration getMapperConfiguration() {
         return config;
     }
 

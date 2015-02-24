@@ -29,6 +29,8 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.MapperConfig;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.MapperConfigPrism;
@@ -38,26 +40,25 @@ import org.mapstruct.ap.prism.NullValueMappingPrism;
 import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 
 /**
- * Class decorating the {@link MapperPrism} with the 'default' configuration.
- *
- * If no configuration for a property is defined in the {@link org.mapstruct.Mapper} annotation this
- * decorator will revert to the {@link org.mapstruct.Mapper#config() } defined mapper.
- *
- * {@link org.mapstruct.MapperConfig#uses() } will add its Mappers to the ones defined in
- * {@link org.mapstruct.Mapper#uses() }
+ * Provides an aggregated view to the settings given via {@link Mapper} and {@link MapperConfig} for a specific mapper
+ * class.
+ * <p>
+ * Settings given via {@code Mapper} will generally take precedence over settings inherited from a referenced config
+ * class. The lists of referenced mappers given via {@link Mapper#uses()} and {@link MapperConfig#uses() } will be
+ * merged.
  *
  * @author Sjaak Derksen
  */
-public class MapperConfig {
+public class MapperConfiguration {
 
     private final MapperPrism mapperPrism;
     private final MapperConfigPrism mapperConfigPrism;
 
-    public static MapperConfig getInstanceOn(Element e) {
-        return new MapperConfig( MapperPrism.getInstanceOn( e ) );
+    public static MapperConfiguration getInstanceOn(Element e) {
+        return new MapperConfiguration( MapperPrism.getInstanceOn( e ) );
     }
 
-    private MapperConfig(MapperPrism mapperPrism) {
+    private MapperConfiguration(MapperPrism mapperPrism) {
         this.mapperPrism = mapperPrism;
         TypeMirror typeMirror = mapperPrism.config();
         if ( typeMirror.getKind().equals( TypeKind.DECLARED ) ) {

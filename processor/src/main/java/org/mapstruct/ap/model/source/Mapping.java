@@ -244,7 +244,7 @@ public class Mapping {
     }
 
     private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
-        CollectionMappingStrategyPrism cms = method.getConfig().getCollectionMappingStrategy();
+        CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         return method.getResultType().getTargetAccessors( cms ).containsKey( name );
     }
 
