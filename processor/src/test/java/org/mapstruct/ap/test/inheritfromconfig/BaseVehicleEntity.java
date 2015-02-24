@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.inheritfromconfig;
 
 /**
  * @author Andreas Gudian
- *
  */
 public abstract class BaseVehicleEntity {
     private long primaryKey;

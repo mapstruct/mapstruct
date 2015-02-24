@@ -44,7 +44,7 @@ import java.lang.annotation.Target;
  *
  * @author Sjaak Derksen
  */
-@Target( ElementType.ANNOTATION_TYPE )
-@Retention( RetentionPolicy.CLASS )
+@Target(ElementType.ANNOTATION_TYPE)
+@Retention(RetentionPolicy.CLASS)
 public @interface Qualifier {
 }

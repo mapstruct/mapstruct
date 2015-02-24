@@ -109,7 +109,7 @@ public @interface MapperConfig {
      * If no strategy is configured, {@link MappingInheritanceStrategy#EXPLICIT} will be used as default.
      *
      * @return The strategy to use for applying {@code @Mapping} configurations of prototype methods in the interface
-     *         annotated with this annotation.
+     * annotated with this annotation.
      */
     MappingInheritanceStrategy mappingInheritanceStrategy()
         default MappingInheritanceStrategy.EXPLICIT;

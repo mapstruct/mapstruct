@@ -27,7 +27,6 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
- *
  */
 @Mapper(
     config = AutoInheritedConfig.class
@@ -35,17 +34,17 @@ import org.mapstruct.factory.Mappers;
 public interface Erroneous2Mapper {
     Erroneous2Mapper INSTANCE = Mappers.getMapper( Erroneous2Mapper.class );
 
-    @InheritConfiguration( name = "toCarEntity2" )
+    @InheritConfiguration(name = "toCarEntity2")
     CarEntity toCarEntity1(CarDto carDto);
 
-    @InheritConfiguration( name = "toCarEntity3" )
+    @InheritConfiguration(name = "toCarEntity3")
     CarEntity toCarEntity2(CarDto carDto);
 
-    @InheritConfiguration( name = "toCarEntity1" )
-    @Mappings( {
-        @Mapping( target = "color", ignore = true ),
-        @Mapping( target = "auditTrail", ignore = true ),
-        @Mapping( target = "primaryKey", ignore = true )
-    } )
+    @InheritConfiguration(name = "toCarEntity1")
+    @Mappings({
+        @Mapping(target = "color", ignore = true),
+        @Mapping(target = "auditTrail", ignore = true),
+        @Mapping(target = "primaryKey", ignore = true)
+    })
     void toCarEntity3(CarDto carDto, @MappingTarget CarEntity entity);
 }

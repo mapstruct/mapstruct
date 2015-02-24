@@ -55,6 +55,7 @@ public class Mappers {
      *
      * @param clazz The type of the mapper to return.
      * @param <T> The type of the mapper to create.
+     *
      * @return An instance of the given mapper type.
      */
     public static <T> T getMapper(Class<T> clazz) {

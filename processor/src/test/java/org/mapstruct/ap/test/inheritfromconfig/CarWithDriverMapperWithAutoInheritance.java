@@ -24,7 +24,6 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
- *
  */
 @Mapper(
     config = AutoInheritedDriverConfig.class
@@ -32,6 +31,6 @@ import org.mapstruct.factory.Mappers;
 public interface CarWithDriverMapperWithAutoInheritance {
     CarWithDriverMapperWithAutoInheritance INSTANCE = Mappers.getMapper( CarWithDriverMapperWithAutoInheritance.class );
 
-    @Mapping( target = "color", source = "carDto.colour" )
+    @Mapping(target = "color", source = "carDto.colour")
     CarWithDriverEntity toCarWithDriverEntity(CarDto carDto, DriverDto driverDto);
 }

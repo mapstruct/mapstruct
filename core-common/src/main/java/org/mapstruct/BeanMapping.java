@@ -31,8 +31,8 @@ import java.lang.annotation.Target;
  *
  * @author Sjaak Derksen
  */
-@Target( ElementType.METHOD )
-@Retention( RetentionPolicy.SOURCE )
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.SOURCE)
 public @interface BeanMapping {
 
     /**
@@ -42,7 +42,7 @@ public @interface BeanMapping {
      */
     Class<?> resultType() default void.class;
 
-   /**
+    /**
      * A qualifier can be specified to aid the selection process of a suitable factory method. This is useful in
      * case multiple factory method (hand written of internal) qualify and result in an 'Ambiguous factory methods'
      * error.

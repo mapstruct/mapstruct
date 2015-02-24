@@ -28,7 +28,6 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
- *
  */
 @Mapper(
     config = AutoInheritedConfig.class
@@ -36,21 +35,21 @@ import org.mapstruct.factory.Mappers;
 public interface CarMapperWithAutoInheritance {
     CarMapperWithAutoInheritance INSTANCE = Mappers.getMapper( CarMapperWithAutoInheritance.class );
 
-    @Mapping( target = "color", source = "colour" )
+    @Mapping(target = "color", source = "colour")
     CarEntity toCarEntity(CarDto carDto);
 
-    @InheritInverseConfiguration( name = "toCarEntity" )
+    @InheritInverseConfiguration(name = "toCarEntity")
     CarDto toCarDto(CarEntity entity);
 
-    @Mappings( {
-        @Mapping( target = "color", source = "colour" ),
-        @Mapping( target = "auditTrail", constant = "fixed" )
-    } )
+    @Mappings({
+        @Mapping(target = "color", source = "colour"),
+        @Mapping(target = "auditTrail", constant = "fixed")
+    })
     CarEntity toCarEntityWithFixedAuditTrail(CarDto carDto);
 
-    @Mapping( target = "color", source = "colour" )
+    @Mapping(target = "color", source = "colour")
     void intoCarEntityOnItsOwn(CarDto carDto, @MappingTarget CarEntity entity);
 
-    @InheritConfiguration( name = "toCarEntity" )
+    @InheritConfiguration(name = "toCarEntity")
     void intoCarEntity(CarDto carDto, @MappingTarget CarEntity entity);
 }

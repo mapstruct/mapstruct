@@ -27,19 +27,19 @@ public enum CollectionMappingStrategy {
 
     /**
      * The setter of the target property will be used to propagate the value:
-     * {@code orderDto.setOrderLines( order.getOrderLines )}.
+     * {@code orderDto.setOrderLines(order.getOrderLines)}.
      * <p>
      * If no setter is available but a getter method, this will be used, under the assumption it has been initialized:
-     * {@code orderDto.getOrderLines().addAll( order.getOrderLines )}.
+     * {@code orderDto.getOrderLines().addAll(order.getOrderLines)}.
      */
     ACCESSOR_ONLY,
 
     /**
      * If present, the setter of the target property will be used to propagate the value:
-     * {@code orderDto.setOrderLines( order.getOrderLines )}.
+     * {@code orderDto.setOrderLines(order.getOrderLines)}.
      * <p>
      * If no setter but and adder method is present, that adder will be invoked for each element of the source
-     * collection: {@code order.addOrderLine( orderLine() )}.
+     * collection: {@code order.addOrderLine(orderLine() )}.
      * <p>
      * If neither a setter nor an adder method but a getter for the target property is present, that getter will be
      * used, assuming it returns an initialized collection: If no setter is available, MapStruct will first look for an

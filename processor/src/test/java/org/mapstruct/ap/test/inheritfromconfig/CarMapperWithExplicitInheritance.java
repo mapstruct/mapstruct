@@ -27,7 +27,6 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
- *
  */
 @Mapper(
     config = AutoInheritedConfig.class,
@@ -36,14 +35,14 @@ import org.mapstruct.factory.Mappers;
 public interface CarMapperWithExplicitInheritance {
     CarMapperWithExplicitInheritance INSTANCE = Mappers.getMapper( CarMapperWithExplicitInheritance.class );
 
-    @InheritConfiguration( name = "baseDtoToEntity" )
-    @Mapping( target = "color", source = "colour" )
+    @InheritConfiguration(name = "baseDtoToEntity")
+    @Mapping(target = "color", source = "colour")
     CarEntity toCarEntity(CarDto carDto);
 
-    @InheritInverseConfiguration( name = "toCarEntity" )
+    @InheritInverseConfiguration(name = "toCarEntity")
     CarDto toCarDto(CarEntity entity);
 
-    @InheritConfiguration( name = "toCarEntity" )
-    @Mapping( target = "auditTrail", constant = "fixed" )
+    @InheritConfiguration(name = "toCarEntity")
+    @Mapping(target = "auditTrail", constant = "fixed")
     CarEntity toCarEntityWithFixedAuditTrail(CarDto carDto);
 }

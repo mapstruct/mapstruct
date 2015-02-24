@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.inheritfromconfig;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
@@ -29,22 +31,20 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 /**
  * @author Andreas Gudian
- *
  */
-@RunWith( AnnotationProcessorTestRunner.class )
-@WithClasses( {
+@RunWith(AnnotationProcessorTestRunner.class)
+@WithClasses({
     BaseVehicleDto.class,
     BaseVehicleEntity.class,
     CarDto.class,
     CarEntity.class,
     CarMapperWithAutoInheritance.class,
     CarMapperWithExplicitInheritance.class,
-    AutoInheritedConfig.class } )
-@IssueKey( "168" )
+    AutoInheritedConfig.class
+})
+@IssueKey("168")
 public class InheritFromConfigTest {
 
     @Test
@@ -145,11 +145,12 @@ public class InheritFromConfigTest {
     }
 
     @Test
-    @WithClasses( {
+    @WithClasses({
         DriverDto.class,
         CarWithDriverEntity.class,
         CarWithDriverMapperWithAutoInheritance.class,
-        AutoInheritedDriverConfig.class } )
+        AutoInheritedDriverConfig.class
+    })
     public void autoInheritedFromMultipleSources() {
         CarDto carDto = newTestDto();
         DriverDto driverDto = new DriverDto();
@@ -163,32 +164,32 @@ public class InheritFromConfigTest {
     }
 
     @Test
-    @WithClasses( { Erroneous1Mapper.class, Erroneous1Config.class } )
+    @WithClasses({ Erroneous1Mapper.class, Erroneous1Config.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic( type = Erroneous1Mapper.class,
+            @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.ERROR,
-                line = 37,
+                line = 36,
                 messageRegExp = "More than one configuration prototype method is applicable. Use @InheritConfiguration"
                     + " to select one of them explicitly:"
                     + " .*BaseVehicleEntity baseDtoToEntity\\(.*BaseVehicleDto dto\\),"
-                    + " .*BaseVehicleEntity anythingToEntity\\(java.lang.Object anyting\\)\\." ),
-            @Diagnostic( type = Erroneous1Mapper.class,
+                    + " .*BaseVehicleEntity anythingToEntity\\(java.lang.Object anyting\\)\\."),
+            @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.WARNING,
-                line = 37,
-                messageRegExp = "Unmapped target properties: \"auditTrail, primaryKey\"\\." ),
-            @Diagnostic( type = Erroneous1Mapper.class,
+                line = 36,
+                messageRegExp = "Unmapped target properties: \"auditTrail, primaryKey\"\\."),
+            @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.ERROR,
-                line = 43,
+                line = 42,
                 messageRegExp = "More than one configuration prototype method is applicable. Use @InheritConfiguration"
                     + " to select one of them explicitly:"
                     + " .*BaseVehicleEntity baseDtoToEntity\\(.*BaseVehicleDto dto\\),"
-                    + " .*BaseVehicleEntity anythingToEntity\\(java.lang.Object anyting\\)\\." ),
-            @Diagnostic( type = Erroneous1Mapper.class,
+                    + " .*BaseVehicleEntity anythingToEntity\\(java.lang.Object anyting\\)\\."),
+            @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.WARNING,
-                line = 43,
-                messageRegExp = "Unmapped target property: \"primaryKey\"\\." )
+                line = 42,
+                messageRegExp = "Unmapped target property: \"primaryKey\"\\.")
         }
     )
     public void erroneous1MultiplePrototypeMethodsMatch() {
@@ -196,18 +197,18 @@ public class InheritFromConfigTest {
     }
 
     @Test
-    @WithClasses( { Erroneous2Mapper.class } )
+    @WithClasses({ Erroneous2Mapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic( type = Erroneous2Mapper.class,
+            @Diagnostic(type = Erroneous2Mapper.class,
                 kind = Kind.ERROR,
-                line = 39,
+                line = 38,
                 messageRegExp = "Cycle detected while evaluating inherited configurations. Inheritance path:"
                     + " .*CarEntity toCarEntity1\\(.*CarDto carDto\\)"
                     + " -> .*CarEntity toCarEntity2\\(.*CarDto carDto\\)"
                     + " -> void toCarEntity3\\(.*CarDto carDto, @MappingTarget .*CarEntity entity\\)"
-                    + " -> .*CarEntity toCarEntity1\\(.*CarDto carDto\\)" )
+                    + " -> .*CarEntity toCarEntity1\\(.*CarDto carDto\\)")
         }
     )
     public void erroneous2InheritanceCycle() {

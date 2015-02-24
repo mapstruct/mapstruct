@@ -123,7 +123,7 @@ public @interface Mapper {
      * applied, using {@link MappingInheritanceStrategy#EXPLICIT} as default.
      *
      * @return The strategy to use for applying {@code @Mapping} configurations of prototype methods in the interface
-     *         specified with {@link #config()}.
+     * specified with {@link #config()}.
      */
     MappingInheritanceStrategy mappingInheritanceStrategy() default MappingInheritanceStrategy.DEFAULT;
 }

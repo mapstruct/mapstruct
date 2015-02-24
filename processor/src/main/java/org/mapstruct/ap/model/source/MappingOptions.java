@@ -45,7 +45,7 @@ public class MappingOptions {
 
     /**
      * @return the {@link Mapping}s configured for this method, keyed by target property name. Only for enum mapping
-     *         methods a target will be mapped by several sources.
+     * methods a target will be mapped by several sources.
      */
     public Map<String, List<Mapping>> getMappings() {
         return mappings;
@@ -73,7 +73,7 @@ public class MappingOptions {
 
     /**
      * @return the {@code true}, iff the options have been fully initialized by applying all available inheritance
-     *         options
+     * options
      */
     public boolean isFullyInitialized() {
         return fullyInitialized;

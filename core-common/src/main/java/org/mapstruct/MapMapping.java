@@ -79,7 +79,8 @@ public @interface MapMapping {
     /**
      * Specifies the type of the key to be used in the result of the mapping method in case multiple mapping
      * methods qualify.
-     *     *
+     *
+     *
      * @return the resultType to select
      */
     Class<?> keyTargetType() default void.class;
@@ -87,7 +88,8 @@ public @interface MapMapping {
     /**
      * Specifies the type of the value to be used in the result of the mapping method in case multiple mapping
      * methods qualify.
-     *     *
+     *
+     *
      * @return the resultType to select
      */
     Class<?> valueTargetType() default void.class;

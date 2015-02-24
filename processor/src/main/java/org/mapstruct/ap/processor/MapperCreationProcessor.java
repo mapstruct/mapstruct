@@ -412,7 +412,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
      * per the source/target type and optionally the name given via {@code @InheritInverseConfiguration}).
      */
     private MappingOptions getInverseMappingOptions(List<SourceMethod> rawMethods, SourceMethod method,
-                                                    List<SourceMethod> initializingMethods, MapperConfiguration mapperConfig) {
+                                                    List<SourceMethod> initializingMethods,
+                                                    MapperConfiguration mapperConfig) {
         SourceMethod resultMethod = null;
         InheritInverseConfigurationPrism reversePrism = InheritInverseConfigurationPrism.getInstanceOn(
             method.getExecutable()

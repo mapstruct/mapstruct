@@ -25,7 +25,6 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
- *
  */
 @Mapper(
     config = Erroneous1Config.class
@@ -33,12 +32,12 @@ import org.mapstruct.factory.Mappers;
 public interface Erroneous1Mapper {
     Erroneous1Mapper INSTANCE = Mappers.getMapper( Erroneous1Mapper.class );
 
-    @Mapping( target = "color", source = "colour" )
+    @Mapping(target = "color", source = "colour")
     CarEntity toCarEntity(CarDto carDto);
 
-    @Mappings( {
-        @Mapping( target = "color", source = "colour" ),
-        @Mapping( target = "auditTrail", constant = "fixed" )
-    } )
+    @Mappings({
+        @Mapping(target = "color", source = "colour"),
+        @Mapping(target = "auditTrail", constant = "fixed")
+    })
     CarEntity toCarEntityWithFixedAuditTrail(CarDto carDto);
 }
