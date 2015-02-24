@@ -25,6 +25,8 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 
+import static org.mapstruct.ap.util.Collections.first;
+
 /**
  * Selects on inheritance distance, e.g. the amount of inheritance steps from the parameter type.
  *
@@ -50,7 +52,7 @@ public class InheritanceSelector implements MethodSelector {
 
         // find the methods with the minimum distance regarding getParameter getParameter type
         for ( T method : methods ) {
-            Parameter singleSourceParam = method.getSourceParameters().iterator().next();
+            Parameter singleSourceParam = first( method.getSourceParameters() );
 
             int sourceTypeDistance = sourceType.distanceTo( singleSourceParam.getType() );
             bestMatchingSourceTypeDistance =

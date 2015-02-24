@@ -16,31 +16,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.template;
+package org.mapstruct.ap.test.inheritfromconfig;
 
-import org.mapstruct.InheritConfiguration;
-import org.mapstruct.Mapper;
+import org.mapstruct.MapperConfig;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.MappingInheritanceStrategy;
 import org.mapstruct.Mappings;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.ReportingPolicy;
 
 /**
- * @author Sjaak Derksen
+ * @author Andreas Gudian
  */
-@Mapper
-public interface SourceTargetMapperSeveralArgs {
-
-    SourceTargetMapperSeveralArgs INSTANCE = Mappers.getMapper( SourceTargetMapperSeveralArgs.class );
-
-    @Mappings({
-        @Mapping( target = "stringPropY", source = "s1.stringPropX" ),
-        @Mapping( target = "integerPropY", source = "s1.integerPropX" ),
-        @Mapping( target = "nestedResultProp", source = "s1.nestedSourceProp.nested" )
-    })
-    Target forwardCreate(Source s1, String constantProp, String expressionProp);
-
-    @InheritConfiguration
-    void forwardUpdate(Source source, String constantProp, String expressionProp, @MappingTarget Target target);
-
+@MapperConfig(
+    mappingInheritanceStrategy = MappingInheritanceStrategy.AUTO_INHERIT_FROM_CONFIG,
+    unmappedTargetPolicy = ReportingPolicy.ERROR
+)
+public interface AutoInheritedConfig {
+    @Mappings( {
+        @Mapping( target = "primaryKey", source = "id" ),
+        @Mapping( target = "auditTrail", ignore = true )
+    } )
+    BaseVehicleEntity baseDtoToEntity(BaseVehicleDto dto);
 }

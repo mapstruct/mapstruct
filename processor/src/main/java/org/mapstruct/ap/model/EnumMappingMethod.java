@@ -29,6 +29,8 @@ import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
+import static org.mapstruct.ap.util.Collections.first;
+
 /**
  * A {@link MappingMethod} which maps one enum type to another, optionally configured by one or more
  * {@link EnumMapping}s.
@@ -63,8 +65,7 @@ public class EnumMappingMethod extends MappingMethod {
 
             List<EnumMapping> enumMappings = new ArrayList<EnumMapping>();
 
-            List<String> sourceEnumConstants
-                = method.getSourceParameters().iterator().next().getType().getEnumConstants();
+            List<String> sourceEnumConstants = first( method.getSourceParameters() ).getType().getEnumConstants();
 
             for ( String enumConstant : sourceEnumConstants ) {
                 List<Mapping> mappedConstants = method.getMappingBySourcePropertyName( enumConstant );
@@ -75,7 +76,7 @@ public class EnumMappingMethod extends MappingMethod {
                 else if ( mappedConstants.size() == 1 ) {
                     enumMappings.add(
                         new EnumMapping(
-                            enumConstant, mappedConstants.iterator().next().getTargetName()
+                            enumConstant, first( mappedConstants ).getTargetName()
                         )
                     );
                 }
@@ -96,13 +97,12 @@ public class EnumMappingMethod extends MappingMethod {
         }
 
         private boolean reportErrorIfMappedEnumConstantsDontExist(SourceMethod method) {
-            List<String> sourceEnumConstants =
-                method.getSourceParameters().iterator().next().getType().getEnumConstants();
+            List<String> sourceEnumConstants = first( method.getSourceParameters() ).getType().getEnumConstants();
             List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
 
             boolean foundIncorrectMapping = false;
 
-            for ( List<Mapping> mappedConstants : method.getMappings().values() ) {
+            for ( List<Mapping> mappedConstants : method.getMappingOptions().getMappings().values() ) {
                 for ( Mapping mappedConstant : mappedConstants ) {
 
                     if ( mappedConstant.getSourceName() == null ) {
@@ -118,7 +118,7 @@ public class EnumMappingMethod extends MappingMethod {
                             mappedConstant.getSourceAnnotationValue(),
                             Message.ENUMMAPPING_NON_EXISTING_CONSTANT,
                             mappedConstant.getSourceName(),
-                            method.getSourceParameters().iterator().next().getType()
+                            first( method.getSourceParameters() ).getType()
                         );
                         foundIncorrectMapping = true;
                     }
@@ -148,8 +148,7 @@ public class EnumMappingMethod extends MappingMethod {
         private boolean reportErrorIfSourceEnumConstantsWithoutCorrespondingTargetConstantAreNotMapped(
             SourceMethod method) {
 
-            List<String> sourceEnumConstants =
-                method.getSourceParameters().iterator().next().getType().getEnumConstants();
+            List<String> sourceEnumConstants = first( method.getSourceParameters() ).getType().getEnumConstants();
             List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
             List<String> unmappedSourceEnumConstants = new ArrayList<String>();
 
@@ -182,6 +181,6 @@ public class EnumMappingMethod extends MappingMethod {
     }
 
     public Parameter getSourceParameter() {
-        return getParameters().iterator().next();
+        return first( getParameters() );
     }
 }

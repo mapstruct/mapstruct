@@ -40,7 +40,7 @@ public interface SourceTargetMapperSingle {
         @Mapping(target = "constantProp", constant = "constant"),
         @Mapping(target = "expressionProp", expression = "java(\"expression\")"),
     })
-    Target forwardCreate(Source source);
+    Target forwardCreate(Source s1);
 
 
     @InheritConfiguration

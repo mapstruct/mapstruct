@@ -112,4 +112,17 @@ public @interface Mapper {
      * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapper.
      */
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.DEFAULT;
+
+    /**
+     * The strategy to use for applying method-level configuration annotations of prototype methods in the interface
+     * specified with {@link #config()}. Annotations that can be inherited are for example {@link Mapping},
+     * {@link IterableMapping}, {@link MapMapping}, or {@link BeanMapping}.
+     * <p>
+     * If no strategy is configured, the strategy given via {@link MapperConfig#mappingInheritanceStrategy()} will be
+     * applied, using {@link MappingInheritanceStrategy#EXPLICIT} as default.
+     *
+     * @return The strategy to use for applying {@code @Mapping} configurations of prototype methods in the interface
+     *         specified with {@link #config()}.
+     */
+    MappingInheritanceStrategy mappingInheritanceStrategy() default MappingInheritanceStrategy.DEFAULT;
 }

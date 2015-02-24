@@ -22,15 +22,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
-import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Executables;
+import org.mapstruct.ap.util.FormattingMessager;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
+
+import static org.mapstruct.ap.util.Collections.first;
 
 /**
  * This class describes the source side of a property mapping.
@@ -286,5 +288,26 @@ public class SourceReference {
             return type;
         }
 
+    }
+
+    /**
+     * Creates a copy of this reference, which is adapted to the given method
+     *
+     * @param the method to adapt the copy to
+     */
+    public SourceReference copyForInheritanceTo(SourceMethod method) {
+        List<Parameter> replacementParamCandidates = new ArrayList<Parameter>();
+        for ( Parameter sourceParam : method.getSourceParameters() ) {
+            if ( sourceParam.getType().isAssignableTo( parameter.getType() ) ) {
+                replacementParamCandidates.add( sourceParam );
+            }
+        }
+
+        Parameter replacement = parameter;
+        if ( replacementParamCandidates.size() == 1 ) {
+            replacement = first( replacementParamCandidates );
+        }
+
+        return new SourceReference( replacement, propertyEntries, isValid );
     }
 }

@@ -23,11 +23,13 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mapstruct.CollectionMappingStrategy;
+import org.mapstruct.MappingInheritanceStrategy;
+import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.prism.MappingInheritanceStrategyPrism;
+import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 
 import static org.fest.assertions.Assertions.assertThat;
-import org.mapstruct.NullValueMappingStrategy;
-import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 
 /**
  * Test for manually created prisms on enumeration types
@@ -45,6 +47,12 @@ public class EnumPrismsTest {
     public void mapNullToDefaultStrategyPrismIsCorrect() {
         assertThat( namesOf( NullValueMappingStrategy.values() ) ).isEqualTo(
             namesOf( NullValueMappingStrategyPrism.values() ) );
+    }
+
+    @Test
+    public void mapMappingInheritanceStrategyPrismIsCorrect() {
+        assertThat( namesOf( MappingInheritanceStrategy.values() ) ).isEqualTo(
+            namesOf( MappingInheritanceStrategyPrism.values() ) );
     }
 
     private static List<String> namesOf(Enum<?>[] values) {

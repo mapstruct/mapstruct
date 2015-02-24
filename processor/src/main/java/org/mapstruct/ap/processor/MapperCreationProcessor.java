@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
@@ -46,6 +45,7 @@ import org.mapstruct.ap.model.MappingBuilderContext;
 import org.mapstruct.ap.model.MappingMethod;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+import org.mapstruct.ap.model.source.MappingOptions;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.option.Options;
 import org.mapstruct.ap.prism.DecoratedWithPrism;
@@ -53,10 +53,15 @@ import org.mapstruct.ap.prism.InheritConfigurationPrism;
 import org.mapstruct.ap.prism.InheritInverseConfigurationPrism;
 import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.processor.creation.MappingResolverImpl;
-import org.mapstruct.ap.util.Message;
+import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.MapperConfig;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 import org.mapstruct.ap.version.VersionInformation;
+
+import static org.mapstruct.ap.prism.MappingInheritanceStrategyPrism.AUTO_INHERIT_FROM_CONFIG;
+import static org.mapstruct.ap.util.Collections.first;
+import static org.mapstruct.ap.util.Collections.join;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -83,7 +88,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.versionInformation = context.getVersionInformation();
         this.typeFactory = context.getTypeFactory();
 
-        List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement );
+        MapperConfig mapperConfig = MapperConfig.getInstanceOn( mapperTypeElement );
+        List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperConfig );
 
         MappingBuilderContext ctx = new MappingBuilderContext(
             typeFactory,
@@ -104,7 +110,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             mapperReferences
         );
         this.mappingContext = ctx;
-        return getMapper( mapperTypeElement, sourceModel );
+        return getMapper( mapperTypeElement, mapperConfig, sourceModel );
     }
 
     @Override
@@ -112,13 +118,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return 1000;
     }
 
-    private List<MapperReference> initReferencedMappers(TypeElement element) {
+    private List<MapperReference> initReferencedMappers(TypeElement element, MapperConfig mapperConfig) {
         List<MapperReference> result = new LinkedList<MapperReference>();
         List<String> variableNames = new LinkedList<String>();
 
-        MapperConfig mapperPrism = MapperConfig.getInstanceOn( element );
-
-        for ( TypeMirror usedMapper : mapperPrism.uses() ) {
+        for ( TypeMirror usedMapper : mapperConfig.uses() ) {
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
                 typeFactory.getType( usedMapper ),
                 MapperPrism.getInstanceOn( typeUtils.asElement( usedMapper ) ) != null,
@@ -133,9 +137,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return result;
     }
 
-    private Mapper getMapper(TypeElement element, List<SourceMethod> methods) {
+    private Mapper getMapper(TypeElement element, MapperConfig mapperConfig, List<SourceMethod> methods) {
         List<MapperReference> mapperReferences = mappingContext.getMapperReferences();
-        List<MappingMethod> mappingMethods = getMappingMethods( methods );
+        List<MappingMethod> mappingMethods = getMappingMethods( mapperConfig, methods );
         mappingMethods.addAll( mappingContext.getUsedVirtualMappings() );
         mappingMethods.addAll( mappingContext.getMappingsToGenerate() );
 
@@ -194,7 +198,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( constructor.getParameters().size() == 1 ) {
                 if ( typeUtils.isAssignable(
                     element.asType(),
-                    constructor.getParameters().iterator().next().asType()
+                    first( constructor.getParameters() ).asType()
                 ) ) {
                     hasDelegateConstructor = true;
                 }
@@ -233,7 +237,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return extraImports;
     }
 
-    private List<MappingMethod> getMappingMethods(List<SourceMethod> methods) {
+    private List<MappingMethod> getMappingMethods(MapperConfig mapperConfig, List<SourceMethod> methods) {
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>();
 
         for ( SourceMethod method : methods ) {
@@ -241,29 +245,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 continue;
             }
 
-            SourceMethod inverseMappingMethod = getInverseMappingMethod( methods, method );
-            SourceMethod templateMappingMethod = getTemplateMappingMethod( methods, method );
+            mergeInheritedOptions( method, mapperConfig, methods, new ArrayList<SourceMethod>() );
+
+            MappingOptions mappingOptions = method.getMappingOptions();
 
             boolean hasFactoryMethod = false;
+
             if ( method.isIterableMapping() ) {
 
                 IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
-                if ( method.getIterableMapping() == null ) {
-                    if ( inverseMappingMethod != null && inverseMappingMethod.getIterableMapping() != null ) {
-                        method.setIterableMapping( inverseMappingMethod.getIterableMapping() );
-                    }
-                    else if ( templateMappingMethod != null && templateMappingMethod.getIterableMapping() != null ) {
-                        method.setIterableMapping( templateMappingMethod.getIterableMapping() );
-                    }
-                }
 
                 String dateFormat = null;
                 List<TypeMirror> qualifiers = null;
                 TypeMirror qualifyingElementTargetType = null;
-                if ( method.getIterableMapping() != null ) {
-                    dateFormat = method.getIterableMapping().getDateFormat();
-                    qualifiers = method.getIterableMapping().getQualifiers();
-                    qualifyingElementTargetType = method.getIterableMapping().getQualifyingElementTargetType();
+                if ( mappingOptions.getIterableMapping() != null ) {
+                    dateFormat = mappingOptions.getIterableMapping().getDateFormat();
+                    qualifiers = mappingOptions.getIterableMapping().getQualifiers();
+                    qualifyingElementTargetType = mappingOptions.getIterableMapping().getQualifyingElementTargetType();
                 }
 
                 IterableMappingMethod iterableMappingMethod = builder
@@ -281,27 +279,19 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
 
-                if ( method.getMapMapping() == null ) {
-                    if ( inverseMappingMethod != null && inverseMappingMethod.getMapMapping() != null ) {
-                        method.setMapMapping( inverseMappingMethod.getMapMapping() );
-                    }
-                    else if ( templateMappingMethod != null && templateMappingMethod.getMapMapping() != null ) {
-                        method.setMapMapping( templateMappingMethod.getMapMapping() );
-                    }
-                }
                 String keyDateFormat = null;
                 String valueDateFormat = null;
                 List<TypeMirror> keyQualifiers = null;
                 List<TypeMirror> valueQualifiers = null;
                 TypeMirror keyQualifyingTargetType = null;
                 TypeMirror valueQualifyingTargetType = null;
-                if ( method.getMapMapping() != null ) {
-                    keyDateFormat = method.getMapMapping().getKeyFormat();
-                    valueDateFormat = method.getMapMapping().getValueFormat();
-                    keyQualifiers = method.getMapMapping().getKeyQualifiers();
-                    valueQualifiers = method.getMapMapping().getValueQualifiers();
-                    keyQualifyingTargetType = method.getMapMapping().getKeyQualifyingTargetType();
-                    valueQualifyingTargetType = method.getMapMapping().getValueQualifyingTargetType();
+                if ( mappingOptions.getMapMapping() != null ) {
+                    keyDateFormat = mappingOptions.getMapMapping().getKeyFormat();
+                    valueDateFormat = mappingOptions.getMapMapping().getValueFormat();
+                    keyQualifiers = mappingOptions.getMapMapping().getKeyQualifiers();
+                    valueQualifiers = mappingOptions.getMapMapping().getValueQualifiers();
+                    keyQualifyingTargetType = mappingOptions.getMapMapping().getKeyQualifyingTargetType();
+                    valueQualifyingTargetType = mappingOptions.getMapMapping().getValueQualifyingTargetType();
                 }
 
                 MapMappingMethod mapMappingMethod = builder
@@ -321,7 +311,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( method.isEnumMapping() ) {
 
                 EnumMappingMethod.Builder builder = new EnumMappingMethod.Builder();
-                method.mergeWithInverseMappings( inverseMappingMethod, templateMappingMethod );
                 MappingMethod enumMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
@@ -334,7 +323,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else {
 
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
-                method.mergeWithInverseMappings( inverseMappingMethod, templateMappingMethod );
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
@@ -356,6 +344,61 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return mappingMethods;
     }
 
+    private void mergeInheritedOptions(SourceMethod method, MapperConfig mapperConfig,
+                                       List<SourceMethod> availableMethods, List<SourceMethod> initializingMethods) {
+        if ( initializingMethods.contains( method ) ) {
+            // cycle detected
+
+            initializingMethods.add( method );
+
+            messager.printMessage(
+                method.getExecutable(),
+                Message.INHERITCONFIGURATION_CYCLE,
+                Strings.join( initializingMethods, " -> " ) );
+            return;
+        }
+
+        initializingMethods.add( method );
+
+        MappingOptions mappingOptions = method.getMappingOptions();
+        List<SourceMethod> applicablePrototypeMethods = method.getApplicablePrototypeMethods();
+
+        MappingOptions inverseMappingOptions =
+            getInverseMappingOptions( availableMethods, method, initializingMethods, mapperConfig );
+
+        MappingOptions templateMappingOptions =
+            getTemplateMappingOptions(
+                join( availableMethods, applicablePrototypeMethods ),
+                method,
+                initializingMethods,
+                mapperConfig );
+
+        if ( templateMappingOptions != null ) {
+            mappingOptions.applyInheritedOptions( templateMappingOptions, false, method, messager, typeFactory );
+        }
+        else if ( inverseMappingOptions != null ) {
+            mappingOptions.applyInheritedOptions( inverseMappingOptions, true, method, messager, typeFactory );
+        }
+        else if ( mapperConfig.getMappingInheritanceStrategy() == AUTO_INHERIT_FROM_CONFIG ) {
+            if ( applicablePrototypeMethods.size() == 1 ) {
+                mappingOptions.applyInheritedOptions(
+                    first( applicablePrototypeMethods ).getMappingOptions(),
+                    false,
+                    method,
+                    messager,
+                    typeFactory );
+            }
+            else if ( applicablePrototypeMethods.size() > 1 ) {
+                messager.printMessage(
+                    method.getExecutable(),
+                    Message.INHERITCONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH,
+                    Strings.join( applicablePrototypeMethods, ", " ) );
+            }
+        }
+
+        mappingOptions.markAsFullyInitialized();
+    }
+
     private void reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType(SourceMethod method) {
         if ( method.getReturnType().getTypeMirror().getKind() != TypeKind.VOID &&
             method.getReturnType().isInterface() &&
@@ -365,12 +408,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     /**
-     * Returns the configuring inverse method in case the given method is annotated with
+     * Returns the configuring inverse method's options in case the given method is annotated with
      * {@code @InheritInverseConfiguration} and exactly one such configuring method can unambiguously be selected (as
      * per the source/target type and optionally the name given via {@code @InheritInverseConfiguration}).
      */
-    private SourceMethod getInverseMappingMethod(List<SourceMethod> rawMethods, SourceMethod method) {
-        SourceMethod result = null;
+    private MappingOptions getInverseMappingOptions(List<SourceMethod> rawMethods, SourceMethod method,
+                                                    List<SourceMethod> initializingMethods, MapperConfig mapperConfig) {
+        SourceMethod resultMethod = null;
         InheritInverseConfigurationPrism reversePrism = InheritInverseConfigurationPrism.getInstanceOn(
             method.getExecutable()
         );
@@ -389,10 +433,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             if ( candidates.size() == 1 ) {
                 // no ambiguity: if no configuredBy is specified, or configuredBy specified and match
                 if ( name.isEmpty() ) {
-                    result = candidates.get( 0 );
+                    resultMethod = candidates.get( 0 );
                 }
                 else if ( candidates.get( 0 ).getName().equals( name ) ) {
-                    result = candidates.get( 0 );
+                    resultMethod = candidates.get( 0 );
                 }
                 else {
                     reportErrorWhenNonMatchingName( candidates.get( 0 ), method, reversePrism );
@@ -409,35 +453,46 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
 
                 if ( nameFilteredcandidates.size() == 1 ) {
-                    result = nameFilteredcandidates.get( 0 );
+                    resultMethod = nameFilteredcandidates.get( 0 );
                 }
                 else if ( nameFilteredcandidates.size() > 1 ) {
                     reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, reversePrism );
                 }
 
-                if ( result == null ) {
+                if ( resultMethod == null ) {
                     reportErrorWhenAmbigousReverseMapping( candidates, method, reversePrism );
                 }
             }
-
-            if ( result != null ) {
-                reportErrorIfInverseMethodHasInheritAnnotation( result, method, reversePrism );
-            }
-
         }
-        return result;
+
+        return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods );
     }
 
-   /**
-     * Returns the configuring forward method in case the given method is annotated with
-     * {@code @InheritConfiguration} and exactly one such configuring method can unambiguously be selected (as
-     * per the source/target type and optionally the name given via {@code @InheritConfiguration}).
-     *
-     * The method cannot be marked forward mapping itself (hence 'ohter'). And neither can it contain an
-     * {@code @InheritReverseConfiguration}
+    private MappingOptions extractInitializedOptions(SourceMethod resultMethod,
+                                                     List<SourceMethod> rawMethods,
+                                                     MapperConfig mapperConfig,
+                                                     List<SourceMethod> initializingMethods) {
+        if ( resultMethod != null ) {
+            if ( !resultMethod.getMappingOptions().isFullyInitialized() ) {
+                mergeInheritedOptions( resultMethod, mapperConfig, rawMethods, initializingMethods );
+            }
+
+            return resultMethod.getMappingOptions();
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the configuring forward method's options in case the given method is annotated with
+     * {@code @InheritConfiguration} and exactly one such configuring method can unambiguously be selected (as per the
+     * source/target type and optionally the name given via {@code @InheritConfiguration}). The method cannot be marked
+     * forward mapping itself (hence 'ohter'). And neither can it contain an {@code @InheritReverseConfiguration}
      */
-    private SourceMethod getTemplateMappingMethod(List<SourceMethod> rawMethods, SourceMethod method) {
-        SourceMethod result = null;
+    private MappingOptions getTemplateMappingOptions(List<SourceMethod> rawMethods, SourceMethod method,
+                                                     List<SourceMethod> initializingMethods,
+                                                     MapperConfig mapperConfig) {
+        SourceMethod resultMethod = null;
         InheritConfigurationPrism forwardPrism = InheritConfigurationPrism.getInstanceOn(
             method.getExecutable()
         );
@@ -445,11 +500,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         if (forwardPrism != null) {
             reportErrorWhenInheritForwardAlsoHasInheritReverseMapping( method );
 
-            // method is configured as being reverse method, collect candidates
             List<SourceMethod> candidates = new ArrayList<SourceMethod>();
             for ( SourceMethod oneMethod : rawMethods ) {
                 // method must be similar but not equal
-                if ( oneMethod.isSimilar( method ) && !( oneMethod.equals( method ) ) ) {
+                if ( method.canInheritFrom( oneMethod ) && !( oneMethod.equals( method ) ) ) {
                     candidates.add( oneMethod );
                 }
             }
@@ -457,14 +511,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             String name = forwardPrism.name();
             if ( candidates.size() == 1 ) {
                 // no ambiguity: if no configuredBy is specified, or configuredBy specified and match
+                SourceMethod sourceMethod = first( candidates );
                 if ( name.isEmpty() ) {
-                    result = candidates.get( 0 );
+                    resultMethod = sourceMethod;
                 }
-                else if ( candidates.get( 0 ).getName().equals( name ) ) {
-                    result = candidates.get( 0 );
+                else if ( sourceMethod.getName().equals( name ) ) {
+                    resultMethod = sourceMethod;
                 }
                 else {
-                    reportErrorWhenNonMatchingName( candidates.get( 0 ), method, forwardPrism );
+                    reportErrorWhenNonMatchingName( sourceMethod, method, forwardPrism );
                 }
             }
             else if ( candidates.size() > 1 ) {
@@ -478,23 +533,19 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
 
                 if ( nameFilteredcandidates.size() == 1 ) {
-                    result = nameFilteredcandidates.get( 0 );
+                    resultMethod = first( nameFilteredcandidates );
                 }
                 else if ( nameFilteredcandidates.size() > 1 ) {
                     reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, forwardPrism );
                 }
 
-                if ( result == null ) {
+                if ( resultMethod == null ) {
                     reportErrorWhenAmbigousMapping( candidates, method, forwardPrism );
                 }
             }
-
-            if ( result != null ) {
-                reportErrorIfMethodHasAnnotation( result, method, forwardPrism );
-            }
-
         }
-        return result;
+
+        return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods );
     }
 
     private void reportErrorWhenInheritForwardAlsoHasInheritReverseMapping(SourceMethod method) {
@@ -505,34 +556,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             messager.printMessage( method.getExecutable(), reversePrism.mirror, Message.INHERITCONFIGURATION_BOTH );
         }
 
-    }
-
-    private void reportErrorIfInverseMethodHasInheritAnnotation(SourceMethod candidate,
-                                                                SourceMethod method,
-                                                                InheritInverseConfigurationPrism reversePrism) {
-
-        InheritInverseConfigurationPrism candidatePrism = InheritInverseConfigurationPrism.getInstanceOn(
-            candidate.getExecutable()
-        );
-
-        if ( candidatePrism != null ) {
-            messager.printMessage( method.getExecutable(),
-                reversePrism.mirror,
-                Message.INHERITINVERSECONFIGURATION_REFERENCE_HAS_INVERSE,
-                candidate.getName()
-            );
-        }
-
-        InheritConfigurationPrism candidateTemplatePrism = InheritConfigurationPrism.getInstanceOn(
-            candidate.getExecutable()
-        );
-        if ( candidateTemplatePrism != null ) {
-            messager.printMessage(  method.getExecutable(),
-                reversePrism.mirror,
-                Message.INHERITINVERSECONFIGURATION_REFERENCE_HAS_FORWARD,
-                candidate.getName()
-            );
-        }
     }
 
     private void reportErrorWhenAmbigousReverseMapping(List<SourceMethod> candidates, SourceMethod method,
@@ -570,7 +593,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             reversePrism.mirror,
             Message.INHERITINVERSECONFIGURATION_DUPLICATE_MATCHES,
             reversePrism.name(),
-            Strings.join( candidates, "(), " )
+            Strings.join( candidates, ", " )
 
         );
     }
@@ -584,35 +607,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             reversePrism.name(),
             onlyCandidate.getName()
         );
-    }
-
-    private void reportErrorIfMethodHasAnnotation(SourceMethod candidate,
-            SourceMethod method,
-            InheritConfigurationPrism prism) {
-
-        InheritConfigurationPrism candidatePrism = InheritConfigurationPrism.getInstanceOn(
-            candidate.getExecutable()
-        );
-
-        if ( candidatePrism != null ) {
-            messager.printMessage( method.getExecutable(),
-                prism.mirror,
-                Message.INHERITCONFIGURATION_REFERENCE_HAS_FORWARD,
-                candidate.getName()
-            );
-        }
-
-        InheritInverseConfigurationPrism candidateInversePrism = InheritInverseConfigurationPrism.getInstanceOn(
-            candidate.getExecutable()
-        );
-
-        if ( candidateInversePrism != null ) {
-            messager.printMessage( method.getExecutable(),
-                prism.mirror,
-                Message.INHERITCONFIGURATION_REFERENCE_HAS_INVERSE,
-                candidate.getName()
-            );
-        }
     }
 
     private void reportErrorWhenAmbigousMapping(List<SourceMethod> candidates, SourceMethod method,

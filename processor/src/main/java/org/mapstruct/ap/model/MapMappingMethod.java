@@ -20,6 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.model.assignment.Assignment;
@@ -28,9 +29,11 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
-import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.MapperConfig;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
+
+import static org.mapstruct.ap.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one {@code Map} type to another. Keys and
@@ -99,7 +102,7 @@ public class MapMappingMethod extends MappingMethod {
 
         public MapMappingMethod build() {
 
-            List<Type> sourceTypeParams = method.getSourceParameters().iterator().next().getType().getTypeParameters();
+            List<Type> sourceTypeParams = first( method.getSourceParameters() ).getType().getTypeParameters();
             List<Type> resultTypeParams = method.getResultType().getTypeParameters();
 
             // find mapping method or conversion for key

@@ -183,36 +183,6 @@ public class InheritConfigurationTest {
     }
 
     @Test
-    @WithClasses({ SourceTargetMapperErroneouslyAnnotated1.class })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated1.class,
-                kind = Kind.ERROR,
-                line = 49,
-                messageRegExp = "Resolved mapping method forwardCreate1\\(\\) should not carry the "
-                    + "@InheritConfiguration annotation itself.")
-        }
-    )
-    public void shouldUseWronglyAnnotatedError1() {
-    }
-
-    @Test
-    @WithClasses({ SourceTargetMapperErroneouslyAnnotated2.class })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated2.class,
-                kind = Kind.ERROR,
-                line = 51,
-                messageRegExp = "Resolved mapping method forwardCreate\\(\\) should not carry the "
-                    + "@InheritInverseConfiguration annotation.")
-        }
-    )
-    public void shouldUseWronglyAnnotatedError2() {
-    }
-
-    @Test
     @WithClasses({ SourceTargetMapperNonMatchingName.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,

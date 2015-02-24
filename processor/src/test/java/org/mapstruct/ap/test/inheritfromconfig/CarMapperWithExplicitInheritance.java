@@ -16,31 +16,34 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.template;
+package org.mapstruct.ap.test.inheritfromconfig;
 
 import org.mapstruct.InheritConfiguration;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
+import org.mapstruct.MappingInheritanceStrategy;
 import org.mapstruct.factory.Mappers;
 
 /**
- * @author Sjaak Derksen
+ * @author Andreas Gudian
+ *
  */
-@Mapper
-public interface SourceTargetMapperSeveralArgs {
+@Mapper(
+    config = AutoInheritedConfig.class,
+    mappingInheritanceStrategy = MappingInheritanceStrategy.EXPLICIT
+)
+public interface CarMapperWithExplicitInheritance {
+    CarMapperWithExplicitInheritance INSTANCE = Mappers.getMapper( CarMapperWithExplicitInheritance.class );
 
-    SourceTargetMapperSeveralArgs INSTANCE = Mappers.getMapper( SourceTargetMapperSeveralArgs.class );
+    @InheritConfiguration( name = "baseDtoToEntity" )
+    @Mapping( target = "color", source = "colour" )
+    CarEntity toCarEntity(CarDto carDto);
 
-    @Mappings({
-        @Mapping( target = "stringPropY", source = "s1.stringPropX" ),
-        @Mapping( target = "integerPropY", source = "s1.integerPropX" ),
-        @Mapping( target = "nestedResultProp", source = "s1.nestedSourceProp.nested" )
-    })
-    Target forwardCreate(Source s1, String constantProp, String expressionProp);
+    @InheritInverseConfiguration( name = "toCarEntity" )
+    CarDto toCarDto(CarEntity entity);
 
-    @InheritConfiguration
-    void forwardUpdate(Source source, String constantProp, String expressionProp, @MappingTarget Target target);
-
+    @InheritConfiguration( name = "toCarEntity" )
+    @Mapping( target = "auditTrail", constant = "fixed" )
+    CarEntity toCarEntityWithFixedAuditTrail(CarDto carDto);
 }

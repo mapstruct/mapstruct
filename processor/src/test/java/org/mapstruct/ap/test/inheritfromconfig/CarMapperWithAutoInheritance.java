@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.template;
+package org.mapstruct.ap.test.inheritfromconfig;
 
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
@@ -27,28 +27,30 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
- * @author Sjaak Derksen
+ * @author Andreas Gudian
+ *
  */
-@Mapper
-public interface SourceTargetMapperErroneouslyAnnotated2 {
+@Mapper(
+    config = AutoInheritedConfig.class
+)
+public interface CarMapperWithAutoInheritance {
+    CarMapperWithAutoInheritance INSTANCE = Mappers.getMapper( CarMapperWithAutoInheritance.class );
 
-    SourceTargetMapperErroneouslyAnnotated2 INSTANCE =
-            Mappers.getMapper( SourceTargetMapperErroneouslyAnnotated2.class );
+    @Mapping( target = "color", source = "colour" )
+    CarEntity toCarEntity(CarDto carDto);
 
-    @Mappings({
-        @Mapping(target = "stringPropY", source = "stringPropX"),
-        @Mapping(target = "integerPropY", source = "integerPropX"),
-        @Mapping(target = "nestedResultProp", source = "nestedSourceProp.nested"),
-        @Mapping(target = "constantProp", constant = "constant"),
-        @Mapping(target = "expressionProp", expression = "java(\"expression\")")
-    })
-    Target forwardCreate(Source source);
+    @InheritInverseConfiguration( name = "toCarEntity" )
+    CarDto toCarDto(CarEntity entity);
 
-    @InheritInverseConfiguration(name = "forwardCreate")
-    @Mapping(target = "nestedSourceProp", ignore = true)
-    Source forwardCreate(Target source);
+    @Mappings( {
+        @Mapping( target = "color", source = "colour" ),
+        @Mapping( target = "auditTrail", constant = "fixed" )
+    } )
+    CarEntity toCarEntityWithFixedAuditTrail(CarDto carDto);
 
-    @InheritConfiguration( name = "forwardCreate" )
-    void forwardUpdate(Target source, @MappingTarget Source target);
+    @Mapping( target = "color", source = "colour" )
+    void intoCarEntityOnItsOwn(CarDto carDto, @MappingTarget CarEntity entity);
 
+    @InheritConfiguration( name = "toCarEntity" )
+    void intoCarEntity(CarDto carDto, @MappingTarget CarEntity entity);
 }

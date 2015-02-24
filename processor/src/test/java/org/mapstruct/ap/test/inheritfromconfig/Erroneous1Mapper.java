@@ -16,31 +16,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.template;
+package org.mapstruct.ap.test.inheritfromconfig;
 
-import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
- * @author Sjaak Derksen
+ * @author Andreas Gudian
+ *
  */
-@Mapper
-public interface SourceTargetMapperSeveralArgs {
+@Mapper(
+    config = Erroneous1Config.class
+)
+public interface Erroneous1Mapper {
+    Erroneous1Mapper INSTANCE = Mappers.getMapper( Erroneous1Mapper.class );
 
-    SourceTargetMapperSeveralArgs INSTANCE = Mappers.getMapper( SourceTargetMapperSeveralArgs.class );
+    @Mapping( target = "color", source = "colour" )
+    CarEntity toCarEntity(CarDto carDto);
 
-    @Mappings({
-        @Mapping( target = "stringPropY", source = "s1.stringPropX" ),
-        @Mapping( target = "integerPropY", source = "s1.integerPropX" ),
-        @Mapping( target = "nestedResultProp", source = "s1.nestedSourceProp.nested" )
-    })
-    Target forwardCreate(Source s1, String constantProp, String expressionProp);
-
-    @InheritConfiguration
-    void forwardUpdate(Source source, String constantProp, String expressionProp, @MappingTarget Target target);
-
+    @Mappings( {
+        @Mapping( target = "color", source = "colour" ),
+        @Mapping( target = "auditTrail", constant = "fixed" )
+    } )
+    CarEntity toCarEntityWithFixedAuditTrail(CarDto carDto);
 }

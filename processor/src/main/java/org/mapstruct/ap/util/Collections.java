@@ -72,4 +72,17 @@ public class Collections {
 
         return set;
     }
+
+    public static <T> T first(Collection<T> collection) {
+        return collection.iterator().next();
+    }
+
+    public static <T> List<T> join(List<T> a, List<T> b) {
+        List<T> result = new ArrayList<T>( a.size() + b.size() );
+
+        result.addAll( a );
+        result.addAll( b );
+
+        return result;
+    }
 }

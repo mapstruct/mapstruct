@@ -19,11 +19,12 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Types;
@@ -33,8 +34,11 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
+import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.MapperConfig;
 import org.mapstruct.ap.util.Strings;
+
+import static org.mapstruct.ap.util.Collections.first;
 
 /**
  * Represents a mapping method with source and target type and the mappings between the properties of source and target
@@ -50,7 +54,6 @@ public class SourceMethod implements Method {
 
     private final Types typeUtils;
     private final TypeFactory typeFactory;
-    private final FormattingMessager messager;
 
     private final Type declaringMapper;
     private final ExecutableElement executable;
@@ -61,10 +64,14 @@ public class SourceMethod implements Method {
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
     private final MapperConfig config;
+    private final MappingOptions mappingOptions;
+    private final List<SourceMethod> prototypeMethods;
 
-    private Map<String, List<Mapping>> mappings;
-    private IterableMapping iterableMapping;
-    private MapMapping mapMapping;
+    private List<Parameter> sourceParameters;
+
+    private List<String> parameterNames;
+
+    private List<SourceMethod> applicablePrototypeMethods;
 
     public static class Builder {
 
@@ -80,6 +87,7 @@ public class SourceMethod implements Method {
         private TypeFactory typeFactory = null;
         private FormattingMessager messager = null;
         private MapperConfig mapperConfig = null;
+        private List<SourceMethod> prototypeMethods = Collections.emptyList();
 
         public Builder() {
         }
@@ -144,24 +152,27 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public SourceMethod createSourceMethod() {
+        public Builder setPrototypeMethods(List<SourceMethod> prototypeMethods) {
+            this.prototypeMethods = prototypeMethods;
+            return this;
+        }
+
+        public SourceMethod buildSourceMethod() {
             SourceMethod sourceMethod = new SourceMethod(
                     declaringMapper,
                     executable,
                     parameters,
                     returnType,
                     exceptionTypes,
-                    mappings,
-                    iterableMapping,
-                    mapMapping,
+                    new MappingOptions( mappings, iterableMapping, mapMapping ),
                     typeUtils,
                     typeFactory,
-                    messager,
-                    mapperConfig
+                    mapperConfig,
+                    prototypeMethods
             );
 
             if ( mappings != null ) {
-                for ( Map.Entry<String, List<Mapping>> entry : sourceMethod.getMappings().entrySet() ) {
+                for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
                     for ( Mapping mapping : entry.getValue() ) {
                         mapping.init( sourceMethod, messager, typeFactory );
                     }
@@ -173,26 +184,24 @@ public class SourceMethod implements Method {
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     private SourceMethod( Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
-                         Type returnType, List<Type> exceptionTypes, Map<String, List<Mapping>> mappings,
-                         IterableMapping iterableMapping, MapMapping mapMapping, Types typeUtils,
-                         TypeFactory typeFactory, FormattingMessager messager, MapperConfig config) {
+                         Type returnType, List<Type> exceptionTypes, MappingOptions mappingOptions, Types typeUtils,
+                         TypeFactory typeFactory, MapperConfig config, List<SourceMethod> prototypeMethods) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
         this.returnType = returnType;
         this.exceptionTypes = exceptionTypes;
-        this.mappings = mappings;
-        this.iterableMapping = iterableMapping;
-        this.mapMapping = mapMapping;
         this.accessibility = Accessibility.fromModifiers( executable.getModifiers() );
+
+        this.mappingOptions = mappingOptions;
 
         this.mappingTargetParameter = determineMappingTargetParameter( parameters );
         this.targetTypeParameter = determineTargetTypeParameter( parameters );
 
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
-        this.messager = messager;
         this.config = config;
+        this.prototypeMethods = prototypeMethods;
     }
 
     private Parameter determineMappingTargetParameter(Iterable<Parameter> parameters) {
@@ -249,11 +258,13 @@ public class SourceMethod implements Method {
      */
     @Override
     public List<Parameter> getSourceParameters() {
-        List<Parameter> sourceParameters = new ArrayList<Parameter>();
+        if ( sourceParameters == null ) {
+            sourceParameters = new ArrayList<Parameter>();
 
-        for ( Parameter parameter : parameters ) {
-            if ( !parameter.isMappingTarget() && !parameter.isTargetType() ) {
-                sourceParameters.add( parameter );
+            for ( Parameter parameter : parameters ) {
+                if ( !parameter.isMappingTarget() && !parameter.isTargetType() ) {
+                    sourceParameters.add( parameter );
+                }
             }
         }
 
@@ -262,10 +273,12 @@ public class SourceMethod implements Method {
 
     @Override
     public List<String> getParameterNames() {
-        List<String> parameterNames = new ArrayList<String>( parameters.size() );
+        if ( parameterNames == null ) {
+            parameterNames = new ArrayList<String>( parameters.size() );
 
-        for ( Parameter parameter : parameters ) {
-            parameterNames.add( parameter.getName() );
+            for ( Parameter parameter : parameters ) {
+                parameterNames.add( parameter.getName() );
+            }
         }
 
         return parameterNames;
@@ -289,84 +302,31 @@ public class SourceMethod implements Method {
         return accessibility;
     }
 
-    /**
-     * @return the {@link Mapping}s configured for this method, keyed by target property name. Only for enum mapping
-     * methods a target will be mapped by several sources.
-     */
-    public Map<String, List<Mapping>> getMappings() {
-        return mappings;
-    }
-
     public Mapping getSingleMappingByTargetPropertyName(String targetPropertyName) {
-        List<Mapping> all = mappings.get( targetPropertyName );
-        return all != null ? all.iterator().next() : null;
-    }
-
-    public void setMappings(Map<String, List<Mapping>> mappings) {
-        this.mappings = mappings;
-    }
-
-    public IterableMapping getIterableMapping() {
-        return iterableMapping;
-    }
-
-    public void setIterableMapping(IterableMapping iterableMapping) {
-        this.iterableMapping = iterableMapping;
-    }
-
-    public MapMapping getMapMapping() {
-        return mapMapping;
-    }
-
-    public void setMapMapping(MapMapping mapMapping) {
-        this.mapMapping = mapMapping;
+        List<Mapping> all = mappingOptions.getMappings().get( targetPropertyName );
+        return all != null ? first( all ) : null;
     }
 
     public boolean reverses(SourceMethod method) {
         return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
-            && equals( getSourceParameters().iterator().next().getType(), method.getResultType() )
-            && equals( getResultType(), method.getSourceParameters().iterator().next().getType() );
+            && equals( first( getSourceParameters() ).getType(), method.getResultType() )
+            && equals( getResultType(), first( method.getSourceParameters() ).getType() );
     }
 
 
     public boolean isSame(SourceMethod method) {
         return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
-            && equals( getSourceParameters().iterator().next().getType(),
-                    method.getSourceParameters().iterator().next().getType())
+            && equals( first( getSourceParameters() ).getType(),
+                first( method.getSourceParameters() ).getType() )
             && equals( getResultType(), method.getResultType() );
     }
 
-    public boolean isSimilar(SourceMethod method) {
-        Map<Type, Integer> test = new HashMap<Type, Integer>();
-
-        // check how many times a type occurs
-        for (Parameter sourceParam : method.getSourceParameters() ) {
-            Type sourceType = sourceParam.getType();
-            if ( !test.containsKey( sourceType ) ) {
-                test.put( sourceType, 0 );
-            }
-            increase( sourceType, test );
-        }
-
-        // check if this method also contains the same time each parameter type.
-        for (Parameter sourceParam : getSourceParameters() ) {
-            Type sourceType = sourceParam.getType();
-            if ( !test.containsKey( sourceType ) ) {
-                // method contains a different parameter type than this
-                return false;
-            }
-            decrease( sourceType, test );
-        }
-
-        // now, if they match they should have the same source parameter types each
-        for ( Integer count : test.values() ) {
-            if ( count != 0 ) {
-                return false;
-            }
-        }
-
-        // finally check the return type.
-        return  equals( getResultType(), method.getResultType() );
+    public boolean canInheritFrom(SourceMethod method) {
+        return isMapMapping() == method.isMapMapping()
+            && isIterableMapping() == method.isIterableMapping()
+            && isEnumMapping() == method.isEnumMapping()
+            && getResultType().isAssignableTo( method.getResultType() )
+            && allParametersAreAssignable( getSourceParameters(), method.getSourceParameters() );
     }
 
     @Override
@@ -380,17 +340,17 @@ public class SourceMethod implements Method {
     }
 
     public boolean isIterableMapping() {
-        return getSourceParameters().size() == 1 && getSourceParameters().iterator().next().getType().isIterableType()
+        return getSourceParameters().size() == 1 && first( getSourceParameters() ).getType().isIterableType()
             && getResultType().isIterableType();
     }
 
     public boolean isMapMapping() {
-        return getSourceParameters().size() == 1 && getSourceParameters().iterator().next().getType().isMapType()
+        return getSourceParameters().size() == 1 && first( getSourceParameters() ).getType().isMapType()
             && getResultType().isMapType();
     }
 
     public boolean isEnumMapping() {
-        return getSourceParameters().size() == 1 && getSourceParameters().iterator().next().getType().isEnumType()
+        return getSourceParameters().size() == 1 && first( getSourceParameters() ).getType().isEnumType()
             && getResultType().isEnumType();
     }
 
@@ -422,7 +382,7 @@ public class SourceMethod implements Method {
     public List<Mapping> getMappingBySourcePropertyName(String sourcePropertyName) {
         List<Mapping> mappingsOfSourceProperty = new ArrayList<Mapping>();
 
-        for ( List<Mapping> mappingOfProperty : mappings.values() ) {
+        for ( List<Mapping> mappingOfProperty : mappingOptions.getMappings().values() ) {
             for ( Mapping mapping : mappingOfProperty ) {
 
                 if ( isEnumMapping() ) {
@@ -435,7 +395,7 @@ public class SourceMethod implements Method {
 
                     // there can only be a mapping if there's only one entry for a source property, so: param.property.
                     // There can be no mapping if there are more entries. So: param.property.property2
-                    if ( sourceEntries.size() == 1 && sourcePropertyName.equals( sourceEntries.get( 0 ).getName() ) ) {
+                    if ( sourceEntries.size() == 1 && sourcePropertyName.equals( first( sourceEntries ).getName() ) ) {
                         mappingsOfSourceProperty.add( mapping );
                     }
                 }
@@ -453,6 +413,45 @@ public class SourceMethod implements Method {
         }
 
         return null;
+    }
+
+    public List<SourceMethod> getApplicablePrototypeMethods() {
+        if ( applicablePrototypeMethods == null ) {
+            applicablePrototypeMethods = new ArrayList<SourceMethod>();
+
+            for ( SourceMethod prototype : prototypeMethods ) {
+                if ( canInheritFrom( prototype ) ) {
+                    applicablePrototypeMethods.add( prototype );
+                }
+            }
+        }
+
+        return applicablePrototypeMethods;
+    }
+
+    private static boolean allParametersAreAssignable(List<Parameter> fromParams, List<Parameter> toParams) {
+        if ( fromParams.size() == toParams.size() ) {
+            Set<Parameter> unaccountedToParams = new HashSet<Parameter>( toParams );
+
+            for ( Parameter fromParam : fromParams ) {
+                // each fromParam needs at least one match, and all toParam need to be accounted for at the end
+                boolean hasMatch = false;
+                for ( Parameter toParam : toParams ) {
+                    if ( fromParam.getType().isAssignableTo( toParam.getType() ) ) {
+                        unaccountedToParams.remove( toParam );
+                        hasMatch = true;
+                    }
+                }
+
+                if ( !hasMatch ) {
+                    return false;
+                }
+            }
+
+            return unaccountedToParams.isEmpty();
+        }
+
+        return false;
     }
 
     /**
@@ -494,57 +493,8 @@ public class SourceMethod implements Method {
         return exceptionTypes;
     }
 
-    /**
-     * Merges in all the mappings configured via the given inverse mapping method, giving the locally defined mappings
-     * precedence.
-     * @param inverseMethod
-     * @param templateMethod
-     */
-    public void mergeWithInverseMappings(SourceMethod inverseMethod, SourceMethod templateMethod) {
-        Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();
-
-        if ( inverseMethod != null && !inverseMethod.getMappings().isEmpty() ) {
-            for ( List<Mapping> lmappings : inverseMethod.getMappings().values() ) {
-                for ( Mapping inverseMapping : lmappings ) {
-                    Mapping reversed = inverseMapping.reverse( this, messager, typeFactory );
-                    if ( reversed != null ) {
-                        List<Mapping> mappingsOfProperty = newMappings.get( reversed.getTargetName() );
-                        if ( mappingsOfProperty == null ) {
-                            mappingsOfProperty = new ArrayList<Mapping>();
-                            newMappings.put( reversed.getTargetName(), mappingsOfProperty );
-                        }
-                        mappingsOfProperty.add( reversed );
-                    }
-                }
-            }
-        }
-
-        if ( templateMethod != null && !templateMethod.getMappings().isEmpty() ) {
-            for ( List<Mapping> lmappings : templateMethod.getMappings().values() ) {
-                for ( Mapping templateMapping : lmappings ) {
-                    if ( templateMapping != null ) {
-                        List<Mapping> mappingsOfProperty = newMappings.get( templateMapping.getTargetName() );
-                        if ( mappingsOfProperty == null ) {
-                            mappingsOfProperty = new ArrayList<Mapping>();
-                            newMappings.put( templateMapping.getTargetName(), mappingsOfProperty );
-                        }
-                        mappingsOfProperty.add( templateMapping );
-                    }
-                }
-            }
-        }
-
-        if ( getMappings().isEmpty() ) {
-            // the mapping method is configuredByReverseMappingMethod, see SourceMethod#setMappings()
-            setMappings( newMappings );
-        }
-        else {
-            // now add all of its own mappings
-            newMappings.putAll( getMappings() );
-            getMappings().clear();
-            // the mapping method is NOT configuredByReverseMappingMethod,
-            getMappings().putAll( newMappings );
-        }
+    public MappingOptions getMappingOptions() {
+        return mappingOptions;
     }
 
     @Override
@@ -552,17 +502,6 @@ public class SourceMethod implements Method {
         return executable.getModifiers().contains( Modifier.STATIC );
     }
 
-    private void increase(Type key, Map<Type, Integer> test) {
-        Integer count = test.get( key );
-        count++;
-        test.put( key, count );
-    }
-
-    private void decrease(Type key, Map<Type, Integer> test) {
-        Integer count = test.get( key );
-        count--;
-        test.put( key, count );
-    }
     /**
      *
      * @return the mapper config when this method needs to be implemented

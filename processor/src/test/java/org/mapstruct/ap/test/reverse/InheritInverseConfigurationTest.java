@@ -108,8 +108,8 @@ public class InheritInverseConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.ERROR,
                 line = 50,
-                messageRegExp = "Given name \"forward\" matches several candidate methods: .*forward.*\\(\\), "
-                    + ".*forward.*\\(\\)"),
+                messageRegExp = "Given name \"forward\" matches several candidate methods: .*forward\\(.*\\), "
+                    + ".*forward\\(.*\\)"),
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.WARNING,
                 line = 55,
@@ -117,46 +117,6 @@ public class InheritInverseConfigurationTest {
         }
     )
     public void shouldRaiseAmbiguousReverseMethodErrorDuplicatedName() {
-    }
-
-    @Test
-    @WithClasses({ SourceTargetMapperErroneouslyAnnotated1.class })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated1.class,
-                kind = Kind.ERROR,
-                line = 50,
-                messageRegExp = "Resolved inverse mapping method reverse\\(\\) should not carry the "
-                    + "@InheritInverseConfiguration annotation itself.")
-        }
-    )
-    public void shouldUseWronglyAnnotatedError1() {
-    }
-
-    @Test
-    @WithClasses({ SourceTargetMapperErroneouslyAnnotated2.class })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-                @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated2.class,
-                        kind = Kind.WARNING,
-                        line = 45,
-                        messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX, "
-                                + "someConstantDownstream, propertyToIgnoreDownstream\""),
-                @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated2.class,
-                        kind = Kind.ERROR,
-                        line = 47,
-                        messageRegExp = "Resolved inverse mapping method forward2\\(\\) should not carry "
-                                + "the @InheritConfiguration annotation"),
-                @Diagnostic(type = SourceTargetMapperErroneouslyAnnotated2.class,
-                        kind = Kind.WARNING,
-                        line = 48,
-                        messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, "
-                                + "propertyNotToIgnoreUpstream\"")
-            }
-    )
-    public void shouldUseWronglyAnnotatedError2() {
     }
 
     @Test

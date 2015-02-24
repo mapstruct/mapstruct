@@ -16,34 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.reverse;
+package org.mapstruct.ap.test.inheritfromconfig;
 
-import org.mapstruct.InheritConfiguration;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
- * @author Sjaak Derksen
+ * @author Andreas Gudian
+ *
  */
-@Mapper
-public interface SourceTargetMapperErroneouslyAnnotated2 {
+@Mapper(
+    config = AutoInheritedDriverConfig.class
+)
+public interface CarWithDriverMapperWithAutoInheritance {
+    CarWithDriverMapperWithAutoInheritance INSTANCE = Mappers.getMapper( CarWithDriverMapperWithAutoInheritance.class );
 
-    SourceTargetMapperErroneouslyAnnotated2 INSTANCE
-            = Mappers.getMapper( SourceTargetMapperErroneouslyAnnotated2.class );
-
-    @Mappings({
-        @Mapping(source = "stringPropX", target = "stringPropY"),
-        @Mapping(source = "integerPropX", target = "integerPropY"),
-        @Mapping(source = "propertyToIgnoreDownstream", target = "propertyNotToIgnoreUpstream")
-    })
-    Target forward(Source source);
-
-    @InheritConfiguration(name = "forward2")
-    Source forward2(Target target);
-
-    @InheritInverseConfiguration(name = "forward2")
-    Target reverse(Source source);
+    @Mapping( target = "color", source = "carDto.colour" )
+    CarWithDriverEntity toCarWithDriverEntity(CarDto carDto, DriverDto driverDto);
 }

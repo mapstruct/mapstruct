@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.tools.Diagnostic;
 
@@ -43,9 +44,9 @@ import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
-import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfig;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -145,7 +146,7 @@ public class BeanMappingMethod extends MappingMethod {
 
             Set<String> handledTargets = new HashSet<String>();
 
-            for ( Map.Entry<String, List<Mapping>> entry : method.getMappings().entrySet() ) {
+            for ( Map.Entry<String, List<Mapping>> entry : method.getMappingOptions().getMappings().entrySet() ) {
                 for ( Mapping mapping : entry.getValue() ) {
 
                     PropertyMapping propertyMapping = null;

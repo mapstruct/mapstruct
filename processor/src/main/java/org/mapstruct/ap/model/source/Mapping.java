@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.mapstruct.ap.util.FormattingMessager;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
@@ -37,6 +37,7 @@ import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
+import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.Message;
 
 /**
@@ -61,7 +62,6 @@ public class Mapping {
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
     private SourceReference sourceReference;
-    private SourceReference targetReference;
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
                                                                ExecutableElement method,
@@ -239,10 +239,6 @@ public class Mapping {
         return sourceReference;
     }
 
-    public SourceReference getTargetReference() {
-        return targetReference;
-    }
-
     public TypeMirror getResultType() {
         return resultType;
     }
@@ -296,6 +292,33 @@ public class Mapping {
 
         reverse.init( method, messager, typeFactory );
         return reverse;
+    }
+
+    /**
+     * Creates a copy of this mapping, which is adapted to the given method
+     *
+     * @param the method to adapt the copy to
+     */
+    public Mapping copyForInheritanceTo(SourceMethod method) {
+        Mapping mapping = new Mapping(
+            sourceName,
+            constant,
+            javaExpression,
+            targetName,
+            dateFormat,
+            qualifiers,
+            isIgnored,
+            mirror,
+            sourceAnnotationValue,
+            targetAnnotationValue,
+            resultType
+            );
+
+        if ( sourceReference != null ) {
+            mapping.sourceReference = sourceReference.copyForInheritanceTo( method );
+        }
+
+        return mapping;
     }
 
     @Override

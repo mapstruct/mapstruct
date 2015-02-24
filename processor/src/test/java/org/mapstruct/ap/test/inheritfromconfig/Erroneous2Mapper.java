@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.template;
+package org.mapstruct.ap.test.inheritfromconfig;
 
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
@@ -26,26 +26,26 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
- * @author Sjaak Derksen
+ * @author Andreas Gudian
+ *
  */
-@Mapper
-public interface SourceTargetMapperErroneouslyAnnotated1 {
+@Mapper(
+    config = AutoInheritedConfig.class
+)
+public interface Erroneous2Mapper {
+    Erroneous2Mapper INSTANCE = Mappers.getMapper( Erroneous2Mapper.class );
 
-    SourceTargetMapperErroneouslyAnnotated1 INSTANCE =
-            Mappers.getMapper( SourceTargetMapperErroneouslyAnnotated1.class );
+    @InheritConfiguration( name = "toCarEntity2" )
+    CarEntity toCarEntity1(CarDto carDto);
 
-    @Mappings({
-        @Mapping(target = "stringPropY", source = "stringPropX"),
-        @Mapping(target = "integerPropY", source = "integerPropX"),
-        @Mapping(target = "nestedResultProp", source = "nestedSourceProp.nested"),
-        @Mapping(target = "constantProp", constant = "constant"),
-        @Mapping(target = "expressionProp", expression = "java(\"expression\")")
-    })
-    Target forwardCreate(Source source);
+    @InheritConfiguration( name = "toCarEntity3" )
+    CarEntity toCarEntity2(CarDto carDto);
 
-    @InheritConfiguration( name = "forwardCreate" )
-    Target forwardCreate1(Source source);
-
-    @InheritConfiguration( name = "forwardCreate1" )
-    void forwardUpdate(Source source, @MappingTarget Target target);
+    @InheritConfiguration( name = "toCarEntity1" )
+    @Mappings( {
+        @Mapping( target = "color", ignore = true ),
+        @Mapping( target = "auditTrail", ignore = true ),
+        @Mapping( target = "primaryKey", ignore = true )
+    } )
+    void toCarEntity3(CarDto carDto, @MappingTarget CarEntity entity);
 }

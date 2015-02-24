@@ -20,6 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
@@ -30,9 +31,11 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
-import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.MapperConfig;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
+
+import static org.mapstruct.ap.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one iterable type to another. The collection
@@ -82,7 +85,7 @@ public class IterableMappingMethod extends MappingMethod {
         }
 
         public IterableMappingMethod build() {
-            Type sourceParameterType = method.getSourceParameters().iterator().next().getType();
+            Type sourceParameterType = first( method.getSourceParameters() ).getType();
             Type resultType = method.getResultType();
 
             Type sourceElementType = sourceParameterType.isArrayType() ? sourceParameterType.getComponentType() :

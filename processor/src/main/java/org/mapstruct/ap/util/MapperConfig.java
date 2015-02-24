@@ -33,10 +33,9 @@ import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.prism.MapperConfigPrism;
 import org.mapstruct.ap.prism.MapperPrism;
+import org.mapstruct.ap.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.prism.NullValueMappingPrism;
 import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
-
-import static org.mapstruct.ap.prism.CollectionMappingStrategyPrism.valueOf;
 
 /**
  * Class decorating the {@link MapperPrism} with the 'default' configuration.
@@ -56,10 +55,6 @@ public class MapperConfig {
 
     public static MapperConfig getInstanceOn(Element e) {
         return new MapperConfig( MapperPrism.getInstanceOn( e ) );
-    }
-
-    public static MapperConfig getInstance(AnnotationMirror mirror) {
-        return new MapperConfig( MapperPrism.getInstance( mirror ) );
     }
 
     private MapperConfig(MapperPrism mapperPrism) {
@@ -100,7 +95,8 @@ public class MapperConfig {
     }
 
     public CollectionMappingStrategyPrism getCollectionMappingStrategy() {
-        CollectionMappingStrategyPrism mapperPolicy = valueOf( mapperPrism.collectionMappingStrategy() );
+        CollectionMappingStrategyPrism mapperPolicy =
+            CollectionMappingStrategyPrism.valueOf( mapperPrism.collectionMappingStrategy() );
 
         if ( mapperPolicy != CollectionMappingStrategyPrism.DEFAULT ) {
             // it is not the default mapper configuration, so return the mapper configured value
@@ -108,7 +104,8 @@ public class MapperConfig {
         }
         else if ( mapperConfigPrism != null ) {
             // try the config mapper configuration
-            CollectionMappingStrategyPrism configPolicy = valueOf( mapperConfigPrism.collectionMappingStrategy() );
+            CollectionMappingStrategyPrism configPolicy =
+                CollectionMappingStrategyPrism.valueOf( mapperConfigPrism.collectionMappingStrategy() );
             if ( configPolicy != CollectionMappingStrategyPrism.DEFAULT ) {
                 // its not the default configuration, so return the mapper config configured value
                 return configPolicy;
@@ -116,6 +113,24 @@ public class MapperConfig {
         }
         // when nothing specified, return ACCESSOR_ONLY (default option)
         return CollectionMappingStrategyPrism.ACCESSOR_ONLY;
+    }
+
+    public MappingInheritanceStrategyPrism getMappingInheritanceStrategy() {
+        MappingInheritanceStrategyPrism mapperPolicy =
+            MappingInheritanceStrategyPrism.valueOf( mapperPrism.mappingInheritanceStrategy() );
+
+        if ( mapperPolicy != MappingInheritanceStrategyPrism.DEFAULT ) {
+            return mapperPolicy;
+        }
+        else if ( mapperConfigPrism != null ) {
+            MappingInheritanceStrategyPrism configPolicy =
+                MappingInheritanceStrategyPrism.valueOf( mapperConfigPrism.mappingInheritanceStrategy() );
+            if ( configPolicy != MappingInheritanceStrategyPrism.DEFAULT ) {
+                return configPolicy;
+            }
+        }
+
+        return MappingInheritanceStrategyPrism.EXPLICIT;
     }
 
     public boolean isMapToDefault(NullValueMappingPrism mapNullToDefault) {
@@ -163,6 +178,10 @@ public class MapperConfig {
         else {
             return "default";
         }
+    }
+
+    public TypeMirror getMapperConfigMirror() {
+        return mapperPrism.config();
     }
 
     public boolean isValid() {

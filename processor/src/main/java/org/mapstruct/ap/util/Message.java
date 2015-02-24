@@ -86,18 +86,16 @@ public enum Message {
     RETRIEVAL_NON_ENUM_TO_ENUM( "Can't generate mapping method from non-enum type to enum type." ),
 
     INHERITCONFIGURATION_BOTH( "Method cannot be annotated with both a @InheritConfiguration and @InheritInverseConfiguration." ),
-    INHERITINVERSECONFIGURATION_REFERENCE_HAS_INVERSE( "Resolved inverse mapping method %s() should not carry the @InheritInverseConfiguration annotation itself." ),
-    INHERITINVERSECONFIGURATION_REFERENCE_HAS_FORWARD( "Resolved inverse mapping method %s() should not carry the @InheritConfiguration annotation." ),
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),
     INHERITINVERSECONFIGURATION_INVALID_NAME( "None of the candidates %s() matches given name: \"%s\"." ),
     INHERITINVERSECONFIGURATION_DUPLICATE_MATCHES( "Given name \"%s\" matches several candidate methods: %s()." ),
     INHERITINVERSECONFIGURATION_NO_NAME_MATCH( "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\"." ),
-    INHERITCONFIGURATION_REFERENCE_HAS_FORWARD( "Resolved mapping method %s() should not carry the @InheritConfiguration annotation itself." ),
-    INHERITCONFIGURATION_REFERENCE_HAS_INVERSE( "Resolved mapping method %s() should not carry the @InheritInverseConfiguration annotation." ),
     INHERITCONFIGURATION_DUPLICATES( "Several matching methods exist: %s(). Specify a name explicitly." ),
     INHERITCONFIGURATION_INVALIDNAME( "None of the candidates %s() matches given name: \"%s\"." ),
     INHERITCONFIGURATION_DUPLICATE_MATCHES( "Given name \"%s\" matches several candidate methods: %s()." ),
-    INHERITCONFIGURATION_NO_NAME_MATCH( "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\"." );
+    INHERITCONFIGURATION_NO_NAME_MATCH( "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\"." ),
+    INHERITCONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH( "More than one configuration prototype method is applicable. Use @InheritConfiguration to select one of them explicitly: %s." ),
+    INHERITCONFIGURATION_CYCLE( "Cycle detected while evaluating inherited configurations. Inheritance path: %s" );
     // CHECKSTYLE:ON
 
     private final String description;

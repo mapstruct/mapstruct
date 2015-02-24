@@ -26,10 +26,18 @@ import java.lang.annotation.Target;
 import org.mapstruct.factory.Mappers;
 
 /**
- * Marks a class-, interface-, enum declaration as (common) configuration.
- *
+ * Marks a class- or interface-declaration as (common) configuration.
+ * <p>
  * The {@link #unmappedTargetPolicy() } and {@link #componentModel() } can be overruled by a specific {@link Mapper}
  * annotation. {@link #uses() } will be used in addition to what is specified in the {@link Mapper} annotation.
+ * </p>
+ * <p>
+ * Mapping methods defined in the annotated type can be used as <em>prototypes</em> from which method-level annotations
+ * such as {@code @Mapping}, {@code @IterableMapping}, etc. can be inherited. Depending on the configured
+ * {@link #mappingInheritanceStrategy()}, the configuration can be inherited either explicitly using
+ * {@link InheritConfiguration} or {@link InheritInverseConfiguration}, or automatically in case all source and target
+ * types are assignable.
+ * </p>
  *
  * @author Sjaak Derksen
  */
@@ -80,7 +88,7 @@ public @interface MapperConfig {
      *
      * @return The strategy applied when propagating the value of collection-typed properties.
      */
-    CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.DEFAULT;
+    CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.ACCESSOR_ONLY;
 
     /**
      * The strategy to be applied when {@code null} is passed as source value to mapping methods. If no strategy is
@@ -88,5 +96,18 @@ public @interface MapperConfig {
      *
      * @return The strategy to be applied when {@code null} is passed as source value to mapping methods.
      */
-    NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.DEFAULT;
+    NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
+
+    /**
+     * The strategy to use for applying method-level configuration annotations of prototype methods in the interface
+     * annotated with this annotation. Annotations that can be inherited are for example {@link Mapping},
+     * {@link IterableMapping}, {@link MapMapping}, or {@link BeanMapping}.
+     * <p>
+     * If no strategy is configured, {@link MappingInheritanceStrategy#EXPLICIT} will be used as default.
+     *
+     * @return The strategy to use for applying {@code @Mapping} configurations of prototype methods in the interface
+     *         annotated with this annotation.
+     */
+    MappingInheritanceStrategy mappingInheritanceStrategy()
+        default MappingInheritanceStrategy.EXPLICIT;
 }
