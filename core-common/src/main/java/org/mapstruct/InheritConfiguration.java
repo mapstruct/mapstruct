@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  *
  * <pre>
  * {@code
- * &#64;Mapping({
+ * &#64;Mappings({
  *     &#64;Mapping(target="make", source="brand"),
  *     &#64;Mapping(target="seatCount", source="numberOfSeats")
  * })
