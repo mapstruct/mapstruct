@@ -20,10 +20,10 @@ package org.mapstruct.ap.test.bugs._374;
 
 import java.util.List;
 import java.util.Map;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueMapping;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
@@ -39,7 +39,7 @@ public interface Issue374Mapper {
     @Mapping(target = "constant", constant = "test")
     Target map(Source source, @MappingTarget Target target);
 
-    @NullValueMapping( NullValueMappingStrategy.RETURN_NULL )
+    @BeanMapping( nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL )
     @Mapping(target = "constant", constant = "test")
     Target map2(Source source, @MappingTarget Target target);
 

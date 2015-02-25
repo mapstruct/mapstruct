@@ -43,7 +43,6 @@ import org.mapstruct.ap.model.source.SourceReference;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.prism.NullValueMappingPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Message;
@@ -54,7 +53,6 @@ import org.mapstruct.ap.util.Strings;
  * configured by one or more {@link PropertyMapping}s.
  *
  * @author Gunnar Morling
- * @author Sjaak Derksen
  */
 public class BeanMappingMethod extends MappingMethod {
 
@@ -106,16 +104,15 @@ public class BeanMappingMethod extends MappingMethod {
             reportErrorForUnmappedTargetPropertiesIfRequired();
 
             // mapNullToDefault
-            NullValueMappingPrism prism = NullValueMappingPrism.getInstanceOn( method.getExecutable() );
+            BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
             boolean mapNullToDefault =
-                MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
+                MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( beanMappingPrism );
 
             MethodReference factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType() );
 
             // if there's no factory method, try the resultType in the @BeanMapping
             Type resultType = null;
             if ( factoryMethod == null ) {
-                BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
                 BeanMapping beanMapping
                     = BeanMapping.fromPrism( beanMappingPrism, method.getExecutable(), ctx.getMessager() );
                 if ( beanMapping != null && beanMapping.getResultType() != null ) {

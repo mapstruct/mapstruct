@@ -26,6 +26,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.prism.MapMappingPrism;
+import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.util.Message;
 
 /**
@@ -48,7 +49,8 @@ public class MapMapping {
         if ( mapMapping == null ) {
             return null;
         }
-
+        boolean nullValueMappingIsDefault =
+            mapMapping.nullValueMappingStrategy().equals( NullValueMappingStrategyPrism.DEFAULT.toString() );
         boolean keyTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.keyTargetType().getKind() );
         boolean valueTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.valueTargetType().getKind() );
         if ( mapMapping.keyDateFormat().isEmpty()
@@ -56,7 +58,8 @@ public class MapMapping {
             && mapMapping.valueDateFormat().isEmpty()
             && mapMapping.valueQualifiedBy().isEmpty()
             && !keyTargetTypeIsDefined
-            && !valueTargetTypeIsDefined ) {
+            && !valueTargetTypeIsDefined
+            && nullValueMappingIsDefault ) {
             messager.printMessage( method, Message.MAPMAPPING_NO_ELEMENTS );
         }
 

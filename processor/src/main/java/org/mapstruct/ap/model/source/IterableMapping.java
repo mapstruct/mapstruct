@@ -27,6 +27,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.prism.IterableMappingPrism;
+import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.util.Message;
 
 /**
@@ -49,9 +50,12 @@ public class IterableMapping {
         }
 
         boolean elementTargetTypeIsDefined = !TypeKind.VOID.equals( iterableMapping.elementTargetType().getKind() );
+        boolean nullValueMappingIsDefault =
+            iterableMapping.nullValueMappingStrategy().equals( NullValueMappingStrategyPrism.DEFAULT.toString() );
         if ( !elementTargetTypeIsDefined
             && iterableMapping.dateFormat().isEmpty()
-            && iterableMapping.qualifiedBy().isEmpty() ) {
+            && iterableMapping.qualifiedBy().isEmpty()
+            && nullValueMappingIsDefault) {
             messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
         }
 

@@ -30,7 +30,7 @@ import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.prism.NullValueMappingPrism;
+import org.mapstruct.ap.prism.IterableMappingPrism;
 import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
@@ -125,7 +125,7 @@ public class IterableMappingMethod extends MappingMethod {
                 assignment = new SetterWrapper( assignment, method.getThrownTypes() );
             }
             // mapNullToDefault
-            NullValueMappingPrism prism = NullValueMappingPrism.getInstanceOn( method.getExecutable() );
+            IterableMappingPrism prism = IterableMappingPrism.getInstanceOn( method.getExecutable() );
             boolean mapNullToDefault
                 = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 

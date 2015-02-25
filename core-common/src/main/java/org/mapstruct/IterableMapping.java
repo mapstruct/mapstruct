@@ -63,4 +63,15 @@ public @interface IterableMapping {
      * @return the elementTargetType to select
      */
     Class<?> elementTargetType() default void.class;
+
+
+    /**
+     * The strategy to be applied when {@code null} is passed as source value to this iterable mapping. If no
+     * strategy is configured, the strategy given via {@link MapperConfig#nullValueMappingStrategy()} or
+     * {@link Mapper#nullValueMappingStrategy()} will be applied, using {@link NullValueMappingStrategy#RETURN_NULL}
+     * by default.
+     *
+     * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapping.
+     */
+    NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.DEFAULT;
 }

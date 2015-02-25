@@ -24,6 +24,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.prism.BeanMappingPrism;
+import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.util.Message;
 
 
@@ -44,7 +45,9 @@ public class BeanMapping {
         }
 
         boolean resultTypeIsDefined = !TypeKind.VOID.equals( beanMapping.resultType().getKind() );
-        if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() ) {
+        boolean nullValueMappingIsDefault =
+            beanMapping.nullValueMappingStrategy().equals( NullValueMappingStrategyPrism.DEFAULT.toString() );
+        if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() && nullValueMappingIsDefault ) {
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
         }
 

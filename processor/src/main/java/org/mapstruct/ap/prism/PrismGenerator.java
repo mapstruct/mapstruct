@@ -33,7 +33,6 @@ import org.mapstruct.MapperConfig;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-import org.mapstruct.NullValueMapping;
 import org.mapstruct.Qualifier;
 import org.mapstruct.TargetType;
 
@@ -56,7 +55,6 @@ import org.mapstruct.TargetType;
     @GeneratePrism(value = InheritConfiguration.class, publicAccess = true),
     @GeneratePrism(value = InheritInverseConfiguration.class, publicAccess = true),
     @GeneratePrism(value = Qualifier.class, publicAccess = true),
-    @GeneratePrism(value = NullValueMapping.class, publicAccess = true),
 
     // external types
     @GeneratePrism(value = XmlElementDecl.class, publicAccess = true)

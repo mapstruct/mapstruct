@@ -28,7 +28,7 @@ import javax.tools.Diagnostic;
 public enum Message {
 
     // CHECKSTYLE:OFF
-    BEANMAPPING_NO_ELEMENTS( "'resultType' and 'qualifiedBy' are undefined in @BeanMapping, define at least one of them." ),
+    BEANMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in @BeanMapping, define at least one of them." ),
     BEANMAPPING_NOT_ASSIGNABLE( "%s not assignable to: %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE( "Unknown property \"%s\" in return type." ),
     BEANMAPPING_SEVERAL_POSSIBLE_SOURCES( "Several possible source properties for target property \"%s\"." ),
@@ -52,10 +52,10 @@ public enum Message {
 
     MAPMAPPING_KEY_MAPPING_NOT_FOUND( "No implementation can be generated for this method. Found no method nor implicit conversion for mapping source key type to target key type." ),
     MAPMAPPING_VALUE_MAPPING_NOT_FOUND( "No implementation can be generated for this method. Found no method nor implicit conversion for mapping source value type to target value type." ),
-    MAPMAPPING_NO_ELEMENTS( "'keyDateFormat', 'keyQualifiedBy', 'keyTargetType', 'valueDateFormat', 'valueQualfiedBy' and 'valueTargetType' are all undefined in @MapMapping, define at least one of them." ),
+    MAPMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'keyDateFormat', 'keyQualifiedBy', 'keyTargetType', 'valueDateFormat', 'valueQualfiedBy' and 'valueTargetType' are all undefined in @MapMapping, define at least one of them." ),
 
     ITERABLEMAPPING_MAPPING_NOT_FOUND( "No implementation can be generated for this method. Found no method nor implicit conversion for mapping source element type into target element type." ),
-    ITERABLEMAPPING_NO_ELEMENTS( "'dateformat', 'qualifiedBy' and 'elementTargetType' are undefined in @IterableMapping, define at least one of them." ),
+    ITERABLEMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are undefined in @IterableMapping, define at least one of them." ),
 
     ENUMMAPPING_MULTIPLE_TARGETS( "One enum constant must not be mapped to more than one target constant, but constant %s is mapped to %s." ),
     ENUMMAPPING_UNDEFINED_SOURCE( "A source constant must be specified for mappings of an enum mapping method." ),
