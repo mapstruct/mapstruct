@@ -38,7 +38,7 @@ import java.util.Date;
  *
  * @author Gunnar Morling
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface Mapping {
 

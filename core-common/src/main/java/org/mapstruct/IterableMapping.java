@@ -35,7 +35,7 @@ import java.util.Date;
  * @author Gunnar Morling
  */
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface IterableMapping {
 
     /**

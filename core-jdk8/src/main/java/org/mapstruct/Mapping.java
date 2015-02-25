@@ -40,7 +40,7 @@ import java.util.Date;
  * @author Gunnar Morling
  */
 @Repeatable(Mappings.class)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface Mapping {
 

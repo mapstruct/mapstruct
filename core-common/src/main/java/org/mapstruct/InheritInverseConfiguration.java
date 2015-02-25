@@ -38,7 +38,7 @@ import java.lang.annotation.Target;
  * @author Sjaak Derksen
  */
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface InheritInverseConfiguration {
 
     /**
