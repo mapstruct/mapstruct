@@ -37,14 +37,19 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
+
+import org.mapstruct.ap.model.source.BeanMapping;
 import org.mapstruct.ap.model.source.IterableMapping;
 import org.mapstruct.ap.model.source.MapMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
+
+import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.prism.IterableMappingPrism;
 import org.mapstruct.ap.prism.MapMappingPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
+
 import org.mapstruct.ap.util.AnnotationProcessingException;
 import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.MapperConfiguration;
@@ -233,12 +238,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     IterableMappingPrism.getInstanceOn( method ), method, messager ) )
                 .setMapMapping(
                     MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager ) )
+                .setBeanMapping(
+                    BeanMapping.fromPrism( BeanMappingPrism.getInstanceOn( method ), method, messager ) )
                 .setTypeUtils( typeUtils )
                 .setMessager( messager )
                 .setTypeFactory( typeFactory )
                 .setMapperConfiguration( mapperConfig )
                 .setPrototypeMethods( prototypeMethods )
-                .buildSourceMethod();
+                .build();
     }
 
     private SourceMethod getReferencedMethod(TypeElement usedMapper, ExecutableType methodType,
@@ -261,7 +268,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 .setExceptionTypes( exceptionTypes )
                 .setTypeUtils( typeUtils )
                 .setTypeFactory( typeFactory )
-                .buildSourceMethod();
+                .build();
     }
 
     private boolean isValidReferencedMethod(List<Parameter> parameters) {

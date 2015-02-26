@@ -26,6 +26,7 @@ import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
+import org.mapstruct.ap.util.MapperConfiguration;
 
 /**
  * This interface makes available common method properties and a matching method
@@ -145,4 +146,10 @@ public interface Method {
      * @return true when static.
      */
     boolean isStatic();
+
+    /**
+     *
+     * @return the mapper config when this method needs to be implemented
+     */
+    MapperConfiguration getMapperConfiguration();
 }

@@ -40,14 +40,12 @@ import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.DefaultConversionContext;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
-import org.mapstruct.ap.model.source.BeanMapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.model.source.selector.SelectionCriteria;
-import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
@@ -96,37 +94,10 @@ public class MappingResolverImpl implements MappingResolver {
         );
     }
 
-    /**
-     * returns a parameter assignment
-     *
-     * @param mappingMethod target mapping method
-     * @param mappedElement used for error messages
-     * @param sourceType parameter to match
-     * @param targetType return type to match
-     * @param targetPropertyName name of the target property
-     * @param dateFormat used for formatting dates in build in methods that need context information
-     * @param qualifiers used for further select the appropriate mapping method based on class and name
-     * @param sourceReference call to source type as string
-     *
-     * @return an assignment to a method parameter, which can either be:
-     * <ol>
-     * <li>MethodReference</li>
-     * <li>TypeConversion</li>
-     * <li>Direct Assignment (empty TargetAssignment)</li>
-     * <li>null, no assignment found</li>
-     * </ol>
-     */
     @Override
-    public Assignment getTargetAssignment(
-        Method mappingMethod,
-        String mappedElement,
-        Type sourceType,
-        Type targetType,
-        String targetPropertyName,
-        String dateFormat,
-        List<TypeMirror> qualifiers,
-        TypeMirror resultType,
-        String sourceReference) {
+    public Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType,
+        Type targetType, String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
+        TypeMirror resultType, String sourceReference) {
 
         SelectionCriteria criteria = new SelectionCriteria(qualifiers, targetPropertyName, resultType );
 
@@ -148,16 +119,9 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    public MethodReference getFactoryMethod( Method mappingMethod, Type targetType ) {
+    public MethodReference getFactoryMethod( Method mappingMethod, Type targetType, List<TypeMirror> qualifiers,
+        TypeMirror resultType ) {
 
-        TypeMirror resultType = null;
-        List<TypeMirror> qualifiers = null;
-        BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( mappingMethod.getExecutable() );
-        BeanMapping beanMapping = BeanMapping.fromPrism( beanMappingPrism, mappingMethod.getExecutable(), messager );
-        if ( beanMapping != null ) {
-            resultType = beanMapping.getResultType();
-            qualifiers = beanMapping.getQualifiers();
-        }
         SelectionCriteria criteria = new SelectionCriteria(qualifiers, null, resultType );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
@@ -192,12 +156,9 @@ public class MappingResolverImpl implements MappingResolver {
         // so this set must be cleared.
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
-        private ResolvingAttempt(List<SourceMethod> sourceModel,
-                                 Method mappingMethod,
-                                 String mappedElement,
-                                 String dateFormat,
-                                 String sourceReference,
-                                 SelectionCriteria criteria) {
+        private ResolvingAttempt(List<SourceMethod> sourceModel, Method mappingMethod, String mappedElement,
+            String dateFormat, String sourceReference, SelectionCriteria criteria) {
+
             this.mappingMethod = mappingMethod;
             this.mappedElement = mappedElement;
             this.methods = filterPossibleCandidateMethods( sourceModel );

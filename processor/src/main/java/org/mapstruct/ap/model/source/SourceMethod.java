@@ -83,6 +83,7 @@ public class SourceMethod implements Method {
         private Map<String, List<Mapping>> mappings;
         private IterableMapping iterableMapping = null;
         private MapMapping mapMapping = null;
+        private BeanMapping beanMapping = null;
         private Types typeUtils;
         private TypeFactory typeFactory = null;
         private FormattingMessager messager = null;
@@ -132,6 +133,11 @@ public class SourceMethod implements Method {
             return this;
         }
 
+        public Builder setBeanMapping(BeanMapping beanMapping) {
+            this.beanMapping = beanMapping;
+            return this;
+        }
+
         public Builder setTypeUtils(Types typeUtils) {
             this.typeUtils = typeUtils;
             return this;
@@ -157,18 +163,22 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public SourceMethod buildSourceMethod() {
+        public SourceMethod build() {
+
+            MappingOptions mappingOptions
+                = new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping );
+
             SourceMethod sourceMethod = new SourceMethod(
-                    declaringMapper,
-                    executable,
-                    parameters,
-                    returnType,
-                    exceptionTypes,
-                    new MappingOptions( mappings, iterableMapping, mapMapping ),
-                    typeUtils,
-                    typeFactory,
-                    mapperConfig,
-                    prototypeMethods
+                declaringMapper,
+                executable,
+                parameters,
+                returnType,
+                exceptionTypes,
+                mappingOptions,
+                typeUtils,
+                typeFactory,
+                mapperConfig,
+                prototypeMethods
             );
 
             if ( mappings != null ) {
@@ -182,10 +192,10 @@ public class SourceMethod implements Method {
         }
     }
 
-    @SuppressWarnings( "checkstyle:parameternumber" )
-    private SourceMethod( Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
-                         Type returnType, List<Type> exceptionTypes, MappingOptions mappingOptions, Types typeUtils,
-                         TypeFactory typeFactory, MapperConfiguration config, List<SourceMethod> prototypeMethods) {
+    @SuppressWarnings("checkstyle:parameternumber")
+    private SourceMethod(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
+        Type returnType, List<Type> exceptionTypes, MappingOptions mappingOptions, Types typeUtils,
+        TypeFactory typeFactory, MapperConfiguration config, List<SourceMethod> prototypeMethods) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
@@ -313,7 +323,6 @@ public class SourceMethod implements Method {
             && equals( getResultType(), first( method.getSourceParameters() ).getType() );
     }
 
-
     public boolean isSame(SourceMethod method) {
         return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
             && equals( first( getSourceParameters() ).getType(),
@@ -355,7 +364,7 @@ public class SourceMethod implements Method {
     }
 
     private boolean equals(Object o1, Object o2) {
-        return ( o1 == null && o2 == null ) || ( o1 != null ) && o1.equals( o2 );
+        return (o1 == null && o2 == null) || (o1 != null) && o1.equals( o2 );
     }
 
     @Override
@@ -502,10 +511,8 @@ public class SourceMethod implements Method {
         return executable.getModifiers().contains( Modifier.STATIC );
     }
 
-    /**
-     *
-     * @return the mapper config when this method needs to be implemented
-     */
+
+    @Override
     public MapperConfiguration getMapperConfiguration() {
         return config;
     }

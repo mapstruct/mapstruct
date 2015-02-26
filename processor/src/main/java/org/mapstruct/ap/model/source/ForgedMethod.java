@@ -27,6 +27,7 @@ import javax.lang.model.element.ExecutableElement;
 import org.mapstruct.ap.model.common.Accessibility;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -170,6 +171,11 @@ public class ForgedMethod implements Method {
     @Override
     public boolean isStatic() {
         return false;
+    }
+
+    @Override
+    public MapperConfiguration getMapperConfiguration() {
+        return null;
     }
 
 }

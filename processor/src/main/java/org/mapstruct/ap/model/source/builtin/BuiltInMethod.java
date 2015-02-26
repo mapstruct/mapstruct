@@ -32,6 +32,7 @@ import org.mapstruct.ap.model.common.ConversionContext;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
+import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -234,4 +235,8 @@ public abstract class BuiltInMethod implements Method {
         return false;
     }
 
+    @Override
+    public MapperConfiguration getMapperConfiguration() {
+        return null;
+    }
 }

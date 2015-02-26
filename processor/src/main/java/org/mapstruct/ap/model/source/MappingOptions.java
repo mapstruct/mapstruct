@@ -35,12 +35,15 @@ public class MappingOptions {
     private Map<String, List<Mapping>> mappings;
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
+    private BeanMapping beanMapping;
     private boolean fullyInitialized;
 
-    public MappingOptions(Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping) {
+    public MappingOptions(Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
+        BeanMapping beanMapping) {
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
+        this.beanMapping = beanMapping;
     }
 
     /**
@@ -59,6 +62,10 @@ public class MappingOptions {
         return mapMapping;
     }
 
+    public BeanMapping getBeanMapping() {
+        return beanMapping;
+    }
+
     public void setMappings(Map<String, List<Mapping>> mappings) {
         this.mappings = mappings;
     }
@@ -69,6 +76,10 @@ public class MappingOptions {
 
     public void setMapMapping(MapMapping mapMapping) {
         this.mapMapping = mapMapping;
+    }
+
+    public void setBeanMapping(BeanMapping beanMapping) {
+        this.beanMapping = beanMapping;
     }
 
     /**
@@ -104,6 +115,12 @@ public class MappingOptions {
             if ( getMapMapping() == null ) {
                 if ( inherited.getMapMapping() != null ) {
                     setMapMapping( inherited.getMapMapping() );
+                }
+            }
+
+            if ( getBeanMapping() == null ) {
+                if ( inherited.getBeanMapping() != null ) {
+                    setBeanMapping( inherited.getBeanMapping() );
                 }
             }
 

@@ -28,8 +28,7 @@ import org.mapstruct.ap.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.prism.MapMappingPrism;
-import org.mapstruct.ap.util.MapperConfiguration;
+import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
@@ -59,6 +58,7 @@ public class MapMappingMethod extends MappingMethod {
         private TypeMirror valueQualifyingTargetType;
         private Method method;
         private MappingBuilderContext ctx;
+        private NullValueMappingStrategyPrism nullValueMappingStrategy;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -99,6 +99,13 @@ public class MapMappingMethod extends MappingMethod {
             this.valueQualifyingTargetType = valueQualifyingTargetType;
             return this;
         }
+
+        public Builder nullValueMappingStrategy(NullValueMappingStrategyPrism nullValueMappingStrategy) {
+            this.nullValueMappingStrategy = nullValueMappingStrategy;
+            return this;
+        }
+
+
 
         public MapMappingMethod build() {
 
@@ -146,11 +153,13 @@ public class MapMappingMethod extends MappingMethod {
             }
 
             // mapNullToDefault
-            MapMappingPrism prism = MapMappingPrism.getInstanceOn( method.getExecutable() );
-            boolean mapNullToDefault =
-                MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
+            boolean mapNullToDefault = false;
+            if ( method.getMapperConfiguration() != null ) {
+                 mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
+            }
 
-            MethodReference factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType() );
+            MethodReference factoryMethod =
+                ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null );
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes() );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes() );

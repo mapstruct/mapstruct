@@ -37,29 +37,38 @@ public class BeanMapping {
 
     private final List<TypeMirror> qualifiers;
     private final TypeMirror resultType;
+    private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
-    public static BeanMapping fromPrism( BeanMappingPrism beanMapping, ExecutableElement method,
-                                         FormattingMessager messager ) {
+    public static BeanMapping fromPrism(BeanMappingPrism beanMapping, ExecutableElement method,
+        FormattingMessager messager) {
+
         if ( beanMapping == null ) {
             return null;
         }
 
         boolean resultTypeIsDefined = !TypeKind.VOID.equals( beanMapping.resultType().getKind() );
-        boolean nullValueMappingIsDefault =
-            beanMapping.nullValueMappingStrategy().equals( NullValueMappingStrategyPrism.DEFAULT.toString() );
-        if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() && nullValueMappingIsDefault ) {
+
+        NullValueMappingStrategyPrism nullValueMappingStrategy
+            = NullValueMappingStrategyPrism.valueOf( beanMapping.nullValueMappingStrategy() );
+
+        if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty()
+            && ( nullValueMappingStrategy == NullValueMappingStrategyPrism.DEFAULT ) ) {
+
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
         }
 
         return new BeanMapping(
             beanMapping.qualifiedBy(),
-            resultTypeIsDefined ? beanMapping.resultType() : null
+            resultTypeIsDefined ? beanMapping.resultType() : null,
+            nullValueMappingStrategy
         );
     }
 
-    private BeanMapping( List<TypeMirror> qualifiers, TypeMirror mirror) {
+    private BeanMapping(List<TypeMirror> qualifiers, TypeMirror mirror, NullValueMappingStrategyPrism nvms) {
+
         this.qualifiers = qualifiers;
         this.resultType = mirror;
+        this.nullValueMappingStrategy = nvms;
     }
 
     public List<TypeMirror> getQualifiers() {
@@ -68,6 +77,10 @@ public class BeanMapping {
 
     public TypeMirror getResultType() {
         return resultType;
+    }
+
+    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
+        return nullValueMappingStrategy;
     }
 
 }

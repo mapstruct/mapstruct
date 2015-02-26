@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.model.PropertyMapping.ConstantMappingBuilder;
@@ -36,13 +37,13 @@ import org.mapstruct.ap.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.model.PropertyMapping.PropertyMappingBuilder;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
-import org.mapstruct.ap.model.source.BeanMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.SourceReference;
 import org.mapstruct.ap.option.ReportingPolicy;
 import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Message;
@@ -70,6 +71,9 @@ public class BeanMappingMethod extends MappingMethod {
         private Map<String, ExecutableElement> unprocessedTargetProperties;
         private final List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<Parameter>();
+        private List<TypeMirror> qualifiers;
+        private NullValueMappingStrategyPrism nullValueMappingStrategy;
+        private TypeMirror resultTypeMirror;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -84,6 +88,21 @@ public class BeanMappingMethod extends MappingMethod {
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
             }
+            return this;
+        }
+
+        public Builder qualifiers(List<TypeMirror> qualifiers) {
+            this.qualifiers = qualifiers;
+            return this;
+        }
+
+        public Builder nullValueMappingStrategy(NullValueMappingStrategyPrism nullValueMappingStrategy) {
+            this.nullValueMappingStrategy = nullValueMappingStrategy;
+            return this;
+        }
+
+        public Builder resultType(TypeMirror resultType) {
+            this.resultTypeMirror = resultType;
             return this;
         }
 
@@ -104,19 +123,23 @@ public class BeanMappingMethod extends MappingMethod {
             reportErrorForUnmappedTargetPropertiesIfRequired();
 
             // mapNullToDefault
-            BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
-            boolean mapNullToDefault =
-                MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( beanMappingPrism );
+            boolean mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
 
-            MethodReference factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType() );
+
+            BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
+            MethodReference factoryMethod
+                = ctx.getMappingResolver().getFactoryMethod(
+                    method,
+                    method.getResultType(),
+                    qualifiers,
+                    resultTypeMirror
+                );
 
             // if there's no factory method, try the resultType in the @BeanMapping
             Type resultType = null;
             if ( factoryMethod == null ) {
-                BeanMapping beanMapping
-                    = BeanMapping.fromPrism( beanMappingPrism, method.getExecutable(), ctx.getMessager() );
-                if ( beanMapping != null && beanMapping.getResultType() != null ) {
-                    resultType = ctx.getTypeFactory().getType( beanMapping.getResultType() );
+                if ( resultTypeMirror != null ) {
+                    resultType = ctx.getTypeFactory().getType( resultTypeMirror );
                     if ( !resultType.isAssignableTo( method.getResultType() ) ) {
                         ctx.getMessager().printMessage( method.getExecutable(),
                             beanMappingPrism.mirror,

@@ -42,6 +42,7 @@ public class IterableMapping {
     private final TypeMirror qualifyingElementTargetType;
     private final AnnotationMirror mirror;
     private final AnnotationValue dateFormatAnnotationValue;
+    private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
     public static IterableMapping fromPrism(IterableMappingPrism iterableMapping, ExecutableElement method,
                                             FormattingMessager messager) {
@@ -50,35 +51,36 @@ public class IterableMapping {
         }
 
         boolean elementTargetTypeIsDefined = !TypeKind.VOID.equals( iterableMapping.elementTargetType().getKind() );
-        boolean nullValueMappingIsDefault =
-            iterableMapping.nullValueMappingStrategy().equals( NullValueMappingStrategyPrism.DEFAULT.toString() );
+
+        NullValueMappingStrategyPrism nullValueMappingStrategy
+            = NullValueMappingStrategyPrism.valueOf( iterableMapping.nullValueMappingStrategy() );
+
         if ( !elementTargetTypeIsDefined
             && iterableMapping.dateFormat().isEmpty()
             && iterableMapping.qualifiedBy().isEmpty()
-            && nullValueMappingIsDefault) {
+            && ( nullValueMappingStrategy == NullValueMappingStrategyPrism.DEFAULT ) ) {
+
             messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
         }
 
-        return new IterableMapping(
-            iterableMapping.dateFormat(),
+        return new IterableMapping(iterableMapping.dateFormat(),
             iterableMapping.qualifiedBy(),
             elementTargetTypeIsDefined ? iterableMapping.elementTargetType() : null,
             iterableMapping.mirror,
-            iterableMapping.values.dateFormat()
+            iterableMapping.values.dateFormat(),
+            nullValueMappingStrategy
         );
     }
 
-    private IterableMapping(
-            String dateFormat,
-            List<TypeMirror> qualifiers,
-            TypeMirror resultType,
-            AnnotationMirror mirror,
-            AnnotationValue dateFormatAnnotationValue ) {
+    private IterableMapping(String dateFormat, List<TypeMirror> qualifiers, TypeMirror resultType,
+        AnnotationMirror mirror, AnnotationValue dateFormatAnnotationValue, NullValueMappingStrategyPrism nvms) {
+
         this.dateFormat = dateFormat;
         this.qualifiers = qualifiers;
         this.qualifyingElementTargetType = resultType;
         this.mirror = mirror;
         this.dateFormatAnnotationValue = dateFormatAnnotationValue;
+        this.nullValueMappingStrategy = nvms;
     }
 
     public String getDateFormat() {
@@ -100,4 +102,9 @@ public class IterableMapping {
     public AnnotationValue getDateFormatAnnotationValue() {
         return dateFormatAnnotationValue;
     }
+
+    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
+        return nullValueMappingStrategy;
+    }
+
 }

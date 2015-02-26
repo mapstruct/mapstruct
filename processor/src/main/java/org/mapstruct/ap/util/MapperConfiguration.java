@@ -30,10 +30,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.option.ReportingPolicy;
-import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.prism.IterableMappingPrism;
-import org.mapstruct.ap.prism.MapMappingPrism;
 import org.mapstruct.ap.prism.MapperConfigPrism;
 import org.mapstruct.ap.prism.MapperPrism;
 import org.mapstruct.ap.prism.MappingInheritanceStrategyPrism;
@@ -134,49 +131,18 @@ public class MapperConfiguration {
         return MappingInheritanceStrategyPrism.EXPLICIT;
     }
 
-    public boolean isMapToDefault(BeanMappingPrism mapNullToDefault) {
+    public boolean isMapToDefault(NullValueMappingStrategyPrism mapNullToDefault) {
 
         // check on method level
         if ( mapNullToDefault != null ) {
-            NullValueMappingStrategyPrism methodPolicy
-                = NullValueMappingStrategyPrism.valueOf( mapNullToDefault.nullValueMappingStrategy() );
-            if ( methodPolicy != NullValueMappingStrategyPrism.DEFAULT ) {
-                return methodPolicy == NullValueMappingStrategyPrism.RETURN_DEFAULT;
+            if ( mapNullToDefault != NullValueMappingStrategyPrism.DEFAULT ) {
+                return mapNullToDefault == NullValueMappingStrategyPrism.RETURN_DEFAULT;
             }
         }
 
         return isMapToDefaultOnMapperAndMappingConfigLevel();
 
     }
-
-    public boolean isMapToDefault(MapMappingPrism mapNullToDefault) {
-
-        // check on method level
-        if ( mapNullToDefault != null ) {
-            NullValueMappingStrategyPrism methodPolicy
-                = NullValueMappingStrategyPrism.valueOf( mapNullToDefault.nullValueMappingStrategy() );
-            if ( methodPolicy != NullValueMappingStrategyPrism.DEFAULT ) {
-                return methodPolicy == NullValueMappingStrategyPrism.RETURN_DEFAULT;
-            }
-        }
-
-        return isMapToDefaultOnMapperAndMappingConfigLevel();
-    }
-
-    public boolean isMapToDefault(IterableMappingPrism mapNullToDefault) {
-
-        // check on method level
-        if ( mapNullToDefault != null ) {
-            NullValueMappingStrategyPrism methodPolicy
-                = NullValueMappingStrategyPrism.valueOf( mapNullToDefault.nullValueMappingStrategy() );
-            if ( methodPolicy != NullValueMappingStrategyPrism.DEFAULT ) {
-                return methodPolicy == NullValueMappingStrategyPrism.RETURN_DEFAULT;
-            }
-        }
-
-        return isMapToDefaultOnMapperAndMappingConfigLevel();
-    }
-
 
     private boolean isMapToDefaultOnMapperAndMappingConfigLevel() {
 

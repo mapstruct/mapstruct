@@ -80,7 +80,8 @@ public class MappingBuilderContext {
          * @param targetPropertyName name of the target property
          * @param dateFormat used for formatting dates in build in methods that need context information
          * @param qualifiers used for further select the appropriate mapping method based on class and name
-         * @param resultType used for further select the appropriate mapping method based on class and name
+         * @param resultType used for further select the appropriate mapping method based on resultType (bean mapping)
+         * targetType (Iterable- and MapMapping)
          * @param sourceReference call to source type as string
          *
          * @return an assignment to a method parameter, which can either be:
@@ -99,12 +100,16 @@ public class MappingBuilderContext {
          * returns a no arg factory method
          *
          * @param mappingMethod target mapping method
-         * @param targetType return type to match
+         * @param target return type to match
+         * @param qualifiers used for further select the appropriate mapping method based on class and name
+         * @param resultType used for further select the appropriate mapping method based on resultType (bean mapping)
+         * targetType (Iterable- and MapMapping)         *
          *
          * @return a method reference to the factory method, or null if no suitable, or ambiguous method found
          *
          */
-        MethodReference getFactoryMethod(Method mappingMethod, Type targetType);
+        MethodReference getFactoryMethod(Method mappingMethod, Type target, List<TypeMirror> qualifiers,
+            TypeMirror resultType);
 
         Set<VirtualMappingMethod> getUsedVirtualMappings();
     }

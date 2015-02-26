@@ -56,6 +56,7 @@ import org.mapstruct.ap.prism.DecoratedWithPrism;
 import org.mapstruct.ap.prism.InheritConfigurationPrism;
 import org.mapstruct.ap.prism.InheritInverseConfigurationPrism;
 import org.mapstruct.ap.prism.MapperPrism;
+import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.MapperConfiguration;
@@ -257,10 +258,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 String dateFormat = null;
                 List<TypeMirror> qualifiers = null;
                 TypeMirror qualifyingElementTargetType = null;
+                NullValueMappingStrategyPrism nullValueMappingStrategy = null;
+
                 if ( mappingOptions.getIterableMapping() != null ) {
                     dateFormat = mappingOptions.getIterableMapping().getDateFormat();
                     qualifiers = mappingOptions.getIterableMapping().getQualifiers();
                     qualifyingElementTargetType = mappingOptions.getIterableMapping().getQualifyingElementTargetType();
+                    nullValueMappingStrategy = mappingOptions.getIterableMapping().getNullValueMappingStrategy();
                 }
 
                 IterableMappingMethod iterableMappingMethod = builder
@@ -269,6 +273,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .dateFormat( dateFormat )
                     .qualifiers( qualifiers )
                     .qualifyingElementTargetType( qualifyingElementTargetType )
+                    .nullValueMappingStrategy( nullValueMappingStrategy )
                     .build();
 
                 hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;
@@ -284,6 +289,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 List<TypeMirror> valueQualifiers = null;
                 TypeMirror keyQualifyingTargetType = null;
                 TypeMirror valueQualifyingTargetType = null;
+                NullValueMappingStrategyPrism nullValueMappingStrategy = null;
+
                 if ( mappingOptions.getMapMapping() != null ) {
                     keyDateFormat = mappingOptions.getMapMapping().getKeyFormat();
                     valueDateFormat = mappingOptions.getMapMapping().getValueFormat();
@@ -291,6 +298,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     valueQualifiers = mappingOptions.getMapMapping().getValueQualifiers();
                     keyQualifyingTargetType = mappingOptions.getMapMapping().getKeyQualifyingTargetType();
                     valueQualifyingTargetType = mappingOptions.getMapMapping().getValueQualifyingTargetType();
+                    nullValueMappingStrategy = mappingOptions.getMapMapping().getNullValueMappingStrategy();
                 }
 
                 MapMappingMethod mapMappingMethod = builder
@@ -302,6 +310,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .valueQualifiers( valueQualifiers )
                     .keyQualifyingTargetType( keyQualifyingTargetType )
                     .valueQualifyingTargetType( valueQualifyingTargetType )
+                    .nullValueMappingStrategy( nullValueMappingStrategy )
                     .build();
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
@@ -321,10 +330,22 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
 
+                NullValueMappingStrategyPrism nullValueMappingStrategy = null;
+                TypeMirror resultType = null;
+                List<TypeMirror> qualifiers = null;
+
+                if ( mappingOptions.getBeanMapping() != null ) {
+                    nullValueMappingStrategy = mappingOptions.getBeanMapping().getNullValueMappingStrategy();
+                    resultType = mappingOptions.getBeanMapping().getResultType();
+                    qualifiers = mappingOptions.getBeanMapping().getQualifiers();
+                }
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
+                    .nullValueMappingStrategy( nullValueMappingStrategy )
+                    .qualifiers( qualifiers )
+                    .resultType( resultType )
                     .build();
 
                 if ( beanMappingMethod != null ) {

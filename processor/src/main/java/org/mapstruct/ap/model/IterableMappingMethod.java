@@ -30,8 +30,7 @@ import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
-import org.mapstruct.ap.prism.IterableMappingPrism;
-import org.mapstruct.ap.util.MapperConfiguration;
+import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
@@ -58,6 +57,7 @@ public class IterableMappingMethod extends MappingMethod {
         private String dateFormat;
         private List<TypeMirror> qualifiers;
         private TypeMirror qualifyingElementTargetType;
+        private NullValueMappingStrategyPrism nullValueMappingStrategy;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -81,6 +81,11 @@ public class IterableMappingMethod extends MappingMethod {
 
         public Builder qualifyingElementTargetType(TypeMirror qualifyingElementTargetType) {
             this.qualifyingElementTargetType = qualifyingElementTargetType;
+            return this;
+        }
+
+        public Builder nullValueMappingStrategy(NullValueMappingStrategyPrism nullValueMappingStrategy) {
+            this.nullValueMappingStrategy = nullValueMappingStrategy;
             return this;
         }
 
@@ -124,12 +129,16 @@ public class IterableMappingMethod extends MappingMethod {
             else {
                 assignment = new SetterWrapper( assignment, method.getThrownTypes() );
             }
-            // mapNullToDefault
-            IterableMappingPrism prism = IterableMappingPrism.getInstanceOn( method.getExecutable() );
-            boolean mapNullToDefault
-                = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() ).isMapToDefault( prism );
 
-            MethodReference factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType() );
+            // mapNullToDefault
+            boolean mapNullToDefault = false;
+            if ( method.getMapperConfiguration() != null ) {
+                 mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
+            }
+
+            MethodReference factoryMethod
+                = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null );
+
             return new IterableMappingMethod(
                     method,
                     assignment,
