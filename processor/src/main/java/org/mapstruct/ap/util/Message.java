@@ -35,6 +35,7 @@ public enum Message {
     BEANMAPPING_SEVERAL_POSSIBLE_TARGET_ACCESSORS( "Found several matching getters for property \"%s\"." ),
     BEANMAPPING_UNMAPPED_TARGETS_WARNING( "Unmapped target %s.", Diagnostic.Kind.WARNING ),
     BEANMAPPING_UNMAPPED_TARGETS_ERROR( "Unmapped target %s." ),
+    BEANMAPPING_CYCLE_BETWEEN_PROPERTIES( "Cycle(s) between properties given via dependsOn(): %s." ),
 
     PROPERTYMAPPING_MAPPING_NOT_FOUND( "Can't map %s to \"%s %s\". Consider to declare/implement a mapping method: \"%s map(%s value)\"." ),
     PROPERTYMAPPING_DUPLICATE_TARGETS( "Target property \"%s\" must not be mapped more than once." ),

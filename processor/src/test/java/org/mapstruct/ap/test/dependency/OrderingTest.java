@@ -23,6 +23,9 @@ import org.junit.runner.RunWith;
 import org.mapstruct.Mapping;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -62,5 +65,22 @@ public class OrderingTest {
 
         assertThat( target ).isNotNull();
         assertThat( target.getFullName() ).isEqualTo( "Bob J. McRobb" );
+    }
+
+    @Test
+    @IssueKey("304")
+    @WithClasses(AddressMapperWithCyclicDependency.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = AddressMapperWithCyclicDependency.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 36,
+                messageRegExp = "Cycle\\(s\\) between properties given via dependsOn\\(\\): firstName -> lastName -> "
+                    + "middleName -> firstName"
+            )
+        }
+    )
+    public void shouldReportErrorIfDependenciesContainCycle() {
     }
 }

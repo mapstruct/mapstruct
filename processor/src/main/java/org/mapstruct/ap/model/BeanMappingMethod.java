@@ -177,23 +177,36 @@ public class BeanMappingMethod extends MappingMethod {
 
             graphAnalyzer.analyze();
 
-            Collections.sort(
-                propertyMappings, new Comparator<PropertyMapping>() {
+            if ( !graphAnalyzer.getCycles().isEmpty() ) {
+                Set<String> cycles = new HashSet<String>( graphAnalyzer.getCycles().size() );
+                for ( List<String> cycle : graphAnalyzer.getCycles() ) {
+                    cycles.add( Strings.join( cycle, " -> " ) );
+                }
 
-                    @Override
-                    public int compare(PropertyMapping o1, PropertyMapping o2) {
-                        if ( graphAnalyzer.getAllDescendants( o1.getName() ).contains( o2.getName() ) ) {
-                            return 1;
-                        }
-                        else if ( graphAnalyzer.getAllDescendants( o2.getName() ).contains( o1.getName() ) ) {
-                            return -1;
-                        }
-                        else {
-                            return 0;
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    Message.BEANMAPPING_CYCLE_BETWEEN_PROPERTIES, Strings.join( cycles, ", " )
+                );
+            }
+            else {
+                Collections.sort(
+                    propertyMappings, new Comparator<PropertyMapping>() {
+
+                        @Override
+                        public int compare(PropertyMapping o1, PropertyMapping o2) {
+                            if ( graphAnalyzer.getAllDescendants( o1.getName() ).contains( o2.getName() ) ) {
+                                return 1;
+                            }
+                            else if ( graphAnalyzer.getAllDescendants( o2.getName() ).contains( o1.getName() ) ) {
+                                return -1;
+                            }
+                            else {
+                                return 0;
+                            }
                         }
                     }
-                }
-            );
+                );
+            }
         }
 
         /**
