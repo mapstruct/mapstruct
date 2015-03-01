@@ -81,7 +81,7 @@ public class Mapping {
                 mappingsOfProperty.add( mapping );
 
                 if ( mappingsOfProperty.size() > 1 && !isEnumType( method.getReturnType() ) ) {
-                    messager.printMessage( method,  Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mappingPrism.target() );
+                    messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, mappingPrism.target() );
                 }
             }
         }
@@ -93,7 +93,8 @@ public class Mapping {
                                            FormattingMessager messager) {
 
         if ( mappingPrism.target().isEmpty() ) {
-            messager.printMessage( element,
+            messager.printMessage(
+                element,
                 mappingPrism.mirror,
                 mappingPrism.values.target(),
                 Message.PROPERTYMAPPING_EMPTY_TARGET
@@ -140,7 +141,7 @@ public class Mapping {
         );
     }
 
-    @SuppressWarnings( "checkstyle:parameternumber" )
+    @SuppressWarnings("checkstyle:parameternumber")
     private Mapping(String sourceName, String constant, String javaExpression, String targetName,
                     String dateFormat, List<TypeMirror> qualifiers,
                     boolean isIgnored, AnnotationMirror mirror,
@@ -169,8 +170,10 @@ public class Mapping {
         Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( mappingPrism.expression() );
 
         if ( !javaExpressionMatcher.matches() ) {
-            messager.printMessage( element, mappingPrism.mirror, mappingPrism.values.expression(),
-                                   Message.PROPERTYMAPPING_INVALID_EXPRESSION );
+            messager.printMessage(
+                element, mappingPrism.mirror, mappingPrism.values.expression(),
+                Message.PROPERTYMAPPING_INVALID_EXPRESSION
+            );
             return null;
         }
 
@@ -280,8 +283,10 @@ public class Mapping {
         if ( sourceReference != null && sourceReference.getPropertyEntries().isEmpty() ) {
             // parameter mapping only, apparently the @InheritReverseConfiguration is intentional
             // but erroneous. Lets raise an error to warn.
-            messager.printMessage(  method.getExecutable(), Message.PROPERTYMAPPING_REVERSAL_PROBLEM,
-                                    sourceReference.getParameter() );
+            messager.printMessage(
+                method.getExecutable(), Message.PROPERTYMAPPING_REVERSAL_PROBLEM,
+                sourceReference.getParameter()
+            );
             return null;
         }
 

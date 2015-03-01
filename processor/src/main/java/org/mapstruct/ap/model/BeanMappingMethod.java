@@ -147,7 +147,8 @@ public class BeanMappingMethod extends MappingMethod {
                 if ( resultTypeMirror != null ) {
                     resultType = ctx.getTypeFactory().getType( resultTypeMirror );
                     if ( !resultType.isAssignableTo( method.getResultType() ) ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
+                        ctx.getMessager().printMessage(
+                            method.getExecutable(),
                             beanMappingPrism.mirror,
                             Message.BEANMAPPING_NOT_ASSIGNABLE, resultType, method.getResultType()
                         );
@@ -218,7 +219,8 @@ public class BeanMappingMethod extends MappingMethod {
                     // fetch the target property
                     ExecutableElement targetProperty = unprocessedTargetProperties.get( mapping.getTargetName() );
                     if ( targetProperty == null ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
+                        ctx.getMessager().printMessage(
+                            method.getExecutable(),
                             mapping.getMirror(),
                             mapping.getSourceAnnotationValue(),
                             Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE,
@@ -383,7 +385,8 @@ public class BeanMappingMethod extends MappingMethod {
 
                         if ( propertyMapping != null && newPropertyMapping != null ) {
                             // TODO improve error message
-                            ctx.getMessager().printMessage( method.getExecutable(),
+                            ctx.getMessager().printMessage(
+                                method.getExecutable(),
                                 Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
                                 targetProperty.getKey()
                             );
@@ -463,7 +466,8 @@ public class BeanMappingMethod extends MappingMethod {
             }
             // Should never really happen
             else {
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
                     Message.BEANMAPPING_SEVERAL_POSSIBLE_TARGET_ACCESSORS,
                     sourcePropertyName
                 );
@@ -506,7 +510,8 @@ public class BeanMappingMethod extends MappingMethod {
                 Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
                     Message.BEANMAPPING_UNMAPPED_TARGETS_ERROR : Message.BEANMAPPING_UNMAPPED_TARGETS_WARNING;
 
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
                     msg,
                     MessageFormat.format(
                         "{0,choice,1#property|1<properties}: \"{1}\"",

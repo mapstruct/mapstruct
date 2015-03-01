@@ -194,7 +194,8 @@ public class PropertyMapping extends ModelElement {
                 }
             }
             else {
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
                     Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
                     sourceElement,
                     targetType,
@@ -409,8 +410,8 @@ public class PropertyMapping extends ModelElement {
             String name = getName( sourceType, targetType );
             name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
-            if ( (sourceType.isCollectionType() || sourceType.isArrayType())
-                && (targetType.isCollectionType() || targetType.isArrayType()) ) {
+            if ( ( sourceType.isCollectionType() || sourceType.isArrayType() )
+                && ( targetType.isCollectionType() || targetType.isArrayType() ) ) {
 
                 ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, element );
                 IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
@@ -578,7 +579,8 @@ public class PropertyMapping extends ModelElement {
                 }
             }
             else {
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
                     Message.CONSTANTMAPPING_MAPPING_NOT_FOUND,
                     sourceType,
                     constantExpression,
