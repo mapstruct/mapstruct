@@ -20,6 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -74,6 +75,7 @@ public class BeanMappingMethod extends MappingMethod {
         private List<TypeMirror> qualifiers;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
         private TypeMirror resultTypeMirror;
+        private final Collection<String> existingVariableNames = new HashSet<String>();
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -88,6 +90,7 @@ public class BeanMappingMethod extends MappingMethod {
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
             }
+            existingVariableNames.addAll( method.getParameterNames() );
             return this;
         }
 
@@ -148,7 +151,14 @@ public class BeanMappingMethod extends MappingMethod {
                 }
             }
 
-            return new BeanMappingMethod( method, propertyMappings, factoryMethod, mapNullToDefault, resultType );
+            return new BeanMappingMethod(
+                method,
+                propertyMappings,
+                factoryMethod,
+                mapNullToDefault,
+                resultType,
+                existingVariableNames
+            );
         }
 
         /**
@@ -210,6 +220,7 @@ public class BeanMappingMethod extends MappingMethod {
                                     .qualifiers( mapping.getQualifiers() )
                                     .resultType( mapping.getResultType() )
                                     .dateFormat( mapping.getDateFormat() )
+                                    .existingVariableNames( existingVariableNames )
                                     .build();
                                 handledTargets.add( mapping.getTargetName() );
                                 unprocessedSourceParameters.remove( sourceRef.getParameter() );
@@ -231,6 +242,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .dateFormat( mapping.getDateFormat() )
                             .qualifiers( mapping.getQualifiers() )
                             .resultType( mapping.getResultType() )
+                            .existingVariableNames( existingVariableNames )
                             .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
@@ -243,6 +255,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .souceMethod( method )
                             .javaExpression( mapping.getJavaExpression() )
                             .targetAccessor( targetProperty )
+                            .existingVariableNames( existingVariableNames )
                             .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
@@ -319,6 +332,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .qualifiers( mapping != null ? mapping.getQualifiers() : null )
                                 .resultType( mapping != null ? mapping.getResultType() : null )
                                 .dateFormat( mapping != null ? mapping.getDateFormat() : null )
+                                .existingVariableNames( existingVariableNames )
                                 .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
@@ -379,6 +393,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .qualifiers( mapping != null ? mapping.getQualifiers() : null )
                             .resultType( mapping != null ? mapping.getResultType() : null )
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
+                            .existingVariableNames( existingVariableNames )
                             .build();
 
                         propertyMappings.add( propertyMapping );
@@ -466,8 +481,9 @@ public class BeanMappingMethod extends MappingMethod {
                               List<PropertyMapping> propertyMappings,
                               MethodReference factoryMethod,
                               boolean mapNullToDefault,
-                              Type resultType ) {
-        super( method );
+                              Type resultType,
+                              Collection<String> existingVariableNames ) {
+        super( method, existingVariableNames );
         this.propertyMappings = propertyMappings;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a

@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
@@ -27,10 +28,10 @@ import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.model.assignment.AdderWrapper;
 import org.mapstruct.ap.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.model.assignment.Assignment;
-import org.mapstruct.ap.model.assignment.GetterCollectionOrMapWrapper;
+import org.mapstruct.ap.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.NullCheckWrapper;
-import org.mapstruct.ap.model.assignment.SetterCollectionOrMapWrapper;
+import org.mapstruct.ap.model.assignment.SetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
@@ -72,6 +73,7 @@ public class PropertyMapping extends ModelElement {
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
         private SourceReference sourceReference;
+        private Collection<String> existingVariableNames;
 
         public PropertyMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -110,6 +112,11 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder dateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
+            return this;
+        }
+
+        public PropertyMappingBuilder existingVariableNames(Collection<String> existingVariableNames) {
+            this.existingVariableNames = existingVariableNames;
             return this;
         }
 
@@ -245,18 +252,20 @@ public class PropertyMapping extends ModelElement {
                 result = new SetterWrapper( result, method.getThrownTypes() );
 
                 // target accessor is setter, so wrap the setter in setter map/ collection handling
-                result = new SetterCollectionOrMapWrapper(
+                result = new SetterWrapperForCollectionsAndMaps(
                     result,
                     targetAccessor.getSimpleName().toString(),
                     newCollectionOrMap
                 );
             }
             else {
-                // wrap the assignment in the setter method
-                result = new SetterWrapper( result, method.getThrownTypes() );
-
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
-                result = new GetterCollectionOrMapWrapper( result );
+                result = new GetterWrapperForCollectionsAndMaps(
+                    result,
+                    method.getThrownTypes(),
+                    targetType,
+                    existingVariableNames
+                );
             }
 
             // For collections and maps include a null check, when the assignment type is DIRECT.
@@ -453,6 +462,7 @@ public class PropertyMapping extends ModelElement {
         private String dateFormat;
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
+        private Collection<String> existingVariableNames;
 
         public ConstantMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -489,6 +499,11 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
+        public ConstantMappingBuilder existingVariableNames(Collection<String> existingVariableNames) {
+            this.existingVariableNames = existingVariableNames;
+            return this;
+        }
+
         public PropertyMapping build() {
 
             // source
@@ -520,12 +535,18 @@ public class PropertyMapping extends ModelElement {
 
             if ( assignment != null ) {
 
-                // target accessor is setter, so decorate assignment as setter
-                assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-
-                // wrap when dealing with getter only on target
-                if ( Executables.isGetterMethod( targetAccessor ) ) {
-                    assignment = new GetterCollectionOrMapWrapper( assignment );
+                if ( Executables.isSetterMethod( targetAccessor ) ) {
+                    // target accessor is setter, so decorate assignment as setter
+                    assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+                }
+                else {
+                    // wrap when dealing with getter only on target
+                    assignment = new GetterWrapperForCollectionsAndMaps(
+                        assignment,
+                        method.getThrownTypes(),
+                        targetType,
+                        existingVariableNames
+                    );
                 }
             }
             else {
@@ -548,6 +569,7 @@ public class PropertyMapping extends ModelElement {
         private SourceMethod method;
         private String javaExpression;
         private ExecutableElement targetAccessor;
+        private Collection<String> existingVariableNames;
 
         public JavaExpressionMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -569,20 +591,30 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
+        public JavaExpressionMappingBuilder existingVariableNames(Collection<String> existingVariableNames) {
+            this.existingVariableNames = existingVariableNames;
+            return this;
+        }
+
         public PropertyMapping build() {
 
             Assignment assignment = AssignmentFactory.createDirect( javaExpression );
-            assignment = new SetterWrapper( assignment, method.getThrownTypes() );
 
             Type targetType;
             if ( Executables.isSetterMethod( targetAccessor ) ) {
+                // setter, so wrap in setter
+                assignment = new SetterWrapper( assignment, method.getThrownTypes() );
                 targetType = ctx.getTypeFactory().getSingleParameter( targetAccessor ).getType();
             }
             else {
                 targetType = ctx.getTypeFactory().getReturnType( targetAccessor );
-
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
-                assignment = new GetterCollectionOrMapWrapper( assignment );
+                assignment = new GetterWrapperForCollectionsAndMaps(
+                    assignment,
+                    method.getThrownTypes(),
+                    targetType,
+                    existingVariableNames
+                );
             }
 
             return new PropertyMapping( targetAccessor.getSimpleName().toString(), targetType, assignment );

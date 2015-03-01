@@ -16,26 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.model.assignment;
+package org.mapstruct.ap.test.bugs._289;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * This wrapper handles the situation were an assignment must be done via a target getter method because there
- * is no setter available.
- *
- * The wrapper checks if there is an collection or map initialized on the target bean (not null). If so it uses the
- * addAll (for collections) or putAll (for maps). The collection / map is cleared in case of a pre-existing target
- * {@link org.mapstruct.MappingTarget }before adding the source entries. The goal is that the same collection / map
- * is used as target.
- *
- * Nothing can be added if the getter on the target returns null.
  *
  * @author Sjaak Derksen
  */
-public class GetterCollectionOrMapWrapper extends AssignmentWrapper {
+public class TargetWithoutSetter {
 
+    private final Collection<TargetElement> collection = new ArrayList<TargetElement>();
 
-    public GetterCollectionOrMapWrapper(Assignment decoratedAssignment) {
-        super( decoratedAssignment );
+    public Collection<TargetElement> getCollection() {
+        return collection;
     }
 
 }

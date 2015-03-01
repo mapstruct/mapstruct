@@ -22,19 +22,31 @@ if ( ${ext.targetBeanName}.${ext.targetAccessorName}() != null ) {
     <#if ext.existingInstanceMapping>
         ${ext.targetBeanName}.${ext.targetAccessorName}().clear();
     </#if>
-    <#if ext.targetType.collectionType>
-        <@includeModel object=assignment
-                   targetBeanName=ext.targetBeanName
-                   raw=ext.raw
-                   existingInstanceMapping=ext.existingInstanceMapping
-                   targetAccessorName="${ext.targetAccessorName}().addAll"
-                   targetType=ext.targetType/>
-    <#else>
-        <@includeModel object=assignment
-                   targetBeanName=ext.targetBeanName
-                   raw=ext.raw
-                   existingInstanceMapping=ext.existingInstanceMapping
-                   targetAccessorName="${ext.targetAccessorName}().putAll"
-                   targetType=ext.targetType/>
+    <#if (exceptionTypes?size == 0) >
+        <@_assignmentLine/>
+        <#else>
+        try {
+            <@_assignmentLine/>
+        }
+        <#list exceptionTypes as exceptionType>
+        catch ( <@includeModel object=exceptionType/> e ) {
+            throw new RuntimeException( e );
+        }
+        </#list>
     </#if>
 }
+<#macro _assignmentLine>
+     <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
+    if ( ${localVarName} != null ) {
+        ${ext.targetBeanName}.${ext.targetAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
+    }
+</#macro>
+<#macro _assignment>
+    <@includeModel object=assignment
+               targetBeanName=ext.targetBeanName
+               raw=ext.raw
+               existingInstanceMapping=ext.existingInstanceMapping
+               targetReadAccessorName=ext.targetReadAccessorName
+               targetWriteAccessorName=ext.targetWriteAccessorName
+               targetType=ext.targetType/>
+</#macro>

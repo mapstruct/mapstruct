@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,8 +46,16 @@ public abstract class MappingMethod extends ModelElement {
     private final Accessibility accessibility;
     private final List<Type> thrownTypes;
     private final boolean isStatic;
+    private final String resultName;
 
-    protected MappingMethod(Method method) {
+    /**
+     * constructor to be overloaded when local variable names are required prior to calling this constructor. (e.g.
+     * for property mappings). It is supposed to be initialized with at least the parameter names.
+     *
+     * @param method
+     * @param existingVariableNames
+     */
+    protected MappingMethod(Method method, Collection<String> existingVariableNames ) {
         this.name = method.getName();
         this.parameters = method.getParameters();
         this.returnType = method.getReturnType();
@@ -54,6 +63,34 @@ public abstract class MappingMethod extends ModelElement {
         this.accessibility = method.getAccessibility();
         this.thrownTypes = method.getThrownTypes();
         this.isStatic = method.isStatic();
+        this.resultName = initResultName( existingVariableNames );
+    }
+
+    protected MappingMethod(Method method ) {
+        this.name = method.getName();
+        this.parameters = method.getParameters();
+        this.returnType = method.getReturnType();
+        this.targetParameter = method.getMappingTargetParameter();
+        this.accessibility = method.getAccessibility();
+        this.thrownTypes = method.getThrownTypes();
+        this.isStatic = method.isStatic();
+        this.resultName = initResultName( method.getParameterNames() );
+    }
+
+    private String initResultName(Collection<String> existingVarNames) {
+        if ( targetParameter != null ) {
+            return targetParameter.getName();
+        }
+        else if ( getResultType().isArrayType() ) {
+            String name = getSaveVariableName( getResultType().getComponentType().getName() + "Tmp", existingVarNames );
+            existingVarNames.add( name );
+            return name;
+        }
+        else {
+            String name = getSaveVariableName( getResultType().getName(), existingVarNames );
+            existingVarNames.add( name );
+            return name;
+        }
     }
 
     public String getName() {
@@ -81,15 +118,7 @@ public abstract class MappingMethod extends ModelElement {
     }
 
     public String getResultName() {
-        if ( targetParameter != null ) {
-            return targetParameter.getName();
-        }
-        else if ( getResultType().isArrayType() ) {
-            return getSaveVariableName( getResultType().getComponentType().getName() + "Tmp", getParameterNames() );
-        }
-        else {
-            return getSaveVariableName( getResultType().getName(), getParameterNames() );
-        }
+        return resultName;
     }
 
     public Type getReturnType() {
@@ -139,4 +168,6 @@ public abstract class MappingMethod extends ModelElement {
     public String toString() {
         return returnType + " " + getName() + "(" + join( parameters, ", " ) + ")";
     }
+
+
 }

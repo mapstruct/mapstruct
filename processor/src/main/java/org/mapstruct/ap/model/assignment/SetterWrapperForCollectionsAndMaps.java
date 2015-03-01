@@ -35,12 +35,12 @@ import org.mapstruct.ap.model.common.Type;
  *
  * @author Sjaak Derksen
  */
-public class SetterCollectionOrMapWrapper extends AssignmentWrapper {
+public class SetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
 
     private final String targetGetterName;
     private final Assignment newCollectionOrMapAssignment;
 
-    public SetterCollectionOrMapWrapper(Assignment decoratedAssignment,
+    public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
                                         String targetSetterName,
                                         Assignment newCollectionOrMapAssignment) {
         super( decoratedAssignment );
