@@ -62,6 +62,8 @@ public class Mapping {
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
+    private final AnnotationValue dependsOnAnnotationValue;
+
     private SourceReference sourceReference;
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
@@ -136,6 +138,7 @@ public class Mapping {
             mappingPrism.mirror,
             mappingPrism.values.source(),
             mappingPrism.values.target(),
+            mappingPrism.values.dependsOn(),
             resultType,
             dependsOn
         );
@@ -146,6 +149,7 @@ public class Mapping {
                     String dateFormat, List<TypeMirror> qualifiers,
                     boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
+                    AnnotationValue dependsOnAnnotationValue,
                     TypeMirror resultType, List<String> dependsOn) {
         this.sourceName = sourceName;
         this.constant = constant;
@@ -157,6 +161,7 @@ public class Mapping {
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
+        this.dependsOnAnnotationValue = dependsOnAnnotationValue;
         this.resultType = resultType;
         this.dependsOn = dependsOn;
     }
@@ -243,6 +248,10 @@ public class Mapping {
         return targetAnnotationValue;
     }
 
+    public AnnotationValue getDependsOnAnnotationValue() {
+        return dependsOnAnnotationValue;
+    }
+
     public SourceReference getSourceReference() {
         return sourceReference;
     }
@@ -301,6 +310,7 @@ public class Mapping {
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue,
+            dependsOnAnnotationValue,
             null,
             Collections.<String>emptyList()
         );
@@ -326,6 +336,7 @@ public class Mapping {
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue,
+            dependsOnAnnotationValue,
             resultType,
             dependsOn
         );

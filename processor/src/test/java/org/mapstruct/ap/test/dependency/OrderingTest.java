@@ -83,4 +83,20 @@ public class OrderingTest {
     )
     public void shouldReportErrorIfDependenciesContainCycle() {
     }
+
+    @Test
+    @IssueKey("304")
+    @WithClasses(AddressMapperWithUnknownPropertyInDependsOn.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = AddressMapperWithUnknownPropertyInDependsOn.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 32,
+                messageRegExp = "\"doesnotexist\" is no property of the method return type"
+            )
+        }
+    )
+    public void shouldReportErrorIfPropertiyGivenInDependsOnDoesNotExist() {
+    }
 }

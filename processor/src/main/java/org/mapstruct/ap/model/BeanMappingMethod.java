@@ -73,6 +73,7 @@ public class BeanMappingMethod extends MappingMethod {
         private MappingBuilderContext ctx;
         private SourceMethod method;
         private Map<String, ExecutableElement> unprocessedTargetProperties;
+        private Set<String> targetProperties;
         private final List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<Parameter>();
         private List<TypeMirror> qualifiers;
@@ -89,6 +90,7 @@ public class BeanMappingMethod extends MappingMethod {
             this.method = sourceMethod;
             CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
             Map<String, ExecutableElement> accessors = method.getResultType().getTargetAccessors( cms );
+            this.targetProperties = accessors.keySet();
             this.unprocessedTargetProperties = new HashMap<String, ExecutableElement>( accessors );
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
@@ -168,6 +170,10 @@ public class BeanMappingMethod extends MappingMethod {
             );
         }
 
+        /**
+         * Sources the given mappings as per the dependency relationships given via {@code dependsOn()}. If a cycle is
+         * detected, an error is reported.
+         */
         private void sortPropertyMappingsByDependencies() {
             final GraphAnalyzer graphAnalyzer = new GraphAnalyzer();
 
@@ -240,6 +246,20 @@ public class BeanMappingMethod extends MappingMethod {
                             mapping.getTargetName()
                         );
                         errorOccurred = true;
+                    }
+
+                    // unknown properties given via dependsOn()?
+                    for ( String dependency : mapping.getDependsOn() ) {
+                        if ( !targetProperties.contains( dependency ) ) {
+                            ctx.getMessager().printMessage(
+                                method.getExecutable(),
+                                mapping.getMirror(),
+                                mapping.getDependsOnAnnotationValue(),
+                                Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON,
+                                dependency
+                            );
+                            errorOccurred = true;
+                        }
                     }
 
                     // check the mapping options
