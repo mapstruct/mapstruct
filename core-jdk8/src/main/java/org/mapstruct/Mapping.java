@@ -137,10 +137,21 @@ public @interface Mapping {
      */
     Class<? extends Annotation>[] qualifiedBy() default { };
 
-   /**
+    /**
      * Specifies the result type of the mapping method to be used in case multiple mapping methods qualify.
      *
      * @return the resultType to select
      */
     Class<?> resultType() default void.class;
+
+    /**
+     * One or more properties of the result type on which the mapped property depends. The generated method
+     * implementation will invoke the setters of the result type ordered so that the given dependency relationship(s)
+     * are satisfied. Useful in case one property setter depends on the state of another property of the result type.
+     * <p>
+     * An error will be raised in case a cycle in the dependency relationships is detected.
+     *
+     * @return the dependencies of the mapped property
+     */
+    String[] dependsOn() default { };
 }

@@ -21,6 +21,8 @@ package org.mapstruct.ap.model;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,6 +40,7 @@ import org.mapstruct.ap.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.model.PropertyMapping.PropertyMappingBuilder;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.SourceReference;
@@ -146,10 +149,13 @@ public class BeanMappingMethod extends MappingMethod {
                     if ( !resultType.isAssignableTo( method.getResultType() ) ) {
                         ctx.getMessager().printMessage( method.getExecutable(),
                             beanMappingPrism.mirror,
-                            Message.BEANMAPPING_NOT_ASSIGNABLE, resultType, method.getResultType());
+                            Message.BEANMAPPING_NOT_ASSIGNABLE, resultType, method.getResultType()
+                        );
                     }
                 }
             }
+
+            sortPropertyMappingsByDependencies();
 
             return new BeanMappingMethod(
                 method,
@@ -158,6 +164,34 @@ public class BeanMappingMethod extends MappingMethod {
                 mapNullToDefault,
                 resultType,
                 existingVariableNames
+            );
+        }
+
+        private void sortPropertyMappingsByDependencies() {
+            final GraphAnalyzer graphAnalyzer = new GraphAnalyzer();
+
+            for ( PropertyMapping propertyMapping : propertyMappings ) {
+                graphAnalyzer.addNode( propertyMapping.getName(), propertyMapping.getDependsOn() );
+            }
+
+            graphAnalyzer.analyze();
+
+            Collections.sort(
+                propertyMappings, new Comparator<PropertyMapping>() {
+
+                    @Override
+                    public int compare(PropertyMapping o1, PropertyMapping o2) {
+                        if ( graphAnalyzer.getAllDescendants( o1.getName() ).contains( o2.getName() ) ) {
+                            return 1;
+                        }
+                        else if ( graphAnalyzer.getAllDescendants( o2.getName() ).contains( o1.getName() ) ) {
+                            return -1;
+                        }
+                        else {
+                            return 0;
+                        }
+                    }
+                }
             );
         }
 
@@ -221,6 +255,7 @@ public class BeanMappingMethod extends MappingMethod {
                                     .resultType( mapping.getResultType() )
                                     .dateFormat( mapping.getDateFormat() )
                                     .existingVariableNames( existingVariableNames )
+                                    .dependsOn( mapping.getDependsOn() )
                                     .build();
                                 handledTargets.add( mapping.getTargetName() );
                                 unprocessedSourceParameters.remove( sourceRef.getParameter() );
@@ -239,10 +274,12 @@ public class BeanMappingMethod extends MappingMethod {
                             .sourceMethod( method )
                             .constantExpression( "\"" + mapping.getConstant() + "\"" )
                             .targetAccessor( targetProperty )
+                            .targetPropertyName( mapping.getTargetName() )
                             .dateFormat( mapping.getDateFormat() )
                             .qualifiers( mapping.getQualifiers() )
                             .resultType( mapping.getResultType() )
                             .existingVariableNames( existingVariableNames )
+                            .dependsOn( mapping.getDependsOn() )
                             .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
@@ -256,6 +293,8 @@ public class BeanMappingMethod extends MappingMethod {
                             .javaExpression( mapping.getJavaExpression() )
                             .targetAccessor( targetProperty )
                             .existingVariableNames( existingVariableNames )
+                            .targetPropertyName( mapping.getTargetName() )
+                            .dependsOn( mapping.getDependsOn() )
                             .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
@@ -333,6 +372,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .resultType( mapping != null ? mapping.getResultType() : null )
                                 .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                                 .existingVariableNames( existingVariableNames )
+                                .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
                                 .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
@@ -394,6 +434,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .resultType( mapping != null ? mapping.getResultType() : null )
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                             .existingVariableNames( existingVariableNames )
+                            .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
                             .build();
 
                         propertyMappings.add( propertyMapping );

@@ -19,12 +19,12 @@
 package org.mapstruct.ap.model.source;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
@@ -57,6 +57,7 @@ public class Mapping {
     private final List<TypeMirror> qualifiers;
     private final TypeMirror resultType;
     private final boolean isIgnored;
+    private final List<String> dependsOn;
 
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -120,6 +121,8 @@ public class Mapping {
 
         boolean resultTypeIsDefined = !TypeKind.VOID.equals( mappingPrism.resultType().getKind() );
         TypeMirror resultType = resultTypeIsDefined ? mappingPrism.resultType() : null;
+        List<String> dependsOn =
+            mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
 
         return new Mapping(
             source,
@@ -132,7 +135,8 @@ public class Mapping {
             mappingPrism.mirror,
             mappingPrism.values.source(),
             mappingPrism.values.target(),
-            resultType
+            resultType,
+            dependsOn
         );
     }
 
@@ -141,7 +145,7 @@ public class Mapping {
                     String dateFormat, List<TypeMirror> qualifiers,
                     boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
-                    TypeMirror resultType ) {
+                    TypeMirror resultType, List<String> dependsOn) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -153,6 +157,7 @@ public class Mapping {
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
         this.resultType = resultType;
+        this.dependsOn = dependsOn;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
@@ -243,6 +248,10 @@ public class Mapping {
         return resultType;
     }
 
+    public List<String> getDependsOn() {
+        return dependsOn;
+    }
+
     private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         return method.getResultType().getTargetAccessors( cms ).containsKey( name );
@@ -287,7 +296,8 @@ public class Mapping {
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue,
-            null
+            null,
+            Collections.<String>emptyList()
         );
 
         reverse.init( method, messager, typeFactory );
@@ -311,8 +321,9 @@ public class Mapping {
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue,
-            resultType
-            );
+            resultType,
+            dependsOn
+        );
 
         if ( sourceReference != null ) {
             mapping.sourceReference = sourceReference.copyForInheritanceTo( method );

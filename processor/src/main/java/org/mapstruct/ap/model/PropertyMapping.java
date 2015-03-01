@@ -20,8 +20,10 @@ package org.mapstruct.ap.model;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -31,8 +33,8 @@ import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.model.assignment.NullCheckWrapper;
-import org.mapstruct.ap.model.assignment.SetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
+import org.mapstruct.ap.model.assignment.SetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
@@ -41,12 +43,12 @@ import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.SourceReference;
 import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
 import org.mapstruct.ap.util.Executables;
+import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
-import org.mapstruct.ap.util.Message;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -57,10 +59,12 @@ import org.mapstruct.ap.util.Message;
  */
 public class PropertyMapping extends ModelElement {
 
+    private final String name;
     private final String sourceBeanName;
     private final String targetAccessorName;
     private final Type targetType;
     private final Assignment assignment;
+    private final List<String> dependsOn;
 
     public static class PropertyMappingBuilder {
 
@@ -74,6 +78,7 @@ public class PropertyMapping extends ModelElement {
         private TypeMirror resultType;
         private SourceReference sourceReference;
         private Collection<String> existingVariableNames;
+        private List<String> dependsOn;
 
         public PropertyMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -117,6 +122,11 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder existingVariableNames(Collection<String> existingVariableNames) {
             this.existingVariableNames = existingVariableNames;
+            return this;
+        }
+
+        public PropertyMappingBuilder dependsOn(List<String> dependsOn) {
+            this.dependsOn = dependsOn;
             return this;
         }
 
@@ -195,10 +205,12 @@ public class PropertyMapping extends ModelElement {
             }
 
             return new PropertyMapping(
+                targetPropertyName,
                 sourceReference.getParameter().getName(),
                 targetAccessor.getSimpleName().toString(),
                 targetType,
-                assignment
+                assignment,
+                dependsOn
             );
         }
 
@@ -465,10 +477,12 @@ public class PropertyMapping extends ModelElement {
         private SourceMethod method;
         private String constantExpression;
         private ExecutableElement targetAccessor;
+        private String targetPropertyName;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
         private Collection<String> existingVariableNames;
+        private List<String> dependsOn;
 
         public ConstantMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -487,6 +501,11 @@ public class PropertyMapping extends ModelElement {
 
         public ConstantMappingBuilder targetAccessor(ExecutableElement targetAccessor) {
             this.targetAccessor = targetAccessor;
+            return this;
+        }
+
+        public ConstantMappingBuilder targetPropertyName(String targetPropertyName) {
+            this.targetPropertyName = targetPropertyName;
             return this;
         }
 
@@ -510,6 +529,11 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
+        public ConstantMappingBuilder dependsOn(List<String> dependsOn) {
+            this.dependsOn = dependsOn;
+            return this;
+        }
+
         public PropertyMapping build() {
 
             // source
@@ -524,8 +548,6 @@ public class PropertyMapping extends ModelElement {
             else {
                 targetType = ctx.getTypeFactory().getReturnType( targetAccessor );
             }
-
-            String targetPropertyName = Executables.getPropertyName( targetAccessor );
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
@@ -565,7 +587,13 @@ public class PropertyMapping extends ModelElement {
                 );
             }
 
-            return new PropertyMapping( targetAccessor.getSimpleName().toString(), targetType, assignment );
+            return new PropertyMapping(
+                targetPropertyName,
+                targetAccessor.getSimpleName().toString(),
+                targetType,
+                assignment,
+                dependsOn
+            );
         }
     }
 
@@ -576,6 +604,8 @@ public class PropertyMapping extends ModelElement {
         private String javaExpression;
         private ExecutableElement targetAccessor;
         private Collection<String> existingVariableNames;
+        private String targetPropertyName;
+        private List<String> dependsOn;
 
         public JavaExpressionMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -602,6 +632,16 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
+        public JavaExpressionMappingBuilder targetPropertyName(String targetPropertyName) {
+            this.targetPropertyName = targetPropertyName;
+            return this;
+        }
+
+        public JavaExpressionMappingBuilder dependsOn(List<String> dependsOn) {
+            this.dependsOn = dependsOn;
+            return this;
+        }
+
         public PropertyMapping build() {
 
             Assignment assignment = AssignmentFactory.createDirect( javaExpression );
@@ -623,24 +663,38 @@ public class PropertyMapping extends ModelElement {
                 );
             }
 
-            return new PropertyMapping( targetAccessor.getSimpleName().toString(), targetType, assignment );
+            return new PropertyMapping(
+                targetPropertyName,
+                targetAccessor.getSimpleName().toString(),
+                targetType,
+                assignment,
+                dependsOn
+            );
         }
 
     }
 
     // Constructor for creating mappings of constant expressions.
-    private PropertyMapping(String targetAccessorName, Type targetType, Assignment propertyAssignment) {
-        this( null, targetAccessorName, targetType, propertyAssignment );
+    private PropertyMapping(String name, String targetAccessorName, Type targetType, Assignment propertyAssignment,
+                            List<String> dependsOn) {
+        this( name, null, targetAccessorName, targetType, propertyAssignment, dependsOn );
     }
 
-    private PropertyMapping(String sourceBeanName, String targetAccessorName, Type targetType, Assignment assignment) {
-
+    private PropertyMapping(String name, String sourceBeanName, String targetAccessorName, Type targetType,
+                            Assignment assignment, List<String> dependsOn) {
+        this.name = name;
         this.sourceBeanName = sourceBeanName;
-
         this.targetAccessorName = targetAccessorName;
         this.targetType = targetType;
-
         this.assignment = assignment;
+        this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
+    }
+
+    /**
+     * Returns the name of this mapping (property name on the target side)
+     */
+    public String getName() {
+        return name;
     }
 
     public String getSourceBeanName() {
@@ -664,12 +718,17 @@ public class PropertyMapping extends ModelElement {
         return assignment.getImportTypes();
     }
 
+    public List<String> getDependsOn() {
+        return dependsOn;
+    }
+
     @Override
     public String toString() {
         return "PropertyMapping {"
-            + "\n    targetName='" + targetAccessorName + "\',"
+            + "\n    name='" + name + "\',"
             + "\n    targetType=" + targetType + ","
-            + "\n    propertyAssignment=" + assignment
+            + "\n    propertyAssignment=" + assignment + ","
+            + "\n    dependsOn=" + dependsOn
             + "\n}";
     }
 }
