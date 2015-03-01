@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 /**
  * Configures the mapping between two bean types.
  * <p>
- * Either {@link #resultType()} , {@link #qualifiedBy()} or {@link #qualifiedBy()}must be specified.
+ * Either {@link #resultType()} , {@link #qualifiedBy()} or {@link #nullValueMappingStrategy()} must be specified.
  * </p>
  *
  * @author Sjaak Derksen
