@@ -41,6 +41,7 @@ import org.mapstruct.ap.model.PropertyMapping.PropertyMappingBuilder;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.dependency.GraphAnalyzer;
+import org.mapstruct.ap.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.model.source.SourceReference;
@@ -175,16 +176,16 @@ public class BeanMappingMethod extends MappingMethod {
          * detected, an error is reported.
          */
         private void sortPropertyMappingsByDependencies() {
-            final GraphAnalyzer graphAnalyzer = new GraphAnalyzer();
+            GraphAnalyzerBuilder graphAnalyzerBuilder = GraphAnalyzer.builder();
 
             for ( PropertyMapping propertyMapping : propertyMappings ) {
-                graphAnalyzer.addNode( propertyMapping.getName(), propertyMapping.getDependsOn() );
+                graphAnalyzerBuilder.withNode( propertyMapping.getName(), propertyMapping.getDependsOn() );
             }
 
-            graphAnalyzer.analyze();
+            final GraphAnalyzer graphAnalyzer = graphAnalyzerBuilder.build();
 
             if ( !graphAnalyzer.getCycles().isEmpty() ) {
-                Set<String> cycles = new HashSet<String>( graphAnalyzer.getCycles().size() );
+                Set<String> cycles = new HashSet<String>();
                 for ( List<String> cycle : graphAnalyzer.getCycles() ) {
                     cycles.add( Strings.join( cycle, " -> " ) );
                 }

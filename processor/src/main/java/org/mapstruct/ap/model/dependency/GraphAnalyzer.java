@@ -19,6 +19,7 @@
 package org.mapstruct.ap.model.dependency;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,32 +35,29 @@ import java.util.Stack;
  */
 public class GraphAnalyzer {
 
-    private final Map<String, Node> nodes = new HashMap<String, Node>();
-    private final Set<List<String>> cycles = new HashSet<List<String>>();
+    private final Map<String, Node> nodes;
+    private final Set<List<String>> cycles;
+    private final Stack<Node> currentPath;
 
-    private final Stack<Node> currentPath = new Stack<Node>();
-
-    public void addNode(String name, List<String> descendants) {
-        Node node = getNode( name );
-
-        for ( String descendant : descendants ) {
-            node.addDescendant( getNode( descendant ) );
-        }
+    private GraphAnalyzer(Map<String, Node> nodes) {
+        this.nodes = nodes;
+        cycles = new HashSet<List<String>>();
+        currentPath = new Stack<Node>();
     }
 
-    public void addNode(String name, String... descendants) {
-        Node node = getNode( name );
+    public static GraphAnalyzerBuilder builder() {
+        return new GraphAnalyzerBuilder();
+    }
 
-        for ( String descendant : descendants ) {
-            node.addDescendant( getNode( descendant ) );
-        }
+    public static GraphAnalyzerBuilder withNode(String name, String... descendants) {
+        return builder().withNode( name, descendants );
     }
 
     /**
      * Performs a full traversal of the graph, detecting potential cycles and calculates the full list of descendants of
      * the nodes.
      */
-    public void analyze() {
+    private void analyze() {
         for ( Node node : nodes.values() ) {
             depthFirstSearch( node );
         }
@@ -109,7 +107,7 @@ public class GraphAnalyzer {
         boolean inCycle = false;
 
         for ( Node n : currentPath ) {
-            if ( n.getName().equals( start.getName() ) ) {
+            if ( !inCycle && n.equals( start ) ) {
                 inCycle = true;
             }
 
@@ -121,14 +119,43 @@ public class GraphAnalyzer {
         return cycle;
     }
 
-    private Node getNode(String name) {
-        Node node = nodes.get( name );
+    public static class GraphAnalyzerBuilder {
 
-        if ( node == null ) {
-            node = new Node( name );
-            nodes.put( name, node );
+        private final Map<String, Node> nodes = new HashMap<String, Node>();
+
+        public GraphAnalyzerBuilder withNode(String name, List<String> descendants) {
+            Node node = getNode( name );
+
+            for ( String descendant : descendants ) {
+                node.addDescendant( getNode( descendant ) );
+            }
+
+            return this;
         }
 
-        return node;
+        public GraphAnalyzerBuilder withNode(String name, String... descendants) {
+            return withNode( name, Arrays.asList( descendants ) );
+        }
+
+        /**
+         * Builds the analyzer and triggers traversal of all nodes for detecting potential cycles and calculates the
+         * full list of descendants of each node.
+         */
+        public GraphAnalyzer build() {
+            GraphAnalyzer graphAnalyzer = new GraphAnalyzer( nodes );
+            graphAnalyzer.analyze();
+            return graphAnalyzer;
+        }
+
+        private Node getNode(String name) {
+            Node node = nodes.get( name );
+
+            if ( node == null ) {
+                node = new Node( name );
+                nodes.put( name, node );
+            }
+
+            return node;
+        }
     }
 }

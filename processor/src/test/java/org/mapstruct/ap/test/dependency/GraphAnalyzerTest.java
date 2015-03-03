@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.mapstruct.ap.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.util.Strings;
@@ -37,24 +36,15 @@ import org.mapstruct.ap.util.Strings;
  */
 public class GraphAnalyzerTest {
 
-    private GraphAnalyzer detector;
-
-    @Before
-    public void setUpDetector() {
-        detector = new GraphAnalyzer();
-    }
-
     @Test
     public void emptyGraph() {
-        detector.analyze();
-
+        GraphAnalyzer detector = GraphAnalyzer.builder().build();
         assertThat( detector.getCycles() ).isEmpty();
     }
 
     @Test
     public void singleNode() {
-        detector.addNode( "a" );
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a" ).build();
 
         assertThat( detector.getCycles() ).isEmpty();
         assertThat( detector.getAllDescendants( "a" ) ).isEmpty();
@@ -62,10 +52,9 @@ public class GraphAnalyzerTest {
 
     @Test
     public void twoNodesWithoutCycle() {
-        detector.addNode( "a", "b" );
-        detector.addNode( "b" );
-
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a", "b" )
+                .withNode( "b" )
+                .build();
 
         assertThat( detector.getCycles() ).isEmpty();
         assertThat( detector.getAllDescendants( "a" ) ).containsOnly( "b" );
@@ -74,31 +63,28 @@ public class GraphAnalyzerTest {
 
     @Test
     public void twoNodesWithCycle() {
-        detector.addNode( "a", "b" );
-        detector.addNode( "b", "a" );
-
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a", "b" )
+                .withNode( "b", "a" )
+                .build();
 
         assertThat( asStrings( detector.getCycles() ) ).containsOnly( "a -> b -> a" );
     }
 
     @Test
     public void threeNodesWithCycleBetweenTwo() {
-        detector.addNode( "a", "b" );
-        detector.addNode( "b", "a", "c" );
-
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a", "b" )
+                .withNode( "b", "a", "c" )
+                .build();
 
         assertThat( asStrings( detector.getCycles() ) ).containsOnly( "a -> b -> a" );
     }
 
     @Test
     public void twoNodesWithSharedDescendantWithoutCycle() {
-        detector.addNode( "a", "b" );
-        detector.addNode( "b", "c" );
-        detector.addNode( "a", "c" );
-
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a", "b" )
+                .withNode( "b", "c" )
+                .withNode( "a", "c" )
+                .build();
 
         assertThat( asStrings( detector.getCycles() ) ).isEmpty();
         assertThat( detector.getAllDescendants( "a" ) ).containsOnly( "b", "c" );
@@ -108,10 +94,9 @@ public class GraphAnalyzerTest {
 
     @Test
     public void threeNodesWithoutCycle() {
-        detector.addNode( "a", "b" );
-        detector.addNode( "c", "b" );
-
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a", "b" )
+                .withNode( "c", "b" )
+                .build();
 
         assertThat( asStrings( detector.getCycles() ) ).isEmpty();
 
@@ -122,36 +107,33 @@ public class GraphAnalyzerTest {
 
     @Test
     public void fourNodesWithCycleBetweenThree() {
-        detector.addNode( "a", "b" );
-        detector.addNode( "b", "c" );
-        detector.addNode( "c", "d" );
-        detector.addNode( "d", "b" );
-
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a", "b" )
+                .withNode( "b", "c" )
+                .withNode( "c", "d" )
+                .withNode( "d", "b" )
+                .build();
 
         assertThat( asStrings( detector.getCycles() ) ).containsOnly( "b -> c -> d -> b" );
     }
 
     @Test
     public void fourNodesWithTwoCycles() {
-        detector.addNode( "a", "b" );
-        detector.addNode( "b", "a" );
-        detector.addNode( "c", "d" );
-        detector.addNode( "d", "c" );
-
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a", "b" )
+                .withNode( "b", "a" )
+                .withNode( "c", "d" )
+                .withNode( "d", "c" )
+                .build();
 
         assertThat( asStrings( detector.getCycles() ) ).containsOnly( "a -> b -> a", "c -> d -> c" );
     }
 
     @Test
     public void fourNodesWithoutCycle() {
-        detector.addNode( "a", "b1" );
-        detector.addNode( "a", "b2" );
-        detector.addNode( "b1", "c" );
-        detector.addNode( "b2", "c" );
-
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a", "b1" )
+                .withNode( "a", "b2" )
+                .withNode( "b1", "c" )
+                .withNode( "b2", "c" )
+                .build();
 
         assertThat( asStrings( detector.getCycles() ) ).isEmpty();
         assertThat( detector.getAllDescendants( "a" ) ).containsOnly( "b1", "b2", "c" );
@@ -162,27 +144,25 @@ public class GraphAnalyzerTest {
 
     @Test
     public void fourNodesWithCycle() {
-        detector.addNode( "a", "b1" );
-        detector.addNode( "a", "b2" );
-        detector.addNode( "b1", "c" );
-        detector.addNode( "b2", "c" );
-        detector.addNode( "c", "a" );
-
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a", "b1" )
+                .withNode( "a", "b2" )
+                .withNode( "b1", "c" )
+                .withNode( "b2", "c" )
+                .withNode( "c", "a" )
+                .build();
 
         assertThat( asStrings( detector.getCycles() ) ).containsOnly( "a -> b1 -> c -> a", "a -> b2 -> c -> a" );
     }
 
     @Test
     public void eightNodesWithoutCycle() {
-        detector.addNode( "a", "b1" );
-        detector.addNode( "a", "b2" );
-        detector.addNode( "b1", "c1" );
-        detector.addNode( "b1", "c2" );
-        detector.addNode( "b2", "c3" );
-        detector.addNode( "b2", "c4" );
-
-        detector.analyze();
+        GraphAnalyzer detector = GraphAnalyzer.withNode( "a", "b1" )
+                .withNode( "a", "b2" )
+                .withNode( "b1", "c1" )
+                .withNode( "b1", "c2" )
+                .withNode( "b2", "c3" )
+                .withNode( "b2", "c4" )
+                .build();
 
         assertThat( detector.getCycles() ).isEmpty();
 
