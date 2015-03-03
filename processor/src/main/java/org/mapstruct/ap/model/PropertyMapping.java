@@ -170,7 +170,13 @@ public class PropertyMapping extends ModelElement {
                 }
                 else if ( targetType.isArrayType() && sourceType.isArrayType() && assignment.getType() == DIRECT ) {
                     Type arrayType = ctx.getTypeFactory().getType( Arrays.class );
-                    assignment = new ArrayCopyWrapper( assignment, targetPropertyName, arrayType, targetType );
+                    assignment = new ArrayCopyWrapper(
+                        assignment,
+                        targetPropertyName,
+                        arrayType,
+                        targetType,
+                        existingVariableNames
+                    );
                     assignment = new NullCheckWrapper( assignment );
                 }
                 else {

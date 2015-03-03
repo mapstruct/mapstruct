@@ -18,11 +18,13 @@
  */
 package org.mapstruct.ap.model.assignment;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.util.Strings;
 import static org.mapstruct.ap.util.Strings.decapitalize;
 import static org.mapstruct.ap.util.Strings.getSaveVariableName;
 
@@ -38,9 +40,9 @@ public class ArrayCopyWrapper extends AssignmentWrapper {
     private final Type targetType;
 
     public ArrayCopyWrapper(Assignment decoratedAssignment, String targetPropertyName, Type arraysType,
-            Type targetType) {
+            Type targetType, Collection<String> existingVariableNames ) {
         super( decoratedAssignment );
-        this.targetPropertyName = targetPropertyName;
+        this.targetPropertyName = Strings.getSaveVariableName( targetPropertyName, existingVariableNames );
         this.arraysType = arraysType;
         this.targetType = targetType;
     }
