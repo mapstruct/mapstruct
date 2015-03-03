@@ -176,7 +176,7 @@ public abstract class GeneratedType extends ModelElement {
         return constructor;
     }
 
-    private void addWithDependents(Collection<Type> collection, Type typeToAdd) {
+    protected void addWithDependents(Collection<Type> collection, Type typeToAdd) {
         if ( typeToAdd == null ) {
             return;
         }

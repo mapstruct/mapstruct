@@ -20,6 +20,7 @@ package org.mapstruct.ap.model;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.lang.model.element.ElementKind;
@@ -105,7 +106,7 @@ public class Decorator extends GeneratedType {
                 typeFactory,
                 elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString(),
                 mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
-                decoratorType.getName(),
+                decoratorType,
                 mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
                 methods,
                 Arrays.asList(  new Field( typeFactory.getType( mapperElement ), "delegate", true ) ) ,
@@ -117,8 +118,10 @@ public class Decorator extends GeneratedType {
         }
     }
 
+    private final Type decoratorType;
+
     @SuppressWarnings( "checkstyle:parameternumber" )
-    private Decorator(TypeFactory typeFactory, String packageName, String name, String superClassName,
+    private Decorator(TypeFactory typeFactory, String packageName, String name, Type decoratorType,
                      String interfaceName, List<MappingMethod> methods, List<? extends Field> fields,
                      Options options, VersionInformation versionInformation, Accessibility accessibility,
                      DecoratorConstructor decoratorConstructor) {
@@ -126,7 +129,7 @@ public class Decorator extends GeneratedType {
             typeFactory,
             packageName,
             name,
-            superClassName,
+            decoratorType.getName(),
             interfaceName,
             methods,
             fields,
@@ -136,6 +139,15 @@ public class Decorator extends GeneratedType {
             new TreeSet<Type>(),
             decoratorConstructor
         );
+
+        this.decoratorType = decoratorType;
+    }
+
+    @Override
+    public SortedSet<Type> getImportTypes() {
+        SortedSet<Type> importTypes = super.getImportTypes();
+        addWithDependents( importTypes, decoratorType );
+        return importTypes;
     }
 
     @Override
