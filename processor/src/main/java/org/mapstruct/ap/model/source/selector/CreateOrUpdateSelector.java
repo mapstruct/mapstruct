@@ -26,18 +26,17 @@ import org.mapstruct.ap.model.source.Method;
 
 /**
  * Selection based on type of method (create - or update method).
- *
  * <p>
  * Prefers (when present):
  * <ol>
- * <li>create method candidates (methods not containing {@link @MappingTarget} ) when mapping method is
- * a create method</li>
- * <li>update method candidates (methods containing {@link @MappingTarget} ) when mapping method is
- * an update method</li>
+ * <li>create method candidates (methods not containing {@code &#64;MappingTarget}) when mapping method is a create
+ * method</li>
+ * <li>update method candidates (methods containing {@code &#64;MappingTarget} ) when mapping method is an update method
+ * </li>
  * </ol>
  * When not present, the remaining (createCandidates when mapping method is update method, updateCandidates when mapping
  * method is a create method) candidates are selected.
- * </p>
+ *
  * @author Sjaak Derksen
  */
 public class CreateOrUpdateSelector implements MethodSelector {

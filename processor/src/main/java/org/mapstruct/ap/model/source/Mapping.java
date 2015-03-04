@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
@@ -321,8 +322,6 @@ public class Mapping {
 
     /**
      * Creates a copy of this mapping, which is adapted to the given method
-     *
-     * @param the method to adapt the copy to
      */
     public Mapping copyForInheritanceTo(SourceMethod method) {
         Mapping mapping = new Mapping(

@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -38,8 +39,8 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 
+import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.Filters;
 import org.mapstruct.ap.util.Nouns;
@@ -334,14 +335,14 @@ public class Type extends ModelElement implements Comparable<Type> {
      * getPropertyWriteAccessors returns a map of the write accessors according to the CollectionMappingStrategy.
      *
      * These accessors include:
-     * <p>
+     *
      * <ul>
      *  <li>setters, the obvious candidate :-), {@link #getSetters() }</li>
      *  <li>getters, for collections that do not have a setter, e.g. for JAXB generated collection attributes
      * {@link #getPropertyReadAccessors() }</li>
      *  <li>adders, typically for from table generated entities, {@link #getAdders() }</li>
      * </ul>
-     * </p>
+     *
      * @param cmStrategy
      * @return an unmodifiable map of all write accessors indexed by property name
      */

@@ -292,8 +292,6 @@ public class SourceReference {
 
     /**
      * Creates a copy of this reference, which is adapted to the given method
-     *
-     * @param the method to adapt the copy to
      */
     public SourceReference copyForInheritanceTo(SourceMethod method) {
         List<Parameter> replacementParamCandidates = new ArrayList<Parameter>();

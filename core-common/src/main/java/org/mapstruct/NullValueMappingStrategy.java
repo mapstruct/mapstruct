@@ -49,8 +49,8 @@ public enum NullValueMappingStrategy {
      * When given via {@link Mapper#nullValueMappingStrategy()}, causes the setting specified via
      * {@link MapperConfig#nullValueMappingStrategy()} to be applied, if present.
      * <p>
-     * When given via {@link NullValueMapping#value()}, causes the setting specified via
-     * {@link Mapper#nullValueMappingStrategy() ()} to be applied, if present.
+     * When given on specific mapping methods (e.g. via @ BeanMapping#nullValueMappingStrategy()}), causes the setting
+     * specified via {@link Mapper#nullValueMappingStrategy() ()} to be applied, if present.
      * <p>
      * Otherwise causes {@link #RETURN_NULL} to be applied.
      */

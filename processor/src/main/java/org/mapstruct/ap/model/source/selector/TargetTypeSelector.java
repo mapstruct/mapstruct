@@ -20,6 +20,7 @@ package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -30,8 +31,8 @@ import org.mapstruct.ap.model.source.Method;
 /**
  * This selector selects a best match based on the result type.
  * <p>
- *  Suppose: Sedan -> Car -> Vehicle, MotorCycle -> Vehicle
- *  By means of this selector one can pinpoint the exact desired return type (Sedan, Car, MotorCycle, Vehicle)
+ * Suppose: Sedan -&gt; Car -&gt; Vehicle, MotorCycle -&gt; Vehicle By means of this selector one can pinpoint the exact
+ * desired return type (Sedan, Car, MotorCycle, Vehicle)
  *
  * @author Sjaak Derksen
  */

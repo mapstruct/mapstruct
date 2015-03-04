@@ -44,9 +44,8 @@ import static org.mapstruct.ap.util.Collections.first;
  * Represents a mapping method with source and target type and the mappings between the properties of source and target
  * type.
  * <p>
- * A method can either be configured by itself or by another method for the inverse mapping direction (one of
- * {@link #setMappings(Map)}, {@link #setIterableMapping(IterableMapping)} or {@link #setMapMapping(MapMapping)} will be
- * called in this case).
+ * A method can either be configured by itself or by another method for the inverse mapping direction (the appropriate
+ * setter on {@link MappingOptions} will be called in this case).
  *
  * @author Gunnar Morling
  */
