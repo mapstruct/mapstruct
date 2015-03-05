@@ -23,6 +23,7 @@ import java.util.List;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.util.Collections;
 import org.mapstruct.ap.util.JavaTimeConstants;
+import org.mapstruct.ap.util.JaxbConstants;
 
 /**
  * Registry for all built-in methods.
@@ -35,7 +36,6 @@ public class BuiltInMappingMethods {
 
     public BuiltInMappingMethods(TypeFactory typeFactory) {
         builtInMethods = Collections.newArrayList(
-            new JaxbElemToValue( typeFactory ),
             new DateToXmlGregorianCalendar( typeFactory ),
             new XmlGregorianCalendarToDate( typeFactory ),
             new StringToXmlGregorianCalendar( typeFactory ),
@@ -45,10 +45,18 @@ public class BuiltInMappingMethods {
 
         );
 
+        if ( isJaxbAvailable( typeFactory ) ) {
+            builtInMethods.add( new JaxbElemToValue( typeFactory ) );
+        }
+
         if ( isJava8TimeAvailable( typeFactory ) ) {
             builtInMethods.add( new ZonedDateTimeToCalendar( typeFactory ) );
             builtInMethods.add( new CalendarToZonedDateTime( typeFactory ) );
         }
+    }
+
+    private static boolean isJaxbAvailable(TypeFactory typeFactory) {
+        return typeFactory.isTypeAvailable( JaxbConstants.JAXB_ELEMENT_FQN );
     }
 
     private static boolean isJava8TimeAvailable(TypeFactory typeFactory) {
