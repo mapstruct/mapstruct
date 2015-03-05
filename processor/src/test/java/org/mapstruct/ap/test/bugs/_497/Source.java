@@ -1,4 +1,4 @@
-package org.mapstruct.ap.test.bugs._new;
+package org.mapstruct.ap.test.bugs._497;
 
 public class Source {
     private SourceType type;

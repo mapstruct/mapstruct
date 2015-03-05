@@ -16,23 +16,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._new;
+package org.mapstruct.ap.test.bugs._497;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.factory.Mappers;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-@Mapper(uses = {MultiplierMapper.class})
-public interface UseQualifierToDetermineAmbiguityInMappingMethods {
+@WithClasses( {
+    UseQualifierToDetermineAmbiguityInMappingMethods.class,
+    MultiplierMapper.class,
+    Source.class, Target.class, SourceType.class,
+    SourceTypeQualifier.class, RandomMultiplier.class, DoubleMultiplier.class
+} )
+@IssueKey("_497")
+@RunWith(AnnotationProcessorTestRunner.class)
+public class UseQualifierToDetermineAmbiguityInMappingMethodsTest {
 
-    UseQualifierToDetermineAmbiguityInMappingMethods INSTANCE 
-            = Mappers.getMapper(UseQualifierToDetermineAmbiguityInMappingMethods.class);
-
-    @Mappings({
-            @Mapping(target = "name", source = "name"),
-            @Mapping(target = "multiplier", source = "type",
-                    qualifiedBy = {SourceTypeQualifier.class, RandomMultiplier.class})
-    })
-    Target map(Source source);
+    @Test
+    public void shouldResolveMethodBasedOnQualifier() {
+    }
 }

@@ -1,4 +1,4 @@
-package org.mapstruct.ap.test.bugs._new;
+package org.mapstruct.ap.test.bugs._497;
 
 public class Target {
     public int multiplier;
