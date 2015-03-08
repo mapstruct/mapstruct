@@ -6,6 +6,7 @@ Christian Schuster
 Dilip Krishnan
 Ewald Volkert
 Gunnar Morling
+Michael Pardo
 Sebastian Hasait
 Sjaak Derksen
 Timo Eckhardt
