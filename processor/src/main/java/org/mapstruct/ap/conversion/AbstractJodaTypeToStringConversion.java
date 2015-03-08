@@ -37,7 +37,7 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
 
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
-        return conversionString( conversionContext, "print" );
+        return conversionString( conversionContext, "print" ) + ".trim()";
     }
 
     @Override
