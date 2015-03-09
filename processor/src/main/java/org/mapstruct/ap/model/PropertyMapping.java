@@ -19,7 +19,6 @@
 package org.mapstruct.ap.model;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -68,45 +67,60 @@ public class PropertyMapping extends ModelElement {
     private final Assignment assignment;
     private final List<String> dependsOn;
 
-    public static class PropertyMappingBuilder {
+    @SuppressWarnings("unchecked")
+    private static class MappingBuilderBase<T extends MappingBuilderBase<T>> {
+
+        protected MappingBuilderContext ctx;
+        protected SourceMethod method;
+        protected ExecutableElement targetWriteAccessor;
+        protected ExecutableElement targetReadAccessor;
+        protected String targetPropertyName;
+        protected List<String> dependsOn;
+        protected Set<String> existingVariableNames;
+
+        public T mappingContext(MappingBuilderContext mappingContext) {
+            this.ctx = mappingContext;
+            return (T) this;
+        }
+
+        public T sourceMethod(SourceMethod sourceMethod) {
+            this.method = sourceMethod;
+            return (T) this;
+        }
+
+        public T targetReadAccessor(ExecutableElement targetReadAccessor) {
+            this.targetReadAccessor = targetReadAccessor;
+            return (T) this;
+        }
+
+        public T targetWriteAccessor(ExecutableElement targetWriteAccessor) {
+            this.targetWriteAccessor = targetWriteAccessor;
+            return (T) this;
+        }
+
+        public T targetPropertyName(String targetPropertyName) {
+            this.targetPropertyName = targetPropertyName;
+            return (T) this;
+        }
+
+        public T dependsOn(List<String> dependsOn) {
+            this.dependsOn = dependsOn;
+            return (T) this;
+        }
+
+        public T existingVariableNames(Set<String> existingVariableNames) {
+            this.existingVariableNames = existingVariableNames;
+            return (T) this;
+        }
+    }
+
+    public static class PropertyMappingBuilder extends MappingBuilderBase<PropertyMappingBuilder> {
 
         // initial properties
-        private MappingBuilderContext ctx;
-        private SourceMethod method;
-        private ExecutableElement targetWriteAccessor;
-        private ExecutableElement targetReadAccessor;
-        private String targetPropertyName;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
         private SourceReference sourceReference;
-        private Collection<String> existingVariableNames;
-        private List<String> dependsOn;
-
-        public PropertyMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
-            this.ctx = mappingContext;
-            return this;
-        }
-
-        public PropertyMappingBuilder souceMethod(SourceMethod sourceMethod) {
-            this.method = sourceMethod;
-            return this;
-        }
-
-        public PropertyMappingBuilder targetReadAccessor(ExecutableElement targetReadAccessor) {
-            this.targetReadAccessor = targetReadAccessor;
-            return this;
-        }
-
-        public PropertyMappingBuilder targetWriteAccessor(ExecutableElement targetWriteAccessor) {
-            this.targetWriteAccessor = targetWriteAccessor;
-            return this;
-        }
-
-        public PropertyMappingBuilder targetPropertyName(String targetPropertyName) {
-            this.targetPropertyName = targetPropertyName;
-            return this;
-        }
 
         public PropertyMappingBuilder sourceReference(SourceReference sourceReference) {
             this.sourceReference = sourceReference;
@@ -125,16 +139,6 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder dateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
-            return this;
-        }
-
-        public PropertyMappingBuilder existingVariableNames(Collection<String> existingVariableNames) {
-            this.existingVariableNames = existingVariableNames;
-            return this;
-        }
-
-        public PropertyMappingBuilder dependsOn(List<String> dependsOn) {
-            this.dependsOn = dependsOn;
             return this;
         }
 
@@ -506,47 +510,15 @@ public class PropertyMapping extends ModelElement {
         }
     }
 
-    public static class ConstantMappingBuilder {
+    public static class ConstantMappingBuilder extends MappingBuilderBase<ConstantMappingBuilder> {
 
-        private MappingBuilderContext ctx;
-        private SourceMethod method;
         private String constantExpression;
-        private String targetPropertyName;
-        private ExecutableElement targetWriteAccessor;
-        private ExecutableElement targetReadAccessor;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
-        private Collection<String> existingVariableNames;
-        private List<String> dependsOn;
-
-        public ConstantMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
-            this.ctx = mappingContext;
-            return this;
-        }
-
-        public ConstantMappingBuilder sourceMethod(SourceMethod sourceMethod) {
-            this.method = sourceMethod;
-            return this;
-        }
 
         public ConstantMappingBuilder constantExpression(String constantExpression) {
             this.constantExpression = constantExpression;
-            return this;
-        }
-
-        public ConstantMappingBuilder targetWriteAccessor(ExecutableElement targetAccessor) {
-            this.targetWriteAccessor = targetAccessor;
-            return this;
-        }
-
-        public ConstantMappingBuilder targetReadAccessor(ExecutableElement targetReadAccessor) {
-            this.targetReadAccessor = targetReadAccessor;
-            return this;
-        }
-
-        public ConstantMappingBuilder targetPropertyName(String targetPropertyName) {
-            this.targetPropertyName = targetPropertyName;
             return this;
         }
 
@@ -562,16 +534,6 @@ public class PropertyMapping extends ModelElement {
 
         public ConstantMappingBuilder resultType(TypeMirror resultType) {
             this.resultType = resultType;
-            return this;
-        }
-
-        public ConstantMappingBuilder existingVariableNames(Collection<String> existingVariableNames) {
-            this.existingVariableNames = existingVariableNames;
-            return this;
-        }
-
-        public ConstantMappingBuilder dependsOn(List<String> dependsOn) {
-            this.dependsOn = dependsOn;
             return this;
         }
 
@@ -656,54 +618,12 @@ public class PropertyMapping extends ModelElement {
         }
     }
 
-    public static class JavaExpressionMappingBuilder {
+    public static class JavaExpressionMappingBuilder extends MappingBuilderBase<JavaExpressionMappingBuilder> {
 
-        private MappingBuilderContext ctx;
-        private SourceMethod method;
         private String javaExpression;
-        private Collection<String> existingVariableNames;
-        private String targetPropertyName;
-        private List<String> dependsOn;
-        private ExecutableElement targetWriteAccessor;
-        private ExecutableElement targetReadAccessor;
-
-        public JavaExpressionMappingBuilder mappingContext(MappingBuilderContext mappingContext) {
-            this.ctx = mappingContext;
-            return this;
-        }
-
-        public JavaExpressionMappingBuilder souceMethod(SourceMethod sourceMethod) {
-            this.method = sourceMethod;
-            return this;
-        }
 
         public JavaExpressionMappingBuilder javaExpression(String javaExpression) {
             this.javaExpression = javaExpression;
-            return this;
-        }
-
-        public JavaExpressionMappingBuilder targetWriteAccessor(ExecutableElement targetWriteAccessor) {
-            this.targetWriteAccessor = targetWriteAccessor;
-            return this;
-        }
-
-        public JavaExpressionMappingBuilder targetReadAccessor(ExecutableElement targetReadAccessor) {
-            this.targetReadAccessor = targetReadAccessor;
-            return this;
-        }
-
-        public JavaExpressionMappingBuilder existingVariableNames(Collection<String> existingVariableNames) {
-            this.existingVariableNames = existingVariableNames;
-            return this;
-        }
-
-        public JavaExpressionMappingBuilder targetPropertyName(String targetPropertyName) {
-            this.targetPropertyName = targetPropertyName;
-            return this;
-        }
-
-        public JavaExpressionMappingBuilder dependsOn(List<String> dependsOn) {
-            this.dependsOn = dependsOn;
             return this;
         }
 

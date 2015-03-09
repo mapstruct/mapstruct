@@ -80,7 +80,7 @@ public class BeanMappingMethod extends MappingMethod {
         private List<TypeMirror> qualifiers;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
         private TypeMirror resultTypeMirror;
-        private final Collection<String> existingVariableNames = new HashSet<String>();
+        private final Set<String> existingVariableNames = new HashSet<String>();
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -283,7 +283,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 // as possible before we stop analysing
                                 propertyMapping = new PropertyMappingBuilder()
                                     .mappingContext( ctx )
-                                    .souceMethod( method )
+                                    .sourceMethod( method )
                                     .targetWriteAccessor( targetWriteAccessor )
                                     .targetReadAccessor( getTargetPropertyReadAccessor( mapping.getTargetName() ) )
                                     .targetPropertyName( mapping.getTargetName() )
@@ -327,7 +327,7 @@ public class BeanMappingMethod extends MappingMethod {
 
                         propertyMapping = new JavaExpressionMappingBuilder()
                             .mappingContext( ctx )
-                            .souceMethod( method )
+                            .sourceMethod( method )
                             .javaExpression( mapping.getJavaExpression() )
                             .existingVariableNames( existingVariableNames )
                             .targetWriteAccessor( targetWriteAccessor )
@@ -405,7 +405,7 @@ public class BeanMappingMethod extends MappingMethod {
 
                             newPropertyMapping = new PropertyMappingBuilder()
                                 .mappingContext( ctx )
-                                .souceMethod( method )
+                                .sourceMethod( method )
                                 .targetWriteAccessor( targetProperty.getValue() )
                                 .targetReadAccessor( getTargetPropertyReadAccessor( targetProperty.getKey() ) )
                                 .targetPropertyName( targetProperty.getKey() )
@@ -469,7 +469,7 @@ public class BeanMappingMethod extends MappingMethod {
 
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
-                            .souceMethod( method )
+                            .sourceMethod( method )
                             .targetWriteAccessor( targetProperty.getValue() )
                             .targetReadAccessor( getTargetPropertyReadAccessor( targetProperty.getKey() ) )
                             .targetPropertyName( targetProperty.getKey() )
