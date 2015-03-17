@@ -143,22 +143,24 @@ class IndentationCorrectingWriter extends Writer {
             }
 
             private void flush(StateContext context) throws IOException {
-                context.writer.write(
-                    context.characters,
-                    context.lastStateChange,
-                    context.currentIndex - context.lastStateChange
-                );
-
-                if ( DEBUG ) {
-                    System.out.print(
-                        new String(
-                            java.util.Arrays.copyOfRange(
-                                context.characters,
-                                context.lastStateChange,
-                                context.currentIndex
-                            )
-                        )
+                if ( null != context.characters && context.currentIndex - context.lastStateChange > 0 ) {
+                    context.writer.write(
+                        context.characters,
+                        context.lastStateChange,
+                        context.currentIndex - context.lastStateChange
                     );
+
+                    if ( DEBUG ) {
+                        System.out.print(
+                            new String(
+                                java.util.Arrays.copyOfRange(
+                                    context.characters,
+                                    context.lastStateChange,
+                                    context.currentIndex
+                                )
+                            )
+                        );
+                    }
                 }
             }
         },
