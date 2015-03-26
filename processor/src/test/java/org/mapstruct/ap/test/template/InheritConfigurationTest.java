@@ -136,8 +136,8 @@ public class InheritConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.WARNING,
                 line = 55,
-                messageRegExp = "Unmapped target properties: \"stringPropY, nestedResultProp, integerPropY, "
-                        + "constantProp, expressionProp\"")
+                messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
+                    + "expressionProp, nestedResultProp\"")
         }
     )
     public void shouldRaiseAmbiguousReverseMethodError() {
@@ -156,8 +156,8 @@ public class InheritConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.WARNING,
                 line = 55,
-                messageRegExp = "Unmapped target properties: \"stringPropY, nestedResultProp, integerPropY, "
-                        + "constantProp, expressionProp\"")
+                messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
+                    + "expressionProp, nestedResultProp\"")
         }
     )
     public void shouldRaiseAmbiguousReverseMethodErrorWrongName() {
@@ -176,8 +176,8 @@ public class InheritConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.WARNING,
                 line = 55,
-                messageRegExp = "Unmapped target properties: \"stringPropY, nestedResultProp, integerPropY, "
-                        + "constantProp, expressionProp\"")        }
+                messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
+                        + "expressionProp, nestedResultProp\"")        }
     )
     public void shouldRaiseAmbiguousReverseMethodErrorDuplicatedName() {
     }
@@ -195,8 +195,8 @@ public class InheritConfigurationTest {
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                         kind = Kind.WARNING,
                         line = 46,
-                        messageRegExp = "Unmapped target properties: \"stringPropY, nestedResultProp, integerPropY, "
-                        + "constantProp, expressionProp\"")
+                messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
+                    + "expressionProp, nestedResultProp\"")
         }
     )
     public void shouldAdviseOnSpecifyingCorrectName() {

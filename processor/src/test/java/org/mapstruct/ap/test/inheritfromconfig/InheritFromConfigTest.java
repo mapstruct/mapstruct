@@ -178,7 +178,7 @@ public class InheritFromConfigTest {
             @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.WARNING,
                 line = 36,
-                messageRegExp = "Unmapped target properties: \"auditTrail, primaryKey\"\\."),
+                messageRegExp = "Unmapped target properties: \"primaryKey, auditTrail\"\\."),
             @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.ERROR,
                 line = 42,

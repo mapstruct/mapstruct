@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.severalsources;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic.Kind;
 
@@ -32,6 +30,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for propagation of attribute without setter in source and getter in
@@ -127,12 +127,13 @@ public class SeveralSourceParametersTest {
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 29,
-                messageRegExp = "Several possible source properties for target property \"zipCode\".") ,
+                messageRegExp = "Several possible source properties for target property \"zipCode\".",
+                javaVersions = { SourceVersion.RELEASE_6 } ),
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 29,
-                messageRegExp = "Several possible source properties for target property \"street\".",
-                javaVersions = { SourceVersion.RELEASE_6 } )
+                messageRegExp = "Several possible source properties for target property \"street\"."),
+
     })
 
     public void shouldFailToGenerateMappingsForAmbigiousSourceProperty() {
