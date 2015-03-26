@@ -23,7 +23,6 @@ ${openExpression}<@_assignment/>${closeExpression}
 <#macro _assignment>
     <@includeModel object=assignment
                targetBeanName=ext.targetBeanName
-               raw=ext.raw
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=ext.targetReadAccessorName
                targetWriteAccessorName=ext.targetWriteAccessorName

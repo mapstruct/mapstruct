@@ -21,7 +21,6 @@
 if ( ${sourceReference} != null ) {
     <@includeModel object=assignment
                 targetBeanName=ext.targetBeanName
-                raw=ext.raw
                 existingInstanceMapping=ext.existingInstanceMapping
                 targetReadAccessorName=ext.targetReadAccessorName
                 targetWriteAccessorName=ext.targetWriteAccessorName

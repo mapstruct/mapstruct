@@ -22,7 +22,6 @@
     for ( <@includeModel object=sourceType/> ${iteratorReference} : ${sourceReference} ) {
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@includeModel object=assignment
                 targetBeanName=ext.targetBeanName
-                raw=ext.raw
                 existingInstanceMapping=ext.existingInstanceMapping
                 targetReadAccessorName=ext.targetReadAccessorName
                 targetWriteAccessorName=ext.targetWriteAccessorName
@@ -33,7 +32,6 @@
         for ( <@includeModel object=sourceType/> ${iteratorReference} : ${sourceReference} ) {
             ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@includeModel object=assignment
                     targetBeanName=ext.targetBeanName
-                    raw=ext.raw
                     existingInstanceMapping=ext.existingInstanceMapping
                     targetReadAccessorName=ext.targetReadAccessorName
                     targetWriteAccessorName=ext.targetWriteAccessorName

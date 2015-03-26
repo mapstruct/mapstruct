@@ -26,7 +26,7 @@
     }
     </#if>
 
-    <#if !existingInstanceMapping><@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType raw=true/><#else>new <@includeModel object=resultType/>()</#if>;</#if>
+    <#if !existingInstanceMapping><@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else>new <@includeModel object=resultType/>()</#if>;</#if>
     <#if (sourceParameters?size > 1)>
         <#list sourceParametersExcludingPrimitives as sourceParam>
             <#if (propertyMappingsByParameter[sourceParam.name]?size > 0)>

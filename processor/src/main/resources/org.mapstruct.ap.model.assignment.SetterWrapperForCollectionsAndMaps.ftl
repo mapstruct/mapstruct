@@ -24,7 +24,6 @@
         <#if ext.targetType.collectionType>
             <@includeModel object=assignment
                    targetBeanName=ext.targetBeanName
-                   raw=ext.raw
                    existingInstanceMapping=ext.existingInstanceMapping
                    targetReadAccessorName=ext.targetReadAccessorName
                    targetWriteAccessorName="${targetGetterName}().addAll"
@@ -32,7 +31,6 @@
         <#else>
             <@includeModel object=assignment
                    targetBeanName=ext.targetBeanName
-                   raw=ext.raw
                    existingInstanceMapping=ext.existingInstanceMapping
                    targetReadAccessorName=ext.targetReadAccessorName
                    targetWriteAccessorName="${targetGetterName}().putAll"
@@ -56,7 +54,6 @@
 <#macro _assignment>
     <@includeModel object=assignment
             targetBeanName=ext.targetBeanName
-            raw=ext.raw
             existingInstanceMapping=ext.existingInstanceMapping
             targetReadAccessorName=ext.targetReadAccessorName
             targetWriteAccessorName=ext.targetWriteAccessorName
@@ -65,7 +62,6 @@
 <#macro _newCollectionOrMapAssignment>
     <@includeModel object=newCollectionOrMapAssignment
             targetBeanName=ext.targetBeanName
-            raw=ext.raw
             existingInstanceMapping=ext.existingInstanceMapping
             targetReadAccessorName=ext.targetReadAccessorName
             targetWriteAccessorName=ext.targetWriteAccessorName

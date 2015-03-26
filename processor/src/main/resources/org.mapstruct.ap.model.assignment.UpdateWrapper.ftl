@@ -32,11 +32,10 @@
 </#if>
 <#macro _assignment>
     if ( ${ext.targetBeanName}.${ext.targetReadAccessorName}() == null ) {
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <#if factoryMethod??><@includeModel object=factoryMethod targetType=ext.targetType raw=true/><#else>new <@includeModel object=ext.targetType/>()</#if> );
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <#if factoryMethod??><@includeModel object=factoryMethod targetType=ext.targetType/><#else>new <@includeModel object=ext.targetType/>()</#if> );
     }
     <@includeModel object=assignment
                targetBeanName=ext.targetBeanName
-               raw=ext.raw
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=ext.targetReadAccessorName
                targetWriteAccessorName=ext.targetWriteAccessorName
