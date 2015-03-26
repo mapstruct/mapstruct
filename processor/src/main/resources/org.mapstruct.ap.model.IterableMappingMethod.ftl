@@ -107,7 +107,7 @@
 <#macro iterableCreation>
     <@compress single_line=true>
         <#if factoryMethod??>
-            <@includeModel object=factoryMethod targetType=resultType raw=true/>
+            <@includeModel object=factoryMethod targetType=resultType/>
         <#else>
             new
             <#if resultType.implementationType??>

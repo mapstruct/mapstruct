@@ -27,6 +27,7 @@ public class Target {
     private long prop1;
     private Bar prop2;
     private SomeType prop3;
+    private GenericWrapper<String> prop4;
 
     public long getProp1() {
         return prop1;
@@ -50,5 +51,13 @@ public class Target {
 
     public void setProp3(SomeType prop3) {
         this.prop3 = prop3;
+    }
+
+    public GenericWrapper<String> getProp4() {
+        return prop4;
+    }
+
+    public void setProp4(GenericWrapper<String> prop4) {
+        this.prop4 = prop4;
     }
 }

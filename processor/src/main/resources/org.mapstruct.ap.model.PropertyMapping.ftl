@@ -20,7 +20,6 @@
 -->
 <@includeModel object=assignment
                targetBeanName=ext.targetBeanName
-               raw=ext.raw
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=targetReadAccessorName
                targetWriteAccessorName=targetWriteAccessorName

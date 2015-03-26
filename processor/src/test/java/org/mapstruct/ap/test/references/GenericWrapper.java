@@ -22,7 +22,7 @@ package org.mapstruct.ap.test.references;
  * @author Andreas Gudian
  *
  */
-public class GenericWrapper<T> {
+public class GenericWrapper<T> extends BaseType {
     private final T wrapped;
 
     public GenericWrapper(T someType) {

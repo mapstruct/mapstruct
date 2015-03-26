@@ -18,9 +18,6 @@
  */
 package org.mapstruct.ap.test.references;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,13 +29,19 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import static org.fest.assertions.MapAssert.entry;
+
 /**
  * @author Andreas Gudian
  *
  */
 @IssueKey( "82" )
 @WithClasses( { Bar.class, Foo.class, FooMapper.class, ReferencedCustomMapper.class, Source.class,
-    SourceTargetMapper.class, Target.class, BaseType.class, SomeType.class, SomeOtherType.class } )
+    SourceTargetMapper.class, Target.class, BaseType.class, SomeType.class, SomeOtherType.class,
+    GenericWrapper.class
+})
 @RunWith(AnnotationProcessorTestRunner.class)
 public class ReferencedMapperTest {
     @Test
@@ -50,6 +53,7 @@ public class ReferencedMapperTest {
         assertThat( target.getProp2() ).isNotNull();
         assertThat( target.getProp2().getProp1() ).isEqualTo( "foo" );
         assertThat( target.getProp3().getValue() ).isEqualTo( "prop3" );
+        assertThat( target.getProp4().getWrapped() ).isEqualTo( "prop4" );
     }
 
     private Source createSource() {
@@ -60,6 +64,7 @@ public class ReferencedMapperTest {
         prop2.setProp1( "foo" );
         source.setProp2( prop2 );
         source.setProp3( "prop3" );
+        source.setProp4( "prop4" );
 
         return source;
     }
@@ -88,8 +93,7 @@ public class ReferencedMapperTest {
 
     @Test
     @IssueKey( "136" )
-    @WithClasses( { SourceTargetMapperWithPrimitives.class, SourceWithWrappers.class, TargetWithPrimitives.class,
-        GenericWrapper.class } )
+    @WithClasses({ SourceTargetMapperWithPrimitives.class, SourceWithWrappers.class, TargetWithPrimitives.class })
     public void shouldMapPrimitivesWithCustomMapper() {
         SourceWithWrappers source = new SourceWithWrappers();
         source.setProp1( new SomeType( "42" ) );
