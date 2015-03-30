@@ -50,6 +50,8 @@ public class Target {
 
     private List<String> stringListNoSetter;
 
+    private List<String> stringListNoSetter2;
+
     @SuppressWarnings("rawtypes")
     private Set set;
 
@@ -147,6 +149,13 @@ public class Target {
             stringListNoSetter = new ArrayList<String>();
         }
         return stringListNoSetter;
+    }
+
+    public List<String> getStringListNoSetter2() {
+        if ( stringListNoSetter2 == null ) {
+            stringListNoSetter2 = new ArrayList<String>();
+        }
+        return stringListNoSetter2;
     }
 
     public Map<String, Long> getOtherStringLongMap() {

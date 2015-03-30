@@ -451,4 +451,35 @@ public class TypeFactory {
             return t;
         }
     }
+
+    /**
+     * Converts any collection type, e.g. List<T> to Collection<T> and any map type, e.g. HashMap<K,V> to Map<K,V>.
+     *
+     * @param collectionOrMap any collection or map type
+     * @return the type representing Collection<T> or Map<K,V>, if the argument type is a subtype of Collection<T> or of
+     *         Map<K,V> respectively.
+     */
+    public Type asCollectionOrMap(Type collectionOrMap) {
+        List<Type> originalParameters = collectionOrMap.getTypeParameters();
+        TypeMirror[] originalParameterMirrors = new TypeMirror[originalParameters.size()];
+        int i = 0;
+        for ( Type param : originalParameters ) {
+            originalParameterMirrors[i++] = param.getTypeMirror();
+        }
+
+        if ( collectionOrMap.isCollectionType()
+            && !"java.util.Collection".equals( collectionOrMap.getFullyQualifiedName() ) ) {
+            return getType( typeUtils.getDeclaredType(
+                elementUtils.getTypeElement( "java.util.Collection" ),
+                originalParameterMirrors ) );
+        }
+        else if ( collectionOrMap.isMapType()
+            && !"java.util.Map".equals( collectionOrMap.getFullyQualifiedName() ) ) {
+            return getType( typeUtils.getDeclaredType(
+                elementUtils.getTypeElement( "java.util.Map" ),
+                originalParameterMirrors ) );
+        }
+
+        return collectionOrMap;
+    }
 }

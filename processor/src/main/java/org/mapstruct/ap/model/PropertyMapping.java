@@ -320,7 +320,7 @@ public class PropertyMapping extends ModelElement {
                 result = new GetterWrapperForCollectionsAndMaps(
                     result,
                     method.getThrownTypes(),
-                    targetType,
+                    ctx.getTypeFactory().asCollectionOrMap( targetType ),
                     existingVariableNames
                 );
             }
@@ -591,7 +591,7 @@ public class PropertyMapping extends ModelElement {
                     assignment = new GetterWrapperForCollectionsAndMaps(
                         assignment,
                         method.getThrownTypes(),
-                        targetType,
+                        ctx.getTypeFactory().asCollectionOrMap( targetType ),
                         existingVariableNames
                     );
                 }
@@ -643,7 +643,7 @@ public class PropertyMapping extends ModelElement {
                 assignment = new GetterWrapperForCollectionsAndMaps(
                     assignment,
                     method.getThrownTypes(),
-                    targetType,
+                    ctx.getTypeFactory().asCollectionOrMap( targetType ),
                     existingVariableNames
                 );
             }

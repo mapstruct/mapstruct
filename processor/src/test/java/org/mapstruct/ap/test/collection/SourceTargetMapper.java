@@ -20,11 +20,12 @@ package org.mapstruct.ap.test.collection;
 
 import java.util.Set;
 
+import org.mapstruct.InheritConfiguration;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -36,19 +37,15 @@ public interface SourceTargetMapper {
         @Mapping(source = "integerList", target = "integerCollection"),
         @Mapping(source = "integerSet", target = "set"),
         @Mapping(source = "anotherIntegerSet", target = "anotherStringSet"),
-        @Mapping(source = "stringList2", target = "stringListNoSetter")
+        @Mapping(source = "stringList2", target = "stringListNoSetter"),
+        @Mapping(source = "stringSet2", target = "stringListNoSetter2")
     })
     Target sourceToTarget(Source source);
 
     @InheritInverseConfiguration( name = "sourceToTarget" )
     Source targetToSource(Target target);
 
-    @Mappings({
-        @Mapping(source = "integerList", target = "integerCollection"),
-        @Mapping(source = "integerSet", target = "set"),
-        @Mapping(source = "anotherIntegerSet", target = "anotherStringSet"),
-        @Mapping(source = "stringList2", target = "stringListNoSetter")
-    })
+    @InheritConfiguration
     Target sourceToTargetTwoArg(Source source, @MappingTarget Target target);
 
     Set<String> integerSetToStringSet(Set<Integer> integers);

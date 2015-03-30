@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.util.Strings;
 
@@ -42,16 +43,16 @@ import org.mapstruct.ap.util.Strings;
 public class GetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
 
     private final List<Type> exceptionTypesToExclude;
-    private final Type targetType;
+    private final Type localVarType;
     private final String localVarName;
 
 
     public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment, List<Type> exceptionTypesToExclude,
-        Type targetType, Collection<String> existingVariableNames ) {
+                                              Type localVarType, Collection<String> existingVariableNames) {
         super( decoratedAssignment );
         this.exceptionTypesToExclude = exceptionTypesToExclude;
-        this.targetType = targetType;
-        this.localVarName = Strings.getSaveVariableName( "target" + targetType.getName(), existingVariableNames );
+        this.localVarType = localVarType;
+        this.localVarName = Strings.getSaveVariableName( "target" + localVarType.getName(), existingVariableNames );
         existingVariableNames.add( localVarName );
    }
 
@@ -73,8 +74,15 @@ public class GetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>();
         imported.addAll( super.getImportTypes() );
-        imported.add( targetType ); /* is a local var */
+        imported.add( localVarType ); /* is a local var */
         return imported;
+    }
+
+    /**
+     * @return the targetType
+     */
+    public Type getLocalVarType() {
+        return localVarType;
     }
 
     public String getLocalVarName() {

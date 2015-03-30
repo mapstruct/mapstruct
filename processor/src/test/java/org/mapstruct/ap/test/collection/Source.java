@@ -50,6 +50,8 @@ public class Source {
 
     private List<String> stringList2;
 
+    private Set<String> stringSet2;
+
     public List<String> getStringList() {
         return stringList;
     }
@@ -152,6 +154,14 @@ public class Source {
 
     public void setOtherStringLongMap(Map<String, Long> otherStringLongMap) {
         this.otherStringLongMap = otherStringLongMap;
+    }
+
+    public Set<String> getStringSet2() {
+        return stringSet2;
+    }
+
+    public void setStringSet2(Set<String> stringSet2) {
+        this.stringSet2 = stringSet2;
     }
 
 }

@@ -36,7 +36,7 @@ if ( ${ext.targetBeanName}.${ext.targetWriteAccessorName}() != null ) {
     </#if>
 }
 <#macro _assignmentLine>
-     <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
+     <@includeModel object=localVarType/> ${localVarName} = <@_assignment/>;
     if ( ${localVarName} != null ) {
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
     }
