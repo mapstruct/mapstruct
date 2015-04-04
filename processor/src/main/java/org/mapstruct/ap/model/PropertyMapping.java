@@ -277,6 +277,7 @@ public class PropertyMapping extends ModelElement {
                         getSourceRef(),
                         sourceType
                     );
+                    result = new NullCheckWrapper( result );
                 }
                 else {
                     // Possibly adding null to a target collection. So should be surrounded by an null check.
