@@ -34,16 +34,18 @@ import org.mapstruct.ap.model.source.SourceMethod;
 import org.mapstruct.ap.prism.QualifierPrism;
 
 /**
- * This selector selects a best match based on qualifiers name.
+ * This selector selects a best match based on qualifier annotations.
  * <p>
  * A method is said to be marked with a qualifier annotation if the class in which it resides is annotated with a
  * qualifier annotation or if the method itself is annotated with a qualifier annotation or both.
  * <p>
  * Rules:
  * <ol>
- * <li>If a method is marked with a qualifier annotation, it does not contribute to a match otherwise and is hence
- * removed from the list of potential mapping methods</li>
- * <li>If multiple qualifiers (qualifedBy) are specified, all should match to make a match.</li>
+ * <li>If no qualifiers are requested in the selection criteria, then only candidate methods without any qualifier
+ * annotations remain in the list of potential candidates</li>
+ * <li>If multiple qualifiers (qualifedBy) are specified, then all of them need to be present at a candidate for it to
+ * match.</li>
+ * <li>If no candidate matches the required qualifiers, then all candidates are returned.</li>
  * </ol>
  *
  * @author Sjaak Derksen

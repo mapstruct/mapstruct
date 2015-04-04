@@ -44,8 +44,20 @@ public class ClassContainingCallbacks {
     }
 
     @BeforeMapping
+    @Qualified
+    public void withSourceBeforeMappingQualified(Source source) {
+        INVOCATIONS.add( new Invocation( "withSourceBeforeMappingQualified", source ) );
+    }
+
+    @BeforeMapping
     public void withSourceBeforeMapping(List<Source> source) {
         INVOCATIONS.add( new Invocation( "withSourceBeforeMapping", source ) );
+    }
+
+    @BeforeMapping
+    @Qualified
+    public void withSourceBeforeMappingQualified(List<Source> source) {
+        INVOCATIONS.add( new Invocation( "withSourceBeforeMappingQualified", source ) );
     }
 
     @BeforeMapping
@@ -54,8 +66,29 @@ public class ClassContainingCallbacks {
     }
 
     @BeforeMapping
+    @Qualified
+    public void withSourceBeforeMappingQualified(Map<String, Source> source) {
+        INVOCATIONS.add( new Invocation( "withSourceBeforeMappingQualified", source ) );
+    }
+
+    @BeforeMapping
     public void withSourceAsObjectBeforeMapping(Object source) {
         INVOCATIONS.add( new Invocation( "withSourceAsObjectBeforeMapping", source ) );
+    }
+
+    @BeforeMapping
+    public <T> void withSourceAndTargetTypeBeforeMapping(Source source, @TargetType Class<T> targetClass) {
+        INVOCATIONS.add( new Invocation( "withSourceAndTargetTypeBeforeMapping", source, targetClass ) );
+    }
+
+    @BeforeMapping
+    public <T> void withSourceAndTargetTypeBeforeMapping(List<Source> source, @TargetType Class<T> targetClass) {
+        INVOCATIONS.add( new Invocation( "withSourceAndTargetTypeBeforeMapping", source, targetClass ) );
+    }
+
+    @BeforeMapping
+    public <T> void withSourceAndTargetTypeBeforeMapping(Map<String, Source> source, @TargetType Class<T> targetClass) {
+        INVOCATIONS.add( new Invocation( "withSourceAndTargetTypeBeforeMapping", source, targetClass ) );
     }
 
     @BeforeMapping
@@ -92,21 +125,6 @@ public class ClassContainingCallbacks {
     @BeforeMapping
     public void withTargetAsObjectBeforeMapping(@MappingTarget Object target) {
         INVOCATIONS.add( new Invocation( "withTargetAsObjectBeforeMapping", target ) );
-    }
-
-    @BeforeMapping
-    public <T> void withSourceAndTargetTypeBeforeMapping(Source source, @TargetType Class<T> targetClass) {
-        INVOCATIONS.add( new Invocation( "withSourceAndTargetTypeBeforeMapping", source, targetClass ) );
-    }
-
-    @BeforeMapping
-    public <T> void withSourceAndTargetTypeBeforeMapping(List<Source> source, @TargetType Class<T> targetClass) {
-        INVOCATIONS.add( new Invocation( "withSourceAndTargetTypeBeforeMapping", source, targetClass ) );
-    }
-
-    @BeforeMapping
-    public <T> void withSourceAndTargetTypeBeforeMapping(Map<String, Source> source, @TargetType Class<T> targetClass) {
-        INVOCATIONS.add( new Invocation( "withSourceAndTargetTypeBeforeMapping", source, targetClass ) );
     }
 
     @AfterMapping
@@ -155,13 +173,31 @@ public class ClassContainingCallbacks {
     }
 
     @AfterMapping
+    @Qualified
+    public void withTargetAfterMappingQualified(@MappingTarget Target target) {
+        INVOCATIONS.add( new Invocation( "withTargetAfterMappingQualified", target ) );
+    }
+
+    @AfterMapping
     public void withTargetAfterMapping(@MappingTarget List<Target> target) {
         INVOCATIONS.add( new Invocation( "withTargetAfterMapping", target ) );
     }
 
     @AfterMapping
+    @Qualified
+    public void withTargetAfterMappingQualified(@MappingTarget List<Target> target) {
+        INVOCATIONS.add( new Invocation( "withTargetAfterMappingQualified", target ) );
+    }
+
+    @AfterMapping
     public void withTargetAfterMapping(@MappingTarget Map<String, Target> target) {
         INVOCATIONS.add( new Invocation( "withTargetAfterMapping", target ) );
+    }
+
+    @AfterMapping
+    @Qualified
+    public void withTargetAfterMappingQualified(@MappingTarget Map<String, Target> target) {
+        INVOCATIONS.add( new Invocation( "withTargetAfterMappingQualified", target ) );
     }
 
     @AfterMapping

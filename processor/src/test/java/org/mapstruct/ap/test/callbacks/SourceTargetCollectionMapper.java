@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.callbacks;
 import java.util.List;
 import java.util.Map;
 
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
@@ -35,6 +36,9 @@ public abstract class SourceTargetCollectionMapper extends BaseMapper {
     public abstract List<Target> sourceToTarget(List<Source> source);
 
     public abstract void sourceToTarget(List<Source> source, @MappingTarget List<Target> target);
+
+    @IterableMapping(qualifiedBy = Qualified.class)
+    public abstract List<Target> qualifiedSourceToTarget(List<Source> source);
 
     public abstract Map<String, Target> sourceToTarget(Map<String, Source> source);
 

@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +34,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 /**
  * Test for callback methods that are defined using {@link BeforeMapping} / {@link AfterMapping}
  *
@@ -42,7 +43,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @RunWith( AnnotationProcessorTestRunner.class )
 @WithClasses( { ClassContainingCallbacks.class, Invocation.class, Source.class, Target.class, SourceTargetMapper.class,
-    SourceTargetCollectionMapper.class, BaseMapper.class } )
+    SourceTargetCollectionMapper.class, BaseMapper.class, Qualified.class })
 @IssueKey("14")
 public class CallbackMethodTest {
 
@@ -103,12 +104,29 @@ public class CallbackMethodTest {
         assertMapMappingInvocations( BaseMapper.getInvocations() );
     }
 
+    @Test
+    public void qualifiersAreEvaluatedCorrectly() {
+        Source source = createSource();
+        Target target = SourceTargetMapper.INSTANCE.qualifiedSourceToTarget( source );
+
+        assertQualifiedInvocations( ClassContainingCallbacks.getInvocations(), source, target );
+        assertQualifiedInvocations( BaseMapper.getInvocations(), source, target );
+
+        reset();
+
+        List<Source> sourceList = Arrays.asList( createSource() );
+        List<Target> targetList = SourceTargetCollectionMapper.INSTANCE.qualifiedSourceToTarget( sourceList );
+
+        assertQualifiedInvocations( ClassContainingCallbacks.getInvocations(), sourceList, targetList );
+        assertQualifiedInvocations( BaseMapper.getInvocations(), sourceList, targetList );
+    }
+
     private void assertBeanMappingInvocations(List<Invocation> invocations) {
         Source source = createSource();
         Target target = createResultTarget();
         Target emptyTarget = createEmptyTarget();
 
-        Assertions.assertThat( invocations ).isEqualTo( beanMappingInvocationList( source, target, emptyTarget ) );
+        assertThat( invocations ).isEqualTo( beanMappingInvocationList( source, target, emptyTarget ) );
     }
 
     private void assertIterableMappingInvocations(List<Invocation> invocations) {
@@ -168,7 +186,7 @@ public class CallbackMethodTest {
         expected.addAll( beanMappingInvocationList( source, target, emptyTarget ) );
         expected.addAll( allAfterMappingMethods( sourceCollection, targetCollection, targetCollectionClass ) );
 
-        Assertions.assertThat( invocations ).isEqualTo( expected );
+        assertThat( invocations ).isEqualTo( expected );
     }
 
     private List<Invocation> beanMappingInvocationList(Object source, Object target, Object emptyTarget) {
@@ -200,6 +218,24 @@ public class CallbackMethodTest {
             new Invocation( "withSourceAndTargetBeforeMapping", source, emptyTarget ),
             new Invocation( "withTargetBeforeMapping", emptyTarget ),
             new Invocation( "withTargetAsObjectBeforeMapping", emptyTarget ) ) );
+    }
+
+    private void assertQualifiedInvocations(List<Invocation> actual, Object source, Object target) {
+        assertThat( actual ).isEqualTo( allQualifiedCallbackMethods( source, target ) );
+    }
+
+    private List<Invocation> allQualifiedCallbackMethods(Object source, Object target) {
+        List<Invocation> invocations = new ArrayList<Invocation>();
+        invocations.add( new Invocation( "withSourceBeforeMappingQualified", source ) );
+
+        if ( source instanceof List || source instanceof Map ) {
+            invocations.addAll(
+                       beanMappingInvocationList( createSource(), createResultTarget(), createEmptyTarget() ) );
+        }
+
+        invocations.add( new Invocation( "withTargetAfterMappingQualified", target ) );
+
+        return invocations;
     }
 
     private Source createSource() {

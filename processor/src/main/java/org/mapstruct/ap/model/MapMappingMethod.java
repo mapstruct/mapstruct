@@ -192,9 +192,9 @@ public class MapMappingMethod extends MappingMethod {
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes() );
 
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
-                LifecycleCallbackFactory.beforeMappingMethods( method, ctx );
+                LifecycleCallbackFactory.beforeMappingMethods( method, null, ctx );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, ctx );
+                LifecycleCallbackFactory.afterMappingMethods( method, null, ctx );
 
             return new MapMappingMethod(
                 method,

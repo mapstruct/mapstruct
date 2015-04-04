@@ -18,20 +18,13 @@
  */
 package org.mapstruct.ap.test.callbacks;
 
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Qualifier;
 
 /**
  * @author Andreas Gudian
+ *
  */
-@Mapper( uses = ClassContainingCallbacks.class )
-public abstract class SourceTargetMapper extends BaseMapper {
-    public static final SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+@Qualifier
+public @interface Qualified {
 
-    public abstract void sourceToTarget(Source source, @MappingTarget Target target);
-
-    @BeanMapping(qualifiedBy = Qualified.class)
-    public abstract Target qualifiedSourceToTarget(Source source);
 }

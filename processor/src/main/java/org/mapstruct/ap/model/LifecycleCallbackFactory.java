@@ -19,14 +19,19 @@
 package org.mapstruct.ap.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.model.source.selector.QualifierSelector;
+import org.mapstruct.ap.model.source.selector.SelectionCriteria;
 
 /**
  * Factory for creating lists of appropriate {@link LifecycleCallbackMethodReference}s
@@ -40,27 +45,95 @@ public final class LifecycleCallbackFactory {
 
     /**
      * @param method the method to obtain the beforeMapping methods for
+     * @param qualifiers method qualifiers
      * @param ctx the builder context
      * @return all applicable {@code @BeforeMapping} methods for the given method
      */
     public static List<LifecycleCallbackMethodReference> beforeMappingMethods(
-            Method method, MappingBuilderContext ctx) {
-        return collectLifecycleCallbackMethods( method, filterBeforeMappingMethods( ctx.getSourceModel() ), ctx );
+            Method method, List<TypeMirror> qualifiers, MappingBuilderContext ctx) {
+        return collectLifecycleCallbackMethods(
+            method,
+            qualifiers,
+            filterBeforeMappingMethods( ctx.getSourceModel() ),
+            ctx );
     }
 
     /**
      * @param method the method to obtain the afterMapping methods for
+     * @param qualifiers method qualifiers
      * @param ctx the builder context
      * @return all applicable {@code @AfterMapping} methods for the given method
      */
     public static List<LifecycleCallbackMethodReference> afterMappingMethods(
-            Method method, MappingBuilderContext ctx) {
-        return collectLifecycleCallbackMethods( method, filterAfterMappingMethods( ctx.getSourceModel() ), ctx );
+            Method method, List<TypeMirror> qualifiers, MappingBuilderContext ctx) {
+        return collectLifecycleCallbackMethods(
+            method,
+            qualifiers,
+            filterAfterMappingMethods( ctx.getSourceModel() ),
+            ctx );
     }
 
     private static List<LifecycleCallbackMethodReference> collectLifecycleCallbackMethods(
-            Method method, List<SourceMethod> callbackMethods, MappingBuilderContext ctx) {
+            Method method, List<TypeMirror> qualifiers, List<SourceMethod> callbackMethods, MappingBuilderContext ctx) {
 
+        Map<SourceMethod, List<Parameter>> parameterAssignmentsForSourceMethod =
+            new HashMap<SourceMethod, List<Parameter>>();
+
+        List<SourceMethod> candidates =
+            filterCandidatesByType( method, callbackMethods, parameterAssignmentsForSourceMethod, ctx );
+
+        candidates = filterCandidatesByQualifiers( method, qualifiers, candidates, ctx );
+
+        return toLifecycleCallbackMethodRefs( candidates, parameterAssignmentsForSourceMethod, ctx );
+    }
+
+    private static List<SourceMethod> filterCandidatesByQualifiers(Method method, List<TypeMirror> qualifiers,
+                                                                   List<SourceMethod> candidates,
+                                                                   MappingBuilderContext ctx) {
+        QualifierSelector selector = new QualifierSelector( ctx.getTypeUtils(), ctx.getElementUtils() );
+
+        return selector.getMatchingMethods( method, candidates, null, null, new SelectionCriteria(
+            qualifiers,
+            null,
+            null,
+            false ) );
+    }
+
+    private static List<LifecycleCallbackMethodReference> toLifecycleCallbackMethodRefs(
+            List<SourceMethod> candidates, Map<SourceMethod, List<Parameter>> parameterAssignmentsForSourceMethod,
+            MappingBuilderContext ctx) {
+
+        List<LifecycleCallbackMethodReference> result = new ArrayList<LifecycleCallbackMethodReference>();
+        for ( SourceMethod candidate : candidates ) {
+            markMapperReferenceAsUsed( ctx.getMapperReferences(), candidate );
+            result.add( new LifecycleCallbackMethodReference(
+                candidate,
+                parameterAssignmentsForSourceMethod.get( candidate ) ) );
+        }
+        return result;
+    }
+
+    private static List<SourceMethod> filterCandidatesByType(Method method,
+            List<SourceMethod> callbackMethods, Map<SourceMethod, List<Parameter>> parameterAssignmentsForSourceMethod,
+            MappingBuilderContext ctx) {
+
+        List<SourceMethod> candidates = new ArrayList<SourceMethod>();
+
+        List<Parameter> availableParams = getAvailableParameters( method, ctx );
+        for ( SourceMethod callback : callbackMethods ) {
+            List<Parameter> parameterAssignments = getParameterAssignments( availableParams, callback.getParameters() );
+
+            if ( parameterAssignments != null
+                && callback.matches( extractSourceTypes( parameterAssignments ), method.getResultType() ) ) {
+
+                parameterAssignmentsForSourceMethod.put( callback, parameterAssignments );
+                candidates.add( callback );
+            }
+        }
+        return candidates;
+    }
+
+    private static List<Parameter> getAvailableParameters(Method method, MappingBuilderContext ctx) {
         List<Parameter> availableParams = new ArrayList<Parameter>( method.getParameters() );
         if ( method.getMappingTargetParameter() == null ) {
             availableParams.add( new Parameter( null, method.getResultType(), true, false ) );
@@ -73,23 +146,10 @@ public final class LifecycleCallbackFactory {
             true );
 
         availableParams.add( targetTypeParameter );
-
-        List<LifecycleCallbackMethodReference> result = new ArrayList<LifecycleCallbackMethodReference>();
-
-        for ( SourceMethod callback : callbackMethods ) {
-            List<Parameter> parameterAssignments = getParameterAssignments( availableParams, callback.getParameters() );
-
-            if ( parameterAssignments != null
-                && callback.matches( extractSourceTypes( parameterAssignments ), method.getResultType() ) ) {
-
-                markMapperReferenceAsUsed( ctx.getMapperReferences(), callback );
-                result.add( new LifecycleCallbackMethodReference( callback, parameterAssignments ) );
-            }
-        }
-        return result;
+        return availableParams;
     }
 
-    private static void markMapperReferenceAsUsed(List<MapperReference> references, SourceMethod method) {
+    private static void markMapperReferenceAsUsed(List<MapperReference> references, Method method) {
         for ( MapperReference ref : references ) {
             if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
                 ref.setUsed( !method.isStatic() );
