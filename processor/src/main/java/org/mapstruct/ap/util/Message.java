@@ -88,6 +88,12 @@ public enum Message {
     RETRIEVAL_PRIMITIVE_RETURN( "Can't generate mapping method with primitive return type." ),
     RETRIEVAL_ENUM_TO_NON_ENUM( "Can't generate mapping method from enum type to non-enum type." ),
     RETRIEVAL_NON_ENUM_TO_ENUM( "Can't generate mapping method from non-enum type to enum type." ),
+    RETRIEVAL_TYPE_VAR_SOURCE( "Can't generate mapping method for a generic type variable source." ),
+    RETRIEVAL_TYPE_VAR_RESULT( "Can't generate mapping method for a generic type variable target." ),
+    RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE( "Can't generate mapping method for a wildcard super bound source." ),
+    RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT( "Can't generate mapping method for a wildcard extends bound result." ),
+
+
 
     INHERITCONFIGURATION_BOTH( "Method cannot be annotated with both a @InheritConfiguration and @InheritInverseConfiguration." ),
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),

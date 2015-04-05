@@ -44,11 +44,11 @@
     <#-- key -->
         <@includeModel object=keyAssignment
                    targetWriteAccessorName=keyVariableName
-                   targetType=resultType.typeParameters[0]/>
+                   targetType=resultType.typeParameters[0].typeBound/>
     <#-- value -->
         <@includeModel object=valueAssignment
                    targetWriteAccessorName=valueVariableName
-                   targetType=resultType.typeParameters[1]/>
+                   targetType=resultType.typeParameters[1].typeBound/>
         ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
     }
     <#if returnType.name != "void">

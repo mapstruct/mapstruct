@@ -410,6 +410,29 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
+        for ( Type typeParameter : resultType.getTypeParameters() ) {
+            if ( typeParameter.isTypeVar() ) {
+                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
+                return false;
+            }
+            if ( typeParameter.isWildCardExtendsBound() ) {
+                messager.printMessage( method, Message.RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT );
+                return false;
+            }
+        }
+
+        for ( Type typeParameter : parameterType.getTypeParameters() ) {
+            if ( typeParameter.isWildCardSuperBound() ) {
+                messager.printMessage( method, Message.RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE );
+                return false;
+            }
+
+            if ( typeParameter.isTypeVar() ) {
+                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
+                return false;
+            }
+        }
+
         return true;
     }
 

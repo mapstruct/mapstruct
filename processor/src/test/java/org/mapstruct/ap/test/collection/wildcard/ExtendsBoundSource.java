@@ -16,21 +16,34 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._306;
+package org.mapstruct.ap.test.collection.wildcard;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
+/**
+ *
+ * @author Sjaak Derksen
+ */
+public class ExtendsBoundSource {
 
-public class Source {
+    private List<? extends Idea> elements;
+    Map<? extends Idea, ? extends Idea> entries;
 
-    private Set<String> fooSet;
-
-    public Set<String> getFooSet() {
-        return fooSet;
+    public List<? extends Idea> getElements() {
+        return elements;
     }
 
-    public void setFooSet(Set<String> fooSet) {
-        this.fooSet = fooSet;
+    public void setElements(List<? extends Idea> elements) {
+        this.elements = elements;
+    }
+
+    public Map<? extends Idea, ? extends Idea> getEntries() {
+        return entries;
+    }
+
+    public void setEntries(Map<? extends Idea, ? extends Idea> entries) {
+        this.entries = entries;
     }
 
 }

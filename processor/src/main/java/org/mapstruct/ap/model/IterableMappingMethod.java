@@ -90,21 +90,18 @@ public class IterableMappingMethod extends MappingMethod {
         }
 
         public IterableMappingMethod build() {
+
+
             Type sourceParameterType = first( method.getSourceParameters() ).getType();
             Type resultType = method.getResultType();
 
-            Type sourceElementType = sourceParameterType.isArrayType() ? sourceParameterType.getComponentType() :
-                    sourceParameterType.getTypeParameters().get( 0 );
-            Type targetElementType = resultType.isArrayType() ? resultType.getComponentType() :
-                    resultType.getTypeParameters().get( 0 );
-
-
-            String elementTypeName = sourceParameterType.isArrayType() ?
-                        sourceParameterType.getComponentType().getName() :
-                        sourceParameterType.getTypeParameters().get( 0 ).getName();
+            Type sourceElementType  = sourceParameterType.isArrayType() ? sourceParameterType.getComponentType()
+                : first( sourceParameterType.getTypeParameters() ).getTypeBound();
+            Type targetElementType = resultType.isArrayType() ? resultType.getComponentType()
+                : first( resultType.getTypeParameters() ).getTypeBound();
 
             String loopVariableName =
-                Strings.getSaveVariableName( elementTypeName, method.getParameterNames() );
+                Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
@@ -230,7 +227,7 @@ public class IterableMappingMethod extends MappingMethod {
             return sourceParameterType.getComponentType();
         }
         else {
-            return sourceParameterType.getTypeParameters().get( 0 );
+            return sourceParameterType.getTypeParameters().get( 0 ).getTypeBound();
         }
     }
 

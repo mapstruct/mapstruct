@@ -27,6 +27,11 @@ import org.mapstruct.TargetType;
  *
  */
 public class ReferencedCustomMapper {
+
+    public String convert(YetAnotherType source){
+        return source.toString();
+    }
+
     public long incrementingIntToLong(int source) {
         return source + 1;
     }

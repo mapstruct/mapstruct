@@ -16,21 +16,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._306;
+package org.mapstruct.itest.simple;
 
-import java.util.Set;
+/**
+ * @author Andreas Gudian
+ *
+ */
+public class YetAnotherType {
+    private String value;
 
-
-public class Source {
-
-    private Set<String> fooSet;
-
-    public Set<String> getFooSet() {
-        return fooSet;
+    public YetAnotherType(String value) {
+        this.value = value;
     }
 
-    public void setFooSet(Set<String> fooSet) {
-        this.fooSet = fooSet;
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

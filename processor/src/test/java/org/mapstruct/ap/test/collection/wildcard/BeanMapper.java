@@ -16,21 +16,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._306;
+package org.mapstruct.ap.test.collection.wildcard;
 
-import java.util.Set;
+import java.math.BigDecimal;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
+/**
+ *
+ * @author Sjaak Derksen
+ */
+@Mapper
+public abstract class BeanMapper {
 
-public class Source {
+    public static final BeanMapper STM = Mappers.getMapper( BeanMapper.class );
 
-    private Set<String> fooSet;
+    public abstract CunningPlan transformA(GoodIdea in);
 
-    public Set<String> getFooSet() {
-        return fooSet;
+    BigDecimal map(JAXBElement<? extends BigDecimal> value) {
+        return value != null ? value.getValue() : null;
     }
 
-    public void setFooSet(Set<String> fooSet) {
-        this.fooSet = fooSet;
+    JAXBElement<? super BigDecimal> map(BigDecimal value) {
+        return new JAXBElement( new QName( "test" ), BigDecimal.class, value );
     }
 
 }

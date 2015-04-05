@@ -16,21 +16,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._306;
+package org.mapstruct.ap.test.collection.wildcard;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
+/**
+ *
+ * @author Sjaak Derksen
+ */
+public class SuperBoundTarget {
 
-public class Source {
+    private List<? super Plan> elements;
+    private Map<? super Plan, ? super Plan> entries;
 
-    private Set<String> fooSet;
-
-    public Set<String> getFooSet() {
-        return fooSet;
+    public List<? super Plan> getElements() {
+        return elements;
     }
 
-    public void setFooSet(Set<String> fooSet) {
-        this.fooSet = fooSet;
+    public void setElements(List<? super Plan> elements) {
+        this.elements = elements;
     }
+
+    public Map<? super Plan, ? super Plan> getEntries() {
+        return entries;
+    }
+
+    public void setEntries(Map<? super Plan, ? super Plan> entries) {
+        this.entries = entries;
+    }
+
 
 }

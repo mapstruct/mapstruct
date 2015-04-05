@@ -18,6 +18,8 @@
  */
 package org.mapstruct.itest.simple;
 
+import java.util.List;
+
 public class Source {
 
     private int foo;
@@ -27,6 +29,7 @@ public class Source {
     private int zip;
     private String someType;
     private SomeType forNested;
+    private List<? extends YetAnotherType> extendsBound;
 
     public int getFoo() {
         return foo;
@@ -83,4 +86,13 @@ public class Source {
     public void setForNested(SomeType forNested) {
         this.forNested = forNested;
     }
+
+    public List<? extends YetAnotherType> getExtendsBound() {
+        return extendsBound;
+    }
+
+    public void setExtendsBound(List<? extends YetAnotherType> extendsBound) {
+        this.extendsBound = extendsBound;
+    }
+
 }

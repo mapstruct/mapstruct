@@ -208,7 +208,7 @@ public class TypeFactory {
             typeUtils, elementUtils, this,
             mirror,
             typeElement,
-            getTypeParameters( mirror ),
+            getTypeParameters( mirror, false ),
             implementationType,
             componentType,
             packageName,
@@ -346,7 +346,7 @@ public class TypeFactory {
         return thrownTypes;
     }
 
-    private List<Type> getTypeParameters(TypeMirror mirror) {
+    private List<Type> getTypeParameters(TypeMirror mirror, boolean isImplementationType) {
         if ( mirror.getKind() != TypeKind.DECLARED ) {
             return java.util.Collections.emptyList();
         }
@@ -355,7 +355,12 @@ public class TypeFactory {
         List<Type> typeParameters = new ArrayList<Type>( declaredType.getTypeArguments().size() );
 
         for ( TypeMirror typeParameter : declaredType.getTypeArguments() ) {
-            typeParameters.add( getType( typeParameter ) );
+            if ( isImplementationType ) {
+                typeParameters.add( getType( typeParameter ).getTypeBound() );
+            }
+            else {
+                typeParameters.add( getType( typeParameter ) );
+            }
         }
 
         return typeParameters;
@@ -395,7 +400,7 @@ public class TypeFactory {
                     declaredType.getTypeArguments().toArray( new TypeMirror[] { } )
                 ),
                 implementationType.getTypeElement(),
-                getTypeParameters( mirror ),
+                getTypeParameters( mirror, true ),
                 null,
                 null,
                 implementationType.getPackageName(),

@@ -35,7 +35,10 @@ public abstract class SourceTargetAbstractMapper {
     })
     public abstract Target sourceToTarget(Source source);
 
-    @Mapping(target = "forNested", ignore = true)
+    @Mappings({
+        @Mapping(target = "forNested", ignore = true),
+        @Mapping(target = "extendsBound", ignore = true)
+    })
     public abstract Source targetToSource(Target target);
 
     protected void isNeverCalled(Source source) {

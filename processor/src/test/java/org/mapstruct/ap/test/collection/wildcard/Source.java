@@ -16,21 +16,34 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._306;
+package org.mapstruct.ap.test.collection.wildcard;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
-
+/**
+ *
+ * @author Sjaak Derksen
+ */
 public class Source {
 
-    private Set<String> fooSet;
+    private List<Idea> elements;
+    Map<Idea, Idea> entries;
 
-    public Set<String> getFooSet() {
-        return fooSet;
+    public List<Idea> getElements() {
+        return elements;
     }
 
-    public void setFooSet(Set<String> fooSet) {
-        this.fooSet = fooSet;
+    public void setElements(List<Idea> elements) {
+        this.elements = elements;
+    }
+
+    public Map<Idea, Idea> getEntries() {
+        return entries;
+    }
+
+    public void setEntries(Map<Idea, Idea> entries) {
+        this.entries = entries;
     }
 
 }

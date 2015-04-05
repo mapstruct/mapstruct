@@ -113,8 +113,8 @@ public class MapMappingMethod extends MappingMethod {
             List<Type> resultTypeParams = method.getResultType().getTypeParameters();
 
             // find mapping method or conversion for key
-            Type keySourceType = sourceTypeParams.get( 0 );
-            Type keyTargetType = resultTypeParams.get( 0 );
+            Type keySourceType = sourceTypeParams.get( 0 ).getTypeBound();
+            Type keyTargetType = resultTypeParams.get( 0 ).getTypeBound();
 
             Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
@@ -134,8 +134,8 @@ public class MapMappingMethod extends MappingMethod {
             }
 
             // find mapping method or conversion for value
-            Type valueSourceType = sourceTypeParams.get( 1 );
-            Type valueTargetType = resultTypeParams.get( 1 );
+            Type valueSourceType = sourceTypeParams.get( 1 ).getTypeBound();
+            Type valueTargetType = resultTypeParams.get( 1 ).getTypeBound();
 
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,

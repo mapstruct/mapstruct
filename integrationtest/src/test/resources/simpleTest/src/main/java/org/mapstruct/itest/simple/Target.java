@@ -18,6 +18,7 @@
  */
 package org.mapstruct.itest.simple;
 
+import java.util.List;
 import org.mapstruct.itest.simple.SomeType;
 
 public class Target {
@@ -29,6 +30,7 @@ public class Target {
     private String zip;
     private SomeType someType;
     private String fromNested;
+    private List<String> extendsBound;
 
     public Long getFoo() {
         return foo;
@@ -84,5 +86,13 @@ public class Target {
 
     public void setFromNested(String fromNested) {
         this.fromNested = fromNested;
+    }
+
+    public List<String> getExtendsBound() {
+        return extendsBound;
+    }
+
+    public void setExtendsBound(List<String> extendsBound) {
+        this.extendsBound = extendsBound;
     }
 }

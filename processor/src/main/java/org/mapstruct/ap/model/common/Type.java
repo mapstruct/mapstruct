@@ -37,6 +37,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -89,6 +91,10 @@ public class Type extends ModelElement implements Comparable<Type> {
     private List<ExecutableElement> setters = null;
     private List<ExecutableElement> adders = null;
     private List<ExecutableElement> alternativeTargetAccessors = null;
+
+
+    private Type boundingBase = null;
+
 
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
@@ -221,6 +227,29 @@ public class Type extends ModelElement implements Comparable<Type> {
     public boolean isArrayType() {
         return componentType != null;
     }
+
+    public boolean isTypeVar() {
+        return (typeMirror.getKind() == TypeKind.TYPEVAR);
+    }
+
+    public boolean isWildCardSuperBound() {
+        boolean result = false;
+        if ( typeMirror.getKind() == TypeKind.WILDCARD ) {
+            WildcardType wildcardType = (WildcardType) typeMirror;
+            result = wildcardType.getSuperBound() != null;
+        }
+        return result;
+    }
+
+    public boolean isWildCardExtendsBound() {
+        boolean result = false;
+        if ( typeMirror.getKind() == TypeKind.WILDCARD ) {
+            WildcardType wildcardType = (WildcardType) typeMirror;
+            result = wildcardType.getExtendsBound() != null;
+        }
+        return result;
+    }
+
 
     public String getFullyQualifiedName() {
         return qualifiedName;
@@ -608,7 +637,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * A valid Java expression most suitable for representing null - useful for dealing with primitives from FTL.
+     * @return A valid Java expression most suitable for representing null - useful for dealing with primitives
+     * from FTL.
      */
     public String getNull() {
         if ( !isPrimitive() || isArrayType() ) {
@@ -675,4 +705,60 @@ public class Type extends ModelElement implements Comparable<Type> {
     public String toString() {
         return typeMirror.toString();
     }
+
+
+    /**
+     *
+     * @return an identification that can be used as part in a forged method name.
+     */
+    public String getIdentification() {
+        if ( isArrayType() ) {
+            return componentType.getName() + "Array";
+        }
+        else {
+            return getTypeBound().getName();
+        }
+    }
+
+    /**
+     * Establishes the type bound:
+     * <ol>
+     * <li>{@code<? extends Number>}, returns Number</li>
+     * <li>{@code<? super Number>}, returns Number</li>
+     * <li>{@code<?>}, returns Object</li>
+     * <li>{@code<T extends Number>, returns Number}</li>
+     * </ol>
+     * @return the bound for this parameter
+     */
+    public Type getTypeBound() {
+
+        if ( boundingBase != null ) {
+            return boundingBase;
+        }
+        boundingBase = this;
+        if ( typeMirror.getKind() == TypeKind.WILDCARD ) {
+            WildcardType wildCardType = (WildcardType) typeMirror;
+            if ( wildCardType.getExtendsBound() != null ) {
+                boundingBase = typeFactory.getType( wildCardType.getExtendsBound() );
+            }
+            else if ( wildCardType.getSuperBound() != null ) {
+                boundingBase = typeFactory.getType( wildCardType.getSuperBound() );
+            }
+            else {
+                String wildCardName = wildCardType.toString();
+                if ( "?".equals( wildCardName )  ) {
+                    boundingBase = typeFactory.getType( Object.class );
+                }
+            }
+        }
+        else if ( typeMirror.getKind() == TypeKind.TYPEVAR ) {
+            TypeVariable typeVariableType = (TypeVariable) typeMirror;
+            if ( typeVariableType.getUpperBound() != null ) {
+                 boundingBase = typeFactory.getType( typeVariableType.getUpperBound() );
+            }
+            // Lowerbounds intentionally left out: Type variables otherwise have a lower bound of NullType.
+        }
+        return boundingBase;
+    }
+
 }

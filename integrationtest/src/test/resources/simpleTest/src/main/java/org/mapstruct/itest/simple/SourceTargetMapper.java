@@ -37,6 +37,9 @@ public interface SourceTargetMapper {
     Target sourceToTarget(Source source);
 
     @InheritInverseConfiguration
-    @Mapping(target = "forNested", ignore = true)
+    @Mappings({
+        @Mapping(target = "forNested", ignore = true),
+        @Mapping(target = "extendsBound", ignore = true)
+    })
     Source targetToSource(Target target);
 }

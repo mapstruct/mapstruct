@@ -16,21 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._306;
+package org.mapstruct.ap.test.collection.wildcard;
 
-import java.util.Set;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 
-public class Source {
+/**
+ *
+ * @author Sjaak Derksen
+ */
+@Mapper
+public interface ExtendsBoundSourceTargetMapper {
 
-    private Set<String> fooSet;
+    ExtendsBoundSourceTargetMapper STM = Mappers.getMapper( ExtendsBoundSourceTargetMapper.class );
 
-    public Set<String> getFooSet() {
-        return fooSet;
-    }
+    Target map(ExtendsBoundSource source);
 
-    public void setFooSet(Set<String> fooSet) {
-        this.fooSet = fooSet;
-    }
-
+    Plan map(Idea in);
 }

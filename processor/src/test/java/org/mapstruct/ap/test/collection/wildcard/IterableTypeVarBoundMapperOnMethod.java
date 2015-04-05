@@ -16,21 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._306;
+package org.mapstruct.ap.test.collection.wildcard;
 
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.List;
+import org.mapstruct.Mapper;
 
+/**
+ *
+ * @author Sjaak Derksen
+ */
+@Mapper
+public interface IterableTypeVarBoundMapperOnMethod {
 
-public class Source {
-
-    private Set<String> fooSet;
-
-    public Set<String> getFooSet() {
-        return fooSet;
-    }
-
-    public void setFooSet(Set<String> fooSet) {
-        this.fooSet = fooSet;
-    }
-
+    <T extends BigDecimal> List<T> map(List<BigDecimal> in);
 }

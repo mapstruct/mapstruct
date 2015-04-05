@@ -504,9 +504,9 @@ public class PropertyMapping extends ModelElement {
         private String getName(Type type) {
             StringBuilder builder = new StringBuilder();
             for ( Type typeParam : type.getTypeParameters() ) {
-                builder.append( typeParam.getName().replace( "[]", "Array" ) );
+                builder.append( typeParam.getIdentification() );
             }
-            builder.append( type.getName().replace( "[]", "Array" ) );
+            builder.append( type.getIdentification() );
             return builder.toString();
         }
     }
