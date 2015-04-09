@@ -50,6 +50,11 @@ public class ClassContainingCallbacks {
     }
 
     @BeforeMapping
+    public void withSourceBeforeMapping(SourceEnum source) {
+        INVOCATIONS.add( new Invocation( "withSourceBeforeMapping", source ) );
+    }
+
+    @BeforeMapping
     public void withSourceBeforeMapping(List<Source> source) {
         INVOCATIONS.add( new Invocation( "withSourceBeforeMapping", source ) );
     }
@@ -82,6 +87,11 @@ public class ClassContainingCallbacks {
     }
 
     @BeforeMapping
+    public <T> void withSourceAndTargetTypeBeforeMapping(SourceEnum source, @TargetType Class<T> targetClass) {
+        INVOCATIONS.add( new Invocation( "withSourceAndTargetTypeBeforeMapping", source, targetClass ) );
+    }
+
+    @BeforeMapping
     public <T> void withSourceAndTargetTypeBeforeMapping(List<Source> source, @TargetType Class<T> targetClass) {
         INVOCATIONS.add( new Invocation( "withSourceAndTargetTypeBeforeMapping", source, targetClass ) );
     }
@@ -93,6 +103,11 @@ public class ClassContainingCallbacks {
 
     @BeforeMapping
     public void withSourceAndTargetBeforeMapping(Source source, @MappingTarget Target target) {
+        INVOCATIONS.add( new Invocation( "withSourceAndTargetBeforeMapping", source, target ) );
+    }
+
+    @BeforeMapping
+    public void withSourceAndTargetBeforeMapping(SourceEnum source, @MappingTarget TargetEnum target) {
         INVOCATIONS.add( new Invocation( "withSourceAndTargetBeforeMapping", source, target ) );
     }
 
@@ -109,6 +124,11 @@ public class ClassContainingCallbacks {
 
     @BeforeMapping
     public void withTargetBeforeMapping(@MappingTarget Target target) {
+        INVOCATIONS.add( new Invocation( "withTargetBeforeMapping", target ) );
+    }
+
+    @BeforeMapping
+    public void withTargetBeforeMapping(@MappingTarget TargetEnum target) {
         INVOCATIONS.add( new Invocation( "withTargetBeforeMapping", target ) );
     }
 
@@ -138,6 +158,11 @@ public class ClassContainingCallbacks {
     }
 
     @AfterMapping
+    public void withSourceAfterMapping(SourceEnum source) {
+        INVOCATIONS.add( new Invocation( "withSourceAfterMapping", source ) );
+    }
+
+    @AfterMapping
     public void withSourceAfterMapping(List<Source> source) {
         INVOCATIONS.add( new Invocation( "withSourceAfterMapping", source ) );
     }
@@ -158,6 +183,11 @@ public class ClassContainingCallbacks {
     }
 
     @AfterMapping
+    public void withSourceAndTargetAfterMapping(SourceEnum source, @MappingTarget TargetEnum target) {
+        INVOCATIONS.add( new Invocation( "withSourceAndTargetAfterMapping", source, target ) );
+    }
+
+    @AfterMapping
     public void withSourceAndTargetAfterMapping(List<Source> source, @MappingTarget List<Target> target) {
         INVOCATIONS.add( new Invocation( "withSourceAndTargetAfterMapping", source, target ) );
     }
@@ -169,6 +199,11 @@ public class ClassContainingCallbacks {
 
     @AfterMapping
     public void withTargetAfterMapping(@MappingTarget Target target) {
+        INVOCATIONS.add( new Invocation( "withTargetAfterMapping", target ) );
+    }
+
+    @AfterMapping
+    public void withTargetAfterMapping(@MappingTarget TargetEnum target) {
         INVOCATIONS.add( new Invocation( "withTargetAfterMapping", target ) );
     }
 

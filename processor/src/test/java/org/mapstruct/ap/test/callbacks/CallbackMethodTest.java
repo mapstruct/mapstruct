@@ -43,7 +43,8 @@ import static org.fest.assertions.Assertions.assertThat;
  */
 @RunWith( AnnotationProcessorTestRunner.class )
 @WithClasses( { ClassContainingCallbacks.class, Invocation.class, Source.class, Target.class, SourceTargetMapper.class,
-    SourceTargetCollectionMapper.class, BaseMapper.class, Qualified.class })
+    SourceTargetCollectionMapper.class, BaseMapper.class, Qualified.class,
+    SourceEnum.class, TargetEnum.class })
 @IssueKey("14")
 public class CallbackMethodTest {
 
@@ -119,6 +120,19 @@ public class CallbackMethodTest {
 
         assertQualifiedInvocations( ClassContainingCallbacks.getInvocations(), sourceList, targetList );
         assertQualifiedInvocations( BaseMapper.getInvocations(), sourceList, targetList );
+    }
+
+    @Test
+    public void callbackMethodsForEnumMappingCalled() {
+        SourceEnum source = SourceEnum.B;
+        TargetEnum target = SourceTargetMapper.INSTANCE.toTargetEnum( source );
+
+        List<Invocation> invocations = new ArrayList<Invocation>();
+        invocations.addAll( allBeforeMappingMethods( source, target, TargetEnum.class ) );
+        invocations.addAll( allAfterMappingMethods( source, target, TargetEnum.class ) );
+
+        assertThat( invocations ).isEqualTo( ClassContainingCallbacks.getInvocations() );
+        assertThat( invocations ).isEqualTo( BaseMapper.getInvocations() );
     }
 
     private void assertBeanMappingInvocations(List<Invocation> invocations) {

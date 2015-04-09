@@ -21,11 +21,14 @@ package org.mapstruct.ap.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.lang.model.type.TypeMirror;
+
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.source.EnumMapping;
 import org.mapstruct.ap.model.source.Mapping;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.model.source.SourceMethod;
+import org.mapstruct.ap.prism.BeanMappingPrism;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
@@ -93,7 +96,24 @@ public class EnumMappingMethod extends MappingMethod {
                 }
             }
 
-            return new EnumMappingMethod( method, enumMappings );
+            List<TypeMirror> qualifiers = getQualifiers( method );
+
+            List<LifecycleCallbackMethodReference> beforeMappingMethods =
+                LifecycleCallbackFactory.beforeMappingMethods( method, qualifiers, ctx );
+            List<LifecycleCallbackMethodReference> afterMappingMethods =
+                LifecycleCallbackFactory.afterMappingMethods( method, qualifiers, ctx );
+
+            return new EnumMappingMethod( method, enumMappings, beforeMappingMethods, afterMappingMethods );
+        }
+
+        private static List<TypeMirror> getQualifiers(SourceMethod method) {
+            BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
+
+            if ( beanMappingPrism != null ) {
+                return beanMappingPrism.qualifiedBy();
+            }
+
+            return null;
         }
 
         private boolean reportErrorIfMappedEnumConstantsDontExist(SourceMethod method) {
@@ -171,8 +191,10 @@ public class EnumMappingMethod extends MappingMethod {
 
     }
 
-    private EnumMappingMethod(Method method, List<EnumMapping> enumMappings) {
-        super( method );
+    private EnumMappingMethod(Method method, List<EnumMapping> enumMappings,
+                              List<LifecycleCallbackMethodReference> beforeMappingMethods,
+                              List<LifecycleCallbackMethodReference> afterMappingMethods) {
+        super( method, beforeMappingMethods, afterMappingMethods );
         this.enumMappings = enumMappings;
     }
 

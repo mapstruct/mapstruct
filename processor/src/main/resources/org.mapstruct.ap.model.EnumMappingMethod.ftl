@@ -20,6 +20,12 @@
 -->
 @Override
 public <@includeModel object=returnType/> ${name}(<@includeModel object=sourceParameter/>) {
+    <#list beforeMappingReferencesWithoutMappingTarget as callback>
+        <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+        <#if !callback_has_next>
+
+        </#if>
+    </#list>
     if ( ${sourceParameter.name} == null ) {
         return  null;
     }
@@ -33,6 +39,18 @@ public <@includeModel object=returnType/> ${name}(<@includeModel object=sourcePa
     </#list>
     default: throw new IllegalArgumentException( "Unexpected enum constant: " + ${sourceParameter.name} );
     }
+    <#list beforeMappingReferencesWithMappingTarget as callback>
+        <#if callback_index = 0>
+
+        </#if>
+        <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    </#list>
+    <#list afterMappingReferences as callback>
+        <#if callback_index = 0>
+
+        </#if>
+        <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    </#list>
 
     return ${resultName};
 }
