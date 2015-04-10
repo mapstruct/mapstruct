@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.array;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +28,8 @@ import org.mapstruct.ap.test.array.source.Scientist;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 @WithClasses( { Scientist.class, ScientistDto.class, ScienceMapper.class } )
 @RunWith(AnnotationProcessorTestRunner.class)
@@ -142,6 +142,7 @@ public class ArrayMappingTest {
         assertThat( existingTarget ).onProperty( "name" ).containsOnly( "Jim" );
     }
 
+    @IssueKey("534")
     @Test
     public void shouldMapbooleanWhenReturnDefault() {
 
@@ -150,6 +151,8 @@ public class ArrayMappingTest {
 
         assertThat( target ).containsOnly( false );
         assertThat( existingTarget ).containsOnly( false );
+
+        assertThat( ScienceMapper.INSTANCE.nvmMapping( null ) ).isEmpty();
     }
 
     @Test

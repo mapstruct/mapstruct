@@ -33,7 +33,7 @@
                     }
                     return<#if returnType.name != "void"> ${resultName}</#if>;
                 <#else>
-                    return new <@includeModel object=resultElementType/>[];
+                    return new <@includeModel object=resultElementType/>[0];
                 </#if>
             <#else>
                 <#if existingInstanceMapping>

@@ -19,8 +19,8 @@
 package org.mapstruct.ap.test.array;
 
 import java.util.List;
-import org.mapstruct.IterableMapping;
 
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueMappingStrategy;
@@ -42,6 +42,9 @@ public interface ScienceMapper {
     List<ScientistDto> scientistsToDtosAsList(Scientist[] scientists);
 
     ScientistDto[] scientistsToDtos(Scientist[] scientists, @MappingTarget ScientistDto[] target);
+
+    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+    boolean[] nvmMapping(boolean[] source);
 
     @IterableMapping( nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT )
     boolean[] nvmMapping(boolean[] source, @MappingTarget boolean[] target);
@@ -71,6 +74,4 @@ public interface ScienceMapper {
 
     @IterableMapping( nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT )
     void nvmMappingVoidReturnDefault(int[] source, @MappingTarget long[] target);
-
-
 }
