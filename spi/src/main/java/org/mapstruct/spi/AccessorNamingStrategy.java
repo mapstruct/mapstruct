@@ -29,7 +29,7 @@ public interface AccessorNamingStrategy {
      * Determine if a method name defines a getter with a non-boolean return type.
      *
      * @param methodName The method name.
-     * @return <code>true</code> if the method name can be a non-boolean getter, <code>false</code> otherwise.
+     * @return {@code true} if the method name can be a non-boolean getter, {@code false} otherwise.
      */
     boolean isNonBooleanGetterName(String methodName);
 
@@ -37,7 +37,7 @@ public interface AccessorNamingStrategy {
      * Determine if a method name defines a getter with a boolean return type.
      *
      * @param methodName The method name.
-     * @return <code>true</code> if the method name can be a boolean getter, <code>false</code> otherwise.
+     * @return {@code true} if the method name can be a boolean getter, {@code false} otherwise.
      */
     boolean isBooleanGetterName(String methodName);
 
@@ -45,7 +45,7 @@ public interface AccessorNamingStrategy {
      * Determine if a method name defines a setter.
      *
      * @param methodName The method name.
-     * @return <code>true</code> if the method name can be a setter, <code>false</code> otherwise.
+     * @return {@code true} if the method name can be a setter, {@code false} otherwise.
      */
     boolean isSetterName(String methodName);
 
@@ -53,13 +53,13 @@ public interface AccessorNamingStrategy {
      * Determine if a method name defines an adder.
      *
      * @param methodName The method name.
-     * @return <code>true</code> if the method name can be an adder, <code>false</code> otherwise.
+     * @return {@code true} if the method name can be an adder, {@code false} otherwise.
      */
     boolean isAdderName(String methodName);
 
     /**
      * Extract the property name from a method name for which {@link #isNonBooleanGetterName(String)} returned
-     * <code>true</code>.
+     * {@code true}.
      *
      * @param methodName The method name, guaranteed to be a non-boolean getter name.
      * @return The property name corresponding to the method name.
@@ -68,7 +68,7 @@ public interface AccessorNamingStrategy {
 
     /**
      * Extract the property name from a method name for which {@link #isBooleanGetterName(String)} returned
-     * <code>true</code>.
+     * {@code true}.
      *
      * @param methodName The method name, guaranteed to be a boolean getter name.
      * @return The property name corresponding to the method name.
@@ -76,7 +76,7 @@ public interface AccessorNamingStrategy {
     String getPropertyNameForBooleanGetterName(String methodName);
 
     /**
-     * Extract the property name from a method name for which {@link #isSetterName(String)} returned <code>true</code>.
+     * Extract the property name from a method name for which {@link #isSetterName(String)} returned {@code true}.
      *
      * @param methodName The method name, guaranteed to be a setter name.
      * @return The property name corresponding to the method name.
@@ -85,7 +85,7 @@ public interface AccessorNamingStrategy {
 
     /**
      * Extract the element name (singular form of the collection's property name) from a method name for which
-     * {@link #isAdderName(String)} returned <code>true</code>.
+     * {@link #isAdderName(String)} returned {@code true}.
      *
      * @param methodName The method name, guaranteed to be an adder name.
      * @return The element name corresponding to the method name.
