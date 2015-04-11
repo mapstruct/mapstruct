@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.services;
 
+import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.WeakHashMap;
 
 import org.mapstruct.spi.AccessorNamingStrategy;
 
@@ -29,21 +31,28 @@ import org.mapstruct.spi.AccessorNamingStrategy;
  */
 public class Services {
 
+    private static final Map<Class<?>, Object> CACHE = new WeakHashMap<Class<?>, Object>();
+
     private Services() {
     }
 
     /**
      * Obtain an implementation of {@link AccessorNamingStrategy}. If no specialized implementation is found using
-     * {@link ServiceLoader}, a JavaBeans-compliant default implementation is returned.
+     * {@link ServiceLoader}, a JavaBeans-compliant default implementation is returned. The result is cached across
+     * invocations.
      *
      * @return The implementation of {@link AccessorNamingStrategy}.
      * @throws IllegalStateException If more than one implementation is found by
      *             {@link ServiceLoader#load(Class, ClassLoader)}.
      */
     public static AccessorNamingStrategy getAccessorNamingStrategy() {
-        AccessorNamingStrategy impl = get( AccessorNamingStrategy.class );
+        AccessorNamingStrategy impl = (AccessorNamingStrategy) CACHE.get( AccessorNamingStrategy.class );
         if ( impl == null ) {
-            impl = new DefaultAccessorNamingStrategy();
+            impl = get( AccessorNamingStrategy.class );
+            if ( impl == null ) {
+                impl = new DefaultAccessorNamingStrategy();
+            }
+            CACHE.put( AccessorNamingStrategy.class, impl );
         }
         return impl;
     }
