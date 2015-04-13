@@ -34,8 +34,7 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 import org.mapstruct.ap.model.source.SourceReference.PropertyEntry;
-import org.mapstruct.ap.prism.AfterMappingPrism;
-import org.mapstruct.ap.prism.BeforeMappingPrism;
+import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Strings;
@@ -520,26 +519,14 @@ public class SourceMethod implements Method {
 
     @Override
     public boolean isLifecycleCallbackMethod() {
-        return isBeforeMappingMethod() || isAfterMappingMethod();
+        return Executables.isLifecycleCallbackMethod( getExecutable() );
     }
 
     public boolean isAfterMappingMethod() {
-        return isAfterMappingMethod( getExecutable() );
+        return Executables.isAfterMappingMethod( getExecutable() );
     }
 
     public boolean isBeforeMappingMethod() {
-        return isBeforeMappingMethod( getExecutable() );
-    }
-
-    public static boolean isLifecycleCallbackMethod(ExecutableElement executableElement) {
-        return isBeforeMappingMethod( executableElement ) || isAfterMappingMethod( executableElement );
-    }
-
-    private static boolean isAfterMappingMethod(ExecutableElement executableElement) {
-        return AfterMappingPrism.getInstanceOn( executableElement ) != null;
-    }
-
-    private static boolean isBeforeMappingMethod(ExecutableElement executableElement) {
-        return BeforeMappingPrism.getInstanceOn( executableElement ) != null;
+        return Executables.isBeforeMappingMethod( getExecutable() );
     }
 }

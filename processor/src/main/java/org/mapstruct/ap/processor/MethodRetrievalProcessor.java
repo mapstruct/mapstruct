@@ -48,6 +48,7 @@ import org.mapstruct.ap.prism.MapMappingPrism;
 import org.mapstruct.ap.prism.MappingPrism;
 import org.mapstruct.ap.prism.MappingsPrism;
 import org.mapstruct.ap.util.AnnotationProcessingException;
+import org.mapstruct.ap.util.Executables;
 import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.MapperConfiguration;
 import org.mapstruct.ap.util.Message;
@@ -272,7 +273,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private boolean isValidLifecycleCallbackMethod(ExecutableElement method, Type returnType) {
-        return isVoid( returnType ) && SourceMethod.isLifecycleCallbackMethod( method );
+        return isVoid( returnType ) && Executables.isLifecycleCallbackMethod( method );
     }
 
     private boolean isValidReferencedMethod(List<Parameter> parameters) {

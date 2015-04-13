@@ -67,9 +67,10 @@ public @interface MapMapping {
 
 
     /**
-     * A value qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case
-     * multiple mappers (hand written of internal) qualify and result in an 'Ambiguous mapping methods found' error.
-     *
+     * A value qualifier can be specified to aid the selection process of a suitable mapper for the values in the map.
+     * This is useful in case multiple mappers (hand written of internal) qualify and result in an 'Ambiguous mapping
+     * methods found' error.
+     * <p>
      * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
      *
      * @return the qualifiers

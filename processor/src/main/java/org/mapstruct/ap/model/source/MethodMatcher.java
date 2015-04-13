@@ -38,6 +38,7 @@ import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 
+import static org.mapstruct.ap.util.Collections.hasNonNullElements;
 import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.isSubType;
 
 /**
@@ -146,7 +147,7 @@ public class MethodMatcher {
                                     Type candidateSourceType,
                                     Map<TypeVariable, TypeMirror> genericTypesMap) {
 
-        if ( isNotObjectClass( candidateSourceType.getTypeMirror() ) ) {
+        if ( !isJavaLangObject( candidateSourceType.getTypeMirror() ) ) {
             TypeMatcher parameterMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_FROM, genericTypesMap );
             if ( !parameterMatcher.visit( candidateSourceType.getTypeMirror(), sourceType.getTypeMirror() ) ) {
                 if ( sourceType.isPrimitive() ) {
@@ -171,7 +172,7 @@ public class MethodMatcher {
                                     Map<TypeVariable, TypeMirror> genericTypesMap) {
 
 
-        if ( isNotObjectClass( candidateResultType.getTypeMirror() ) && !candidateResultType.isVoid() ) {
+        if ( !isJavaLangObject( candidateResultType.getTypeMirror() ) && !candidateResultType.isVoid() ) {
 
             TypeMatcher returnTypeMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_TO, genericTypesMap );
             if ( !returnTypeMatcher.visit( candidateResultType.getTypeMirror(), resultType.getTypeMirror() ) ) {
@@ -205,23 +206,12 @@ public class MethodMatcher {
 
     /**
      * @param type the type
-     * @return {@code true}, if the type does NOT represent java.lang.Object
+     * @return {@code true}, if the type represents java.lang.Object
      */
-    private boolean isNotObjectClass(TypeMirror type) {
-        return !( type.getKind() == TypeKind.DECLARED
-                        && ( (TypeElement) ( (DeclaredType) type ).asElement() ).getQualifiedName().contentEquals(
-                            Object.class.getName() ) );
-    }
-
-    private static <E> boolean hasNonNullElements(List<E> elements) {
-        if ( elements != null ) {
-            for ( E e : elements ) {
-                if ( e != null ) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    private boolean isJavaLangObject(TypeMirror type) {
+        return type.getKind() == TypeKind.DECLARED
+            && ( (TypeElement) ( (DeclaredType) type ).asElement() ).getQualifiedName().contentEquals(
+                Object.class.getName() );
     }
 
     private enum Assignability {

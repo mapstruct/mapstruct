@@ -34,6 +34,9 @@ import org.mapstruct.ap.services.Services;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.MethodType;
 
+import org.mapstruct.ap.prism.AfterMappingPrism;
+import org.mapstruct.ap.prism.BeforeMappingPrism;
+
 import static javax.lang.model.util.ElementFilter.methodsIn;
 import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
@@ -163,7 +166,7 @@ public class Executables {
             }
         }
 
-        alreadyCollected.addAll( safeToAdd );
+        alreadyCollected.addAll( 0, safeToAdd );
     }
 
     /**
@@ -208,5 +211,30 @@ public class Executables {
     private static boolean hasNonObjectSuperclass(TypeElement element) {
         return element.getSuperclass().getKind() == TypeKind.DECLARED
             && asTypeElement( element.getSuperclass() ).getSuperclass().getKind() == TypeKind.DECLARED;
+    }
+
+    /**
+     * @param executableElement the element to check
+     * @return {@code true}, if the executable element is a method annotated with {@code @BeforeMapping} or
+     *         {@code @AfterMapping}
+     */
+    public static boolean isLifecycleCallbackMethod(ExecutableElement executableElement) {
+        return isBeforeMappingMethod( executableElement ) || isAfterMappingMethod( executableElement );
+    }
+
+    /**
+     * @param executableElement the element to check
+     * @return {@code true}, if the executable element is a method annotated with {@code @AfterMapping}
+     */
+    public static boolean isAfterMappingMethod(ExecutableElement executableElement) {
+        return AfterMappingPrism.getInstanceOn( executableElement ) != null;
+    }
+
+    /**
+     * @param executableElement the element to check
+     * @return {@code true}, if the executable element is a method annotated with {@code @BeforeMapping}
+     */
+    public static boolean isBeforeMappingMethod(ExecutableElement executableElement) {
+        return BeforeMappingPrism.getInstanceOn( executableElement ) != null;
     }
 }
