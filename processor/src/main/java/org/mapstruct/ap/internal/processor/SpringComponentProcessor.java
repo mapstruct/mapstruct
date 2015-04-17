@@ -44,4 +44,9 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
     protected Annotation getMapperReferenceAnnotation() {
         return new Annotation( getTypeFactory().getType( "org.springframework.beans.factory.annotation.Autowired" ) );
     }
+
+    @Override
+    protected boolean shouldDecoratorBeRemoved() {
+        return true;
+    }
 }

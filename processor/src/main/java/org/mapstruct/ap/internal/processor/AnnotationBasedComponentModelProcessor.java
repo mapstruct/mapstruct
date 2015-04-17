@@ -56,6 +56,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             return mapper;
         }
 
+        if ( shouldDecoratorBeRemoved() ) {
+            mapper.removeDecorator();
+        }
+
         mapper.addAnnotation( getTypeAnnotation() );
 
         ListIterator<MapperReference> iterator = mapper.getReferencedMappers().listIterator();
@@ -96,6 +100,11 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
      * @return the annotation of the field for the mapper reference
      */
     protected abstract Annotation getMapperReferenceAnnotation();
+
+    /**
+     * @return if generated decorator class should be removed
+     */
+    protected abstract boolean shouldDecoratorBeRemoved();
 
     @Override
     public int getPriority() {

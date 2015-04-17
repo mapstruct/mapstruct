@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.itest.spring.SpringBasedMapperTest.SpringTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,6 +46,9 @@ public class SpringBasedMapperTest {
     @Autowired
     private SourceTargetMapper mapper;
 
+    @Autowired
+    @Qualifier( "sourceTargetMapperDecorator" )
+    private DecoratedSourceTargetMapper decoratedMapper;
 
     @Test
     public void shouldCreateSpringBasedMapper() {
@@ -56,4 +60,15 @@ public class SpringBasedMapperTest {
         assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 42 ) );
         assertThat( target.getDate() ).isEqualTo( "1980" );
     }
+
+    @Test
+    public void shouldInjectDecorator() {
+        Source source = new Source();
+
+        Target target = decoratedMapper.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 43 ) );
+    }
+
 }
