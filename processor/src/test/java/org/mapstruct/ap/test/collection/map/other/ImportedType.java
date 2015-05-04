@@ -16,31 +16,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.map;
+package org.mapstruct.ap.test.collection.map.other;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.mapstruct.ap.test.collection.map.other.ImportedType;
-
-public class Target {
-
-    private Map<String, String> values;
-    private LinkedHashMap<String, ImportedType> stringEnumMap;
-
-    public Map<String, String> getValues() {
-        return values;
-    }
-
-    public void setValues(Map<String, String> values) {
-        this.values = values;
-    }
-
-    public LinkedHashMap<String, ImportedType> getStringEnumMap() {
-        return stringEnumMap;
-    }
-
-    public void setStringEnumMap(LinkedHashMap<String, ImportedType> stringEnumMap) {
-        this.stringEnumMap = stringEnumMap;
-    }
+/**
+ * A type that needs to be imported by the mapper implementation
+ *
+ * @author Andreas Gudian
+ */
+public enum ImportedType {
+    A, B, C;
 }

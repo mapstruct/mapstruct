@@ -21,6 +21,7 @@ package org.mapstruct.ap.model.common;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -234,15 +235,23 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     @Override
     public Set<Type> getImportTypes() {
+        Set<Type> result = new HashSet<Type>();
+
+        result.add( this );
+
         if ( implementationType != null ) {
-            return Collections.singleton( implementationType );
+            result.addAll( implementationType.getImportTypes() );
         }
-        else if ( componentType != null ) {
-            return Collections.singleton( componentType );
+
+        if ( componentType != null ) {
+            result.addAll( componentType.getImportTypes() );
         }
-        else {
-            return Collections.<Type>emptySet();
+
+        for ( Type parameter : typeParameters ) {
+            result.addAll( parameter.getImportTypes() );
         }
+
+        return result;
     }
 
     /**
@@ -495,7 +504,8 @@ public class Type extends ModelElement implements Comparable<Type> {
 
             List<ExecutableElement> result = new ArrayList<ExecutableElement>();
             List<ExecutableElement> setterMethods = getSetters();
-            List<ExecutableElement> getterMethods = new ArrayList( getPropertyReadAccessors().values() );
+            List<ExecutableElement> getterMethods =
+                new ArrayList<ExecutableElement>( getPropertyReadAccessors().values() );
 
             // there could be a getter method for a list/map that is not present as setter.
             // a getter could substitute the setter in that case and act as setter.
