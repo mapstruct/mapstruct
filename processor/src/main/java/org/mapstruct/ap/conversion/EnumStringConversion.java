@@ -34,7 +34,7 @@ public class EnumStringConversion extends SimpleConversion {
 
     @Override
     public String getToExpression(ConversionContext conversionContext) {
-        return "<SOURCE>.toString()";
+        return "<SOURCE>.name()";
     }
 
     @Override
