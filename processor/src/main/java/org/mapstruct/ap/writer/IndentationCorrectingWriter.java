@@ -29,6 +29,16 @@ import java.util.Arrays;
  * This writer discards any leading whitespace characters following to a line break character. When the first
  * non-whitespace character is written after a line break, the correct indentation characters are added, which is four
  * whitespace characters per indentation level.
+ *
+ * <p>
+ * The state pattern is line oriented. It starts by writing text. Indentation is increased if a brace '('or
+ * brace '{' is encountered in the code to be generated and written out in state: IN_TEXT_START_OF_LINE. Whenever
+ * a line end occurs (PC or Linux style) the amount of enters is checked and at max set to 2.
+ *
+ * Whenever a string definition is encountered in the code that should be generated, increasing the indentation is
+ * stopped (so `{` and '(' are ignored) until the end of the string is encountered ('"'). To avoid writing a new
+ * indentation, the state then returns to IN_TEXT.
+ *
  * <p>
  * This is a very basic implementation which does not take into account comments, escaping etc.
  *
@@ -43,7 +53,7 @@ class IndentationCorrectingWriter extends Writer {
     private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     private static final boolean IS_WINDOWS = System.getProperty( "os.name" ).startsWith( "Windows" );
 
-    private State currentState = State.IN_TEXT;
+    private State currentState = State.START_OF_LINE;
     private final StateContext context;
 
     IndentationCorrectingWriter(Writer out) {
@@ -99,12 +109,22 @@ class IndentationCorrectingWriter extends Writer {
     private enum State {
 
         /**
-         * Within any text.
+         * Within any text, before encountering a String definition.
          */
-        IN_TEXT {
+        START_OF_LINE {
             @Override
             State doHandleCharacter(char c, StateContext context) {
                 switch ( c ) {
+                    case '{':
+                    case '(':
+                        context.indentationLevel++;
+                        return IN_TEXT;
+                    case '}':
+                    case ')':
+                        context.indentationLevel--;
+                        return IN_TEXT;
+                    case '\"':
+                        return IN_STRING;
                     case '\r':
                         return isWindows() ? IN_LINE_BREAK : AFTER_LINE_BREAK;
                     case '\n':
@@ -142,27 +162,115 @@ class IndentationCorrectingWriter extends Writer {
                 flush( context );
             }
 
-            private void flush(StateContext context) throws IOException {
-                if ( null != context.characters && context.currentIndex - context.lastStateChange > 0 ) {
-                    context.writer.write(
-                        context.characters,
-                        context.lastStateChange,
-                        context.currentIndex - context.lastStateChange
-                    );
+        },
 
-                    if ( DEBUG ) {
-                        System.out.print(
-                            new String(
-                                java.util.Arrays.copyOfRange(
-                                    context.characters,
-                                    context.lastStateChange,
-                                    context.currentIndex
-                                )
-                            )
-                        );
-                    }
+        /**
+         * Within any text, but after a String (" ").
+         */
+        IN_TEXT {
+            @Override
+            State doHandleCharacter(char c, StateContext context) {
+                switch ( c ) {
+                    case '{':
+                    case '(':
+                        context.indentationLevel++;
+                        return IN_TEXT;
+                    case '}':
+                    case ')':
+                        context.indentationLevel--;
+                        return IN_TEXT;
+                    case '\"':
+                        return IN_STRING;
+                    case '\r':
+                        return isWindows() ? IN_LINE_BREAK : AFTER_LINE_BREAK;
+                    case '\n':
+                        return AFTER_LINE_BREAK;
+                    default:
+                        return IN_TEXT;
                 }
             }
+
+            /**
+             * Writes out the current text.
+             */
+            @Override
+            void onExit(StateContext context) throws IOException {
+                flush( context );
+            }
+
+            /**
+             * Writes out the current text.
+             */
+            @Override
+            void onBufferFinished(StateContext context) throws IOException {
+                flush( context );
+            }
+
+        },
+
+        /**
+         * In a String definition, Between un-escaped quotes " "
+         */
+        IN_STRING {
+
+            @Override
+            State doHandleCharacter(char c, StateContext context) {
+                switch ( c ) {
+                    case '\"':
+                        return IN_TEXT;
+                    case '\\':
+                        return IN_STRING_ESCAPED_CHAR;
+                    default:
+                        return IN_STRING;
+                }
+            }
+
+            /**
+             * Writes out the current text.
+             */
+            @Override
+            void onExit(StateContext context) throws IOException {
+                flush( context );
+            }
+
+            /**
+             * Writes out the current text.
+             */
+            @Override
+            void onBufferFinished(StateContext context) throws IOException {
+                flush( context );
+            }
+
+        },
+
+        /**
+         * In a String, character following an escape character '\', should be ignored, can also be '"' that
+         * should be ignored.
+         */
+        IN_STRING_ESCAPED_CHAR {
+
+            @Override
+            State doHandleCharacter(char c, StateContext context) {
+                // ignore escaped character
+                return IN_STRING;
+            }
+
+            /**
+             * Writes out the current text.
+             */
+            @Override
+            void onExit(StateContext context) throws IOException {
+                flush( context );
+            }
+
+            /**
+             * Writes out the current text.
+             */
+            @Override
+            void onBufferFinished(StateContext context) throws IOException {
+                flush( context );
+            }
+
         },
 
         /**
@@ -186,7 +294,16 @@ class IndentationCorrectingWriter extends Writer {
         AFTER_LINE_BREAK {
             @Override
             State doHandleCharacter(char c, StateContext context) {
+
                 switch ( c ) {
+                    case '{':
+                    case '(':
+                        context.indentationLevel++;
+                        return START_OF_LINE;
+                    case '}':
+                    case ')':
+                        context.indentationLevel--;
+                        return START_OF_LINE;
                     case '\r':
                         return isWindows() ? IN_LINE_BREAK : AFTER_LINE_BREAK;
                     case ' ':
@@ -195,7 +312,7 @@ class IndentationCorrectingWriter extends Writer {
                         context.consecutiveLineBreaks++;
                         return AFTER_LINE_BREAK;
                     default:
-                        return IN_TEXT;
+                        return START_OF_LINE;
                 }
             }
 
@@ -220,12 +337,7 @@ class IndentationCorrectingWriter extends Writer {
         };
 
         final State handleCharacter(char c, StateContext context) throws IOException {
-            if ( c == '{' || c == '(' ) {
-                context.indentationLevel++;
-            }
-            else if ( c == '}' || c == ')' ) {
-                context.indentationLevel--;
-            }
+
 
             return doHandleCharacter( c, context );
         }
@@ -244,6 +356,28 @@ class IndentationCorrectingWriter extends Writer {
         }
 
         void onBufferFinished(StateContext context) throws IOException {
+        }
+
+        protected void flush(StateContext context) throws IOException {
+            if ( null != context.characters && context.currentIndex - context.lastStateChange > 0 ) {
+                context.writer.write(
+                    context.characters,
+                    context.lastStateChange,
+                    context.currentIndex - context.lastStateChange
+                );
+
+                if ( DEBUG ) {
+                    System.out.print(
+                        new String(
+                            java.util.Arrays.copyOfRange(
+                                context.characters,
+                                context.lastStateChange,
+                                context.currentIndex
+                            )
+                        )
+                    );
+                }
+            }
         }
     }
 
