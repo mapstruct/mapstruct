@@ -20,7 +20,6 @@ package org.mapstruct.ap.model.source;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 
@@ -41,6 +40,7 @@ public class ForgedMethod implements Method {
     private final Type returnType;
     private final String name;
     private final ExecutableElement positionHintElement;
+    private final List<Type> thrownTypes;
 
      /**
      * Creates a new forged method with the given name.
@@ -55,6 +55,7 @@ public class ForgedMethod implements Method {
         String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
         this.parameters = Arrays.asList( new Parameter( sourceParamSafeName, sourceType ) );
         this.returnType = targetType;
+        this.thrownTypes = new ArrayList<Type>();
         this.name = name;
         this.positionHintElement = positionHintElement;
     }
@@ -67,6 +68,7 @@ public class ForgedMethod implements Method {
     public ForgedMethod(String name, ForgedMethod forgedMethod) {
         this.parameters = forgedMethod.parameters;
         this.returnType = forgedMethod.returnType;
+        this.thrownTypes = new ArrayList<Type>();
         this.positionHintElement = forgedMethod.positionHintElement;
         this.name = name;
     }
@@ -131,7 +133,16 @@ public class ForgedMethod implements Method {
 
     @Override
     public List<Type> getThrownTypes() {
-        return Collections.<Type>emptyList();
+        return thrownTypes;
+    }
+
+    public void addThrownTypes(List<Type> thrownTypesToAdd) {
+        for ( Type thrownType : thrownTypesToAdd ) {
+            // make sure there are no duplicates coming from the keyAssignment thrown types.
+            if ( !thrownTypes.contains( thrownType ) ) {
+                thrownTypes.add( thrownType );
+            }
+        }
     }
 
     @Override

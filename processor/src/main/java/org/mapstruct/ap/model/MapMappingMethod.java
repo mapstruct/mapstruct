@@ -27,6 +27,7 @@ import org.mapstruct.ap.model.assignment.Assignment;
 import org.mapstruct.ap.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.source.ForgedMethod;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.util.Message;
@@ -149,6 +150,16 @@ public class MapMappingMethod extends MappingMethod {
                 "entry.getValue()",
                 false
             );
+
+            if ( method instanceof ForgedMethod ) {
+                ForgedMethod forgedMethod = (ForgedMethod) method;
+                if ( keyAssignment != null ) {
+                    forgedMethod.addThrownTypes( keyAssignment.getExceptionTypes() );
+                }
+                if ( valueAssignment != null ) {
+                    forgedMethod.addThrownTypes( valueAssignment.getExceptionTypes() );
+                }
+            }
 
             if ( valueAssignment == null ) {
                 ctx.getMessager().printMessage( method.getExecutable(), Message.MAPMAPPING_VALUE_MAPPING_NOT_FOUND );

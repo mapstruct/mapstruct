@@ -29,6 +29,7 @@ import org.mapstruct.ap.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.model.assignment.SetterWrapper;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.model.source.ForgedMethod;
 import org.mapstruct.ap.model.source.Method;
 import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.util.Message;
@@ -119,7 +120,12 @@ public class IterableMappingMethod extends MappingMethod {
             if ( assignment == null ) {
                 ctx.getMessager().printMessage( method.getExecutable(), Message.ITERABLEMAPPING_MAPPING_NOT_FOUND );
             }
-
+            else {
+                if ( method instanceof ForgedMethod ) {
+                    ForgedMethod forgedMethod = (ForgedMethod) method;
+                    forgedMethod.addThrownTypes( assignment.getExceptionTypes() );
+                }
+            }
             // target accessor is setter, so decorate assignment as setter
             if ( resultType.isArrayType() ) {
                 assignment = new LocalVarWrapper( assignment, method.getThrownTypes() );
