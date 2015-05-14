@@ -16,3 +16,4 @@
 # Build
 /*/target
 test-output
+/target/
