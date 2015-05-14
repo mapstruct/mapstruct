@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.source.expressions.java;
 
 import java.util.Arrays;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -32,6 +33,6 @@ public interface SourceTargetListMapper {
 
     SourceTargetListMapper INSTANCE = Mappers.getMapper( SourceTargetListMapper.class );
 
-    @Mapping( target = "list", expression = "java(Arrays.asList(\"test2\"))" )
+    @Mapping(target = "list", expression = "java(Arrays.asList( \"test2\" ))")
     TargetList map( SourceList source );
 }
