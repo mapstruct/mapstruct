@@ -115,12 +115,10 @@ public interface Method {
     List<Type> getThrownTypes();
 
     /**
-     * Returns the type of the result.
+     * Returns the type of the result. The result is defined as the type of the parameter designated with
+     * {@link org.mapstruct.MappingTarget}, or in absence the return type.
      *
-     * The result is defined as the type of the parameter designated with {@link org.mapstruct.MappingTarget},
-     * or in absence the return type.
-     *
-     * @return
+     * @return result type
      */
     Type getResultType();
 

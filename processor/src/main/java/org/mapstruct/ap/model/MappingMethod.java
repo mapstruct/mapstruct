@@ -29,6 +29,7 @@ import org.mapstruct.ap.model.common.ModelElement;
 import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.source.Method;
+
 import static org.mapstruct.ap.util.Strings.getSaveVariableName;
 import static org.mapstruct.ap.util.Strings.join;
 
@@ -49,11 +50,11 @@ public abstract class MappingMethod extends ModelElement {
     private final String resultName;
 
     /**
-     * constructor to be overloaded when local variable names are required prior to calling this constructor. (e.g.
-     * for property mappings). It is supposed to be initialized with at least the parameter names.
+     * constructor to be overloaded when local variable names are required prior to calling this constructor. (e.g. for
+     * property mappings). It is supposed to be initialized with at least the parameter names.
      *
-     * @param method
-     * @param existingVariableNames
+     * @param method method
+     * @param existingVariableNames existingVariableNames
      */
     protected MappingMethod(Method method, Collection<String> existingVariableNames ) {
         this.name = method.getName();

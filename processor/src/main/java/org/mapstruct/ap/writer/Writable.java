@@ -39,7 +39,7 @@ public interface Writable {
          * Retrieves the object with the given type from this context.
          *
          * @param type The type of the object to retrieve from this context.
-         *
+         * @param <T> the type
          * @return The object with the given type from this context.
          */
         <T> T get(Class<T> type);
@@ -50,6 +50,7 @@ public interface Writable {
      *
      * @param context Provides additional data specific to the used implementation of the serialization mechanism.
      * @param writer The writer to write this element to. Must not be closed by implementations.
+     * @throws Exception in case of an error
      */
     void write(Context context, Writer writer) throws Exception;
 }

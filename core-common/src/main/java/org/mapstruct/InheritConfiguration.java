@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
  * method:
  *
  * <pre>
- * {@code
+ * <code>
  * &#64;Mappings({
  *     &#64;Mapping(target="make", source="brand"),
  *     &#64;Mapping(target="seatCount", source="numberOfSeats")
@@ -44,7 +44,7 @@ import java.lang.annotation.Target;
  *
  * &#64;InheritConfiguration
  * void updateCarDto(Car car, &#64;MappingTarget CarDto carDto);
- * }
+ * </code>
  * </pre>
  *
  * @author Sjaak Derksen

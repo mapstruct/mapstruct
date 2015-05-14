@@ -110,12 +110,12 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
     }
 
     /**
-     * Returns the default format style to be applied if non is given explicitly.
+     * @return the default format style to be applied if non is given explicitly.
      */
     protected abstract String formatStyle();
 
     /**
-     * Returns the name of the parse method for converting a String into a specific Joda-Time type.
+     * @return the name of the parse method for converting a String into a specific Joda-Time type.
      */
     protected abstract String parseMethod();
 }

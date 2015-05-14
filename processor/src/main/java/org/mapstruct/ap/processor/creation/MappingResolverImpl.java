@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.mapstruct.ap.util.FormattingMessager;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -46,6 +45,7 @@ import org.mapstruct.ap.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.model.source.selector.SelectionCriteria;
+import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.Message;
 import org.mapstruct.ap.util.Strings;
 
@@ -498,8 +498,6 @@ public class MappingResolverImpl implements MappingResolver {
          * <li>the property is of a collection or map type and the constructor of the target type (either itself or its
          * implementation type) accepts the source type.</li>
          * </ul>
-         *
-         * @param property The property mapping to check.
          *
          * @return {@code true} if the specified property can be mapped, {@code false} otherwise.
          */

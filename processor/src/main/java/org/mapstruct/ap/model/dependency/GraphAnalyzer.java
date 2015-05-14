@@ -67,6 +67,9 @@ public class GraphAnalyzer {
      * Returns all the descendants of the given node, either direct or transitive ones.
      * <p>
      * <b>Note</b>:The list will only be complete if the graph contains no cycles.
+     *
+     * @param name the node name to get the descendants for
+     * @return the descendants
      */
     public Set<String> getAllDescendants(String name) {
         Node node = nodes.get( name );
@@ -140,6 +143,8 @@ public class GraphAnalyzer {
         /**
          * Builds the analyzer and triggers traversal of all nodes for detecting potential cycles and calculates the
          * full list of descendants of each node.
+         *
+         * @return the analyzer
          */
         public GraphAnalyzer build() {
             GraphAnalyzer graphAnalyzer = new GraphAnalyzer( nodes );

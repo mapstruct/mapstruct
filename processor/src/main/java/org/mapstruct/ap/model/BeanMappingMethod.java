@@ -528,8 +528,6 @@ public class BeanMappingMethod extends MappingMethod {
          * be returned. If that is not set either, the default value from {@code Mapper#unmappedTargetPolicy()} will be
          * returned.
          *
-         * @param element The type declaring the generated mapper type
-         *
          * @return The effective policy for reporting unmapped target properties.
          */
         private ReportingPolicy getEffectiveUnmappedTargetPolicy() {

@@ -34,14 +34,14 @@ public class EnumMapping {
     }
 
     /**
-     * Returns the name of the constant in the source enum.
+     * @return the name of the constant in the source enum.
      */
     public String getSource() {
         return source;
     }
 
     /**
-     * Returns the name of the constant in the target enum.
+     * @return the name of the constant in the target enum.
      */
     public String getTarget() {
         return target;

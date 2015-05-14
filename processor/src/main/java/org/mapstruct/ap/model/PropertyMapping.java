@@ -680,7 +680,7 @@ public class PropertyMapping extends ModelElement {
     }
 
     /**
-     * Returns the name of this mapping (property name on the target side)
+     * @return the name of this mapping (property name on the target side)
      */
     public String getName() {
         return name;

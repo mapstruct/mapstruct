@@ -20,6 +20,7 @@ package org.mapstruct.ap.model.source.selector;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import javax.xml.bind.annotation.XmlElementDecl;
@@ -38,7 +39,7 @@ import org.mapstruct.ap.prism.XmlElementDeclPrism;
  * <li>Name matches</li>
  * </ol>
  * If there are name and scope matches, only those will be returned, otherwise the next in line (scope matches), etc. If
- * the given method is not annotated with {@code} XmlElementDecl} it will be considered as matching.
+ * the given method is not annotated with {@code XmlElementDecl} it will be considered as matching.
  *
  * @author Sjaak Derksen
  */

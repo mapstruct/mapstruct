@@ -20,6 +20,7 @@ package org.mapstruct.ap.model.assignment;
 
 import java.util.List;
 import java.util.Set;
+
 import org.mapstruct.ap.model.common.Type;
 
 /**
@@ -59,14 +60,14 @@ public interface Assignment {
      List<Type> getExceptionTypes();
 
      /**
-      * An assignment in itself can wrap another assignment. E.g.:
-      * <ul>
-      * <li>a MethodReference can wrap a TypeConversion, another MethodReference and ultimately a Simple</li>
-      * <li>a TypeConversion can wrap a MethodReference, and ultimately a Simple</li>
-      * </ul>
-      *
-      * @param assignment
-      */
+     * An assignment in itself can wrap another assignment. E.g.:
+     * <ul>
+     * <li>a MethodReference can wrap a TypeConversion, another MethodReference and ultimately a Simple</li>
+     * <li>a TypeConversion can wrap a MethodReference, and ultimately a Simple</li>
+     * </ul>
+     *
+     * @param assignment the assignment to set
+     */
      void setAssignment( Assignment assignment );
 
      /**

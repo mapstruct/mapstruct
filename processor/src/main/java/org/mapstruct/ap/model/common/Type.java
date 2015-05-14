@@ -185,7 +185,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * Returns this type's enum constants in case it is an enum, an empty list otherwise.
+     * @return this type's enum constants in case it is an enum, an empty list otherwise.
      */
     public List<String> getEnumConstants() {
         return enumConstants;
@@ -256,7 +256,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * The name of this type as to be used within import statements.
+     * @return The name of this type as to be used within import statements.
      */
     public String getImportName() {
         return isArrayType() ? qualifiedName.substring( 0, qualifiedName.length() - 2 ) : qualifiedName;
@@ -369,18 +369,16 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * getPropertyWriteAccessors returns a map of the write accessors according to the CollectionMappingStrategy.
-     *
-     * These accessors include:
-     *
+     * getPropertyWriteAccessors returns a map of the write accessors according to the CollectionMappingStrategy. These
+     * accessors include:
      * <ul>
-     *  <li>setters, the obvious candidate :-), {@link #getSetters() }</li>
-     *  <li>getters, for collections that do not have a setter, e.g. for JAXB generated collection attributes
+     * <li>setters, the obvious candidate :-), {@link #getSetters() }</li>
+     * <li>getters, for collections that do not have a setter, e.g. for JAXB generated collection attributes
      * {@link #getPropertyReadAccessors() }</li>
-     *  <li>adders, typically for from table generated entities, {@link #getAdders() }</li>
+     * <li>adders, typically for from table generated entities, {@link #getAdders() }</li>
      * </ul>
      *
-     * @param cmStrategy
+     * @param cmStrategy collection mapping strategy
      * @return an unmodifiable map of all write accessors indexed by property name
      */
     public Map<String, ExecutableElement> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
@@ -619,7 +617,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * Whether this type can access the given method declared on the given type.
+     * @param type the type declaring the method
+     * @param method the method to check
+     * @return Whether this type can access the given method declared on the given type.
      */
     public boolean canAccess(Type type, ExecutableElement method) {
         if ( method.getModifiers().contains( Modifier.PRIVATE ) ) {
@@ -637,8 +637,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * @return A valid Java expression most suitable for representing null - useful for dealing with primitives
-     * from FTL.
+     * @return A valid Java expression most suitable for representing null - useful for dealing with primitives from
+     *         FTL.
      */
     public String getNull() {
         if ( !isPrimitive() || isArrayType() ) {

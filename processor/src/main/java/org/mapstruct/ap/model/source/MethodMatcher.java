@@ -33,8 +33,8 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
-import org.mapstruct.ap.model.common.Parameter;
 
+import org.mapstruct.ap.model.common.Parameter;
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.model.common.TypeFactory;
 
@@ -375,9 +375,6 @@ public class MethodMatcher {
 
     /**
      * checks whether a type t is in bounds of the typeParameter tpe
-     *
-     * @param t
-     * @param tpe
      *
      * @return true if within bounds
      */

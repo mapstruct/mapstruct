@@ -254,8 +254,8 @@ public class TypeFactory {
      * Get the ExecutableType for given method as part of usedMapper. Possibly parameterized types in method declaration
      * will be evaluated to concrete types then.
      *
-     * @param usedMapper
-     * @param method
+     * @param usedMapper the type declaring the method
+     * @param method the method
      * @return the ExecutableType representing the method as part of usedMapper
      */
     public ExecutableType getMethodType(TypeElement usedMapper, ExecutableElement method) {
@@ -458,11 +458,12 @@ public class TypeFactory {
     }
 
     /**
-     * Converts any collection type, e.g. List<T> to Collection<T> and any map type, e.g. HashMap<K,V> to Map<K,V>.
+     * Converts any collection type, e.g. {@code List<T>} to {@code Collection<T>} and any map type, e.g.
+     * {@code HashMap<K,V>} to {@code Map<K,V>}.
      *
      * @param collectionOrMap any collection or map type
-     * @return the type representing Collection<T> or Map<K,V>, if the argument type is a subtype of Collection<T> or of
-     *         Map<K,V> respectively.
+     * @return the type representing {@code Collection<T>} or {@code Map<K,V>}, if the argument type is a subtype of
+     *         {@code Collection<T>} or of {@code Map<K,V>} respectively.
      */
     public Type asCollectionOrMap(Type collectionOrMap) {
         List<Type> originalParameters = collectionOrMap.getTypeParameters();

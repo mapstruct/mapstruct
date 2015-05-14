@@ -88,6 +88,9 @@ public class Nouns {
     /**
      * Converts given pluralized noun into the singular form. If no singular form could be determined, the given word
      * itself is returned.
+     *
+     * @param plural plural word
+     * @return singular form, if available
      */
     public static String singularize(String plural) {
         for ( ReplaceRule replaceRule : SINGULAR_RULES ) {

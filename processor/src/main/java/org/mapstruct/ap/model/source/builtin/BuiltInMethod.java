@@ -135,13 +135,11 @@ public abstract class BuiltInMethod implements Method {
     }
 
     /**
-     * the conversion context is used to format an auxiliary parameter in the method call
-     * with context specific information such as a date format.
+     * the conversion context is used to format an auxiliary parameter in the method call with context specific
+     * information such as a date format.
      *
-     * @param conversionContext
-     *
-     * @return null if no context parameter should be included
-     *         "null" if there should be an explicit null call
+     * @param conversionContext context
+     * @return null if no context parameter should be included "null" if there should be an explicit null call
      *         "'dateFormat'" for instance, to indicate how the build-in method should format the date
      */
     public String getContextParameter(ConversionContext conversionContext) {
@@ -174,13 +172,12 @@ public abstract class BuiltInMethod implements Method {
     }
 
     /**
-     * Analyzes the Java Generic type variables in the parameter do match the type variables in the build in method
-     * same goes for the returnType.
+     * Analyzes the Java Generic type variables in the parameter do match the type variables in the build in method same
+     * goes for the returnType.
      *
      * @param parameter source
      * @param returnType target
-     *
-     * @return
+     * @return {@code true}, iff the the type variables match
      */
     public boolean doTypeVarsMatch(Type parameter, Type returnType) {
         return true;

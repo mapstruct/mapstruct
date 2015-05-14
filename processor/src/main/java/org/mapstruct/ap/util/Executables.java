@@ -114,8 +114,9 @@ public class Executables {
     }
 
     /**
-     * Returns the 'element name' to which an adder method applies. If. e.g. an adder method is named
-     * {@code addChild(Child v)}, the element name would be 'Child'.
+     * @param adderMethod the adder method
+     * @return the 'element name' to which an adder method applies. If. e.g. an adder method is named
+     *         {@code addChild(Child v)}, the element name would be 'Child'.
      */
     public static String getElementNameForAdder(ExecutableElement adderMethod) {
         if ( isAdderMethod( adderMethod ) ) {
@@ -255,7 +256,7 @@ public class Executables {
 
     /**
      * @param elementUtils the elementUtils
-     * @param methods the list of already collected methods of one type hierarchy (order is from sub-types to
+     * @param alreadyAdded the list of already collected methods of one type hierarchy (order is from sub-types to
      *            super-types)
      * @param executable the method to check
      * @param parentType the type for which elements are collected

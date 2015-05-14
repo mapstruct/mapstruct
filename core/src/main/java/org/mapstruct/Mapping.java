@@ -94,7 +94,6 @@ public @interface Mapping {
      * <p>
      * Currently, Java is the only supported "expression language" and expressions must be given in form of Java
      * expressions using the following format: {@code java(<EXPRESSION>)}. For instance the mapping
-     * <p>
      *
      * <pre>
      * {@code @Mapping(

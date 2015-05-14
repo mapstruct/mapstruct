@@ -322,6 +322,9 @@ public class Mapping {
 
     /**
      * Creates a copy of this mapping, which is adapted to the given method
+     *
+     * @param method the method to create the copy for
+     * @return the copy
      */
     public Mapping copyForInheritanceTo(SourceMethod method) {
         Mapping mapping = new Mapping(

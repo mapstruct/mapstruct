@@ -19,7 +19,7 @@
 package org.mapstruct.ap.prism;
 
 /**
- * Prism for the enum {@link org.mapstruct.MapNullToDefaultStrategy}
+ * Prism for the enum {@link org.mapstruct.NullValueMappingStrategy}
  *
  * @author Sjaak Derksen
  */
