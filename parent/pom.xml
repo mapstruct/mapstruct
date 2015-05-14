@@ -109,7 +109,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>14.0.1</version>
+                <version>18.0</version>
             </dependency>
             <dependency>
                 <groupId>com.jolira</groupId>
@@ -472,12 +472,14 @@
                         <exclude>**/mapstruct.xml</exclude>
                         <exclude>**/toolchains-*.xml</exclude>
                         <exclude>**/eclipse-formatter-config.xml</exclude>
+                        <exclude>**/checkstyle-for-generated-sources.xml</exclude>
                         <exclude>maven-settings.xml</exclude>
                         <exclude>readme.md</exclude>
                         <exclude>CONTRIBUTING.md</exclude>
                         <exclude>.gitattributes</exclude>
                         <exclude>.gitignore</exclude>
                         <exclude>.factorypath</exclude>
+                        <exclude>.checkstyle</exclude>
                     </excludes>
                 </configuration>
                 <executions>

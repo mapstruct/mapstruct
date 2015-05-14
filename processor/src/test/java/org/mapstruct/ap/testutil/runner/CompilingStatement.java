@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,6 +51,14 @@ import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOptions;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
+import org.xml.sax.InputSource;
+
+import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
+import com.puppycrawl.tools.checkstyle.Checker;
+import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
+import com.puppycrawl.tools.checkstyle.DefaultLogger;
+import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -179,6 +189,49 @@ class CompilingStatement extends Statement {
         }
 
         assertDiagnostics( actualResult.getDiagnostics(), expectedResult.getDiagnostics() );
+
+        assertCheckstyleRules();
+    }
+
+    private void assertCheckstyleRules() throws Exception {
+        if ( sourceOutputDir != null ) {
+            Properties properties = new Properties();
+            properties.put( "checkstyle.cache.file", classOutputDir + "/checkstyle.cache" );
+
+            final Checker checker = new Checker();
+            checker.setModuleClassLoader( Checker.class.getClassLoader() );
+            checker.configure( ConfigurationLoader.loadConfiguration(
+                new InputSource( getClass().getClassLoader().getResourceAsStream(
+                    "checkstyle-for-generated-sources.xml" ) ),
+                new PropertiesExpander( properties ),
+                true ) );
+
+            ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+            checker.addListener( new DefaultLogger( ByteStreams.nullOutputStream(), true, errorStream, true ) );
+
+            int errors = checker.process( findGeneratedFiles( new File( sourceOutputDir ) ) );
+            if ( errors > 0 ) {
+                String errorLog = errorStream.toString( "UTF-8" );
+                assertThat( true ).describedAs( "Expected checkstyle compliant output, but got errors:\n" + errorLog )
+                                  .isEqualTo( false );
+            }
+        }
+    }
+
+    private static List<File> findGeneratedFiles(File file) {
+        final List<File> files = Lists.newLinkedList();
+
+        if ( file.canRead() ) {
+            if ( file.isDirectory() ) {
+                for ( File element : file.listFiles() ) {
+                    files.addAll( findGeneratedFiles( element ) );
+                }
+            }
+            else if ( file.isFile() ) {
+                files.add( file );
+            }
+        }
+        return files;
     }
 
     private void assertDiagnostics(List<DiagnosticDescriptor> actualDiagnostics,
@@ -229,8 +282,6 @@ class CompilingStatement extends Statement {
     /**
      * Returns the classes to be compiled for this test.
      *
-     * @param testMethod The test method of interest
-     *
      * @return A set containing the classes to be compiled for this test
      */
     private Set<Class<?>> getTestClasses() {
@@ -257,8 +308,6 @@ class CompilingStatement extends Statement {
 
     /**
      * Returns the processor options to be used this test.
-     *
-     * @param testMethod The test method of interest
      *
      * @return A list containing the processor options to be used for this test
      */

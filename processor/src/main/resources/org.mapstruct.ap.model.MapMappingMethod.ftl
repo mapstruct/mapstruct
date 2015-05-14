@@ -26,7 +26,7 @@
         <#else>
             <#if existingInstanceMapping>
                  ${resultName}.clear();
-                 return<#if returnType.name != "void"> ${resultName} </#if>;
+                 return<#if returnType.name != "void"> ${resultName}</#if>;
             <#else>
                  return <@returnObjectCreation/>;
             </#if>
