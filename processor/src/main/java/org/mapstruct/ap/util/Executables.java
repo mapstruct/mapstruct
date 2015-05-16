@@ -20,7 +20,6 @@ package org.mapstruct.ap.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -29,6 +28,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
+import org.mapstruct.ap.naming.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.services.Services;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.MethodType;
@@ -43,7 +43,10 @@ import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.replaceTypeEleme
  */
 public class Executables {
 
-    private static AccessorNamingStrategy accessorNamingStrategy = Services.getAccessorNamingStrategy();
+    private static AccessorNamingStrategy accessorNamingStrategy = Services.get(
+        AccessorNamingStrategy.class,
+        new DefaultAccessorNamingStrategy()
+    );
 
     private Executables() {
     }
@@ -51,7 +54,7 @@ public class Executables {
     public static boolean isGetterMethod(ExecutableElement method) {
         return isPublic( method ) &&
             method.getParameters().isEmpty() &&
-            Services.getAccessorNamingStrategy().getMethodType( method ) == MethodType.GETTER;
+            accessorNamingStrategy.getMethodType( method ) == MethodType.GETTER;
     }
 
     public static boolean isSetterMethod(ExecutableElement method) {
@@ -81,6 +84,11 @@ public class Executables {
      */
     public static String getElementNameForAdder(ExecutableElement adderMethod) {
         return accessorNamingStrategy.getElementName( adderMethod );
+    }
+
+    public static String getCollectionGetterName(ExecutableElement targetSetter) {
+        String propertyName = accessorNamingStrategy.getPropertyName( targetSetter );
+        return accessorNamingStrategy.getCollectionGetterName( propertyName );
     }
 
     /**

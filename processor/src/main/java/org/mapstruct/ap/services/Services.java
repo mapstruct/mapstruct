@@ -19,8 +19,8 @@
 package org.mapstruct.ap.services;
 
 import java.util.ServiceLoader;
-
-import org.mapstruct.ap.spi.AccessorNamingStrategy;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * A simple locator for SPI implementations.
@@ -29,32 +29,35 @@ import org.mapstruct.ap.spi.AccessorNamingStrategy;
  */
 public class Services {
 
-    private static final AccessorNamingStrategy ACCESSOR_NAMING_STRATEGY = findAccessorNamingStrategy();
+    private static final ConcurrentMap<Class<?>, Object> SERVICES = new ConcurrentHashMap<Class<?>, Object>();
 
     private Services() {
     }
 
-    /**
-     * Obtain an implementation of {@link AccessorNamingStrategy}. If no specialized implementation is found using
-     * {@link ServiceLoader}, a JavaBeans-compliant default implementation is returned. The result is cached across
-     * invocations.
-     *
-     * @return The implementation of {@link AccessorNamingStrategy}.
-     * @throws IllegalStateException If more than one implementation is found by
-     *             {@link ServiceLoader#load(Class, ClassLoader)}.
-     */
-    public static AccessorNamingStrategy getAccessorNamingStrategy() {
-        return ACCESSOR_NAMING_STRATEGY;
-    }
+    public static <T> T get(Class<T> serviceType, T defaultValue) {
+        @SuppressWarnings("unchecked")
+        T service = (T) SERVICES.get( serviceType );
 
-    private static AccessorNamingStrategy findAccessorNamingStrategy() {
-        AccessorNamingStrategy defaultImpl = new DefaultAccessorNamingStrategy();
-        AccessorNamingStrategy impl = find( AccessorNamingStrategy.class );
-        if ( impl == null ) {
-            impl = defaultImpl;
+        if ( service == null ) {
+            service = loadAndCache( serviceType, defaultValue );
         }
 
-        return impl;
+        return service;
+    }
+
+    private static <T> T loadAndCache(Class<T> serviceType, T defaultValue) {
+        T service = find( serviceType );
+        if ( service == null ) {
+            service = defaultValue;
+        }
+
+        @SuppressWarnings("unchecked")
+        T cached = (T) SERVICES.putIfAbsent( serviceType, service );
+        if ( cached != null ) {
+            service = (T) cached;
+        }
+
+        return service;
     }
 
     private static <T> T find(Class<T> spi) {
@@ -68,7 +71,8 @@ public class Services {
                 throw new IllegalStateException(
                     "Multiple implementations have been found for the service provider interface "
                         + spi.getCanonicalName() + ": " + matchingImplementation.getClass().getCanonicalName() + ", "
-                        + implementation.getClass().getCanonicalName() + "." );
+                        + implementation.getClass().getCanonicalName() + "."
+                );
             }
         }
 
