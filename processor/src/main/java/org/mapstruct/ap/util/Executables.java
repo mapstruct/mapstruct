@@ -19,9 +19,7 @@
 package org.mapstruct.ap.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -30,10 +28,10 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleElementVisitor6;
-import javax.lang.model.util.SimpleTypeVisitor6;
 
 import org.mapstruct.ap.services.Services;
+import org.mapstruct.ap.spi.AccessorNamingStrategy;
+import org.mapstruct.ap.spi.MethodType;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
@@ -45,38 +43,27 @@ import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.replaceTypeEleme
  */
 public class Executables {
 
+    private static AccessorNamingStrategy accessorNamingStrategy = Services.getAccessorNamingStrategy();
+
     private Executables() {
     }
 
     public static boolean isGetterMethod(ExecutableElement method) {
-        return isPublic( method ) && ( isNonBooleanGetterMethod( method ) || isBooleanGetterMethod( method ) );
-    }
-
-    private static boolean isNonBooleanGetterMethod(ExecutableElement method) {
-        return method.getParameters().isEmpty()
-            && Services.getAccessorNamingStrategy().isNonBooleanGetterName( method.getSimpleName().toString() )
-            && method.getReturnType().getKind() != TypeKind.VOID;
-    }
-
-    private static boolean isBooleanGetterMethod(ExecutableElement method) {
-        boolean returnTypeIsBoolean = method.getReturnType().getKind() == TypeKind.BOOLEAN ||
-            "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) );
-
-        return method.getParameters().isEmpty()
-            && Services.getAccessorNamingStrategy().isBooleanGetterName( method.getSimpleName().toString() )
-            && returnTypeIsBoolean;
+        return isPublic( method ) &&
+            method.getParameters().isEmpty() &&
+            Services.getAccessorNamingStrategy().getMethodType( method ) == MethodType.GETTER;
     }
 
     public static boolean isSetterMethod(ExecutableElement method) {
         return isPublic( method )
-            && Services.getAccessorNamingStrategy().isSetterName( method.getSimpleName().toString() )
-            && method.getParameters().size() == 1;
+            && method.getParameters().size() == 1
+            && accessorNamingStrategy.getMethodType( method ) == MethodType.SETTER;
     }
 
     public static boolean isAdderMethod(ExecutableElement method) {
         return isPublic( method )
-            && Services.getAccessorNamingStrategy().isAdderName( method.getSimpleName().toString() )
-            && method.getParameters().size() == 1;
+            && method.getParameters().size() == 1
+            && accessorNamingStrategy.getMethodType( method ) == MethodType.ADDER;
     }
 
     private static boolean isPublic(ExecutableElement method) {
@@ -84,23 +71,7 @@ public class Executables {
     }
 
     public static String getPropertyName(ExecutableElement getterOrSetterMethod) {
-        if ( isNonBooleanGetterMethod( getterOrSetterMethod ) ) {
-            return Services.getAccessorNamingStrategy().getPropertyNameForNonBooleanGetterName(
-                getterOrSetterMethod.getSimpleName().toString()
-            );
-        }
-        else if ( isBooleanGetterMethod( getterOrSetterMethod ) ) {
-            return Services.getAccessorNamingStrategy().getPropertyNameForBooleanGetterName(
-                getterOrSetterMethod.getSimpleName().toString()
-            );
-        }
-        else if ( isSetterMethod( getterOrSetterMethod ) ) {
-            return Services.getAccessorNamingStrategy().getPropertyNameForSetterName(
-                getterOrSetterMethod.getSimpleName().toString()
-            );
-        }
-
-        throw new IllegalArgumentException( "Executable " + getterOrSetterMethod + " is not getter or setter method." );
+        return accessorNamingStrategy.getPropertyName( getterOrSetterMethod );
     }
 
     /**
@@ -109,51 +80,7 @@ public class Executables {
      *         {@code addChild(Child v)}, the element name would be 'Child'.
      */
     public static String getElementNameForAdder(ExecutableElement adderMethod) {
-        if ( isAdderMethod( adderMethod ) ) {
-            return Services.getAccessorNamingStrategy().getElementNameForAdderName(
-                adderMethod.getSimpleName().toString()
-            );
-        }
-
-        throw new IllegalArgumentException( "Executable " + adderMethod + " is not an adder method." );
-    }
-
-    public static Set<String> getPropertyNames(List<ExecutableElement> propertyAccessors) {
-        Set<String> propertyNames = new HashSet<String>();
-
-        for ( ExecutableElement executableElement : propertyAccessors ) {
-            propertyNames.add( getPropertyName( executableElement ) );
-        }
-
-        return propertyNames;
-    }
-
-    private static String getQualifiedName(TypeMirror type) {
-        DeclaredType declaredType = type.accept(
-            new SimpleTypeVisitor6<DeclaredType, Void>() {
-                @Override
-                public DeclaredType visitDeclared(DeclaredType t, Void p) {
-                    return t;
-                }
-            },
-            null
-        );
-
-        if ( declaredType == null ) {
-            return null;
-        }
-
-        TypeElement typeElement = declaredType.asElement().accept(
-            new SimpleElementVisitor6<TypeElement, Void>() {
-                @Override
-                public TypeElement visitType(TypeElement e, Void p) {
-                    return e;
-                }
-            },
-            null
-        );
-
-        return typeElement != null ? typeElement.getQualifiedName().toString() : null;
+        return accessorNamingStrategy.getElementName( adderMethod );
     }
 
     /**
@@ -196,7 +123,8 @@ public class Executables {
                 elementUtils,
                 alreadyAdded,
                 asTypeElement( element.getSuperclass() ),
-                parentType );
+                parentType
+            );
         }
 
         for ( TypeMirror interfaceType : element.getInterfaces() ) {
@@ -204,7 +132,8 @@ public class Executables {
                 elementUtils,
                 alreadyAdded,
                 asTypeElement( interfaceType ),
-                parentType );
+                parentType
+            );
         }
 
     }
@@ -220,7 +149,7 @@ public class Executables {
         List<ExecutableElement> safeToAdd = new ArrayList<ExecutableElement>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
             if ( isNotObjectEquals( toAdd )
-               && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd, parentType ) ) {
+                && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd, parentType ) ) {
                 safeToAdd.add( toAdd );
             }
         }
@@ -246,10 +175,11 @@ public class Executables {
 
     /**
      * @param elementUtils the elementUtils
-     * @param alreadyAdded the list of already collected methods of one type hierarchy (order is from sub-types to
+     * @param methods the list of already collected methods of one type hierarchy (order is from sub-types to
      *            super-types)
      * @param executable the method to check
      * @param parentType the type for which elements are collected
+     *
      * @return {@code true}, iff the given executable was not yet overridden by a method in the given list.
      */
     private static boolean wasNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyAdded,

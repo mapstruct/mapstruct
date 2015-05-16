@@ -319,7 +319,7 @@ public class PropertyMapping extends ModelElement {
                 // target accessor is setter, so wrap the setter in setter map/ collection handling
                 result = new SetterWrapperForCollectionsAndMaps(
                     result,
-                    targetWriteAccessor.getSimpleName().toString(),
+                    targetWriteAccessor,
                     newCollectionOrMap
                 );
             }
