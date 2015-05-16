@@ -43,10 +43,6 @@
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>mapstruct-spi</artifactId>
-        </dependency>
 
         <!-- Compile-only; Using "provided" scope as there is no such scope in Maven;
         these dependencies are not required at runtime, only for prism generation

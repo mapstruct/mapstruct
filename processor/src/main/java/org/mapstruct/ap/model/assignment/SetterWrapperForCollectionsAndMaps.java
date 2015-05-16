@@ -21,8 +21,11 @@ package org.mapstruct.ap.model.assignment;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.lang.model.element.ExecutableElement;
+
 import org.mapstruct.ap.model.common.Type;
 import org.mapstruct.ap.services.Services;
+import org.mapstruct.ap.spi.AccessorNamingStrategy;
 
 /**
  * This wrapper handles the situation were an assignment is done via the setter.
@@ -42,11 +45,15 @@ public class SetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
     private final Assignment newCollectionOrMapAssignment;
 
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
-                                        String targetSetterName,
+                                        ExecutableElement targetSetter,
                                         Assignment newCollectionOrMapAssignment) {
         super( decoratedAssignment );
-        this.targetGetterName =
-            Services.getAccessorNamingStrategy().getNonBooleanGetterNameForSetterName( targetSetterName );
+
+        AccessorNamingStrategy accessorNamingStrategy = Services.getAccessorNamingStrategy();
+
+        this.targetGetterName = accessorNamingStrategy.getCollectionGetterName(
+                accessorNamingStrategy.getPropertyName( targetSetter )
+        );
         this.newCollectionOrMapAssignment = newCollectionOrMapAssignment;
     }
 

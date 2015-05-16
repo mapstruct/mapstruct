@@ -20,7 +20,7 @@ package org.mapstruct.ap.services;
 
 import java.util.ServiceLoader;
 
-import org.mapstruct.spi.AccessorNamingStrategy;
+import org.mapstruct.ap.spi.AccessorNamingStrategy;
 
 /**
  * A simple locator for SPI implementations.
@@ -53,7 +53,7 @@ public class Services {
         if ( impl == null ) {
             impl = defaultImpl;
         }
-        impl.setDefaultAccessorNamingStrategy( defaultImpl );
+
         return impl;
     }
 

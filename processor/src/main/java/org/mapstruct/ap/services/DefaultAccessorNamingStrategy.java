@@ -20,7 +20,16 @@ package org.mapstruct.ap.services;
 
 import java.beans.Introspector;
 
-import org.mapstruct.spi.AccessorNamingStrategy;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleElementVisitor6;
+import javax.lang.model.util.SimpleTypeVisitor6;
+
+import org.mapstruct.ap.spi.AccessorNamingStrategy;
+import org.mapstruct.ap.spi.MethodType;
 
 /**
  * The default JavaBeans-compliant implementation of the {@link AccessorNamingStrategy} service provider interface.
@@ -30,51 +39,90 @@ import org.mapstruct.spi.AccessorNamingStrategy;
 class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
 
     @Override
-    public void setDefaultAccessorNamingStrategy(AccessorNamingStrategy defaultAccessorNamingStrategy) {
+    public MethodType getMethodType(ExecutableElement method) {
+        if ( isGetterMethod( method ) ) {
+            return MethodType.GETTER;
+        }
+        else if ( isSetterMethod( method ) ) {
+            return MethodType.SETTER;
+        }
+        else if ( isAdderMethod( method ) ) {
+            return MethodType.ADDER;
+        }
+        else {
+            return MethodType.OTHER;
+        }
     }
 
-    @Override
-    public boolean isNonBooleanGetterName(String methodName) {
-        return methodName.startsWith( "get" ) && methodName.length() > 3;
+    private boolean isGetterMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+
+        boolean isNonBooleanGetterName = methodName.startsWith( "get" ) && methodName.length() > 3 &&
+            method.getReturnType().getKind() != TypeKind.VOID;
+
+        boolean isBooleanGetterName = methodName.startsWith( "is" ) && methodName.length() > 2;
+        boolean returnTypeIsBoolean = method.getReturnType().getKind() == TypeKind.BOOLEAN ||
+            "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) );
+
+        return isNonBooleanGetterName || ( isBooleanGetterName && returnTypeIsBoolean );
     }
 
-    @Override
-    public boolean isBooleanGetterName(String methodName) {
-        return methodName.startsWith( "is" ) && methodName.length() > 2;
-    }
+    public boolean isSetterMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
 
-    @Override
-    public boolean isSetterName(String methodName) {
         return methodName.startsWith( "set" ) && methodName.length() > 3;
     }
 
-    @Override
-    public boolean isAdderName(String methodName) {
+    public boolean isAdderMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+
         return methodName.startsWith( "add" ) && methodName.length() > 3;
     }
 
+
     @Override
-    public String getPropertyNameForNonBooleanGetterName(String methodName) {
+    public String getPropertyName(ExecutableElement getterOrSetterMethod) {
+        String methodName = getterOrSetterMethod.getSimpleName().toString();
+        return Introspector.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
+    }
+
+    @Override
+    public String getElementName(ExecutableElement adderMethod) {
+        String methodName = adderMethod.getSimpleName().toString();
         return Introspector.decapitalize( methodName.substring( 3 ) );
     }
 
     @Override
-    public String getPropertyNameForBooleanGetterName(String methodName) {
-        return Introspector.decapitalize( methodName.substring( 2 ) );
+    public String getCollectionGetterName(String property) {
+        return "get" + property.substring( 0, 1 ).toUpperCase() + property.substring( 1 );
     }
 
-    @Override
-    public String getPropertyNameForSetterName(String methodName) {
-        return Introspector.decapitalize( methodName.substring( 3 ) );
+    private static String getQualifiedName(TypeMirror type) {
+        DeclaredType declaredType = type.accept(
+            new SimpleTypeVisitor6<DeclaredType, Void>() {
+                @Override
+                public DeclaredType visitDeclared(DeclaredType t, Void p) {
+                    return t;
+                }
+            },
+            null
+        );
+
+        if ( declaredType == null ) {
+            return null;
+        }
+
+        TypeElement typeElement = declaredType.asElement().accept(
+            new SimpleElementVisitor6<TypeElement, Void>() {
+                @Override
+                public TypeElement visitType(TypeElement e, Void p) {
+                    return e;
+                }
+            },
+            null
+        );
+
+        return typeElement != null ? typeElement.getQualifiedName().toString() : null;
     }
 
-    @Override
-    public String getElementNameForAdderName(String methodName) {
-        return Introspector.decapitalize( methodName.substring( 3 ) );
-    }
-
-    @Override
-    public String getNonBooleanGetterNameForSetterName(String methodName) {
-        return "get" + methodName.substring( 3 );
-    }
 }
