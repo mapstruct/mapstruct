@@ -16,10 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.services;
+package org.mapstruct.ap.naming;
 
 import java.beans.Introspector;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -36,7 +35,7 @@ import org.mapstruct.ap.spi.MethodType;
  *
  * @author Christian Schuster
  */
-class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
+public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
 
     @Override
     public MethodType getMethodType(ExecutableElement method) {
