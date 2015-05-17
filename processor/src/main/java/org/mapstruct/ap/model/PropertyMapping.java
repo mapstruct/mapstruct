@@ -302,7 +302,14 @@ public class PropertyMapping extends ModelElement {
                 // mapping method. Note, typeconversons do not apply to collections or maps
                 Assignment newCollectionOrMap = null;
                 if ( result.getType() == DIRECT ) {
-                    newCollectionOrMap = new NewCollectionOrMapWrapper( result, targetType.getImportTypes() );
+                    Set<Type> implementationTypes;
+                    if ( targetType.getImplementationType() != null ) {
+                        implementationTypes = targetType.getImplementationType().getImportTypes();
+                    }
+                    else {
+                        implementationTypes = targetType.getImportTypes();
+                    }
+                    newCollectionOrMap = new NewCollectionOrMapWrapper( result, implementationTypes );
                     newCollectionOrMap = new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
                 }
 
