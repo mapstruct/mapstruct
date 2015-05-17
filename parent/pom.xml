@@ -43,7 +43,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <com.jolira.hickory.version>1.0.0</com.jolira.hickory.version>
         <org.apache.maven.plugins.enforcer.version>1.2</org.apache.maven.plugins.enforcer.version>
-        <org.apache.maven.plugins.surefire.version>2.17</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.surefire.version>2.18.1</org.apache.maven.plugins.surefire.version>
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
@@ -109,7 +109,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>18.0</version>
+                <version>14.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.jolira</groupId>
@@ -120,6 +120,11 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.12</version>
+            </dependency>
+            <dependency>
+                <groupId>com.puppycrawl.tools</groupId>
+                <artifactId>checkstyle</artifactId>
+                <version>5.9</version>
             </dependency>
 
             <!-- CDI, Weld, Arquillian -->
