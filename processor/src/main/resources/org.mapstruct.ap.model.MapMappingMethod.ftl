@@ -57,8 +57,7 @@
     </#if>
 }
 <#macro throws>
-    <@compress single_line=true>
-        <#if (thrownTypes?size > 0)> throws </#if>
+    <#if (thrownTypes?size > 0)><#lt> throws </#if><@compress single_line=true>
         <#list thrownTypes as exceptionType>
             <@includeModel object=exceptionType/>
             <#if exceptionType_has_next>, </#if>
