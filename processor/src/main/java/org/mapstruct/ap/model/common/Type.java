@@ -268,10 +268,6 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         result.add( this );
 
-        if ( implementationType != null ) {
-            result.addAll( implementationType.getImportTypes() );
-        }
-
         if ( componentType != null ) {
             result.addAll( componentType.getImportTypes() );
         }

@@ -217,6 +217,9 @@ public class MapMappingMethod extends MappingMethod {
         }
         if ( ( factoryMethod == null ) && ( !isExistingInstanceMapping() ) ) {
             types.addAll( getReturnType().getImportTypes() );
+            if ( getReturnType().getImplementationType() != null ) {
+                types.addAll( getReturnType().getImplementationType().getImportTypes() );
+            }
         }
 
         return types;
