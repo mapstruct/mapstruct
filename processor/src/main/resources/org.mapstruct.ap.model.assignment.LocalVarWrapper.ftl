@@ -18,14 +18,14 @@
      limitations under the License.
 
 -->
-<#if (exceptionTypes?size == 0) >
+<#if (thrownTypes?size == 0) >
     <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/></#if> ${ext.targetWriteAccessorName} = <@_assignment/>;
 <#else>
     <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/> ${ext.targetWriteAccessorName};</#if>
     try {
         ${ext.targetWriteAccessorName} = <@_assignment/>;
     }
-    <#list exceptionTypes as exceptionType>
+    <#list thrownTypes as exceptionType>
     catch ( <@includeModel object=exceptionType/> e ) {
        throw new RuntimeException( e );
     }

@@ -18,13 +18,13 @@
      limitations under the License.
 
 -->
-<#if (exceptionTypes?size == 0) >
+<#if (thrownTypes?size == 0) >
     <@_assignment/>;
 <#else>
     try {
         <@_assignment/>;
     }
-    <#list exceptionTypes as exceptionType>
+    <#list thrownTypes as exceptionType>
     catch ( <@includeModel object=exceptionType/> e ) {
         throw new RuntimeException( e );
     }

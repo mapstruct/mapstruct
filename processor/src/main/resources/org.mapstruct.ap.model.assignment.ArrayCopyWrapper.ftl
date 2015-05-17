@@ -18,7 +18,7 @@
      limitations under the License.
 
 -->
-<#if (exceptionTypes?size == 0) >
+<#if (thrownTypes?size == 0) >
     <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
     ${ext.targetBeanName}.${ext.targetWriteAccessorName}( Arrays.copyOf( ${localVarName}, ${localVarName}.length ) );
 <#else>
@@ -26,7 +26,7 @@
         <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}( Arrays.copyOf( ${localVarName}, ${localVarName}.length ) );
     }
-    <#list exceptionTypes as exceptionType>
+    <#list thrownTypes as exceptionType>
     catch ( <@includeModel object=exceptionType/> e ) {
         throw new RuntimeException( e );
     }

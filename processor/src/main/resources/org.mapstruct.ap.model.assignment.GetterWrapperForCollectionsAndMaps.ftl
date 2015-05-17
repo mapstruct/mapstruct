@@ -22,13 +22,13 @@ if ( ${ext.targetBeanName}.${ext.targetWriteAccessorName}() != null ) {
     <#if ext.existingInstanceMapping>
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}().clear();
     </#if>
-    <#if (exceptionTypes?size == 0) >
+    <#if (thrownTypes?size == 0) >
         <@_assignmentLine/>
         <#else>
         try {
             <@_assignmentLine/>
         }
-        <#list exceptionTypes as exceptionType>
+        <#list thrownTypes as exceptionType>
         catch ( <@includeModel object=exceptionType/> e ) {
             throw new RuntimeException( e );
         }

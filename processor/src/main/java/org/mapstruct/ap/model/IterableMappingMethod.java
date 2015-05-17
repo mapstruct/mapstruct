@@ -123,7 +123,7 @@ public class IterableMappingMethod extends MappingMethod {
             else {
                 if ( method instanceof ForgedMethod ) {
                     ForgedMethod forgedMethod = (ForgedMethod) method;
-                    forgedMethod.addThrownTypes( assignment.getExceptionTypes() );
+                    forgedMethod.addThrownTypes( assignment.getThrownTypes() );
                 }
             }
             // target accessor is setter, so decorate assignment as setter

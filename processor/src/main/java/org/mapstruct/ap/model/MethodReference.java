@@ -41,7 +41,7 @@ public class MethodReference extends MappingMethod implements Assignment {
 
     private final MapperReference declaringMapper;
     private final Set<Type> importTypes;
-    private final List<Type> exceptionTypes;
+    private final List<Type> thrownTypes;
     private final boolean isUpdateMethod;
 
     /**
@@ -78,7 +78,7 @@ public class MethodReference extends MappingMethod implements Assignment {
             imported.add( targetType );
         }
         this.importTypes = Collections.<Type>unmodifiableSet( imported );
-        this.exceptionTypes = method.getThrownTypes();
+        this.thrownTypes = method.getThrownTypes();
         this.isUpdateMethod = method.getMappingTargetParameter() != null;
    }
 
@@ -87,7 +87,7 @@ public class MethodReference extends MappingMethod implements Assignment {
         this.declaringMapper = null;
         this.contextParam = method.getContextParameter( contextParam );
         this.importTypes = Collections.emptySet();
-        this.exceptionTypes = Collections.emptyList();
+        this.thrownTypes = Collections.emptyList();
         this.isUpdateMethod = method.getMappingTargetParameter() != null;
     }
 
@@ -139,11 +139,11 @@ public class MethodReference extends MappingMethod implements Assignment {
     }
 
     @Override
-    public List<Type> getExceptionTypes() {
+    public List<Type> getThrownTypes() {
         List<Type> exceptions = new ArrayList<Type>();
-        exceptions.addAll( exceptionTypes );
+        exceptions.addAll( thrownTypes );
         if ( assignment != null ) {
-            exceptions.addAll( assignment.getExceptionTypes() );
+            exceptions.addAll( assignment.getThrownTypes() );
         }
         return exceptions;
     }

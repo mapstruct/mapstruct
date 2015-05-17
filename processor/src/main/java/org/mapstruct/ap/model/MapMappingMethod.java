@@ -154,10 +154,10 @@ public class MapMappingMethod extends MappingMethod {
             if ( method instanceof ForgedMethod ) {
                 ForgedMethod forgedMethod = (ForgedMethod) method;
                 if ( keyAssignment != null ) {
-                    forgedMethod.addThrownTypes( keyAssignment.getExceptionTypes() );
+                    forgedMethod.addThrownTypes( keyAssignment.getThrownTypes() );
                 }
                 if ( valueAssignment != null ) {
-                    forgedMethod.addThrownTypes( valueAssignment.getExceptionTypes() );
+                    forgedMethod.addThrownTypes( valueAssignment.getThrownTypes() );
                 }
             }
 

@@ -18,7 +18,7 @@
      limitations under the License.
 
 -->
-<#if (exceptionTypes?size == 0) >
+<#if (thrownTypes?size == 0) >
     for ( <@includeModel object=sourceType/> ${iteratorReference} : ${sourceReference} ) {
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@includeModel object=assignment
                 targetBeanName=ext.targetBeanName
@@ -38,7 +38,7 @@
                     targetType=ext.targetType/> );
         }
     }
-    <#list exceptionTypes as exceptionType>
+    <#list thrownTypes as exceptionType>
     catch ( <@includeModel object=exceptionType/> e ) {
         throw new RuntimeException( e );
     }

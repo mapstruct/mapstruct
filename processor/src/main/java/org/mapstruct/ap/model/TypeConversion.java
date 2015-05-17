@@ -36,7 +36,7 @@ public class TypeConversion extends ModelElement implements Assignment {
     private static final String SOURCE_REFERENCE_PATTERN = "<SOURCE>";
 
     private final Set<Type> importTypes;
-    private final List<Type> exceptionTypes;
+    private final List<Type> thrownTypes;
     private final String openExpression;
     private final String closeExpression;
 
@@ -52,7 +52,7 @@ public class TypeConversion extends ModelElement implements Assignment {
             String expression ) {
         this.importTypes = new HashSet<Type>( importTypes );
         this.importTypes.addAll( exceptionTypes );
-        this.exceptionTypes = exceptionTypes;
+        this.thrownTypes = exceptionTypes;
 
         int patternIndex = expression.indexOf( SOURCE_REFERENCE_PATTERN );
         this.openExpression = expression.substring( 0, patternIndex );
@@ -65,8 +65,8 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
-    public List<Type> getExceptionTypes() {
-        return exceptionTypes;
+    public List<Type> getThrownTypes() {
+        return thrownTypes;
     }
 
     public String getOpenExpression() {

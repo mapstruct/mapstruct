@@ -42,8 +42,8 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     }
 
     @Override
-    public List<Type> getExceptionTypes() {
-        return decoratedAssignment.getExceptionTypes();
+    public List<Type> getThrownTypes() {
+        return decoratedAssignment.getThrownTypes();
     }
 
     @Override

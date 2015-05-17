@@ -49,7 +49,7 @@ public class Direct extends ModelElement implements Assignment {
     }
 
     @Override
-    public List<Type> getExceptionTypes() {
+    public List<Type> getThrownTypes() {
         return Collections.emptyList();
     }
 

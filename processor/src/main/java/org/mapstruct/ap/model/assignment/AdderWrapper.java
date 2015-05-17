@@ -32,28 +32,28 @@ import org.mapstruct.ap.model.common.Type;
  */
 public class AdderWrapper extends AssignmentWrapper {
 
-    private final List<Type> exceptionTypesToExclude;
+    private final List<Type> thrownTypesToExclude;
     private final String sourceReference;
     private final Type sourceType;
 
     public AdderWrapper(
         Assignment decoratedAssignment,
-        List<Type> exceptionTypesToExclude,
+        List<Type> thrownTypesToExclude,
         String sourceReference,
         Type sourceType) {
         super( decoratedAssignment );
-        this.exceptionTypesToExclude = exceptionTypesToExclude;
+        this.thrownTypesToExclude = thrownTypesToExclude;
         this.sourceReference = sourceReference;
         this.sourceType = sourceType;
     }
 
     @Override
-    public List<Type> getExceptionTypes() {
-        List<Type> parentExceptionTypes = super.getExceptionTypes();
-        List<Type> result = new ArrayList<Type>( parentExceptionTypes );
-        for ( Type exceptionTypeToExclude : exceptionTypesToExclude ) {
-            for ( Type parentExceptionType : parentExceptionTypes ) {
-                if ( parentExceptionType.isAssignableTo( exceptionTypeToExclude ) ) {
+    public List<Type> getThrownTypes() {
+        List<Type> parentThrownTypes = super.getThrownTypes();
+        List<Type> result = new ArrayList<Type>( parentThrownTypes );
+        for ( Type thrownTypeToExclude : thrownTypesToExclude ) {
+            for ( Type parentExceptionType : parentThrownTypes ) {
+                if ( parentExceptionType.isAssignableTo( thrownTypeToExclude ) ) {
                     result.remove( parentExceptionType );
                 }
             }

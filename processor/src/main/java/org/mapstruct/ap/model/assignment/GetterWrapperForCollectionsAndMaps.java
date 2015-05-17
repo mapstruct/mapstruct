@@ -42,28 +42,28 @@ import org.mapstruct.ap.util.Strings;
  */
 public class GetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
 
-    private final List<Type> exceptionTypesToExclude;
+    private final List<Type> thrownTypesToExclude;
     private final Type localVarType;
     private final String localVarName;
 
 
-    public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment, List<Type> exceptionTypesToExclude,
+    public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment, List<Type> thrownTypesToExclude,
                                               Type localVarType, Collection<String> existingVariableNames) {
         super( decoratedAssignment );
-        this.exceptionTypesToExclude = exceptionTypesToExclude;
+        this.thrownTypesToExclude = thrownTypesToExclude;
         this.localVarType = localVarType;
         this.localVarName = Strings.getSaveVariableName( "target" + localVarType.getName(), existingVariableNames );
         existingVariableNames.add( localVarName );
    }
 
     @Override
-    public List<Type> getExceptionTypes() {
-        List<Type> parentExceptionTypes = super.getExceptionTypes();
-        List<Type> result = new ArrayList<Type>( parentExceptionTypes );
-        for ( Type exceptionTypeToExclude : exceptionTypesToExclude ) {
-            for ( Type parentExceptionType : parentExceptionTypes ) {
-                if ( parentExceptionType.isAssignableTo( exceptionTypeToExclude ) ) {
-                    result.remove( parentExceptionType );
+    public List<Type> getThrownTypes() {
+        List<Type> parentThrownTypes = super.getThrownTypes();
+        List<Type> result = new ArrayList<Type>( parentThrownTypes );
+        for ( Type thrownTypeToExclude : thrownTypesToExclude ) {
+            for ( Type parentThrownType : parentThrownTypes ) {
+                if ( parentThrownType.isAssignableTo( thrownTypeToExclude ) ) {
+                    result.remove( parentThrownType );
                 }
             }
         }

@@ -57,7 +57,7 @@ public interface Assignment {
      *
      * @return exceptions thrown
      */
-    List<Type> getExceptionTypes();
+     List<Type> getThrownTypes();
 
     /**
      * An assignment in itself can wrap another assignment. E.g.:
