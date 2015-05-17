@@ -50,16 +50,16 @@ public interface Assignment {
      *
      * @return imported types
      */
-     Set<Type> getImportTypes();
+    Set<Type> getImportTypes();
 
     /**
      * returns all types exception types thrown by this assignment.
      *
      * @return exceptions thrown
      */
-     List<Type> getExceptionTypes();
+    List<Type> getExceptionTypes();
 
-     /**
+    /**
      * An assignment in itself can wrap another assignment. E.g.:
      * <ul>
      * <li>a MethodReference can wrap a TypeConversion, another MethodReference and ultimately a Simple</li>
@@ -68,22 +68,22 @@ public interface Assignment {
      *
      * @param assignment the assignment to set
      */
-     void setAssignment( Assignment assignment );
+    void setAssignment(Assignment assignment);
 
-     /**
-      * the source reference being a source-getter, a constant, etc.
-      *
-      * @return source reference
-      */
-     String getSourceReference();
+    /**
+     * the source reference being a source-getter, a constant, etc.
+     *
+     * @return source reference
+     */
+    String getSourceReference();
 
-     /**
-      * Returns whether the type of assignment
-      *
-      * @return {@link  AssignmentType}
-      */
-     AssignmentType getType();
+    /**
+     * Returns whether the type of assignment
+     *
+     * @return {@link  AssignmentType}
+     */
+    AssignmentType getType();
 
 
-     boolean isUpdateMethod();
+    boolean isUpdateMethod();
 }
