@@ -253,7 +253,7 @@ public class PropertyMapping extends ModelElement {
                     }
                     Assignment factoryMethod =
                         ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
-                    result = new UpdateWrapper( result, method.getThrownTypes(), targetType, factoryMethod );
+                    result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod );
                 }
                 else {
                     result = new SetterWrapper( result, method.getThrownTypes() );
@@ -579,8 +579,7 @@ public class PropertyMapping extends ModelElement {
                         }
                         Assignment factoryMethod =
                             ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
-                        assignment =
-                            new UpdateWrapper( assignment, method.getThrownTypes(), targetType, factoryMethod );
+                        assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod );
                     }
                     else {
                         assignment = new SetterWrapper( assignment, method.getThrownTypes() );

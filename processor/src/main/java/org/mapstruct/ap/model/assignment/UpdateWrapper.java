@@ -19,9 +19,7 @@
 package org.mapstruct.ap.model.assignment;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.mapstruct.ap.model.common.Type;
 
 /**
@@ -32,14 +30,12 @@ import org.mapstruct.ap.model.common.Type;
 public class UpdateWrapper extends AssignmentWrapper {
 
     private final List<Type> exceptionTypesToExclude;
-    private final Type targetType;
     private final Assignment factoryMethod;
 
-    public UpdateWrapper(Assignment decoratedAssignment, List<Type> exceptionTypesToExclude, Type targetType,
-                         Assignment factoryMethod ) {
+    public UpdateWrapper(Assignment decoratedAssignment, List<Type> exceptionTypesToExclude,
+        Assignment factoryMethod ) {
         super( decoratedAssignment );
         this.exceptionTypesToExclude = exceptionTypesToExclude;
-        this.targetType = targetType;
         this.factoryMethod = factoryMethod;
     }
 
@@ -55,14 +51,6 @@ public class UpdateWrapper extends AssignmentWrapper {
             }
         }
         return result;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>();
-        imported.addAll( super.getImportTypes() );
-        imported.add( targetType ); /* is a new target type */
-        return imported;
     }
 
     public Assignment getFactoryMethod() {
