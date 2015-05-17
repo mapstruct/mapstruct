@@ -177,7 +177,7 @@ public class IterableMappingMethod extends MappingMethod {
         if ( elementAssignment != null ) {
             types.addAll( elementAssignment.getImportTypes() );
         }
-        if ( factoryMethod == null ) {
+        if ( ( factoryMethod == null ) && ( !isExistingInstanceMapping() ) ) {
             types.addAll( getReturnType().getImportTypes() );
         }
         return types;
