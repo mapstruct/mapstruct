@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -136,26 +138,51 @@ public class MappingProcessor extends AbstractProcessor {
                 continue;
             }
 
-            for ( Element mapperElement : roundEnvironment.getElementsAnnotatedWith( annotation ) ) {
-                TypeElement mapperTypeElement = asTypeElement( mapperElement );
+            Set<? extends Element> elementsWithAnnotation;
+            try {
+                elementsWithAnnotation = roundEnvironment.getElementsAnnotatedWith( annotation );
+            }
+            catch ( Throwable t ) { // whenever that may happen, but just to stay on the save side
+                handleUncaughtError( annotation, t );
+                continue;
+            }
 
-                // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
-                // annotations unknown to the compiler, even though they are not declared Mappers
-                if ( mapperTypeElement == null || MapperPrism.getInstanceOn( mapperTypeElement ) == null ) {
-                    continue;
+            for ( Element mapperElement : elementsWithAnnotation ) {
+                try {
+                    TypeElement mapperTypeElement = asTypeElement( mapperElement );
+
+                    // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
+                    // annotations unknown to the compiler, even though they are not declared Mappers
+                    if ( mapperTypeElement == null || MapperPrism.getInstanceOn( mapperTypeElement ) == null ) {
+                        continue;
+                    }
+
+                    // create a new context for each generated mapper in order to have imports of referenced types
+                    // correctly managed;
+                    // note that this assumes that a new source file is created for each mapper which must not
+                    // necessarily be the case, e.g. in case of several mapper interfaces declared as inner types
+                    // of one outer interface
+                    ProcessorContext context = new DefaultModelElementProcessorContext( processingEnv, options );
+                    processMapperTypeElement( context, mapperTypeElement );
                 }
-
-                // create a new context for each generated mapper in order to have imports of referenced types
-                // correctly managed;
-                // note that this assumes that a new source file is created for each mapper which must not
-                // necessarily be the case, e.g. in case of several mapper interfaces declared as inner types
-                // of one outer interface
-                ProcessorContext context = new DefaultModelElementProcessorContext( processingEnv, options );
-                processMapperTypeElement( context, mapperTypeElement );
+                catch ( Throwable t ) {
+                    handleUncaughtError( mapperElement, t );
+                    break;
+                }
             }
         }
 
         return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
+    }
+
+    private void handleUncaughtError(Element element, Throwable thrown) {
+        StringWriter sw = new StringWriter();
+        thrown.printStackTrace( new PrintWriter( sw ) );
+
+        String reportableStacktrace = sw.toString().replace( System.getProperty( "line.separator" ), "  " );
+
+        processingEnv.getMessager().printMessage(
+            Kind.ERROR, "Internal error in the mapping processor: " + reportableStacktrace, element );
     }
 
     /**
