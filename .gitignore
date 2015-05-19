@@ -13,6 +13,9 @@
 *.iws
 .idea
 
+# Netbeans
+nb-configuration.xml
+
 # Build
 /*/target
 test-output

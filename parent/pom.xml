@@ -479,6 +479,7 @@
                         <exclude>**/toolchains-*.xml</exclude>
                         <exclude>**/eclipse-formatter-config.xml</exclude>
                         <exclude>**/checkstyle-for-generated-sources.xml</exclude>
+                        <exclude>**/nb-configuration.xml</exclude>
                         <exclude>maven-settings.xml</exclude>
                         <exclude>readme.md</exclude>
                         <exclude>CONTRIBUTING.md</exclude>
