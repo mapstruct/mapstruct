@@ -34,6 +34,26 @@ public class SpecificCompilerWorkarounds {
 
     private SpecificCompilerWorkarounds() { }
 
+  /**
+     * Tests whether one type is assignable to another.
+     *
+     * <p>
+     * Work-around for a bug most likely related to problem solved with {@link #isSubType}
+     *
+     * @param types the type utils
+     * @param t1 the first type
+     * @param t2 the second type
+     * @return {@code true} if and only if the first type is assignable to the second
+     * @throws IllegalArgumentException if given an executable or package type
+     */
+    public static boolean isAssignable(Types types, TypeMirror t1, TypeMirror t2) {
+        if ( t1.getKind() == TypeKind.VOID ) {
+            return false;
+        }
+
+        return types.isAssignable( erasure( types, t1 ), erasure( types, t2 ) );
+    }
+
     /**
      * Tests whether one type is a subtype of another. Any type is considered to be a subtype of itself. Also see <a
      * href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html">JLS section 4.10, Subtyping</a>.

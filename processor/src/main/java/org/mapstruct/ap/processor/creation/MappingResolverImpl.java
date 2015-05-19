@@ -47,6 +47,7 @@ import org.mapstruct.ap.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.util.FormattingMessager;
 import org.mapstruct.ap.util.Message;
+import org.mapstruct.ap.util.SpecificCompilerWorkarounds;
 import org.mapstruct.ap.util.Strings;
 
 /**
@@ -551,7 +552,7 @@ public class MappingResolverImpl implements MappingResolver {
                 ? typeFactory.getType( Object.class ).getTypeMirror()
                 : targetType.getTypeParameters().get( 0 ).getTypeMirror();
 
-            return typeUtils.isAssignable( sourceElementType, targetElementType );
+            return SpecificCompilerWorkarounds.isAssignable( typeUtils, sourceElementType, targetElementType );
         }
 
         /**
