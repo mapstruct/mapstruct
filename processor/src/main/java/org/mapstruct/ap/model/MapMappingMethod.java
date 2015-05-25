@@ -131,7 +131,14 @@ public class MapMappingMethod extends MappingMethod {
             );
 
             if ( keyAssignment == null ) {
-                ctx.getMessager().printMessage( method.getExecutable(), Message.MAPMAPPING_KEY_MAPPING_NOT_FOUND );
+                if ( method instanceof ForgedMethod ) {
+                    // leave messaging to calling property mapping
+                    return null;
+                }
+                else {
+                    ctx.getMessager().printMessage( method.getExecutable(),
+                        Message.MAPMAPPING_KEY_MAPPING_NOT_FOUND );
+                }
             }
 
             // find mapping method or conversion for value
@@ -162,7 +169,14 @@ public class MapMappingMethod extends MappingMethod {
             }
 
             if ( valueAssignment == null ) {
-                ctx.getMessager().printMessage( method.getExecutable(), Message.MAPMAPPING_VALUE_MAPPING_NOT_FOUND );
+                if ( method instanceof ForgedMethod ) {
+                    // leave messaging to calling property mapping
+                    return null;
+                }
+                else {
+                    ctx.getMessager().printMessage( method.getExecutable(),
+                        Message.MAPMAPPING_VALUE_MAPPING_NOT_FOUND );
+                }
             }
 
             // mapNullToDefault

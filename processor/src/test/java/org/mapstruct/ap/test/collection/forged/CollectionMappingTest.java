@@ -21,11 +21,15 @@ package org.mapstruct.ap.test.collection.forged;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+import javax.tools.Diagnostic.Kind;
 import static org.fest.assertions.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.util.Collections;
 
@@ -71,5 +75,47 @@ public class CollectionMappingTest {
         assertThat( source2 ).isNotNull();
         assertThat( source2.getBarMap() ).isEqualTo( sourceMap );
     }
+
+    @Test
+    @WithClasses({ ErroneousCollectionNonMappableSetMapper.class,
+        ErroneousNonMappableSetSource.class,
+        ErroneousNonMappableSetTarget.class,
+        Foo.class,
+        Bar.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousCollectionNonMappableSetMapper.class,
+                kind = Kind.ERROR,
+                line = 30,
+                messageRegExp = "Can't map property \".* nonMappableSet\" to \".* nonMappableSet\". "
+                    + "Consider to declare/implement a mapping method: .*."),
+        }
+    )
+    public void shouldGenerateNonMappleMethodForSetMapping() {
+    }
+
+   @Test
+    @WithClasses({ ErroneousCollectionNonMappableMapMapper.class,
+        ErroneousNonMappableMapSource.class,
+        ErroneousNonMappableMapTarget.class,
+        Foo.class,
+        Bar.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousCollectionNonMappableMapMapper.class,
+                kind = Kind.ERROR,
+                line = 30,
+                messageRegExp = "Can't map property \".* nonMappableMap\" to \".* nonMappableMap\". "
+                    + "Consider to declare/implement a mapping method: .*."),
+        }
+    )
+    public void shouldGenerateNonMappleMethodForMapMapping() {
+    }
+
+
 
 }

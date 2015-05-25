@@ -467,17 +467,18 @@ public class PropertyMapping extends ModelElement {
                     .method( methodRef )
                     .build();
 
-                if ( !ctx.getMappingsToGenerate().contains( iterableMappingMethod ) ) {
-                    ctx.getMappingsToGenerate().add( iterableMappingMethod );
-                }
-                else {
-                    String existingName = ctx.getExistingMappingMethod( iterableMappingMethod ).getName();
-                    methodRef = new ForgedMethod( existingName, methodRef );
-                }
+                if ( iterableMappingMethod != null ) {
+                    if ( !ctx.getMappingsToGenerate().contains( iterableMappingMethod ) ) {
+                        ctx.getMappingsToGenerate().add( iterableMappingMethod );
+                    }
+                    else {
+                        String existingName = ctx.getExistingMappingMethod( iterableMappingMethod ).getName();
+                        methodRef = new ForgedMethod( existingName, methodRef );
+                    }
 
-                assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
-                assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
-
+                    assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
+                    assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                }
             }
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
 
@@ -489,15 +490,17 @@ public class PropertyMapping extends ModelElement {
                     .method( methodRef )
                     .build();
 
-                if ( !ctx.getMappingsToGenerate().contains( mapMappingMethod ) ) {
-                    ctx.getMappingsToGenerate().add( mapMappingMethod );
+                if ( mapMappingMethod != null ) {
+                    if ( !ctx.getMappingsToGenerate().contains( mapMappingMethod ) ) {
+                        ctx.getMappingsToGenerate().add( mapMappingMethod );
+                    }
+                    else {
+                        String existingName = ctx.getExistingMappingMethod( mapMappingMethod ).getName();
+                        methodRef = new ForgedMethod( existingName, methodRef );
+                    }
+                    assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
+                    assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
                 }
-                else {
-                    String existingName = ctx.getExistingMappingMethod( mapMappingMethod ).getName();
-                    methodRef = new ForgedMethod( existingName, methodRef );
-                }
-                assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
-                assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
             }
             return assignment;
         }

@@ -118,7 +118,13 @@ public class IterableMappingMethod extends MappingMethod {
             );
 
             if ( assignment == null ) {
-                ctx.getMessager().printMessage( method.getExecutable(), Message.ITERABLEMAPPING_MAPPING_NOT_FOUND );
+                if ( method instanceof ForgedMethod ) {
+                    // leave messaging to calling property mapping
+                    return null;
+                }
+                else {
+                    ctx.getMessager().printMessage( method.getExecutable(), Message.ITERABLEMAPPING_MAPPING_NOT_FOUND );
+                }
             }
             else {
                 if ( method instanceof ForgedMethod ) {
