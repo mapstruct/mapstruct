@@ -18,9 +18,7 @@
  */
 package org.mapstruct.ap.services;
 
-import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.WeakHashMap;
 
 import org.mapstruct.spi.AccessorNamingStrategy;
 
@@ -31,7 +29,7 @@ import org.mapstruct.spi.AccessorNamingStrategy;
  */
 public class Services {
 
-    private static final Map<Class<?>, Object> CACHE = new WeakHashMap<Class<?>, Object>();
+    private static final AccessorNamingStrategy ACCESSOR_NAMING_STRATEGY = findAccessorNamingStrategy();
 
     private Services() {
     }
@@ -46,18 +44,18 @@ public class Services {
      *             {@link ServiceLoader#load(Class, ClassLoader)}.
      */
     public static AccessorNamingStrategy getAccessorNamingStrategy() {
-        AccessorNamingStrategy impl = (AccessorNamingStrategy) CACHE.get( AccessorNamingStrategy.class );
+        return ACCESSOR_NAMING_STRATEGY;
+    }
+
+    private static AccessorNamingStrategy findAccessorNamingStrategy() {
+        AccessorNamingStrategy impl = find( AccessorNamingStrategy.class );
         if ( impl == null ) {
-            impl = get( AccessorNamingStrategy.class );
-            if ( impl == null ) {
-                impl = new DefaultAccessorNamingStrategy();
-            }
-            CACHE.put( AccessorNamingStrategy.class, impl );
+            impl = new DefaultAccessorNamingStrategy();
         }
         return impl;
     }
 
-    private static <T> T get(Class<T> spi) {
+    private static <T> T find(Class<T> spi) {
         T matchingImplementation = null;
 
         for ( T implementation : ServiceLoader.load( spi, spi.getClassLoader() ) ) {
