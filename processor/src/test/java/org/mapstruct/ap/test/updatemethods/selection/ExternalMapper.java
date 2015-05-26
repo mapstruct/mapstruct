@@ -19,7 +19,9 @@
 package org.mapstruct.ap.test.updatemethods.selection;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
 import org.mapstruct.ap.test.updatemethods.DepartmentDto;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntity;
 import org.mapstruct.factory.Mappers;
@@ -33,6 +35,10 @@ public interface ExternalMapper {
 
     ExternalMapper INSTANCE = Mappers.getMapper( ExternalMapper.class );
 
+    @Mappings({
+        @Mapping( target = "employees", ignore = true ),
+        @Mapping( target = "secretaryToEmployee", ignore = true )
+    })
     void toDepartmentEntity(DepartmentDto dto, @MappingTarget DepartmentEntity entity);
 
 }

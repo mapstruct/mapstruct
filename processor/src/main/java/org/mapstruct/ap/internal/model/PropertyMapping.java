@@ -170,8 +170,7 @@ public class PropertyMapping extends ModelElement {
 
             // all the tricky cases will be excluded for the time being.
             boolean preferUpdateMethods;
-            if ( targetType.isCollectionOrMapType() ||  targetType.isArrayType() ||
-                targetAccessorType == TargetWriteAccessorType.ADDER ) {
+            if ( targetAccessorType == TargetWriteAccessorType.ADDER ) {
                 preferUpdateMethods = false;
             }
             else {
@@ -253,7 +252,8 @@ public class PropertyMapping extends ModelElement {
                     }
                     Assignment factoryMethod =
                         ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
-                    result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod );
+                    result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
+                        targetType.getImplementationType() );
                 }
                 else {
                     result = new SetterWrapper( result, method.getThrownTypes() );
@@ -312,16 +312,29 @@ public class PropertyMapping extends ModelElement {
                     newCollectionOrMap = new NewCollectionOrMapWrapper( result, implementationTypes );
                     newCollectionOrMap = new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
                 }
+                if ( result.isUpdateMethod() ) {
+                    if ( targetReadAccessor == null ) {
+                        ctx.getMessager().printMessage( method.getExecutable(),
+                            Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
+                            targetPropertyName );
+                    }
+                    Assignment factoryMethod
+                        = ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
+                    result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
+                        targetType.getImplementationType() );
+                }
+                else {
+                    // wrap the assignment in the setter method
+                    result = new SetterWrapper( result, method.getThrownTypes() );
 
-                // wrap the assignment in the setter method
-                result = new SetterWrapper( result, method.getThrownTypes() );
+                    // target accessor is setter, so wrap the setter in setter map/ collection handling
+                    result = new SetterWrapperForCollectionsAndMaps(
+                        result,
+                        targetWriteAccessor,
+                        newCollectionOrMap
+                    );
+                }
 
-                // target accessor is setter, so wrap the setter in setter map/ collection handling
-                result = new SetterWrapperForCollectionsAndMaps(
-                    result,
-                    targetWriteAccessor,
-                    newCollectionOrMap
-                );
             }
             else {
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
@@ -589,7 +602,8 @@ public class PropertyMapping extends ModelElement {
                         }
                         Assignment factoryMethod =
                             ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
-                        assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod );
+                        assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod,
+                            targetType.getImplementationType() );
                     }
                     else {
                         assignment = new SetterWrapper( assignment, method.getThrownTypes() );

@@ -41,6 +41,10 @@ public interface OrganizationMapper {
 
     void toCompanyEntity(CompanyDto dto, @MappingTarget CompanyEntity entity);
 
+    @Mappings({
+        @Mapping( target = "employees", ignore = true ),
+        @Mapping( target = "secretaryToEmployee", ignore = true )
+    })
     DepartmentEntity toDepartmentEntity(DepartmentDto dto);
 
     @Mapping(source = "type", target = "type")

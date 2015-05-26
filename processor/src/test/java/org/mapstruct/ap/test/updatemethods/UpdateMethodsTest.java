@@ -36,20 +36,26 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @IssueKey("160")
 @RunWith(AnnotationProcessorTestRunner.class)
+ @WithClasses({
+    OrganizationDto.class,
+    OrganizationEntity.class,
+    CompanyDto.class,
+    CompanyEntity.class,
+    DepartmentDto.class,
+    DepartmentEntity.class,
+    DepartmentEntityFactory.class,
+    OrganizationTypeEntity.class,
+    OrganizationTypeNrEntity.class,
+    EmployeeDto.class,
+    EmployeeEntity.class,
+    SecretaryDto.class,
+    SecretaryEntity.class
+})
 public class UpdateMethodsTest {
 
     @Test
     @WithClasses( {
-        OrganizationMapper.class,
-        OrganizationDto.class,
-        OrganizationEntity.class,
-        CompanyDto.class,
-        CompanyEntity.class,
-        DepartmentDto.class,
-        DepartmentEntity.class,
-        DepartmentEntityFactory.class,
-        OrganizationTypeEntity.class,
-        OrganizationTypeNrEntity.class
+        OrganizationMapper.class
     } )
     public void testPreferUpdateMethod() {
 
@@ -77,16 +83,7 @@ public class UpdateMethodsTest {
 
     @Test
     @WithClasses( {
-        OrganizationMapper.class,
-        OrganizationDto.class,
-        OrganizationEntity.class,
-        CompanyDto.class,
-        CompanyEntity.class,
-        DepartmentDto.class,
-        DepartmentEntity.class,
-        DepartmentEntityFactory.class,
-        OrganizationTypeEntity.class,
-        OrganizationTypeNrEntity.class
+        OrganizationMapper.class
     } )
     public void testPreferUpdateMethodSourceObjectNotDefined() {
 
@@ -111,14 +108,7 @@ public class UpdateMethodsTest {
   @Test
     @WithClasses( {
         CompanyMapper.class,
-        CompanyDto.class,
-        CompanyEntity.class,
-        DepartmentDto.class,
-        DepartmentInBetween.class,
-        DepartmentEntity.class,
-        DepartmentEntityFactory.class,
-        OrganizationTypeEntity.class,
-        OrganizationTypeNrEntity.class
+        DepartmentInBetween.class
     } )
     public void testPreferUpdateMethodEncapsulatingCreateMethod() {
 
@@ -138,21 +128,14 @@ public class UpdateMethodsTest {
     @Test
     @WithClasses( {
         ErroneousOrganizationMapper1.class,
-        OrganizationDto.class,
-        OrganizationWithoutCompanyGetterEntity.class,
-        CompanyDto.class,
-        CompanyEntity.class,
-        DepartmentDto.class,
-        DepartmentEntity.class,
-        DepartmentEntityFactory.class,
-        OrganizationTypeEntity.class
+        OrganizationWithoutCompanyGetterEntity.class
     } )
    @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousOrganizationMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 36,
+                line = 37,
                 messageRegExp = "No read accessor found for property \"company\" in target type.")
         }
    )
@@ -161,45 +144,30 @@ public class UpdateMethodsTest {
     @Test
     @WithClasses( {
         ErroneousOrganizationMapper2.class,
-        OrganizationDto.class,
-        OrganizationWithoutTypeGetterEntity.class,
-        CompanyDto.class,
-        CompanyEntity.class,
-        DepartmentDto.class,
-        DepartmentEntity.class,
-        DepartmentEntityFactory.class,
-        OrganizationTypeEntity.class
+        OrganizationWithoutTypeGetterEntity.class
     } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 36,
+                line = 37,
                 messageRegExp = "No read accessor found for property \"type\" in target type.")
-        }
-   )
+    } )
     public void testShouldFailOnConstantMappingNoPropertyGetter() { }
 
    @Test
     @WithClasses( {
         ErroneousCompanyMapper1.class,
-        OrganizationDto.class,
-        OrganizationWithoutTypeGetterEntity.class,
-        CompanyDto.class,
-        CompanyEntity.class,
-        DepartmentDto.class,
-        DepartmentInBetween.class,
-        DepartmentEntity.class,
-        DepartmentEntityFactory.class,
-        OrganizationTypeEntity.class
+        DepartmentInBetween.class
+
     } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousCompanyMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 34,
+                line = 36,
                 messageRegExp = "Can't map property \".*DepartmentDto department\" to \".*DepartmentEntity department.")
         }
     )

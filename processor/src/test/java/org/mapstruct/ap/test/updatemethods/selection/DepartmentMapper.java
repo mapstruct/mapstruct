@@ -16,30 +16,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.updatemethods;
+package org.mapstruct.ap.test.updatemethods.selection;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
+import org.mapstruct.ap.test.updatemethods.DepartmentDto;
+import org.mapstruct.ap.test.updatemethods.DepartmentEntity;
+import org.mapstruct.ap.test.updatemethods.EmployeeDto;
+import org.mapstruct.ap.test.updatemethods.EmployeeEntity;
+import org.mapstruct.ap.test.updatemethods.SecretaryDto;
+import org.mapstruct.ap.test.updatemethods.SecretaryEntity;
 import org.mapstruct.factory.Mappers;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@Mapper( uses = DepartmentEntityFactory.class )
-public interface ErroneousCompanyMapper1 {
+@Mapper( uses = ExternalHandWrittenMapper.class )
+public interface DepartmentMapper {
 
-    ErroneousCompanyMapper1 INSTANCE = Mappers.getMapper( ErroneousCompanyMapper1.class );
+    DepartmentMapper INSTANCE = Mappers.getMapper( DepartmentMapper.class );
 
-    void toCompanyEntity(CompanyDto dto, @MappingTarget CompanyEntity entity);
+    void toDepartmentEntity(DepartmentDto dto, @MappingTarget DepartmentEntity entity);
 
-    void  toInBetween(DepartmentDto dto, @MappingTarget DepartmentInBetween entity);
+    EmployeeEntity toEmployeeEntity(EmployeeDto dto);
 
-    @Mappings({
-        @Mapping( target = "employees", ignore = true ),
-        @Mapping( target = "secretaryToEmployee", ignore = true )
-    })
-    void toDepartmentEntity(DepartmentInBetween dto, @MappingTarget DepartmentEntity entity);
+    SecretaryEntity toSecretaryEntity(SecretaryDto dto);
+
 }

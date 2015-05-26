@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.updatemethods;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -40,6 +41,10 @@ public interface ErroneousOrganizationMapper2 {
     @Mapping(source = "type", target = "type")
     void toName(String type, @MappingTarget OrganizationTypeEntity entity);
 
+    @Mappings({
+        @Mapping( target = "employees", ignore = true ),
+        @Mapping( target = "secretaryToEmployee", ignore = true )
+    })
     DepartmentEntity toDepartmentEntity(DepartmentDto dto);
 
 }

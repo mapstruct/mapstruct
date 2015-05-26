@@ -18,6 +18,10 @@
  */
 package org.mapstruct.ap.test.updatemethods.selection;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import static org.fest.assertions.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.updatemethods.CompanyDto;
@@ -25,6 +29,10 @@ import org.mapstruct.ap.test.updatemethods.CompanyEntity;
 import org.mapstruct.ap.test.updatemethods.DepartmentDto;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntity;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntityFactory;
+import org.mapstruct.ap.test.updatemethods.EmployeeDto;
+import org.mapstruct.ap.test.updatemethods.EmployeeEntity;
+import org.mapstruct.ap.test.updatemethods.SecretaryDto;
+import org.mapstruct.ap.test.updatemethods.SecretaryEntity;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -35,17 +43,26 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @IssueKey("160")
 @RunWith(AnnotationProcessorTestRunner.class)
+@WithClasses({
+    OrganizationMapper1.class,
+    ExternalMapper.class,
+    ExternalHandWrittenMapper.class,
+    CompanyDto.class,
+    CompanyEntity.class,
+    DepartmentMapper.class,
+    DepartmentDto.class,
+    DepartmentEntityFactory.class,
+    DepartmentEntity.class,
+    EmployeeDto.class,
+    EmployeeEntity.class,
+    SecretaryDto.class,
+    SecretaryEntity.class
+})
 public class ExternalSelectionTest {
 
     @Test
     @WithClasses({
-        OrganizationMapper1.class,
-        ExternalMapper.class,
-        CompanyDto.class,
-        CompanyEntity.class,
-        DepartmentDto.class,
-        DepartmentEntityFactory.class,
-        DepartmentEntity.class
+        OrganizationMapper1.class
     })
     public void shouldSelectGeneratedExternalMapper() {
 
@@ -56,13 +73,7 @@ public class ExternalSelectionTest {
 
     @Test
     @WithClasses({
-        OrganizationMapper2.class,
-        ExternalHandWrittenMapper.class,
-        CompanyDto.class,
-        CompanyEntity.class,
-        DepartmentDto.class,
-        DepartmentEntityFactory.class,
-        DepartmentEntity.class
+        OrganizationMapper2.class
     })
     public void shouldSelectGeneratedHandWrittenExternalMapper() {
 
@@ -71,4 +82,33 @@ public class ExternalSelectionTest {
         OrganizationMapper2.INSTANCE.toCompanyEntity( dto, entity );
     }
 
+
+    @Test
+    @IssueKey( "487" )
+    public void shouldSelectGeneratedExternalMapperForIterablesAndMaps() {
+
+        DepartmentDto departmentDto = new DepartmentDto();
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setName( "Sarah" );
+        SecretaryDto secretaryDto = new SecretaryDto();
+        secretaryDto.setName( "Jim" );
+        departmentDto.setEmployees( Arrays.asList( employeeDto ) );
+        Map<SecretaryDto, EmployeeDto> secretaryToEmployee = new HashMap<SecretaryDto, EmployeeDto>();
+        secretaryToEmployee.put( secretaryDto, employeeDto );
+        departmentDto.setSecretaryToEmployee( secretaryToEmployee );
+
+        DepartmentEntity departmentEntity = new DepartmentEntity( 5 );
+
+        DepartmentMapper.INSTANCE.toDepartmentEntity( departmentDto, departmentEntity );
+
+        assertThat( departmentEntity ).isNotNull();
+        assertThat( departmentEntity.getEmployees() ).isNotEmpty();
+        assertThat( departmentEntity.getEmployees().get( 0 ).getName() ).isEqualTo( "Sarah" );
+        assertThat( departmentEntity.getSecretaryToEmployee() ).isNotEmpty();
+        Map.Entry<SecretaryEntity, EmployeeEntity> firstEntry =
+            departmentEntity.getSecretaryToEmployee().entrySet().iterator().next();
+        assertThat( firstEntry.getKey().getName() ).isEqualTo( "Jim" );
+        assertThat( firstEntry.getValue().getName() ).isEqualTo( "Sarah" );
+
+    }
 }

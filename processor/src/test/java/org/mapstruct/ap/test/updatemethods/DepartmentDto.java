@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.test.updatemethods;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author Sjaak Derksen
@@ -25,6 +28,8 @@ package org.mapstruct.ap.test.updatemethods;
 public class DepartmentDto {
 
     private String name;
+    private List<EmployeeDto> employees;
+    private Map<SecretaryDto, EmployeeDto> secretaryToEmployee;
 
     public String getName() {
         return name;
@@ -32,6 +37,22 @@ public class DepartmentDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<EmployeeDto> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<EmployeeDto> employees) {
+        this.employees = employees;
+    }
+
+    public Map<SecretaryDto, EmployeeDto> getSecretaryToEmployee() {
+        return secretaryToEmployee;
+    }
+
+    public void setSecretaryToEmployee(Map<SecretaryDto, EmployeeDto> secretaryToEmployee) {
+        this.secretaryToEmployee = secretaryToEmployee;
     }
 
 }

@@ -32,7 +32,7 @@
 </#if>
 <#macro _assignment>
     if ( ${ext.targetBeanName}.${ext.targetReadAccessorName}() == null ) {
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <#if factoryMethod??><@includeModel object=factoryMethod targetType=ext.targetType/><#else>new <@includeModel object=ext.targetType/>()</#if> );
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <#if factoryMethod??><@includeModel object=factoryMethod targetType=ext.targetType/><#else><@_newObject/></#if> );
     }
     <@includeModel object=assignment
                targetBeanName=ext.targetBeanName
@@ -41,3 +41,5 @@
                targetWriteAccessorName=ext.targetWriteAccessorName
                targetType=ext.targetType/>
 </#macro>
+<#macro _newObject>new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>()</#macro>
+
