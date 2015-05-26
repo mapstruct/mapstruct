@@ -48,10 +48,12 @@ public class Services {
     }
 
     private static AccessorNamingStrategy findAccessorNamingStrategy() {
+        AccessorNamingStrategy defaultImpl = new DefaultAccessorNamingStrategy();
         AccessorNamingStrategy impl = find( AccessorNamingStrategy.class );
         if ( impl == null ) {
-            impl = new DefaultAccessorNamingStrategy();
+            impl = defaultImpl;
         }
+        impl.setDefaultAccessorNamingStrategy( defaultImpl );
         return impl;
     }
 

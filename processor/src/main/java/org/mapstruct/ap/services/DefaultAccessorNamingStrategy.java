@@ -30,6 +30,10 @@ import org.mapstruct.spi.AccessorNamingStrategy;
 class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
 
     @Override
+    public void setDefaultAccessorNamingStrategy(AccessorNamingStrategy defaultAccessorNamingStrategy) {
+    }
+
+    @Override
     public boolean isNonBooleanGetterName(String methodName) {
         return methodName.startsWith( "get" ) && methodName.length() > 3;
     }
