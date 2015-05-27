@@ -20,6 +20,7 @@ package org.mapstruct.ap.util;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -43,7 +44,7 @@ import static org.mapstruct.ap.util.SpecificCompilerWorkarounds.replaceTypeEleme
  */
 public class Executables {
 
-    private static AccessorNamingStrategy accessorNamingStrategy = Services.get(
+    private static final AccessorNamingStrategy ACCESSOR_NAMING_STRATEGY = Services.get(
         AccessorNamingStrategy.class,
         new DefaultAccessorNamingStrategy()
     );
@@ -54,19 +55,19 @@ public class Executables {
     public static boolean isGetterMethod(ExecutableElement method) {
         return isPublic( method ) &&
             method.getParameters().isEmpty() &&
-            accessorNamingStrategy.getMethodType( method ) == MethodType.GETTER;
+            ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.GETTER;
     }
 
     public static boolean isSetterMethod(ExecutableElement method) {
         return isPublic( method )
             && method.getParameters().size() == 1
-            && accessorNamingStrategy.getMethodType( method ) == MethodType.SETTER;
+            && ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.SETTER;
     }
 
     public static boolean isAdderMethod(ExecutableElement method) {
         return isPublic( method )
             && method.getParameters().size() == 1
-            && accessorNamingStrategy.getMethodType( method ) == MethodType.ADDER;
+            && ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.ADDER;
     }
 
     private static boolean isPublic(ExecutableElement method) {
@@ -74,7 +75,7 @@ public class Executables {
     }
 
     public static String getPropertyName(ExecutableElement getterOrSetterMethod) {
-        return accessorNamingStrategy.getPropertyName( getterOrSetterMethod );
+        return ACCESSOR_NAMING_STRATEGY.getPropertyName( getterOrSetterMethod );
     }
 
     /**
@@ -83,12 +84,12 @@ public class Executables {
      *         {@code addChild(Child v)}, the element name would be 'Child'.
      */
     public static String getElementNameForAdder(ExecutableElement adderMethod) {
-        return accessorNamingStrategy.getElementName( adderMethod );
+        return ACCESSOR_NAMING_STRATEGY.getElementName( adderMethod );
     }
 
     public static String getCollectionGetterName(ExecutableElement targetSetter) {
-        String propertyName = accessorNamingStrategy.getPropertyName( targetSetter );
-        return accessorNamingStrategy.getCollectionGetterName( propertyName );
+        String propertyName = ACCESSOR_NAMING_STRATEGY.getPropertyName( targetSetter );
+        return ACCESSOR_NAMING_STRATEGY.getCollectionGetterName( propertyName );
     }
 
     /**
@@ -183,11 +184,10 @@ public class Executables {
 
     /**
      * @param elementUtils the elementUtils
-     * @param methods the list of already collected methods of one type hierarchy (order is from sub-types to
+     * @param alreadyAdded the list of already collected methods of one type hierarchy (order is from sub-types to
      *            super-types)
      * @param executable the method to check
      * @param parentType the type for which elements are collected
-     *
      * @return {@code true}, iff the given executable was not yet overridden by a method in the given list.
      */
     private static boolean wasNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyAdded,

@@ -21,4 +21,4 @@
  * SPI (service provider interface) contracts to be implemented for advanced use cases.
  * </p>
  */
-package org.mapstruct.ap.naming;
+package org.mapstruct.ap.spi;
