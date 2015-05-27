@@ -20,8 +20,10 @@ package org.mapstruct.ap.model.assignment;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.model.common.Type;
+import org.mapstruct.ap.util.Executables;
 
 /**
  * This wrapper handles the situation were an assignment is done via the setter.
@@ -41,10 +43,11 @@ public class SetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
     private final Assignment newCollectionOrMapAssignment;
 
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
-                                        String targetSetterName,
-                                        Assignment newCollectionOrMapAssignment) {
+                                              ExecutableElement targetSetter,
+                                              Assignment newCollectionOrMapAssignment) {
         super( decoratedAssignment );
-        this.targetGetterName = "get" + targetSetterName.substring( 3 );
+
+        this.targetGetterName = Executables.getCollectionGetterName( targetSetter );
         this.newCollectionOrMapAssignment = newCollectionOrMapAssignment;
     }
 
