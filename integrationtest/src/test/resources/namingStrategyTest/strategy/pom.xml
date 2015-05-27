@@ -24,35 +24,20 @@
 
     <parent>
         <groupId>org.mapstruct</groupId>
-        <artifactId>mapstruct-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../../parent/pom.xml</relativePath>
+        <artifactId>namingStrategyTest-aggregator</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>mapstruct-naming-strategy-integrationtest-strategy</artifactId>
+    <artifactId>namingStrategyTest-strategy</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>${project.version}</version>
+            <version>${mapstruct.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.mycila.maven-license-plugin</groupId>
-                <artifactId>maven-license-plugin</artifactId>
-                <configuration>
-                    <header>${basedir}/../../etc/license.txt</header>
-                    <mapping>
-                        <xjb>XML_STYLE</xjb>
-                    </mapping>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
