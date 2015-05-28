@@ -43,7 +43,7 @@ public class Mapper extends GeneratedType {
     private static final String DECORATED_IMPLEMENTATION_SUFFIX = "Impl_";
 
     private final List<MapperReference> referencedMappers;
-    private final Decorator decorator;
+    private Decorator decorator;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Mapper(TypeFactory typeFactory, String packageName, String name, String superClassName,
@@ -156,6 +156,10 @@ public class Mapper extends GeneratedType {
 
     public Decorator getDecorator() {
         return decorator;
+    }
+
+    public void removeDecorator() {
+        this.decorator = null;
     }
 
     @Override

@@ -44,4 +44,9 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
     protected Annotation getMapperReferenceAnnotation() {
         return new Annotation( getTypeFactory().getType( "javax.inject.Inject" ) );
     }
+
+    @Override
+    protected boolean shouldDecoratorBeRemoved() {
+        return false;
+    }
 }

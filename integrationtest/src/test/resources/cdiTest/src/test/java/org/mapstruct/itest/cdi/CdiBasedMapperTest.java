@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,12 +42,17 @@ public class CdiBasedMapperTest {
     @Inject
     private SourceTargetMapper mapper;
 
+    @Inject
+    private DecoratedSourceTargetMapper decoratedMapper;
+
     @Deployment
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create( JavaArchive.class )
             .addPackage( SourceTargetMapper.class.getPackage() )
             .addPackage( DateMapper.class.getPackage() )
-            .addAsManifestResource( EmptyAsset.INSTANCE, "beans.xml" );
+            .addAsManifestResource(
+                    new StringAsset("<decorators><class>org.mapstruct.itest.cdi.SourceTargetMapperDecorator</class></decorators>"),
+                    "beans.xml" );
     }
 
     @Test
@@ -59,5 +64,15 @@ public class CdiBasedMapperTest {
         assertThat( target ).isNotNull();
         assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 42 ) );
         assertThat( target.getDate() ).isEqualTo( "1980" );
+    }
+
+    @Test
+    public void shouldInjectDecorator() {
+        Source source = new Source();
+
+        Target target = decoratedMapper.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 43 ) );
     }
 }
