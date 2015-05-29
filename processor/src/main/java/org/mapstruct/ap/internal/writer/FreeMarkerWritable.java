@@ -33,13 +33,24 @@ public abstract class FreeMarkerWritable implements Writable {
     }
 
     /**
-     * Returns the name of the template to be used for a specific writable type. By default, the fully-qualified class
-     * name of the given model element type, appended with the extension {@code *.ftl} is used as template file name,
-     * but this can be customized by overriding this method if required.
+     * Returns the name of the template to be used for a specific writable type. By default,
+     * {@link #getTemplateNameForClass(Class)} is called with {@code getClass()}, but this can be customized by
+     * overriding this method if required.
      *
      * @return the name of the template. Must not be {@code null}.
      */
     protected String getTemplateName() {
-        return getClass().getName() + ".ftl";
+        return getTemplateNameForClass( getClass() );
+    }
+
+    /**
+     * Returns the name of the template to be used for a specific writable type. By default, the package directory and
+     * the class name of the given model element type, appended with the extension {@code *.ftl} is used as template
+     * file name.
+     *
+     * @return the name of the template. Must not be {@code null}.
+     */
+    protected String getTemplateNameForClass(Class<?> clazz) {
+        return clazz.getName().replace( '.', '/' ) + ".ftl";
     }
 }

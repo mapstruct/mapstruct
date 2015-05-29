@@ -31,15 +31,13 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
  */
 public class VirtualMappingMethod extends MappingMethod {
 
-    private static final String BUILTIN_METHOD_TEMPLATE_PREFIX = "org.mapstruct.ap.internal.model.builtin.";
-
     private final String templateName;
     private final Set<Type> importTypes;
 
     public VirtualMappingMethod(BuiltInMethod method) {
         super( method );
         this.importTypes = method.getImportTypes();
-        this.templateName = BUILTIN_METHOD_TEMPLATE_PREFIX + method.getClass().getSimpleName() + ".ftl";
+        this.templateName = getTemplateNameForClass( method.getClass() );
     }
 
     @Override

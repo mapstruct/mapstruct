@@ -152,6 +152,6 @@ public class Decorator extends GeneratedType {
 
     @Override
     protected String getTemplateName() {
-        return GeneratedType.class.getName() + ".ftl";
+        return getTemplateNameForClass( GeneratedType.class );
     }
 }
