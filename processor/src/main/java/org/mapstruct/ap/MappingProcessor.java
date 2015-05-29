@@ -41,14 +41,14 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.model.Mapper;
-import org.mapstruct.ap.option.Options;
-import org.mapstruct.ap.option.ReportingPolicy;
-import org.mapstruct.ap.prism.MapperPrism;
-import org.mapstruct.ap.processor.DefaultModelElementProcessorContext;
-import org.mapstruct.ap.processor.ModelElementProcessor;
-import org.mapstruct.ap.processor.ModelElementProcessor.ProcessorContext;
-import org.mapstruct.ap.util.AnnotationProcessingException;
+import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.option.ReportingPolicy;
+import org.mapstruct.ap.internal.prism.MapperPrism;
+import org.mapstruct.ap.internal.processor.DefaultModelElementProcessorContext;
+import org.mapstruct.ap.internal.processor.ModelElementProcessor;
+import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
+import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 
 /**
  * A JSR 269 annotation {@link Processor} which generates the implementations for mapper interfaces (interfaces

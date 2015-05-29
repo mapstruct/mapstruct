@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.mapstruct.ap.model.dependency.GraphAnalyzer;
-import org.mapstruct.ap.util.Strings;
+import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
+import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * Unit test for {@link GraphAnalyzer}.

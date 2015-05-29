@@ -25,9 +25,9 @@ import org.junit.Test;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.MappingInheritanceStrategy;
 import org.mapstruct.NullValueMappingStrategy;
-import org.mapstruct.ap.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.prism.MappingInheritanceStrategyPrism;
-import org.mapstruct.ap.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 
 import static org.fest.assertions.Assertions.assertThat;
 

@@ -315,7 +315,7 @@
                     <version>2.10.3</version>
                     <configuration>
                         <quiet>true</quiet>
-                        <excludePackageNames>org.mapstruct.ap.prism;org.mapstruct.itest.jaxb.xsd.*</excludePackageNames>
+                        <excludePackageNames>org.mapstruct.ap.internal.prism;org.mapstruct.itest.jaxb.xsd.*</excludePackageNames>
                     </configuration>
                 </plugin>
                 <plugin>

@@ -19,19 +19,23 @@
 package org.mapstruct.ap.test.collection.forged;
 
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+
 import javax.tools.Diagnostic.Kind;
-import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.util.Collections;
+
+import com.google.common.collect.ImmutableMap;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for mappings between collection types,
