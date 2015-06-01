@@ -80,7 +80,7 @@ public class Target {
         this.someType = someType;
     }
 
-    public String getFormNested() {
+    public String getFromNested() {
         return fromNested;
     }
 

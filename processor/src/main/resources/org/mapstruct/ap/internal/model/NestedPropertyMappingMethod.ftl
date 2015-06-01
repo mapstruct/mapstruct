@@ -24,13 +24,13 @@
         return ${returnType.null};
     }
 <#list propertyEntries as entry>
-    <#if entry.presenceChecker?? >
-    if ( !<@localVarName index=entry_index/>.${entry.presenceChecker.simpleName}() ) {
+    <#if entry.presenceCheckerName?? >
+    if ( !<@localVarName index=entry_index/>.${entry.presenceCheckerName}() ) {
         return ${returnType.null};
     }
     </#if>
     <@includeModel object=entry.type/> ${entry.name} = <@localVarName index=entry_index/>.${entry.accessorName}();
-    <#if !entry.presenceChecker?? >
+    <#if !entry.presenceCheckerName?? >
     <#if !entry.type.primitive>
     if ( ${entry.name} == null ) {
         return ${returnType.null};

@@ -21,10 +21,13 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import static org.mapstruct.ap.internal.util.Collections.first;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 
 /**
@@ -51,7 +54,7 @@ public class MappingOptions {
 
     /**
      * @return the {@link Mapping}s configured for this method, keyed by target property name. Only for enum mapping
-     * methods a target will be mapped by several sources.
+     * methods a target will be mapped by several sources. TODO. Remove the value list when 2.0
      */
     public Map<String, List<Mapping>> getMappings() {
         return mappings;
@@ -178,11 +181,45 @@ public class MappingOptions {
                 }
             }
 
+
             // now add all of its own mappings
             newMappings.putAll( getMappings() );
+
+            // filter new mappings
+            filterNestedTargetIgnores( newMappings );
+
             setMappings( newMappings );
         }
 
         markAsFullyInitialized();
     }
+
+    private void filterNestedTargetIgnores( Map<String, List<Mapping>> mappings) {
+
+        // collect all properties to ignore, and safe their target name ( == same name as first ref target property)
+        Set<String> ignored = new HashSet<String>();
+        for ( Map.Entry<String, List<Mapping>> mappingEntry : mappings.entrySet() ) {
+            Mapping mapping = first( mappingEntry.getValue() ); // list only used for deprecated enums mapping
+            if ( mapping.isIgnored() && mapping.getTargetReference().isValid() ) {
+                ignored.add( mapping.getTargetName() );
+            }
+        }
+
+        // collect all entries to remove (avoid concurrent modification)
+        Set<String> toBeRemoved = new HashSet<String>();
+        for ( Map.Entry<String, List<Mapping>> mappingEntry : mappings.entrySet() ) {
+            Mapping mapping = first( mappingEntry.getValue() ); // list only used for deprecated enums mapping
+            TargetReference targetReference = mapping.getTargetReference();
+            if ( targetReference.isValid()
+                && targetReference.getPropertyEntries().size() > 1
+                && ignored.contains( first( targetReference.getPropertyEntries() ).getName() ) ) {
+                toBeRemoved.add( mappingEntry.getKey() );
+            }
+        }
+
+        // finall remove all duplicates
+        mappings.keySet().removeAll( toBeRemoved );
+
+    }
+
 }

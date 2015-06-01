@@ -48,6 +48,8 @@ public abstract class FreeMarkerWritable implements Writable {
      * the class name of the given model element type, appended with the extension {@code *.ftl} is used as template
      * file name.
      *
+     * @param clazz class to obtain a template for
+     *
      * @return the name of the template. Must not be {@code null}.
      */
     protected String getTemplateNameForClass(Class<?> clazz) {

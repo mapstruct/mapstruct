@@ -18,20 +18,4 @@
      limitations under the License.
 
 -->
-<#if localTargetVarName??>
-<@includeModel object=assignment
-               targetBeanName=localTargetVarName
-               existingInstanceMapping=ext.existingInstanceMapping
-               targetReadAccessorName=targetReadAccessorName
-               targetWriteAccessorName=targetWriteAccessorName
-               targetType=targetType
-               defaultValueAssignment=defaultValueAssignment />
-<#else>
-<@includeModel object=assignment
-               targetBeanName=ext.targetBeanName
-               existingInstanceMapping=ext.existingInstanceMapping
-               targetReadAccessorName=targetReadAccessorName
-               targetWriteAccessorName=targetWriteAccessorName
-               targetType=targetType
-               defaultValueAssignment=defaultValueAssignment />
-</#if>
+${targetBean}.${setterName}( ${sourceRef} );

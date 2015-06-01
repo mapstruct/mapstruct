@@ -25,7 +25,7 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
+import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -140,23 +140,41 @@ public class NestedPropertyMappingMethod extends MappingMethod {
         return true;
     }
 
-    public static class SafePropertyEntry extends PropertyEntry {
+    public static class SafePropertyEntry {
 
         private final String safeName;
+        private final String readAccessorName;
+        private final String presenceCheckerName;
+        private final Type type;
 
-        public SafePropertyEntry( PropertyEntry entry, String safeName ) {
-            super( entry.getName(), entry.getAccessor(), entry.getPresenceChecker(), entry.getType() );
+        public SafePropertyEntry(PropertyEntry entry, String safeName) {
             this.safeName = safeName;
+            this.readAccessorName = entry.getReadAccessor().getSimpleName().toString();
+            if ( entry.getPresenceChecker() != null ) {
+                this.presenceCheckerName = entry.getPresenceChecker().getSimpleName().toString();
+            }
+            else {
+                this.presenceCheckerName = null;
+            }
+            this.type = entry.getType();
         }
 
-        @Override
         public String getName() {
             return safeName;
         }
 
         public String getAccessorName() {
-            return getAccessor().getSimpleName().toString();
+            return readAccessorName;
         }
-    }
 
+        public String getPresenceCheckerName() {
+            return presenceCheckerName;
+        }
+
+        public Type getType() {
+            return type;
+        }
+
+    }
 }
+

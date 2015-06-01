@@ -346,7 +346,7 @@ Mapping methods with several source parameters will return `null` in case all th
 [[nested-mappings]]
 === Nested mappings
 
-MapStruct will handle nested mappings, by means of the `.` notation:
+MapStruct will handle nested mappings (in source), by means of the `.` notation:
 
 .Mapping method with several source parameters
 ====
@@ -1681,7 +1681,7 @@ Methods that are considered for inverse inheritance need to be defined in the cu
 
 If multiple methods qualify, the method from which to inherit the configuration from needs to be specified using the `name` property like this: `@InheritInverseConfiguration(name = "carToDto")`.
 
-Nested properties are excluded (silently ignored) from reverse mapping. The same holds true for expressions and constants. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
+Expressions and constants are excluded (silently ignored). Reverse mapping of nested source properties is experimental as of the 1.1.0.Beta2. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
 
 [[shared-configurations]]
 === Shared configurations
