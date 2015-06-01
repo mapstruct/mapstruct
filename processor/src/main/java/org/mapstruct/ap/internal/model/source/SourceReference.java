@@ -31,6 +31,7 @@ import javax.lang.model.type.DeclaredType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import static org.mapstruct.ap.internal.model.source.PropertyEntry.forSourceReference;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -95,6 +96,7 @@ public class SourceReference {
 
         public SourceReference build() {
 
+
             String sourceName = mapping.getSourceName();
 
             if ( sourceName == null ) {
@@ -124,7 +126,7 @@ public class SourceReference {
                 if ( segments.length > 1 && parameter != null ) {
                     sourcePropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                     entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                    foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
+                    foundEntryMatch = (entries.size() == sourcePropertyNames.length);
                 }
                 else {
                     // its only a parameter, no property
@@ -138,14 +140,14 @@ public class SourceReference {
                 sourcePropertyNames = segments;
                 parameter = method.getSourceParameters().get( 0 );
                 entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
+                foundEntryMatch = (entries.size() == sourcePropertyNames.length);
 
                 if ( !foundEntryMatch ) {
                     //Lets see if the expression contains the parameterName, so parameterName.propName1.propName2
                     if ( parameter.getName().equals( segments[0] ) ) {
                         sourcePropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                         entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                        foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
+                        foundEntryMatch = (entries.size() == sourcePropertyNames.length);
                     }
                     else {
                         // segment[0] cannot be attributed to the parameter name.
@@ -158,7 +160,7 @@ public class SourceReference {
 
                 if ( parameter != null ) {
                     reportMappingError( Message.PROPERTYMAPPING_NO_PROPERTY_IN_PARAMETER, parameter.getName(),
-                                        Strings.join( Arrays.asList( sourcePropertyNames ), "." ) );
+                        Strings.join( Arrays.asList( sourcePropertyNames ), "." ) );
                 }
                 else {
                     reportMappingError( Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName() );
@@ -181,7 +183,7 @@ public class SourceReference {
                     if ( getter.getKey().equals( entryName ) ) {
                         newType = typeFactory.getReturnType( (DeclaredType) newType.getTypeMirror(),
                               getter.getValue() );
-                        sourceEntries.add( new PropertyEntry( entryName, getter.getValue(),
+                        sourceEntries.add( forSourceReference( entryName, getter.getValue(),
                               sourcePresenceCheckers.get( entryName ), newType ) );
                         matchFound = true;
                         break;
@@ -239,7 +241,7 @@ public class SourceReference {
         public SourceReference build() {
             List<PropertyEntry> sourcePropertyEntries = new ArrayList<PropertyEntry>();
             if ( readAccessor != null ) {
-                sourcePropertyEntries.add( new PropertyEntry( name, readAccessor, presenceChecker, type ) );
+                sourcePropertyEntries.add( forSourceReference( name, readAccessor, presenceChecker, type ) );
             }
             return new SourceReference( sourceParameter, sourcePropertyEntries, true );
         }
@@ -270,42 +272,6 @@ public class SourceReference {
             sourceName.add( propertyEntry.getName() );
         }
         return sourceName;
-    }
-
-    /**
-     * A PropertyEntry contains information on the name, accessor and return type of a property.
-     */
-    public static class PropertyEntry {
-
-        private final String name;
-        private final ExecutableElement accessor;
-        private final ExecutableElement presenceChecker;
-        private final Type type;
-
-        public PropertyEntry(String name, ExecutableElement readAccessor,
-            ExecutableElement presenceChecker, Type type) {
-            this.name = name;
-            this.accessor = readAccessor;
-            this.presenceChecker = presenceChecker;
-            this.type = type;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public ExecutableElement getAccessor() {
-            return accessor;
-        }
-
-        public ExecutableElement getPresenceChecker() {
-            return presenceChecker;
-        }
-
-        public Type getType() {
-            return type;
-        }
-
     }
 
     /**

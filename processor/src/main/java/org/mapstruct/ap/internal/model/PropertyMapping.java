@@ -50,9 +50,10 @@ import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SourceReference;
-import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
 import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -72,6 +73,7 @@ public class PropertyMapping extends ModelElement {
     private final String sourceBeanName;
     private final String targetWriteAccessorName;
     private final String targetReadAccessorName;
+    private final String localTargetVarName;
     private final Type targetType;
     private final Assignment assignment;
     private final List<String> dependsOn;
@@ -106,6 +108,7 @@ public class PropertyMapping extends ModelElement {
         protected Type targetType;
         protected ExecutableElement targetReadAccessor;
         protected String targetPropertyName;
+        protected String localTargetVarName;
 
         protected List<String> dependsOn;
         protected Set<String> existingVariableNames;
@@ -120,6 +123,14 @@ public class PropertyMapping extends ModelElement {
             return (T) this;
         }
 
+        public T targetProperty( PropertyEntry targetProp ) {
+            this.targetReadAccessor = targetProp.getReadAccessor();
+            this.targetWriteAccessor = targetProp.getWriteAccessor();
+            this.targetType = targetProp.getType();
+            this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
+            return (T) this;
+        }
+
         public T targetReadAccessor(ExecutableElement targetReadAccessor) {
             this.targetReadAccessor = targetReadAccessor;
             return (T) this;
@@ -130,6 +141,11 @@ public class PropertyMapping extends ModelElement {
             this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
             this.targetType = determineTargetType();
 
+            return (T) this;
+        }
+
+        public T localTargetVarName( String localTargetVarName ) {
+            this.localTargetVarName = localTargetVarName;
             return (T) this;
         }
 
@@ -264,6 +280,7 @@ public class PropertyMapping extends ModelElement {
                 targetWriteAccessor.getSimpleName().toString(),
                 targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
+                localTargetVarName,
                 assignment,
                 dependsOn,
                 getDefaultValueAssignment()
@@ -478,12 +495,8 @@ public class PropertyMapping extends ModelElement {
             if ( propertyEntries.isEmpty() ) {
                 return sourceParam.getType();
             }
-            else if ( propertyEntries.size() == 1 ) {
-                PropertyEntry propertyEntry = propertyEntries.get( 0 );
-                return propertyEntry.getType();
-            }
             else {
-                PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
+                PropertyEntry lastPropertyEntry = last( propertyEntries );
                 return lastPropertyEntry.getType();
             }
         }
@@ -499,11 +512,11 @@ public class PropertyMapping extends ModelElement {
             // simple property
             else if ( propertyEntries.size() == 1 ) {
                 PropertyEntry propertyEntry = propertyEntries.get( 0 );
-                return sourceParam.getName() + "." + propertyEntry.getAccessor().getSimpleName() + "()";
+                return sourceParam.getName() + "." + propertyEntry.getReadAccessor().getSimpleName() + "()";
             }
             // nested property given as dot path
             else {
-                PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
+                PropertyEntry lastPropertyEntry = last( propertyEntries );
 
                 // copy mapper configuration from the source method, its the same mapper
                 MapperConfiguration config = method.getMapperConfiguration();
@@ -732,6 +745,7 @@ public class PropertyMapping extends ModelElement {
                 targetWriteAccessor.getSimpleName().toString(),
                 targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
+                localTargetVarName,
                 assignment,
                 dependsOn,
                 null
@@ -770,6 +784,7 @@ public class PropertyMapping extends ModelElement {
                 targetWriteAccessor.getSimpleName().toString(),
                 targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
+                localTargetVarName,
                 assignment,
                 dependsOn,
                 null
@@ -778,20 +793,24 @@ public class PropertyMapping extends ModelElement {
     }
 
     // Constructor for creating mappings of constant expressions.
-    private PropertyMapping(String name, String targetWriteAccessorName, String targetReadAccessorName, Type targetType,
-                            Assignment propertyAssignment, List<String> dependsOn, Assignment defaultValueAssignment ) {
+    private PropertyMapping(String name,  String targetWriteAccessorName, String targetReadAccessorName,
+                            Type targetType, String localTargetVarName, Assignment propertyAssignment,
+                            List<String> dependsOn, Assignment defaultValueAssignment ) {
         this( name, null, targetWriteAccessorName, targetReadAccessorName,
-                        targetType, propertyAssignment, dependsOn, defaultValueAssignment );
+                        targetType, localTargetVarName, propertyAssignment, dependsOn, defaultValueAssignment );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
-                            String targetReadAccessorName, Type targetType, Assignment assignment,
+                            String targetReadAccessorName, Type targetType, String localTargetVarName,
+                            Assignment assignment,
                             List<String> dependsOn, Assignment defaultValueAssignment ) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
         this.targetReadAccessorName = targetReadAccessorName;
         this.targetType = targetType;
+        this.localTargetVarName = localTargetVarName;
+
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
         this.defaultValueAssignment = defaultValueAssignment;
@@ -818,6 +837,10 @@ public class PropertyMapping extends ModelElement {
 
     public Type getTargetType() {
         return targetType;
+    }
+
+    public String getLocalTargetVarName() {
+        return localTargetVarName;
     }
 
     public Assignment getAssignment() {

@@ -35,7 +35,6 @@ import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
@@ -199,7 +198,7 @@ public class SourceMethod implements Method {
             if ( mappings != null ) {
                 for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
                     for ( Mapping mapping : entry.getValue() ) {
-                        mapping.init( sourceMethod, messager, typeFactory );
+                        mapping.init( sourceMethod, messager, typeFactory, false );
                     }
                 }
             }

@@ -39,21 +39,27 @@ import javax.tools.Diagnostic;
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
+import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
 import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.TargetReference;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -69,6 +75,7 @@ public class BeanMappingMethod extends MappingMethod {
     private final MethodReference factoryMethod;
     private final boolean mapNullToDefault;
     private final Type resultType;
+    private final NestedTargetObjects nestedTargetObjects;
 
     public static class Builder {
 
@@ -81,6 +88,7 @@ public class BeanMappingMethod extends MappingMethod {
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
         private SelectionParameters selectionParameters;
         private final Set<String> existingVariableNames = new HashSet<String>();
+        private NestedTargetObjects nestedTargetObjects;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -92,6 +100,14 @@ public class BeanMappingMethod extends MappingMethod {
             CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
             Map<String, ExecutableElement> accessors = method.getResultType().getPropertyWriteAccessors( cms );
             this.targetProperties = accessors.keySet();
+
+            this.nestedTargetObjects = new NestedTargetObjects.Builder()
+                .existingVariableNames( existingVariableNames )
+                .mappings( method.getMappingOptions().getMappings() )
+                .mappingBuilderContext( ctx )
+                .sourceMethod( method )
+                .build();
+
             this.unprocessedTargetProperties = new LinkedHashMap<String, ExecutableElement>( accessors );
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
@@ -170,7 +186,8 @@ public class BeanMappingMethod extends MappingMethod {
                 resultType,
                 existingVariableNames,
                 beforeMappingMethods,
-                afterMappingMethods
+                afterMappingMethods,
+                nestedTargetObjects
             );
         }
 
@@ -230,8 +247,8 @@ public class BeanMappingMethod extends MappingMethod {
          * in search of more problems.
          */
         private boolean handleDefinedSourceMappings() {
-            boolean errorOccurred = false;
 
+            boolean errorOccurred = false;
             Set<String> handledTargets = new HashSet<String>();
 
             for ( Map.Entry<String, List<Mapping>> entry : method.getMappingOptions().getMappings().entrySet() ) {
@@ -239,21 +256,27 @@ public class BeanMappingMethod extends MappingMethod {
 
                     PropertyMapping propertyMapping = null;
 
-                    // fetch the target property
-                    ExecutableElement targetWriteAccessor = unprocessedTargetProperties.get( mapping.getTargetName() );
-                    if ( targetWriteAccessor == null ) {
-                        boolean hasReadAccessor =
+                    TargetReference targetRef = mapping.getTargetReference();
+                    String resultPropertyName = null;
+                    if ( targetRef.isValid() ) {
+                        resultPropertyName = first( targetRef.getPropertyEntries() ).getName();
+                    }
+
+                    if (!unprocessedTargetProperties.containsKey( resultPropertyName ) ) {
+                         boolean hasReadAccessor =
                             method.getResultType().getPropertyReadAccessors().containsKey( mapping.getTargetName() );
-                        ctx.getMessager().printMessage(
-                            method.getExecutable(),
+                        ctx.getMessager().printMessage( method.getExecutable(),
                             mapping.getMirror(),
                             mapping.getSourceAnnotationValue(),
-                            hasReadAccessor ? Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RETURNTYPE :
-                                Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE,
+                            hasReadAccessor ? Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE :
+                                Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE,
                             mapping.getTargetName()
                         );
                         errorOccurred = true;
+                        continue;
                     }
+
+                    PropertyEntry targetProperty = last( targetRef.getPropertyEntries() );
 
                     // unknown properties given via dependsOn()?
                     for ( String dependency : mapping.getDependsOn() ) {
@@ -283,62 +306,60 @@ public class BeanMappingMethod extends MappingMethod {
                         SourceReference sourceRef = mapping.getSourceReference();
                         if ( sourceRef.isValid() ) {
 
-                            if ( targetWriteAccessor != null ) {
-
-                                // targetProperty == null can occur: we arrived here because we want as many errors
-                                // as possible before we stop analysing
-                                propertyMapping = new PropertyMappingBuilder()
-                                    .mappingContext( ctx )
-                                    .sourceMethod( method )
-                                    .targetWriteAccessor( targetWriteAccessor )
-                                    .targetReadAccessor( getTargetPropertyReadAccessor( mapping.getTargetName() ) )
-                                    .targetPropertyName( mapping.getTargetName() )
-                                    .sourceReference( sourceRef )
-                                    .selectionParameters( mapping.getSelectionParameters() )
-                                    .formattingParameters( mapping.getFormattingParameters() )
-                                    .existingVariableNames( existingVariableNames )
-                                    .dependsOn( mapping.getDependsOn() )
-                                    .defaultValue( mapping.getDefaultValue() )
-                                    .build();
-                                handledTargets.add( mapping.getTargetName() );
-                                unprocessedSourceParameters.remove( sourceRef.getParameter() );
-                            }
+                            // targetProperty == null can occur: we arrived here because we want as many errors
+                            // as possible before we stop analysing
+                            propertyMapping = new PropertyMappingBuilder()
+                                .mappingContext( ctx )
+                                .sourceMethod( method )
+                                .targetProperty( targetProperty )
+                                .targetPropertyName( mapping.getTargetName() )
+                                .sourceReference( sourceRef )
+                                .selectionParameters( mapping.getSelectionParameters() )
+                                .formattingParameters( mapping.getFormattingParameters() )
+                                .existingVariableNames( existingVariableNames )
+                                .dependsOn( mapping.getDependsOn() )
+                                .defaultValue( mapping.getDefaultValue() )
+                                .localTargetVarName( nestedTargetObjects.getLocalVariableName( targetRef ) )
+                                .build();
+                            handledTargets.add( resultPropertyName );
+                            unprocessedSourceParameters.remove( sourceRef.getParameter() );
                         }
                         else {
                             errorOccurred = true;
+                            continue;
                         }
                     }
 
                     // its a constant
-                    else if ( mapping.getConstant() != null && targetWriteAccessor != null ) {
+                    else if ( mapping.getConstant() != null ) {
 
                         propertyMapping = new ConstantMappingBuilder()
                             .mappingContext( ctx )
                             .sourceMethod( method )
                             .constantExpression( "\"" + mapping.getConstant() + "\"" )
-                            .targetWriteAccessor( targetWriteAccessor )
-                            .targetReadAccessor( getTargetPropertyReadAccessor( mapping.getTargetName() ) )
+                            .targetProperty( targetProperty )
                             .targetPropertyName( mapping.getTargetName() )
                             .formattingParameters( mapping.getFormattingParameters() )
                             .selectionParameters( mapping.getSelectionParameters() )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping.getDependsOn() )
+                            .localTargetVarName( nestedTargetObjects.getLocalVariableName( targetRef ) )
                             .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
 
                     // its an expression
-                    else if ( mapping.getJavaExpression() != null && targetWriteAccessor != null ) {
+                    else if ( mapping.getJavaExpression() != null ) {
 
                         propertyMapping = new JavaExpressionMappingBuilder()
                             .mappingContext( ctx )
                             .sourceMethod( method )
                             .javaExpression( mapping.getJavaExpression() )
                             .existingVariableNames( existingVariableNames )
-                            .targetWriteAccessor( targetWriteAccessor )
-                            .targetReadAccessor( targetWriteAccessor )
+                            .targetProperty( targetProperty )
                             .targetPropertyName( mapping.getTargetName() )
                             .dependsOn( mapping.getDependsOn() )
+                            .localTargetVarName( nestedTargetObjects.getLocalVariableName( targetRef ) )
                             .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
@@ -367,12 +388,13 @@ public class BeanMappingMethod extends MappingMethod {
          * the set of remaining target properties.
          */
         private void applyPropertyNameBasedMapping() {
-            Iterator<Entry<String, ExecutableElement>> targetPropertiesIterator =
+
+            Iterator<Entry<String, ExecutableElement>> targetPropertyEntriesIterator =
                 unprocessedTargetProperties.entrySet().iterator();
 
-            while ( targetPropertiesIterator.hasNext() ) {
+            while ( targetPropertyEntriesIterator.hasNext() ) {
 
-                Entry<String, ExecutableElement> targetProperty = targetPropertiesIterator.next();
+                Entry<String, ExecutableElement> targetProperty = targetPropertyEntriesIterator.next();
                 String targetPropertyName = targetProperty.getKey();
 
                 PropertyMapping propertyMapping = null;
@@ -441,19 +463,19 @@ public class BeanMappingMethod extends MappingMethod {
 
                 if ( propertyMapping != null ) {
                     propertyMappings.add( propertyMapping );
-                    targetPropertiesIterator.remove();
+                    targetPropertyEntriesIterator.remove();
                 }
             }
         }
 
         private void applyParameterNameBasedMapping() {
 
-            Iterator<Entry<String, ExecutableElement>> targetProperties =
+            Iterator<Entry<String, ExecutableElement>> targetPropertyEntriesIterator =
                 unprocessedTargetProperties.entrySet().iterator();
 
-            while ( targetProperties.hasNext() ) {
+            while ( targetPropertyEntriesIterator.hasNext() ) {
 
-                Entry<String, ExecutableElement> targetProperty = targetProperties.next();
+                Entry<String, ExecutableElement> targetProperty = targetPropertyEntriesIterator.next();
 
                 Iterator<Parameter> sourceParameters = unprocessedSourceParameters.iterator();
 
@@ -482,7 +504,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .build();
 
                         propertyMappings.add( propertyMapping );
-                        targetProperties.remove();
+                        targetPropertyEntriesIterator.remove();
                         sourceParameters.remove();
                     }
                 }
@@ -545,7 +567,8 @@ public class BeanMappingMethod extends MappingMethod {
                               Type resultType,
                               Collection<String> existingVariableNames,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                              List<LifecycleCallbackMethodReference> afterMappingReferences) {
+                              List<LifecycleCallbackMethodReference> afterMappingReferences,
+                              NestedTargetObjects nestedTargetObjects ) {
         super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences );
         this.propertyMappings = propertyMappings;
 
@@ -566,6 +589,7 @@ public class BeanMappingMethod extends MappingMethod {
         this.factoryMethod = factoryMethod;
         this.mapNullToDefault = mapNullToDefault;
         this.resultType = resultType;
+        this.nestedTargetObjects = nestedTargetObjects.init( this.getResultName() );
     }
 
     public List<PropertyMapping> getPropertyMappings() {
@@ -578,6 +602,14 @@ public class BeanMappingMethod extends MappingMethod {
 
     public Map<String, List<PropertyMapping>> getPropertyMappingsByParameter() {
         return mappingsByParameter;
+    }
+
+    public Set<LocalVariable> getLocalVariablesToCreate() {
+        return this.nestedTargetObjects.localVariables;
+    }
+
+    public Set<NestedLocalVariableAssignment> getNestedLocalVariableAssignments() {
+        return this.nestedTargetObjects.nestedAssignments;
     }
 
     public boolean isMapNullToDefault() {
@@ -601,6 +633,7 @@ public class BeanMappingMethod extends MappingMethod {
         for ( PropertyMapping propertyMapping : propertyMappings ) {
             types.addAll( propertyMapping.getImportTypes() );
         }
+        types.addAll( nestedTargetObjects.getImportTypes() );
 
         return types;
     }
@@ -630,4 +663,139 @@ public class BeanMappingMethod extends MappingMethod {
     public MethodReference getFactoryMethod() {
         return this.factoryMethod;
     }
+
+
+    private static class NestedTargetObjects  {
+
+        private final Set<LocalVariable> localVariables;
+        private final Set<NestedLocalVariableAssignment> nestedAssignments;
+        // local variable names indexed by fullname
+        private final Map<String, String> localVariableNames;
+
+
+        private Set<Type> getImportTypes() {
+            Set<Type> importedTypes = new HashSet<Type>();
+            for ( LocalVariable localVariableToCreate : localVariables ) {
+                importedTypes.add( localVariableToCreate.getType() );
+            }
+            return importedTypes;
+        }
+
+        private static class Builder {
+
+            private Map<String, List<Mapping>> mappings;
+            private Set<String> existingVariableNames;
+            private MappingBuilderContext ctx;
+            private SourceMethod method;
+
+            private Builder mappings(Map<String, List<Mapping>> mappings) {
+                this.mappings = mappings;
+                return this;
+            }
+
+            private Builder existingVariableNames(Set<String> existingVariableNames) {
+                this.existingVariableNames = existingVariableNames;
+                return this;
+            }
+
+            private Builder mappingBuilderContext(MappingBuilderContext ctx) {
+                this.ctx = ctx;
+                return this;
+            }
+
+            private Builder sourceMethod(SourceMethod method) {
+                this.method = method;
+                return this;
+            }
+            private NestedTargetObjects build() {
+
+
+                Map<String, PropertyEntry> uniquePropertyEntries = new HashMap<String, PropertyEntry>();
+                Map<String, String> localVariableNames = new HashMap<String, String>();
+                Set<LocalVariable> localVariables = new HashSet<LocalVariable>();
+
+                // colllect unique local variables
+                for ( Map.Entry<String, List<Mapping>> mapping : mappings.entrySet() ) {
+
+                    TargetReference targetRef = first( mapping.getValue() ).getTargetReference();
+                    List<PropertyEntry> propertyEntries = targetRef.getPropertyEntries();
+
+                    for ( int i = 0; i < propertyEntries.size() - 1; i++ ) {
+                        PropertyEntry entry = propertyEntries.get( i );
+                        uniquePropertyEntries.put( entry.getFullName(), entry );
+                    }
+
+                }
+
+                // assign variable names and create local variables.
+                for ( PropertyEntry propertyEntry : uniquePropertyEntries.values() ) {
+                    String name = getSaveVariableName( propertyEntry.getName(), existingVariableNames );
+                    existingVariableNames.add( name );
+                    Type type = propertyEntry.getType();
+                    Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, type, null );
+                    localVariables.add( new LocalVariable( name, type, factoryMethod ) );
+                    localVariableNames.put( propertyEntry.getFullName(), name );
+                }
+
+
+                Set<NestedLocalVariableAssignment> relations = new HashSet<NestedLocalVariableAssignment>();
+
+                // create relations branches (getter / setter) -- need to go to postInit()
+                for ( Map.Entry<String, List<Mapping>> mapping : mappings.entrySet() ) {
+
+                    TargetReference targetRef = first( mapping.getValue() ).getTargetReference();
+                    List<PropertyEntry> propertyEntries = targetRef.getPropertyEntries();
+
+                    for ( int i = 0; i < propertyEntries.size() - 1; i++ ) {
+                        // null means the targetBean is the methods targetBean. Needs to be set later.
+                        String targetBean = null;
+                        if ( i > 0 ) {
+                            PropertyEntry targetPropertyEntry = propertyEntries.get( i - 1 );
+                            targetBean = localVariableNames.get( targetPropertyEntry.getFullName() );
+                        }
+                        PropertyEntry sourcePropertyEntry = propertyEntries.get( i );
+                        String targetAccessor = sourcePropertyEntry.getWriteAccessor().getSimpleName().toString();
+                        String sourceRef = localVariableNames.get( sourcePropertyEntry.getFullName() );
+                        relations.add( new NestedLocalVariableAssignment( targetBean, targetAccessor, sourceRef ) );
+                    }
+                }
+
+                return new NestedTargetObjects( localVariables, localVariableNames, relations );
+            }
+        }
+
+        private NestedTargetObjects(Set<LocalVariable> localVariables, Map<String, String> localVariableNames,
+            Set<NestedLocalVariableAssignment> relations) {
+            this.localVariables = localVariables;
+            this.localVariableNames = localVariableNames;
+            this.nestedAssignments = relations;
+        }
+
+        /**
+         * returns a local vaRriable name when relevant (so when not the 'parameter' targetBean should be used)
+         *
+         * @param targefetRef
+         * @return generated local variable name
+         */
+        private String getLocalVariableName(TargetReference targetRef) {
+            String result = null;
+            List<PropertyEntry> propertyEntries = targetRef.getPropertyEntries();
+            if ( propertyEntries.size() > 1 ) {
+                result = localVariableNames.get( propertyEntries.get( propertyEntries.size() - 2 ).getFullName() );
+            }
+            return result;
+        }
+
+        private NestedTargetObjects init( String targetBeanName ) {
+            for ( NestedLocalVariableAssignment nestedAssignment : nestedAssignments ) {
+                if ( nestedAssignment.getTargetBean() == null ) {
+                    nestedAssignment.setTargetBean( targetBeanName );
+                }
+            }
+            return this;
+        }
+
+    }
+
 }
+
