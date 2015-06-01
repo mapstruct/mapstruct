@@ -57,14 +57,14 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Sjaak Derksen
  */
-public class SourceReference {
+public class NestedReference {
 
     private final Parameter parameter;
     private final List<PropertyEntry> propertyEntries;
     private final boolean isValid;
 
     /**
-     * Builds a {@link SourceReference} from an {@code @Mappping}.
+     * Builds a {@link NestedReference} from an {@code @Mappping}.
      */
     public static class BuilderFromMapping {
 
@@ -93,7 +93,7 @@ public class SourceReference {
             return this;
         }
 
-        public SourceReference build() {
+        public NestedReference build() {
 
             String sourceName = mapping.getSourceName();
 
@@ -166,7 +166,7 @@ public class SourceReference {
                 isValid = false;
             }
 
-            return new SourceReference( parameter, entries, isValid );
+            return new NestedReference( parameter, entries, isValid );
         }
 
         private List<PropertyEntry> getSourceEntries(Type type, String[] entryNames) {
@@ -199,7 +199,7 @@ public class SourceReference {
     }
 
     /**
-     * Builds a {@link SourceReference} from a property.
+     * Builds a {@link NestedReference} from a property.
      */
     public static class BuilderFromProperty {
 
@@ -228,16 +228,16 @@ public class SourceReference {
             return this;
         }
 
-        public SourceReference build() {
+        public NestedReference build() {
             List<PropertyEntry> sourcePropertyEntries = new ArrayList<PropertyEntry>();
             if ( accessor != null ) {
                 sourcePropertyEntries.add( new PropertyEntry( name, accessor, type ) );
             }
-            return new SourceReference( sourceParameter, sourcePropertyEntries, true );
+            return new NestedReference( sourceParameter, sourcePropertyEntries, true );
         }
     }
 
-    private SourceReference(Parameter sourceParameter, List<PropertyEntry> sourcePropertyEntries, boolean isValid) {
+    private NestedReference(Parameter sourceParameter, List<PropertyEntry> sourcePropertyEntries, boolean isValid) {
         this.parameter = sourceParameter;
         this.propertyEntries = sourcePropertyEntries;
         this.isValid = isValid;
@@ -299,7 +299,7 @@ public class SourceReference {
      * @param method the method to create the copy for
      * @return the copy
      */
-    public SourceReference copyForInheritanceTo(SourceMethod method) {
+    public NestedReference copyForInheritanceTo(SourceMethod method) {
         List<Parameter> replacementParamCandidates = new ArrayList<Parameter>();
         for ( Parameter sourceParam : method.getSourceParameters() ) {
             if ( sourceParam.getType().isAssignableTo( parameter.getType() ) ) {
@@ -312,6 +312,6 @@ public class SourceReference {
             replacement = first( replacementParamCandidates );
         }
 
-        return new SourceReference( replacement, propertyEntries, isValid );
+        return new NestedReference( replacement, propertyEntries, isValid );
     }
 }

@@ -66,7 +66,7 @@ public class Mapping {
     private final AnnotationValue targetAnnotationValue;
     private final AnnotationValue dependsOnAnnotationValue;
 
-    private SourceReference sourceReference;
+    private NestedReference sourceReference;
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
                                                                ExecutableElement method,
@@ -208,7 +208,7 @@ public class Mapping {
     public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
 
         if ( !method.isEnumMapping() ) {
-            sourceReference = new SourceReference.BuilderFromMapping()
+            sourceReference = new NestedReference.BuilderFromMapping()
                 .mapping( this )
                 .method( method )
                 .messager( messager )
@@ -271,7 +271,7 @@ public class Mapping {
         return dependsOnAnnotationValue;
     }
 
-    public SourceReference getSourceReference() {
+    public NestedReference getSourceReference() {
         return sourceReference;
     }
 

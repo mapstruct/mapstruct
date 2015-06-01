@@ -46,7 +46,7 @@ import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBui
 import org.mapstruct.ap.internal.model.source.Mapping;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.model.source.SourceReference;
+import org.mapstruct.ap.internal.model.source.NestedReference;
 import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
@@ -278,7 +278,7 @@ public class BeanMappingMethod extends MappingMethod {
                     else if ( mapping.getSourceName() != null ) {
 
                         // determine source parameter
-                        SourceReference sourceRef = mapping.getSourceReference();
+                        NestedReference sourceRef = mapping.getSourceReference();
                         if ( sourceRef.isValid() ) {
 
                             if ( targetWriteAccessor != null ) {
@@ -400,7 +400,7 @@ public class BeanMappingMethod extends MappingMethod {
                             Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
                             DeclaredType sourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
 
-                            SourceReference sourceRef = new SourceReference.BuilderFromProperty()
+                            NestedReference sourceRef = new NestedReference.BuilderFromProperty()
                                 .sourceParameter( sourceParameter )
                                 .type( ctx.getTypeFactory().getReturnType( sourceType, sourceAccessor ) )
                                 .accessor( sourceAccessor )
@@ -466,7 +466,7 @@ public class BeanMappingMethod extends MappingMethod {
                     if ( sourceParameter.getName().equals( targetProperty.getKey() ) ) {
                         Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
 
-                        SourceReference sourceRef = new SourceReference.BuilderFromProperty()
+                        NestedReference sourceRef = new NestedReference.BuilderFromProperty()
                             .sourceParameter( sourceParameter )
                             .name( targetProperty.getKey() )
                             .build();

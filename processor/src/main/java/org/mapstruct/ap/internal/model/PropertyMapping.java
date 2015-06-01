@@ -49,8 +49,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.model.source.SourceReference;
-import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
+import org.mapstruct.ap.internal.model.source.NestedReference;
+import org.mapstruct.ap.internal.model.source.NestedReference.PropertyEntry;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -168,10 +168,10 @@ public class PropertyMapping extends ModelElement {
         // initial properties
         private String dateFormat;
         private String defaultValue;
-        private SourceReference sourceReference;
         private SelectionParameters selectionParameters;
+        private NestedReference sourceReference;
 
-        public PropertyMappingBuilder sourceReference(SourceReference sourceReference) {
+        public PropertyMappingBuilder sourceReference(NestedReference sourceReference) {
             this.sourceReference = sourceReference;
             return this;
         }

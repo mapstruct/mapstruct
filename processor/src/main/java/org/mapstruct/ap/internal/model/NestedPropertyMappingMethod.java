@@ -25,7 +25,7 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
+import org.mapstruct.ap.internal.model.source.NestedReference.PropertyEntry;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
