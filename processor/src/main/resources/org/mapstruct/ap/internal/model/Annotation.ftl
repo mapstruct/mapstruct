@@ -18,4 +18,4 @@
      limitations under the License.
 
 -->
-@<@includeModel object=type/>
+@<@includeModel object=type/><#if (properties?size > 0) >(<#list properties as property>${property}<#if property_has_next>, </#if></#list>)</#if>

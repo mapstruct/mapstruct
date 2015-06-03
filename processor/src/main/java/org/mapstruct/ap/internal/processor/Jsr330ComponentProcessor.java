@@ -20,6 +20,8 @@ package org.mapstruct.ap.internal.processor;
 
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -36,8 +38,8 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
     }
 
     @Override
-    protected Annotation getTypeAnnotation() {
-        return new Annotation( getTypeFactory().getType( "javax.inject.Named" ) );
+    protected List<Annotation> getTypeAnnotations(Mapper mapper) {
+        return Collections.singletonList( new Annotation( getTypeFactory().getType( "javax.inject.Named" ) ) );
     }
 
     @Override
@@ -46,7 +48,7 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
     }
 
     @Override
-    protected boolean shouldDecoratorBeRemoved() {
-        return false;
+    protected boolean requiresGenerationOfDecoratorClass() {
+        return true;
     }
 }

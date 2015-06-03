@@ -18,6 +18,10 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
 
@@ -36,8 +40,19 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
     }
 
     @Override
-    protected Annotation getTypeAnnotation() {
-        return new Annotation( getTypeFactory().getType( "org.springframework.stereotype.Component" ) );
+    protected List<Annotation> getTypeAnnotations(Mapper mapper) {
+        List<Annotation> typeAnnotations = new ArrayList<Annotation>();
+        typeAnnotations.add( new Annotation( getTypeFactory().getType( "org.springframework.stereotype.Component" ) ) );
+
+        if ( mapper.getDecorator() != null ) {
+            Annotation qualifier = new Annotation(
+                    getTypeFactory().getType( "org.springframework.beans.factory.annotation.Qualifier" ),
+                    Arrays.asList( "\"delegate\"" )
+            );
+            typeAnnotations.add( qualifier );
+        }
+
+        return typeAnnotations;
     }
 
     @Override
@@ -46,7 +61,7 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
     }
 
     @Override
-    protected boolean shouldDecoratorBeRemoved() {
-        return true;
+    protected boolean requiresGenerationOfDecoratorClass() {
+        return false;
     }
 }

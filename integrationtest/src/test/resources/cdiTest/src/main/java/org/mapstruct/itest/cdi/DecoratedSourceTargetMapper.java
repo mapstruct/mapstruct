@@ -23,7 +23,6 @@ import org.mapstruct.DecoratedWith;
 import org.mapstruct.itest.cdi.other.DateMapper;
 
 @Mapper( componentModel = "cdi", uses = DateMapper.class )
-@DecoratedWith( SourceTargetMapperDecorator.class )
 public interface DecoratedSourceTargetMapper {
 
     Target sourceToTarget(Source source);

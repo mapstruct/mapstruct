@@ -38,6 +38,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = SpringTestConfig.class )
 @RunWith( SpringJUnit4ClassRunner.class )
 public class SpringBasedMapperTest {
+
     @Configuration
     @ComponentScan(basePackageClasses = SpringBasedMapperTest.class)
     public static class SpringTestConfig {
@@ -47,7 +48,6 @@ public class SpringBasedMapperTest {
     private SourceTargetMapper mapper;
 
     @Autowired
-    @Qualifier( "sourceTargetMapperDecorator" )
     private DecoratedSourceTargetMapper decoratedMapper;
 
     @Test
@@ -70,5 +70,4 @@ public class SpringBasedMapperTest {
         assertThat( target ).isNotNull();
         assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 43 ) );
     }
-
 }

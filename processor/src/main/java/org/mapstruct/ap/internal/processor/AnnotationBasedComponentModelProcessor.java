@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import java.util.List;
 import java.util.ListIterator;
 
 import javax.lang.model.element.TypeElement;
@@ -56,11 +57,13 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             return mapper;
         }
 
-        if ( shouldDecoratorBeRemoved() ) {
-            mapper.removeDecorator();
+        for ( Annotation typeAnnotation : getTypeAnnotations( mapper ) ) {
+            mapper.addAnnotation( typeAnnotation );
         }
 
-        mapper.addAnnotation( getTypeAnnotation() );
+        if ( !requiresGenerationOfDecoratorClass() ) {
+            mapper.removeDecorator();
+        }
 
         ListIterator<MapperReference> iterator = mapper.getReferencedMappers().listIterator();
         while ( iterator.hasNext() ) {
@@ -92,9 +95,9 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     protected abstract String getComponentModelIdentifier();
 
     /**
-     * @return the annotation of the mapper implementation
+     * @return the annotation(s) to be added at the mapper type implementation
      */
-    protected abstract Annotation getTypeAnnotation();
+    protected abstract List<Annotation> getTypeAnnotations(Mapper mapper);
 
     /**
      * @return the annotation of the field for the mapper reference
@@ -102,9 +105,9 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     protected abstract Annotation getMapperReferenceAnnotation();
 
     /**
-     * @return if generated decorator class should be removed
+     * @return if a decorator (sub-)class needs to be generated or not
      */
-    protected abstract boolean shouldDecoratorBeRemoved();
+    protected abstract boolean requiresGenerationOfDecoratorClass();
 
     @Override
     public int getPriority() {

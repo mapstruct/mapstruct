@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
 
@@ -36,8 +39,10 @@ public class CdiComponentProcessor extends AnnotationBasedComponentModelProcesso
     }
 
     @Override
-    protected Annotation getTypeAnnotation() {
-        return new Annotation( getTypeFactory().getType( "javax.enterprise.context.ApplicationScoped" ) );
+    protected List<Annotation> getTypeAnnotations(Mapper mapper) {
+        return Collections.singletonList(
+                new Annotation( getTypeFactory().getType( "javax.enterprise.context.ApplicationScoped" ) )
+        );
     }
 
     @Override
@@ -46,7 +51,7 @@ public class CdiComponentProcessor extends AnnotationBasedComponentModelProcesso
     }
 
     @Override
-    protected boolean shouldDecoratorBeRemoved() {
-        return true;
+    protected boolean requiresGenerationOfDecoratorClass() {
+        return false;
     }
 }
