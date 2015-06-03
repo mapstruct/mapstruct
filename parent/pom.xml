@@ -44,6 +44,7 @@
         <com.jolira.hickory.version>1.0.0</com.jolira.hickory.version>
         <org.apache.maven.plugins.enforcer.version>1.2</org.apache.maven.plugins.enforcer.version>
         <org.apache.maven.plugins.surefire.version>2.18.1</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.javadoc.version>2.10.3</org.apache.maven.plugins.javadoc.version>
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
@@ -312,7 +313,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.3</version>
+                    <version>${org.apache.maven.plugins.javadoc.version}</version>
                     <configuration>
                         <quiet>true</quiet>
                         <excludePackageNames>org.mapstruct.ap.internal.prism;org.mapstruct.itest.jaxb.xsd.*</excludePackageNames>
@@ -571,4 +572,27 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>sonatype-oss-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${org.apache.maven.plugins.javadoc.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
