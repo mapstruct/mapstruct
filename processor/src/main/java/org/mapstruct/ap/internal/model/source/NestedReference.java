@@ -172,15 +172,20 @@ public class NestedReference {
         private List<PropertyEntry> getSourceEntries(Type type, String[] entryNames) {
             List<PropertyEntry> sourceEntries = new ArrayList<PropertyEntry>();
             Type newType = type;
-            for ( String entryName : entryNames ) {
+            for ( int i = 0; i < entryNames.length; i++ ) {
                 boolean matchFound = false;
                 Map<String, ExecutableElement> sourceReadAccessors = newType.getPropertyReadAccessors();
                 for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
-                    if ( getter.getKey().equals( entryName ) ) {
-                        newType = typeFactory.getReturnType(
-                                (DeclaredType) newType.getTypeMirror(), getter.getValue()
-                        );
-                        sourceEntries.add( new PropertyEntry( entryName, getter.getValue(), newType ) );
+                    if ( getter.getKey().equals( entryNames[i] ) ) {
+                        newType =  typeFactory.getReturnType( (DeclaredType) newType.getTypeElement(), getter.getValue() );
+                        String[] fullName = Arrays.copyOfRange( entryNames, 0, i + 1 );
+                        PropertyEntry existingPropertyEntry = searchForExistingPropertyEntry( fullName );
+                        if ( existingPropertyEntry != null ) {
+                            sourceEntries.add( existingPropertyEntry );
+                        }
+                        else {
+                            sourceEntries.add( new PropertyEntry( fullName, getter.getValue(), newType ) );
+                        }
                         matchFound = true;
                         break;
                     }
@@ -190,6 +195,31 @@ public class NestedReference {
                 }
             }
             return sourceEntries;
+        }
+
+
+        /**
+         * Searches if a property entry has been created before for this specific bean mapping method.
+         *
+         * @param fullName the full name of the property.
+         * @return
+         */
+        private PropertyEntry searchForExistingPropertyEntry(String[] fullName) {
+            PropertyEntry existingPropertyEntry = null;
+            for ( String entry : method.getMappingOptions().getMappings().keySet() ) {
+                for ( Mapping existingMapping : method.getMappingOptions().getMappings().get( entry ) ) {
+                    if ( existingMapping.getSourceReference() != null ) {
+                        NestedReference sourceRef = existingMapping.getSourceReference();
+                        for ( PropertyEntry propertyEntry : sourceRef.getPropertyEntries() ) {
+                            if ( Arrays.deepEquals( fullName, propertyEntry.fullName ) ) {
+                                existingPropertyEntry = propertyEntry;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return existingPropertyEntry;
         }
 
         private void reportMappingError(Message msg, Object... objects) {
@@ -266,21 +296,38 @@ public class NestedReference {
 
     /**
      * A PropertyEntry contains information on the name, accessor and return type of a property.
+     *
+     * It can be shared between several nested properties. For example
+     *
+     * bean
+     *
+     *   nestedMapping1 = "x.y1.z1"
+     *   nestedMapping2 = "x.y1.z2"
+     *   nestedMapping3 = "x.y2.z3"
+     *
+     * has property entries x, y1, y2, z1, z2, z3.
      */
     public static class PropertyEntry {
 
-        private final String name;
+
+        private final String[] fullName;
         private final ExecutableElement accessor;
         private final Type type;
 
+        public PropertyEntry(String[] fullName, ExecutableElement accessor, Type type) {
+            this.fullName = fullName;
+            this.accessor = accessor;
+            this.type = type;
+        }
+
         public PropertyEntry(String name, ExecutableElement accessor, Type type) {
-            this.name = name;
+            this.fullName = new String[]{ name };
             this.accessor = accessor;
             this.type = type;
         }
 
         public String getName() {
-            return name;
+            return fullName[fullName.length - 1];
         }
 
         public ExecutableElement getAccessor() {
