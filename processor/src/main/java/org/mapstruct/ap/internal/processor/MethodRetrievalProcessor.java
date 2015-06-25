@@ -181,7 +181,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         ExecutableType methodType = typeFactory.getMethodType( usedMapper, method );
         List<Parameter> parameters = typeFactory.getParameters( methodType, method );
-        Type returnType = typeFactory.getReturnType( method );
+        Type returnType = typeFactory.getReturnType( methodType );
 
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
         boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );

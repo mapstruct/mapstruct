@@ -454,10 +454,14 @@ public class PropertyMapping extends ModelElement {
             switch ( targetAccessorType ) {
                 case ADDER:
                 case SETTER:
-                    return ctx.getTypeFactory().getSingleParameter( targetWriteAccessor ).getType();
+                    return ctx.getTypeFactory().getSingleParameter(
+                        method.getResultType().getTypeElement(),
+                        targetWriteAccessor ).getType();
                 case GETTER:
                 default:
-                    return ctx.getTypeFactory().getReturnType( targetWriteAccessor );
+                    return ctx.getTypeFactory().getReturnType(
+                        method.getResultType().getTypeElement(),
+                        targetWriteAccessor );
             }
         }
 
@@ -570,10 +574,14 @@ public class PropertyMapping extends ModelElement {
             // target
             Type targetType;
             if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
-                targetType = ctx.getTypeFactory().getSingleParameter( targetWriteAccessor ).getType();
+                targetType = ctx.getTypeFactory().getSingleParameter(
+                    method.getResultType().getTypeElement(),
+                    targetWriteAccessor ).getType();
             }
             else {
-                targetType = ctx.getTypeFactory().getReturnType( targetWriteAccessor );
+                targetType = ctx.getTypeFactory().getReturnType(
+                    method.getResultType().getTypeElement(),
+                    targetWriteAccessor );
             }
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
@@ -659,10 +667,14 @@ public class PropertyMapping extends ModelElement {
             if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
                 // setter, so wrap in setter
                 assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-                targetType = ctx.getTypeFactory().getSingleParameter( targetWriteAccessor ).getType();
+                targetType = ctx.getTypeFactory().getSingleParameter(
+                    method.getResultType().getTypeElement(),
+                    targetWriteAccessor ).getType();
             }
             else {
-                targetType = ctx.getTypeFactory().getReturnType( targetWriteAccessor );
+                targetType = ctx.getTypeFactory().getReturnType(
+                    method.getResultType().getTypeElement(),
+                    targetWriteAccessor );
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
                 assignment = new GetterWrapperForCollectionsAndMaps(
                     assignment,
