@@ -398,7 +398,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 // first check if there's a setter method.
                 ExecutableElement adderMethod = null;
                 if ( Executables.isSetterMethod( candidate ) ) {
-                    Type targetType = typeFactory.getSingleParameter( candidate ).getType();
+                    Type targetType = typeFactory.getSingleParameter( typeElement, candidate ).getType();
                     // ok, the current accessor is a setter. So now the strategy determines what to use
                     if ( cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
                         adderMethod = getAdderForType( targetType, targetPropertyName );
@@ -407,7 +407,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 else if ( Executables.isGetterMethod( candidate ) ) {
                         // the current accessor is a getter (no setter available). But still, an add method is according
                     // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
-                    Type targetType = typeFactory.getReturnType( candidate );
+                    Type targetType = typeFactory.getReturnType( typeFactory.getMethodType( typeElement, candidate ) );
                     adderMethod = getAdderForType( targetType, targetPropertyName );
                 }
                 if ( adderMethod != null ) {

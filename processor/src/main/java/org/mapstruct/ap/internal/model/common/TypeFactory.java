@@ -55,6 +55,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.prism.MappingTargetPrism;
 import org.mapstruct.ap.internal.prism.TargetTypePrism;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
+import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds;
 
 import static org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds.erasure;
@@ -254,18 +255,18 @@ public class TypeFactory {
      * Get the ExecutableType for given method as part of usedMapper. Possibly parameterized types in method declaration
      * will be evaluated to concrete types then.
      *
-     * @param usedMapper the type declaring the method
+     * @param includingType the type on which's scope the method type shall be evaluated
      * @param method the method
      * @return the ExecutableType representing the method as part of usedMapper
      */
-    public ExecutableType getMethodType(TypeElement usedMapper, ExecutableElement method) {
-        DeclaredType asType = (DeclaredType) replaceTypeElementIfNecessary( elementUtils, usedMapper ).asType();
+    public ExecutableType getMethodType(TypeElement includingType, ExecutableElement method) {
+        DeclaredType asType = (DeclaredType) replaceTypeElementIfNecessary( elementUtils, includingType ).asType();
         TypeMirror asMemberOf = typeUtils.asMemberOf( asType, method );
         ExecutableType methodType = asMemberOf.accept( new ExecutableTypeRetrievalVisitor(), null );
         return methodType;
     }
 
-    public Parameter getSingleParameter(ExecutableElement method) {
+    public Parameter getSingleParameter(TypeElement includingType, ExecutableElement method) {
         List<? extends VariableElement> parameters = method.getParameters();
 
         if ( parameters.size() != 1 ) {
@@ -273,31 +274,11 @@ public class TypeFactory {
             return null;
         }
 
-        VariableElement parameter = parameters.get( 0 );
-
-        return new Parameter(
-            parameter.getSimpleName().toString(),
-            getType( parameter.asType() )
-        );
+        return Collections.first( getParameters( includingType, method ) );
     }
 
-    public List<Parameter> getParameters(ExecutableElement method) {
-        List<? extends VariableElement> parameters = method.getParameters();
-        List<Parameter> result = new ArrayList<Parameter>( parameters.size() );
-
-        for ( VariableElement parameter : parameters ) {
-            result
-                .add(
-                    new Parameter(
-                        parameter.getSimpleName().toString(),
-                        getType( parameter.asType() ),
-                        MappingTargetPrism.getInstanceOn( parameter ) != null,
-                        TargetTypePrism.getInstanceOn( parameter ) != null
-                    )
-                );
-        }
-
-        return result;
+    public List<Parameter> getParameters(TypeElement includingType, ExecutableElement method) {
+        return getParameters( getMethodType( includingType, method ), method );
     }
 
     public List<Parameter> getParameters(ExecutableType methodType, ExecutableElement method) {
@@ -322,20 +303,16 @@ public class TypeFactory {
         return result;
     }
 
-    public Type getReturnType(ExecutableElement method) {
-        return getType( method.getReturnType() );
+    public Type getReturnType(TypeElement includingType, ExecutableElement method) {
+        return getReturnType( getMethodType( includingType, method ) );
     }
 
     public Type getReturnType(ExecutableType method) {
         return getType( method.getReturnType() );
     }
 
-    public List<Type> getThrownTypes(ExecutableElement method) {
-        List<Type> thrownTypes = new ArrayList<Type>();
-        for (TypeMirror exceptionType : method.getThrownTypes() ) {
-            thrownTypes.add( getType( exceptionType ) );
-        }
-        return thrownTypes;
+    public List<Type> getThrownTypes(TypeElement includingType, ExecutableElement method) {
+        return getThrownTypes( getMethodType( includingType, method ) );
     }
 
     public List<Type> getThrownTypes(ExecutableType method) {
@@ -488,4 +465,5 @@ public class TypeFactory {
 
         return collectionOrMap;
     }
+
 }
