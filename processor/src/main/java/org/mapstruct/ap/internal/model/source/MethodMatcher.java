@@ -124,7 +124,7 @@ public class MethodMatcher {
         }
 
         // check result type
-        if ( !matchResultType( resultType, candidateMethod.getResultType(), genericTypesMap ) ) {
+        if ( !matchResultType( resultType, genericTypesMap ) ) {
             return false;
         }
 
@@ -167,19 +167,29 @@ public class MethodMatcher {
         return true;
     }
 
-    private boolean matchResultType(Type resultType,
-                                    Type candidateResultType,
-                                    Map<TypeVariable, TypeMirror> genericTypesMap) {
+    private boolean matchResultType(Type resultType, Map<TypeVariable, TypeMirror> genericTypesMap) {
 
+        Type candidateResultType = candidateMethod.getResultType();
 
         if ( !isJavaLangObject( candidateResultType.getTypeMirror() ) && !candidateResultType.isVoid() ) {
 
-            TypeMatcher returnTypeMatcher = new TypeMatcher( Assignability.VISITED_ASSIGNABLE_TO, genericTypesMap );
+            final Assignability visitedAssignability;
+            if ( candidateMethod.getReturnType().isVoid() ) {
+                // for void-methods, the result-type of the candidate needs to be assignable from the given result type
+                visitedAssignability = Assignability.VISITED_ASSIGNABLE_FROM;
+            }
+            else {
+                // for non-void methods, the result-type of the candidate needs to be assignable to the given result
+                // type
+                visitedAssignability = Assignability.VISITED_ASSIGNABLE_TO;
+            }
+
+            TypeMatcher returnTypeMatcher = new TypeMatcher( visitedAssignability, genericTypesMap );
             if ( !returnTypeMatcher.visit( candidateResultType.getTypeMirror(), resultType.getTypeMirror() ) ) {
                 if ( resultType.isPrimitive() ) {
                     TypeMirror boxedType = typeUtils.boxedClass( (PrimitiveType) resultType.getTypeMirror() ).asType();
                     TypeMatcher boxedReturnTypeMatcher =
-                        new TypeMatcher( Assignability.VISITED_ASSIGNABLE_TO, genericTypesMap );
+                        new TypeMatcher( visitedAssignability, genericTypesMap );
 
                     if ( !boxedReturnTypeMatcher.visit( candidateResultType.getTypeMirror(), boxedType ) ) {
                         return false;
@@ -189,7 +199,7 @@ public class MethodMatcher {
                     TypeMirror boxedCandidateReturnType =
                         typeUtils.boxedClass( (PrimitiveType) candidateResultType.getTypeMirror() ).asType();
                     TypeMatcher boxedReturnTypeMatcher =
-                        new TypeMatcher( Assignability.VISITED_ASSIGNABLE_TO, genericTypesMap );
+                        new TypeMatcher( visitedAssignability, genericTypesMap );
 
                     if ( !boxedReturnTypeMatcher.visit( boxedCandidateReturnType, resultType.getTypeMirror() ) ) {
                         return false;
