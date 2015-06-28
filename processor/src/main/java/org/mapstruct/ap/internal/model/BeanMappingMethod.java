@@ -365,14 +365,14 @@ public class BeanMappingMethod extends MappingMethod {
          * the set of remaining target properties.
          */
         private void applyPropertyNameBasedMapping() {
-            Iterator<Entry<String, ExecutableElement>> targetPropertiesIterator =
+            Iterator<Entry<String, ExecutableElement>> targetPropertyEntriesIterator =
                 unprocessedTargetProperties.entrySet().iterator();
 
             // usually there should be only one getter; only for Boolean there may be two: isFoo() and getFoo()
             List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( 2 );
 
-            while ( targetPropertiesIterator.hasNext() ) {
-                Entry<String, ExecutableElement> targetProperty = targetPropertiesIterator.next();
+            while ( targetPropertyEntriesIterator.hasNext() ) {
+                Entry<String, ExecutableElement> targetProperty = targetPropertyEntriesIterator.next();
 
                 PropertyMapping propertyMapping = null;
 
@@ -444,19 +444,18 @@ public class BeanMappingMethod extends MappingMethod {
 
                 if ( propertyMapping != null ) {
                     propertyMappings.add( propertyMapping );
-                    targetPropertiesIterator.remove();
                 }
             }
         }
 
         private void applyParameterNameBasedMapping() {
 
-            Iterator<Entry<String, ExecutableElement>> targetProperties =
+            Iterator<Entry<String, ExecutableElement>> targetPropertyEntriesIterator =
                 unprocessedTargetProperties.entrySet().iterator();
 
-            while ( targetProperties.hasNext() ) {
+            while ( targetPropertyEntriesIterator.hasNext() ) {
 
-                Entry<String, ExecutableElement> targetProperty = targetProperties.next();
+                Entry<String, ExecutableElement> targetProperty = targetPropertyEntriesIterator.next();
 
                 Iterator<Parameter> sourceParameters = unprocessedSourceParameters.iterator();
 
@@ -485,7 +484,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .build();
 
                         propertyMappings.add( propertyMapping );
-                        targetProperties.remove();
+                        targetPropertyEntriesIterator.remove();
                         sourceParameters.remove();
                     }
                 }
@@ -662,3 +661,4 @@ public class BeanMappingMethod extends MappingMethod {
         return this.factoryMethod;
     }
 }
+
