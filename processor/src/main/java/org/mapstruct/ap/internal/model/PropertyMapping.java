@@ -47,6 +47,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
 
@@ -262,7 +263,8 @@ public class PropertyMapping extends ModelElement {
                     && !sourceReference.getPropertyEntries().isEmpty() /* parameter null taken care of by beanmapper */
                     && ( result.getType() == TYPE_CONVERTED
                     || result.getType() == TYPE_CONVERTED_MAPPED
-                    || result.getType() == DIRECT && targetType.isPrimitive() ) ) {
+                    || result.getType() == MAPPED_TYPE_CONVERTED
+                    || ( result.getType() == DIRECT && targetType.isPrimitive() ) ) ) {
                     // for primitive types null check is not possible at all, but a conversion needs
                     // a null check.
                     result = new NullCheckWrapper( result );
