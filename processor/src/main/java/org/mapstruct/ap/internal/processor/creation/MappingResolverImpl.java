@@ -31,9 +31,9 @@ import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
 import org.mapstruct.ap.internal.model.AssignmentFactory;
 import org.mapstruct.ap.internal.model.MapperReference;
+import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
 import org.mapstruct.ap.internal.model.VirtualMappingMethod;
-import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
@@ -391,6 +391,10 @@ public class MappingResolverImpl implements MappingResolver {
 
             // search the other way around
             for ( Method methodXCandidate : methodXCandidates ) {
+                if ( methodXCandidate.getMappingTargetParameter() != null ) {
+                    continue;
+                }
+
                 Assignment methodRefX = resolveViaMethod(
                     sourceType,
                     methodXCandidate.getReturnType(),
