@@ -405,7 +405,8 @@ public class TypeFactory {
     }
 
     private boolean isImported(String name, String qualifiedName) {
-        String importedType = importedQualifiedTypesBySimpleName.get( name );
+        String trimmedName = TypeFactory.trimSimpleClassName( name );
+        String importedType = importedQualifiedTypesBySimpleName.get( trimmedName );
 
         boolean imported = false;
         if ( importedType != null ) {
@@ -414,7 +415,7 @@ public class TypeFactory {
             }
         }
         else {
-            importedQualifiedTypesBySimpleName.put( name, qualifiedName );
+            importedQualifiedTypesBySimpleName.put( trimmedName, qualifiedName );
             imported = true;
         }
         return imported;
@@ -464,6 +465,17 @@ public class TypeFactory {
         }
 
         return collectionOrMap;
+    }
+
+    static String trimSimpleClassName(String className) {
+        if ( className == null ) {
+            return null;
+        }
+        String trimmedClassName = className;
+        while ( trimmedClassName.endsWith( "[]" ) ) {
+            trimmedClassName = trimmedClassName.substring( 0, trimmedClassName.length() - 2 );
+        }
+        return trimmedClassName;
     }
 
 }
