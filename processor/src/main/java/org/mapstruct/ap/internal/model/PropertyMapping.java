@@ -51,6 +51,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.NestedReference;
 import org.mapstruct.ap.internal.model.source.NestedReference.PropertyEntry;
+import static org.mapstruct.ap.internal.util.Collections.last;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -434,12 +435,8 @@ public class PropertyMapping extends ModelElement {
             if ( propertyEntries.isEmpty() ) {
                 return sourceParam.getType();
             }
-            else if ( propertyEntries.size() == 1 ) {
-                PropertyEntry propertyEntry = propertyEntries.get( 0 );
-                return propertyEntry.getType();
-            }
             else {
-                PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
+                PropertyEntry lastPropertyEntry = last( propertyEntries );
                 return lastPropertyEntry.getType();
             }
         }
@@ -459,7 +456,7 @@ public class PropertyMapping extends ModelElement {
             }
             // nested property given as dot path
             else {
-                PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
+                PropertyEntry lastPropertyEntry = last( propertyEntries );
 
                 // copy mapper configuration from the source method, its the same mapper
                 MapperConfiguration config = method.getMapperConfiguration();

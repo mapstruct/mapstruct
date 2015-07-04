@@ -18,11 +18,11 @@
  */
 package org.mapstruct.ap.test.nestedsourceproperties;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
 import org.mapstruct.factory.Mappers;
 
@@ -30,19 +30,9 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper
-public interface ArtistToChartEntry {
+public interface ArtistToChartEntryReverse {
 
-    ArtistToChartEntry MAPPER = Mappers.getMapper( ArtistToChartEntry.class );
-
-    @Mappings({
-        @Mapping(target = "chartName", source = "chart.name"),
-        @Mapping(target = "songTitle", source = "song.title"),
-        @Mapping(target = "artistName", source = "song.artist.name"),
-        @Mapping(target = "recordedAt", source = "song.artist.label.studio.name"),
-        @Mapping(target = "city", source = "song.artist.label.studio.city"),
-        @Mapping(target = "position", source = "position")
-    })
-    ChartEntry map(Chart chart, Song song, Integer position);
+    ArtistToChartEntryReverse MAPPER = Mappers.getMapper( ArtistToChartEntryReverse.class );
 
     @Mappings({
         @Mapping(target = "chartName", ignore = true),
@@ -52,26 +42,9 @@ public interface ArtistToChartEntry {
         @Mapping(target = "city", source = "artist.label.studio.city"),
         @Mapping(target = "position", ignore = true)
     })
-    ChartEntry map(Song song);
+    ChartEntry mapForward(Song song);
 
-//    TODO: behaviour will change after introduction of reverse mapping
-//
-//    @InheritInverseConfiguration
-//    @Mappings({
-//        @Mapping(target = "artist", ignore = true),
-//        @Mapping(target = "positions", ignore = true)
-//    })
-//    Song map(ChartEntry song);
-
-
-    @Mappings({
-        @Mapping(target = "chartName", source = "name"),
-        @Mapping(target = "songTitle", ignore = true),
-        @Mapping(target = "artistName", ignore = true),
-        @Mapping(target = "recordedAt", ignore = true),
-        @Mapping(target = "city", ignore = true),
-        @Mapping(target = "position", ignore = true)
-    })
-    ChartEntry map(Chart name);
+    @InheritInverseConfiguration
+    Song mapReverse(ChartEntry song);
 
 }

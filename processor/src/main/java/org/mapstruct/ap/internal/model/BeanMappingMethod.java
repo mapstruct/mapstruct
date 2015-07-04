@@ -51,6 +51,7 @@ import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import static org.mapstruct.ap.internal.util.Collections.last;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -93,6 +94,10 @@ public class BeanMappingMethod extends MappingMethod {
             CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
             Map<String, ExecutableElement> accessors = method.getResultType().getPropertyWriteAccessors( cms );
             this.targetProperties = accessors.keySet();
+            // TODO: These are only the 1'st level accessors.. something has to happen here to take nested targets into
+            // consideration
+
+
             this.unprocessedTargetProperties = new LinkedHashMap<String, ExecutableElement>( accessors );
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
@@ -240,18 +245,26 @@ public class BeanMappingMethod extends MappingMethod {
 
                     PropertyMapping propertyMapping = null;
 
-                    // fetch the target property
-                    ExecutableElement targetWriteAccessor = unprocessedTargetProperties.get( mapping.getTargetName() );
-                    if ( targetWriteAccessor == null ) {
-                        ctx.getMessager().printMessage(
-                            method.getExecutable(),
+                    NestedReference targetRef = mapping.getTargetReference();
+                    String resultPropertyName = null;
+                    if ( !targetRef.getPropertyEntries().isEmpty() ) {
+                        // TODO property is said to be handled when root level entry is handled for nested targets.
+                        resultPropertyName = targetRef.getPropertyEntries().get( 0 ).getName();
+                    }
+
+                    // this has to be done differently.. Based on targetRef..
+                    if (!unprocessedTargetProperties.containsKey( resultPropertyName ) ) {
+                        ctx.getMessager().printMessage( method.getExecutable(),
                             mapping.getMirror(),
                             mapping.getSourceAnnotationValue(),
-                            Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE,
+                            Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE,
                             mapping.getTargetName()
                         );
                         errorOccurred = true;
+                        continue;
                     }
+
+                    ExecutableElement targetWriteAccessor = last( targetRef.getPropertyEntries() ).getAccessor();
 
                     // unknown properties given via dependsOn()?
                     for ( String dependency : mapping.getDependsOn() ) {
@@ -298,12 +311,13 @@ public class BeanMappingMethod extends MappingMethod {
                                     .dependsOn( mapping.getDependsOn() )
                                     .defaultValue( mapping.getDefaultValue() )
                                     .build();
-                                handledTargets.add( mapping.getTargetName() );
+                                handledTargets.add( resultPropertyName );
                                 unprocessedSourceParameters.remove( sourceRef.getParameter() );
                             }
                         }
                         else {
                             errorOccurred = true;
+                            continue;
                         }
                     }
 
@@ -444,6 +458,7 @@ public class BeanMappingMethod extends MappingMethod {
 
                 if ( propertyMapping != null ) {
                     propertyMappings.add( propertyMapping );
+                    targetPropertyEntriesIterator.remove();
                 }
             }
         }
@@ -660,5 +675,7 @@ public class BeanMappingMethod extends MappingMethod {
     public MethodReference getFactoryMethod() {
         return this.factoryMethod;
     }
+
+
 }
 

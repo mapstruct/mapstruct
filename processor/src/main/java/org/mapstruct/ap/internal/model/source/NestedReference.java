@@ -18,12 +18,11 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
@@ -31,15 +30,19 @@ import javax.lang.model.type.DeclaredType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+import org.mapstruct.ap.internal.util.Executables;
+
 /**
  * This class describes the source side of a property mapping.
  * <p>
- * It contains the source parameter, and all individual (nested) property entries. So consider the following
- * mapping method:
+ * It contains the source parameter, and all individual (nested) property entries. So consider the following mapping
+ * method:
  *
  * <pre>
  * &#64;Mapping(source = "in.propA.propB" target = "propC")
@@ -66,29 +69,29 @@ public class NestedReference {
     /**
      * Builds a {@link NestedReference} from an {@code @Mappping}.
      */
-    public static class BuilderFromMapping {
+    public static class BuilderFromSourceMapping {
 
         private Mapping mapping;
         private SourceMethod method;
         private FormattingMessager messager;
         private TypeFactory typeFactory;
 
-        public BuilderFromMapping messager(FormattingMessager messager) {
+        public BuilderFromSourceMapping messager(FormattingMessager messager) {
             this.messager = messager;
             return this;
         }
 
-        public BuilderFromMapping mapping(Mapping mapping) {
+        public BuilderFromSourceMapping mapping(Mapping mapping) {
             this.mapping = mapping;
             return this;
         }
 
-        public BuilderFromMapping method(SourceMethod method) {
+        public BuilderFromSourceMapping method(SourceMethod method) {
             this.method = method;
             return this;
         }
 
-        public BuilderFromMapping typeFactory(TypeFactory typeFactory) {
+        public BuilderFromSourceMapping typeFactory(TypeFactory typeFactory) {
             this.typeFactory = typeFactory;
             return this;
         }
@@ -124,7 +127,7 @@ public class NestedReference {
                 if ( segments.length > 1 && parameter != null ) {
                     sourcePropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                     entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                    foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
+                    foundEntryMatch = (entries.size() == sourcePropertyNames.length);
                 }
                 else {
                     // its only a parameter, no property
@@ -138,14 +141,14 @@ public class NestedReference {
                 sourcePropertyNames = segments;
                 parameter = method.getSourceParameters().get( 0 );
                 entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
+                foundEntryMatch = (entries.size() == sourcePropertyNames.length);
 
                 if ( !foundEntryMatch ) {
                     //Lets see if the expression contains the parameterName, so parameterName.propName1.propName2
                     if ( parameter.getName().equals( segments[0] ) ) {
                         sourcePropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                         entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                        foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
+                        foundEntryMatch = (entries.size() == sourcePropertyNames.length);
                     }
                     else {
                         // segment[0] cannot be attributed to the parameter name.
@@ -158,7 +161,7 @@ public class NestedReference {
 
                 if ( parameter != null ) {
                     reportMappingError( Message.PROPERTYMAPPING_NO_PROPERTY_IN_PARAMETER, parameter.getName(),
-                                        Strings.join( Arrays.asList( sourcePropertyNames ), "." ) );
+                        Strings.join( Arrays.asList( sourcePropertyNames ), "." ) );
                 }
                 else {
                     reportMappingError( Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName() );
@@ -173,13 +176,27 @@ public class NestedReference {
             List<PropertyEntry> sourceEntries = new ArrayList<PropertyEntry>();
             Type newType = type;
             for ( int i = 0; i < entryNames.length; i++ ) {
+
+                // initialize
                 boolean matchFound = false;
                 Map<String, ExecutableElement> sourceReadAccessors = newType.getPropertyReadAccessors();
-                for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
+
+                // search through the read accessors
+                for ( Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
+
+                    // match
                     if ( getter.getKey().equals( entryNames[i] ) ) {
-                        newType =  typeFactory.getReturnType( (DeclaredType) newType.getTypeElement(), getter.getValue() );
+
+                        newType =  typeFactory.getReturnType(
+                            (DeclaredType) newType.getTypeMirror(),
+                            getter.getValue()
+                        );
+
+                        // search existing entries
                         String[] fullName = Arrays.copyOfRange( entryNames, 0, i + 1 );
                         PropertyEntry existingPropertyEntry = searchForExistingPropertyEntry( fullName );
+
+                        // make a new entry when none exists
                         if ( existingPropertyEntry != null ) {
                             sourceEntries.add( existingPropertyEntry );
                         }
@@ -196,7 +213,6 @@ public class NestedReference {
             }
             return sourceEntries;
         }
-
 
         /**
          * Searches if a property entry has been created before for this specific bean mapping method.
@@ -224,7 +240,203 @@ public class NestedReference {
 
         private void reportMappingError(Message msg, Object... objects) {
             messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
-                                   msg, objects );
+                msg, objects );
+        }
+    }
+
+    /**
+     * Builds a {@link NestedReference} from an {@code @Mappping}.
+     */
+    public static class BuilderFromTargetMapping {
+
+        private Mapping mapping;
+        private SourceMethod method;
+        private FormattingMessager messager;
+        private TypeFactory typeFactory;
+        private boolean isReverse;
+
+        public BuilderFromTargetMapping messager(FormattingMessager messager) {
+            this.messager = messager;
+            return this;
+        }
+
+        public BuilderFromTargetMapping mapping(Mapping mapping) {
+            this.mapping = mapping;
+            return this;
+        }
+
+        public BuilderFromTargetMapping method(SourceMethod method) {
+            this.method = method;
+            return this;
+        }
+
+        public BuilderFromTargetMapping typeFactory(TypeFactory typeFactory) {
+            this.typeFactory = typeFactory;
+            return this;
+        }
+
+        public BuilderFromTargetMapping isReverse(boolean isReverse) {
+            this.isReverse = isReverse;
+            return this;
+        }
+
+        public NestedReference build() {
+
+            String targetName = mapping.getTargetName();
+
+            if ( targetName == null ) {
+                return null;
+            }
+
+            boolean isValid = true;
+            boolean foundEntryMatch = false;
+
+            String[] segments = targetName.split( "\\." );
+            Parameter parameter = method.getMappingTargetParameter();
+
+            // check returntype
+            Type resultType = method.getResultType();
+            String[] targetPropertyNames = segments;
+            List<PropertyEntry> entries = getTargetEntries( resultType, targetPropertyNames );
+            foundEntryMatch = (entries.size() == targetPropertyNames.length);
+            if ( !foundEntryMatch ) {
+                targetPropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
+                entries = getTargetEntries( resultType, targetPropertyNames );
+                foundEntryMatch = (entries.size() == targetPropertyNames.length);
+            }
+
+            // @MappingTarget (update) can possibly introduce a parameter name in the mapping..
+            // starts to get hairy in case of reversing..
+            // situation with parameter name in name and without..
+
+//            else {
+
+                // try option with parameter name and without
+                // TODO ignore parameter name completely when reverse
+//                if ( segments.length == 1 ) {
+//                    String mappingTargetParameterName = segments[0];
+//                    if ( parameter.getName().equals( segments[0] ) ) {
+//                        foundEntryMatch = true;
+//                    }
+//                    else {
+//                        reportMappingError( Message.PROPERTYMAPPING_INVALID_PARAMETER_NAME,
+//                            mappingTargetParameterName );
+//                        isValid = false;
+//                    }
+//                }
+//                else if ( segments.length > 1 ) {
+//                    entries = getTargetEntries( parameter.getType(), segments );
+//                    foundEntryMatch = (entries.size() == targetPropertyNames.length);
+//                    if ( !foundEntryMatch ) {
+//                        targetPropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
+//                        entries = getTargetEntries( parameter.getType(), targetPropertyNames );
+//                        foundEntryMatch = (entries.size() == targetPropertyNames.length);
+//                    }
+//                }
+//            }
+//
+            if ( !foundEntryMatch ) {
+
+//                if ( parameter != null ) {
+//                    reportMappingError( Message.PROPERTYMAPPING_NO_PROPERTY_IN_PARAMETER, parameter.getName(),
+//                        Strings.join( Arrays.asList( targetPropertyNames ), "." ) );
+//                }
+//                else {
+//                    reportMappingError( Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName() );
+//                }
+                isValid = false;
+            }
+
+            return new NestedReference( parameter, entries, isValid );
+        }
+
+        private List<PropertyEntry> getTargetEntries(Type type, String[] entryNames) {
+
+            // initialize
+            CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
+            List<PropertyEntry> targetEntries = new ArrayList<PropertyEntry>();
+            Type newType = type;
+
+            // iterate, establish for each entry the target write accessors. Other than setter is only allowed for
+            // last entry
+            for ( int i = 0; i < entryNames.length; i++ ) {
+
+                boolean matchFound = false;
+                Set<Map.Entry<String, ExecutableElement>> targetWriteAccessorEntries =
+                    newType.getPropertyWriteAccessors( cms ).entrySet();
+
+                // iterate over target write accessors entries  find existing or create new property entry.
+                for ( Map.Entry<String, ExecutableElement> targetWriteAccessorEntry : targetWriteAccessorEntries ) {
+
+                    if ( targetWriteAccessorEntry.getKey().equals( entryNames[i] ) ) {
+
+                        // there is a match, determine the accessor
+                        ExecutableElement targetWriteAccessor = targetWriteAccessorEntry.getValue();
+
+                        if ( (i == entryNames.length - 1 )
+                            || (Executables.isSetterMethod( targetWriteAccessor ) ) ) {
+                            // only intermediate nested properties when they are a true setter
+                            // the last may be other accessor (setter / getter / adder).
+
+                            if ( Executables.isGetterMethod( targetWriteAccessor ) ) {
+                                newType = typeFactory.getReturnType(
+                                    (DeclaredType) newType.getTypeMirror(),
+                                    targetWriteAccessor );
+                            }
+                            else {
+                                newType = typeFactory.getSingleParameter(
+                                    (DeclaredType) newType.getTypeMirror(),
+                                    targetWriteAccessor ).getType();
+                            }
+                            String[] fullName = Arrays.copyOfRange( entryNames, 0, i + 1 );
+
+                            // check if an entry alread exists, otherwise create
+                            PropertyEntry existingPropertyEntry = searchForExistingPropertyEntry( fullName );
+                            if ( existingPropertyEntry != null ) {
+                                targetEntries.add( existingPropertyEntry );
+                            }
+                            else {
+                                targetEntries.add( new PropertyEntry( fullName, targetWriteAccessor, newType ) );
+                            }
+                            matchFound = true;
+                            break;
+                        }
+                    }
+                }
+                if ( !matchFound ) {
+                    break;
+                }
+            }
+            return targetEntries;
+        }
+
+        /**
+         * Searches if a property entry has been created before for this specific bean mapping method.
+         *
+         * @param fullName the full name of the property.
+         * @return
+         */
+        private PropertyEntry searchForExistingPropertyEntry(String[] fullName) {
+            PropertyEntry existingPropertyEntry = null;
+            for ( String entry : method.getMappingOptions().getMappings().keySet() ) {
+                for ( Mapping existingMapping : method.getMappingOptions().getMappings().get( entry ) ) {
+                    if ( existingMapping.getTargetReference() != null ) {
+                        NestedReference targetRef = existingMapping.getTargetReference();
+                        for ( PropertyEntry propertyEntry : targetRef.getPropertyEntries() ) {
+                            if ( Arrays.deepEquals( fullName, propertyEntry.fullName ) ) {
+                                existingPropertyEntry = propertyEntry;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return existingPropertyEntry;
+        }
+
+        private void reportMappingError(Message msg, Object... objects) {
+            messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
+                msg, objects );
         }
     }
 
@@ -286,12 +498,15 @@ public class NestedReference {
     }
 
     public List<String> getElementNames() {
-        List<String> sourceName = new ArrayList<String>();
-        sourceName.add( parameter.getName() );
-        for ( PropertyEntry propertyEntry : propertyEntries ) {
-            sourceName.add( propertyEntry.getName() );
+        List<String> elementName = new ArrayList<String>();
+        if ( parameter != null ) {
+            // only relevant for source properties
+            elementName.add( parameter.getName() );
         }
-        return sourceName;
+        for ( PropertyEntry propertyEntry : propertyEntries ) {
+            elementName.add( propertyEntry.getName() );
+        }
+        return elementName;
     }
 
     /**
@@ -301,14 +516,11 @@ public class NestedReference {
      *
      * bean
      *
-     *   nestedMapping1 = "x.y1.z1"
-     *   nestedMapping2 = "x.y1.z2"
-     *   nestedMapping3 = "x.y2.z3"
+     * nestedMapping1 = "x.y1.z1" nestedMapping2 = "x.y1.z2" nestedMapping3 = "x.y2.z3"
      *
      * has property entries x, y1, y2, z1, z2, z3.
      */
     public static class PropertyEntry {
-
 
         private final String[] fullName;
         private final ExecutableElement accessor;
@@ -321,7 +533,7 @@ public class NestedReference {
         }
 
         public PropertyEntry(String name, ExecutableElement accessor, Type type) {
-            this.fullName = new String[]{ name };
+            this.fullName = new String[]{name};
             this.accessor = accessor;
             this.type = type;
         }
