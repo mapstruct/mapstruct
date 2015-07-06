@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.bugs._590;
 
+import java.util.logging.XMLFormatter;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
@@ -50,13 +52,13 @@ public abstract class SourceTargetMapper {
     }
 
     public static class Target {
-        private StringBuilder prop;
+        private XMLFormatter prop;
 
-        public StringBuilder getProp() {
+        public XMLFormatter getProp() {
             return prop;
         }
 
-        public void setProp(StringBuilder prop) {
+        public void setProp(XMLFormatter prop) {
             this.prop = prop;
         }
     }
