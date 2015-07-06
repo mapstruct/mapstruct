@@ -39,8 +39,7 @@ public class Issue590Test {
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = { @Diagnostic(type = SourceTargetMapper.class,
             kind = Kind.ERROR,
-            line = 34,
-            messageRegExp = "Can't map property \"[^ ]+ [^\"]+\" to \"[^ ]+ [^\"]+\"") })
+            messageRegExp = "Can't map property \"java\\.lang\\.String prop\" to \"[^ ]+ prop\"") })
     public void showsCantMapPropertyError() {
 
     }
