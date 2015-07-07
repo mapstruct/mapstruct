@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -25,6 +27,8 @@ import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.AnnotationMapperReference;
+import org.mapstruct.ap.internal.model.Decorator;
+import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -64,15 +68,43 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         if ( !requiresGenerationOfDecoratorClass() ) {
             mapper.removeDecorator();
         }
+        else if ( mapper.getDecorator() != null ) {
+            adjustDecorator( mapper );
+        }
 
+        List<Annotation> annotations = getMapperReferenceAnnotations();
         ListIterator<MapperReference> iterator = mapper.getReferencedMappers().listIterator();
         while ( iterator.hasNext() ) {
             MapperReference reference = iterator.next();
             iterator.remove();
-            iterator.add( replacementMapperReference( reference ) );
+            iterator.add( replacementMapperReference( reference, annotations ) );
         }
 
         return mapper;
+    }
+
+    protected void adjustDecorator(Mapper mapper) {
+        Decorator decorator = mapper.getDecorator();
+
+        for ( Annotation typeAnnotation : getDecoratorAnnotations() ) {
+            decorator.addAnnotation( typeAnnotation );
+        }
+
+        decorator.removeConstructor();
+
+
+        List<Annotation> annotations = getDelegatorReferenceAnnotations( mapper );
+        List<Field> replacement = new ArrayList<Field>();
+        if ( !decorator.getMethods().isEmpty() ) {
+            for ( Field field : decorator.getFields() ) {
+                replacement.add( replacementMapperReference( field, annotations ) );
+            }
+        }
+        decorator.setFields( replacement );
+    }
+
+    protected List<Annotation> getDelegatorReferenceAnnotations(Mapper mapper) {
+        return Collections.emptyList();
     }
 
     /**
@@ -80,11 +112,11 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
      *
      * @return the mapper reference replacing the original one
      */
-    protected MapperReference replacementMapperReference(MapperReference originalReference) {
+    protected MapperReference replacementMapperReference(Field originalReference, List<Annotation> annotations) {
         return new AnnotationMapperReference(
             originalReference.getType(),
             originalReference.getVariableName(),
-            getMapperReferenceAnnotation(),
+            annotations,
             originalReference.isUsed()
         );
     }
@@ -100,9 +132,16 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     protected abstract List<Annotation> getTypeAnnotations(Mapper mapper);
 
     /**
+     * @return the annotation(s) to be added at the decorator of the mapper
+     */
+    protected List<Annotation> getDecoratorAnnotations() {
+        return Collections.emptyList();
+    }
+
+    /**
      * @return the annotation of the field for the mapper reference
      */
-    protected abstract Annotation getMapperReferenceAnnotation();
+    protected abstract List<Annotation> getMapperReferenceAnnotations();
 
     /**
      * @return if a decorator (sub-)class needs to be generated or not

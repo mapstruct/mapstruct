@@ -23,14 +23,11 @@ import javax.decorator.Delegate;
 import javax.inject.Inject;
 
 @Decorator
-public class SourceTargetMapperDecorator implements DecoratedSourceTargetMapper {
+public abstract class SourceTargetMapperDecorator implements DecoratedSourceTargetMapper {
 
     @Delegate
     @Inject
     private DecoratedSourceTargetMapper delegate;
-
-    public SourceTargetMapperDecorator() {
-    }
 
     @Override
     public Target sourceToTarget(Source source) {

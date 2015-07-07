@@ -20,6 +20,7 @@ package org.mapstruct.ap.internal.processor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.mapstruct.ap.internal.model.Annotation;
@@ -42,26 +43,58 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
     @Override
     protected List<Annotation> getTypeAnnotations(Mapper mapper) {
         List<Annotation> typeAnnotations = new ArrayList<Annotation>();
-        typeAnnotations.add( new Annotation( getTypeFactory().getType( "org.springframework.stereotype.Component" ) ) );
+        typeAnnotations.add( component() );
 
         if ( mapper.getDecorator() != null ) {
-            Annotation qualifier = new Annotation(
-                    getTypeFactory().getType( "org.springframework.beans.factory.annotation.Qualifier" ),
-                    Arrays.asList( "\"delegate\"" )
-            );
-            typeAnnotations.add( qualifier );
+            typeAnnotations.add( qualifierDelegate() );
         }
 
         return typeAnnotations;
     }
 
     @Override
-    protected Annotation getMapperReferenceAnnotation() {
-        return new Annotation( getTypeFactory().getType( "org.springframework.beans.factory.annotation.Autowired" ) );
+    protected List<Annotation> getDecoratorAnnotations() {
+        return Arrays.asList(
+            component(),
+            primary()
+        );
+    }
+
+    @Override
+    protected List<Annotation> getMapperReferenceAnnotations() {
+        return Collections.singletonList(
+            autowired()
+        );
+    }
+
+    @Override
+    protected List<Annotation> getDelegatorReferenceAnnotations(Mapper mapper) {
+        return Arrays.asList(
+            autowired(),
+            qualifierDelegate()
+        );
     }
 
     @Override
     protected boolean requiresGenerationOfDecoratorClass() {
-        return false;
+        return true;
+    }
+
+    private Annotation autowired() {
+        return new Annotation( getTypeFactory().getType( "org.springframework.beans.factory.annotation.Autowired" ) );
+    }
+
+    private Annotation qualifierDelegate() {
+        return new Annotation(
+            getTypeFactory().getType( "org.springframework.beans.factory.annotation.Qualifier" ),
+            Collections.singletonList( "\"delegate\"" ) );
+    }
+
+    private Annotation primary() {
+        return new Annotation( getTypeFactory().getType( "org.springframework.context.annotation.Primary" ) );
+    }
+
+    private Annotation component() {
+        return new Annotation( getTypeFactory().getType( "org.springframework.stereotype.Component" ) );
     }
 }

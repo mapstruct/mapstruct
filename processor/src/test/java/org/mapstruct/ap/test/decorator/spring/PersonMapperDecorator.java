@@ -16,16 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest.cdi;
+package org.mapstruct.ap.test.decorator.spring;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.DecoratedWith;
-import org.mapstruct.itest.cdi.other.DateMapper;
+import org.mapstruct.ap.test.decorator.Person;
+import org.mapstruct.ap.test.decorator.PersonDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-@Mapper( componentModel = "cdi", uses = DateMapper.class )
-public interface DecoratedSourceTargetMapper {
+public abstract class PersonMapperDecorator implements PersonMapper {
 
-    Target sourceToTarget(Source source);
+    @Autowired
+    @Qualifier("delegate")
+    private PersonMapper delegate;
 
-    Target undecoratedSourceToTarget(Source source);
+    @Override
+    public PersonDto personToPersonDto(Person person) {
+        PersonDto dto = delegate.personToPersonDto( person );
+        dto.setName( person.getFirstName() + " " + person.getLastName() );
+
+        return dto;
+    }
 }

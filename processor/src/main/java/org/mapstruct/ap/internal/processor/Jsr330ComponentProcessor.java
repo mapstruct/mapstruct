@@ -18,10 +18,12 @@
  */
 package org.mapstruct.ap.internal.processor;
 
-import org.mapstruct.ap.internal.model.Annotation;
-import org.mapstruct.ap.internal.model.Mapper;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.mapstruct.ap.internal.model.Annotation;
+import org.mapstruct.ap.internal.model.Mapper;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -39,16 +41,46 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
 
     @Override
     protected List<Annotation> getTypeAnnotations(Mapper mapper) {
-        return Collections.singletonList( new Annotation( getTypeFactory().getType( "javax.inject.Named" ) ) );
+        if ( mapper.getDecorator() == null ) {
+            return Collections.singletonList( named() );
+        }
+        else {
+            return Collections.singletonList( namedDelegate( mapper ) );
+        }
     }
 
     @Override
-    protected Annotation getMapperReferenceAnnotation() {
-        return new Annotation( getTypeFactory().getType( "javax.inject.Inject" ) );
+    protected List<Annotation> getDecoratorAnnotations() {
+        return Collections.singletonList( named() );
+    }
+
+    @Override
+    protected List<Annotation> getDelegatorReferenceAnnotations(Mapper mapper) {
+        return Arrays.asList( inject(), namedDelegate( mapper ) );
+    }
+
+    @Override
+    protected List<Annotation> getMapperReferenceAnnotations() {
+        return Collections.singletonList( inject() );
     }
 
     @Override
     protected boolean requiresGenerationOfDecoratorClass() {
         return true;
+    }
+
+    private Annotation named() {
+        return new Annotation( getTypeFactory().getType( "javax.inject.Named" ) );
+    }
+
+    private Annotation namedDelegate(Mapper mapper) {
+        return new Annotation(
+            getTypeFactory().getType( "javax.inject.Named" ),
+            Collections.singletonList( '"' + mapper.getPackageName() + "." + mapper.getName() + '"' )
+        );
+    }
+
+    private Annotation inject() {
+        return new Annotation( getTypeFactory().getType( "javax.inject.Inject" ) );
     }
 }

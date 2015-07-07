@@ -50,14 +50,14 @@ public abstract class GeneratedType extends ModelElement {
 
     private final List<Annotation> annotations;
     private final List<MappingMethod> methods;
-    private final List<? extends Field> fields;
     private final SortedSet<Type> extraImportedTypes;
 
     private final boolean suppressGeneratorTimestamp;
     private final boolean suppressGeneratorVersionComment;
     private final VersionInformation versionInformation;
     private final Accessibility accessibility;
-    private final Constructor constructor;
+    private List<? extends Field> fields;
+    private Constructor constructor;
 
     /**
      * Type representing the {@code @Generated} annotation
@@ -128,8 +128,12 @@ public abstract class GeneratedType extends ModelElement {
         return methods;
     }
 
-    public List<? extends ModelElement> getFields() {
+    public List<? extends Field> getFields() {
         return fields;
+    }
+
+    public void setFields(List<? extends Field> fields) {
+        this.fields = fields;
     }
 
     public boolean isSuppressGeneratorTimestamp() {
@@ -180,6 +184,10 @@ public abstract class GeneratedType extends ModelElement {
 
     public Constructor getConstructor() {
         return constructor;
+    }
+
+    public void removeConstructor() {
+        constructor = null;
     }
 
     protected void addWithDependents(Collection<Type> collection, Type typeToAdd) {

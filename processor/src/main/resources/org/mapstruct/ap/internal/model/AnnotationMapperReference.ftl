@@ -18,5 +18,7 @@
      limitations under the License.
 
 -->
+<#list annotations as annotation>
 <#nt><@includeModel object=annotation/>
+</#list>
 private <@includeModel object=type/> ${variableName};

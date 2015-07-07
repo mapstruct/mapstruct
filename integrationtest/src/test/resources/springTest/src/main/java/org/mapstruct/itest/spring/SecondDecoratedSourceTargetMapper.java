@@ -16,14 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest.cdi;
+package org.mapstruct.itest.spring;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.DecoratedWith;
-import org.mapstruct.itest.cdi.other.DateMapper;
+import org.mapstruct.itest.spring.other.DateMapper;
 
-@Mapper( componentModel = "cdi", uses = DateMapper.class )
-public interface DecoratedSourceTargetMapper {
+@Mapper( componentModel = "spring", uses = DateMapper.class )
+@DecoratedWith( SecondSourceTargetMapperDecorator.class )
+public interface SecondDecoratedSourceTargetMapper {
 
     Target sourceToTarget(Source source);
 

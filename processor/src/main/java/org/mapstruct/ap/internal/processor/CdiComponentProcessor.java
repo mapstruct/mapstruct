@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,8 +47,8 @@ public class CdiComponentProcessor extends AnnotationBasedComponentModelProcesso
     }
 
     @Override
-    protected Annotation getMapperReferenceAnnotation() {
-        return new Annotation( getTypeFactory().getType( "javax.inject.Inject" ) );
+    protected List<Annotation> getMapperReferenceAnnotations() {
+        return Arrays.asList( new Annotation( getTypeFactory().getType( "javax.inject.Inject" ) ) );
     }
 
     @Override

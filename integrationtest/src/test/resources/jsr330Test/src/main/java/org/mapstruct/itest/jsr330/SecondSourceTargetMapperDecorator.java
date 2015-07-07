@@ -16,16 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest.cdi;
+package org.mapstruct.itest.jsr330;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.DecoratedWith;
-import org.mapstruct.itest.cdi.other.DateMapper;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-@Mapper( componentModel = "cdi", uses = DateMapper.class )
-public interface DecoratedSourceTargetMapper {
+public abstract class SecondSourceTargetMapperDecorator implements SecondDecoratedSourceTargetMapper {
 
-    Target sourceToTarget(Source source);
+    @Inject
+    @Named("org.mapstruct.itest.jsr330.SecondDecoratedSourceTargetMapperImpl_")
+    private SecondDecoratedSourceTargetMapper delegate;
 
-    Target undecoratedSourceToTarget(Source source);
+    @Override
+    public Target sourceToTarget(Source source) {
+        Target t = delegate.sourceToTarget( source );
+        t.setFoo( 43L );
+        return t;
+    }
 }

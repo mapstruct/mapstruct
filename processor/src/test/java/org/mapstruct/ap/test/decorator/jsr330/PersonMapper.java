@@ -16,16 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest.cdi;
+package org.mapstruct.ap.test.decorator.jsr330;
 
-import org.mapstruct.Mapper;
 import org.mapstruct.DecoratedWith;
-import org.mapstruct.itest.cdi.other.DateMapper;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ap.test.decorator.Address;
+import org.mapstruct.ap.test.decorator.AddressDto;
+import org.mapstruct.ap.test.decorator.Person;
+import org.mapstruct.ap.test.decorator.PersonDto;
 
-@Mapper( componentModel = "cdi", uses = DateMapper.class )
-public interface DecoratedSourceTargetMapper {
+@Mapper(componentModel = "jsr330")
+@DecoratedWith(PersonMapperDecorator.class)
+public interface PersonMapper {
 
-    Target sourceToTarget(Source source);
+    @Mapping( target = "name", ignore = true )
+    PersonDto personToPersonDto(Person person);
 
-    Target undecoratedSourceToTarget(Source source);
+    AddressDto addressToAddressDto(Address address);
 }

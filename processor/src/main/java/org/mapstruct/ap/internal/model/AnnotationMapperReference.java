@@ -18,10 +18,11 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.util.Collections;
 
 /**
  * Mapper reference which is retrieved via Annotation-based dependency injection.
@@ -31,19 +32,26 @@ import org.mapstruct.ap.internal.util.Collections;
  */
 public class AnnotationMapperReference extends MapperReference {
 
-    private final Annotation annotation;
+    private final List<Annotation> annotations;
 
-    public AnnotationMapperReference(Type type, String variableName, Annotation annotation, boolean isUsed) {
+    public AnnotationMapperReference(Type type, String variableName, List<Annotation> annotations, boolean isUsed) {
         super( type, variableName, isUsed );
-        this.annotation = annotation;
+        this.annotations = annotations;
     }
 
-    public Annotation getAnnotation() {
-        return annotation;
+    public List<Annotation> getAnnotations() {
+        return annotations;
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        return Collections.asSet( annotation.getImportTypes(), super.getType() );
+        Set<Type> types = new HashSet<Type>();
+        types.add( getType() );
+
+        for ( Annotation annotation : annotations ) {
+            types.addAll( annotation.getImportTypes() );
+        }
+
+        return types;
     }
 }

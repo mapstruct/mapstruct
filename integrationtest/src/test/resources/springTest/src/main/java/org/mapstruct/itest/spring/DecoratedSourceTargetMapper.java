@@ -27,4 +27,6 @@ import org.mapstruct.itest.spring.other.DateMapper;
 public interface DecoratedSourceTargetMapper {
 
     Target sourceToTarget(Source source);
+
+    Target undecoratedSourceToTarget(Source source);
 }

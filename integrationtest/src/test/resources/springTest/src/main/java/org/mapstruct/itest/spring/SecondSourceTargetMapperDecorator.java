@@ -16,16 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest.cdi;
+package org.mapstruct.itest.spring;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.DecoratedWith;
-import org.mapstruct.itest.cdi.other.DateMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-@Mapper( componentModel = "cdi", uses = DateMapper.class )
-public interface DecoratedSourceTargetMapper {
+public abstract class SecondSourceTargetMapperDecorator implements SecondDecoratedSourceTargetMapper {
 
-    Target sourceToTarget(Source source);
+    @Autowired
+    @Qualifier( "delegate" )
+    private DecoratedSourceTargetMapper delegate;
 
-    Target undecoratedSourceToTarget(Source source);
+    @Override
+    public Target sourceToTarget(Source source) {
+        Target t = delegate.sourceToTarget( source );
+        t.setFoo( 43L );
+        return t;
+    }
 }

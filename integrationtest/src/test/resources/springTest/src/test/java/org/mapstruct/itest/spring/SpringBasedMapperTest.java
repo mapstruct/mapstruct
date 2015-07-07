@@ -18,25 +18,24 @@
  */
 package org.mapstruct.itest.spring;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.itest.spring.SpringBasedMapperTest.SpringTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for generation of Spring-based Mapper implementations
  *
  * @author Andreas Gudian
  */
-@ContextConfiguration(classes = SpringTestConfig.class )
-@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration(classes = SpringTestConfig.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class SpringBasedMapperTest {
 
     @Configuration
@@ -50,8 +49,11 @@ public class SpringBasedMapperTest {
     @Autowired
     private DecoratedSourceTargetMapper decoratedMapper;
 
+    @Autowired
+    private SecondDecoratedSourceTargetMapper secondDecoratedMapper;
+
     @Test
-    public void shouldCreateSpringBasedMapper() {
+    public void shouldInjectSpringBasedMapper() {
         Source source = new Source();
 
         Target target = mapper.sourceToTarget( source );
@@ -69,5 +71,29 @@ public class SpringBasedMapperTest {
 
         assertThat( target ).isNotNull();
         assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 43 ) );
+        assertThat( target.getDate() ).isEqualTo( "1980" );
+
+        target = decoratedMapper.undecoratedSourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 42 ) );
+        assertThat( target.getDate() ).isEqualTo( "1980" );
+    }
+
+    @Test
+    public void shouldInjectSecondDecorator() {
+        Source source = new Source();
+
+        Target target = secondDecoratedMapper.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 43 ) );
+        assertThat( target.getDate() ).isEqualTo( "1980" );
+
+        target = secondDecoratedMapper.undecoratedSourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 42 ) );
+        assertThat( target.getDate() ).isEqualTo( "1980" );
     }
 }
