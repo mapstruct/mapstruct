@@ -189,18 +189,6 @@
                             </artifactItems>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>copy</id>
-                        <phase>generate-test-resources</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/test-dependencies
-                            </outputDirectory>
-                            <stripVersion>true</stripVersion>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>

@@ -102,12 +102,7 @@ class CompilingStatement extends Statement {
         }
     };
 
-    private static final List<String> LIBRARIES = Arrays.asList(
-        "mapstruct.jar",
-        "guava.jar",
-        "javax.inject.jar",
-        "joda-time.jar"
-    );
+    private static final List<File> COMPILER_CLASSPATH = buildCompilerClasspath();
 
     private Statement next;
     private final FrameworkMethod method;
@@ -115,7 +110,6 @@ class CompilingStatement extends Statement {
     private JavaCompiler compiler;
     private String classOutputDir;
     private String sourceOutputDir;
-    private List<File> classPath;
     private CompilationRequest compilationRequest;
 
     public CompilingStatement(FrameworkMethod method) {
@@ -149,16 +143,46 @@ class CompilingStatement extends Statement {
         classOutputDir = basePath + TARGET_COMPILATION_TESTS + i + "/classes";
         sourceOutputDir = basePath + TARGET_COMPILATION_TESTS + i + "/generated-sources/mapping";
 
-        String testDependenciesDir = basePath + "/target/test-dependencies/";
-
-        classPath = new ArrayList<File>();
-        for ( String library : LIBRARIES ) {
-            classPath.add( new File( testDependenciesDir, library ) );
-        }
-
         createOutputDirs();
 
         ( (ModifiableURLClassLoader) Thread.currentThread().getContextClassLoader() ).addOutputDir( classOutputDir );
+    }
+
+    private static List<File> buildCompilerClasspath() {
+        String[] bootClasspath =
+            System.getProperty( "java.class.path" ).split( System.getProperty( "path.separator" ) );
+        String fs = System.getProperty( "file.separator" );
+        String testClasses = "target" + fs + "test-classes";
+
+        String[] whitelist =
+            new String[] {
+                "processor" + fs + "target",  // the processor itself
+                "core" + fs + "target",  // MapStruct annotations in multi-module reactor build or IDE
+                "org" + fs + "mapstruct" + fs + "mapstruct" + fs,  // MapStruct annotations in single module build
+                "freemarker",
+                "guava",
+                "javax.inject",
+                "spring-beans",
+                "spring-context",
+                "joda-time" };
+
+        List<File> classpath = new ArrayList<File>();
+        for ( String path : bootClasspath ) {
+            if ( !path.contains( testClasses ) && isWhitelisted( path, whitelist ) ) {
+                classpath.add( new File( path ) );
+            }
+        }
+
+        return classpath;
+    }
+
+    private static boolean isWhitelisted(String path, String[] whitelist) {
+        for ( String whitelisted : whitelist ) {
+            if ( path.contains( whitelisted ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected void generateMapperImplementation() throws Exception {
@@ -380,7 +404,7 @@ class CompilingStatement extends Statement {
             fileManager.getJavaFileObjectsFromFiles( getSourceFiles( compilationRequest.sourceClasses ) );
 
         try {
-            fileManager.setLocation( StandardLocation.CLASS_PATH, classPath );
+            fileManager.setLocation( StandardLocation.CLASS_PATH, COMPILER_CLASSPATH );
             fileManager.setLocation( StandardLocation.CLASS_OUTPUT, Arrays.asList( new File( classOutputDir ) ) );
             fileManager.setLocation( StandardLocation.SOURCE_OUTPUT, Arrays.asList( new File( sourceOutputDir ) ) );
         }

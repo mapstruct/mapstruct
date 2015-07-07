@@ -56,9 +56,6 @@ public class ModifiableURLClassLoader extends URLClassLoader {
         }
     }
 
-    /**
-     * @param basePath
-     */
     public void addURL(String basePath) {
         try {
             addURL( new URL( basePath ) );
