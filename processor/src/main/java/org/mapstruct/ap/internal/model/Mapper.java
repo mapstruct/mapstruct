@@ -39,24 +39,29 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  */
 public class Mapper extends GeneratedType {
 
-    private static final String IMPLEMENTATION_SUFFIX = "Impl";
-    private static final String DECORATED_IMPLEMENTATION_SUFFIX = "Impl_";
+    static final String CLASS_NAME_PLACEHOLDER = "<CLASS_NAME>";
+    static final String PACKAGE_NAME_PLACEHOLDER = "<PACKAGE_NAME>";
+    static final String DEFAULT_IMPLEMENTATION_CLASS = CLASS_NAME_PLACEHOLDER + "Impl";
+    static final String DEFAULT_IMPLEMENTATION_PACKAGE = PACKAGE_NAME_PLACEHOLDER;
 
+    private final boolean customPackage;
+    private final boolean customImplName;
     private final List<MapperReference> referencedMappers;
     private Decorator decorator;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Mapper(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                   String interfaceName, List<MappingMethod> methods, Options options,
-                   VersionInformation versionInformation, Accessibility accessibility,
-                   List<MapperReference> referencedMappers, Decorator decorator,
-                   SortedSet<Type> extraImportedTypes ) {
+                   String interfacePackage, String interfaceName, boolean customPackage, boolean customImplName,
+                   List<MappingMethod> methods, Options options, VersionInformation versionInformation,
+                   Accessibility accessibility, List<MapperReference> referencedMappers, Decorator decorator,
+                   SortedSet<Type> extraImportedTypes) {
 
         super(
             typeFactory,
             packageName,
             name,
             superClassName,
+            interfacePackage,
             interfaceName,
             methods,
             referencedMappers,
@@ -66,6 +71,8 @@ public class Mapper extends GeneratedType {
             extraImportedTypes,
             null
         );
+        this.customPackage = customPackage;
+        this.customImplName = customImplName;
 
         this.referencedMappers = referencedMappers;
         this.decorator = decorator;
@@ -83,6 +90,10 @@ public class Mapper extends GeneratedType {
         private Options options;
         private VersionInformation versionInformation;
         private Decorator decorator;
+        private String implName;
+        private boolean customName;
+        private String implPackage;
+        private boolean customPackage;
 
         public Builder element(TypeElement element) {
             this.element = element;
@@ -129,16 +140,34 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
+        public Builder implName(String implName) {
+            this.implName = implName;
+            this.customName = !DEFAULT_IMPLEMENTATION_CLASS.equals( this.implName );
+            return this;
+        }
+
+        public Builder implPackage(String implPackage) {
+            this.implPackage = implPackage;
+            this.customPackage = !DEFAULT_IMPLEMENTATION_PACKAGE.equals( this.implPackage );
+            return this;
+        }
+
         public Mapper build() {
-            String implementationName = element.getSimpleName()
-                + ( decorator == null ? IMPLEMENTATION_SUFFIX : DECORATED_IMPLEMENTATION_SUFFIX );
+            String implementationName = implName.replace( CLASS_NAME_PLACEHOLDER, element.getSimpleName() ) +
+                    ( decorator == null ? "" : "_" );
+
+            String elementPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
+            String packageName = implPackage.replace( PACKAGE_NAME_PLACEHOLDER, elementPackage );
 
             return new Mapper(
                 typeFactory,
-                elementUtils.getPackageOf( element ).getQualifiedName().toString(),
+                packageName,
                 implementationName,
                 element.getKind() != ElementKind.INTERFACE ? element.getSimpleName().toString() : null,
+                elementPackage,
                 element.getKind() == ElementKind.INTERFACE ? element.getSimpleName().toString() : null,
+                customPackage,
+                customName,
                 mappingMethods,
                 options,
                 versionInformation,
@@ -160,6 +189,15 @@ public class Mapper extends GeneratedType {
 
     public void removeDecorator() {
         this.decorator = null;
+    }
+
+    /**
+     * Checks if the mapper has a custom implementation that is a custom suffix of an explicit destination package.
+     *
+     * @return
+     */
+    public boolean hasCustomImplementation() {
+        return customImplName || customPackage;
     }
 
     @Override

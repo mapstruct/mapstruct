@@ -45,6 +45,7 @@ public abstract class GeneratedType extends ModelElement {
     private final String packageName;
     private final String name;
     private final String superClassName;
+    private final String interfacePackage;
     private final String interfaceName;
 
     private final List<Annotation> annotations;
@@ -65,7 +66,7 @@ public abstract class GeneratedType extends ModelElement {
 
     // CHECKSTYLE:OFF
     protected GeneratedType(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                            String interfaceName,
+                            String interfacePackage, String interfaceName,
                             List<MappingMethod> methods,
                             List<? extends Field> fields,
                             Options options,
@@ -76,6 +77,7 @@ public abstract class GeneratedType extends ModelElement {
         this.packageName = packageName;
         this.name = name;
         this.superClassName = superClassName;
+        this.interfacePackage = interfacePackage;
         this.interfaceName = interfaceName;
         this.extraImportedTypes = extraImportedTypes;
 
@@ -104,6 +106,10 @@ public abstract class GeneratedType extends ModelElement {
 
     public String getSuperClassName() {
         return superClassName;
+    }
+
+    public String getInterfacePackage() {
+        return interfacePackage;
     }
 
     public String getInterfaceName() {

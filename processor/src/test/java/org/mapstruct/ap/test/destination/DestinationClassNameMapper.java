@@ -16,25 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
+package org.mapstruct.ap.test.destination;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import org.junit.Test;
+import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-import org.mapstruct.test.model.Foo;
 
 /**
- * Unit test for {@link Mappers}.
- *
- * @author Gunnar Morling
+ * @author Christophe Labouisse on 27/05/2015.
  */
-public class MappersTest {
+@Mapper(implementationName = "My<CLASS_NAME>CustomImpl")
+public interface DestinationClassNameMapper {
+    DestinationClassNameMapper INSTANCE = Mappers.getMapper( DestinationClassNameMapper.class );
 
-    @Test
-    public void shouldReturnImplementationInstance() {
-
-        Foo mapper = Mappers.getMapper( Foo.class );
-        assertThat( mapper ).isNotNull();
-    }
+    String intToString(Integer source);
 }

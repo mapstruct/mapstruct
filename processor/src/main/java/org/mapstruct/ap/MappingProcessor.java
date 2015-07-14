@@ -101,6 +101,7 @@ public class MappingProcessor extends AbstractProcessor {
         "mapstruct.suppressGeneratorVersionInfoComment";
     protected static final String UNMAPPED_TARGET_POLICY = "mapstruct.unmappedTargetPolicy";
     protected static final String DEFAULT_COMPONENT_MODEL = "mapstruct.defaultComponentModel";
+    protected static final String ALWAYS_GENERATE_SERVICE_FILE = "mapstruct.alwaysGenerateServicesFile";
 
     private Options options;
 
@@ -113,12 +114,14 @@ public class MappingProcessor extends AbstractProcessor {
 
     private Options createOptions() {
         String unmappedTargetPolicy = processingEnv.getOptions().get( UNMAPPED_TARGET_POLICY );
+        String defaultComponentModel = processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL );
 
         return new Options(
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
             unmappedTargetPolicy != null ? ReportingPolicy.valueOf( unmappedTargetPolicy ) : null,
-            processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL )
+            defaultComponentModel == null ? "default" : defaultComponentModel,
+            Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) )
         );
     }
 
