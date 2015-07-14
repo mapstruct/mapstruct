@@ -85,6 +85,28 @@ public @interface Mapper {
     String componentModel() default "default";
 
     /**
+     * Specifies the name of the implementation class. A single {@code *} wildcard can be used and will be replaced
+     * by the interface's or abstract class' name.
+     * <p>
+     * Defaults to postfixing the name with {@code Impl}
+     *
+     * @return The implementation suffix.
+     * @see #implementationPackage()
+     */
+    String implementationName() default "default";
+
+    /**
+     * Specifies the target package for the generated implementation.  A single {@code *} wildcard can be used and will
+     * be replaced by the interface's or abstract class' package.
+     * <p>
+     * Defaults to using the same package as the mapper interface/abstract class
+     *
+     * @return the destination package.
+     * @see #implementationName()
+     */
+    String implementationPackage() default "default";
+
+    /**
      * A class annotated with {@link MapperConfig} which should be used as configuration template. Any settings given
      * via {@link Mapper} will take precedence over the settings from the referenced configuration source. The list of
      * referenced mappers will contain all mappers given via {@link Mapper#uses()} and {@link MapperConfig#uses()}.

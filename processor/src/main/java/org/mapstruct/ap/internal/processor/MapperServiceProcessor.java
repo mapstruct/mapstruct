@@ -18,60 +18,57 @@
  */
 package org.mapstruct.ap.internal.processor;
 
-import java.io.IOException;
+import org.mapstruct.ap.internal.model.GeneratedType;
+import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.model.ServicesEntry;
+import org.mapstruct.ap.internal.writer.ModelWriter;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.TypeElement;
-import javax.tools.JavaFileObject;
-
-import org.mapstruct.ap.internal.model.GeneratedType;
-import org.mapstruct.ap.internal.model.Mapper;
-import org.mapstruct.ap.internal.writer.ModelWriter;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+import java.io.IOException;
 
 /**
- * A {@link ModelElementProcessor} which creates a Java source file representing
- * the given {@link Mapper} object, unless the given mapper type is erroneous.
- *
- * @author Gunnar Morling
+ * @author Christophe Labouisse on 12/07/2015.
  */
-public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, Mapper> {
+public class MapperServiceProcessor  implements ModelElementProcessor<Mapper, Void> {
+    @Override
+    public Void process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
+        if ( !context.isErroneous() && mapper.hasCustomImplementation() ) {
+            writeToSourceFile( context.getFiler(), mapper );
+        }
+        return null;
+    }
 
     @Override
-    public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
-        if ( !context.isErroneous() ) {
-            writeToSourceFile( context.getFiler(), mapper );
-            return mapper;
-        }
-
-        return null;
+    public int getPriority() {
+        return 100000;
     }
 
     private void writeToSourceFile(Filer filer, Mapper model) {
         ModelWriter modelWriter = new ModelWriter();
+        ServicesEntry servicesEntry = getServicesEntry( model.getDecorator() == null ? model : model.getDecorator() );
 
-        createSourceFile( model, modelWriter, filer );
-
-        if ( model.getDecorator() != null ) {
-            createSourceFile( model.getDecorator(), modelWriter, filer );
-        }
+        createSourceFile( servicesEntry, modelWriter, filer );
     }
 
-    private void createSourceFile(GeneratedType model, ModelWriter modelWriter, Filer filer) {
+    private ServicesEntry getServicesEntry(GeneratedType model) {
+        return new ServicesEntry(model.getInterfacePackage(), model.getInterfaceName(),
+                                 model.getPackageName(), model.getName());
+    }
+
+    private void createSourceFile(ServicesEntry model, ModelWriter modelWriter, Filer filer) {
         String fileName = model.getPackageName() + "." + model.getName();
 
-        JavaFileObject sourceFile;
+        FileObject sourceFile;
         try {
-            sourceFile = filer.createSourceFile( fileName );
+            sourceFile = filer.createResource( StandardLocation.CLASS_OUTPUT, "", "META-INF/services/" + fileName );
         }
         catch ( IOException e ) {
             throw new RuntimeException( e );
         }
 
         modelWriter.writeModel( sourceFile, model );
-    }
-
-    @Override
-    public int getPriority() {
-        return 10000;
     }
 }

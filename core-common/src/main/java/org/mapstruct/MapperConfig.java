@@ -85,6 +85,28 @@ public @interface MapperConfig {
     String componentModel() default "default";
 
     /**
+     * Specifies the name of the implementation class. A single {@code *} wildcard can be used and will be replaced
+     * by the interface's or abstract class' name.
+     * <p>
+     * Defaults to postfixing the name with {@code Impl}
+     *
+     * @return The implementation suffix.
+     * @see #implementationPackage()
+     */
+    String implementationName() default "default";
+
+    /**
+     * Specifies the target package for the generated implementation.  A single {@code *} wildcard can be used and will
+     * be replaced by the interface's or abstract class' package.
+     * <p>
+     * Defaults to using the same package as the mapper interface/abstract class
+     *
+     * @return the destination package.
+     * @see #implementationName()
+     */
+    String implementationPackage() default "default";
+
+    /**
      * The strategy to be applied when propagating the value of collection-typed properties. By default, only JavaBeans
      * accessor methods (setters or getters) will be used, but it is also possible to invoke a corresponding adder
      * method for each element of the source collection (e.g. {@code orderDto.addOrderLine()}).
