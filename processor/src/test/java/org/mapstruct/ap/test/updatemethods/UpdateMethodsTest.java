@@ -20,15 +20,14 @@ package org.mapstruct.ap.test.updatemethods;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  *
@@ -85,6 +84,30 @@ public class UpdateMethodsTest {
     @WithClasses( {
         OrganizationMapper.class
     } )
+    public void testUpdateMethodClearsExistingValues() {
+
+        OrganizationEntity organizationEntity = new OrganizationEntity();
+        CompanyEntity companyEntity = new CompanyEntity();
+        organizationEntity.setCompany( companyEntity );
+        companyEntity.setName( "CocaCola" );
+        DepartmentEntity department = new DepartmentEntity( null );
+        department.setName( "recipies" );
+        companyEntity.setDepartment( department );
+
+        OrganizationDto organizationDto = new OrganizationDto();
+        organizationDto.setCompany( null );
+
+        OrganizationMapper.INSTANCE.toOrganizationEntity( organizationDto, organizationEntity );
+
+        assertThat( organizationEntity.getCompany() ).isNull();
+        assertThat( organizationEntity.getType().getType() ).isEqualTo( "commercial" );
+        assertThat( organizationEntity.getTypeNr().getNumber() ).isEqualTo( 5 );
+    }
+
+    @Test
+    @WithClasses({
+        OrganizationMapper.class
+    })
     public void testPreferUpdateMethodSourceObjectNotDefined() {
 
         OrganizationEntity organizationEntity = new OrganizationEntity();
@@ -105,7 +128,7 @@ public class UpdateMethodsTest {
         assertThat( organizationEntity.getCompany().getDepartment().getName() ).isEqualTo( "finance" );
     }
 
-  @Test
+    @Test
     @WithClasses( {
         CompanyMapper.class,
         DepartmentInBetween.class
@@ -156,7 +179,7 @@ public class UpdateMethodsTest {
     } )
     public void testShouldFailOnConstantMappingNoPropertyGetter() { }
 
-   @Test
+    @Test
     @WithClasses( {
         ErroneousCompanyMapper1.class,
         DepartmentInBetween.class
