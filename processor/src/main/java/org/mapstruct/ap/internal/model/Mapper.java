@@ -31,6 +31,8 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
+import static org.mapstruct.Mapper.DEFAULT_IMPL_NAME;
+
 /**
  * Represents a type implementing a mapper interface (annotated with {@code @Mapper}). This is the root object of the
  * mapper model.
@@ -39,18 +41,16 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  */
 public class Mapper extends GeneratedType {
 
-    private static final String IMPLEMENTATION_SUFFIX = "Impl";
-    private static final String DECORATED_IMPLEMENTATION_SUFFIX = "Impl_";
-
+    private final boolean customImplName;
     private final List<MapperReference> referencedMappers;
     private Decorator decorator;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Mapper(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                   String interfaceName, List<MappingMethod> methods, Options options,
+                   String interfaceName, boolean customImplName, List<MappingMethod> methods, Options options,
                    VersionInformation versionInformation, Accessibility accessibility,
                    List<MapperReference> referencedMappers, Decorator decorator,
-                   SortedSet<Type> extraImportedTypes ) {
+                   SortedSet<Type> extraImportedTypes) {
 
         super(
             typeFactory,
@@ -66,6 +66,7 @@ public class Mapper extends GeneratedType {
             extraImportedTypes,
             null
         );
+        this.customImplName = customImplName;
 
         this.referencedMappers = referencedMappers;
         this.decorator = decorator;
@@ -83,6 +84,8 @@ public class Mapper extends GeneratedType {
         private Options options;
         private VersionInformation versionInformation;
         private Decorator decorator;
+        private String implName;
+        private boolean customName;
 
         public Builder element(TypeElement element) {
             this.element = element;
@@ -129,9 +132,15 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
+        public Builder implName(String implName) {
+            this.customName = !DEFAULT_IMPL_NAME.equals( implName );
+            this.implName = implName;
+            return this;
+        }
+
         public Mapper build() {
-            String implementationName = element.getSimpleName()
-                + ( decorator == null ? IMPLEMENTATION_SUFFIX : DECORATED_IMPLEMENTATION_SUFFIX );
+            String implementationName = implName.replace( "*", element.getSimpleName() ) +
+                                        ( decorator == null ? "" : "_" );
 
             return new Mapper(
                 typeFactory,
@@ -139,6 +148,7 @@ public class Mapper extends GeneratedType {
                 implementationName,
                 element.getKind() != ElementKind.INTERFACE ? element.getSimpleName().toString() : null,
                 element.getKind() == ElementKind.INTERFACE ? element.getSimpleName().toString() : null,
+                customName,
                 mappingMethods,
                 options,
                 versionInformation,
@@ -160,6 +170,10 @@ public class Mapper extends GeneratedType {
 
     public void removeDecorator() {
         this.decorator = null;
+    }
+
+    public boolean hasCustomImplName() {
+        return customImplName;
     }
 
     @Override

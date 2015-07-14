@@ -41,8 +41,6 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  */
 public class Decorator extends GeneratedType {
 
-    private static final String IMPLEMENTATION_SUFFIX = "Impl";
-
     public static class Builder {
 
         private Elements elementUtils;
@@ -53,6 +51,7 @@ public class Decorator extends GeneratedType {
         private Options options;
         private VersionInformation versionInformation;
         private boolean hasDelegateConstructor;
+        private String implName;
 
         public Builder elementUtils(Elements elementUtils) {
             this.elementUtils = elementUtils;
@@ -94,18 +93,25 @@ public class Decorator extends GeneratedType {
             return this;
         }
 
+        public Builder implName(String implName) {
+            this.implName = implName;
+            return this;
+        }
+
         public Decorator build() {
+            String implementationName = implName.replace( "*", mapperElement.getSimpleName() );
+
             Type decoratorType = typeFactory.getType( decoratorPrism.value() );
             DecoratorConstructor decoratorConstructor = new DecoratorConstructor(
-                        mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
-                        mapperElement.getSimpleName().toString() + "Impl_",
+                        implementationName,
+                        implementationName + "_",
                         hasDelegateConstructor );
 
 
             return new Decorator(
                 typeFactory,
                 elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString(),
-                mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
+                implementationName,
                 decoratorType,
                 mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
                 methods,

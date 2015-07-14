@@ -150,16 +150,17 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .mapperReferences( mapperReferences )
             .options( options )
             .versionInformation( versionInformation )
-            .decorator( getDecorator( element, methods ) )
+            .decorator( getDecorator( element, methods, mapperConfig.implName() ) )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
             .extraImports( getExtraImports( element ) )
+            .implName( mapperConfig.implName() )
             .build();
 
         return mapper;
     }
 
-    private Decorator getDecorator(TypeElement element, List<SourceMethod> methods) {
+    private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, String implName) {
         DecoratedWithPrism decoratorPrism = DecoratedWithPrism.getInstanceOn( element );
 
         if ( decoratorPrism == null ) {
@@ -219,6 +220,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
              .hasDelegateConstructor( hasDelegateConstructor )
              .options( options )
              .versionInformation( versionInformation )
+             .implName( implName )
              .build();
 
         return decorator;

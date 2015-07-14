@@ -29,7 +29,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.tools.JavaFileObject;
+import javax.tools.FileObject;
 
 import org.mapstruct.ap.internal.writer.Writable.Context;
 
@@ -74,7 +74,7 @@ public class ModelWriter {
         CONFIGURATION.setLocalizedLookup( false );
     }
 
-    public void writeModel(JavaFileObject sourceFile, Writable model) {
+    public void writeModel(FileObject sourceFile, Writable model) {
         try {
             BufferedWriter writer = new BufferedWriter( new IndentationCorrectingWriter( sourceFile.openWriter() ) );
 
