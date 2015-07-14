@@ -18,6 +18,12 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +40,7 @@ import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
+import org.mapstruct.ap.internal.model.assignment.UpdateNullCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -45,11 +52,6 @@ import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -260,14 +262,19 @@ public class PropertyMapping extends ModelElement {
                     result = new SetterWrapper( result, method.getThrownTypes() );
                 }
                 if ( !sourceType.isPrimitive()
-                    && !sourceReference.getPropertyEntries().isEmpty() /* parameter null taken care of by beanmapper */
-                    && ( result.getType() == TYPE_CONVERTED
-                    || result.getType() == TYPE_CONVERTED_MAPPED
-                    || result.getType() == MAPPED_TYPE_CONVERTED
-                    || ( result.getType() == DIRECT && targetType.isPrimitive() ) ) ) {
-                    // for primitive types null check is not possible at all, but a conversion needs
-                    // a null check.
-                    result = new NullCheckWrapper( result );
+                    && !sourceReference.getPropertyEntries().isEmpty() ) { // parameter null taken care of by beanmapper
+
+                    if ( result.isUpdateMethod() ) {
+                        result = new UpdateNullCheckWrapper( result );
+                    }
+                    else if ( result.getType() == TYPE_CONVERTED
+                        || result.getType() == TYPE_CONVERTED_MAPPED
+                        || result.getType() == MAPPED_TYPE_CONVERTED
+                        || ( result.getType() == DIRECT && targetType.isPrimitive() ) ) {
+                        // for primitive types null check is not possible at all, but a conversion needs
+                        // a null check.
+                        result = new NullCheckWrapper( result );
+                    }
                 }
             }
             else {
@@ -353,6 +360,9 @@ public class PropertyMapping extends ModelElement {
             // null check. Typeconversions do not apply to collections and maps.
             if ( result.getType() == DIRECT ) {
                 result = new NullCheckWrapper( result );
+            }
+            else if ( result.getType() == MAPPED && result.isUpdateMethod() ) {
+                result = new UpdateNullCheckWrapper( result );
             }
 
             return result;
