@@ -25,6 +25,8 @@ import java.lang.annotation.Target;
 
 import org.mapstruct.factory.Mappers;
 
+import static org.mapstruct.Mapper.DEFAULT_IMPL_NAME;
+
 /**
  * Marks a class or interface as configuration source for generated mappers. This allows to share common configurations
  * between several mapper classes.
@@ -83,6 +85,16 @@ public @interface MapperConfig {
      * @return The component model for the generated mapper.
      */
     String componentModel() default "default";
+
+    /**
+     * Specifies the name of the implementation class. A single {@code *} wildcard can be used and will be replaced
+     * by the interface's or abstract class' name.
+     * <p>
+     * Defaults to {@code *Impl} which means: <i>postfix the name with {@code Impl}</i>
+     *
+     * @return The implementation suffix.
+     */
+    String implName() default DEFAULT_IMPL_NAME;
 
     /**
      * The strategy to be applied when propagating the value of collection-typed properties. By default, only JavaBeans

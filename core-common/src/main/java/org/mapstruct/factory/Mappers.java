@@ -20,6 +20,8 @@ package org.mapstruct.factory;
 
 import org.mapstruct.Mapper;
 
+import java.util.ServiceLoader;
+
 /**
  * Factory for obtaining mapper instances if no explicit component model such as CDI is configured via
  * {@link Mapper#componentModel()}.
@@ -71,6 +73,16 @@ public class Mappers {
 
             if ( classLoader == null ) {
                 classLoader = Mappers.class.getClassLoader();
+            }
+
+            ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
+
+            if ( loader != null ) {
+                for ( T mapper : loader ) {
+                    if ( mapper != null ) {
+                        return mapper;
+                    }
+                }
             }
 
             @SuppressWarnings("unchecked")
