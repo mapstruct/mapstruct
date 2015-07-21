@@ -21,11 +21,14 @@ package org.mapstruct.ap.test.updatemethods.selection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.updatemethods.BossDto;
+import org.mapstruct.ap.test.updatemethods.BossEntity;
 import org.mapstruct.ap.test.updatemethods.CompanyDto;
 import org.mapstruct.ap.test.updatemethods.CompanyEntity;
+import org.mapstruct.ap.test.updatemethods.ConstructableDepartmentEntity;
 import org.mapstruct.ap.test.updatemethods.DepartmentDto;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntity;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntityFactory;
@@ -36,6 +39,8 @@ import org.mapstruct.ap.test.updatemethods.SecretaryEntity;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  *
@@ -56,7 +61,10 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     EmployeeDto.class,
     EmployeeEntity.class,
     SecretaryDto.class,
-    SecretaryEntity.class
+    SecretaryEntity.class,
+    BossDto.class,
+    BossEntity.class,
+    ConstructableDepartmentEntity.class
 })
 public class ExternalSelectionTest {
 
@@ -69,6 +77,18 @@ public class ExternalSelectionTest {
         CompanyEntity entity = new CompanyEntity();
         CompanyDto dto = new CompanyDto();
         OrganizationMapper1.INSTANCE.toCompanyEntity( dto, entity );
+    }
+
+    @Test
+    @WithClasses({
+        OrganizationMapper3.class
+    })
+    @IssueKey("604")
+    public void shouldSelectGeneratedExternalMapperWithImportForPropertyType() {
+
+        BossEntity entity = new BossEntity();
+        BossDto dto = new BossDto();
+        OrganizationMapper3.INSTANCE.toBossEntity( dto, entity );
     }
 
     @Test

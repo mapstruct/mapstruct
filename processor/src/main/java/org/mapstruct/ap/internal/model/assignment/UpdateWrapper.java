@@ -41,7 +41,21 @@ public class UpdateWrapper extends AssignmentWrapper {
         super( decoratedAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.factoryMethod = factoryMethod;
-        this.targetImplementationType = targetImplementationType;
+        this.targetImplementationType = determineImplType( factoryMethod, targetImplementationType );
+    }
+
+    private static Type determineImplType(Assignment factoryMethod, Type targetType) {
+        if ( targetType.getImplementationType() != null ) {
+            // it's probably a collection or something
+            return targetType.getImplementationType();
+        }
+
+        if ( factoryMethod == null ) {
+            // no factory method means we create a new instance ourself and thus need to import the type
+            return targetType;
+        }
+
+        return null;
     }
 
     @Override

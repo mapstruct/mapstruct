@@ -256,7 +256,7 @@ public class PropertyMapping extends ModelElement {
                     Assignment factoryMethod =
                         ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
                     result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
-                        targetType.getImplementationType() );
+                        targetType );
                 }
                 else {
                     result = new SetterWrapper( result, method.getThrownTypes() );
@@ -330,7 +330,7 @@ public class PropertyMapping extends ModelElement {
                     Assignment factoryMethod
                         = ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
                     result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
-                        targetType.getImplementationType() );
+                        targetType );
                 }
                 else {
                     // wrap the assignment in the setter method
@@ -623,7 +623,7 @@ public class PropertyMapping extends ModelElement {
                         Assignment factoryMethod =
                             ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
                         assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod,
-                            targetType.getImplementationType() );
+                            targetType );
                     }
                     else {
                         assignment = new SetterWrapper( assignment, method.getThrownTypes() );
