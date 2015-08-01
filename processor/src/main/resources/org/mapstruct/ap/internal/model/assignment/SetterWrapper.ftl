@@ -19,10 +19,10 @@
 
 -->
 <#if (thrownTypes?size == 0) >
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_assignment/> );
+    <@assignment_w_defaultValue/>
 <#else>
     try {
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_assignment/> );
+        <@assignment_w_defaultValue/>
     }
     <#list thrownTypes as exceptionType>
     catch ( <@includeModel object=exceptionType/> e ) {
@@ -30,11 +30,31 @@
     }
     </#list>
 </#if>
+
 <#macro _assignment>
     <@includeModel object=assignment
                targetBeanName=ext.targetBeanName
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=ext.targetReadAccessorName
                targetWriteAccessorName=ext.targetWriteAccessorName
+               targetType=ext.targetType
+               defaultValueAssignment=ext.defaultValueAssignment/>
+</#macro>
+
+<#macro _defaultValueAssignment>
+    <@includeModel object=ext.defaultValueAssignment.assignment
+               targetBeanName=ext.targetBeanName
+               existingInstanceMapping=ext.existingInstanceMapping
+               targetWriteAccessorName=ext.targetWriteAccessorName
                targetType=ext.targetType/>
+</#macro>
+
+<#macro assignment_w_defaultValue>
+    ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_assignment/> );
+    <#-- if the assignee property is a primitive, defaulValueAssignment will not be set -->
+    <#if ext.defaultValueAssignment?? >
+    if ( ${sourceReference} == null ) {
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_defaultValueAssignment/> );
+    }
+    </#if>
 </#macro>

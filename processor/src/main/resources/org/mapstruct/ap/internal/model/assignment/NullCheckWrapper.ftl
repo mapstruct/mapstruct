@@ -24,5 +24,16 @@ if ( ${sourceReference} != null ) {
                 existingInstanceMapping=ext.existingInstanceMapping
                 targetReadAccessorName=ext.targetReadAccessorName
                 targetWriteAccessorName=ext.targetWriteAccessorName
+                targetType=ext.targetType
+                defaultValue=ext.defaultValueAssignment/>
+}
+<#if ext.defaultValueAssignment?? >
+else {
+    <@includeModel object=ext.defaultValueAssignment
+                targetBeanName=ext.targetBeanName
+                existingInstanceMapping=ext.existingInstanceMapping
+                targetReadAccessorName=ext.targetReadAccessorName
+                targetWriteAccessorName=ext.targetWriteAccessorName
                 targetType=ext.targetType/>
 }
+</#if>

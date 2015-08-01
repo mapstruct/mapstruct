@@ -154,4 +154,16 @@ public @interface Mapping {
      * @return the dependencies of the mapped property
      */
     String[] dependsOn() default { };
+
+    /**
+     * <p>
+     * In case the source property is null the provided default {@link String} value is set.
+     * If the designated target
+     * property is not of type {@code String}, the value will be converted by applying a matching conversion method or
+     * built-in conversion.
+     * </p>
+     * Either this attribute or {@link #constant()} or {@link #expression()} may be specified for a given mapping.
+     * @return Default value to set in case the source property is null.
+     */
+    String defaultValue() default "";
 }
