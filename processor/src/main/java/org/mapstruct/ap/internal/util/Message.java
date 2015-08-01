@@ -44,6 +44,8 @@ public enum Message {
     PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED( "Source and constant are both defined in @Mapping, either define a source or a constant." ),
     PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED( "Source and expression are both defined in @Mapping, either define a source or an expression." ),
     PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED( "Expression and constant are both defined in @Mapping, either define an expression or a constant." ),
+    PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED( "Expression and default value are both defined in @Mapping, either define a defaultValue or an expression." ),
+    PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED( "Constant and default value are both defined in @Mapping, either define a defaultValue or a constant." ),
     PROPERTYMAPPING_INVALID_EXPRESSION( "Value must be given in the form \"java(<EXPRESSION>)\"." ),
     PROPERTYMAPPING_REVERSAL_PROBLEM( "Parameter %s cannot be reversed." ),
     PROPERTYMAPPING_INVALID_PARAMETER_NAME( "Method has no parameter named \"%s\"." ),

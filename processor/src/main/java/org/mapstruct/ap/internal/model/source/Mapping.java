@@ -18,13 +18,12 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.MappingPrism;
+import org.mapstruct.ap.internal.prism.MappingsPrism;
+import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.Message;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -33,13 +32,13 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-
-import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.MappingPrism;
-import org.mapstruct.ap.internal.prism.MappingsPrism;
-import org.mapstruct.ap.internal.util.FormattingMessager;
-import org.mapstruct.ap.internal.util.Message;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.
@@ -55,6 +54,7 @@ public class Mapping {
     private final String javaExpression;
     private final String targetName;
     private final String dateFormat;
+    private final String defaultValue;
     private final List<TypeMirror> qualifiers;
     private final TypeMirror resultType;
     private final boolean isIgnored;
@@ -95,6 +95,7 @@ public class Mapping {
     public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element,
                                            FormattingMessager messager) {
 
+
         if ( mappingPrism.target().isEmpty() ) {
             messager.printMessage(
                 element,
@@ -117,11 +118,20 @@ public class Mapping {
             messager.printMessage( element, Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED );
             return null;
         }
+        else if ( !mappingPrism.expression().isEmpty() && !mappingPrism.defaultValue().isEmpty() ) {
+            messager.printMessage( element, Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED );
+            return null;
+        }
+        else if ( !mappingPrism.constant().isEmpty() && !mappingPrism.defaultValue().isEmpty() ) {
+            messager.printMessage( element, Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED );
+            return null;
+        }
 
         String source = mappingPrism.source().isEmpty() ? null : mappingPrism.source();
         String constant = mappingPrism.constant().isEmpty() ? null : mappingPrism.constant();
         String expression = getExpression( mappingPrism, element, messager );
         String dateFormat = mappingPrism.dateFormat().isEmpty() ? null : mappingPrism.dateFormat();
+        String defaultValue = mappingPrism.defaultValue().isEmpty() ? null : mappingPrism.defaultValue();
 
         boolean resultTypeIsDefined = !TypeKind.VOID.equals( mappingPrism.resultType().getKind() );
         TypeMirror resultType = resultTypeIsDefined ? mappingPrism.resultType() : null;
@@ -134,6 +144,7 @@ public class Mapping {
             expression,
             mappingPrism.target(),
             dateFormat,
+            defaultValue,
             mappingPrism.qualifiedBy(),
             mappingPrism.ignore(),
             mappingPrism.mirror,
@@ -147,7 +158,7 @@ public class Mapping {
 
     @SuppressWarnings("checkstyle:parameternumber")
     private Mapping(String sourceName, String constant, String javaExpression, String targetName,
-                    String dateFormat, List<TypeMirror> qualifiers,
+                    String dateFormat, String defaultValue, List<TypeMirror> qualifiers,
                     boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
                     AnnotationValue dependsOnAnnotationValue,
@@ -157,6 +168,7 @@ public class Mapping {
         this.javaExpression = javaExpression;
         this.targetName = targetName;
         this.dateFormat = dateFormat;
+        this.defaultValue = defaultValue;
         this.qualifiers = qualifiers;
         this.isIgnored = isIgnored;
         this.mirror = mirror;
@@ -227,6 +239,10 @@ public class Mapping {
 
     public String getDateFormat() {
         return dateFormat;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
     }
 
     public List<TypeMirror> getQualifiers() {
@@ -306,6 +322,7 @@ public class Mapping {
             null, // expression
             sourceName != null ? sourceName : targetName,
             dateFormat,
+            null,
             qualifiers,
             isIgnored,
             mirror,
@@ -333,6 +350,7 @@ public class Mapping {
             javaExpression,
             targetName,
             dateFormat,
+            defaultValue,
             qualifiers,
             isIgnored,
             mirror,
