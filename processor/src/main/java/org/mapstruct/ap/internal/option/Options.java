@@ -29,15 +29,17 @@ public class Options {
     private final boolean suppressGeneratorTimestamp;
     private final boolean suppressGeneratorVersionComment;
     private final ReportingPolicy unmappedTargetPolicy;
+    private final boolean alwaysGenerateSpi;
     private final String defaultComponentModel;
 
     public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
                    ReportingPolicy unmappedTargetPolicy,
-                   String defaultComponentModel) {
+                   String defaultComponentModel, boolean alwaysGenerateSpi) {
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.suppressGeneratorVersionComment = suppressGeneratorVersionComment;
         this.unmappedTargetPolicy = unmappedTargetPolicy;
         this.defaultComponentModel = defaultComponentModel;
+        this.alwaysGenerateSpi = alwaysGenerateSpi;
     }
 
     public boolean isSuppressGeneratorTimestamp() {
@@ -54,5 +56,9 @@ public class Options {
 
     public String getDefaultComponentModel() {
         return defaultComponentModel;
+    }
+
+    public boolean isAlwaysGenerateSpi() {
+        return alwaysGenerateSpi;
     }
 }

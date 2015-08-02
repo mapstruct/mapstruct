@@ -18,10 +18,12 @@
  */
 package org.mapstruct.ap.test.destination;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.factory.Mappers;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -35,6 +37,26 @@ public class DestinationClassNameTest {
     public void shouldGenerateRightName() throws Exception {
         DestinationClassNameMapper instance = DestinationClassNameMapper.INSTANCE;
         assertThat( instance.getClass().getSimpleName() ).isEqualTo( "MyDestinationClassNameMapperCustomImpl" );
+    }
+
+    @Test
+    @WithClasses({ DestinationClassNameWithJsr330Mapper.class })
+    public void shouldNotGenerateSpi() throws Exception {
+
+        Class<DestinationClassNameWithJsr330Mapper> clazz = DestinationClassNameWithJsr330Mapper.class;
+        try {
+            Mappers.getMapper( clazz );
+            Assert.fail( "Should have thrown an ClassNotFoundException" );
+        }
+        catch ( RuntimeException e ) {
+            assertThat( e.getCause() ).isNotNull()
+                    .isExactlyInstanceOf( ClassNotFoundException.class )
+                    .hasMessage( "Cannot find implementation for " + clazz.getName() );
+        }
+
+        DestinationClassNameWithJsr330Mapper instance = (DestinationClassNameWithJsr330Mapper) Class
+                .forName( clazz.getName() + "Jsr330Impl" ).newInstance();
+        assertThat( instance.getClass().getSimpleName() ).isEqualTo( "DestinationClassNameWithJsr330MapperJsr330Impl" );
     }
 
     @Test

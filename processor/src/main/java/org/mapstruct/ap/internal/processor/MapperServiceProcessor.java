@@ -21,6 +21,8 @@ package org.mapstruct.ap.internal.processor;
 import org.mapstruct.ap.internal.model.GeneratedType;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.ServicesEntry;
+import org.mapstruct.ap.internal.option.OptionsHelper;
+import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.writer.ModelWriter;
 
 import javax.annotation.processing.Filer;
@@ -35,7 +37,22 @@ import java.io.IOException;
 public class MapperServiceProcessor  implements ModelElementProcessor<Mapper, Void> {
     @Override
     public Void process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
-        if ( !context.isErroneous() && mapper.hasCustomImplementation() ) {
+        boolean spiGenerationNeeded;
+
+        if ( context.getOptions().isAlwaysGenerateSpi() ) {
+            spiGenerationNeeded = true;
+        }
+        else {
+            String componentModel = MapperConfiguration.getInstanceOn( mapperTypeElement ).componentModel();
+            String effectiveComponentModel = OptionsHelper.getEffectiveComponentModel(
+                    context.getOptions(),
+                    componentModel
+            );
+
+            spiGenerationNeeded = "default".equals( effectiveComponentModel );
+        }
+
+        if ( !context.isErroneous() && spiGenerationNeeded && mapper.hasCustomImplementation() ) {
             writeToSourceFile( context.getFiler(), mapper );
         }
         return null;
