@@ -75,20 +75,24 @@ public class Mappers {
                 classLoader = Mappers.class.getClassLoader();
             }
 
-            ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
+            try {
+                @SuppressWarnings("unchecked")
+                T mapper = (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
+                return mapper;
+            }
+            catch (ClassNotFoundException e) {
+                ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
 
-            if ( loader != null ) {
-                for ( T mapper : loader ) {
-                    if ( mapper != null ) {
-                        return mapper;
+                if ( loader != null ) {
+                    for ( T mapper : loader ) {
+                        if ( mapper != null ) {
+                            return mapper;
+                        }
                     }
                 }
+
+                throw new ClassNotFoundException("Cannot find implementation for " + clazz.getName());
             }
-
-            @SuppressWarnings("unchecked")
-            T mapper = (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
-
-            return mapper;
         }
         catch ( Exception e ) {
             throw new RuntimeException( e );
