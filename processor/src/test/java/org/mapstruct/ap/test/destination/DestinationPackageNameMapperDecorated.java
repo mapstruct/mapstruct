@@ -25,7 +25,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Christophe Labouisse on 27/05/2015.
  */
-@Mapper(implementationPackage = "*.dest")
+@Mapper(implementationPackage = "<PACKAGE_NAME>.dest")
 @DecoratedWith(DestinationPackageNameMapperDecorator.class)
 public interface DestinationPackageNameMapperDecorated {
     DestinationPackageNameMapperDecorated INSTANCE = Mappers.getMapper( DestinationPackageNameMapperDecorated.class );

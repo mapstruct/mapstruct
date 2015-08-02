@@ -24,7 +24,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Christophe Labouisse on 27/05/2015.
  */
-@Mapper(config = DestinationClassNameMapperConfig.class, implementationName = "Custom*MyImpl")
+@Mapper(config = DestinationClassNameMapperConfig.class, implementationName = "Custom<CLASS_NAME>MyImpl")
 public interface DestinationClassNameMapperWithConfigOverride {
     DestinationClassNameMapperWithConfigOverride INSTANCE =
             Mappers.getMapper( DestinationClassNameMapperWithConfigOverride.class );

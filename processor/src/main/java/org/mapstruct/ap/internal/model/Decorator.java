@@ -18,20 +18,19 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.SortedSet;
-
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.prism.DecoratedWithPrism;
 import org.mapstruct.ap.internal.version.VersionInformation;
+
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedSet;
 
 /**
  * Represents a decorator applied to a generated mapper type.
@@ -95,12 +94,12 @@ public class Decorator extends GeneratedType {
         }
 
         public Builder implName(String implName) {
-            this.implName = "default".equals( implName ) ? "*Impl" : implName;
+            this.implName = "default".equals( implName ) ? Mapper.DEFAULT_IMPLEMENTATION_CLASS : implName;
             return this;
         }
 
         public Builder implPackage(String implPackage) {
-            this.implPackage = "default".equals( implPackage ) ? "*" : implPackage;
+            this.implPackage = "default".equals( implPackage ) ? Mapper.DEFAULT_IMPLEMENTATION_PACKAGE : implPackage;
             return this;
         }
 
@@ -110,7 +109,8 @@ public class Decorator extends GeneratedType {
         }
 
         public Decorator build() {
-            String implementationName = implName.replace( "*", mapperElement.getSimpleName() );
+            String implementationName = implName.replace( Mapper.CLASS_NAME_PLACEHOLDER,
+                                                          mapperElement.getSimpleName() );
 
             Type decoratorType = typeFactory.getType( decoratorPrism.value() );
             DecoratorConstructor decoratorConstructor = new DecoratorConstructor(
@@ -120,7 +120,7 @@ public class Decorator extends GeneratedType {
 
 
             String elementPackage = elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString();
-            String packageName = implPackage.replace( "*", elementPackage );
+            String packageName = implPackage.replace( Mapper.PACKAGE_NAME_PLACEHOLDER, elementPackage );
 
             return new Decorator(
                 typeFactory,

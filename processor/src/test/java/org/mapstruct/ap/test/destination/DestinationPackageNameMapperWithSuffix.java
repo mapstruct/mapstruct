@@ -24,7 +24,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Christophe Labouisse on 27/05/2015.
  */
-@Mapper(implementationName = "*MyImpl", implementationPackage = "*.dest")
+@Mapper(implementationName = "<CLASS_NAME>MyImpl", implementationPackage = "<PACKAGE_NAME>.dest")
 public interface DestinationPackageNameMapperWithSuffix {
     DestinationPackageNameMapperWithSuffix INSTANCE = Mappers.getMapper( DestinationPackageNameMapperWithSuffix.class );
 

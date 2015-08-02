@@ -24,7 +24,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Christophe Labouisse on 27/05/2015.
  */
-@Mapper(implementationName = "My*CustomImpl")
+@Mapper(implementationName = "My<CLASS_NAME>CustomImpl")
 public interface DestinationClassNameMapper {
     DestinationClassNameMapper INSTANCE = Mappers.getMapper( DestinationClassNameMapper.class );
 

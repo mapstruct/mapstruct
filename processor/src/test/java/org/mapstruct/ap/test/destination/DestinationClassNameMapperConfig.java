@@ -23,6 +23,6 @@ import org.mapstruct.MapperConfig;
 /**
  * @author Christophe Labouisse on 30/05/2015.
  */
-@MapperConfig(implementationName = "My*ConfigImpl")
+@MapperConfig(implementationName = "My<CLASS_NAME>ConfigImpl")
 public interface DestinationClassNameMapperConfig {
 }

@@ -23,6 +23,6 @@ import org.mapstruct.MapperConfig;
 /**
  * @author Christophe Labouisse on 30/05/2015.
  */
-@MapperConfig(implementationPackage = "*.dest")
+@MapperConfig(implementationPackage = "<PACKAGE_NAME>.dest")
 public interface DestinationPackageNameMapperConfig {
 }

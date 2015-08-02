@@ -25,7 +25,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Christophe Labouisse on 27/05/2015.
  */
-@Mapper(implementationName = "My*CustomImpl")
+@Mapper(implementationName = "My<CLASS_NAME>CustomImpl")
 @DecoratedWith(DestinationClassNameMapperDecorator.class)
 public interface DestinationClassNameMapperDecorated {
     DestinationClassNameMapperDecorated INSTANCE = Mappers.getMapper( DestinationClassNameMapperDecorated.class );

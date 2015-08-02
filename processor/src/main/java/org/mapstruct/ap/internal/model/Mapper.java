@@ -39,6 +39,11 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  */
 public class Mapper extends GeneratedType {
 
+    static final String CLASS_NAME_PLACEHOLDER = "<CLASS_NAME>";
+    static final String PACKAGE_NAME_PLACEHOLDER = "<PACKAGE_NAME>";
+    static final String DEFAULT_IMPLEMENTATION_CLASS = CLASS_NAME_PLACEHOLDER + "Impl";
+    static final String DEFAULT_IMPLEMENTATION_PACKAGE = PACKAGE_NAME_PLACEHOLDER;
+
     private final boolean customPackage;
     private final boolean customImplName;
     private final List<MapperReference> referencedMappers;
@@ -136,23 +141,23 @@ public class Mapper extends GeneratedType {
         }
 
         public Builder implName(String implName) {
-            this.implName = "default".equals( implName ) ? "*Impl" : implName;
-            this.customName = !"*Impl".equals( this.implName );
+            this.implName = "default".equals( implName ) ? DEFAULT_IMPLEMENTATION_CLASS : implName;
+            this.customName = !DEFAULT_IMPLEMENTATION_CLASS.equals( this.implName );
             return this;
         }
 
         public Builder implPackage(String implPackage) {
-            this.implPackage = "default".equals( implPackage ) ? "*" : implPackage;
-            this.customPackage = !"*".equals( this.implPackage );
+            this.implPackage = "default".equals( implPackage ) ? DEFAULT_IMPLEMENTATION_PACKAGE : implPackage;
+            this.customPackage = !DEFAULT_IMPLEMENTATION_PACKAGE.equals( this.implPackage );
             return this;
         }
 
         public Mapper build() {
-            String implementationName = implName.replace( "*", element.getSimpleName() ) +
+            String implementationName = implName.replace( CLASS_NAME_PLACEHOLDER, element.getSimpleName() ) +
                     ( decorator == null ? "" : "_" );
 
             String elementPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
-            String packageName = implPackage.replace( "*", elementPackage );
+            String packageName = implPackage.replace( PACKAGE_NAME_PLACEHOLDER, elementPackage );
 
             return new Mapper(
                 typeFactory,
