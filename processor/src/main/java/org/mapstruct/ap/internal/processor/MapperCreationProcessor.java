@@ -242,7 +242,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         // Add original package if a dest package has been set
-        if ( !"*".equals( mapperConfiguration.implementationPackage() ) ) {
+        if ( !"default".equals( mapperConfiguration.implementationPackage() ) ) {
             extraImports.add( typeFactory.getType( element ) );
         }
 
