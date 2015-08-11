@@ -18,9 +18,12 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -45,6 +48,19 @@ import static org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds.replace
  * @author Gunnar Morling
  */
 public class Executables {
+
+    private static final Method DEFAULT_METHOD;
+
+    static {
+        Method method;
+        try {
+            method = ExecutableElement.class.getMethod( "isDefault" );
+        }
+        catch ( NoSuchMethodException e ) {
+            method = null;
+        }
+        DEFAULT_METHOD = method;
+    }
 
     private static final AccessorNamingStrategy ACCESSOR_NAMING_STRATEGY = Services.get(
         AccessorNamingStrategy.class,
@@ -78,6 +94,18 @@ public class Executables {
 
     public static String getPropertyName(ExecutableElement getterOrSetterMethod) {
         return ACCESSOR_NAMING_STRATEGY.getPropertyName( getterOrSetterMethod );
+    }
+
+    public static boolean isDefaultMethod(ExecutableElement method) {
+        try {
+            return DEFAULT_METHOD != null && Boolean.TRUE.equals( DEFAULT_METHOD.invoke( method ) );
+        }
+        catch ( IllegalAccessException e ) {
+            return false;
+        }
+        catch ( InvocationTargetException e ) {
+            return false;
+        }
     }
 
     /**
@@ -159,13 +187,27 @@ public class Executables {
                                             List<ExecutableElement> methodsToAdd, TypeElement parentType) {
         List<ExecutableElement> safeToAdd = new ArrayList<ExecutableElement>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
-            if ( isNotObjectEquals( toAdd )
+            if ( isNotStaticMethodInInterface( toAdd, parentType )
+                && isNotInterfaceDefaultMethod( toAdd, parentType )
+                && isNotObjectEquals( toAdd )
                 && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd, parentType ) ) {
                 safeToAdd.add( toAdd );
             }
         }
 
         alreadyCollected.addAll( 0, safeToAdd );
+    }
+
+    private static boolean isNotStaticMethodInInterface(ExecutableElement element, TypeElement parentType) {
+        return !( parentType.getKind().isInterface() &&
+            element.getKind() == ElementKind.METHOD &&
+            element.getModifiers().containsAll( Arrays.asList( Modifier.PUBLIC, Modifier.STATIC ) ) );
+    }
+
+    private static boolean isNotInterfaceDefaultMethod(ExecutableElement element, TypeElement parentType) {
+        return !( parentType.getKind().isInterface() &&
+            element.getKind() == ElementKind.METHOD &&
+            isDefaultMethod( element ) );
     }
 
     /**
