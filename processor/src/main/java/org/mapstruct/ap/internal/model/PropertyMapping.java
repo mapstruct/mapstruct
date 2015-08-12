@@ -68,8 +68,7 @@ public class PropertyMapping extends ModelElement {
     private final Type targetType;
     private final Assignment assignment;
     private final List<String> dependsOn;
-    private String defaultValue;
-    private Assignment defaultValueAssignment;
+    private final Assignment defaultValueAssignment;
 
     @SuppressWarnings("unchecked")
     private static class MappingBuilderBase<T extends MappingBuilderBase<T>> {
@@ -796,10 +795,6 @@ public class PropertyMapping extends ModelElement {
 
     public List<String> getDependsOn() {
         return dependsOn;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
     }
 
     @Override

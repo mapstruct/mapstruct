@@ -30,7 +30,6 @@
     }
     </#list>
 </#if>
-
 <#macro _assignment>
     <@includeModel object=assignment
                targetBeanName=ext.targetBeanName
@@ -40,7 +39,6 @@
                targetType=ext.targetType
                defaultValueAssignment=ext.defaultValueAssignment/>
 </#macro>
-
 <#macro _defaultValueAssignment>
     <@includeModel object=ext.defaultValueAssignment.assignment
                targetBeanName=ext.targetBeanName
@@ -48,13 +46,16 @@
                targetWriteAccessorName=ext.targetWriteAccessorName
                targetType=ext.targetType/>
 </#macro>
-
 <#macro assignment_w_defaultValue>
-    ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_assignment/> );
-    <#-- if the assignee property is a primitive, defaulValueAssignment will not be set -->
     <#if ext.defaultValueAssignment?? >
-    if ( ${sourceReference} == null ) {
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_defaultValueAssignment/> );
-    }
+        <#-- if the assignee property is a primitive, defaulValueAssignment will not be set -->
+        if ( ${sourceReference} != null ) {
+            ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_assignment/> );
+        }
+        else {
+            ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_defaultValueAssignment/> );
+        }
+    <#else>
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_assignment/> );
     </#if>
 </#macro>

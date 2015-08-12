@@ -64,7 +64,7 @@ public @interface Mapping {
      * <li>When no matching property is found, MapStruct looks for a matching parameter name instead.</li>
      * <li>When used to map an enum constant, the name of the constant member is to be given.</li>
      * </ol>
-     * Either this attribute or {@link #constant()} or {@link #expression()} may be specified for a given mapping.
+     * This attribute can not be used together with {@link #constant()} or {@link #expression()}.
      *
      * @return The source name of the configured property or enum constant.
      */
@@ -83,7 +83,7 @@ public @interface Mapping {
      * property is not of type {@code String}, the value will be converted by applying a matching conversion method or
      * built-in conversion.
      * <p>
-     * Either this attribute or {@link #source()} or {@link #expression()} may be specified for a given mapping.
+     * This attribute can not be used together with {@link #source()}, {@link #defaultValue()} or {@link #expression()}.
      *
      * @return A constant {@code String} constant specifying the value for the designated target property
      */
@@ -94,6 +94,7 @@ public @interface Mapping {
      * <p>
      * Currently, Java is the only supported "expression language" and expressions must be given in form of Java
      * expressions using the following format: {@code java(<EXPRESSION>)}. For instance the mapping
+     * <p>
      *
      * <pre>
      * {@code @Mapping(
@@ -109,7 +110,7 @@ public @interface Mapping {
      * Any types referenced in expressions must be given via their fully-qualified name. Alternatively, types can be
      * imported via {@link Mapper#imports()}.
      * <p>
-     * Either this attribute, {@link #source()} or {@link #constant()} may be specified for a given mapping.
+     * This attribute can not be used together with {@link #source()}, {@link #defaultValue()} or {@link #constant()}.
      *
      * @return An expression specifying the value for the designated target property
      */
@@ -153,14 +154,13 @@ public @interface Mapping {
     String[] dependsOn() default { };
 
     /**
+     * In case the source property is {@code null}, the provided default {@link String} value is set. If the designated
+     * target property is not of type {@code String}, the value will be converted by applying a matching conversion
+     * method or built-in conversion.
      * <p>
-     * In case the source property is null the provided default {@link String} value is set.
-     * If the designated target
-     * property is not of type {@code String}, the value will be converted by applying a matching conversion method or
-     * built-in conversion.
-     * </p>
-     * Either this attribute or {@link #constant()} or {@link #expression()} may be specified for a given mapping.
-     * @return Default value to set in case the source property is null.
+     * This attribute can not be used together with {@link #constant()} or {@link #expression()}.
+     *
+     * @return Default value to set in case the source property is {@code null}.
      */
     String defaultValue() default "";
 }
