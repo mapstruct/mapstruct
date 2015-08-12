@@ -18,20 +18,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeMirror;
-
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
@@ -53,6 +39,19 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
  * {@code int Target#bar}. Name and type of source and target property can differ. If they have different types, the
@@ -69,6 +68,8 @@ public class PropertyMapping extends ModelElement {
     private final Type targetType;
     private final Assignment assignment;
     private final List<String> dependsOn;
+    private String defaultValue;
+    private Assignment defaultValueAssignment;
 
     @SuppressWarnings("unchecked")
     private static class MappingBuilderBase<T extends MappingBuilderBase<T>> {
@@ -121,6 +122,7 @@ public class PropertyMapping extends ModelElement {
 
         // initial properties
         private String dateFormat;
+        private String defaultValue;
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
         private SourceReference sourceReference;
@@ -142,6 +144,11 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder dateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
+            return this;
+        }
+
+        public PropertyMappingBuilder defaultValue(String defaultValue) {
+            this.defaultValue = defaultValue;
             return this;
         }
 
@@ -237,8 +244,29 @@ public class PropertyMapping extends ModelElement {
                 targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
                 assignment,
-                dependsOn
+                dependsOn,
+                getDefaultValueAssignment()
             );
+        }
+
+        private Assignment getDefaultValueAssignment() {
+            if ( defaultValue != null && !getSourceType().isPrimitive() ) {
+                PropertyMapping build = new ConstantMappingBuilder()
+                        .constantExpression( '"' + defaultValue + '"' )
+                        .dateFormat( dateFormat )
+                        .qualifiers( qualifiers )
+                        .resultType( resultType )
+                        .dependsOn( dependsOn )
+                        .existingVariableNames( existingVariableNames )
+                        .mappingContext( ctx )
+                        .sourceMethod( method )
+                        .targetPropertyName( targetPropertyName )
+                        .targetReadAccessor( targetReadAccessor )
+                        .targetWriteAccessor( targetWriteAccessor )
+                        .build();
+                return build.getAssignment();
+            }
+            return null;
         }
 
         private Assignment assignObject(Type sourceType, Type targetType, TargetWriteAccessorType targetAccessorType,
@@ -657,7 +685,8 @@ public class PropertyMapping extends ModelElement {
                 targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
                 assignment,
-                dependsOn
+                dependsOn,
+                null
             );
         }
     }
@@ -702,7 +731,8 @@ public class PropertyMapping extends ModelElement {
                 targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
                 assignment,
-                dependsOn
+                dependsOn,
+                null
             );
         }
 
@@ -710,13 +740,14 @@ public class PropertyMapping extends ModelElement {
 
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name, String targetWriteAccessorName, String targetReadAccessorName, Type targetType,
-                            Assignment propertyAssignment, List<String> dependsOn) {
-        this( name, null, targetWriteAccessorName, targetReadAccessorName, targetType, propertyAssignment, dependsOn );
+                            Assignment propertyAssignment, List<String> dependsOn, Assignment defaultValueAssignment ) {
+        this( name, null, targetWriteAccessorName, targetReadAccessorName,
+                        targetType, propertyAssignment, dependsOn, defaultValueAssignment );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             String targetReadAccessorName, Type targetType, Assignment assignment,
-                            List<String> dependsOn) {
+                            List<String> dependsOn, Assignment defaultValueAssignment ) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -724,6 +755,7 @@ public class PropertyMapping extends ModelElement {
         this.targetType = targetType;
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
+        this.defaultValueAssignment = defaultValueAssignment;
     }
 
     /**
@@ -753,6 +785,10 @@ public class PropertyMapping extends ModelElement {
         return assignment;
     }
 
+    public Assignment getDefaultValueAssignment() {
+        return defaultValueAssignment;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
         return assignment.getImportTypes();
@@ -760,6 +796,10 @@ public class PropertyMapping extends ModelElement {
 
     public List<String> getDependsOn() {
         return dependsOn;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
     }
 
     @Override
@@ -770,6 +810,7 @@ public class PropertyMapping extends ModelElement {
             + "\n    targetReadAccessorName='" + targetReadAccessorName + "\',"
             + "\n    targetType=" + targetType + ","
             + "\n    propertyAssignment=" + assignment + ","
+            + "\n    defaultValueAssignment=" + defaultValueAssignment + ","
             + "\n    dependsOn=" + dependsOn
             + "\n}";
     }
