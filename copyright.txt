@@ -6,7 +6,7 @@ Christian Schuster
 Dilip Krishnan
 Ewald Volkert
 Gunnar Morling
-Ivo Šmíd
+Ivo Smid
 Michael Pardo
 Mustafa Caylak
 Paul Strugnell
