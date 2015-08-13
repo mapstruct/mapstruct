@@ -18,12 +18,13 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.MappingPrism;
-import org.mapstruct.ap.internal.prism.MappingsPrism;
-import org.mapstruct.ap.internal.util.FormattingMessager;
-import org.mapstruct.ap.internal.util.Message;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -32,13 +33,13 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.MappingPrism;
+import org.mapstruct.ap.internal.prism.MappingsPrism;
+import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.Message;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.
@@ -106,34 +107,34 @@ public class Mapping {
             return null;
         }
 
-        if ( !mappingPrism.source().isEmpty() && !mappingPrism.constant().isEmpty() ) {
+        if ( !mappingPrism.source().isEmpty() && mappingPrism.values.constant() != null ) {
             messager.printMessage( element, Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED );
             return null;
         }
-        else if ( !mappingPrism.source().isEmpty() && !mappingPrism.expression().isEmpty() ) {
+        else if ( !mappingPrism.source().isEmpty() && mappingPrism.values.expression() != null ) {
             messager.printMessage( element, Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED );
             return null;
         }
-        else if ( !mappingPrism.expression().isEmpty() && !mappingPrism.constant().isEmpty() ) {
+        else if ( mappingPrism.values.expression() != null && mappingPrism.values.constant() != null ) {
             messager.printMessage( element, Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED );
             return null;
         }
-        else if ( !mappingPrism.expression().isEmpty() && !mappingPrism.defaultValue().isEmpty() ) {
+        else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultValue() != null ) {
             messager.printMessage( element, Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED );
             return null;
         }
-        else if ( !mappingPrism.constant().isEmpty() && !mappingPrism.defaultValue().isEmpty() ) {
+        else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultValue() != null ) {
             messager.printMessage( element, Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED );
             return null;
         }
 
         String source = mappingPrism.source().isEmpty() ? null : mappingPrism.source();
-        String constant = mappingPrism.constant().isEmpty() ? null : mappingPrism.constant();
+        String constant = mappingPrism.values.constant() == null ? null : mappingPrism.constant();
         String expression = getExpression( mappingPrism, element, messager );
-        String dateFormat = mappingPrism.dateFormat().isEmpty() ? null : mappingPrism.dateFormat();
-        String defaultValue = mappingPrism.defaultValue().isEmpty() ? null : mappingPrism.defaultValue();
+        String dateFormat = mappingPrism.values.dateFormat() == null ? null : mappingPrism.dateFormat();
+        String defaultValue = mappingPrism.values.defaultValue() == null ? null : mappingPrism.defaultValue();
 
-        boolean resultTypeIsDefined = !TypeKind.VOID.equals( mappingPrism.resultType().getKind() );
+        boolean resultTypeIsDefined = mappingPrism.values.resultType() != null;
         TypeMirror resultType = resultTypeIsDefined ? mappingPrism.resultType() : null;
         List<String> dependsOn =
             mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();

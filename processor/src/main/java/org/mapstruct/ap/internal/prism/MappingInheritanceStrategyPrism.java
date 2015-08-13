@@ -26,6 +26,5 @@ package org.mapstruct.ap.internal.prism;
  */
 public enum MappingInheritanceStrategyPrism {
     EXPLICIT,
-    AUTO_INHERIT_FROM_CONFIG,
-    DEFAULT;
+    AUTO_INHERIT_FROM_CONFIG;
 }

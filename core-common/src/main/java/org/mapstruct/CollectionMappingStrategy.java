@@ -51,12 +51,5 @@ public enum CollectionMappingStrategy {
      * Identical to {@link #SETTER_PREFERRED}, only that adder methods will be preferred over setter methods, if both
      * are present for a given collection-typed property.
      */
-    ADDER_PREFERRED,
-
-    /**
-     * If given via {@link Mapper#collectionMappingStrategy()}, causes the setting specified via
-     * {@link MapperConfig#collectionMappingStrategy()} to be applied, if present. Otherwise causes
-     * {@link #ACCESSOR_ONLY} to be applied.
-     */
-    DEFAULT;
+    ADDER_PREFERRED;
 }

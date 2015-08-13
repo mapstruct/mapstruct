@@ -35,13 +35,5 @@ public enum MappingInheritanceStrategy {
      * Inherit the method-level configuration annotations automatically if source and target types of the prototype
      * method are assignable from the types of a given mapping method.
      */
-    AUTO_INHERIT_FROM_CONFIG,
-
-    /**
-     * When given via {@link Mapper#mappingInheritanceStrategy()}, the value specified via
-     * {@link MapperConfig#mappingInheritanceStrategy()} will be applied, if present.
-     * <p>
-     * When given via {@link MapperConfig#mappingInheritanceStrategy()}, the strategy {@link #EXPLICIT} will be applied.
-     */
-    DEFAULT;
+    AUTO_INHERIT_FROM_CONFIG;
 }

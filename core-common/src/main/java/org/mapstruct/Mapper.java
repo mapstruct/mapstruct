@@ -59,7 +59,7 @@ public @interface Mapper {
      *
      * @return The reporting policy for unmapped target properties.
      */
-    ReportingPolicy unmappedTargetPolicy() default ReportingPolicy.DEFAULT;
+    ReportingPolicy unmappedTargetPolicy() default ReportingPolicy.WARN;
 
     /**
      * Specifies the component model to which the generated mapper should
@@ -103,7 +103,7 @@ public @interface Mapper {
      *
      * @return The strategy applied when propagating the value of collection-typed properties.
      */
-    CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.DEFAULT;
+    CollectionMappingStrategy collectionMappingStrategy() default CollectionMappingStrategy.ACCESSOR_ONLY;
 
     /**
      * The strategy to be applied when {@code null} is passed as source value to the methods of this mapper. If no
@@ -112,7 +112,7 @@ public @interface Mapper {
      *
      * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapper.
      */
-    NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.DEFAULT;
+    NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
 
     /**
      * The strategy to use for applying method-level configuration annotations of prototype methods in the interface
@@ -125,5 +125,5 @@ public @interface Mapper {
      * @return The strategy to use for applying {@code @Mapping} configurations of prototype methods in the interface
      * specified with {@link #config()}.
      */
-    MappingInheritanceStrategy mappingInheritanceStrategy() default MappingInheritanceStrategy.DEFAULT;
+    MappingInheritanceStrategy mappingInheritanceStrategy() default MappingInheritanceStrategy.EXPLICIT;
 }

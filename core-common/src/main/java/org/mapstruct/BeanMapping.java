@@ -61,5 +61,5 @@ public @interface BeanMapping {
      *
      * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapping.
      */
-    NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.DEFAULT;
+    NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
 }

@@ -50,11 +50,13 @@ public class BeanMapping {
 
         boolean resultTypeIsDefined = !TypeKind.VOID.equals( beanMapping.resultType().getKind() );
 
-        NullValueMappingStrategyPrism nullValueMappingStrategy
-            = NullValueMappingStrategyPrism.valueOf( beanMapping.nullValueMappingStrategy() );
+        NullValueMappingStrategyPrism nullValueMappingStrategy =
+            null == beanMapping.values.nullValueMappingStrategy()
+                            ? null
+                            : NullValueMappingStrategyPrism.valueOf( beanMapping.nullValueMappingStrategy() );
 
         if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty()
-            && ( nullValueMappingStrategy == NullValueMappingStrategyPrism.DEFAULT ) ) {
+            && ( nullValueMappingStrategy == null ) ) {
 
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
         }

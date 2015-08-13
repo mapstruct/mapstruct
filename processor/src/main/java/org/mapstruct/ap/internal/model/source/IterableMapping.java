@@ -53,13 +53,15 @@ public class IterableMapping {
 
         boolean elementTargetTypeIsDefined = !TypeKind.VOID.equals( iterableMapping.elementTargetType().getKind() );
 
-        NullValueMappingStrategyPrism nullValueMappingStrategy
-            = NullValueMappingStrategyPrism.valueOf( iterableMapping.nullValueMappingStrategy() );
+        NullValueMappingStrategyPrism nullValueMappingStrategy =
+            iterableMapping.values.nullValueMappingStrategy() == null
+                            ? null
+                            : NullValueMappingStrategyPrism.valueOf( iterableMapping.nullValueMappingStrategy() );
 
         if ( !elementTargetTypeIsDefined
             && iterableMapping.dateFormat().isEmpty()
             && iterableMapping.qualifiedBy().isEmpty()
-            && ( nullValueMappingStrategy == NullValueMappingStrategyPrism.DEFAULT ) ) {
+            && ( nullValueMappingStrategy == null ) ) {
 
             messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
         }

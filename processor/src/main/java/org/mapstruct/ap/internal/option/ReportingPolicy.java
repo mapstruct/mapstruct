@@ -31,8 +31,7 @@ public enum ReportingPolicy {
 
     IGNORE( null, false, false ),
     WARN( Kind.WARNING, true, false ),
-    ERROR( Kind.ERROR, true, true ),
-    DEFAULT( Kind.WARNING, true, false );
+    ERROR( Kind.ERROR, true, true );
 
     private final Diagnostic.Kind diagnosticKind;
     private final boolean requiresReport;

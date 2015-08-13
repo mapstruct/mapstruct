@@ -27,6 +27,5 @@ public enum CollectionMappingStrategyPrism {
 
     ACCESSOR_ONLY,
     SETTER_PREFERRED,
-    ADDER_PREFERRED,
-    DEFAULT;
+    ADDER_PREFERRED;
 }

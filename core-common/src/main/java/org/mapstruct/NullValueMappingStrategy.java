@@ -43,16 +43,5 @@ public enum NullValueMappingStrategy {
      * <li>For map mapping methods an empty map will be returned.</li>
      * </ul>
      */
-    RETURN_DEFAULT,
-
-    /**
-     * When given via {@link Mapper#nullValueMappingStrategy()}, causes the setting specified via
-     * {@link MapperConfig#nullValueMappingStrategy()} to be applied, if present.
-     * <p>
-     * When given on specific mapping methods (e.g. via @ BeanMapping#nullValueMappingStrategy()}), causes the setting
-     * specified via {@link Mapper#nullValueMappingStrategy() ()} to be applied, if present.
-     * <p>
-     * Otherwise causes {@link #RETURN_NULL} to be applied.
-     */
-    DEFAULT;
+    RETURN_DEFAULT;
 }

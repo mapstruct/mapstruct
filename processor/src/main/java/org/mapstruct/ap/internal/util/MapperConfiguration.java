@@ -29,7 +29,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperConfigPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
@@ -79,65 +78,37 @@ public class MapperConfiguration {
     }
 
     public String unmappedTargetPolicy() {
-        if ( ReportingPolicy.valueOf( mapperPrism.unmappedTargetPolicy() ) != ReportingPolicy.DEFAULT ) {
-            // it is not the default configuration
-            return mapperPrism.unmappedTargetPolicy();
-        }
-        else if ( mapperConfigPrism != null &&
-            ReportingPolicy.valueOf( mapperConfigPrism.unmappedTargetPolicy() ) != ReportingPolicy.DEFAULT ) {
+        if ( mapperConfigPrism != null && mapperPrism.values.unmappedTargetPolicy() == null ) {
             return mapperConfigPrism.unmappedTargetPolicy();
         }
         else {
-            return ReportingPolicy.WARN.name();
+            return mapperPrism.unmappedTargetPolicy();
         }
     }
 
     public CollectionMappingStrategyPrism getCollectionMappingStrategy() {
-        CollectionMappingStrategyPrism mapperPolicy =
-            CollectionMappingStrategyPrism.valueOf( mapperPrism.collectionMappingStrategy() );
-
-        if ( mapperPolicy != CollectionMappingStrategyPrism.DEFAULT ) {
-            // it is not the default mapper configuration, so return the mapper configured value
-            return mapperPolicy;
+        if ( mapperConfigPrism != null && mapperPrism.values.collectionMappingStrategy() == null ) {
+            return CollectionMappingStrategyPrism.valueOf( mapperConfigPrism.collectionMappingStrategy() );
         }
-        else if ( mapperConfigPrism != null ) {
-            // try the config mapper configuration
-            CollectionMappingStrategyPrism configPolicy =
-                CollectionMappingStrategyPrism.valueOf( mapperConfigPrism.collectionMappingStrategy() );
-            if ( configPolicy != CollectionMappingStrategyPrism.DEFAULT ) {
-                // its not the default configuration, so return the mapper config configured value
-                return configPolicy;
-            }
+        else {
+            return CollectionMappingStrategyPrism.valueOf( mapperPrism.collectionMappingStrategy() );
         }
-        // when nothing specified, return ACCESSOR_ONLY (default option)
-        return CollectionMappingStrategyPrism.ACCESSOR_ONLY;
     }
 
     public MappingInheritanceStrategyPrism getMappingInheritanceStrategy() {
-        MappingInheritanceStrategyPrism mapperPolicy =
-            MappingInheritanceStrategyPrism.valueOf( mapperPrism.mappingInheritanceStrategy() );
-
-        if ( mapperPolicy != MappingInheritanceStrategyPrism.DEFAULT ) {
-            return mapperPolicy;
+        if ( mapperConfigPrism != null && mapperPrism.values.mappingInheritanceStrategy() == null ) {
+            return MappingInheritanceStrategyPrism.valueOf( mapperConfigPrism.mappingInheritanceStrategy() );
         }
-        else if ( mapperConfigPrism != null ) {
-            MappingInheritanceStrategyPrism configPolicy =
-                MappingInheritanceStrategyPrism.valueOf( mapperConfigPrism.mappingInheritanceStrategy() );
-            if ( configPolicy != MappingInheritanceStrategyPrism.DEFAULT ) {
-                return configPolicy;
-            }
+        else {
+            return MappingInheritanceStrategyPrism.valueOf( mapperPrism.mappingInheritanceStrategy() );
         }
-
-        return MappingInheritanceStrategyPrism.EXPLICIT;
     }
 
     public boolean isMapToDefault(NullValueMappingStrategyPrism mapNullToDefault) {
 
         // check on method level
         if ( mapNullToDefault != null ) {
-            if ( mapNullToDefault != NullValueMappingStrategyPrism.DEFAULT ) {
-                return mapNullToDefault == NullValueMappingStrategyPrism.RETURN_DEFAULT;
-            }
+            return mapNullToDefault == NullValueMappingStrategyPrism.RETURN_DEFAULT;
         }
 
         return isMapToDefaultOnMapperAndMappingConfigLevel();
@@ -145,40 +116,24 @@ public class MapperConfiguration {
     }
 
     private boolean isMapToDefaultOnMapperAndMappingConfigLevel() {
-
-        // check on mapper level
-        NullValueMappingStrategyPrism mapperPolicy =
-            NullValueMappingStrategyPrism.valueOf( mapperPrism.nullValueMappingStrategy() );
-
-        if ( mapperPolicy != NullValueMappingStrategyPrism.DEFAULT ) {
-            // it is not the default mapper configuration, so return the mapper configured value
-            return mapperPolicy == NullValueMappingStrategyPrism.RETURN_DEFAULT;
+        final NullValueMappingStrategyPrism strategy;
+        if ( mapperConfigPrism != null && mapperPrism.values.nullValueMappingStrategy() == null ) {
+            strategy = NullValueMappingStrategyPrism.valueOf( mapperConfigPrism.nullValueMappingStrategy() );
+        }
+        else {
+            strategy = NullValueMappingStrategyPrism.valueOf( mapperPrism.nullValueMappingStrategy() );
         }
 
-        // check on mapping config level
-        else if ( mapperConfigPrism != null ) {
-            // try the config mapper configuration
-            NullValueMappingStrategyPrism configPolicy =
-                NullValueMappingStrategyPrism.valueOf( mapperConfigPrism.nullValueMappingStrategy() );
-            if ( configPolicy != NullValueMappingStrategyPrism.DEFAULT ) {
-                // its not the default configuration, so return the mapper config configured value
-                return configPolicy == NullValueMappingStrategyPrism.RETURN_DEFAULT;
-            }
-        }
-        // when nothing specified, return RETURN_NULL (default option)
-        return false;
+        return NullValueMappingStrategyPrism.RETURN_DEFAULT == strategy;
     }
 
 
     public String componentModel() {
-        if ( !mapperPrism.componentModel().equals( "default" ) ) {
-            return mapperPrism.componentModel();
-        }
-        else if ( mapperConfigPrism != null ) {
+        if ( mapperConfigPrism != null && mapperPrism.values.componentModel() == null ) {
             return mapperConfigPrism.componentModel();
         }
         else {
-            return "default";
+            return mapperPrism.componentModel();
         }
     }
 

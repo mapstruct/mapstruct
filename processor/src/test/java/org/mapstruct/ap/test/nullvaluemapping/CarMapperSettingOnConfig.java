@@ -21,9 +21,9 @@ package org.mapstruct.ap.test.nullvaluemapping;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -45,7 +45,7 @@ public interface CarMapperSettingOnConfig {
     CarDto carToCarDto(Car car);
 
 
-    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.DEFAULT, dateFormat = "dummy")
+    @IterableMapping(dateFormat = "dummy")
     List<CarDto> carsToCarDtos(List<Car> cars);
 
 

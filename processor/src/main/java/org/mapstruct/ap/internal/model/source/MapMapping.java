@@ -52,8 +52,10 @@ public class MapMapping {
             return null;
         }
 
-        NullValueMappingStrategyPrism nullValueMappingStrategy
-            = NullValueMappingStrategyPrism.valueOf( mapMapping.nullValueMappingStrategy() );
+        NullValueMappingStrategyPrism nullValueMappingStrategy =
+            mapMapping.values.nullValueMappingStrategy() == null
+                            ? null
+                            : NullValueMappingStrategyPrism.valueOf( mapMapping.nullValueMappingStrategy() );
 
 
         boolean keyTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.keyTargetType().getKind() );
@@ -64,7 +66,7 @@ public class MapMapping {
             && mapMapping.valueQualifiedBy().isEmpty()
             && !keyTargetTypeIsDefined
             && !valueTargetTypeIsDefined
-            && ( nullValueMappingStrategy == NullValueMappingStrategyPrism.DEFAULT ) ) {
+            && ( nullValueMappingStrategy == null ) ) {
 
             messager.printMessage( method, Message.MAPMAPPING_NO_ELEMENTS );
         }
