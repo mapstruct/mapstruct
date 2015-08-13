@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
@@ -60,6 +61,7 @@ public class SourceConstantsTest {
         assertThat( target ).isNotNull();
         assertThat( target.getPropertyThatShouldBeMapped() ).isEqualTo( "SomeProperty" );
         assertThat( target.getStringConstant() ).isEqualTo( "stringConstant" );
+        assertThat( target.getEmptyStringConstant() ).isEqualTo( "" );
         assertThat( target.getIntegerConstant() ).isEqualTo( 14 );
         assertThat( target.getLongWrapperConstant() ).isEqualTo( new Long( 3001L ) );
         assertThat( target.getDateConstant() ).isEqualTo( getDate( "dd-MM-yyyy", "09-01-2014" ) );
@@ -97,12 +99,12 @@ public class SourceConstantsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.ERROR,
-                line = 41,
+                line = 42,
                 messageRegExp = "Source and constant are both defined in @Mapping, either define a source or a "
                     + "constant"),
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.WARNING,
-                line = 41,
+                line = 42,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
         }
     )
@@ -122,13 +124,13 @@ public class SourceConstantsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.ERROR,
-                line = 41,
+                line = 42,
                 messageRegExp =
                     "Expression and constant are both defined in @Mapping, either define an expression or a "
                         + "constant"),
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.WARNING,
-                line = 41,
+                line = 42,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
         }
     )
@@ -148,12 +150,12 @@ public class SourceConstantsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.ERROR,
-                line = 41,
+                line = 42,
                 messageRegExp = "Source and expression are both defined in @Mapping, either define a source or an "
                     + "expression"),
             @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.WARNING,
-                line = 41,
+                line = 42,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
         }
     )

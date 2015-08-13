@@ -29,6 +29,7 @@ public class Target {
 
     private String propertyThatShouldBeMapped;
     private String stringConstant;
+    private String emptyStringConstant;
     private int integerConstant;
     private Long longWrapperConstant;
     private Date dateConstant;
@@ -76,6 +77,14 @@ public class Target {
 
     public List<String> getNameConstants() {
         return nameConstants;
+    }
+
+    public String getEmptyStringConstant() {
+        return emptyStringConstant;
+    }
+
+    public void setEmptyStringConstant(String emptyStringConstant) {
+        this.emptyStringConstant = emptyStringConstant;
     }
 
 }
