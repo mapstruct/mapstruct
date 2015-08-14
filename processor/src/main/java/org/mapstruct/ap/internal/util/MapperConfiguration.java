@@ -35,16 +35,6 @@ import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
  * Provides an aggregated view to the settings given via {@link org.mapstruct.Mapper} and
  * {@link org.mapstruct.MapperConfig} for a specific mapper class.
