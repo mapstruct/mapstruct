@@ -141,13 +141,13 @@ public class Mapper extends GeneratedType {
         }
 
         public Builder implName(String implName) {
-            this.implName = "default".equals( implName ) ? DEFAULT_IMPLEMENTATION_CLASS : implName;
+            this.implName = implName;
             this.customName = !DEFAULT_IMPLEMENTATION_CLASS.equals( this.implName );
             return this;
         }
 
         public Builder implPackage(String implPackage) {
-            this.implPackage = "default".equals( implPackage ) ? DEFAULT_IMPLEMENTATION_PACKAGE : implPackage;
+            this.implPackage = implPackage;
             this.customPackage = !DEFAULT_IMPLEMENTATION_PACKAGE.equals( this.implPackage );
             return this;
         }
