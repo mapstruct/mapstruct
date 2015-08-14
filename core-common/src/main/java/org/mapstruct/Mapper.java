@@ -96,8 +96,8 @@ public @interface Mapper {
     String implementationName() default "<CLASS_NAME>Impl";
 
     /**
-     * Specifies the target package for the generated implementation. The {@code <CLASS_NAME>} will be replaced
-     * by the interface's or abstract class' package.
+     * Specifies the target package for the generated implementation. The {@code <PACKAGE_NAME>} will be replaced by the
+     * interface's or abstract class' package.
      * <p>
      * Defaults to using the same package as the mapper interface/abstract class
      *
