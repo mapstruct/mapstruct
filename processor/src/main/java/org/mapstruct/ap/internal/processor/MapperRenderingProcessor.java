@@ -34,12 +34,13 @@ import org.mapstruct.ap.internal.writer.ModelWriter;
  *
  * @author Gunnar Morling
  */
-public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, Void> {
+public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, Mapper> {
 
     @Override
-    public Void process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
+    public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
         if ( !context.isErroneous() ) {
             writeToSourceFile( context.getFiler(), mapper );
+            return mapper;
         }
 
         return null;
@@ -71,6 +72,6 @@ public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, V
 
     @Override
     public int getPriority() {
-        return 10000;
+        return 9999;
     }
 }

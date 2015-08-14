@@ -20,6 +20,8 @@ package org.mapstruct.factory;
 
 import org.mapstruct.Mapper;
 
+import java.util.ServiceLoader;
+
 /**
  * Factory for obtaining mapper instances if no explicit component model such as CDI is configured via
  * {@link Mapper#componentModel()}.
@@ -73,10 +75,24 @@ public class Mappers {
                 classLoader = Mappers.class.getClassLoader();
             }
 
-            @SuppressWarnings("unchecked")
-            T mapper = (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
+            try {
+                @SuppressWarnings("unchecked")
+                T mapper = (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
+                return mapper;
+            }
+            catch (ClassNotFoundException e) {
+                ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
 
-            return mapper;
+                if ( loader != null ) {
+                    for ( T mapper : loader ) {
+                        if ( mapper != null ) {
+                            return mapper;
+                        }
+                    }
+                }
+
+                throw new ClassNotFoundException("Cannot find implementation for " + clazz.getName());
+            }
         }
         catch ( Exception e ) {
             throw new RuntimeException( e );

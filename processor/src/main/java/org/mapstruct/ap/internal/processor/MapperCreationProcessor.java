@@ -150,16 +150,20 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .mapperReferences( mapperReferences )
             .options( options )
             .versionInformation( versionInformation )
-            .decorator( getDecorator( element, methods ) )
+            .decorator( getDecorator( element, methods, mapperConfig.implementationName(),
+                        mapperConfig.implementationPackage() ) )
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
             .extraImports( getExtraImports( element ) )
+            .implName( mapperConfig.implementationName() )
+            .implPackage( mapperConfig.implementationPackage() )
             .build();
 
         return mapper;
     }
 
-    private Decorator getDecorator(TypeElement element, List<SourceMethod> methods) {
+    private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, String implName,
+                                   String implPackage) {
         DecoratedWithPrism decoratorPrism = DecoratedWithPrism.getInstanceOn( element );
 
         if ( decoratorPrism == null ) {
@@ -219,6 +223,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
              .hasDelegateConstructor( hasDelegateConstructor )
              .options( options )
              .versionInformation( versionInformation )
+            .implName( implName )
+            .implPackage( implPackage )
+            .extraImports( getExtraImports( element ) )
              .build();
 
         return decorator;
@@ -232,6 +239,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         for ( TypeMirror extraImport : mapperConfiguration.imports() ) {
             Type type = typeFactory.getType( extraImport );
             extraImports.add( type );
+        }
+
+        // Add original package if a dest package has been set
+        if ( !"default".equals( mapperConfiguration.implementationPackage() ) ) {
+            extraImports.add( typeFactory.getType( element ) );
         }
 
         return extraImports;

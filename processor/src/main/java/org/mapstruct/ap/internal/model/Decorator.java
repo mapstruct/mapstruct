@@ -18,15 +18,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -34,14 +25,19 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.prism.DecoratedWithPrism;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedSet;
+
 /**
  * Represents a decorator applied to a generated mapper type.
  *
  * @author Gunnar Morling
  */
 public class Decorator extends GeneratedType {
-
-    private static final String IMPLEMENTATION_SUFFIX = "Impl";
 
     public static class Builder {
 
@@ -53,6 +49,9 @@ public class Decorator extends GeneratedType {
         private Options options;
         private VersionInformation versionInformation;
         private boolean hasDelegateConstructor;
+        private String implName;
+        private String implPackage;
+        private SortedSet<Type> extraImportedTypes;
 
         public Builder elementUtils(Elements elementUtils) {
             this.elementUtils = elementUtils;
@@ -94,25 +93,48 @@ public class Decorator extends GeneratedType {
             return this;
         }
 
+        public Builder implName(String implName) {
+            this.implName = "default".equals( implName ) ? Mapper.DEFAULT_IMPLEMENTATION_CLASS : implName;
+            return this;
+        }
+
+        public Builder implPackage(String implPackage) {
+            this.implPackage = "default".equals( implPackage ) ? Mapper.DEFAULT_IMPLEMENTATION_PACKAGE : implPackage;
+            return this;
+        }
+
+        public Builder extraImports(SortedSet<Type> extraImportedTypes) {
+            this.extraImportedTypes = extraImportedTypes;
+            return this;
+        }
+
         public Decorator build() {
+            String implementationName = implName.replace( Mapper.CLASS_NAME_PLACEHOLDER,
+                                                          mapperElement.getSimpleName() );
+
             Type decoratorType = typeFactory.getType( decoratorPrism.value() );
             DecoratorConstructor decoratorConstructor = new DecoratorConstructor(
-                        mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
-                        mapperElement.getSimpleName().toString() + "Impl_",
+                        implementationName,
+                        implementationName + "_",
                         hasDelegateConstructor );
 
 
+            String elementPackage = elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString();
+            String packageName = implPackage.replace( Mapper.PACKAGE_NAME_PLACEHOLDER, elementPackage );
+
             return new Decorator(
                 typeFactory,
-                elementUtils.getPackageOf( mapperElement ).getQualifiedName().toString(),
-                mapperElement.getSimpleName().toString() + IMPLEMENTATION_SUFFIX,
+                packageName,
+                implementationName,
                 decoratorType,
+                elementPackage,
                 mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
                 methods,
                 Arrays.asList(  new Field( typeFactory.getType( mapperElement ), "delegate", true ) ) ,
                 options,
                 versionInformation,
                 Accessibility.fromModifiers( mapperElement.getModifiers() ),
+                extraImportedTypes,
                 decoratorConstructor
             );
         }
@@ -122,21 +144,23 @@ public class Decorator extends GeneratedType {
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Decorator(TypeFactory typeFactory, String packageName, String name, Type decoratorType,
-                     String interfaceName, List<MappingMethod> methods, List<? extends Field> fields,
-                     Options options, VersionInformation versionInformation, Accessibility accessibility,
-                     DecoratorConstructor decoratorConstructor) {
+                      String interfacePackage, String interfaceName, List<MappingMethod> methods,
+                      List<? extends Field> fields, Options options, VersionInformation versionInformation,
+                      Accessibility accessibility, SortedSet<Type> extraImports,
+                      DecoratorConstructor decoratorConstructor) {
         super(
             typeFactory,
             packageName,
             name,
             decoratorType.getName(),
+            interfacePackage,
             interfaceName,
             methods,
             fields,
             options,
             versionInformation,
             accessibility,
-            new TreeSet<Type>(),
+            extraImports,
             decoratorConstructor
         );
 
