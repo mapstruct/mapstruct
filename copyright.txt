@@ -3,6 +3,7 @@ Contributors
 
 Andreas Gudian
 Christian Schuster
+Christophe Labouisse
 Dilip Krishnan
 Ewald Volkert
 Gunnar Morling
