@@ -34,7 +34,7 @@ import static org.fest.assertions.Assertions.assertThat;
 public class DestinationPackageNameTest {
     @Test
     @WithClasses({ DestinationPackageNameMapper.class })
-    public void shouldGeneratedInRightPackage() throws Exception {
+    public void shouldGenerateInRightPackage() throws Exception {
         DestinationPackageNameMapper instance = DestinationPackageNameMapper.INSTANCE;
         assertThat( instance.getClass().getName() )
                 .isEqualTo( "org.mapstruct.ap.test.destination.dest.DestinationPackageNameMapperImpl" );
@@ -42,7 +42,7 @@ public class DestinationPackageNameTest {
 
     @Test
     @WithClasses({ DestinationPackageNameMapperWithSuffix.class })
-    public void shouldGeneratedInRightPackageWithSuffix() throws Exception {
+    public void shouldGenerateInRightPackageWithSuffix() throws Exception {
         DestinationPackageNameMapperWithSuffix instance = DestinationPackageNameMapperWithSuffix.INSTANCE;
         assertThat( instance.getClass().getName() )
                 .isEqualTo( "org.mapstruct.ap.test.destination.dest.DestinationPackageNameMapperWithSuffixMyImpl" );

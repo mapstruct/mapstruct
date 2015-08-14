@@ -72,6 +72,6 @@ public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, M
 
     @Override
     public int getPriority() {
-        return 10000;
+        return 9999;
     }
 }

@@ -32,6 +32,12 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 
 /**
+ * A {@link ModelElementProcessor} which creates files in the {@code META-INF/services}
+ * hierarchy for classes with custom implementation class or package name.
+ *
+ * Service files will only be generated for mappers with the default component model
+ * unless force using the {@code mapstruct.alwaysGenerateServicesFile} option.
+ *
  * @author Christophe Labouisse on 12/07/2015.
  */
 public class MapperServiceProcessor  implements ModelElementProcessor<Mapper, Void> {
@@ -60,7 +66,7 @@ public class MapperServiceProcessor  implements ModelElementProcessor<Mapper, Vo
 
     @Override
     public int getPriority() {
-        return 100000;
+        return 10000;
     }
 
     private void writeToSourceFile(Filer filer, Mapper model) {
