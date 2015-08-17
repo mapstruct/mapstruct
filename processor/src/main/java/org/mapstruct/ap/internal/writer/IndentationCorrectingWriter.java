@@ -71,7 +71,7 @@ class IndentationCorrectingWriter extends Writer {
             State newState = currentState.handleCharacter( c, context );
 
             if ( newState != currentState ) {
-                currentState.onExit( context );
+                currentState.onExit( context, newState );
                 newState.onEntry( context );
                 currentState = newState;
             }
@@ -89,7 +89,7 @@ class IndentationCorrectingWriter extends Writer {
 
     @Override
     public void close() throws IOException {
-        currentState.onExit( context );
+        currentState.onExit( context, null );
         context.writer.close();
     }
 
@@ -150,7 +150,7 @@ class IndentationCorrectingWriter extends Writer {
              * Writes out the current text.
              */
             @Override
-            void onExit(StateContext context) throws IOException {
+            void onExit(StateContext context, State nextState) throws IOException {
                 flush( context );
             }
 
@@ -194,7 +194,7 @@ class IndentationCorrectingWriter extends Writer {
              * Writes out the current text.
              */
             @Override
-            void onExit(StateContext context) throws IOException {
+            void onExit(StateContext context, State nextState) throws IOException {
                 flush( context );
             }
 
@@ -229,7 +229,7 @@ class IndentationCorrectingWriter extends Writer {
              * Writes out the current text.
              */
             @Override
-            void onExit(StateContext context) throws IOException {
+            void onExit(StateContext context, State nextState) throws IOException {
                 flush( context );
             }
 
@@ -259,7 +259,7 @@ class IndentationCorrectingWriter extends Writer {
              * Writes out the current text.
              */
             @Override
-            void onExit(StateContext context) throws IOException {
+            void onExit(StateContext context, State nextState) throws IOException {
                 flush( context );
             }
 
@@ -320,19 +320,21 @@ class IndentationCorrectingWriter extends Writer {
              * Writes out the current line-breaks, avoiding more than one consecutive empty line
              */
             @Override
-            void onExit(StateContext context) throws IOException {
+            void onExit(StateContext context, State nextState) throws IOException {
                 context.consecutiveLineBreaks++;
-                int lineBreaks = Math.min( context.consecutiveLineBreaks, 2 );
+                if ( nextState != IN_LINE_BREAK ) {
+                    int lineBreaks = Math.min( context.consecutiveLineBreaks, 2 );
 
-                for ( int i = 0; i < lineBreaks; i++ ) {
-                    context.writer.append( LINE_SEPARATOR );
+                    for ( int i = 0; i < lineBreaks; i++ ) {
+                        context.writer.append( LINE_SEPARATOR );
 
-                    if ( DEBUG ) {
-                        System.out.print( "\\n" + LINE_SEPARATOR );
+                        if ( DEBUG ) {
+                            System.out.print( "\\n" + LINE_SEPARATOR );
+                        }
                     }
-                }
 
-                context.consecutiveLineBreaks = 0;
+                    context.consecutiveLineBreaks = 0;
+                }
             }
         };
 
@@ -352,7 +354,7 @@ class IndentationCorrectingWriter extends Writer {
         void doOnEntry(StateContext context) throws IOException {
         }
 
-        void onExit(StateContext context) throws IOException {
+        void onExit(StateContext context, State nextState) throws IOException {
         }
 
         void onBufferFinished(StateContext context) throws IOException {

@@ -39,6 +39,10 @@
         <property name="format" value="\S\z" />
         <property name="message" value="There is no new line at the end of file" />
     </module>
+    <module name="RegexpMultiline">
+        <property name="format" value="(\r\n\r\n\r\n|\r\r\r|\n\n\n)" />
+        <property name="message" value="There are multiple blank lines" />
+    </module>
 
     <module name="RegexpSingleline">
         <!-- \s matches whitespace character, $ matches end of line. -->
@@ -90,7 +94,6 @@
         <module name="TypecastParenPad"/>
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
-
 
         <!-- Modifier Checks                                    -->
         <!-- See http://checkstyle.sf.net/config_modifiers.html -->
