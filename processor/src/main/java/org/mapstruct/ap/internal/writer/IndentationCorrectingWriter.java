@@ -301,6 +301,9 @@ class IndentationCorrectingWriter extends Writer {
                         context.indentationLevel++;
                         return START_OF_LINE;
                     case '}':
+                        if ( context.consecutiveLineBreaks > 0 ) {
+                            context.consecutiveLineBreaks = 0; // remove previous blank lines
+                        }
                     case ')':
                         context.indentationLevel--;
                         return START_OF_LINE;

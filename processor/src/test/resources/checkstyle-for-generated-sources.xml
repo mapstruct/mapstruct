@@ -43,6 +43,10 @@
         <property name="format" value="(\r\n\r\n\r\n|\r\r\r|\n\n\n)" />
         <property name="message" value="There are multiple blank lines" />
     </module>
+    <module name="RegexpMultiline">
+        <property name="format" value="(\r\n\r\n\ *\}|\r\r *\}|\n\n *\})" />
+        <property name="message" value="There are blank lines before a closing bracket" />
+    </module>
 
     <module name="RegexpSingleline">
         <!-- \s matches whitespace character, $ matches end of line. -->
