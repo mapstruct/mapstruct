@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,8 +36,6 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Represents a "built-in" mapping method which will be added as private method to the generated mapper. Built-in
@@ -247,5 +247,10 @@ public abstract class BuiltInMethod implements Method {
     @Override
     public boolean isLifecycleCallbackMethod() {
         return false;
+    }
+
+    @Override
+    public boolean isUpdateMethod() {
+        return getMappingTargetParameter() != null;
     }
 }

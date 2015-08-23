@@ -47,7 +47,7 @@ public class FactoryTest {
             @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 35,
-                messageRegExp = "Ambiguous mapping methods found for factorizing "
+                messageRegExp = "Ambiguous factory methods found for creating "
                         + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar: "
                         + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar createBar\\(\\), "
                         + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar .*BarFactory.createBar\\(\\)." )

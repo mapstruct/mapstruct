@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,8 +40,6 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Represents a mapping method with source and target type and the mappings between the properties of source and target
@@ -528,5 +528,10 @@ public class SourceMethod implements Method {
 
     public boolean isBeforeMappingMethod() {
         return Executables.isBeforeMappingMethod( getExecutable() );
+    }
+
+    @Override
+    public boolean isUpdateMethod() {
+        return getMappingTargetParameter() != null;
     }
 }

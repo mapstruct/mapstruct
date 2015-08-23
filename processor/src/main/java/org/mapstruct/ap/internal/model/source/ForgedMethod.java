@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +31,6 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * This method will be generated in absence of a suitable abstract method to implement.
@@ -197,4 +197,8 @@ public class ForgedMethod implements Method {
         return null;
     }
 
+    @Override
+    public boolean isUpdateMethod() {
+        return getMappingTargetParameter() != null;
+    }
 }

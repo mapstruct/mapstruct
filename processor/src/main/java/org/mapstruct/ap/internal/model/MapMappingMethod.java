@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.List;
 import java.util.Set;
 
@@ -32,8 +34,6 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one {@code Map} type to another. Keys and
@@ -185,8 +185,10 @@ public class MapMappingMethod extends MappingMethod {
                  mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
             }
 
-            MethodReference factoryMethod =
-                ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null );
+            MethodReference factoryMethod = null;
+            if ( !method.isUpdateMethod() ) {
+                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null );
+            }
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes() );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes() );

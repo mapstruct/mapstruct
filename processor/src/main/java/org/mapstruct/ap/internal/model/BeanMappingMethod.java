@@ -138,13 +138,15 @@ public class BeanMappingMethod extends MappingMethod {
 
 
             BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
-            MethodReference factoryMethod
-                = ctx.getMappingResolver().getFactoryMethod(
+
+            MethodReference factoryMethod = null;
+            if ( !method.isUpdateMethod() ) {
+                factoryMethod = ctx.getMappingResolver().getFactoryMethod(
                     method,
                     method.getResultType(),
                     qualifiers,
-                    resultTypeMirror
-                );
+                    resultTypeMirror );
+            }
 
             // if there's no factory method, try the resultType in the @BeanMapping
             Type resultType = null;

@@ -150,8 +150,14 @@ public interface Method {
      */
     MapperConfiguration getMapperConfiguration();
 
-    /*
+    /**
      * @return {@code true}, if the method represents a mapping lifecycle callback (Before/After mapping method)
      */
     boolean isLifecycleCallbackMethod();
+
+    /**
+     * @return {@code true}, if the method is an update method, i.e. it has a parameter annotated with
+     *         {@code @MappingTarget}.
+     */
+    boolean isUpdateMethod();
 }

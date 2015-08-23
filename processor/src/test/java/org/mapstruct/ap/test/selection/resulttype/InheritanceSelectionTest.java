@@ -22,8 +22,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.tools.Diagnostic.Kind;
-import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -32,6 +33,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  *
@@ -56,7 +59,7 @@ public class InheritanceSelectionTest {
             @Diagnostic(type = ErroneousFruitMapper.class,
                 kind = Kind.ERROR,
                 line = 36,
-                messageRegExp = "Ambiguous mapping methods found for factorizing .*Fruit: "
+                messageRegExp = "Ambiguous factory methods found for creating .*Fruit: "
                     + ".*Apple .*ConflictingFruitFactory\\.createApple\\(\\), "
                     + ".*Banana .*ConflictingFruitFactory\\.createBanana\\(\\)\\.")
         }

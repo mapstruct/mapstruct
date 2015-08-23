@@ -74,7 +74,7 @@ public enum Message {
 
     GENERAL_NO_IMPLEMENTATION( "No implementation type is registered for return type %s." ),
     GENERAL_AMBIGIOUS_MAPPING_METHOD( "Ambiguous mapping methods found for mapping %s to %s: %s." ),
-    GENERAL_AMBIGIOUS_FACTORY_METHOD( "Ambiguous mapping methods found for factorizing %s: %s." ),
+    GENERAL_AMBIGIOUS_FACTORY_METHOD( "Ambiguous factory methods found for creating %s: %s." ),
     GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK( "No dateFormat check is supported for types %s, %s" ),
     GENERAL_VALID_DATE( "Given date format \"%s\" is valid.", Diagnostic.Kind.NOTE ),
     GENERAL_INVALID_DATE( "Given date format \"%s\" is invalid. Message: \"%s\"." ),
