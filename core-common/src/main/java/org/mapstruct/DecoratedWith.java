@@ -88,8 +88,8 @@ import java.lang.annotation.Target;
  * <h3>2. Component model 'spring'</h3>
  * <h4>Referencing the original mapper in the decorator</h4>
  * <p>
- * The generated implementation of the original mapper is annotated with the Spring's {@code @Qualifier("delegate")}. To
- * autowire that bean in your decorator, add that qualifier annotation as well:
+ * The generated implementation of the original mapper is annotated with the Spring annotation
+ * {@code @Qualifier("delegate")}. To autowire that bean in your decorator, add that qualifier annotation as well:
  *
  * <pre>
  * public abstract class PersonMapperDecorator implements PersonMapper {
@@ -122,8 +122,10 @@ import java.lang.annotation.Target;
  * <h4>Referencing the original mapper</h4>
  * <p>
  * JSR 330 doesn't specify qualifiers and only allows to specifically name the beans. Hence, the generated
- * implementation of the original mapper is annotated with the {@code @Named("fully-qualified-name-of-generated-impl")}.
- * To inject that bean in your decorator, add the same annotation to the delegate field:
+ * implementation of the original mapper is annotated with {@code @Named("fully-qualified-name-of-generated-impl")}
+ * (please note that when using a decorator, the class name of the mapper implementation ends with an underscore). To
+ * inject that bean in your decorator, add the same annotation to the delegate field (e.g. by copy/pasting it from the
+ * generated class):
  *
  * <pre>
  * public abstract class PersonMapperDecorator implements PersonMapper {
