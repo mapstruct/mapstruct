@@ -187,9 +187,7 @@ public class Executables {
                                             List<ExecutableElement> methodsToAdd, TypeElement parentType) {
         List<ExecutableElement> safeToAdd = new ArrayList<ExecutableElement>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
-            if ( isNotStaticMethodInInterface( toAdd, parentType )
-                && isNotInterfaceDefaultMethod( toAdd, parentType )
-                && isNotObjectEquals( toAdd )
+            if ( isNotObjectEquals( toAdd )
                 && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd, parentType ) ) {
                 safeToAdd.add( toAdd );
             }
@@ -198,16 +196,16 @@ public class Executables {
         alreadyCollected.addAll( 0, safeToAdd );
     }
 
-    private static boolean isNotStaticMethodInInterface(ExecutableElement element, TypeElement parentType) {
-        return !( parentType.getKind().isInterface() &&
+    public static boolean isInterfaceDefaultMethod(ExecutableElement element, TypeElement parentType) {
+        return parentType.getKind().isInterface() &&
             element.getKind() == ElementKind.METHOD &&
-            element.getModifiers().containsAll( Arrays.asList( Modifier.PUBLIC, Modifier.STATIC ) ) );
+            isDefaultMethod( element );
     }
 
-    private static boolean isNotInterfaceDefaultMethod(ExecutableElement element, TypeElement parentType) {
-        return !( parentType.getKind().isInterface() &&
+    public static boolean isStaticFromInterfaceMethod(ExecutableElement element, TypeElement parentType) {
+        return parentType.getKind().isInterface() &&
             element.getKind() == ElementKind.METHOD &&
-            isDefaultMethod( element ) );
+            element.getModifiers().containsAll( Arrays.asList( Modifier.PUBLIC, Modifier.STATIC ) );
     }
 
     /**

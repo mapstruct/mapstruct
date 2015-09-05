@@ -145,6 +145,20 @@ public interface Method {
     boolean isStatic();
 
     /**
+     * Whether this method is Java 8 default method
+     *
+     * @return true when Java 8 default method
+     */
+    boolean isDefault();
+
+    /**
+     * Returns method's enclosing type if method is Java 8 static method
+     *
+     * @return type of static method from Java 8 interface
+     */
+    Type getStaticMethodFromInterfaceType();
+
+    /**
      *
      * @return the mapper config when this method needs to be implemented
      */
