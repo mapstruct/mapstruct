@@ -20,7 +20,16 @@
 -->
 <@compress single_line=true>
     <#-- method is either internal to the mapper class, or external (via uses) declaringMapper!=null -->
-    <#if declaringMapper??><#if static><@includeModel object=declaringMapper.type/><#else>${mapperVariableName}</#if>.</#if>${name}<#if (parameters?size > 0)>( <@arguments/> )<#else>()</#if>
+    <#if declaringMapper??><#if static><@includeModel object=declaringMapper.type/><#else>${mapperVariableName}</#if>.<@params/>
+    <#elseif staticMethodFromInterfaceType??><@includeModel object=staticMethodFromInterfaceType/>.<@params/>
+    <#else>
+    <@params/>
+    </#if>
+    <#macro params>
+        <@compress>
+            ${name}<#if (parameters?size > 0)>( <@arguments/> )<#else>()</#if>
+        </@compress>
+    </#macro>
     <#macro arguments>
         <#list parameters as param>
             <#if param.targetType>
