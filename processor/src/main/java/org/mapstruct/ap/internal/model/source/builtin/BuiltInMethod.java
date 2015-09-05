@@ -240,6 +240,16 @@ public abstract class BuiltInMethod implements Method {
     }
 
     @Override
+    public boolean isDefault() {
+        return false;
+    }
+
+    @Override
+    public Type getStaticMethodFromInterfaceType() {
+        return null;
+    }
+
+    @Override
     public MapperConfiguration getMapperConfiguration() {
         return null;
     }
