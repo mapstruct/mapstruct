@@ -377,6 +377,18 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
+      for ( Parameter sourceParameter : sourceParameters ) {
+            if ( sourceParameter.getType().isTypeVar() ) {
+                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
+                return false;
+            }
+        }
+
+        if ( returnType.isTypeVar() || resultType.isTypeVar() ) {
+                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
+                return false;
+        }
+
         Type parameterType = sourceParameters.get( 0 ).getType();
 
         if ( parameterType.isIterableType() && !resultType.isIterableType() ) {
