@@ -66,8 +66,7 @@ public class SourceMethod implements Method {
     private final MapperConfiguration config;
     private final MappingOptions mappingOptions;
     private final List<SourceMethod> prototypeMethods;
-    private final boolean defaultMethod;
-    private final Type staticMethodFromInterfaceType;
+    private final Type mapperToImplement;
 
     private List<Parameter> sourceParameters;
 
@@ -78,6 +77,7 @@ public class SourceMethod implements Method {
     public static class Builder {
 
         private Type declaringMapper = null;
+        private Type definingType = null;
         private ExecutableElement executable;
         private List<Parameter> parameters;
         private Type returnType = null;
@@ -91,8 +91,6 @@ public class SourceMethod implements Method {
         private FormattingMessager messager = null;
         private MapperConfiguration mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
-        private boolean defaultMethod;
-        private Type staticMethodFromInterfaceType;
 
         public Builder() {
         }
@@ -167,13 +165,8 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setDefaultMethod(boolean defaultMethod) {
-            this.defaultMethod = defaultMethod;
-            return this;
-        }
-
-        public Builder setStaticMethodFromInterfaceType(Type staticMethodFromInterfaceType) {
-            this.staticMethodFromInterfaceType = staticMethodFromInterfaceType;
+        public Builder setDefininingType(Type definingType) {
+            this.definingType = definingType;
             return this;
         }
 
@@ -181,6 +174,7 @@ public class SourceMethod implements Method {
 
             MappingOptions mappingOptions
                 = new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping );
+
 
             SourceMethod sourceMethod = new SourceMethod(
                 declaringMapper,
@@ -193,8 +187,7 @@ public class SourceMethod implements Method {
                 typeFactory,
                 mapperConfig,
                 prototypeMethods,
-                defaultMethod,
-                staticMethodFromInterfaceType
+                definingType
             );
 
             if ( mappings != null ) {
@@ -212,7 +205,7 @@ public class SourceMethod implements Method {
     private SourceMethod(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
                          Type returnType, List<Type> exceptionTypes, MappingOptions mappingOptions, Types typeUtils,
                          TypeFactory typeFactory, MapperConfiguration config, List<SourceMethod> prototypeMethods,
-                         boolean defaultMethod, Type staticMethodFromInterfaceType) {
+                         Type mapperToImplement) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
@@ -229,8 +222,7 @@ public class SourceMethod implements Method {
         this.typeFactory = typeFactory;
         this.config = config;
         this.prototypeMethods = prototypeMethods;
-        this.defaultMethod = defaultMethod;
-        this.staticMethodFromInterfaceType = staticMethodFromInterfaceType;
+        this.mapperToImplement = mapperToImplement;
     }
 
     private Parameter determineMappingTargetParameter(Iterable<Parameter> parameters) {
@@ -532,12 +524,12 @@ public class SourceMethod implements Method {
 
     @Override
     public boolean isDefault() {
-        return defaultMethod;
+        return Executables.isDefaultMethod( executable );
     }
 
     @Override
-    public Type getStaticMethodFromInterfaceType() {
-        return staticMethodFromInterfaceType;
+    public Type getDefiningType() {
+        return mapperToImplement;
     }
 
     @Override

@@ -18,17 +18,17 @@
  */
 package org.mapstruct.ap.test.bugs._636;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.factory.Mappers;
 
 @Mapper
-public class MyMapper {
-    public BigDecimal mapBigIntToDecimal(BigInteger source) {
-        return source == null ? null : new BigDecimal( source );
+public interface SourceTargetBaseMapper {
+
+
+    default Foo fooFromId(long id) {
+        return new Foo(id);
+    }
+
+    static Bar barFromId(String id) {
+        return new Bar(id);
     }
 }

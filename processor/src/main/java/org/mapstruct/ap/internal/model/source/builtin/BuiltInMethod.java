@@ -245,7 +245,7 @@ public abstract class BuiltInMethod implements Method {
     }
 
     @Override
-    public Type getStaticMethodFromInterfaceType() {
+    public Type getDefiningType() {
         return null;
     }
 

@@ -18,12 +18,10 @@
  */
 package org.mapstruct.ap.test.bugs._636;
 
-import java.math.BigDecimal;
 
 public class Target {
     private Foo foo;
     private Bar bar;
-    private BigDecimal number;
 
     public Foo getFoo() {
         return foo;
@@ -41,11 +39,4 @@ public class Target {
         this.bar = bar;
     }
 
-    public BigDecimal getNumber() {
-        return number;
-    }
-
-    public void setNumber(BigDecimal number) {
-        this.number = number;
-    }
 }

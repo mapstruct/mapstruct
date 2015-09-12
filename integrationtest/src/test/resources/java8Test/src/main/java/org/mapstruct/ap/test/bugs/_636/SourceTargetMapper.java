@@ -23,22 +23,14 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = MyMapper.class)
-public interface SourceTargetMapper {
+@Mapper
+public interface SourceTargetMapper extends SourceTargetBaseMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
         @Mapping(source = "idFoo", target = "foo"),
-        @Mapping(source = "idBar", target = "bar"),
-        @Mapping(source = "number", target = "number")
+        @Mapping(source = "idBar", target = "bar")
     })
     Target mapSourceToTarget(Source source);
 
-    default Foo fooFromId(long id) {
-        return new Foo(id);
-    }
-
-    static Bar barFromId(String id) {
-        return new Bar(id);
-    }
 }

@@ -152,11 +152,10 @@ public interface Method {
     boolean isDefault();
 
     /**
-     * Returns method's enclosing type if method is Java 8 static method
      *
-     * @return type of static method from Java 8 interface
+     *  @return the Type (class or interface) that defines this method.
      */
-    Type getStaticMethodFromInterfaceType();
+    Type getDefiningType();
 
     /**
      *

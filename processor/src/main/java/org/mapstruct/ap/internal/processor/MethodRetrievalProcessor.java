@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -87,7 +86,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         List<SourceMethod> prototypeMethods =
-            retrievePrototypeMethods( mapperConfig.getMapperConfigMirror(), mapperConfig, mapperTypeElement );
+            retrievePrototypeMethods( mapperConfig.getMapperConfigMirror(), mapperConfig );
         return retrieveMethods( mapperTypeElement, mapperTypeElement, mapperConfig, prototypeMethods );
     }
 
@@ -96,8 +95,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return 1;
     }
 
-    private List<SourceMethod> retrievePrototypeMethods(TypeMirror typeMirror, MapperConfiguration mapperConfig,
-                                                        TypeElement mapperTypeElement) {
+    private List<SourceMethod> retrievePrototypeMethods(TypeMirror typeMirror, MapperConfiguration mapperConfig ) {
         if ( typeMirror == null || typeMirror.getKind() == TypeKind.VOID ) {
             return Collections.emptyList();
         }
@@ -120,8 +118,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     parameters,
                     containsTargetTypeParameter,
                     mapperConfig,
-                    prototypeMethods,
-                    mapperTypeElement
+                    prototypeMethods
                 );
 
             if ( method != null ) {
@@ -196,8 +193,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 parameters,
                 containsTargetTypeParameter,
                 mapperConfig,
-                prototypeMethods,
-                mapperToImplement);
+                prototypeMethods );
         }
         //otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( parameters, returnType )
@@ -213,8 +209,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                           List<Parameter> parameters,
                                                           boolean containsTargetTypeParameter,
                                                           MapperConfiguration mapperConfig,
-                                                          List<SourceMethod> prototypeMethods,
-                                                          TypeElement mapperToImplement) {
+                                                          List<SourceMethod> prototypeMethods ) {
         Type returnType = typeFactory.getReturnType( methodType );
         List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
         List<Parameter> sourceParameters = extractSourceParameters( parameters );
@@ -256,7 +251,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 .setTypeFactory( typeFactory )
                 .setMapperConfiguration( mapperConfig )
                 .setPrototypeMethods( prototypeMethods )
-                .setDefaultMethod( Executables.isInterfaceDefaultMethod( method, mapperToImplement ) )
             .build();
     }
 
@@ -267,33 +261,24 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
         Type usedMapperAsType = typeFactory.getType( usedMapper );
         Type mapperToImplementAsType = typeFactory.getType( mapperToImplement );
-        Type staticMethodFromInterfaceType = findStaticMethodFromInterfaceType( method );
 
         if ( !mapperToImplementAsType.canAccess( usedMapperAsType, method ) ) {
             return null;
         }
 
+
+        Type definingType = typeFactory.getType( method.getEnclosingElement().asType() );
+
         return new SourceMethod.Builder()
             .setDeclaringMapper( usedMapper.equals( mapperToImplement ) ? null : usedMapperAsType )
+            .setDefininingType( definingType )
             .setExecutable( method )
             .setParameters( parameters )
             .setReturnType( returnType )
             .setExceptionTypes( exceptionTypes )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
-            .setDefaultMethod( Executables.isInterfaceDefaultMethod( method, mapperToImplement ) )
-            .setStaticMethodFromInterfaceType( staticMethodFromInterfaceType )
             .build();
-    }
-
-    private Type findStaticMethodFromInterfaceType(ExecutableElement method) {
-        Element enclosingElement = method.getEnclosingElement();
-        boolean staticMethodFromInterface = ( enclosingElement.getKind().isInterface() &&
-            Executables.isStaticFromInterfaceMethod(
-                method, ( (TypeElement) enclosingElement )
-            )
-        );
-        return staticMethodFromInterface ? typeFactory.getType( enclosingElement.asType() ) : null;
     }
 
     private boolean isValidLifecycleCallbackMethod(ExecutableElement method, Type returnType) {

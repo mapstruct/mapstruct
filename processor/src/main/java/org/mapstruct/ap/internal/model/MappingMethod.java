@@ -47,7 +47,6 @@ public abstract class MappingMethod extends ModelElement {
     private final Accessibility accessibility;
     private final List<Type> thrownTypes;
     private final boolean isStatic;
-    private final Type staticMethodFromInterfaceType;
     private final String resultName;
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithMappingTarget;
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithoutMappingTarget;
@@ -70,7 +69,6 @@ public abstract class MappingMethod extends ModelElement {
         this.accessibility = method.getAccessibility();
         this.thrownTypes = method.getThrownTypes();
         this.isStatic = method.isStatic();
-        this.staticMethodFromInterfaceType = method.getStaticMethodFromInterfaceType();
         this.resultName = initResultName( existingVariableNames );
         this.beforeMappingReferencesWithMappingTarget = filterMappingTarget( beforeMappingReferences, true );
         this.beforeMappingReferencesWithoutMappingTarget = filterMappingTarget( beforeMappingReferences, false );
@@ -146,10 +144,6 @@ public abstract class MappingMethod extends ModelElement {
         return isStatic;
     }
 
-    public Type getStaticMethodFromInterfaceType() {
-        return staticMethodFromInterfaceType;
-    }
-
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = new HashSet<Type>();
@@ -160,9 +154,6 @@ public abstract class MappingMethod extends ModelElement {
 
         types.add( getReturnType() );
         types.addAll( thrownTypes );
-        if ( staticMethodFromInterfaceType != null ) {
-            types.add( staticMethodFromInterfaceType );
-        }
         return types;
     }
 

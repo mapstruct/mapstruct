@@ -61,6 +61,9 @@ public class MethodReference extends MappingMethod implements Assignment {
      */
     private Assignment assignment;
 
+
+    private final Type definingType;
+
     /**
      * Creates a new reference to the given method.
      *
@@ -80,6 +83,7 @@ public class MethodReference extends MappingMethod implements Assignment {
         this.importTypes = Collections.<Type>unmodifiableSet( imported );
         this.thrownTypes = method.getThrownTypes();
         this.isUpdateMethod = method.getMappingTargetParameter() != null;
+        this.definingType = method.getDefiningType();
    }
 
     public MethodReference(BuiltInMethod method, ConversionContext contextParam) {
@@ -88,6 +92,7 @@ public class MethodReference extends MappingMethod implements Assignment {
         this.contextParam = method.getContextParameter( contextParam );
         this.importTypes = Collections.emptySet();
         this.thrownTypes = Collections.emptyList();
+        this.definingType = null;
         this.isUpdateMethod = method.getMappingTargetParameter() != null;
     }
 
@@ -129,11 +134,18 @@ public class MethodReference extends MappingMethod implements Assignment {
         return null;
     }
 
+    public Type getDefiningType() {
+        return definingType;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>( importTypes );
         if ( assignment != null ) {
             imported.addAll( assignment.getImportTypes() );
+        }
+        if ( isStatic() ) {
+            imported.add( definingType );
         }
         return imported;
     }
