@@ -198,7 +198,7 @@ public class ForgedMethod implements Method {
     }
 
     @Override
-    public Type getStaticMethodFromInterfaceType() {
+    public Type getMapperToImplement() {
         return null;
     }
 

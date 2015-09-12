@@ -21,7 +21,7 @@
 <@compress single_line=true>
     <#-- method is either internal to the mapper class, or external (via uses) declaringMapper!=null -->
     <#if declaringMapper??><#if static><@includeModel object=declaringMapper.type/><#else>${mapperVariableName}</#if>.<@params/>
-    <#elseif staticMethodFromInterfaceType??><@includeModel object=staticMethodFromInterfaceType/>.<@params/>
+    <#elseif static && mapperToImplement??><@includeModel object=mapperToImplement/>.<@params/>
     <#else>
     <@params/>
     </#if>

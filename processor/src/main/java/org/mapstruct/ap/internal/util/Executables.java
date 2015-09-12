@@ -21,7 +21,6 @@ package org.mapstruct.ap.internal.util;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -200,12 +199,6 @@ public class Executables {
         return parentType.getKind().isInterface() &&
             element.getKind() == ElementKind.METHOD &&
             isDefaultMethod( element );
-    }
-
-    public static boolean isStaticFromInterfaceMethod(ExecutableElement element, TypeElement parentType) {
-        return parentType.getKind().isInterface() &&
-            element.getKind() == ElementKind.METHOD &&
-            element.getModifiers().containsAll( Arrays.asList( Modifier.PUBLIC, Modifier.STATIC ) );
     }
 
     /**

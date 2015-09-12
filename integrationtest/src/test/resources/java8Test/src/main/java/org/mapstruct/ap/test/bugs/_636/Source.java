@@ -18,17 +18,13 @@
  */
 package org.mapstruct.ap.test.bugs._636;
 
-import java.math.BigInteger;
-
 public class Source {
     private final long idFoo;
     private final String idBar;
-    private final BigInteger number;
 
-    public Source(long idFoo, String idBar, BigInteger number) {
+    public Source(long idFoo, String idBar) {
         this.idFoo = idFoo;
         this.idBar = idBar;
-        this.number = number;
     }
 
     public long getIdFoo() {
@@ -37,9 +33,5 @@ public class Source {
 
     public String getIdBar() {
         return idBar;
-    }
-
-    public BigInteger getNumber() {
-        return number;
     }
 }

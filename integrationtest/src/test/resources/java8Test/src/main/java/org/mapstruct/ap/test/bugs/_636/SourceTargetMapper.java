@@ -23,14 +23,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = MyMapper.class)
+@Mapper
 public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
         @Mapping(source = "idFoo", target = "foo"),
-        @Mapping(source = "idBar", target = "bar"),
-        @Mapping(source = "number", target = "number")
+        @Mapping(source = "idBar", target = "bar")
     })
     Target mapSourceToTarget(Source source);
 

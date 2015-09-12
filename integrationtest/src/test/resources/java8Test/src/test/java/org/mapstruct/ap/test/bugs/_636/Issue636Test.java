@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.bugs._636;
 
-import java.math.BigInteger;
-
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -31,9 +29,8 @@ public class Issue636Test {
 
         final long idFoo = 123;
         final String idBar = "Bar456";
-        final BigInteger number = BigInteger.valueOf( 789L );
 
-        final Source source = new Source( idFoo, idBar, number );
+        final Source source = new Source( idFoo, idBar );
 
         final Target target = SourceTargetMapper.INSTANCE.mapSourceToTarget( source );
 
@@ -42,7 +39,5 @@ public class Issue636Test {
         assertThat( target.getFoo().getId() ).isEqualTo( idFoo );
         assertThat( target.getBar() ).isNotNull();
         assertThat( target.getBar().getId() ).isEqualTo( idBar );
-        assertThat( target.getNumber() ).isNotNull();
-        assertThat( target.getNumber().toBigInteger() ).isEqualTo( number );
     }
 }
