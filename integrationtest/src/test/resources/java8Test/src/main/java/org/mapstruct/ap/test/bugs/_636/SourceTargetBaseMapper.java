@@ -23,12 +23,6 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface SourceTargetBaseMapper {
 
+    // TODO.. move default and static interface method here when problem in eclipse processor is fixed.
 
-    default Foo fooFromId(long id) {
-        return new Foo(id);
-    }
-
-    static Bar barFromId(String id) {
-        return new Bar(id);
-    }
 }
