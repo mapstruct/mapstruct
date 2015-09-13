@@ -33,4 +33,12 @@ public interface SourceTargetMapper extends SourceTargetBaseMapper {
     })
     Target mapSourceToTarget(Source source);
 
+    default Foo fooFromId(long id) {
+        return new Foo(id);
+    }
+
+    static Bar barFromId(String id) {
+        return new Bar(id);
+    }
+
 }
