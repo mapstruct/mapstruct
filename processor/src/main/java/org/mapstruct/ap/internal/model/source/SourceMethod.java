@@ -77,7 +77,7 @@ public class SourceMethod implements Method {
     public static class Builder {
 
         private Type declaringMapper = null;
-        private Type mapperToImplement = null;
+        private Type definingType = null;
         private ExecutableElement executable;
         private List<Parameter> parameters;
         private Type returnType = null;
@@ -165,8 +165,8 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMapperToImplement(Type mapperToImplement) {
-            this.mapperToImplement = mapperToImplement;
+        public Builder setDefininingType(Type definingType) {
+            this.definingType = definingType;
             return this;
         }
 
@@ -187,7 +187,7 @@ public class SourceMethod implements Method {
                 typeFactory,
                 mapperConfig,
                 prototypeMethods,
-                mapperToImplement
+                definingType
             );
 
             if ( mappings != null ) {
@@ -524,15 +524,11 @@ public class SourceMethod implements Method {
 
     @Override
     public boolean isDefault() {
-        boolean isDefault = false;
-        if ( mapperToImplement != null ) {
-            isDefault = Executables.isInterfaceDefaultMethod( executable, mapperToImplement.getTypeElement() );
-        }
-        return isDefault;
+        return Executables.isDefaultMethod( executable );
     }
 
     @Override
-    public Type getMapperToImplement() {
+    public Type getDefiningType() {
         return mapperToImplement;
     }
 

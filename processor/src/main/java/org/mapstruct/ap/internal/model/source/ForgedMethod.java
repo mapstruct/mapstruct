@@ -198,7 +198,7 @@ public class ForgedMethod implements Method {
     }
 
     @Override
-    public Type getMapperToImplement() {
+    public Type getDefiningType() {
         return null;
     }
 

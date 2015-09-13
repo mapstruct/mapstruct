@@ -153,9 +153,9 @@ public interface Method {
 
     /**
      *
-     *  @return the Abstract Class or Interface that defines this method when it needs to be implemented.
+     *  @return the Type (class or interface) that defines this method.
      */
-    Type getMapperToImplement();
+    Type getDefiningType();
 
     /**
      *

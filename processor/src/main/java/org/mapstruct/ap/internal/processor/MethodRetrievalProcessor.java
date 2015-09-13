@@ -266,9 +266,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return null;
         }
 
+
+        Type definingType = typeFactory.getType( method.getEnclosingElement().asType() );
+
         return new SourceMethod.Builder()
             .setDeclaringMapper( usedMapper.equals( mapperToImplement ) ? null : usedMapperAsType )
-            .setMapperToImplement( mapperToImplementAsType )
+            .setDefininingType( definingType )
             .setExecutable( method )
             .setParameters( parameters )
             .setReturnType( returnType )

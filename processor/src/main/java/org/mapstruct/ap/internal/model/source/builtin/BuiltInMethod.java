@@ -245,7 +245,7 @@ public abstract class BuiltInMethod implements Method {
     }
 
     @Override
-    public Type getMapperToImplement() {
+    public Type getDefiningType() {
         return null;
     }
 

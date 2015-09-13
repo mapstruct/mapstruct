@@ -22,7 +22,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -195,11 +194,6 @@ public class Executables {
         alreadyCollected.addAll( 0, safeToAdd );
     }
 
-    public static boolean isInterfaceDefaultMethod(ExecutableElement element, TypeElement parentType) {
-        return parentType.getKind().isInterface() &&
-            element.getKind() == ElementKind.METHOD &&
-            isDefaultMethod( element );
-    }
 
     /**
      * @param executable the executable to check

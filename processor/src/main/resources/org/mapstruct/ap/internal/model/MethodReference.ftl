@@ -21,7 +21,8 @@
 <@compress single_line=true>
     <#-- method is either internal to the mapper class, or external (via uses) declaringMapper!=null -->
     <#if declaringMapper??><#if static><@includeModel object=declaringMapper.type/><#else>${mapperVariableName}</#if>.<@params/>
-    <#elseif static && mapperToImplement??><@includeModel object=mapperToImplement/>.<@params/>
+    <#-- method is referenced java8 static method in the mapper to implement (interface)  -->
+    <#elseif static><@includeModel object=definingType/>.<@params/>
     <#else>
     <@params/>
     </#if>
