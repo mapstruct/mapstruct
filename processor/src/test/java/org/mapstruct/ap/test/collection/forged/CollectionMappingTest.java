@@ -121,5 +121,72 @@ public class CollectionMappingTest {
     }
 
 
+    @Test
+    @IssueKey( "640" )
+    @WithClasses({ CollectionMapper.class, Source.class, Target.class })
+    public void shouldForgeNewIterableMappingMethodReturnNullOnNullSource() {
+
+        Source source = new Source();
+        source.setFooSet( null );
+
+        Target target = CollectionMapper.INSTANCE.sourceToTarget( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getFooSet() ).isNull();
+
+        Source source2 = CollectionMapper.INSTANCE.targetToSource( target );
+        assertThat( source2 ).isNotNull();
+        assertThat( source2.getFooSet() ).isNull();
+    }
+
+    @Test
+    @IssueKey( "640" )
+    @WithClasses({ CollectionMapper.class, Source.class, Target.class })
+    public void shouldForgeNewMapMappingMethodReturnNullOnNullSource() {
+
+        Source source = new Source();
+        source.setBarMap( null );
+
+        Target target = CollectionMapper.INSTANCE.sourceToTarget( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getBarMap() ).isNull();
+
+        Source source2 = CollectionMapper.INSTANCE.targetToSource( target );
+        assertThat( source2 ).isNotNull();
+        assertThat( source2.getBarMap() ).isNull();
+    }
+
+    @Test
+    @IssueKey( "640" )
+    @WithClasses({ CollectionMapperNullValueMappingReturnDefault.class, Source.class, Target.class })
+    public void shouldForgeNewIterableMappingMethodReturnEmptyOnNullSource() {
+
+        Source source = new Source();
+        source.setFooSet( null );
+
+        Target target = CollectionMapperNullValueMappingReturnDefault.INSTANCE.sourceToTarget( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getFooSet() ).isEmpty();
+
+        Source source2 = CollectionMapperNullValueMappingReturnDefault.INSTANCE.targetToSource( target );
+        assertThat( source2 ).isNotNull();
+        assertThat( source2.getFooSet() ).isEmpty();
+    }
+
+    @Test
+    @IssueKey( "640" )
+    @WithClasses({ CollectionMapperNullValueMappingReturnDefault.class, Source.class, Target.class })
+    public void shouldForgeNewMapMappingMethodReturnEmptyOnNullSource() {
+
+        Source source = new Source();
+        source.setBarMap( null );
+
+        Target target = CollectionMapperNullValueMappingReturnDefault.INSTANCE.sourceToTarget( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getBarMap() ).isEmpty();
+
+        Source source2 = CollectionMapperNullValueMappingReturnDefault.INSTANCE.targetToSource( target );
+        assertThat( source2 ).isNotNull();
+        assertThat( source2.getBarMap() ).isEmpty();
+    }
 
 }
