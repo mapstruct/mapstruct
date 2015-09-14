@@ -51,6 +51,7 @@ import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentTy
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+import org.mapstruct.ap.internal.util.MapperConfiguration;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -429,6 +430,9 @@ public class PropertyMapping extends ModelElement {
             else {
                 PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
 
+                // copy mapper configuration from the source method, its the same mapper
+                MapperConfiguration config = method.getMapperConfiguration();
+
                 // forge a method from the parameter type to the last entry type.
                 String forgedName = Strings.joinAndCamelize( sourceReference.getElementNames() );
                 forgedName = Strings.getSaveVariableName( forgedName, ctx.getNamesOfMappingsToGenerate() );
@@ -436,6 +440,7 @@ public class PropertyMapping extends ModelElement {
                     forgedName,
                     sourceReference.getParameter().getType(),
                     lastPropertyEntry.getType(),
+                    config,
                     method.getExecutable()
                 );
                 NestedPropertyMappingMethod.Builder builder = new NestedPropertyMappingMethod.Builder();
@@ -515,7 +520,9 @@ public class PropertyMapping extends ModelElement {
             if ( ( sourceType.isCollectionType() || sourceType.isArrayType() )
                 && ( targetType.isCollectionType() || targetType.isArrayType() ) ) {
 
-                ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, element );
+                // copy mapper configuration from the source method, its the same mapper
+                MapperConfiguration config = method.getMapperConfiguration();
+                ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element );
                 IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
 
                 IterableMappingMethod iterableMappingMethod = builder
@@ -538,7 +545,9 @@ public class PropertyMapping extends ModelElement {
             }
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
 
-                ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, element );
+                // copy mapper configuration from the source method, its the same mapper
+                MapperConfiguration config = method.getMapperConfiguration();
+                ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element );
 
                 MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
                 MapMappingMethod mapMappingMethod = builder
