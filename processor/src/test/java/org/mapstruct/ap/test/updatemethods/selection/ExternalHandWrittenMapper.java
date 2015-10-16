@@ -57,7 +57,8 @@ public class ExternalHandWrittenMapper {
 
         if ( entityMap != null && dtoMap != null ) {
             for ( Map.Entry<SecretaryDto, EmployeeDto> dtoEntry : dtoMap.entrySet() ) {
-                entityMap.put( DepartmentMapper.INSTANCE.toSecretaryEntity( dtoEntry.getKey() ) ,
+                entityMap.put(
+                    DepartmentMapper.INSTANCE.toSecretaryEntity( dtoEntry.getKey() ),
                     DepartmentMapper.INSTANCE.toEmployeeEntity( dtoEntry.getValue() )  );
             }
         }

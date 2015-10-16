@@ -100,7 +100,7 @@ public class QualifierTest {
         assertThat( germanMovies.getFacts() ).includes(
                 entry( "Regisseur", Arrays.asList( "M. Night Shyamalan" ) ),
                 entry( "Besetzung", Arrays.asList( "Bruce Willis", "Haley Joel Osment", "Toni Collette" ) ),
-                entry( "Handlungstichwörter", Arrays.asList( "Jungen", "Kinderpsychologe", "Ich sehe tote Menschen" ) )
+            entry( "Handlungstichwörter", Arrays.asList( "Jungen", "Kinderpsychologe", "Ich sehe tote Menschen" ) )
         );
     }
 
@@ -139,7 +139,7 @@ public class QualifierTest {
 
         GermanRelease result = MapperWithoutQualifiedBy.INSTANCE.map( foreignMovies );
         assertThat( result ).isNotNull();
-        assertThat( result.getTitle() ).isEqualTo( "ehT ,esneS htxiS");
+        assertThat( result.getTitle() ).isEqualTo( "ehT ,esneS htxiS" );
 
     }
 

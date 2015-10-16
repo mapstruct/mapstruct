@@ -98,7 +98,7 @@ public class ModifiableURLClassLoader extends URLClassLoader {
     private static final class FilteringParentClassLoader extends ClassLoader {
         private String excludedPackage;
 
-        public FilteringParentClassLoader(String excludedPackage) {
+        FilteringParentClassLoader(String excludedPackage) {
             this.excludedPackage = excludedPackage;
         }
 

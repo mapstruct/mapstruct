@@ -46,7 +46,7 @@ public class ArrayMappingTest {
 
         assertThat( dto ).isNotNull();
         assertThat( dto ).isNotEqualTo( source );
-        assertThat( dto.getPublications() ).containsOnly( "the Lancet", "Nature");
+        assertThat( dto.getPublications() ).containsOnly( "the Lancet", "Nature" );
     }
 
     @Test

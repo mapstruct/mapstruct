@@ -44,7 +44,7 @@ class Node {
      */
     private final Set<String> allDescendants;
 
-    public Node(String name) {
+    Node(String name) {
         this.name = name;
         descendants = new ArrayList<Node>();
         allDescendants = new HashSet<String>();

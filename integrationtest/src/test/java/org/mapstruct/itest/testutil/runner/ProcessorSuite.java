@@ -51,7 +51,7 @@ public @interface ProcessorSuite {
      *
      * @author Andreas Gudian
      */
-    public enum ProcessorType {
+    enum ProcessorType {
         /**
          * Use an Oracle JDK 1.6 (or 1.6.x) via toolchain support to perform the processing
          */
@@ -113,13 +113,13 @@ public @interface ProcessorSuite {
         private String compilerId;
         private String sourceTargetVersion;
 
-        private ProcessorType(Toolchain toolchain, String compilerId, String sourceTargetVersion) {
+        ProcessorType(Toolchain toolchain, String compilerId, String sourceTargetVersion) {
             this.toolchain = toolchain;
             this.compilerId = compilerId;
             this.sourceTargetVersion = sourceTargetVersion;
         }
 
-        private ProcessorType(ProcessorType... included) {
+        ProcessorType(ProcessorType... included) {
             this.included = included;
         }
 
@@ -158,7 +158,7 @@ public @interface ProcessorSuite {
      *
      * @author Andreas Gudian
      */
-    public interface CommandLineEnhancer {
+    interface CommandLineEnhancer {
         /**
          * @param processorType the processor type for which the test is executed.
          * @return additional command line arguments to be passed to the Maven {@link Verifier}.

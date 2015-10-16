@@ -59,7 +59,7 @@ public class FreeMarkerModelElementWriter {
         private final BeanModel object;
         private final SimpleMapModel extParams;
 
-        public ExternalParamsTemplateModel(BeanModel object, SimpleMapModel extParams) {
+        ExternalParamsTemplateModel(BeanModel object, SimpleMapModel extParams) {
             this.object = object;
             this.extParams = extParams;
         }

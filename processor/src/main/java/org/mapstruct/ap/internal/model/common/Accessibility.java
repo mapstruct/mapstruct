@@ -32,7 +32,7 @@ public enum Accessibility {
 
     private final String keyword;
 
-    private Accessibility(String keyword) {
+    Accessibility(String keyword) {
         this.keyword = keyword;
     }
 

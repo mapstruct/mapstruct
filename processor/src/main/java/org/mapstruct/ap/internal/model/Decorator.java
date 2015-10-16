@@ -131,7 +131,7 @@ public class Decorator extends GeneratedType {
                 elementPackage,
                 mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
                 methods,
-                Arrays.asList(  new Field( typeFactory.getType( mapperElement ), "delegate", true ) ) ,
+                Arrays.asList( new Field( typeFactory.getType( mapperElement ), "delegate", true ) ),
                 options,
                 versionInformation,
                 Accessibility.fromModifiers( mapperElement.getModifiers() ),

@@ -76,7 +76,7 @@ public class UpdateMethodsTest {
         assertThat( organizationEntity.getCompany() ).isEqualTo( companyEntity );
         assertThat( organizationEntity.getCompany().getName() ).isEqualTo( "PepsiCo" );
         assertThat( organizationEntity.getType().getType() ).isEqualTo( "commercial" );
-        assertThat( organizationEntity.getTypeNr().getNumber()).isEqualTo( 5 );
+        assertThat( organizationEntity.getTypeNr().getNumber() ).isEqualTo( 5 );
         assertThat( organizationEntity.getCompany().getDepartment().getName() ).isEqualTo( "finance" );
     }
 
@@ -124,7 +124,7 @@ public class UpdateMethodsTest {
 
         assertThat( organizationEntity.getCompany().getName() ).isEqualTo( "PepsiCo" );
         assertThat( organizationEntity.getType().getType() ).isEqualTo( "commercial" );
-        assertThat( organizationEntity.getTypeNr().getNumber()).isEqualTo( 5 );
+        assertThat( organizationEntity.getTypeNr().getNumber() ).isEqualTo( 5 );
         assertThat( organizationEntity.getCompany().getDepartment().getName() ).isEqualTo( "finance" );
     }
 

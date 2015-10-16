@@ -30,7 +30,7 @@ import org.mapstruct.ap.internal.model.common.Type;
  */
 public interface Assignment {
 
-    public static enum AssignmentType {
+    enum AssignmentType {
         /** assignment is direct */
         DIRECT,
         /** assignment is type converted */

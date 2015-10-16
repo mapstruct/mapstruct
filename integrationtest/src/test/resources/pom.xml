@@ -37,7 +37,7 @@
 
     <properties>
         <mapstruct.version>${mapstruct.version}</mapstruct.version>
-        <mapstruct-artifact-id>foobar</mapstruct-artifact-id>
+        <mapstruct-artifact-id>mapstruct</mapstruct-artifact-id>
         <toolchain-jdk-version></toolchain-jdk-version>
         <toolchain-jdk-vendor></toolchain-jdk-vendor>
         <compiler-id></compiler-id>

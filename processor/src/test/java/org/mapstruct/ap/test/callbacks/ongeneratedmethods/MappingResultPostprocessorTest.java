@@ -52,7 +52,7 @@ public class MappingResultPostprocessorTest {
 
         // setup
         Address address = new Address();
-        address.setAddressLine( "RoadToNowhere;5");
+        address.setAddressLine( "RoadToNowhere;5" );
         address.setTown( "SmallTown" );
         Employee employee = new Employee();
         employee.setAddress( address );

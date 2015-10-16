@@ -106,7 +106,7 @@ public class NestedMappingMethodInvocationTest {
 
         assertThat( source ).isNotNull();
         assertThat( source.getDate().getValue() ).isEqualTo( "06.07.2013" );
-        assertThat( source.getDate().getName()).isEqualTo( QNAME );
+        assertThat( source.getDate().getName() ).isEqualTo( QNAME );
     }
 
     private OrderType createOrderType() throws DatatypeConfigurationException {

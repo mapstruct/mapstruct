@@ -51,7 +51,7 @@ public class CollectionMappingTest {
     public void shouldForgeNewIterableMappingMethod() {
 
         Source source = new Source();
-        source.setFooSet( Collections.asSet( "1", "2") );
+        source.setFooSet( Collections.asSet( "1", "2" ) );
 
         Target target = CollectionMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();

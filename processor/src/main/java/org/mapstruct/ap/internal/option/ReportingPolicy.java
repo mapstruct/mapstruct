@@ -37,7 +37,7 @@ public enum ReportingPolicy {
     private final boolean requiresReport;
     private final boolean failsBuild;
 
-    private ReportingPolicy(Diagnostic.Kind diagnosticKind, boolean requiresReport, boolean failsBuild) {
+    ReportingPolicy(Diagnostic.Kind diagnosticKind, boolean requiresReport, boolean failsBuild) {
         this.requiresReport = requiresReport;
         this.diagnosticKind = diagnosticKind;
         this.failsBuild = failsBuild;

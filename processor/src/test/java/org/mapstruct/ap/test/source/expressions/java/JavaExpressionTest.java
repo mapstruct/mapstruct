@@ -60,7 +60,7 @@ public class JavaExpressionTest {
     @Test
     @WithClasses({
         Source.class,
-        Source2.class ,
+        Source2.class,
         Target.class,
         TimeAndFormat.class,
         SourceTargetMapperSeveralSources.class

@@ -237,7 +237,7 @@ public class BuiltInTest {
         DateProperty target = CalendarToDateMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp()).isEqualTo( createCalendar( "02.03.1999" ).getTime());
+        assertThat( target.getProp() ).isEqualTo( createCalendar( "02.03.1999" ).getTime() );
     }
 
     @Test
@@ -250,7 +250,7 @@ public class BuiltInTest {
         CalendarProperty target = DateToCalendarMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp()).isEqualTo( createCalendar( "02.03.1999" ));
+        assertThat( target.getProp() ).isEqualTo( createCalendar( "02.03.1999" ) );
 
     }
 
@@ -264,7 +264,7 @@ public class BuiltInTest {
         StringProperty target = CalendarToStringMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp()).isEqualTo( "02.03.1999" );
+        assertThat( target.getProp() ).isEqualTo( "02.03.1999" );
     }
 
     @Test
@@ -277,7 +277,7 @@ public class BuiltInTest {
         CalendarProperty target = StringToCalendarMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp()).isEqualTo( createCalendar( "02.03.1999" ) );
+        assertThat( target.getProp() ).isEqualTo( createCalendar( "02.03.1999" ) );
 
     }
 

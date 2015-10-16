@@ -27,7 +27,7 @@ public <@includeModel object=returnType/> ${name}(<#list parameters as param><@i
         <#if (thrownTypes?size > 0)>throws </#if>
         <#list thrownTypes as exceptionType>
             <@includeModel object=exceptionType/>
-            <#if exceptionType_has_next>, </#if>
+            <#if exceptionType_has_next>, </#if><#t>
         </#list>
     </@compress>
 </#macro>
