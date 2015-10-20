@@ -123,9 +123,9 @@ import java.lang.annotation.Target;
  * <p>
  * JSR 330 doesn't specify qualifiers and only allows to specifically name the beans. Hence, the generated
  * implementation of the original mapper is annotated with {@code @Named("fully-qualified-name-of-generated-impl")}
- * (please note that when using a decorator, the class name of the mapper implementation ends with an underscore). To
- * inject that bean in your decorator, add the same annotation to the delegate field (e.g. by copy/pasting it from the
- * generated class):
+ * and {@code @Singleton} (please note that when using a decorator, the class name of the mapper implementation ends
+ * with an underscore). To inject that bean in your decorator, add the same annotation to the delegate field (e.g. by
+ * copy/pasting it from the generated class):
  *
  * <pre>
  * public abstract class PersonMapperDecorator implements PersonMapper {

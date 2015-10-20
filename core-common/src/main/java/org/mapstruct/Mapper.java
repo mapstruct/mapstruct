@@ -75,7 +75,7 @@ public @interface Mapper {
      * can be retrieved via {@code @Autowired}</li>
      * <li>
      * {@code jsr330}: the generated mapper is annotated with {@code @Named} and
-     * can be retrieved via {@code @Inject}</li>
+     * {@code @Singleton}, and can be retrieved via {@code @Inject}</li>
      * </ul>
      * The method overrides an unmappedTargetPolicy set in a central configuration set
      * by {@link #config() }

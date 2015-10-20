@@ -23,7 +23,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
+@Singleton
 @Named
 public class DateMapper {
 
