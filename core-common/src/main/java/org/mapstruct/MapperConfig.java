@@ -77,7 +77,7 @@ public @interface MapperConfig {
      * can be retrieved via {@code @Autowired}</li>
      * <li>
      * {@code jsr330}: the generated mapper is annotated with {@code @Named} and
-     * can be retrieved via {@code @Inject}</li>
+     * {@code @Singleton}, and can be retrieved via {@code @Inject}</li>
      * </ul>
      *
      * @return The component model for the generated mapper.

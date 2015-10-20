@@ -42,16 +42,16 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
     @Override
     protected List<Annotation> getTypeAnnotations(Mapper mapper) {
         if ( mapper.getDecorator() == null ) {
-            return Collections.singletonList( named() );
+            return Arrays.asList( singleton(), named() );
         }
         else {
-            return Collections.singletonList( namedDelegate( mapper ) );
+            return Arrays.asList( singleton(), namedDelegate( mapper ) );
         }
     }
 
     @Override
     protected List<Annotation> getDecoratorAnnotations() {
-        return Collections.singletonList( named() );
+        return Arrays.asList( singleton(), named() );
     }
 
     @Override
@@ -67,6 +67,10 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
     @Override
     protected boolean requiresGenerationOfDecoratorClass() {
         return true;
+    }
+
+    private Annotation singleton() {
+        return new Annotation( getTypeFactory().getType( "javax.inject.Singleton" ) );
     }
 
     private Annotation named() {
