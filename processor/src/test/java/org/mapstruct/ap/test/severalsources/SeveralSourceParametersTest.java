@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.severalsources;
 
-import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Before;
@@ -145,7 +144,7 @@ public class SeveralSourceParametersTest {
         assertThat( deliveryAddress.getZipCode() ).isEqualTo( 12345 );
         assertThat( deliveryAddress.getHouseNumber() ).isEqualTo( 42 );
         assertThat( deliveryAddress.getDescription() ).isEqualTo( "An actor" );
-        assertThat( deliveryAddress.getStreet()).isEqualTo( "Main street" );
+        assertThat( deliveryAddress.getStreet() ).isEqualTo( "Main street" );
     }
 
     @Test
@@ -157,18 +156,15 @@ public class SeveralSourceParametersTest {
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 29,
-                messageRegExp = "Several possible source properties for target property \"description\".",
-                javaVersions = { SourceVersion.RELEASE_6 } ),
-            @Diagnostic(type = ErroneousSourceTargetMapper.class,
-                kind = Kind.ERROR,
-                line = 29,
-                messageRegExp = "Several possible source properties for target property \"zipCode\".",
-                javaVersions = { SourceVersion.RELEASE_6 } ),
-            @Diagnostic(type = ErroneousSourceTargetMapper.class,
-                kind = Kind.ERROR,
-                line = 29,
                 messageRegExp = "Several possible source properties for target property \"street\"."),
-
+            @Diagnostic(type = ErroneousSourceTargetMapper.class,
+                kind = Kind.ERROR,
+                line = 29,
+                messageRegExp = "Several possible source properties for target property \"zipCode\"."),
+            @Diagnostic(type = ErroneousSourceTargetMapper.class,
+                kind = Kind.ERROR,
+                line = 29,
+                messageRegExp = "Several possible source properties for target property \"description\".")
     })
     public void shouldFailToGenerateMappingsForAmbigiousSourceProperty() {
     }

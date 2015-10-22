@@ -108,8 +108,8 @@ public class InheritInverseConfigurationTest {
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.ERROR,
                 line = 50,
-                messageRegExp = "Given name \"forward\" matches several candidate methods: .*forward\\(.*\\), "
-                    + ".*forward\\(.*\\)"),
+                messageRegExp = "Given name \"forward\" matches several candidate methods: .*forward\\(.+\\), "
+                    + ".*forward\\(.+\\)"),
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.WARNING,
                 line = 55,

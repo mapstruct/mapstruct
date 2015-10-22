@@ -39,9 +39,19 @@ import org.mapstruct.ap.testutil.assertions.JavaFileAssert;
  */
 public class GeneratedSource implements TestRule {
 
+    private static ThreadLocal<CompilingStatement> compilingStatement = new ThreadLocal<CompilingStatement>();;
+
     @Override
     public Statement apply(Statement base, Description description) {
         return base;
+    }
+
+    static void setCompilingStatement(CompilingStatement compilingStatement) {
+        GeneratedSource.compilingStatement.set( compilingStatement );
+    }
+
+    static void clearCompilingStatement() {
+        GeneratedSource.compilingStatement.remove();
     }
 
     /**
@@ -60,6 +70,6 @@ public class GeneratedSource implements TestRule {
      * @return an assert for the file specified by the given path
      */
     public JavaFileAssert forJavaFile(String path) {
-        return new JavaFileAssert( new File( CompilingStatement.getSourceOutputDir() + "/" + path ) );
+        return new JavaFileAssert( new File( compilingStatement.get().getSourceOutputDir() + "/" + path ) );
     }
 }

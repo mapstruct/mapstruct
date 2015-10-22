@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.erroneous.annotationnotfound;
 
 import javax.tools.Diagnostic.Kind;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -45,9 +46,7 @@ public class AnnotationNotFoundTest {
                 @Diagnostic( type = ErroneousMapper.class,
                         kind = Kind.ERROR,
                         line = 30,
-                        messageRegExp = "cannot find symbol\n"
-                        + "  symbol:   class NotFoundAnnotation\n"
-                        + "  location: interface org.mapstruct.ap.test.erroneous.annotationnotfound.ErroneousMapper" )
+                        messageRegExp = "NotFoundAnnotation")
             }
     )
     public void shouldFailToGenerateMappings() {

@@ -21,11 +21,13 @@ package org.mapstruct.ap.testutil.compilation.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.lang.model.SourceVersion;
+
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
+import org.codehaus.plexus.compiler.CompilerMessage;
+import org.codehaus.plexus.compiler.CompilerResult;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
@@ -57,25 +59,11 @@ public class CompilationOutcomeDescriptor {
             List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
             for ( org.mapstruct.ap.testutil.compilation.annotation.Diagnostic diagnostic :
                 expectedCompilationResult.diagnostics() ) {
-                if ( requiresEvaluation( diagnostic.javaVersions() ) ) {
-                    diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( diagnostic ) );
-                }
+                diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( diagnostic ) );
             }
 
             return new CompilationOutcomeDescriptor( expectedCompilationResult.value(), diagnosticDescriptors );
         }
-    }
-
-    private static boolean requiresEvaluation(SourceVersion[] sourceVersions) {
-        if ( sourceVersions.length == 0 ) {
-            return true;
-        }
-        for ( SourceVersion sourceVersion : sourceVersions ) {
-            if ( SourceVersion.latestSupported().equals( sourceVersion ) ) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static CompilationOutcomeDescriptor forResult(String sourceDir, boolean compilationSuccessful,
@@ -88,6 +76,21 @@ public class CompilationOutcomeDescriptor {
             //ignore notes created by the compiler
             if ( diagnostic.getKind() != Kind.NOTE ) {
                 diagnosticDescriptors.add( DiagnosticDescriptor.forDiagnostic( sourceDir, diagnostic ) );
+            }
+        }
+
+        return new CompilationOutcomeDescriptor( compilationResult, diagnosticDescriptors );
+    }
+
+    public static CompilationOutcomeDescriptor forResult(String sourceDir, CompilerResult compilerResult) {
+        CompilationResult compilationResult =
+            compilerResult.isSuccess() ? CompilationResult.SUCCEEDED : CompilationResult.FAILED;
+
+        List<DiagnosticDescriptor> diagnosticDescriptors = new ArrayList<DiagnosticDescriptor>();
+
+        for ( CompilerMessage message : compilerResult.getCompilerMessages() ) {
+            if ( message.getKind() != CompilerMessage.Kind.NOTE ) {
+                diagnosticDescriptors.add( DiagnosticDescriptor.forCompilerMessage( sourceDir, message ) );
             }
         }
 
