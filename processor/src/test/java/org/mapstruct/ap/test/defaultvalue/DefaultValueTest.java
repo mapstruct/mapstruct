@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.defaultvalue;
 
+import java.text.ParseException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -26,8 +28,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import java.text.ParseException;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -136,6 +136,10 @@ public class DefaultValueTest {
                             line = 33,
                             messageRegExp = "Constant and default value are both defined in @Mapping,"
                                     + " either define a defaultValue or a constant." ),
+                    @Diagnostic(type = ErroneousMapper.class,
+                            kind = javax.tools.Diagnostic.Kind.ERROR,
+                            line = 33,
+                            messageRegExp = "Can't map property \".*Region region\" to \".*String region\"\\. Consider")
             }
     )
     public void errorOnDefaultValueAndConstant() throws ParseException {
@@ -154,6 +158,10 @@ public class DefaultValueTest {
                             line = 33,
                             messageRegExp = "Expression and default value are both defined in @Mapping,"
                                     + " either define a defaultValue or an expression." ),
+                    @Diagnostic(type = ErroneousMapper2.class,
+                            kind = javax.tools.Diagnostic.Kind.ERROR,
+                            line = 33,
+                            messageRegExp = "Can't map property \".*Region region\" to \".*String region\"\\. Consider")
             }
     )
     public void errorOnDefaultValueAndExpression() throws ParseException {
