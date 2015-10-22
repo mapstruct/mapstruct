@@ -18,12 +18,22 @@
  */
 package org.mapstruct.itest.testutil.runner;
 
+import static org.apache.maven.it.util.ResourceExtractor.extractResourceToDestination;
+import static org.apache.maven.shared.utils.io.FileUtils.copyURLToFile;
+import static org.apache.maven.shared.utils.io.FileUtils.deleteDirectory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.apache.maven.it.Verifier;
 import org.junit.internal.AssumptionViolatedException;
@@ -35,10 +45,8 @@ import org.junit.runners.ParentRunner;
 import org.junit.runners.model.InitializationError;
 import org.mapstruct.itest.testutil.runner.ProcessorSuite.ProcessorType;
 import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner.ProcessorTestCase;
-
-import static org.apache.maven.it.util.ResourceExtractor.extractResourceToDestination;
-import static org.apache.maven.shared.utils.io.FileUtils.copyURLToFile;
-import static org.apache.maven.shared.utils.io.FileUtils.deleteDirectory;
+import org.mapstruct.itest.testutil.runner.xml.Toolchains;
+import org.mapstruct.itest.testutil.runner.xml.Toolchains.ProviderDescription;
 
 /**
  * Runner for processor integration tests. Requires the annotation {@link ProcessorSuite} on the test class.
@@ -57,7 +65,9 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
      */
     public static final String SYS_PROP_DEBUG = "processorIntegrationTest.debug";
 
-    public static final String SYS_PROP_CAN_USE_JDK_9 = "processorIntegrationTest.canUseJdk9";
+    private static final File TOOLCHAINS_FILE = getToolchainsFile();
+
+    private static final Collection<ProcessorType> ENABLED_PROCESSOR_TYPES = detectSupportedTypes( TOOLCHAINS_FILE );
 
     public static final class ProcessorTestCase {
         private final String baseDir;
@@ -67,15 +77,9 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
         public ProcessorTestCase(String baseDir, ProcessorType processor) {
             this.baseDir = baseDir;
             this.processor = processor;
-            this.ignored =
-                ( !TOOLCHAINS_ENABLED && processor.getToolchain() != null )
-                    || ( processor == ProcessorType.ORACLE_JAVA_9 && !CAN_USE_JDK_9 );
+            this.ignored = !ENABLED_PROCESSOR_TYPES.contains( processor );
         }
     }
-
-    private static final File SPECIFIED_TOOLCHAINS_FILE = getSpecifiedToolchainsFile();
-    private static final boolean TOOLCHAINS_ENABLED = toolchainsFileExists();
-    private static final boolean CAN_USE_JDK_9 = canUseJdk9();
 
     private final List<ProcessorTestCase> methods;
 
@@ -227,15 +231,13 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
     private void configureToolchains(ProcessorTestCase child, Verifier verifier, List<String> goals,
                                      PrintStream originalOut) {
         if ( child.processor.getToolchain() != null ) {
-            if ( null != SPECIFIED_TOOLCHAINS_FILE ) {
-                verifier.addCliOption( "--toolchains" );
-                verifier.addCliOption( SPECIFIED_TOOLCHAINS_FILE.getPath().replace( '\\', '/' ) );
-            }
+            verifier.addCliOption( "--toolchains" );
+            verifier.addCliOption( TOOLCHAINS_FILE.getPath().replace( '\\', '/' ) );
 
-            String[] parts = child.processor.getToolchain().split( "-" );
+            Toolchain toolchain = child.processor.getToolchain();
 
-            verifier.addCliOption( "-Dtoolchain-jdk-vendor=" + parts[0] );
-            verifier.addCliOption( "-Dtoolchain-jdk-version=" + parts[1] );
+            verifier.addCliOption( "-Dtoolchain-jdk-vendor=" + toolchain.getVendor() );
+            verifier.addCliOption( "-Dtoolchain-jdk-version=" + toolchain.getVersionRangeString() );
 
             goals.add( "toolchains:toolchain" );
         }
@@ -257,7 +259,7 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
         return extractResourceToDestination( getClass(), "/" + child.baseDir, tempDir, true );
     }
 
-    private static File getSpecifiedToolchainsFile() {
+    private static File getToolchainsFile() {
         String specifiedToolchainsFile = System.getProperty( SYS_PROP_TOOLCHAINS_FILE );
         if ( null != specifiedToolchainsFile ) {
             try {
@@ -278,20 +280,59 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
             }
         }
 
-        return null;
+        // use default location
+        String defaultPath = System.getProperty( "user.home" ) + System.getProperty( "file.separator" ) + ".m2";
+        return new File( defaultPath, "toolchains.xml" );
     }
 
-    private static boolean canUseJdk9() {
-        return Boolean.parseBoolean( System.getProperty( SYS_PROP_CAN_USE_JDK_9, "true" ) );
-    }
-
-    private static boolean toolchainsFileExists() {
-        if ( null != SPECIFIED_TOOLCHAINS_FILE ) {
-            return SPECIFIED_TOOLCHAINS_FILE.exists();
+    private static Collection<ProcessorType> detectSupportedTypes(File toolchainsFile) {
+        Toolchains toolchains;
+        try {
+            if ( toolchainsFile.exists() ) {
+                Unmarshaller unmarshaller = JAXBContext.newInstance( Toolchains.class ).createUnmarshaller();
+                toolchains = (Toolchains) unmarshaller.unmarshal( toolchainsFile );
+            }
+            else {
+                toolchains = null;
+            }
+        }
+        catch ( JAXBException e ) {
+            toolchains = null;
         }
 
-        String defaultPath = System.getProperty( "user.home" ) + System.getProperty( "file.separator" ) + ".m2";
-        return new File( defaultPath, "toolchains.xml" ).exists();
+        Collection<ProcessorType> supported = new HashSet<>();
+        for ( ProcessorType type : ProcessorType.values() ) {
+            if ( isSupported( type, toolchains ) ) {
+                supported.add( type );
+            }
+        }
+
+        return supported;
     }
 
+    private static boolean isSupported(ProcessorType type, Toolchains toolchains) {
+        if ( type.getToolchain() == null ) {
+            return true;
+        }
+
+        if ( toolchains == null ) {
+            return false;
+        }
+
+        Toolchain required = type.getToolchain();
+
+        for ( Toolchains.Toolchain tc : toolchains.getToolchains() ) {
+            if ( "jdk".equals( tc.getType() ) ) {
+                ProviderDescription desc = tc.getProviderDescription();
+                if ( desc != null
+                    && required.getVendor().equals( desc.getVendor() )
+                    && desc.getVersion() != null
+                    && desc.getVersion().startsWith( required.getVersionMinInclusive() ) ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

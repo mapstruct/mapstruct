@@ -52,12 +52,12 @@ public @interface ProcessorSuite {
         /**
          * Use an Oracle JDK 1.6 (or 1.6.x) via toolchain support to perform the processing
          */
-        ORACLE_JAVA_6( "oracle-[1.6,1.7)", "javac", "1.6" ),
+        ORACLE_JAVA_6( new Toolchain( "oracle", "1.6", "1.7" ), "javac", "1.6" ),
 
         /**
          * Use an Oracle JDK 1.7 (or 1.7.x) via toolchain support to perform the processing
          */
-        ORACLE_JAVA_7( "oracle-[1.7,1.8)", "javac", "1.7" ),
+        ORACLE_JAVA_7( new Toolchain( "oracle", "1.7", "1.8" ), "javac", "1.7" ),
 
         /**
          * Use the same JDK that runs the mvn build to perform the processing
@@ -67,7 +67,7 @@ public @interface ProcessorSuite {
         /**
          * Use an Oracle JDK 1.9 (or 1.9.x) via toolchain support to perform the processing
          */
-        ORACLE_JAVA_9( "oracle-[1.9,1.10)", "javac", "1.9" ),
+        ORACLE_JAVA_9( new Toolchain( "oracle", "9", "10" ), "javac", "1.9" ),
 
         /**
          * Use the eclipse compiler with 1.7 source/target level from tycho-compiler-jdt to perform the build and
@@ -100,11 +100,11 @@ public @interface ProcessorSuite {
 
         private ProcessorType[] included = { };
 
-        private String toolchain;
+        private Toolchain toolchain;
         private String compilerId;
         private String sourceTargetVersion;
 
-        private ProcessorType(String toolchain, String compilerId, String sourceTargetVersion) {
+        private ProcessorType(Toolchain toolchain, String compilerId, String sourceTargetVersion) {
             this.toolchain = toolchain;
             this.compilerId = compilerId;
             this.sourceTargetVersion = sourceTargetVersion;
@@ -124,7 +124,7 @@ public @interface ProcessorSuite {
         /**
          * @return the toolchain
          */
-        public String getToolchain() {
+        public Toolchain getToolchain() {
             return toolchain;
         }
 
