@@ -57,7 +57,7 @@ public class JodaConversionTest {
         src.setDateTime( new DateTime( 2014, 1, 1, 0, 0, 0, DateTimeZone.UTC ) );
         Target target = SourceTargetMapper.INSTANCE.sourceToTargetDateTimeMapped( src );
         assertThat( target ).isNotNull();
-        assertThat( target.getDateTime() ).isEqualTo( "01.01.2014 00:00 UTC" );
+        assertThat( target.getDateTime() ).isIn( "01.01.2014 00:00 UTC", "01.01.2014 00:00 +00:00" );
     }
 
     @Test
@@ -99,7 +99,7 @@ public class JodaConversionTest {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( src );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getDateTime() ).isEqualTo( "01.01.2014 00:00 UTC" );
+        assertThat( target.getDateTime() ).isIn( "01.01.2014 00:00 UTC", "01.01.2014 00:00 +00:00" );
         assertThat( target.getLocalDateTime() ).isEqualTo( "01.01.2014 00:00" );
         assertThat( target.getLocalDate() ).isEqualTo( "01.01.2014" );
         assertThat( target.getLocalTime() ).isEqualTo( "00:00" );
@@ -107,7 +107,7 @@ public class JodaConversionTest {
         // and now with default mappings
         target = SourceTargetMapper.INSTANCE.sourceToTargetDefaultMapping( src );
         assertThat( target ).isNotNull();
-        assertThat( target.getDateTime() ).isEqualTo( "1. Januar 2014 00:00:00 UTC" );
+        assertThat( target.getDateTime() ).isIn( "1. Januar 2014 00:00:00 UTC", "1. Januar 2014 00:00:00 +00:00" );
         assertThat( target.getLocalDateTime() ).isEqualTo( "1. Januar 2014 00:00:00" );
         assertThat( target.getLocalDate() ).isEqualTo( "1. Januar 2014" );
         assertThat( target.getLocalTime() ).isEqualTo( "00:00:00" );
