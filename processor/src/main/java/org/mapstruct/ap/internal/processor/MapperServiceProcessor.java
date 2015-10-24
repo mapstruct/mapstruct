@@ -18,18 +18,19 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import java.io.IOException;
+
+import javax.annotation.processing.Filer;
+import javax.lang.model.element.TypeElement;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+
 import org.mapstruct.ap.internal.model.GeneratedType;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.ServicesEntry;
 import org.mapstruct.ap.internal.option.OptionsHelper;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.writer.ModelWriter;
-
-import javax.annotation.processing.Filer;
-import javax.lang.model.element.TypeElement;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
-import java.io.IOException;
 
 /**
  * A {@link ModelElementProcessor} which creates files in the {@code META-INF/services}
@@ -77,7 +78,9 @@ public class MapperServiceProcessor  implements ModelElementProcessor<Mapper, Vo
     }
 
     private ServicesEntry getServicesEntry(GeneratedType model) {
-        return new ServicesEntry(model.getInterfacePackage(), model.getInterfaceName(),
+        String mapperName = model.getInterfaceName() != null ? model.getInterfaceName() : model.getSuperClassName();
+
+        return new ServicesEntry(model.getInterfacePackage(), mapperName,
                                  model.getPackageName(), model.getName());
     }
 

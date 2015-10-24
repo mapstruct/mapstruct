@@ -85,4 +85,18 @@ public class DestinationClassNameTest {
         assertThat( ( (DestinationClassNameMapperDecorator) instance ).delegate.getClass().getSimpleName() )
                 .isEqualTo( "MyDestinationClassNameMapperDecoratedCustomImpl_" );
     }
+
+    @Test
+    @WithClasses({ AbstractDestinationClassNameMapper.class, AbstractDestinationPackageNameMapper.class })
+    public void shouldWorkWithAbstractClasses() {
+        AbstractDestinationClassNameMapper mapper1 = AbstractDestinationClassNameMapper.INSTANCE;
+        assertThat( mapper1.getClass().getPackage().getName() )
+                .isEqualTo( AbstractDestinationClassNameMapper.class.getPackage().getName() );
+        assertThat( mapper1.getClass().getSimpleName() ).isEqualTo( "MyAbstractDestinationClassNameMapperCustomImpl" );
+
+        AbstractDestinationPackageNameMapper mapper2 = AbstractDestinationPackageNameMapper.INSTANCE;
+        assertThat( mapper2.getClass().getPackage().getName() )
+                .isEqualTo( AbstractDestinationPackageNameMapper.class.getPackage().getName() + ".dest" );
+        assertThat( mapper2.getClass().getSimpleName() ).isEqualTo( "AbstractDestinationPackageNameMapperImpl" );
+    }
 }
