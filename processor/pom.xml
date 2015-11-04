@@ -57,7 +57,11 @@
             <artifactId>mapstruct</artifactId>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-compiler-jdt</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
@@ -84,11 +88,7 @@
             <artifactId>javax.inject</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-compiler-jdt</artifactId>
-            <scope>test</scope>
-        </dependency>
+
         <!-- plexus-container-default is a runtime-dependency of the tyco-compiler -->
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
