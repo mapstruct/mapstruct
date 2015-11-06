@@ -38,7 +38,7 @@ import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.MethodType;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
-import static org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
+import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.

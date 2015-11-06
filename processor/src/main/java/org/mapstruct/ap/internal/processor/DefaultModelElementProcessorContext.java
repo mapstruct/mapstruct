@@ -33,6 +33,7 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.workarounds.TypesDecorator;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
@@ -47,13 +48,15 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final Options options;
     private final TypeFactory typeFactory;
     private final VersionInformation versionInformation;
+    private final Types delegatingTypes;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options) {
         this.processingEnvironment = processingEnvironment;
         this.messager = new DelegatingMessager( processingEnvironment.getMessager() );
+        this.delegatingTypes = new TypesDecorator( processingEnvironment );
         this.typeFactory = new TypeFactory(
             processingEnvironment.getElementUtils(),
-            processingEnvironment.getTypeUtils()
+            delegatingTypes
         );
         this.options = options;
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
@@ -66,7 +69,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
 
     @Override
     public Types getTypeUtils() {
-        return processingEnvironment.getTypeUtils();
+        return delegatingTypes;
     }
 
     @Override
@@ -99,19 +102,19 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         return messager.isErroneous();
     }
 
-    private static class DelegatingMessager implements FormattingMessager {
+    private static final class DelegatingMessager implements FormattingMessager {
 
         private final Messager delegate;
         private boolean isErroneous = false;
 
-        public DelegatingMessager(Messager delegate) {
+        DelegatingMessager(Messager delegate) {
             this.delegate = delegate;
         }
 
         @Override
         public void printMessage(Message msg, Object... args) {
             String message = String.format( msg.getDescription(), args );
-            delegate.printMessage( msg.getDiagnosticKind(), message);
+            delegate.printMessage( msg.getDiagnosticKind(), message );
             if ( msg.getDiagnosticKind() == Kind.ERROR ) {
                 isErroneous = true;
             }

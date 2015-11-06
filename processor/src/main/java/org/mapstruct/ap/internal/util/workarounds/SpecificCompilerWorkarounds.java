@@ -16,9 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.internal.util.workarounds;
 
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -31,14 +34,10 @@ import javax.lang.model.util.Types;
  * @author Andreas Gudian
  */
 public class SpecificCompilerWorkarounds {
-
     private SpecificCompilerWorkarounds() { }
 
-  /**
-     * Tests whether one type is assignable to another.
-     *
-     * <p>
-     * Work-around for a bug most likely related to problem solved with {@link #isSubType}
+    /**
+     * Tests whether one type is assignable to another, checking for VOID first.
      *
      * @param types the type utils
      * @param t1 the first type
@@ -46,12 +45,12 @@ public class SpecificCompilerWorkarounds {
      * @return {@code true} if and only if the first type is assignable to the second
      * @throws IllegalArgumentException if given an executable or package type
      */
-    public static boolean isAssignable(Types types, TypeMirror t1, TypeMirror t2) {
+    static boolean isAssignable(Types types, TypeMirror t1, TypeMirror t2) {
         if ( t1.getKind() == TypeKind.VOID ) {
             return false;
         }
 
-        return types.isAssignable( erasure( types, t1 ), erasure( types, t2 ) );
+        return types.isAssignable( t1, t2 );
     }
 
     /**
@@ -66,7 +65,7 @@ public class SpecificCompilerWorkarounds {
      * @return {@code true} if and only if the first type is a subtype of the second
      * @throws IllegalArgumentException if given an executable or package type
      */
-    public static boolean isSubType(Types types, TypeMirror t1, TypeMirror t2) {
+    static boolean isSubtype(Types types, TypeMirror t1, TypeMirror t2) {
         if ( t1.getKind() == TypeKind.VOID ) {
             return false;
         }
@@ -86,7 +85,7 @@ public class SpecificCompilerWorkarounds {
      * @return the erasure of the given type
      * @throws IllegalArgumentException if given a package type
      */
-    public static TypeMirror erasure(Types types, TypeMirror t) {
+    static TypeMirror erasure(Types types, TypeMirror t) {
         if ( t.getKind() == TypeKind.VOID || t.getKind() == TypeKind.NULL ) {
             return t;
         }
@@ -114,5 +113,35 @@ public class SpecificCompilerWorkarounds {
             }
         }
         return element;
+    }
+
+    /**
+     * Workaround for Bugs in the Eclipse implementation of {@link Types#asMemberOf(DeclaredType, Element)}.
+     *
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590">Eclipse Bug 382590</a>
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=481555">Eclipse Bug 481555</a>
+     */
+    static TypeMirror asMemberOf(Types typeUtils, ProcessingEnvironment env, DeclaredType containing, Element element) {
+        TypeMirror result = null;
+        Exception lastException = null;
+        try {
+            try {
+                result = typeUtils.asMemberOf( containing, element );
+            }
+            catch ( IllegalArgumentException e ) {
+                lastException = e;
+
+                result = EclipseAsMemberOfWorkaround.asMemberOf( env, containing, element );
+            }
+        }
+        catch ( Exception e ) {
+            lastException = e;
+        }
+        if ( null == result ) {
+            throw new RuntimeException( "Fallback implementation of asMemberOf didn't work for "
+                + element + " in " + containing, lastException );
+        }
+
+        return result;
     }
 }

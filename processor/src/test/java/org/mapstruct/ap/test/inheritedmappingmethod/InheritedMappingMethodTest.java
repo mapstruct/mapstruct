@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.inheritedmappingmethod;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.inheritedmappingmethod._target.CarDto;
@@ -30,6 +28,8 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 @IssueKey( "274" )
 @WithClasses({
  Car.class, CarDto.class, UnboundMappable.class, CarMapper.class, //
@@ -39,7 +39,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class InheritedMappingMethodTest {
 
     @Test
-    public void shouldProvideUnboundedMapperInstance() throws Exception {
+    public void shouldProvideUnboundedMapperInstance() {
         UnboundMappable<CarDto, Car> instance = CarMapper.INSTANCE;
         assertThat( instance ).isNotNull();
     }
@@ -59,7 +59,7 @@ public class InheritedMappingMethodTest {
     }
 
     @Test
-    public void shouldProvideBoundedMapperInstance() throws Exception {
+    public void shouldProvideBoundedMapperInstance() {
         BoundMappable<? extends CarDto, ? extends Car> instance = FastCarMapper.INSTANCE;
         assertThat( instance ).isNotNull();
     }
