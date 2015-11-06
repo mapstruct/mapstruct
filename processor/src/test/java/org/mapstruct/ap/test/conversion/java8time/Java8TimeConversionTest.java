@@ -240,12 +240,12 @@ public class Java8TimeConversionTest {
         source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source.getForDateConversionWithZonedDateTime() ).isEqualTo( dateTime );
-
     }
 
     @Test
     public void testLocalDateTimeToDateMapping() {
-        TimeZone.setDefault( TimeZone.getTimeZone( "UTC" ) );
+        TimeZone.setDefault( TimeZone.getTimeZone( "Australia/Melbourne" ) );
+
         Source source = new Source();
         LocalDateTime dateTime = LocalDateTime.of( 2014, 1, 1, 0, 0 );
         source.setForDateConversionWithLocalDateTime( dateTime );
@@ -266,7 +266,5 @@ public class Java8TimeConversionTest {
         source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source.getForDateConversionWithLocalDateTime() ).isEqualTo( dateTime );
-
     }
-
 }

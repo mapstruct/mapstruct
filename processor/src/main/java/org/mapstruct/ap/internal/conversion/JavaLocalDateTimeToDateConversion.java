@@ -33,6 +33,6 @@ public class JavaLocalDateTimeToDateConversion extends SimpleConversion {
 
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
-        return "java.time.LocalDateTime.ofInstant( <SOURCE>.toInstant(), java.time.ZoneId.systemDefault() )";
+        return "java.time.LocalDateTime.ofInstant( <SOURCE>.toInstant(), java.time.ZoneId.of( \"UTC\" ) )";
     }
 }
