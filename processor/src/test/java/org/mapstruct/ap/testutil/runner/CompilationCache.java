@@ -20,6 +20,12 @@ package org.mapstruct.ap.testutil.runner;
 
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 
+/**
+ * Remembers the last {@link CompilationRequest} together with the outcome of that request. Consecutive tests that
+ * request the same compilation can reuse the results from this holder.
+ *
+ * @author Andreas Gudian
+ */
 class CompilationCache {
     private String lastSourceOutputDir;
     private CompilationRequest lastRequest;

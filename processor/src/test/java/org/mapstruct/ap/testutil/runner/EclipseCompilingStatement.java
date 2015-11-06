@@ -30,7 +30,7 @@ import org.mapstruct.ap.MappingProcessor;
 import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
 
 /**
- * Statement that uses the JDK compiler to compile.
+ * Statement that uses the Eclipse JDT compiler to compile.
  *
  * @author Andreas Gudian
  */

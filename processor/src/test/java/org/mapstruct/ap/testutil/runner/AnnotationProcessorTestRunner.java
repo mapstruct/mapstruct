@@ -33,7 +33,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 /**
  * A JUnit4 runner for Annotation Processor tests.
  * <p>
- * Test classes are safe to be executed in parallel, the methods must not executed in parallel.
+ * Test classes are safe to be executed in parallel, but test methods are not safe to be executed in parallel.
  * <p>
  * The classes to be compiled for a given test method must be specified via {@link WithClasses}. In addition the
  * following things can be configured optionally :

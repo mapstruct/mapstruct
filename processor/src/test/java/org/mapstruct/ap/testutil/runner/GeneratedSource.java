@@ -39,7 +39,11 @@ import org.mapstruct.ap.testutil.assertions.JavaFileAssert;
  */
 public class GeneratedSource implements TestRule {
 
-    private static ThreadLocal<CompilingStatement> compilingStatement = new ThreadLocal<CompilingStatement>();;
+    /**
+     * static ThreadLocal, as the {@link CompilingStatement} must inject itself statically for this rule to gain access
+     * to the statement's information. As test execution of different classes in parallel is supported.
+     */
+    private static ThreadLocal<CompilingStatement> compilingStatement = new ThreadLocal<CompilingStatement>();
 
     @Override
     public Statement apply(Statement base, Description description) {
