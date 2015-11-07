@@ -18,11 +18,14 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
+import org.junit.runner.manipulation.Filter;
+import org.junit.runner.manipulation.NoTestsRemainException;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.ParentRunner;
@@ -75,5 +78,62 @@ public class AnnotationProcessorTestRunner extends ParentRunner<Runner> {
     @Override
     protected void runChild(Runner child, RunNotifier notifier) {
         child.run( notifier );
+    }
+
+    @Override
+    public void filter(Filter filter) throws NoTestsRemainException {
+        super.filter( new FilterDecorator( filter ) );
+    }
+
+    /**
+     * Allows to only execute selected methods, even if the executing framework is not aware of parameterized tests
+     * (e.g. some versions of IntelliJ, Netbeans, Eclipse).
+     */
+    private static final class FilterDecorator extends Filter {
+        private final Filter delegate;
+
+        private FilterDecorator(Filter delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public boolean shouldRun(Description description) {
+            boolean shouldRun = delegate.shouldRun( description );
+            if ( !shouldRun ) {
+                return delegate.shouldRun( withoutParameterizedName( description ) );
+            }
+
+            return shouldRun;
+        }
+
+        @Override
+        public String describe() {
+            return delegate.describe();
+        }
+
+        private Description withoutParameterizedName(Description description) {
+            String cleanDispayName = removeParameter( description.getDisplayName() );
+            Description cleanDescription =
+                Description.createSuiteDescription(
+                    cleanDispayName,
+                    description.getAnnotations().toArray( new Annotation[description.getAnnotations().size()] ) );
+
+            for ( Description child : description.getChildren() ) {
+                cleanDescription.addChild( withoutParameterizedName( child ) );
+            }
+
+            return cleanDescription;
+        }
+
+        private String removeParameter(String name) {
+            if ( name.startsWith( "[" ) ) {
+                return name;
+            }
+
+            // remove "[compiler]" from "method[compiler](class)"
+            int open = name.indexOf( '[' );
+            int close = name.indexOf( ']' ) + 1;
+            return name.substring( 0, open ) + name.substring( close );
+        }
     }
 }
