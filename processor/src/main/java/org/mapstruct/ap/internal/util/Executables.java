@@ -18,10 +18,15 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import static javax.lang.model.util.ElementFilter.methodsIn;
+import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -36,9 +41,6 @@ import org.mapstruct.ap.internal.prism.BeforeMappingPrism;
 import org.mapstruct.ap.internal.services.Services;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.MethodType;
-
-import static javax.lang.model.util.ElementFilter.methodsIn;
-import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.
@@ -213,19 +215,26 @@ public class Executables {
 
     /**
      * @param elementUtils the elementUtils
-     * @param alreadyAdded the list of already collected methods of one type hierarchy (order is from sub-types to
+     * @param alreadyCollected the list of already collected methods of one type hierarchy (order is from sub-types to
      *            super-types)
      * @param executable the method to check
      * @param parentType the type for which elements are collected
      * @return {@code true}, iff the given executable was not yet overridden by a method in the given list.
      */
-    private static boolean wasNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyAdded,
+    private static boolean wasNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyCollected,
                                                ExecutableElement executable, TypeElement parentType) {
-        for ( ExecutableElement executableInSubtype : alreadyAdded ) {
+        for ( ListIterator<ExecutableElement> it = alreadyCollected.listIterator(); it.hasNext(); ) {
+            ExecutableElement executableInSubtype = it.next();
             if ( elementUtils.overrides( executableInSubtype, executable, parentType ) ) {
                 return false;
             }
+            else if ( elementUtils.overrides( executable, executableInSubtype, parentType ) ) {
+                // remove the method from another interface hierarchy that is overridden by the executable to add
+                it.remove();
+                return true;
+            }
         }
+
         return true;
     }
 
