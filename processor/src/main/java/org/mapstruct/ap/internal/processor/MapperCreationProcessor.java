@@ -18,6 +18,10 @@
  */
 package org.mapstruct.ap.internal.processor;
 
+import static org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism.AUTO_INHERIT_FROM_CONFIG;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.join;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,10 +63,6 @@ import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
-
-import static org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism.AUTO_INHERIT_FROM_CONFIG;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.join;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -173,7 +173,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         TypeElement decoratorElement = (TypeElement) typeUtils.asElement( decoratorPrism.value() );
 
         if ( !typeUtils.isAssignable( decoratorElement.asType(), element.asType() ) ) {
-            messager.printMessage( element, decoratorPrism.mirror, Message.DECORATOR_NO_SUBTYPE);
+            messager.printMessage( element, decoratorPrism.mirror, Message.DECORATOR_NO_SUBTYPE );
         }
 
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>( methods.size() );
@@ -491,8 +491,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 else if ( nameFilteredcandidates.size() > 1 ) {
                     reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, reversePrism );
                 }
-
-                if ( resultMethod == null ) {
+                else {
                     reportErrorWhenAmbigousReverseMapping( candidates, method, reversePrism );
                 }
             }
@@ -571,8 +570,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 else if ( nameFilteredcandidates.size() > 1 ) {
                     reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, forwardPrism );
                 }
-
-                if ( resultMethod == null ) {
+                else {
                     reportErrorWhenAmbigousMapping( candidates, method, forwardPrism );
                 }
             }
@@ -675,7 +673,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             prism.mirror,
             Message.INHERITCONFIGURATION_DUPLICATE_MATCHES,
             prism.name(),
-            Strings.join( candidates, "(), " )
+            Strings.join( candidates, ", " )
         );
     }
 

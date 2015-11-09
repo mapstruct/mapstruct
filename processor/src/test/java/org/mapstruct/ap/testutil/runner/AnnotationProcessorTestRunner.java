@@ -18,12 +18,17 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
-import java.net.URL;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.List;
 
+import org.junit.runner.Description;
+import org.junit.runner.Runner;
+import org.junit.runner.manipulation.Filter;
+import org.junit.runner.manipulation.NoTestsRemainException;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.Statement;
-import org.junit.runners.model.TestClass;
+import org.junit.runners.ParentRunner;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
@@ -31,7 +36,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 /**
  * A JUnit4 runner for Annotation Processor tests.
  * <p>
- * Test classes and test methods are safe to be executed in parallel.
+ * Test classes are safe to be executed in parallel, but test methods are not safe to be executed in parallel.
  * <p>
  * The classes to be compiled for a given test method must be specified via {@link WithClasses}. In addition the
  * following things can be configured optionally :
@@ -44,11 +49,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
  * @author Gunnar Morling
  * @author Andreas Gudian
  */
-public class AnnotationProcessorTestRunner extends BlockJUnit4ClassRunner {
-    static final ModifiableURLClassLoader TEST_CLASS_LOADER = new ModifiableURLClassLoader();
-    private final Class<?> klass;
-    private Class<?> klassToUse;
-    private ReplacableTestClass replacableTestClass;
+public class AnnotationProcessorTestRunner extends ParentRunner<Runner> {
+    private final List<Runner> runners;
 
     /**
      * @param klass the test class
@@ -57,72 +59,81 @@ public class AnnotationProcessorTestRunner extends BlockJUnit4ClassRunner {
      */
     public AnnotationProcessorTestRunner(Class<?> klass) throws Exception {
         super( klass );
-        this.klass = klass;
+
+        runners = Arrays.<Runner> asList(
+            new InnerAnnotationProcessorRunner( klass, Compiler.JDK ),
+            new InnerAnnotationProcessorRunner( klass, Compiler.ECLIPSE ) );
+    }
+
+    @Override
+    protected List<Runner> getChildren() {
+        return runners;
+    }
+
+    @Override
+    protected Description describeChild(Runner child) {
+        return child.getDescription();
+    }
+
+    @Override
+    protected void runChild(Runner child, RunNotifier notifier) {
+        child.run( notifier );
+    }
+
+    @Override
+    public void filter(Filter filter) throws NoTestsRemainException {
+        super.filter( new FilterDecorator( filter ) );
     }
 
     /**
-     * newly loads the class with the test class loader and sets that loader as context class loader of the thread
-     *
-     * @param klass the class to replace
-     *
-     * @return the class loaded with the test class loader
+     * Allows to only execute selected methods, even if the executing framework is not aware of parameterized tests
+     * (e.g. some versions of IntelliJ, Netbeans, Eclipse).
      */
-    private static Class<?> replaceClassLoaderAndClass(Class<?> klass) {
-        replaceContextClassLoader( klass );
+    private static final class FilterDecorator extends Filter {
+        private final Filter delegate;
 
-        try {
-            return Thread.currentThread().getContextClassLoader().loadClass( klass.getName() );
-        }
-        catch ( ClassNotFoundException e ) {
-            throw new RuntimeException( e );
+        private FilterDecorator(Filter delegate) {
+            this.delegate = delegate;
         }
 
-    }
+        @Override
+        public boolean shouldRun(Description description) {
+            boolean shouldRun = delegate.shouldRun( description );
+            if ( !shouldRun ) {
+                return delegate.shouldRun( withoutParameterizedName( description ) );
+            }
 
-    private static void replaceContextClassLoader(Class<?> klass) {
-        String classFileName = klass.getName().replace( ".", "/" ) + ".class";
-        URL classResource = klass.getClassLoader().getResource( classFileName );
-        String fullyQualifiedUrl = classResource.toExternalForm();
-        String basePath = fullyQualifiedUrl.substring( 0, fullyQualifiedUrl.length() - classFileName.length() );
-
-        ModifiableURLClassLoader testClassLoader = new ModifiableURLClassLoader();
-        testClassLoader.addURL( basePath );
-
-        Thread.currentThread().setContextClassLoader( testClassLoader );
-    }
-
-    @Override
-    protected TestClass createTestClass(final Class<?> testClass) {
-        replacableTestClass = new ReplacableTestClass( testClass );
-        return replacableTestClass;
-    }
-
-    private FrameworkMethod replaceFrameworkMethod(FrameworkMethod m) {
-        try {
-            return new FrameworkMethod(
-                klassToUse.getDeclaredMethod( m.getName(), m.getMethod().getParameterTypes() ) );
-        }
-        catch ( NoSuchMethodException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    @Override
-    protected Statement methodBlock(FrameworkMethod method) {
-        CompilingStatement statement = new CompilingStatement( method );
-        if ( statement.needsRecompilation() ) {
-            klassToUse = replaceClassLoaderAndClass( klass );
-
-            replacableTestClass.replaceClass( klassToUse );
+            return shouldRun;
         }
 
-        method = replaceFrameworkMethod( method );
+        @Override
+        public String describe() {
+            return delegate.describe();
+        }
 
-        Statement next = super.methodBlock( method );
+        private Description withoutParameterizedName(Description description) {
+            String cleanDispayName = removeParameter( description.getDisplayName() );
+            Description cleanDescription =
+                Description.createSuiteDescription(
+                    cleanDispayName,
+                    description.getAnnotations().toArray( new Annotation[description.getAnnotations().size()] ) );
 
-        statement.setNextStatement( next );
+            for ( Description child : description.getChildren() ) {
+                cleanDescription.addChild( withoutParameterizedName( child ) );
+            }
 
-        return statement;
+            return cleanDescription;
+        }
+
+        private String removeParameter(String name) {
+            if ( name.startsWith( "[" ) ) {
+                return name;
+            }
+
+            // remove "[compiler]" from "method[compiler](class)"
+            int open = name.indexOf( '[' );
+            int close = name.indexOf( ']' ) + 1;
+            return name.substring( 0, open ) + name.substring( close );
+        }
     }
-
 }
