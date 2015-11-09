@@ -55,8 +55,8 @@ class EclipseCompilingStatement extends CompilingStatement {
         config.setAnnotationProcessors( new String[] { MappingProcessor.class.getName() } );
         config.setSourceFiles( getSourceFiles( compilationRequest.getSourceClasses() ) );
         config.setShowWarnings( false );
-        config.setSourceVersion( "1.6" );
-        config.setTargetVersion( "1.6" );
+        config.setSourceVersion( "1.8" );
+        config.setTargetVersion( "1.8" );
 
         for ( String option : compilationRequest.getProcessorOptions() ) {
             config.addCompilerCustomArgument( option, null );
