@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,8 +33,6 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * This class describes the source side of a property mapping.
@@ -176,7 +176,7 @@ public class SourceReference {
                 Map<String, ExecutableElement> sourceReadAccessors = newType.getPropertyReadAccessors();
                 for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
                     if ( getter.getKey().equals( entryName ) ) {
-                        newType = typeFactory.getType( getter.getValue().getReturnType() );
+                        newType = typeFactory.getReturnType( newType.getTypeElement(), getter.getValue() );
                         sourceEntries.add( new PropertyEntry( entryName, getter.getValue(), newType ) );
                         matchFound = true;
                         break;
