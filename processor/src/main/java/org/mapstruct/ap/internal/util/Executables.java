@@ -18,9 +18,6 @@
  */
 package org.mapstruct.ap.internal.util;
 
-import static javax.lang.model.util.ElementFilter.methodsIn;
-import static org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -41,6 +38,9 @@ import org.mapstruct.ap.internal.prism.BeforeMappingPrism;
 import org.mapstruct.ap.internal.services.Services;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.MethodType;
+
+import static javax.lang.model.util.ElementFilter.methodsIn;
+import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.

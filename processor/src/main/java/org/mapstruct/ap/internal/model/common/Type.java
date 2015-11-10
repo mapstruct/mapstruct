@@ -46,7 +46,6 @@ import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.Nouns;
-import org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -312,8 +311,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         return new Type(
             typeUtils,
             elementUtils,
-                typeFactory,
-            SpecificCompilerWorkarounds.erasure( typeUtils, typeMirror ),
+            typeFactory,
+            typeUtils.erasure( typeMirror ),
             typeElement,
             typeParameters,
             implementationType,
@@ -573,9 +572,8 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private boolean isSubType(TypeMirror candidate, Class<?> clazz) {
         String className = clazz.getCanonicalName();
-        TypeMirror classType =
-            SpecificCompilerWorkarounds.erasure( typeUtils, elementUtils.getTypeElement( className ).asType() );
-        return SpecificCompilerWorkarounds.isSubType( typeUtils, candidate, classType );
+        TypeMirror classType = typeUtils.erasure( elementUtils.getTypeElement( className ).asType() );
+        return typeUtils.isSubtype( candidate, classType );
     }
 
     /**

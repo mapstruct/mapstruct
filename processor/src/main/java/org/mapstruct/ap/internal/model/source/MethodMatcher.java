@@ -39,7 +39,6 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 
 import static org.mapstruct.ap.internal.util.Collections.hasNonNullElements;
-import static org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds.isSubType;
 
 /**
  * SourceMethodMatcher $8.4 of the JavaLanguage specification describes a method body as such:
@@ -232,7 +231,7 @@ public class MethodMatcher {
         private final Assignability assignability;
         private final Map<TypeVariable, TypeMirror> genericTypesMap;
 
-        public TypeMatcher(Assignability assignability, Map<TypeVariable, TypeMirror> genericTypesMap) {
+        TypeMatcher(Assignability assignability, Map<TypeVariable, TypeMirror> genericTypesMap) {
             super( Boolean.FALSE ); // default value
             this.assignability = assignability;
             this.genericTypesMap = genericTypesMap;
@@ -302,8 +301,8 @@ public class MethodMatcher {
                 // check if types are in bound
                 TypeMirror lowerBound = t.getLowerBound();
                 TypeMirror upperBound = t.getUpperBound();
-                if ( ( isNullType( lowerBound ) || isSubType( typeUtils, lowerBound, p ) )
-                    && ( isNullType( upperBound ) || isSubType( typeUtils, p, upperBound ) ) ) {
+                if ( ( isNullType( lowerBound ) || typeUtils.isSubtype( lowerBound, p ) )
+                    && ( isNullType( upperBound ) || typeUtils.isSubtype( p, upperBound ) ) ) {
                     genericTypesMap.put( t, p );
                     return Boolean.TRUE;
                 }
@@ -327,7 +326,7 @@ public class MethodMatcher {
                     case DECLARED:
                         // for example method: String method(? extends String)
                         // isSubType checks range [subtype, type], e.g. isSubtype [Object, String]==true
-                        return isSubType( typeUtils, p, extendsBound );
+                        return typeUtils.isSubtype( p, extendsBound );
 
                     case TYPEVAR:
                         // for example method: <T extends String & Serializable> T method(? extends T)
@@ -349,7 +348,7 @@ public class MethodMatcher {
                         // for example method: String method(? super String)
                         // to check super type, we can simply reverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
-                        return isSubType( typeUtils, superBound, p ) || typeUtils.isSameType( p, superBound );
+                        return typeUtils.isSubtype( superBound, p ) || typeUtils.isSameType( p, superBound );
 
                     case TYPEVAR:
 
@@ -367,7 +366,7 @@ public class MethodMatcher {
                         // to check super type, we can simply reverse the argument, but that would initially yield
                         // a result: <type, superType] (so type not included) so we need to check sameType also.
                         TypeMirror superBoundAsDeclared = typeParameter.getBounds().get( 0 );
-                        return ( isSubType( typeUtils, superBoundAsDeclared, p ) || typeUtils.isSameType(
+                        return ( typeUtils.isSubtype( superBoundAsDeclared, p ) || typeUtils.isSameType(
                             p,
                             superBoundAsDeclared ) );
                     default:
@@ -405,7 +404,7 @@ public class MethodMatcher {
         List<? extends TypeMirror> bounds = tpe.getBounds();
         if ( t != null && bounds != null ) {
             for ( TypeMirror bound : bounds ) {
-                if ( !( bound.getKind() == TypeKind.DECLARED && isSubType( typeUtils, t, bound ) ) ) {
+                if ( !( bound.getKind() == TypeKind.DECLARED && typeUtils.isSubtype( t, bound ) ) ) {
                     return false;
                 }
             }
