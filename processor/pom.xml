@@ -61,6 +61,7 @@
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-compiler-jdt</artifactId>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <!-- Test -->
         <dependency>
