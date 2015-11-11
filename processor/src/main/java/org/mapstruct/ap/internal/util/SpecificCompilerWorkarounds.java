@@ -18,11 +18,15 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import org.eclipse.jdt.internal.compiler.apt.model.EclipseCompilerWorkaroundTypes;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import org.eclipse.jdt.internal.compiler.apt.model.TypesImpl;
 
 /**
  * Contains workarounds for various quirks in specific compilers.
@@ -114,5 +118,12 @@ public class SpecificCompilerWorkarounds {
             }
         }
         return element;
+    }
+
+    public static TypeMirror asMemberOf(DeclaredType containing, Element element, Types typeUtils, Elements elementUtils) {
+        if ( typeUtils instanceof TypesImpl ) {
+            EclipseCompilerWorkaroundTypes helper = new EclipseCompilerWorkaroundTypes( (TypesImpl) typeUtils);
+        }
+        return typeUtils.asMemberOf( containing, element );
     }
 }

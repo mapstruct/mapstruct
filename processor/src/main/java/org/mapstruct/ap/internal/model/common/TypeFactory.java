@@ -261,7 +261,7 @@ public class TypeFactory {
      */
     public ExecutableType getMethodType(TypeElement includingType, ExecutableElement method) {
         DeclaredType asType = (DeclaredType) replaceTypeElementIfNecessary( elementUtils, includingType ).asType();
-        TypeMirror asMemberOf = typeUtils.asMemberOf( asType, method );
+        TypeMirror asMemberOf = SpecificCompilerWorkarounds.asMemberOf( asType, method, typeUtils, elementUtils );
         ExecutableType methodType = asMemberOf.accept( new ExecutableTypeRetrievalVisitor(), null );
         return methodType;
     }
