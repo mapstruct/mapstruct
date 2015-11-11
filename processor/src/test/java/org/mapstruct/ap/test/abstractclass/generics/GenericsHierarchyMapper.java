@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.abstractclass.generics;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -38,18 +39,18 @@ public abstract class GenericsHierarchyMapper {
     public abstract Target toTarget(AbstractClassExposingItemB source);
 
     @Mapping(target = "item", source = "itemC")
-    public abstract SourceWithItemC toSourceWithItemC(Target target);
+    public abstract void intoSourceWithItemC(Target target, @MappingTarget AbstractClassExposingItemC bean);
 
     @Mapping(target = "item", source = "itemB")
-    public abstract SourceWithItemB toSourceWithItemB(Target target);
+    public abstract void intoSourceWithItemB(Target target, @MappingTarget AbstractClassExposingItemB bean);
 
     protected ItemC modifyItemC(ItemC item) {
-        item.setTouchedC( true );
+        item.setTypeParameterIsResolvedToItemC( true );
         return item;
     }
 
     protected ItemB modifyItemB(ItemB item) {
-        item.setTouchedB( true );
+        item.setTypeParameterIsResolvedToItemB( true );
         return item;
     }
 }

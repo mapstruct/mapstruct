@@ -31,7 +31,7 @@ import static org.fest.assertions.Assertions.assertThat;
  *
  */
 @RunWith(AnnotationProcessorTestRunner.class)
-@IssueKey("644")
+@IssueKey("644,687,688")
 @WithClasses({
     AbstractClassExposingItemC.class,
     AbstractClassExposingItemB.class,
@@ -42,8 +42,6 @@ import static org.fest.assertions.Assertions.assertThat;
     ItemProviderSomeItemA.class,
     ItemProviderAny.class,
     ItemProviderSomeItemB.class,
-    SourceWithItemB.class,
-    SourceWithItemC.class,
     Target.class
 })
 public class GenericsHierarchyTest {
@@ -54,12 +52,12 @@ public class GenericsHierarchyTest {
 
         source.setItem( new ItemC() );
         // make sure the jdk compiler resolves the same as we expect
-        source.getItem().setTouchedC( false );
+        source.getItem().setTypeParameterIsResolvedToItemC( false );
 
         Target target = GenericsHierarchyMapper.INSTANCE.toTarget( source );
 
-        assertThat( target.getItemC().isTouchedC() ).isTrue();
-        assertThat( target.getItemC().isTouchedB() ).isFalse();
+        assertThat( target.getItemC().typeParameterIsResolvedToItemC() ).isTrue();
+        assertThat( target.getItemC().typeParameterIsResolvedToItemB() ).isFalse();
     }
 
     @Test
@@ -68,11 +66,11 @@ public class GenericsHierarchyTest {
 
         source.setItem( new ItemB() );
         // make sure the jdk compiler resolves the same as we expect
-        source.getItem().setTouchedB( false );
+        source.getItem().setTypeParameterIsResolvedToItemB( false );
 
         Target target = GenericsHierarchyMapper.INSTANCE.toTarget( source );
 
-        assertThat( target.getItemB().isTouchedB() ).isTrue();
+        assertThat( target.getItemB().typeParameterIsResolvedToItemB() ).isTrue();
     }
 
     @Test
@@ -81,9 +79,10 @@ public class GenericsHierarchyTest {
 
         target.setItemC( new ItemC() );
 
-        SourceWithItemC source = GenericsHierarchyMapper.INSTANCE.toSourceWithItemC( target );
+        SourceWithItemC source = new SourceWithItemC();
+        GenericsHierarchyMapper.INSTANCE.intoSourceWithItemC( target, source );
 
-        assertThat( source.getItem().isTouchedC() ).isTrue();
+        assertThat( source.getItem().typeParameterIsResolvedToItemC() ).isTrue();
     }
 
     @Test
@@ -92,8 +91,9 @@ public class GenericsHierarchyTest {
 
         target.setItemB( new ItemB() );
 
-        SourceWithItemB source = GenericsHierarchyMapper.INSTANCE.toSourceWithItemB( target );
+        SourceWithItemB source = new SourceWithItemB();
+        GenericsHierarchyMapper.INSTANCE.intoSourceWithItemB( target, source );
 
-        assertThat( source.getItem().isTouchedB() ).isTrue();
+        assertThat( source.getItem().typeParameterIsResolvedToItemB() ).isTrue();
     }
 }

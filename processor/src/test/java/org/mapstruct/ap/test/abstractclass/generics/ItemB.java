@@ -23,13 +23,13 @@ package org.mapstruct.ap.test.abstractclass.generics;
  *
  */
 public class ItemB extends ItemA {
-    private boolean touchedB;
+    private boolean typeParameterIsResolvedToItemB;
 
-    public boolean isTouchedB() {
-        return touchedB;
+    public boolean typeParameterIsResolvedToItemB() {
+        return typeParameterIsResolvedToItemB;
     }
 
-    public void setTouchedB(boolean touchedB) {
-        this.touchedB = touchedB;
+    public void setTypeParameterIsResolvedToItemB(boolean typeParameterIsResolvedToItemB) {
+        this.typeParameterIsResolvedToItemB = typeParameterIsResolvedToItemB;
     }
 }
