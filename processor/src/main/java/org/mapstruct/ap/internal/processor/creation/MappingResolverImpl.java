@@ -23,7 +23,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -45,6 +51,7 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
+import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -511,19 +518,27 @@ public class MappingResolverImpl implements MappingResolver {
         private boolean isPropertyMappable(Type sourceType, Type targetType) {
             boolean collectionOrMapTargetTypeHasCompatibleConstructor = false;
 
-            if ( sourceType.isCollectionType() && targetType.isCollectionType() ) {
-                collectionOrMapTargetTypeHasCompatibleConstructor = collectionTypeHasCompatibleConstructor(
-                    sourceType,
-                    targetType.getImplementationType() != null
-                        ? targetType.getImplementationType() : targetType
-                );
-            }
+            // if ( sourceType.isCollectionType() && targetType.isCollectionType() ) {
+            // collectionOrMapTargetTypeHasCompatibleConstructor = collectionTypeHasCompatibleConstructor(
+            // sourceType,
+            // targetType.getImplementationType() != null
+            // ? targetType.getImplementationType() : targetType
+            // );
+            // }
+            //
+            // if ( sourceType.isMapType() && targetType.isMapType() ) {
+            // collectionOrMapTargetTypeHasCompatibleConstructor = mapTypeHasCompatibleConstructor(
+            // sourceType,
+            // targetType.getImplementationType() != null
+            // ? targetType.getImplementationType() : targetType
+            // );
+            // }
 
-            if ( sourceType.isMapType() && targetType.isMapType() ) {
-                collectionOrMapTargetTypeHasCompatibleConstructor = mapTypeHasCompatibleConstructor(
+            if ( sourceType.isCollectionType() || targetType.isMapType() ) {
+                collectionOrMapTargetTypeHasCompatibleConstructor = hasCompatibleConstructor(
                     sourceType,
                     targetType.getImplementationType() != null
-                        ? targetType.getImplementationType() : targetType
+                                    ? targetType.getImplementationType() : targetType
                 );
             }
 
@@ -540,67 +555,49 @@ public class MappingResolverImpl implements MappingResolver {
          *
          * @param sourceType the source type
          * @param targetType the target type
-         *
          * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
-         * otherwise.
+         *         otherwise.
          */
-        private boolean collectionTypeHasCompatibleConstructor(Type sourceType, Type targetType) {
-            // note (issue #127): actually this should check for the presence of a matching constructor, with help of
-            // Types#asMemberOf(); but this method seems to not work correctly in the Eclipse implementation, so instead
-            // we just check whether the target type is parameterized in a way that it implicitly should have a
-            // constructor which accepts the source type
+        private boolean hasCompatibleConstructor(Type sourceType, Type targetType) {
+            List<ExecutableElement> targetTypeConstructors = ElementFilter.constructorsIn(
+                targetType.getTypeElement().getEnclosedElements() );
 
-            TypeMirror sourceElementType = sourceType.getTypeParameters().isEmpty()
-                ? typeFactory.getType( Object.class ).getTypeMirror()
-                : sourceType.getTypeParameters().get( 0 ).getTypeMirror();
+            for ( ExecutableElement constructor : targetTypeConstructors ) {
+                if ( constructor.getParameters().size() != 1 ) {
+                    continue;
+                }
 
-            TypeMirror targetElementType = targetType.getTypeParameters().isEmpty()
-                ? typeFactory.getType( Object.class ).getTypeMirror()
-                : targetType.getTypeParameters().get( 0 ).getTypeMirror();
+                // get the constructor resolved against the type arguments of specific target type
+                ExecutableType typedConstructor = (ExecutableType) typeUtils.asMemberOf(
+                    (DeclaredType) targetType.getTypeMirror(),
+                    constructor );
 
-            return typeUtils.isAssignable( sourceElementType, targetElementType );
-        }
+                TypeMirror parameterType = Collections.first( typedConstructor.getParameterTypes() );
+                if ( parameterType.getKind() == TypeKind.DECLARED ) {
+                    // replace any possible type bounds in the type parameters of the parameter types, as in JDK super
+                    // type bounds in the arguments are returned from asMemberOf with "? extends ? super XX"
+                    //
+                    // It might also be enough to just remove "? super" from type parameters of
+                    // targetType.getTypeMirror() in case we're in JDK. And that would be something that should be
+                    // handled in SpecificCompilerWorkarounds...
 
-        /**
-         * Whether the given target type has a single-argument constructor which accepts the given source type.
-         *
-         * @param sourceType the source type
-         * @param targetType the target type
-         *
-         * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
-         * otherwise.
-         */
-        private boolean mapTypeHasCompatibleConstructor(Type sourceType, Type targetType) {
-            // note (issue #127): actually this should check for the presence of a matching constructor, with help of
-            // Types#asMemberOf(); but this method seems to not work correctly in the Eclipse implementation, so instead
-            // we just check whether the target type is parameterized in a way that it implicitly should have a
-            // constructor which accepts the source type
+                    DeclaredType p = (DeclaredType) parameterType;
+                    List<TypeMirror> typeArguments = new ArrayList<TypeMirror>( p.getTypeArguments().size() );
 
-            TypeMirror sourceKeyType;
-            TypeMirror targetKeyType;
-            TypeMirror sourceValueType;
-            TypeMirror targetValueType;
+                    for ( TypeMirror tArg : p.getTypeArguments() ) {
+                        typeArguments.add( typeFactory.getTypeBound( tArg ) );
+                    }
+                    parameterType = typeUtils.getDeclaredType(
+                        (TypeElement) p.asElement(),
+                        typeArguments.toArray( new TypeMirror[typeArguments.size()] ) );
+                }
 
-            if ( sourceType.getTypeParameters().isEmpty() ) {
-                sourceKeyType = typeFactory.getType( Object.class ).getTypeMirror();
-                sourceValueType = typeFactory.getType( Object.class ).getTypeMirror();
-            }
-            else {
-                sourceKeyType = sourceType.getTypeParameters().get( 0 ).getTypeMirror();
-                sourceValueType = sourceType.getTypeParameters().get( 1 ).getTypeMirror();
+                if ( typeUtils.isAssignable( sourceType.getTypeMirror(), parameterType ) ) {
+                    return true;
+                }
             }
 
-            if ( targetType.getTypeParameters().isEmpty() ) {
-                targetKeyType = typeFactory.getType( Object.class ).getTypeMirror();
-                targetValueType = typeFactory.getType( Object.class ).getTypeMirror();
-            }
-            else {
-                targetKeyType = targetType.getTypeParameters().get( 0 ).getTypeMirror();
-                targetValueType = targetType.getTypeParameters().get( 1 ).getTypeMirror();
-            }
-
-            return typeUtils.isAssignable( sourceKeyType, targetKeyType )
-                && typeUtils.isAssignable( sourceValueType, targetValueType );
+            return false;
         }
     }
 }

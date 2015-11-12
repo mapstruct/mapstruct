@@ -37,7 +37,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -725,34 +724,12 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return the bound for this parameter
      */
     public Type getTypeBound() {
-
         if ( boundingBase != null ) {
             return boundingBase;
         }
-        boundingBase = this;
-        if ( typeMirror.getKind() == TypeKind.WILDCARD ) {
-            WildcardType wildCardType = (WildcardType) typeMirror;
-            if ( wildCardType.getExtendsBound() != null ) {
-                boundingBase = typeFactory.getType( wildCardType.getExtendsBound() );
-            }
-            else if ( wildCardType.getSuperBound() != null ) {
-                boundingBase = typeFactory.getType( wildCardType.getSuperBound() );
-            }
-            else {
-                String wildCardName = wildCardType.toString();
-                if ( "?".equals( wildCardName )  ) {
-                    boundingBase = typeFactory.getType( Object.class );
-                }
-            }
-        }
-        else if ( typeMirror.getKind() == TypeKind.TYPEVAR ) {
-            TypeVariable typeVariableType = (TypeVariable) typeMirror;
-            if ( typeVariableType.getUpperBound() != null ) {
-                 boundingBase = typeFactory.getType( typeVariableType.getUpperBound() );
-            }
-            // Lowerbounds intentionally left out: Type variables otherwise have a lower bound of NullType.
-        }
+
+        boundingBase = typeFactory.getType( typeFactory.getTypeBound( getTypeMirror() ) );
+
         return boundingBase;
     }
-
 }

@@ -47,6 +47,8 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -445,6 +447,45 @@ public class TypeFactory {
         }
 
         return collectionOrMap;
+    }
+
+    /**
+     * Establishes the type bound:
+     * <ol>
+     * <li>{@code<? extends Number>}, returns Number</li>
+     * <li>{@code<? super Number>}, returns Number</li>
+     * <li>{@code<?>}, returns Object</li>
+     * <li>{@code<T extends Number>, returns Number}</li>
+     * </ol>
+     *
+     * @param typeMirror the type to return the bound for
+     * @return the bound for this parameter
+     */
+    public TypeMirror getTypeBound(TypeMirror typeMirror) {
+        if ( typeMirror.getKind() == TypeKind.WILDCARD ) {
+            WildcardType wildCardType = (WildcardType) typeMirror;
+            if ( wildCardType.getExtendsBound() != null ) {
+                return wildCardType.getExtendsBound();
+            }
+
+            if ( wildCardType.getSuperBound() != null ) {
+                return wildCardType.getSuperBound();
+            }
+
+            String wildCardName = wildCardType.toString();
+            if ( "?".equals( wildCardName ) ) {
+                return elementUtils.getTypeElement( Object.class.getCanonicalName() ).asType();
+            }
+        }
+        else if ( typeMirror.getKind() == TypeKind.TYPEVAR ) {
+            TypeVariable typeVariableType = (TypeVariable) typeMirror;
+            if ( typeVariableType.getUpperBound() != null ) {
+                return typeVariableType.getUpperBound();
+            }
+            // Lowerbounds intentionally left out: Type variables otherwise have a lower bound of NullType.
+        }
+
+        return typeMirror;
     }
 
     static String trimSimpleClassName(String className) {
