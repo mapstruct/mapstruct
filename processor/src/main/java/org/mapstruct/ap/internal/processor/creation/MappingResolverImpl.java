@@ -518,24 +518,8 @@ public class MappingResolverImpl implements MappingResolver {
         private boolean isPropertyMappable(Type sourceType, Type targetType) {
             boolean collectionOrMapTargetTypeHasCompatibleConstructor = false;
 
-            // if ( sourceType.isCollectionType() && targetType.isCollectionType() ) {
-            // collectionOrMapTargetTypeHasCompatibleConstructor = collectionTypeHasCompatibleConstructor(
-            // sourceType,
-            // targetType.getImplementationType() != null
-            // ? targetType.getImplementationType() : targetType
-            // );
-            // }
-            //
-            // if ( sourceType.isMapType() && targetType.isMapType() ) {
-            // collectionOrMapTargetTypeHasCompatibleConstructor = mapTypeHasCompatibleConstructor(
-            // sourceType,
-            // targetType.getImplementationType() != null
-            // ? targetType.getImplementationType() : targetType
-            // );
-            // }
-
             if ( sourceType.isCollectionType() || targetType.isMapType() ) {
-                collectionOrMapTargetTypeHasCompatibleConstructor = hasCompatibleConstructor(
+                collectionOrMapTargetTypeHasCompatibleConstructor = hasCompatibleCopyConstructor(
                     sourceType,
                     targetType.getImplementationType() != null
                                     ? targetType.getImplementationType() : targetType
@@ -558,7 +542,7 @@ public class MappingResolverImpl implements MappingResolver {
          * @return {@code true} if the target type has a constructor accepting the given source type, {@code false}
          *         otherwise.
          */
-        private boolean hasCompatibleConstructor(Type sourceType, Type targetType) {
+        private boolean hasCompatibleCopyConstructor(Type sourceType, Type targetType) {
             List<ExecutableElement> targetTypeConstructors = ElementFilter.constructorsIn(
                 targetType.getTypeElement().getEnclosedElements() );
 
