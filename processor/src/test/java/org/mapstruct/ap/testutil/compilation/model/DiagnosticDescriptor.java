@@ -22,9 +22,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
+import org.codehaus.plexus.compiler.CompilerMessage;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 
 /**
@@ -68,6 +70,34 @@ public class DiagnosticDescriptor {
         );
     }
 
+    public static DiagnosticDescriptor forCompilerMessage(String sourceDir, CompilerMessage compilerMessage) {
+        String[] lines = compilerMessage.getMessage().split( System.lineSeparator() );
+        String message = lines[3];
+
+        return new DiagnosticDescriptor(
+            removeSourceDirPrefix( sourceDir, compilerMessage.getFile() ),
+            toJavaxKind( compilerMessage.getKind() ),
+            Long.valueOf( compilerMessage.getStartLine() ),
+            message );
+    }
+
+    private static Kind toJavaxKind(CompilerMessage.Kind kind) {
+        switch ( kind ) {
+            case ERROR:
+                return Kind.ERROR;
+            case MANDATORY_WARNING:
+                return Kind.MANDATORY_WARNING;
+            case NOTE:
+                return Kind.NOTE;
+            case OTHER:
+                return Kind.OTHER;
+            case WARNING:
+                return Kind.WARNING;
+            default:
+                return null;
+        }
+    }
+
     private static String getSourceName(String sourceDir, javax.tools.Diagnostic<? extends JavaFileObject> diagnostic) {
         if ( diagnostic.getSource() == null ) {
             return null;
@@ -77,13 +107,17 @@ public class DiagnosticDescriptor {
 
         try {
             String sourceName = new File( uri ).getCanonicalPath();
-            return sourceName.length() > sourceDir.length() ?
-                sourceName.substring( sourceDir.length() + 1 ) :
-                sourceName;
+            return removeSourceDirPrefix( sourceDir, sourceName );
         }
         catch ( IOException e ) {
             throw new RuntimeException( e );
         }
+    }
+
+    private static String removeSourceDirPrefix(String sourceDir, String sourceName) {
+        return sourceName.length() > sourceDir.length() ?
+            sourceName.substring( sourceDir.length() + 1 ) :
+            sourceName;
     }
 
     private static URI getUri(javax.tools.Diagnostic<? extends JavaFileObject> diagnostic) {

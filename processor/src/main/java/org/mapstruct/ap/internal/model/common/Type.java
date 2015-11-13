@@ -37,7 +37,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -46,7 +45,6 @@ import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.Nouns;
-import org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -312,8 +310,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         return new Type(
             typeUtils,
             elementUtils,
-                typeFactory,
-            SpecificCompilerWorkarounds.erasure( typeUtils, typeMirror ),
+            typeFactory,
+            typeUtils.erasure( typeMirror ),
             typeElement,
             typeParameters,
             implementationType,
@@ -573,9 +571,8 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private boolean isSubType(TypeMirror candidate, Class<?> clazz) {
         String className = clazz.getCanonicalName();
-        TypeMirror classType =
-            SpecificCompilerWorkarounds.erasure( typeUtils, elementUtils.getTypeElement( className ).asType() );
-        return SpecificCompilerWorkarounds.isSubType( typeUtils, candidate, classType );
+        TypeMirror classType = typeUtils.erasure( elementUtils.getTypeElement( className ).asType() );
+        return typeUtils.isSubtype( candidate, classType );
     }
 
     /**
@@ -727,34 +724,12 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return the bound for this parameter
      */
     public Type getTypeBound() {
-
         if ( boundingBase != null ) {
             return boundingBase;
         }
-        boundingBase = this;
-        if ( typeMirror.getKind() == TypeKind.WILDCARD ) {
-            WildcardType wildCardType = (WildcardType) typeMirror;
-            if ( wildCardType.getExtendsBound() != null ) {
-                boundingBase = typeFactory.getType( wildCardType.getExtendsBound() );
-            }
-            else if ( wildCardType.getSuperBound() != null ) {
-                boundingBase = typeFactory.getType( wildCardType.getSuperBound() );
-            }
-            else {
-                String wildCardName = wildCardType.toString();
-                if ( "?".equals( wildCardName )  ) {
-                    boundingBase = typeFactory.getType( Object.class );
-                }
-            }
-        }
-        else if ( typeMirror.getKind() == TypeKind.TYPEVAR ) {
-            TypeVariable typeVariableType = (TypeVariable) typeMirror;
-            if ( typeVariableType.getUpperBound() != null ) {
-                 boundingBase = typeFactory.getType( typeVariableType.getUpperBound() );
-            }
-            // Lowerbounds intentionally left out: Type variables otherwise have a lower bound of NullType.
-        }
+
+        boundingBase = typeFactory.getType( typeFactory.getTypeBound( getTypeMirror() ) );
+
         return boundingBase;
     }
-
 }

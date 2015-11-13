@@ -47,19 +47,17 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleElementVisitor6;
-import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.prism.MappingTargetPrism;
 import org.mapstruct.ap.internal.prism.TargetTypePrism;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
-import org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds;
 
-import static org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds.erasure;
-import static org.mapstruct.ap.internal.util.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
+import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
 /**
  * Factory creating {@link Type} instances.
@@ -82,10 +80,10 @@ public class TypeFactory {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
 
-        iterableType = erasure( typeUtils, elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
+        iterableType = typeUtils.erasure( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
         collectionType =
-            erasure( typeUtils, elementUtils.getTypeElement( Collection.class.getCanonicalName() ).asType() );
-        mapType = erasure( typeUtils, elementUtils.getTypeElement( Map.class.getCanonicalName() ).asType() );
+            typeUtils.erasure( elementUtils.getTypeElement( Collection.class.getCanonicalName() ).asType() );
+        mapType = typeUtils.erasure( elementUtils.getTypeElement( Map.class.getCanonicalName() ).asType() );
 
         implementationTypes.put( Iterable.class.getName(), getType( ArrayList.class ) );
         implementationTypes.put( Collection.class.getName(), getType( ArrayList.class ) );
@@ -139,9 +137,9 @@ public class TypeFactory {
 
         Type implementationType = getImplementationType( mirror );
 
-        boolean isIterableType = SpecificCompilerWorkarounds.isSubType( typeUtils, mirror, iterableType );
-        boolean isCollectionType = SpecificCompilerWorkarounds.isSubType( typeUtils, mirror, collectionType );
-        boolean isMapType = SpecificCompilerWorkarounds.isSubType( typeUtils, mirror, mapType );
+        boolean isIterableType = typeUtils.isSubtype( mirror, iterableType );
+        boolean isCollectionType = typeUtils.isSubtype( mirror, collectionType );
+        boolean isMapType = typeUtils.isSubtype( mirror, mapType );
 
         boolean isEnumType;
         boolean isInterface;
@@ -159,7 +157,7 @@ public class TypeFactory {
             isInterface = declaredType.asElement().getKind() == ElementKind.INTERFACE;
             name = declaredType.asElement().getSimpleName().toString();
 
-            typeElement = declaredType.asElement().accept( new TypeElementRetrievalVisitor(), null );
+            typeElement = (TypeElement) declaredType.asElement();
 
             if ( typeElement != null ) {
                 packageName = elementUtils.getPackageOf( typeElement ).getQualifiedName().toString();
@@ -177,8 +175,7 @@ public class TypeFactory {
 
             if ( componentTypeMirror.getKind() == TypeKind.DECLARED ) {
                 DeclaredType declaredType = (DeclaredType) componentTypeMirror;
-                TypeElement componentTypeElement =
-                        declaredType.asElement().accept( new TypeElementRetrievalVisitor(), null );
+                TypeElement componentTypeElement = (TypeElement) declaredType.asElement();
 
                 name = componentTypeElement.getSimpleName().toString() + "[]";
                 packageName = elementUtils.getPackageOf( componentTypeElement ).getQualifiedName().toString();
@@ -262,8 +259,7 @@ public class TypeFactory {
     public ExecutableType getMethodType(TypeElement includingType, ExecutableElement method) {
         DeclaredType asType = (DeclaredType) replaceTypeElementIfNecessary( elementUtils, includingType ).asType();
         TypeMirror asMemberOf = typeUtils.asMemberOf( asType, method );
-        ExecutableType methodType = asMemberOf.accept( new ExecutableTypeRetrievalVisitor(), null );
-        return methodType;
+        return (ExecutableType) asMemberOf;
     }
 
     public Parameter getSingleParameter(TypeElement includingType, ExecutableElement method) {
@@ -421,20 +417,6 @@ public class TypeFactory {
         return imported;
     }
 
-    private static class TypeElementRetrievalVisitor extends SimpleElementVisitor6<TypeElement, Void> {
-        @Override
-        public TypeElement visitType(TypeElement e, Void p) {
-            return e;
-        }
-    }
-
-    private static class ExecutableTypeRetrievalVisitor extends SimpleTypeVisitor6<ExecutableType, Void> {
-        @Override
-        public ExecutableType visitExecutable(ExecutableType t, Void p) {
-            return t;
-        }
-    }
-
     /**
      * Converts any collection type, e.g. {@code List<T>} to {@code Collection<T>} and any map type, e.g.
      * {@code HashMap<K,V>} to {@code Map<K,V>}.
@@ -465,6 +447,45 @@ public class TypeFactory {
         }
 
         return collectionOrMap;
+    }
+
+    /**
+     * Establishes the type bound:
+     * <ol>
+     * <li>{@code<? extends Number>}, returns Number</li>
+     * <li>{@code<? super Number>}, returns Number</li>
+     * <li>{@code<?>}, returns Object</li>
+     * <li>{@code<T extends Number>, returns Number}</li>
+     * </ol>
+     *
+     * @param typeMirror the type to return the bound for
+     * @return the bound for this parameter
+     */
+    public TypeMirror getTypeBound(TypeMirror typeMirror) {
+        if ( typeMirror.getKind() == TypeKind.WILDCARD ) {
+            WildcardType wildCardType = (WildcardType) typeMirror;
+            if ( wildCardType.getExtendsBound() != null ) {
+                return wildCardType.getExtendsBound();
+            }
+
+            if ( wildCardType.getSuperBound() != null ) {
+                return wildCardType.getSuperBound();
+            }
+
+            String wildCardName = wildCardType.toString();
+            if ( "?".equals( wildCardName ) ) {
+                return elementUtils.getTypeElement( Object.class.getCanonicalName() ).asType();
+            }
+        }
+        else if ( typeMirror.getKind() == TypeKind.TYPEVAR ) {
+            TypeVariable typeVariableType = (TypeVariable) typeMirror;
+            if ( typeVariableType.getUpperBound() != null ) {
+                return typeVariableType.getUpperBound();
+            }
+            // Lowerbounds intentionally left out: Type variables otherwise have a lower bound of NullType.
+        }
+
+        return typeMirror;
     }
 
     static String trimSimpleClassName(String className) {

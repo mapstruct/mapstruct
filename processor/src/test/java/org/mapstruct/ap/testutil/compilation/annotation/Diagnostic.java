@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.testutil.compilation.annotation;
 
-import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic.Kind;
 
 /**
@@ -58,11 +57,4 @@ public @interface Diagnostic {
      *         diagnostic.
      */
     String messageRegExp() default ".*";
-
-    /**
-     * The java version for which this this diagnostic is valid.
-     *
-     * @return versions for which this Diagnostic should be evaluated. Default it evaluates for all
-     */
-    SourceVersion[] javaVersions() default { };
 }

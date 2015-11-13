@@ -53,7 +53,7 @@ public class InheritConfigurationTest {
         assertThat( createdTarget ).isNotNull();
         assertThat( createdTarget.getStringPropY() ).isEqualTo( "1" );
         assertThat( createdTarget.getIntegerPropY() ).isEqualTo( 2 );
-        assertThat( createdTarget.getNestedResultProp() ).isEqualTo( "nested");
+        assertThat( createdTarget.getNestedResultProp() ).isEqualTo( "nested" );
         assertThat( createdTarget.getExpressionProp() ).isEqualTo( "expression" );
         assertThat( createdTarget.getConstantProp() ).isEqualTo( "constant" );
 
@@ -80,7 +80,7 @@ public class InheritConfigurationTest {
         assertThat( createdTarget ).isNotNull();
         assertThat( createdTarget.getStringPropY() ).isEqualTo( "1" );
         assertThat( createdTarget.getIntegerPropY() ).isEqualTo( 2 );
-        assertThat( createdTarget.getNestedResultProp() ).isEqualTo( "nested");
+        assertThat( createdTarget.getNestedResultProp() ).isEqualTo( "nested" );
         assertThat( createdTarget.getExpressionProp() ).isEqualTo( "expression" );
         assertThat( createdTarget.getConstantProp() ).isEqualTo( "constant" );
 
@@ -108,7 +108,7 @@ public class InheritConfigurationTest {
         assertThat( createdTarget ).isNotNull();
         assertThat( createdTarget.getStringPropY() ).isEqualTo( "1" );
         assertThat( createdTarget.getIntegerPropY() ).isEqualTo( 2 );
-        assertThat( createdTarget.getNestedResultProp() ).isEqualTo( "nested");
+        assertThat( createdTarget.getNestedResultProp() ).isEqualTo( "nested" );
         assertThat( createdTarget.getExpressionProp() ).isEqualTo( "expression" );
         assertThat( createdTarget.getConstantProp() ).isEqualTo( "constant" );
 
@@ -172,7 +172,7 @@ public class InheritConfigurationTest {
                 kind = Kind.ERROR,
                 line = 54,
                 messageRegExp = "Given name \"forwardCreate\" matches several candidate methods: "
-                        + ".*forwardCreate.*\\(\\), .*forwardCreate.*\\(\\)"),
+                    + ".*forwardCreate.*, .*forwardCreate.*"),
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.WARNING,
                 line = 55,
