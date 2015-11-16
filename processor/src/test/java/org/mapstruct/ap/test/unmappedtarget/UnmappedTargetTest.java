@@ -68,15 +68,15 @@ public class UnmappedTargetTest {
     }
 
     @Test
-    @WithClasses({ Source.class, Target.class, StrictSourceTargetMapper.class })
+    @WithClasses({ Source.class, Target.class, ErroneousStrictSourceTargetMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = StrictSourceTargetMapper.class,
+            @Diagnostic(type = ErroneousStrictSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 30,
                 messageRegExp = "Unmapped target property: \"bar\""),
-            @Diagnostic(type = StrictSourceTargetMapper.class,
+            @Diagnostic(type = ErroneousStrictSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 32,
                 messageRegExp = "Unmapped target property: \"qux\"")

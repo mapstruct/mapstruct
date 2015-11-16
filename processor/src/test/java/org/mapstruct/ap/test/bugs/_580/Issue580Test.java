@@ -26,6 +26,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.bugs._580.java8.Source;
+import org.mapstruct.ap.test.bugs._580.java8.SourceTargetMapper;
+import org.mapstruct.ap.test.bugs._580.java8.Target;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;

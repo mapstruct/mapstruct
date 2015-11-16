@@ -69,13 +69,13 @@ public class OrderingTest {
 
     @Test
     @IssueKey("304")
-    @WithClasses(AddressMapperWithCyclicDependency.class)
+    @WithClasses(ErroneousAddressMapperWithCyclicDependency.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = AddressMapperWithCyclicDependency.class,
+            @Diagnostic(type = ErroneousAddressMapperWithCyclicDependency.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 36,
+                line = 37,
                 messageRegExp = "Cycle\\(s\\) between properties given via dependsOn\\(\\): firstName -> lastName -> "
                     + "middleName -> firstName"
             )
@@ -86,11 +86,11 @@ public class OrderingTest {
 
     @Test
     @IssueKey("304")
-    @WithClasses(AddressMapperWithUnknownPropertyInDependsOn.class)
+    @WithClasses(ErroneousAddressMapperWithUnknownPropertyInDependsOn.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = AddressMapperWithUnknownPropertyInDependsOn.class,
+            @Diagnostic(type = ErroneousAddressMapperWithUnknownPropertyInDependsOn.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 32,
                 messageRegExp = "\"doesnotexist\" is no property of the method return type"

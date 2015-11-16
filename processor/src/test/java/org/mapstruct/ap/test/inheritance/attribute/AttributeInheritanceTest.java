@@ -50,11 +50,11 @@ public class AttributeInheritanceTest {
     }
 
     @Test
-    @WithClasses({ Source.class, Target.class, TargetSourceMapper.class })
+    @WithClasses({ Source.class, Target.class, ErroneousTargetSourceMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = @Diagnostic(
-            type = TargetSourceMapper.class,
+            type = ErroneousTargetSourceMapper.class,
             kind = Kind.ERROR,
             line = 29,
             messageRegExp = "Can't map property \"java.lang.CharSequence foo\" to \"java.lang.String foo\""

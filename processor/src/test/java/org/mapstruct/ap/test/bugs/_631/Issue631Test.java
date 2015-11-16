@@ -40,17 +40,17 @@ public class Issue631Test {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = SourceTargetMapper.class,
+            @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 35,
                 messageRegExp = "Can't generate mapping method for a generic type variable target."),
-            @Diagnostic(type = SourceTargetMapper.class,
+            @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 37,
                 messageRegExp = "Can't generate mapping method for a generic type variable source.")
         }
     )
-    @WithClasses({SourceTargetMapper.class, Base1.class, Base2.class})
+    @WithClasses({ErroneousSourceTargetMapper.class, Base1.class, Base2.class})
     public void showsCantMapPropertyError() {
 
     }

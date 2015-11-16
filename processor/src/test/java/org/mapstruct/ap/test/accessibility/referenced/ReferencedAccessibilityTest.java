@@ -39,11 +39,11 @@ public class ReferencedAccessibilityTest {
 
     @Test
     @IssueKey( "206" )
-    @WithClasses( { SourceTargetMapperPrivate.class, ReferencedMapperPrivate.class } )
+    @WithClasses( { ErroneousSourceTargetMapperPrivate.class, ReferencedMapperPrivate.class } )
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
             diagnostics = {
-                @Diagnostic( type = SourceTargetMapperPrivate.class,
+                @Diagnostic( type = ErroneousSourceTargetMapperPrivate.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 35,
                         messageRegExp = "Can't map property \"org\\.mapstruct\\.ap\\.test\\.accessibility\\."
@@ -65,13 +65,13 @@ public class ReferencedAccessibilityTest {
 
     @Test
     @IssueKey( "206" )
-    @WithClasses( { SourceTargetMapperDefaultOther.class, ReferencedMapperDefaultOther.class } )
+    @WithClasses( { ErroneousSourceTargetMapperDefaultOther.class, ReferencedMapperDefaultOther.class } )
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
             diagnostics = {
-                @Diagnostic( type = SourceTargetMapperDefaultOther.class,
+                @Diagnostic( type = ErroneousSourceTargetMapperDefaultOther.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 36,
+                        line = 37,
                         messageRegExp = "Can't map property \"org\\.mapstruct\\.ap\\.test\\.accessibility\\."
                                 + "referenced\\.ReferencedSource referencedSource\" to \"org\\.mapstruct\\."
                                 + "ap\\.test\\.accessibility\\.referenced\\.ReferencedTarget referencedTarget\"" )
@@ -86,11 +86,11 @@ public class ReferencedAccessibilityTest {
 
     @Test
     @IssueKey( "206" )
-    @WithClasses( { AbstractSourceTargetMapperPrivate.class, SourceTargetmapperPrivateBase.class } )
+    @WithClasses( { ErroneousAbstractSourceTargetMapperPrivate.class, SourceTargetmapperPrivateBase.class } )
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
             diagnostics = {
-                @Diagnostic( type = AbstractSourceTargetMapperPrivate.class,
+                @Diagnostic( type = ErroneousAbstractSourceTargetMapperPrivate.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 36,
                         messageRegExp = "Can't map property \"org\\.mapstruct\\.ap\\.test\\.accessibility\\."

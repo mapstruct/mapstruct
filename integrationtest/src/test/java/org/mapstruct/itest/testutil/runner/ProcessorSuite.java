@@ -23,6 +23,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collection;
+
+import org.apache.maven.it.Verifier;
 
 /**
  * Declares the content of the integration test.
@@ -70,6 +73,12 @@ public @interface ProcessorSuite {
         ORACLE_JAVA_9( new Toolchain( "oracle", "9", "10" ), "javac", "1.9" ),
 
         /**
+         * Use the eclipse compiler with 1.6 source/target level from tycho-compiler-jdt to perform the build and
+         * processing
+         */
+        ECLIPSE_JDT_JAVA_6( null, "jdt", "1.6" ),
+
+        /**
          * Use the eclipse compiler with 1.7 source/target level from tycho-compiler-jdt to perform the build and
          * processing
          */
@@ -90,8 +99,8 @@ public @interface ProcessorSuite {
         /**
          * Use all available processing variants
          */
-        ALL( ORACLE_JAVA_6, ORACLE_JAVA_7, ORACLE_JAVA_8, ORACLE_JAVA_9, ECLIPSE_JDT_JAVA_7, ECLIPSE_JDT_JAVA_8,
-            PROCESSOR_PLUGIN_JAVA_8 ),
+        ALL( ORACLE_JAVA_6, ORACLE_JAVA_7, ORACLE_JAVA_8, ORACLE_JAVA_9, ECLIPSE_JDT_JAVA_6, ECLIPSE_JDT_JAVA_7,
+            ECLIPSE_JDT_JAVA_8, PROCESSOR_PLUGIN_JAVA_8 ),
 
         /**
          * Use all JDK8 compatible processing variants
@@ -144,6 +153,20 @@ public @interface ProcessorSuite {
     }
 
     /**
+     * Can be configured to provide additional command line arguments for the invoked Maven process, depending on the
+     * {@link ProcessorType} the test is executed for.
+     *
+     * @author Andreas Gudian
+     */
+    public interface CommandLineEnhancer {
+        /**
+         * @param processorType the processor type for which the test is executed.
+         * @return additional command line arguments to be passed to the Maven {@link Verifier}.
+         */
+        Collection<String> getAdditionalCommandLineArguments(ProcessorType processorType);
+    }
+
+    /**
      * @return a path in the classpath that contains the maven module to run as integration test: {@code mvn clean test}
      */
     String baseDir();
@@ -152,4 +175,9 @@ public @interface ProcessorSuite {
      * @return the variants to execute the integration tests with. See {@link ProcessorType}.
      */
     ProcessorType[] processorTypes() default { ProcessorType.ALL };
+
+    /**
+     * @return the {@link CommandLineEnhancer} implementation. Must have a default constructor.
+     */
+    Class<? extends CommandLineEnhancer> commandLineEnhancer() default CommandLineEnhancer.class;
 }

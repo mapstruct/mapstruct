@@ -77,10 +77,10 @@ public class ConfigTest {
     }
 
     @Test
-    @WithClasses( { TargetNoFoo.class, SourceTargetMapperError.class } )
+    @WithClasses( { TargetNoFoo.class, SourceTargetMapperErroneous.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = SourceTargetMapperError.class,
+            @Diagnostic(type = SourceTargetMapperErroneous.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR, line = 33,
                 messageRegExp = "Unmapped target property: \"noFoo\"")
         })

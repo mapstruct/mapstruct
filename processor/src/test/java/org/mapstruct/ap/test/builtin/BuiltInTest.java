@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.builtin;
 
-import org.mapstruct.ap.test.builtin.mapper.SourceTargetWithSqlDateMapper;
+import org.mapstruct.ap.test.builtin.mapper.ErroneousSourceTargetWithSqlDateMapper;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -320,11 +320,11 @@ public class BuiltInTest {
 
     @Test
     @IssueKey( "277" )
-    @WithClasses( { SourceWithDate.class, TargetWithSqlDate.class, SourceTargetWithSqlDateMapper.class } )
+    @WithClasses( { SourceWithDate.class, TargetWithSqlDate.class, ErroneousSourceTargetWithSqlDateMapper.class } )
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
             diagnostics = {
-                @Diagnostic( type = SourceTargetWithSqlDateMapper.class,
+                @Diagnostic( type = ErroneousSourceTargetWithSqlDateMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 35,
                         messageRegExp = "Can't map property \"java\\.util\\.Date date\" to "
