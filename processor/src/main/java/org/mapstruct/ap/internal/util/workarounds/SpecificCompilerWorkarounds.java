@@ -27,6 +27,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.internal.version.VersionInformation;
+
 /**
  * Contains workarounds for various quirks in specific compilers.
  *
@@ -121,7 +123,8 @@ public class SpecificCompilerWorkarounds {
      * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590">Eclipse Bug 382590</a>
      * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=481555">Eclipse Bug 481555</a>
      */
-    static TypeMirror asMemberOf(Types typeUtils, ProcessingEnvironment env, DeclaredType containing, Element element) {
+    static TypeMirror asMemberOf(Types typeUtils, ProcessingEnvironment env, VersionInformation versionInformation,
+                                 DeclaredType containing, Element element) {
         TypeMirror result = null;
         Exception lastException = null;
         try {
@@ -130,13 +133,15 @@ public class SpecificCompilerWorkarounds {
             }
             catch ( IllegalArgumentException e ) {
                 lastException = e;
-
-                result = EclipseAsMemberOfWorkaround.asMemberOf( env, containing, element );
+                if ( versionInformation.isEclipseJDTCompiler() ) {
+                    result = EclipseAsMemberOfWorkaround.asMemberOf( env, containing, element );
+                }
             }
         }
         catch ( Exception e ) {
             lastException = e;
         }
+
         if ( null == result ) {
             throw new RuntimeException( "Fallback implementation of asMemberOf didn't work for "
                 + element + " in " + containing, lastException );

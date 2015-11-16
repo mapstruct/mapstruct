@@ -34,6 +34,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.internal.version.VersionInformation;
+
 /**
  * Replaces the usage of {@link Types} within MapStruct by delegating to the original implementation or to our specific
  * workarounds if necessary.
@@ -43,10 +45,12 @@ import javax.lang.model.util.Types;
 public class TypesDecorator implements Types {
     private final Types delegate;
     private final ProcessingEnvironment processingEnv;
+    private final VersionInformation versionInformation;
 
-    public TypesDecorator(ProcessingEnvironment processingEnv) {
+    public TypesDecorator(ProcessingEnvironment processingEnv, VersionInformation versionInformation) {
         this.delegate = processingEnv.getTypeUtils();
         this.processingEnv = processingEnv;
+        this.versionInformation = versionInformation;
     }
 
     @Override
@@ -141,6 +145,11 @@ public class TypesDecorator implements Types {
 
     @Override
     public TypeMirror asMemberOf(DeclaredType containing, Element element) {
-        return SpecificCompilerWorkarounds.asMemberOf( delegate, processingEnv, containing, element );
+        return SpecificCompilerWorkarounds.asMemberOf(
+            delegate,
+            processingEnv,
+            versionInformation,
+            containing,
+            element );
     }
 }

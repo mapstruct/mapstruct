@@ -28,4 +28,6 @@ public interface VersionInformation {
     String getRuntimeVendor();
     String getMapStructVersion();
     String getCompiler();
+    boolean isEclipseJDTCompiler();
+    boolean isJavacCompiler();
 }

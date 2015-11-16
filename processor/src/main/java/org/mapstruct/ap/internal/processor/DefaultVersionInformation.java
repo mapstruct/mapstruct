@@ -37,21 +37,28 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  */
 public class DefaultVersionInformation implements VersionInformation {
     private static final String JAVAC_PE_CLASS = "com.sun.tools.javac.processing.JavacProcessingEnvironment";
+    private static final String COMPILER_NAME_JAVAC = "javac";
+
     private static final String JDT_IDE_PE_CLASS =
         "org.eclipse.jdt.internal.apt.pluggable.core.dispatch.IdeBuildProcessingEnvImpl";
     private static final String JDT_BATCH_PE_CLASS =
         "org.eclipse.jdt.internal.compiler.apt.dispatch.BatchProcessingEnvImpl";
+    private static final String COMPILER_NAME_ECLIPSE_JDT = "Eclipse JDT";
 
     private static final String MAP_STRUCT_VERSION = initMapStructVersion();
 
     private final String runtimeVersion;
     private final String runtimeVendor;
     private final String compiler;
+    private final boolean eclipseJDT;
+    private final boolean javac;
 
     DefaultVersionInformation(String runtimeVersion, String runtimeVendor, String compiler) {
         this.runtimeVersion = runtimeVersion;
         this.runtimeVendor = runtimeVendor;
         this.compiler = compiler;
+        this.eclipseJDT = compiler.startsWith( COMPILER_NAME_ECLIPSE_JDT );
+        this.javac = compiler.startsWith( COMPILER_NAME_JAVAC );
     }
 
     @Override
@@ -74,6 +81,16 @@ public class DefaultVersionInformation implements VersionInformation {
         return this.compiler;
     }
 
+    @Override
+    public boolean isEclipseJDTCompiler() {
+        return eclipseJDT;
+    }
+
+    @Override
+    public boolean isJavacCompiler() {
+        return javac;
+    }
+
     static DefaultVersionInformation fromProcessingEnvironment(ProcessingEnvironment processingEnv) {
         String runtimeVersion = System.getProperty( "java.version" );
         String runtimeVendor = System.getProperty( "java.vendor" );
@@ -87,16 +104,17 @@ public class DefaultVersionInformation implements VersionInformation {
         String className = processingEnv.getClass().getName();
 
         if ( className.equals( JAVAC_PE_CLASS ) ) {
-            return "javac";
+            return COMPILER_NAME_JAVAC;
         }
 
         if ( className.equals( JDT_IDE_PE_CLASS ) ) {
             // the processing environment for the IDE integrated APT is in a different bundle than the APT classes
-            return "Eclipse JDT (IDE) " + getLibraryName( processingEnv.getTypeUtils().getClass(), true );
+            return COMPILER_NAME_ECLIPSE_JDT + " (IDE) "
+                + getLibraryName( processingEnv.getTypeUtils().getClass(), true );
         }
 
         if ( className.equals( JDT_BATCH_PE_CLASS ) ) {
-            return "Eclipse JDT (Batch) " + getLibraryName( processingEnv.getClass(), true );
+            return COMPILER_NAME_ECLIPSE_JDT + " (Batch) " + getLibraryName( processingEnv.getClass(), true );
         }
 
         return processingEnv.getClass().getSimpleName() + " from " + getLibraryName( processingEnv.getClass(), false );

@@ -53,13 +53,13 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options) {
         this.processingEnvironment = processingEnvironment;
         this.messager = new DelegatingMessager( processingEnvironment.getMessager() );
-        this.delegatingTypes = new TypesDecorator( processingEnvironment );
+        this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
+        this.delegatingTypes = new TypesDecorator( processingEnvironment, versionInformation );
         this.typeFactory = new TypeFactory(
             processingEnvironment.getElementUtils(),
             delegatingTypes
         );
         this.options = options;
-        this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
     }
 
     @Override
