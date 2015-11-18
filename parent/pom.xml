@@ -46,7 +46,7 @@
         <org.apache.maven.plugins.surefire.version>2.18.1</org.apache.maven.plugins.surefire.version>
         <org.apache.maven.plugins.javadoc.version>2.10.3</org.apache.maven.plugins.javadoc.version>
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
-        <org.eclipse.tyco.compiler-jdt.version>0.23.1</org.eclipse.tyco.compiler-jdt.version>
+        <org.eclipse.tycho.compiler-jdt.version>0.23.1</org.eclipse.tycho.compiler-jdt.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
     </properties>
@@ -197,7 +197,7 @@
             <dependency>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-compiler-jdt</artifactId>
-                <version>${org.eclipse.tyco.compiler-jdt.version}</version>
+                <version>${org.eclipse.tycho.compiler-jdt.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
