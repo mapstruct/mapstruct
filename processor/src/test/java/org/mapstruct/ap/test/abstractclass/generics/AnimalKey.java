@@ -20,9 +20,16 @@ package org.mapstruct.ap.test.abstractclass.generics;
 
 /**
  * @author Andreas Gudian
+ *
  */
-public interface ItemProviderAny<X> {
-    X getItem();
+public class AnimalKey extends KeyOfAllBeings {
+    private boolean typeParameterIsResolvedToItemC;
 
-    void setItem(X id);
+    public boolean typeParameterIsResolvedToAnimalKey() {
+        return typeParameterIsResolvedToItemC;
+    }
+
+    public void setTypeParameterIsResolvedToAnimalKey(boolean typeParameterIsResolvedToItemC) {
+        this.typeParameterIsResolvedToItemC = typeParameterIsResolvedToItemC;
+    }
 }

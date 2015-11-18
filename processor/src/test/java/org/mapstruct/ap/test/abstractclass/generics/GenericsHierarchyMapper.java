@@ -32,25 +32,25 @@ import org.mapstruct.factory.Mappers;
 public abstract class GenericsHierarchyMapper {
     public static final GenericsHierarchyMapper INSTANCE = Mappers.getMapper( GenericsHierarchyMapper.class );
 
-    @Mapping(target = "itemC", source = "item")
-    public abstract Target toTarget(AbstractClassExposingItemC source);
+    @Mapping(target = "itemC", source = "key")
+    public abstract Target toTarget(AbstractAnimal source);
 
-    @Mapping(target = "itemB", source = "item")
-    public abstract Target toTarget(AbstractClassExposingItemB source);
+    @Mapping(target = "itemB", source = "key")
+    public abstract Target toTarget(AbstractHuman source);
 
-    @Mapping(target = "item", source = "itemC")
-    public abstract void intoSourceWithItemC(Target target, @MappingTarget AbstractClassExposingItemC bean);
+    @Mapping(target = "key", source = "itemC")
+    public abstract void updateSourceWithAnimalKey(Target target, @MappingTarget AbstractAnimal bean);
 
-    @Mapping(target = "item", source = "itemB")
-    public abstract void intoSourceWithItemB(Target target, @MappingTarget AbstractClassExposingItemB bean);
+    @Mapping(target = "key", source = "itemB")
+    public abstract void updateSourceWithKeyOfAllBeings(Target target, @MappingTarget AbstractHuman bean);
 
-    protected ItemC modifyItemC(ItemC item) {
-        item.setTypeParameterIsResolvedToItemC( true );
+    protected AnimalKey modifyAnimalKey(AnimalKey item) {
+        item.setTypeParameterIsResolvedToAnimalKey( true );
         return item;
     }
 
-    protected ItemB modifyItemB(ItemB item) {
-        item.setTypeParameterIsResolvedToItemB( true );
+    protected KeyOfAllBeings modifyKeyOfAllBeings(KeyOfAllBeings item) {
+        item.setTypeParameterIsResolvedToKeyOfAllBeings( true );
         return item;
     }
 }

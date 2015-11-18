@@ -23,22 +23,22 @@ package org.mapstruct.ap.test.abstractclass.generics;
  *
  */
 public class Target {
-    private ItemC itemC;
-    private ItemB itemB;
+    private AnimalKey itemC;
+    private KeyOfAllBeings itemB;
 
-    public ItemC getItemC() {
+    public AnimalKey getItemC() {
         return itemC;
     }
 
-    public void setItemC(ItemC itemC) {
+    public void setItemC(AnimalKey itemC) {
         this.itemC = itemC;
     }
 
-    public ItemB getItemB() {
+    public KeyOfAllBeings getItemB() {
         return itemB;
     }
 
-    public void setItemB(ItemB itemB) {
+    public void setItemB(KeyOfAllBeings itemB) {
         this.itemB = itemB;
     }
 

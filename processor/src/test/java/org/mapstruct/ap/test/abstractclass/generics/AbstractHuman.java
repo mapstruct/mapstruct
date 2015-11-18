@@ -18,6 +18,6 @@
  */
 package org.mapstruct.ap.test.abstractclass.generics;
 
-public abstract class AbstractClassExposingItemB
-    implements ItemProviderAny<ItemB>, ItemProviderSomeItemA<ItemA> {
+public abstract class AbstractHuman
+    implements GenericIdentifiable<KeyOfAllBeings>, Identifiable<Key> {
 }

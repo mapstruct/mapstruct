@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.abstractclass.generics;
 /**
  * @author Andreas Gudian
  */
-public abstract class AbstractClassExposingItemC
-    implements ItemProviderSomeItemA<ItemB>, ItemProviderSomeItemB<ItemC> {
-
+public interface Identifiable<T extends Key> {
+    T getKey();
 }
