@@ -1,6 +1,6 @@
 # MapStruct - Java bean mappings, the easy way!
 
-_Version: 1.0.0.CR2, August 27th 2015_
+_Version: 1.0.0.Final, November 25th 2015_
 
 ## What is MapStruct?
 
@@ -16,6 +16,9 @@ Compared to dynamic mapping frameworks, MapStruct offers the following advantage
 * Compile-time type safety: Only objects and attributes mapping to each other can be mapped, no accidental mapping of an order entity into a customer DTO etc.
 * Self-contained code, no runtime dependencies
 * Clear error-reports at build time, if entities or attributes can't be mapped
+* Mapping code is easy to debug (or edited by hand e.g. in case of a bug in the generator)
+
+MapStruct works in command line builds (plain javac, via Maven, Gradle, Ant etc.) and IDEs. For Eclipse, there is a dedicated plug-in under development (see https://github.com/mapstruct/mapstruct-eclipse) which goes beyond what's possible with an annotation processor, providing content assist for annotation attributes, quick fixes and more.
 
 ## Documentation and getting help
 
@@ -35,13 +38,19 @@ For Maven based projects add the following to your POM file in order to use MapS
 
 ...
 <properties>
-    <org.mapstruct.version>[current MapStruct version]</org.mapstruct.version>
+    <org.mapstruct.version>1.0.0.Final</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
     <dependency>
         <groupId>org.mapstruct</groupId>
         <artifactId>mapstruct</artifactId>
+        <version>${org.mapstruct.version}</version>
+    </dependency>
+    <!-- Use this with Java 8 and beyond -->
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-jdk8</artifactId>
         <version>${org.mapstruct.version}</version>
     </dependency>
 </dependencies>
