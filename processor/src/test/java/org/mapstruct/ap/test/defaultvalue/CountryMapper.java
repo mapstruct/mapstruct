@@ -33,6 +33,7 @@ public abstract class CountryMapper {
             @Mapping( target = "id", defaultValue = "42" ),
             @Mapping( target = "zipcode", defaultValue = "1337" ),
             @Mapping( target = "region", defaultValue = "someRegion" ),
+            @Mapping( target = "continent", defaultValue = "EUROPE" )
     } )
     public abstract CountryDts mapToCountryDts(CountryEntity country);
 
@@ -40,19 +41,19 @@ public abstract class CountryMapper {
             @Mapping( target = "code", defaultValue = "DE" ),
             @Mapping( target = "id", defaultValue = "42" ),
             @Mapping( target = "zipcode", defaultValue = "1337" ),
-            @Mapping( target = "region", ignore = true )
-
+            @Mapping( target = "region", ignore = true ),
+            @Mapping( target = "continent", defaultValue = "EUROPE" )
     } )
-    public abstract void mapToCountryDts(CountryDts countryDts, @MappingTarget CountryEntity country);
+    public abstract void mapToCountryEntity(CountryDts countryDts, @MappingTarget CountryEntity country);
 
     @Mappings( {
             @Mapping( target = "code", defaultValue = "DE" ),
             @Mapping( target = "id", defaultValue = "42" ),
             @Mapping( target = "zipcode", defaultValue = "1337" ),
-            @Mapping( target = "region", ignore = true )
-
+            @Mapping( target = "region", ignore = true ),
+            @Mapping( target = "continent", defaultValue = "EUROPE" )
     } )
-    public abstract void mapToCountryDts(CountryEntity source, @MappingTarget CountryEntity target);
+    public abstract void mapToCountryEntity(CountryEntity source, @MappingTarget CountryEntity target);
 
     protected String mapToString(Region region) {
         return ( region != null ) ? region.getCode() : null;

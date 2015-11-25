@@ -18,6 +18,14 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
+
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
@@ -36,22 +44,15 @@ import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
 import org.mapstruct.ap.internal.util.Executables;
+import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeMirror;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -798,8 +799,15 @@ public class PropertyMapping extends ModelElement {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Set<Type> getImportTypes() {
-        return assignment.getImportTypes();
+        if ( defaultValueAssignment == null ) {
+            return assignment.getImportTypes();
+        }
+
+        return org.mapstruct.ap.internal.util.Collections.asSet(
+            assignment.getImportTypes(),
+            defaultValueAssignment.getImportTypes() );
     }
 
     public List<String> getDependsOn() {

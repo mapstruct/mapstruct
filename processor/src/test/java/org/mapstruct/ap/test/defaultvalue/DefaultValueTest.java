@@ -22,6 +22,7 @@ import java.text.ParseException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.defaultvalue.other.Continent;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -35,7 +36,8 @@ import static org.fest.assertions.Assertions.assertThat;
 @RunWith( AnnotationProcessorTestRunner.class )
 @WithClasses( {
         CountryEntity.class,
-        CountryDts.class
+        CountryDts.class,
+        Continent.class
 } )
 public class DefaultValueTest {
     @Test
@@ -63,10 +65,9 @@ public class DefaultValueTest {
 
         // code is null so it should fall back to the default value
         assertThat( countryDts.getCode() ).isEqualTo( "DE" );
-
         assertThat( countryDts.getZipcode() ).isEqualTo( 0 );
-
         assertThat( countryDts.getRegion() ).isEqualTo( "someRegion" );
+        assertThat( countryDts.getContinent() ).isEqualTo( Continent.EUROPE );
     }
 
     @Test
@@ -80,12 +81,14 @@ public class DefaultValueTest {
         Region region = new Region();
         region.setCode( "foobar" );
         countryEntity.setRegion( region );
+        countryEntity.setContinent( Continent.NORTH_AMERICA );
 
         CountryDts countryDts = CountryMapper.INSTANCE.mapToCountryDts( countryEntity );
 
         // the source entity had a code set, so the default value shouldn't be used
         assertThat( countryDts.getCode() ).isEqualTo( "US" );
         assertThat( countryDts.getRegion() ).isEqualTo( "foobar" );
+        assertThat( countryDts.getContinent() ).isEqualTo( Continent.NORTH_AMERICA );
     }
 
     @Test
@@ -97,12 +100,13 @@ public class DefaultValueTest {
         CountryEntity countryEntity = new CountryEntity();
         CountryDts countryDts = new CountryDts();
 
-        CountryMapper.INSTANCE.mapToCountryDts( countryDts, countryEntity );
+        CountryMapper.INSTANCE.mapToCountryEntity( countryDts, countryEntity );
 
         assertThat( countryEntity.getId() ).isEqualTo( 0 );
         // no code is set, so fall back to default value
         assertThat( countryEntity.getCode() ).isEqualTo( "DE" );
         assertThat( countryEntity.getZipcode() ).isEqualTo( 0 );
+        assertThat( countryEntity.getContinent() ).isEqualTo( Continent.EUROPE );
     }
 
     @Test
@@ -114,13 +118,14 @@ public class DefaultValueTest {
         CountryEntity source = new CountryEntity();
         CountryEntity target = new CountryEntity();
 
-        CountryMapper.INSTANCE.mapToCountryDts( source, target );
+        CountryMapper.INSTANCE.mapToCountryEntity( source, target );
 
         // no id is set, so fall back to default value
         assertThat( target.getId() ).isEqualTo( 42 );
         // no code is set, so fall back to default value
         assertThat( target.getCode() ).isEqualTo( "DE" );
         assertThat( target.getZipcode() ).isEqualTo( 0 );
+        assertThat( target.getContinent() ).isEqualTo( Continent.EUROPE );
     }
 
     @Test

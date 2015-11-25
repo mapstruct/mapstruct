@@ -18,11 +18,14 @@
  */
 package org.mapstruct.ap.test.defaultvalue;
 
+import org.mapstruct.ap.test.defaultvalue.other.Continent;
+
 public class CountryEntity {
     private String code;
     private Integer id;
     private long zipcode;
     private Region region;
+    private Continent continent;
 
     public String getCode() {
         return code;
@@ -56,4 +59,11 @@ public class CountryEntity {
         this.region = region;
     }
 
+    public Continent getContinent() {
+        return continent;
+    }
+
+    public void setContinent(Continent continent) {
+        this.continent = continent;
+    }
 }
