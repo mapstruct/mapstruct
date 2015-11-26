@@ -90,7 +90,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- plexus-container-default is a runtime-dependency of the tyco-compiler -->
+        <!-- plexus-container-default is a runtime-dependency of the tycho-compiler -->
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-container-default</artifactId>
@@ -242,7 +242,7 @@
                     <dependency>
                         <groupId>org.eclipse.tycho</groupId>
                         <artifactId>tycho-compiler-jdt</artifactId>
-                        <version>${org.eclipse.tyco.compiler-jdt.version}</version>
+                        <version>${org.eclipse.tycho.compiler-jdt.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

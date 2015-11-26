@@ -22,14 +22,14 @@ package org.mapstruct.ap.test.abstractclass.generics;
  * @author Andreas Gudian
  *
  */
-public class ItemB extends ItemA {
+public class KeyOfAllBeings extends Key {
     private boolean typeParameterIsResolvedToItemB;
 
-    public boolean typeParameterIsResolvedToItemB() {
+    public boolean typeParameterIsResolvedToKeyOfAllBeings() {
         return typeParameterIsResolvedToItemB;
     }
 
-    public void setTypeParameterIsResolvedToItemB(boolean typeParameterIsResolvedToItemB) {
+    public void setTypeParameterIsResolvedToKeyOfAllBeings(boolean typeParameterIsResolvedToItemB) {
         this.typeParameterIsResolvedToItemB = typeParameterIsResolvedToItemB;
     }
 }

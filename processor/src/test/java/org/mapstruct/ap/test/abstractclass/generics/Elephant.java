@@ -22,14 +22,16 @@ package org.mapstruct.ap.test.abstractclass.generics;
  * @author Andreas Gudian
  *
  */
-public class ItemC extends ItemB {
-    private boolean typeParameterIsResolvedToItemC;
+public class Elephant extends AbstractAnimal {
+    private AnimalKey item;
 
-    public boolean typeParameterIsResolvedToItemC() {
-        return typeParameterIsResolvedToItemC;
+    @Override
+    public AnimalKey getKey() {
+        return item;
     }
 
-    public void setTypeParameterIsResolvedToItemC(boolean typeParameterIsResolvedToItemC) {
-        this.typeParameterIsResolvedToItemC = typeParameterIsResolvedToItemC;
+    @Override
+    public void setKey(AnimalKey item) {
+        this.item = item;
     }
 }

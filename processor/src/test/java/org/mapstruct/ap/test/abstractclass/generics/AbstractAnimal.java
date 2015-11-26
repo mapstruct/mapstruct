@@ -21,9 +21,7 @@ package org.mapstruct.ap.test.abstractclass.generics;
 /**
  * @author Andreas Gudian
  */
-public interface ItemProviderSomeItemB<ID extends ItemB> extends ItemProviderSomeItemA<ItemB> {
-    @Override
-    ID getItem();
+public abstract class AbstractAnimal
+    implements Identifiable<KeyOfAllBeings>, IAnimal<AnimalKey> {
 
-    void setItem(ID item);
 }

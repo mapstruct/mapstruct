@@ -33,67 +33,67 @@ import static org.fest.assertions.Assertions.assertThat;
 @RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("644,687,688")
 @WithClasses({
-    AbstractClassExposingItemC.class,
-    AbstractClassExposingItemB.class,
+    AbstractAnimal.class,
+    AbstractHuman.class,
     GenericsHierarchyMapper.class,
-    ItemA.class,
-    ItemB.class,
-    ItemC.class,
-    ItemProviderSomeItemA.class,
-    ItemProviderAny.class,
-    ItemProviderSomeItemB.class,
+    Key.class,
+    KeyOfAllBeings.class,
+    AnimalKey.class,
+    Identifiable.class,
+    GenericIdentifiable.class,
+    IAnimal.class,
     Target.class
 })
 public class GenericsHierarchyTest {
 
     @Test
-    public void determinesItemCSourceGetter() {
-        AbstractClassExposingItemC source = new SourceWithItemC();
+    public void determinesAnimalKeyGetter() {
+        AbstractAnimal source = new Elephant();
 
-        source.setItem( new ItemC() );
+        source.setKey( new AnimalKey() );
         // make sure the jdk compiler resolves the same as we expect
-        source.getItem().setTypeParameterIsResolvedToItemC( false );
+        source.getKey().setTypeParameterIsResolvedToAnimalKey( false );
 
         Target target = GenericsHierarchyMapper.INSTANCE.toTarget( source );
 
-        assertThat( target.getItemC().typeParameterIsResolvedToItemC() ).isTrue();
-        assertThat( target.getItemC().typeParameterIsResolvedToItemB() ).isFalse();
+        assertThat( target.getItemC().typeParameterIsResolvedToAnimalKey() ).isTrue();
+        assertThat( target.getItemC().typeParameterIsResolvedToKeyOfAllBeings() ).isFalse();
     }
 
     @Test
-    public void determinesItemBSourceGetter() {
-        AbstractClassExposingItemB source = new SourceWithItemB();
+    public void determinesKeyOfAllBeingsGetter() {
+        AbstractHuman source = new Child();
 
-        source.setItem( new ItemB() );
+        source.setKey( new KeyOfAllBeings() );
         // make sure the jdk compiler resolves the same as we expect
-        source.getItem().setTypeParameterIsResolvedToItemB( false );
+        source.getKey().setTypeParameterIsResolvedToKeyOfAllBeings( false );
 
         Target target = GenericsHierarchyMapper.INSTANCE.toTarget( source );
 
-        assertThat( target.getItemB().typeParameterIsResolvedToItemB() ).isTrue();
+        assertThat( target.getItemB().typeParameterIsResolvedToKeyOfAllBeings() ).isTrue();
     }
 
     @Test
     public void determinesItemCSourceSetter() {
         Target target = new Target();
 
-        target.setItemC( new ItemC() );
+        target.setItemC( new AnimalKey() );
 
-        SourceWithItemC source = new SourceWithItemC();
-        GenericsHierarchyMapper.INSTANCE.intoSourceWithItemC( target, source );
+        Elephant source = new Elephant();
+        GenericsHierarchyMapper.INSTANCE.updateSourceWithAnimalKey( target, source );
 
-        assertThat( source.getItem().typeParameterIsResolvedToItemC() ).isTrue();
+        assertThat( source.getKey().typeParameterIsResolvedToAnimalKey() ).isTrue();
     }
 
     @Test
     public void determinesItemBSourceSetter() {
         Target target = new Target();
 
-        target.setItemB( new ItemB() );
+        target.setItemB( new KeyOfAllBeings() );
 
-        SourceWithItemB source = new SourceWithItemB();
-        GenericsHierarchyMapper.INSTANCE.intoSourceWithItemB( target, source );
+        Child source = new Child();
+        GenericsHierarchyMapper.INSTANCE.updateSourceWithKeyOfAllBeings( target, source );
 
-        assertThat( source.getItem().typeParameterIsResolvedToItemB() ).isTrue();
+        assertThat( source.getKey().typeParameterIsResolvedToKeyOfAllBeings() ).isTrue();
     }
 }

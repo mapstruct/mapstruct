@@ -64,7 +64,7 @@
                             <dependency>
                                 <groupId>org.eclipse.tycho</groupId>
                                 <artifactId>tycho-compiler-jdt</artifactId>
-                                <version>${org.eclipse.tyco.compiler-jdt.version}</version>
+                                <version>${org.eclipse.tycho.compiler-jdt.version}</version>
                             </dependency>
                         </dependencies>
                     </plugin>

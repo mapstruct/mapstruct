@@ -20,8 +20,9 @@ package org.mapstruct.ap.test.abstractclass.generics;
 
 /**
  * @author Andreas Gudian
- *
  */
-public class ItemA {
+public interface GenericIdentifiable<X> {
+    X getKey();
 
+    void setKey(X id);
 }

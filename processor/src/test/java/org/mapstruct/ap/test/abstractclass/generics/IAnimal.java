@@ -20,16 +20,10 @@ package org.mapstruct.ap.test.abstractclass.generics;
 
 /**
  * @author Andreas Gudian
- *
  */
-public class SourceWithItemB extends AbstractClassExposingItemB {
-    private ItemB item;
+public interface IAnimal<ID extends KeyOfAllBeings> extends Identifiable<KeyOfAllBeings> {
+    @Override
+    ID getKey();
 
-    public ItemB getItem() {
-        return item;
-    }
-
-    public void setItem(ItemB item) {
-        this.item = item;
-    }
+    void setKey(ID item);
 }
