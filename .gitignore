@@ -22,3 +22,4 @@ test-output
 
 # Misc.
 .DS_Store
+.java-version
