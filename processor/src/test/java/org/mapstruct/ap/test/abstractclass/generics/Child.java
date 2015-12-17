@@ -22,14 +22,14 @@ package org.mapstruct.ap.test.abstractclass.generics;
  * @author Andreas Gudian
  *
  */
-public class SourceWithItemB extends AbstractClassExposingItemB {
-    private ItemB item;
+public class Child extends AbstractHuman {
+    private KeyOfAllBeings key;
 
-    public ItemB getItem() {
-        return item;
+    public KeyOfAllBeings getKey() {
+        return key;
     }
 
-    public void setItem(ItemB item) {
-        this.item = item;
+    public void setKey(KeyOfAllBeings key) {
+        this.key = key;
     }
 }

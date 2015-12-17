@@ -21,6 +21,8 @@ package org.mapstruct.ap.test.abstractclass.generics;
 /**
  * @author Andreas Gudian
  */
-public interface ItemProviderSomeItemA<T extends ItemA> {
-    T getItem();
+public interface GenericIdentifiable<X> {
+    X getKey();
+
+    void setKey(X id);
 }

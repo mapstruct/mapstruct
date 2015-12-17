@@ -20,16 +20,8 @@ package org.mapstruct.ap.test.abstractclass.generics;
 
 /**
  * @author Andreas Gudian
- *
  */
-public class ItemB extends ItemA {
-    private boolean typeParameterIsResolvedToItemB;
+public abstract class AbstractAnimal
+    implements Identifiable<KeyOfAllBeings>, IAnimal<AnimalKey> {
 
-    public boolean typeParameterIsResolvedToItemB() {
-        return typeParameterIsResolvedToItemB;
-    }
-
-    public void setTypeParameterIsResolvedToItemB(boolean typeParameterIsResolvedToItemB) {
-        this.typeParameterIsResolvedToItemB = typeParameterIsResolvedToItemB;
-    }
 }

@@ -18,18 +18,6 @@
  */
 package org.mapstruct.ap.test.abstractclass.generics;
 
-/**
- * @author Andreas Gudian
- *
- */
-public class ItemC extends ItemB {
-    private boolean typeParameterIsResolvedToItemC;
-
-    public boolean typeParameterIsResolvedToItemC() {
-        return typeParameterIsResolvedToItemC;
-    }
-
-    public void setTypeParameterIsResolvedToItemC(boolean typeParameterIsResolvedToItemC) {
-        this.typeParameterIsResolvedToItemC = typeParameterIsResolvedToItemC;
-    }
+public abstract class AbstractHuman
+    implements GenericIdentifiable<KeyOfAllBeings>, Identifiable<Key> {
 }

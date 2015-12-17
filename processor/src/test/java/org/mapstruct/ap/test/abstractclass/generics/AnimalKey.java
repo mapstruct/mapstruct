@@ -18,6 +18,18 @@
  */
 package org.mapstruct.ap.test.abstractclass.generics;
 
-public abstract class AbstractClassExposingItemB
-    implements ItemProviderAny<ItemB>, ItemProviderSomeItemA<ItemA> {
+/**
+ * @author Andreas Gudian
+ *
+ */
+public class AnimalKey extends KeyOfAllBeings {
+    private boolean typeParameterIsResolvedToAnimalKey;
+
+    public boolean typeParameterIsResolvedToAnimalKey() {
+        return typeParameterIsResolvedToAnimalKey;
+    }
+
+    public void setTypeParameterIsResolvedToAnimalKey(boolean typeParameterIsResolvedToAnimalKey) {
+        this.typeParameterIsResolvedToAnimalKey = typeParameterIsResolvedToAnimalKey;
+    }
 }
