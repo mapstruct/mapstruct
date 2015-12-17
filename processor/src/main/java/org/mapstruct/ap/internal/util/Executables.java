@@ -155,6 +155,10 @@ public class Executables {
             element = replaceTypeElementIfNecessary( elementUtils, element );
         }
 
+        if ( element.asType().getKind() == TypeKind.ERROR ) {
+            throw new TypeHierarchyErroneousException( element );
+        }
+
         addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ), parentType );
 
         if ( hasNonObjectSuperclass( element ) ) {
@@ -244,8 +248,12 @@ public class Executables {
      * @return {@code true}, iff the type has a super-class that is not java.lang.Object
      */
     private static boolean hasNonObjectSuperclass(TypeElement element) {
+        if ( element.getSuperclass().getKind() == TypeKind.ERROR ) {
+            throw new TypeHierarchyErroneousException( element );
+        }
+
         return element.getSuperclass().getKind() == TypeKind.DECLARED
-            && asTypeElement( element.getSuperclass() ).getSuperclass().getKind() == TypeKind.DECLARED;
+            && !asTypeElement( element.getSuperclass() ).getQualifiedName().toString().equals( "java.lang.Object" );
     }
 
     /**
