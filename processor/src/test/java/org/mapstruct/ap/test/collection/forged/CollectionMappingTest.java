@@ -19,6 +19,8 @@
 package org.mapstruct.ap.test.collection.forged;
 
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.Map;
 
 import javax.tools.Diagnostic.Kind;
@@ -34,8 +36,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import com.google.common.collect.ImmutableMap;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for mappings between collection types,

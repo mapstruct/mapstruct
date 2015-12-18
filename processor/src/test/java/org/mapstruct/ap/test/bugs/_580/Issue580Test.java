@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.bugs._580;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.time.LocalDate;
 
 import javax.xml.datatype.DatatypeConstants;
@@ -32,8 +34,6 @@ import org.mapstruct.ap.test.bugs._580.java8.Target;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * @author Andreas Gudian

@@ -20,11 +20,12 @@ package org.mapstruct.ap.test.exceptions;
 
 
 import java.text.ParseException;
-import org.mapstruct.ap.test.exceptions.imports.TestExceptionBase;
 import java.util.List;
 import java.util.Map;
+
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.exceptions.imports.TestExceptionBase;
 import org.mapstruct.factory.Mappers;
 
 /**

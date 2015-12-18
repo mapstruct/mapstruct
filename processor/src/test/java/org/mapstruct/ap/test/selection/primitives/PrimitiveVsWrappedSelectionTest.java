@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.selection.primitives;
 
 import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;

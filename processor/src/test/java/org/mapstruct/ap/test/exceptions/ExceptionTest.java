@@ -19,14 +19,15 @@
 package org.mapstruct.ap.test.exceptions;
 
 import java.text.ParseException;
-import org.mapstruct.ap.test.exceptions.imports.TestException1;
-import org.mapstruct.ap.test.exceptions.imports.TestExceptionBase;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.exceptions.imports.TestException1;
+import org.mapstruct.ap.test.exceptions.imports.TestExceptionBase;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;

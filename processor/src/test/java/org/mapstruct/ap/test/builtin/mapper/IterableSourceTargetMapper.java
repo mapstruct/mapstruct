@@ -18,15 +18,14 @@
  */
 package org.mapstruct.ap.test.builtin.mapper;
 
-import org.mapstruct.ap.test.builtin._target.IterableTarget;
-import org.mapstruct.ap.test.builtin.source.IterableSource;
-
 import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.builtin._target.IterableTarget;
+import org.mapstruct.ap.test.builtin.source.IterableSource;
 import org.mapstruct.factory.Mappers;
 
 @Mapper

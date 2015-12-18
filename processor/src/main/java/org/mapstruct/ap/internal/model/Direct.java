@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import org.mapstruct.ap.internal.model.assignment.Assignment;
-import org.mapstruct.ap.internal.model.common.ModelElement;
-import org.mapstruct.ap.internal.model.common.Type;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.common.ModelElement;
+import org.mapstruct.ap.internal.model.common.Type;
 
 /**
  * Direct Assignment. Just a source reference

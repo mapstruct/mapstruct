@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.test.references;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,10 +31,6 @@ import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
-
-import static org.fest.assertions.MapAssert.entry;
 
 /**
  * @author Andreas Gudian

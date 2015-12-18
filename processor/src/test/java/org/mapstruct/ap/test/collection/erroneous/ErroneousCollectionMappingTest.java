@@ -64,7 +64,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = EmptyItererableMappingMapper.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 36,
                 messageRegExp = "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are "
                     + "undefined in @IterableMapping, define at least one of them.")
         }
@@ -80,7 +80,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = EmptyMapMappingMapper.class,
                 kind = Kind.ERROR,
-                line = 34,
+                line = 35,
                 messageRegExp = "'nullValueMappingStrategy', 'keyDateFormat', 'keyQualifiedBy', 'keyTargetType', "
                     + "'valueDateFormat', 'valueQualfiedBy' and 'valueTargetType' are all undefined in @MapMapping, "
                     + "define at least one of them.")
@@ -97,7 +97,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 37,
                 messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
                     + "conversion for mapping source element type into target element type.")
         }
@@ -113,7 +113,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoKeyMappingFound.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 37,
                 messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
                     + "conversion for mapping source key type to target key type.")
         }
@@ -129,7 +129,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoValueMappingFound.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 37,
                 messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
                     + "conversion for mapping source value type to target value type.")
         }

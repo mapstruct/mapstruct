@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.updatemethods.selection;
 
 import java.util.List;
 import java.util.Map;
+
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ap.test.updatemethods.DepartmentDto;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntity;

@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.collection.wildcard;
 
 import java.math.BigDecimal;
 import java.util.List;
+
 import org.mapstruct.Mapper;
 
 /**

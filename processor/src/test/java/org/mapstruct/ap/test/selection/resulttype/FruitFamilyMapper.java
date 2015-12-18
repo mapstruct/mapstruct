@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.selection.resulttype;
 
 import java.util.List;
 import java.util.Map;
+
 import org.mapstruct.BeanMapping;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;

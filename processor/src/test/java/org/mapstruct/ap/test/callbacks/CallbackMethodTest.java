@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.callbacks;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,8 +35,6 @@ import org.mapstruct.BeforeMapping;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for callback methods that are defined using {@link BeforeMapping} / {@link AfterMapping}

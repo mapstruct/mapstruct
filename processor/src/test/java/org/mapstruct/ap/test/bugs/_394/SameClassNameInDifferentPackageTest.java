@@ -18,6 +18,11 @@
  */
 package org.mapstruct.ap.test.bugs._394;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._394.source.AnotherCar;
@@ -25,11 +30,6 @@ import org.mapstruct.ap.test.bugs._394.source.Cars;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 @WithClasses( {
     SameNameForSourceAndTargetCarsMapper.class,

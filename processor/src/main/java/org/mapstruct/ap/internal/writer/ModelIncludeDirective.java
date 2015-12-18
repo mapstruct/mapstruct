@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mapstruct.ap.internal.writer.ModelWriter.DefaultModelElementWriterContext;
+
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeanModel;
 import freemarker.template.Configuration;
@@ -29,8 +31,6 @@ import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
-
-import org.mapstruct.ap.internal.writer.ModelWriter.DefaultModelElementWriterContext;
 
 /**
  * A {@link TemplateDirectiveModel} which allows to recursively write a graph of

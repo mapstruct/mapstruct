@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.collection.wildcard;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.math.BigDecimal;
 
 import javax.xml.bind.JAXBElement;
@@ -31,8 +33,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/527.
@@ -88,7 +88,7 @@ public class WildCardTest {
             diagnostics = {
                 @Diagnostic( type = ErroneousIterableSuperBoundSourceMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 32,
+                        line = 33,
                         messageRegExp = "Can't generate mapping method for a wildcard super bound source." )
             }
     )
@@ -102,7 +102,7 @@ public class WildCardTest {
             diagnostics = {
                 @Diagnostic( type = ErroneousIterableExtendsBoundTargetMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 32,
+                        line = 33,
                         messageRegExp = "Can't generate mapping method for a wildcard extends bound result." )
             }
     )
@@ -116,7 +116,7 @@ public class WildCardTest {
             diagnostics = {
             @Diagnostic(type = ErroneousIterableTypeVarBoundMapperOnMethod.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 32,
+                        line = 33,
                         messageRegExp = "Can't generate mapping method for a generic type variable target." )
             }
     )
@@ -130,7 +130,7 @@ public class WildCardTest {
             diagnostics = {
                 @Diagnostic( type = ErroneousIterableTypeVarBoundMapperOnMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 32,
+                        line = 33,
                         messageRegExp = "Can't generate mapping method for a generic type variable source." )
             }
     )

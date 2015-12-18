@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 import java.util.Date;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
-
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between the following Joda types and {@link Date}:

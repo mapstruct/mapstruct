@@ -20,10 +20,10 @@ package org.mapstruct.ap.test.complex;
 
 import java.util.List;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.ap.test.complex._target.CarDto;
 import org.mapstruct.ap.test.complex._target.PersonDto;
 import org.mapstruct.ap.test.complex.other.DateMapper;

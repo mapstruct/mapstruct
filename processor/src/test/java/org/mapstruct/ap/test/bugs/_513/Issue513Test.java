@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.bugs._513;
 
 import java.util.Arrays;
 import java.util.HashMap;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;

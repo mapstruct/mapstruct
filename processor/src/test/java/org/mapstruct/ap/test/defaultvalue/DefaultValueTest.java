@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.defaultvalue;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.text.ParseException;
 
 import org.junit.Test;
@@ -29,8 +31,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 @IssueKey( "600" )
 @RunWith( AnnotationProcessorTestRunner.class )

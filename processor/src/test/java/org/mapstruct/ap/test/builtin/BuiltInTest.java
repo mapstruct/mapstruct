@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.builtin;
 
-import org.mapstruct.ap.test.builtin.mapper.ErroneousSourceTargetWithSqlDateMapper;
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -58,6 +58,7 @@ import org.mapstruct.ap.test.builtin.mapper.CalendarToStringMapper;
 import org.mapstruct.ap.test.builtin.mapper.CalendarToXmlGregCalMapper;
 import org.mapstruct.ap.test.builtin.mapper.DateToCalendarMapper;
 import org.mapstruct.ap.test.builtin.mapper.DateToXmlGregCalMapper;
+import org.mapstruct.ap.test.builtin.mapper.ErroneousSourceTargetWithSqlDateMapper;
 import org.mapstruct.ap.test.builtin.mapper.IterableSourceTargetMapper;
 import org.mapstruct.ap.test.builtin.mapper.JaxbListMapper;
 import org.mapstruct.ap.test.builtin.mapper.JaxbMapper;
@@ -77,8 +78,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for the generation of built-in mapping methods.

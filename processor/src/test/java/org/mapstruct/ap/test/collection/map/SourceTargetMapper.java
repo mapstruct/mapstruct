@@ -21,10 +21,10 @@ package org.mapstruct.ap.test.collection.map;
 import java.util.Date;
 import java.util.Map;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = CustomNumberMapper.class)

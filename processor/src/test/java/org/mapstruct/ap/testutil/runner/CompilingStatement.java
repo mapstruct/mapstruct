@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -49,8 +51,6 @@ import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
 import com.puppycrawl.tools.checkstyle.DefaultLogger;
 import com.puppycrawl.tools.checkstyle.PropertiesExpander;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * A JUnit4 statement that performs source generation using the annotation processor and compiles those sources.

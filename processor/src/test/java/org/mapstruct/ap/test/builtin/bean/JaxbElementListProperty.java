@@ -18,8 +18,9 @@
  */
 package org.mapstruct.ap.test.builtin.bean;
 
-import javax.xml.bind.JAXBElement;
 import java.util.List;
+
+import javax.xml.bind.JAXBElement;
 
 public class JaxbElementListProperty {
 

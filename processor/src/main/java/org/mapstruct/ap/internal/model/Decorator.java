@@ -18,19 +18,20 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedSet;
+
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.prism.DecoratedWithPrism;
 import org.mapstruct.ap.internal.version.VersionInformation;
-
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import java.util.Arrays;
-import java.util.List;
-import java.util.SortedSet;
 
 /**
  * Represents a decorator applied to a generated mapper type.

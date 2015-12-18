@@ -18,16 +18,15 @@
  */
 package org.mapstruct.ap.test.bugs._394;
 
+import java.util.List;
+
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ap.test.bugs._394._target.AnotherCar;
 import org.mapstruct.ap.test.bugs._394.source.Cars;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
-
-import org.mapstruct.InheritInverseConfiguration;
 
 @Mapper
 public interface SameNameForSourceAndTargetCarsMapper {

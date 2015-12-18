@@ -18,21 +18,22 @@
  */
 package org.mapstruct.ap.internal.util;
 
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.MapperConfigPrism;
-import org.mapstruct.ap.internal.prism.MapperPrism;
-import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.MapperConfigPrism;
+import org.mapstruct.ap.internal.prism.MapperPrism;
+import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 
 /**
  * Provides an aggregated view to the settings given via {@link org.mapstruct.Mapper} and

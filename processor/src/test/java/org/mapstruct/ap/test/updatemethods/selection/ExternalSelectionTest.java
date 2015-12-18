@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.updatemethods.selection;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +41,6 @@ import org.mapstruct.ap.test.updatemethods.SecretaryEntity;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  *

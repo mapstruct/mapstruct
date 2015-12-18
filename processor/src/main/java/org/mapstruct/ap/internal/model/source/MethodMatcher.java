@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import static org.mapstruct.ap.internal.util.Collections.hasNonNullElements;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +39,6 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-
-import static org.mapstruct.ap.internal.util.Collections.hasNonNullElements;
 
 /**
  * SourceMethodMatcher $8.4 of the JavaLanguage specification describes a method body as such:

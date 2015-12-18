@@ -21,9 +21,9 @@ package org.mapstruct.ap.test.nullvaluemapping;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

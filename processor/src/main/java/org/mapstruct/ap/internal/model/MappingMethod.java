@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
+import static org.mapstruct.ap.internal.util.Strings.join;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,9 +32,6 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
-
-import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
-import static org.mapstruct.ap.internal.util.Strings.join;
 
 /**
  * A method implemented or referenced by a {@link Mapper} class.

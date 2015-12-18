@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.selection.qualifier;
 
 import java.util.List;
 import java.util.Map;
+
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;

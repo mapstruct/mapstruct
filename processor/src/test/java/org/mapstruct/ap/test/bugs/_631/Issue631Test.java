@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.bugs._631;
 
 
 import javax.tools.Diagnostic.Kind;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;

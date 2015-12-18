@@ -18,14 +18,15 @@
  */
 package org.mapstruct.ap.test.references.statics;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.references.statics.nonused.NonUsedMapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import static org.fest.assertions.Assertions.assertThat;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mapstruct.ap.test.references.statics.nonused.NonUsedMapper;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**

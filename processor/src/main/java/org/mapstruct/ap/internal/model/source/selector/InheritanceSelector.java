@@ -18,14 +18,14 @@
  */
 package org.mapstruct.ap.internal.model.source.selector;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Selects on inheritance distance, e.g. the amount of inheritance steps from the parameter type.

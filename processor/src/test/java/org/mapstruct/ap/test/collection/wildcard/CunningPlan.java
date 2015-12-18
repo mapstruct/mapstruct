@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.collection.wildcard;
 
 import java.math.BigDecimal;
+
 import javax.xml.bind.JAXBElement;
 
 /**

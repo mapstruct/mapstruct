@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.collection.erroneous;
 
 import java.text.AttributedString;
 import java.util.Map;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

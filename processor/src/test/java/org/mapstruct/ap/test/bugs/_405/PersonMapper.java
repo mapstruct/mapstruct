@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.bugs._405;
 
 import java.util.List;
 import java.util.Map;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

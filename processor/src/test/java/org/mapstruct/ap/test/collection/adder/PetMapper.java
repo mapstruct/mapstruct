@@ -22,12 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
-
 import org.mapstruct.TargetType;
 import org.mapstruct.ap.test.collection.adder._target.IndoorPet;
 import org.mapstruct.ap.test.collection.adder._target.OutdoorPet;
 import org.mapstruct.ap.test.collection.adder._target.Pet;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Sjaak Derksen

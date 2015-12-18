@@ -18,13 +18,15 @@
  */
 package org.mapstruct.ap.test.nullvaluemapping;
 
+import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import org.mapstruct.BeanMapping;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -33,8 +35,6 @@ import org.mapstruct.ap.test.nullvaluemapping._target.DriverAndCarDto;
 import org.mapstruct.ap.test.nullvaluemapping.source.Car;
 import org.mapstruct.ap.test.nullvaluemapping.source.Driver;
 import org.mapstruct.factory.Mappers;
-
-import static org.mapstruct.NullValueMappingStrategy.RETURN_DEFAULT;
 
 @Mapper(imports = UUID.class)
 public interface CarMapper {

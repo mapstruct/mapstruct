@@ -18,14 +18,14 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
-
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@code DateTime} and {@link Calendar}.

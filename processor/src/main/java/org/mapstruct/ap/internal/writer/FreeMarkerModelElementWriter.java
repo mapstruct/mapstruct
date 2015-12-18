@@ -21,6 +21,8 @@ package org.mapstruct.ap.internal.writer;
 import java.io.Writer;
 import java.util.Map;
 
+import org.mapstruct.ap.internal.writer.Writable.Context;
+
 import freemarker.ext.beans.BeanModel;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.SimpleMapModel;
@@ -29,8 +31,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
-
-import org.mapstruct.ap.internal.writer.Writable.Context;
 
 /**
  * Delegate for writing given {@link Writable}s into a {@link Writer} using

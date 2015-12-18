@@ -18,14 +18,16 @@
  */
 package org.mapstruct.ap.test.selection.qualifier;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
+
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.SomeOtherMapper;
 import org.mapstruct.factory.Mappers;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  *

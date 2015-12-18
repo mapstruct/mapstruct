@@ -18,6 +18,10 @@
  */
 package org.mapstruct.itest.testutil.runner;
 
+import static org.apache.maven.it.util.ResourceExtractor.extractResourceToDestination;
+import static org.apache.maven.shared.utils.io.FileUtils.copyURLToFile;
+import static org.apache.maven.shared.utils.io.FileUtils.deleteDirectory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -45,10 +49,6 @@ import org.mapstruct.itest.testutil.runner.ProcessorSuite.ProcessorType;
 import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner.ProcessorTestCase;
 import org.mapstruct.itest.testutil.runner.xml.Toolchains;
 import org.mapstruct.itest.testutil.runner.xml.Toolchains.ProviderDescription;
-
-import static org.apache.maven.it.util.ResourceExtractor.extractResourceToDestination;
-import static org.apache.maven.shared.utils.io.FileUtils.copyURLToFile;
-import static org.apache.maven.shared.utils.io.FileUtils.deleteDirectory;
 
 /**
  * Runner for processor integration tests. Requires the annotation {@link ProcessorSuite} on the test class.

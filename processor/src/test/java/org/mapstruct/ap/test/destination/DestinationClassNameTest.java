@@ -18,14 +18,14 @@
  */
 package org.mapstruct.ap.test.destination;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * @author Christophe Labouisse on 27/05/2015.

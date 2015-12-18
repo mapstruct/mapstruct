@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.model.common;
 
 import java.util.Set;
+
 import javax.lang.model.element.Modifier;
 
 /**

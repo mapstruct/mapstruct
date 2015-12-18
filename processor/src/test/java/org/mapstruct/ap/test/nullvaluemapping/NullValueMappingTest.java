@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.nullvaluemapping;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +34,6 @@ import org.mapstruct.ap.test.nullvaluemapping.source.Driver;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Tests for the strategies for mapping {@code null} values, given via {@code NullValueMapping} etc.

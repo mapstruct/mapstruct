@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.collection.erroneous;
 
 import java.util.Date;
 import java.util.Map;
+
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 

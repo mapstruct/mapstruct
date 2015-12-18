@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import org.mapstruct.ap.internal.model.assignment.Assignment;
-import org.mapstruct.ap.internal.model.common.ModelElement;
-import org.mapstruct.ap.internal.model.common.Type;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.common.ModelElement;
+import org.mapstruct.ap.internal.model.common.Type;
 
 /**
  * An inline conversion between source and target type of a mapping.

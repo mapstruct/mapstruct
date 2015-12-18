@@ -19,8 +19,10 @@
 package org.mapstruct.ap.test.collection.wildcard;
 
 import java.math.BigDecimal;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

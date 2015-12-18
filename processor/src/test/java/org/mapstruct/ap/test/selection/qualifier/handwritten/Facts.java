@@ -18,9 +18,11 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.handwritten;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  *

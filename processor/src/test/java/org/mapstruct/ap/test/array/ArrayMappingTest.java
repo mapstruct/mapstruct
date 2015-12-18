@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.array;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,8 +30,6 @@ import org.mapstruct.ap.test.array.source.Scientist;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 @WithClasses( { Scientist.class, ScientistDto.class, ScienceMapper.class } )
 @RunWith(AnnotationProcessorTestRunner.class)

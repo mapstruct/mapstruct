@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.decorator.jsr330;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.Calendar;
 
 import javax.inject.Inject;
@@ -38,8 +40,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for the application of decorators using component model jsr330.

@@ -18,11 +18,11 @@
  */
 package org.mapstruct.ap.test.source.expressions.java;
 
-import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.test.source.expressions.java.mapper.TimeAndFormat;
 import org.mapstruct.factory.Mappers;
 
 /**

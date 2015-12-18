@@ -18,28 +18,31 @@
  */
 package org.mapstruct.ap.test.selection.qualifier;
 
-import org.mapstruct.ap.test.selection.qualifier.bean.GermanRelease;
-import org.mapstruct.ap.test.selection.qualifier.bean.OriginalRelease;
-import org.mapstruct.ap.test.selection.qualifier.bean.AbstractEntry;
-import org.mapstruct.ap.test.selection.qualifier.handwritten.Titles;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.tools.Diagnostic.Kind;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.selection.qualifier.annotation.CreateGermanRelease;
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotated;
 import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
+import org.mapstruct.ap.test.selection.qualifier.bean.AbstractEntry;
+import org.mapstruct.ap.test.selection.qualifier.bean.GermanRelease;
+import org.mapstruct.ap.test.selection.qualifier.bean.OriginalRelease;
 import org.mapstruct.ap.test.selection.qualifier.bean.ReleaseFactory;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.Facts;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.PlotWords;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.Reverse;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.SomeOtherMapper;
+import org.mapstruct.ap.test.selection.qualifier.handwritten.Titles;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.YetAnotherMapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
