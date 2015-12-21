@@ -24,6 +24,7 @@ import org.mapstruct.itest.jaxb.xsd.test1.OrderDetailsType;
 import org.mapstruct.itest.jaxb.xsd.test1.OrderType;
 import org.mapstruct.itest.jaxb.xsd.test2.OrderStatusType;
 import org.mapstruct.itest.jaxb.xsd.test2.ShippingAddressType;
+import org.mapstruct.itest.jaxb.xsd.underscores.SubType;
 
 
 /**
@@ -32,6 +33,7 @@ import org.mapstruct.itest.jaxb.xsd.test2.ShippingAddressType;
 @Mapper(uses = {
     org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory.class,
     org.mapstruct.itest.jaxb.xsd.test2.ObjectFactory.class,
+    org.mapstruct.itest.jaxb.xsd.underscores.ObjectFactory.class,
     JaxbMapper.class
 })
 public interface SourceTargetMapper {
@@ -47,6 +49,8 @@ public interface SourceTargetMapper {
 
     ShippingAddressDto shippingAddressToDto(ShippingAddressType source);
 
+    SubTypeDto subTypeToDto(SubType source);
+
     // target 2 source methods
     OrderType targetToSource(OrderDto target);
 
@@ -55,4 +59,6 @@ public interface SourceTargetMapper {
     OrderStatusType dtoToStatus(OrderStatusDto target);
 
     ShippingAddressType dtoToShippingAddress(ShippingAddressDto source);
+
+    SubType dtoToSubType(SubTypeDto source);
 }

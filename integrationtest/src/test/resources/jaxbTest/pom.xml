@@ -50,6 +50,7 @@
                     <schemaDirectory>\${project.build.resources[0].directory}/schema/</schemaDirectory>
                     <schemaIncludes>
                         <include>**/test1.xsd</include>
+                        <include>**/underscores.xsd</include>
                     </schemaIncludes>
                     <bindingDirectory>\${project.build.resources[0].directory}/binding</bindingDirectory>
                     <bindingIncludes>

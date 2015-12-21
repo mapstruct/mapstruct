@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.prism;
 
 import javax.xml.bind.annotation.XmlElementDecl;
+import javax.xml.bind.annotation.XmlElementRef;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
@@ -62,7 +63,8 @@ import net.java.dev.hickory.prism.GeneratePrisms;
     @GeneratePrism(value = BeforeMapping.class, publicAccess = true),
 
     // external types
-    @GeneratePrism(value = XmlElementDecl.class, publicAccess = true)
+    @GeneratePrism(value = XmlElementDecl.class, publicAccess = true),
+    @GeneratePrism(value = XmlElementRef.class, publicAccess = true)
 })
 public class PrismGenerator {
 

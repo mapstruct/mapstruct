@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
+     and/or other contributors as indicated by the @authors tag. See the
+     copyright.txt file in the distribution for a full listing of all
+     contributors.
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+		xmlns:underscores="http://www.mapstruct.org/itest/jaxb/xsd/underscores"
+		targetNamespace="http://www.mapstruct.org/itest/jaxb/xsd/underscores"
+		elementFormDefault="qualified" version="1.0.0">
+
+    <element name="Super" type="underscores:SuperType" />
+    <complexType name="SuperType">
+	<sequence>
+	    <element name="inheritedCamelCase" type="string"/>
+	    <element name="inherited_underscore" type="string"/>
+	</sequence>
+    </complexType>
+
+	<element name="Sub" type="underscores:SubType" />
+	<complexType name="SubType">
+		<complexContent>
+			<extension base="underscores:SuperType">
+				<sequence>
+					<element name="declaredCamelCase" type="string"/>
+					<element name="declared_underscore" type="string"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+</schema>

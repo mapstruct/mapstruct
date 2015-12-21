@@ -34,6 +34,7 @@ import javax.xml.bind.Marshaller;
 import org.junit.Test;
 import org.mapstruct.itest.jaxb.xsd.test1.ObjectFactory;
 import org.mapstruct.itest.jaxb.xsd.test1.OrderType;
+import org.mapstruct.itest.jaxb.xsd.underscores.SubType;
 
 /**
  * Test for generation of JAXB based mapper implementations.
@@ -89,6 +90,27 @@ public class JaxbBasedMapperTest {
         );
         assertThat( source2.getOrderDetails().getName() ).isEqualTo( source1.getOrderDetails().getName() );
         assertThat( source2.getOrderDetails().getStatus() ).isEqualTo( source1.getOrderDetails().getStatus() );
+    }
+
+    @Test
+    public void underscores() throws ParseException, JAXBException {
+
+        SourceTargetMapper mapper = SourceTargetMapper.INSTANCE;
+
+        SubTypeDto source1 = new SubTypeDto();
+        source1.setInheritedCamelCase("InheritedCamelCase");
+        source1.setInheritedUnderscore("InheritedUnderscore");
+        source1.setDeclaredCamelCase("DeclaredCamelCase");
+        source1.setDeclaredUnderscore("DeclaredUnderscore");
+
+        SubType target = mapper.dtoToSubType( source1 );
+
+        SubTypeDto source2 = mapper.subTypeToDto( target );
+
+        assertThat( source2.getInheritedCamelCase() ).isEqualTo( source1.getInheritedCamelCase() );
+        assertThat( source2.getInheritedUnderscore() ).isEqualTo( source1.getInheritedUnderscore() );
+        assertThat( source2.getDeclaredCamelCase() ).isEqualTo( source1.getDeclaredCamelCase() );
+        assertThat( source2.getDeclaredUnderscore() ).isEqualTo( source1.getDeclaredUnderscore() );
     }
 
     private Date createDate(String date) throws ParseException {

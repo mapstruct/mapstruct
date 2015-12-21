@@ -44,7 +44,7 @@ public class MethodSelectors implements MethodSelector {
                 new TypeSelector(),
                 new QualifierSelector( typeUtils, elementUtils ),
                 new TargetTypeSelector( typeUtils, elementUtils ),
-                new XmlElementDeclSelector( typeUtils ),
+                new XmlElementDeclSelector( typeUtils, elementUtils ),
                 new InheritanceSelector(),
                 new CreateOrUpdateSelector()
             );
