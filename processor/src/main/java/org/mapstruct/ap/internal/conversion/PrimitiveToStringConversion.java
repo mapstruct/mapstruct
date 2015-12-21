@@ -19,8 +19,6 @@
 package org.mapstruct.ap.internal.conversion;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
-import org.mapstruct.ap.internal.util.NativeTypes;
-import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * Conversion between primitive types such as {@code byte} or {@code long} and
@@ -28,28 +26,23 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Gunnar Morling
  */
-public class PrimitiveToStringConversion extends SimpleConversion {
-
-    private final Class<?> sourceType;
-    private final Class<?> wrapperType;
+public class PrimitiveToStringConversion extends PossibleNumberToStringConversion {
 
     public PrimitiveToStringConversion(Class<?> sourceType) {
+        super( sourceType );
         if ( !sourceType.isPrimitive() ) {
             throw new IllegalArgumentException( sourceType + " is no primitive type." );
         }
-
-        this.sourceType = sourceType;
-        this.wrapperType = NativeTypes.getWrapperType( sourceType );
     }
 
     @Override
-    public String getToExpression(ConversionContext conversionContext) {
+    protected String getFallbackToExpression(ConversionContext conversionContext) {
         return "String.valueOf( <SOURCE> )";
     }
 
     @Override
-    public String getFromExpression(ConversionContext conversionContext) {
-        return wrapperType.getSimpleName() + ".parse" +
-            Strings.capitalize( sourceType.getSimpleName() ) + "( <SOURCE> )";
+    protected String getFallbackFromExpression(ConversionContext conversionContext) {
+        return getParseTypeExpression( "<SOURCE>" );
     }
+
 }

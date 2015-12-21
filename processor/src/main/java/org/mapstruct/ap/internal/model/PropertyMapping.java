@@ -123,6 +123,7 @@ public class PropertyMapping extends ModelElement {
 
         // initial properties
         private String dateFormat;
+        private String numberFormat;
         private String defaultValue;
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
@@ -145,6 +146,11 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder dateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
+            return this;
+        }
+
+        public PropertyMappingBuilder numberFormat(String numberFormat) {
+            this.numberFormat = numberFormat;
             return this;
         }
 
@@ -195,6 +201,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 targetPropertyName,
                 dateFormat,
+                numberFormat,
                 qualifiers,
                 resultType,
                 sourceRefStr,
@@ -591,6 +598,7 @@ public class PropertyMapping extends ModelElement {
 
         private String constantExpression;
         private String dateFormat;
+        private String numberFormat;
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
 
@@ -601,6 +609,11 @@ public class PropertyMapping extends ModelElement {
 
         public ConstantMappingBuilder dateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
+            return this;
+        }
+
+        public ConstantMappingBuilder numberFormat(String numberFormat) {
+            this.numberFormat = numberFormat;
             return this;
         }
 
@@ -640,6 +653,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 targetPropertyName,
                 dateFormat,
+                numberFormat,
                 qualifiers,
                 resultType,
                 constantExpression,

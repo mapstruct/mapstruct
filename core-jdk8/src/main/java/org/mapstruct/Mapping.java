@@ -81,6 +81,14 @@ public @interface Mapping {
     String dateFormat() default "";
 
     /**
+     * A format string as processable by {@link java.text.DecimalFormat} if the annotated method maps from a
+     *  {@link Number} to a {@link String} or vice-versa. Will be ignored for all other element types.
+     *
+     * @return A decimal format string as processable by {@link java.text.DecimalFormat}.
+     */
+    String numberFormat() default "";
+
+    /**
      * A constant {@link String} based on which the specified target property is to be set. If the designated target
      * property is not of type {@code String}, the value will be converted by applying a matching conversion method or
      * built-in conversion.

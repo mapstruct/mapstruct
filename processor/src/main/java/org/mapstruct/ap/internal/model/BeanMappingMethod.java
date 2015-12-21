@@ -302,6 +302,7 @@ public class BeanMappingMethod extends MappingMethod {
                                     .qualifiers( mapping.getQualifiers() )
                                     .resultType( mapping.getResultType() )
                                     .dateFormat( mapping.getDateFormat() )
+                                    .numberFormat( mapping.getNumberFormat() )
                                     .existingVariableNames( existingVariableNames )
                                     .dependsOn( mapping.getDependsOn() )
                                     .defaultValue( mapping.getDefaultValue() )
@@ -427,6 +428,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .qualifiers( mapping != null ? mapping.getQualifiers() : null )
                                 .resultType( mapping != null ? mapping.getResultType() : null )
                                 .dateFormat( mapping != null ? mapping.getDateFormat() : null )
+                                .numberFormat( mapping != null ? mapping.getNumberFormat() : null )
                                 .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
                                 .existingVariableNames( existingVariableNames )
                                 .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
@@ -492,6 +494,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .qualifiers( mapping != null ? mapping.getQualifiers() : null )
                             .resultType( mapping != null ? mapping.getResultType() : null )
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
+                            .numberFormat( mapping != null ? mapping.getNumberFormat() : null )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
                             .build();

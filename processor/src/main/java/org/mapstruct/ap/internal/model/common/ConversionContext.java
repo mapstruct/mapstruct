@@ -43,6 +43,8 @@ public interface ConversionContext {
      */
     String getDateFormat();
 
+    String getNumberFormat();
+
     TypeFactory getTypeFactory();
 
 }

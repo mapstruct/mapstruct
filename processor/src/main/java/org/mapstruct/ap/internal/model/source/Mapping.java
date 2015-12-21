@@ -55,6 +55,7 @@ public class Mapping {
     private final String javaExpression;
     private final String targetName;
     private final String dateFormat;
+    private final String numberFormat;
     private final String defaultValue;
     private final List<TypeMirror> qualifiers;
     private final TypeMirror resultType;
@@ -132,6 +133,7 @@ public class Mapping {
         String constant = mappingPrism.values.constant() == null ? null : mappingPrism.constant();
         String expression = getExpression( mappingPrism, element, messager );
         String dateFormat = mappingPrism.values.dateFormat() == null ? null : mappingPrism.dateFormat();
+        String numberFormat = mappingPrism.values.numberFormat() == null ? null : mappingPrism.numberFormat();
         String defaultValue = mappingPrism.values.defaultValue() == null ? null : mappingPrism.defaultValue();
 
         boolean resultTypeIsDefined = mappingPrism.values.resultType() != null;
@@ -145,6 +147,7 @@ public class Mapping {
             expression,
             mappingPrism.target(),
             dateFormat,
+            numberFormat,
             defaultValue,
             mappingPrism.qualifiedBy(),
             mappingPrism.ignore(),
@@ -159,7 +162,7 @@ public class Mapping {
 
     @SuppressWarnings("checkstyle:parameternumber")
     private Mapping(String sourceName, String constant, String javaExpression, String targetName,
-                    String dateFormat, String defaultValue, List<TypeMirror> qualifiers,
+                    String dateFormat, String numberFormat, String defaultValue, List<TypeMirror> qualifiers,
                     boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
                     AnnotationValue dependsOnAnnotationValue,
@@ -169,6 +172,7 @@ public class Mapping {
         this.javaExpression = javaExpression;
         this.targetName = targetName;
         this.dateFormat = dateFormat;
+        this.numberFormat = numberFormat;
         this.defaultValue = defaultValue;
         this.qualifiers = qualifiers;
         this.isIgnored = isIgnored;
@@ -240,6 +244,10 @@ public class Mapping {
 
     public String getDateFormat() {
         return dateFormat;
+    }
+
+    public String getNumberFormat() {
+        return numberFormat;
     }
 
     public String getDefaultValue() {
@@ -323,6 +331,7 @@ public class Mapping {
             null, // expression
             sourceName != null ? sourceName : targetName,
             dateFormat,
+            numberFormat,
             null,
             qualifiers,
             isIgnored,
@@ -351,6 +360,7 @@ public class Mapping {
             javaExpression,
             targetName,
             dateFormat,
+            numberFormat,
             defaultValue,
             qualifiers,
             isIgnored,

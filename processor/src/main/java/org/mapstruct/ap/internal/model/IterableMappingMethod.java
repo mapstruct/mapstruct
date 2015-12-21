@@ -56,6 +56,7 @@ public class IterableMappingMethod extends MappingMethod {
         private Method method;
         private MappingBuilderContext ctx;
         private String dateFormat;
+        private String numberFormat;
         private List<TypeMirror> qualifiers;
         private TypeMirror qualifyingElementTargetType;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
@@ -72,6 +73,11 @@ public class IterableMappingMethod extends MappingMethod {
 
         public Builder dateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
+            return this;
+        }
+
+        public Builder numberFormat(String numberFormat) {
+            this.numberFormat = numberFormat;
             return this;
         }
 
@@ -111,6 +117,7 @@ public class IterableMappingMethod extends MappingMethod {
                 targetElementType,
                 null, // there is no targetPropertyName
                 dateFormat,
+                numberFormat,
                 qualifiers,
                 qualifyingElementTargetType,
                 loopVariableName,

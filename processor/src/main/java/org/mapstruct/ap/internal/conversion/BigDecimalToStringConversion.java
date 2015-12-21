@@ -18,33 +18,39 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
-import java.math.BigDecimal;
-import java.util.Set;
-
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
+
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Conversion between {@link BigDecimal} and {@link String}.
  *
  * @author Gunnar Morling
  */
-public class BigDecimalToStringConversion extends SimpleConversion {
+public class BigDecimalToStringConversion extends PossibleNumberToStringConversion {
+
+    public BigDecimalToStringConversion() {
+        super( BigDecimal.class );
+    }
 
     @Override
-    public String getToExpression(ConversionContext conversionContext) {
+    protected String getFallbackToExpression(ConversionContext conversionContext) {
         return "<SOURCE>.toString()";
     }
 
     @Override
-    public String getFromExpression(ConversionContext conversionContext) {
+    protected String getFallbackFromExpression(ConversionContext conversionContext) {
         return "new BigDecimal( <SOURCE> )";
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
-        return asSet( conversionContext.getTypeFactory().getType( BigDecimal.class ) );
+        Set<Type> importTypes = new HashSet<Type>();
+        importTypes.addAll( super.getFromConversionImportTypes( conversionContext ) );
+        importTypes.add( conversionContext.getTypeFactory().getType( BigDecimal.class ) );
+        return importTypes;
     }
 }

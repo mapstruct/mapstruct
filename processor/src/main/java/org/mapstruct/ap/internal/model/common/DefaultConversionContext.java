@@ -32,15 +32,17 @@ public class DefaultConversionContext implements ConversionContext {
     private final Type sourceType;
     private final Type targetType;
     private final String dateFormat;
+    private final String numberFormat;
     private final TypeFactory typeFactory;
 
     public DefaultConversionContext(TypeFactory typeFactory, FormattingMessager messager, Type sourceType,
-                                    Type targetType, String dateFormat) {
+                                    Type targetType, String dateFormat, String numberFormat) {
         this.typeFactory = typeFactory;
         this.messager = messager;
         this.sourceType = sourceType;
         this.targetType = targetType;
         this.dateFormat = dateFormat;
+        this.numberFormat = numberFormat;
         validateDateFormat();
     }
 
@@ -61,6 +63,11 @@ public class DefaultConversionContext implements ConversionContext {
     @Override
     public Type getTargetType() {
         return targetType;
+    }
+
+    @Override
+    public String getNumberFormat() {
+        return numberFormat;
     }
 
     @Override

@@ -78,7 +78,7 @@ public class DefaultConversionContextTest {
         Type type = typeWithFQN( JavaTimeConstants.ZONED_DATE_TIME_FQN );
         StatefulMessagerMock statefulMessagerMock = new StatefulMessagerMock();
         new DefaultConversionContext(
-                        null, statefulMessagerMock, type, type, "qwertz" );
+                        null, statefulMessagerMock, type, type, "qwertz", null);
         assertThat( statefulMessagerMock.getLastKindPrinted() ).isEqualTo( Diagnostic.Kind.ERROR );
     }
 
@@ -87,7 +87,7 @@ public class DefaultConversionContextTest {
         Type type = typeWithFQN( JavaTimeConstants.ZONED_DATE_TIME_FQN );
         StatefulMessagerMock statefulMessagerMock = new StatefulMessagerMock();
         new DefaultConversionContext(
-                        null, statefulMessagerMock, type, type, null );
+                        null, statefulMessagerMock, type, type, null, null);
         assertThat( statefulMessagerMock.getLastKindPrinted() ).isNull();
     }
 
@@ -96,7 +96,7 @@ public class DefaultConversionContextTest {
         Type type = typeWithFQN( "java.lang.String" );
         StatefulMessagerMock statefulMessagerMock = new StatefulMessagerMock();
         new DefaultConversionContext(
-                        null, statefulMessagerMock, type, type, "qwertz" );
+                        null, statefulMessagerMock, type, type, "qwertz", null);
         assertThat( statefulMessagerMock.getLastKindPrinted() ).isNull();
     }
 
