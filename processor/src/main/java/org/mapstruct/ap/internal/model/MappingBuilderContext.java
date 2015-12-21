@@ -91,6 +91,7 @@ public class MappingBuilderContext {
          * <li>null, no assignment found</li>
          * </ol>
          */
+        @SuppressWarnings("checkstyle:parameternumber")
         Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
                                        String targetPropertyName, String dateFormat,
                                        SelectionParameters selectionParameters, String sourceReference,

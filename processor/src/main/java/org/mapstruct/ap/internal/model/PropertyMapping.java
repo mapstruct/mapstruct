@@ -167,6 +167,7 @@ public class PropertyMapping extends ModelElement {
 
         // initial properties
         private String dateFormat;
+        private String numberFormat;
         private String defaultValue;
         private SourceReference sourceReference;
         private SelectionParameters selectionParameters;
@@ -183,6 +184,11 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder dateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
+            return this;
+        }
+
+        public PropertyMappingBuilder numberFormat(String numberFormat) {
+            this.numberFormat = numberFormat;
             return this;
         }
 

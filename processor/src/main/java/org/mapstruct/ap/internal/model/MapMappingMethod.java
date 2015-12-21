@@ -51,6 +51,7 @@ public class MapMappingMethod extends MappingMethod {
     public static class Builder {
 
         private String keyDateFormat;
+        private String keyNumberFormat;
         private String valueDateFormat;
         private Method method;
         private MappingBuilderContext ctx;

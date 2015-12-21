@@ -18,9 +18,13 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Provides functionality around the Java primitive data types and their wrapper
@@ -32,6 +36,7 @@ public class NativeTypes {
 
     private static final Map<Class<?>, Class<?>> WRAPPER_TO_PRIMITIVE_TYPES;
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER_TYPES;
+    private static final Set<Class<?>> NUMBER_TYPES = new HashSet<Class<?>>();
 
     private NativeTypes() {
     }
@@ -60,6 +65,21 @@ public class NativeTypes {
         tmp.put( char.class, Character.class );
 
         PRIMITIVE_TO_WRAPPER_TYPES = Collections.unmodifiableMap( tmp );
+
+        NUMBER_TYPES.add( byte.class );
+        NUMBER_TYPES.add( short.class );
+        NUMBER_TYPES.add( int.class );
+        NUMBER_TYPES.add( long.class );
+        NUMBER_TYPES.add( float.class );
+        NUMBER_TYPES.add( double.class );
+        NUMBER_TYPES.add( Byte.class );
+        NUMBER_TYPES.add( Short.class );
+        NUMBER_TYPES.add( Integer.class );
+        NUMBER_TYPES.add( Long.class );
+        NUMBER_TYPES.add( Float.class );
+        NUMBER_TYPES.add( Double.class );
+        NUMBER_TYPES.add( BigInteger.class );
+        NUMBER_TYPES.add( BigDecimal.class );
     }
 
     public static Class<?> getWrapperType(Class<?> clazz) {
@@ -76,5 +96,14 @@ public class NativeTypes {
         }
 
         return WRAPPER_TO_PRIMITIVE_TYPES.get( clazz );
+    }
+
+    public static boolean isNumber(Class<?> clazz) {
+        if ( clazz == null ) {
+            return false;
+        }
+        else {
+            return NUMBER_TYPES.contains( clazz );
+        }
     }
 }

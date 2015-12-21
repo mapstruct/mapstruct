@@ -39,6 +39,7 @@ public class IterableMapping {
     private final SelectionParameters selectionParameters;
     private final AnnotationMirror mirror;
     private final AnnotationValue dateFormatAnnotationValue;
+    private final AnnotationValue numberFormatAnnotationValue;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
     public static IterableMapping fromPrism(IterableMappingPrism iterableMapping, ExecutableElement method,
@@ -72,6 +73,7 @@ public class IterableMapping {
             selection,
             iterableMapping.mirror,
             iterableMapping.values.dateFormat(),
+            iterableMapping.values.numberFormat(),
             nullValueMappingStrategy
         );
     }
@@ -83,6 +85,7 @@ public class IterableMapping {
         this.selectionParameters = selectionParameters;
         this.mirror = mirror;
         this.dateFormatAnnotationValue = dateFormatAnnotationValue;
+        this.numberFormatAnnotationValue = numberFormatAnnotationValue;
         this.nullValueMappingStrategy = nvms;
     }
 
@@ -100,6 +103,14 @@ public class IterableMapping {
 
     public AnnotationValue getDateFormatAnnotationValue() {
         return dateFormatAnnotationValue;
+    }
+
+    public String getNumberFormat() {
+        return numberFormat;
+    }
+
+    public AnnotationValue getNumberFormatAnnotationValue() {
+        return numberFormatAnnotationValue;
     }
 
     public NullValueMappingStrategyPrism getNullValueMappingStrategy() {

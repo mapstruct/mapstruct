@@ -294,6 +294,7 @@ public class BeanMappingMethod extends MappingMethod {
                                     .sourceReference( sourceRef )
                                     .selectionParameters( mapping.getSelectionParameters() )
                                     .dateFormat( mapping.getDateFormat() )
+                                    .numberFormat( mapping.getNumberFormat() )
                                     .existingVariableNames( existingVariableNames )
                                     .dependsOn( mapping.getDependsOn() )
                                     .defaultValue( mapping.getDefaultValue() )
@@ -416,6 +417,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .sourceReference( sourceRef )
                                 .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
                                 .dateFormat( mapping != null ? mapping.getDateFormat() : null )
+                                .numberFormat( mapping != null ? mapping.getNumberFormat() : null )
                                 .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
                                 .existingVariableNames( existingVariableNames )
                                 .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
@@ -480,6 +482,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .sourceReference( sourceRef )
                             .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
+                            .numberFormat( mapping != null ? mapping.getNumberFormat() : null )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
                             .build();

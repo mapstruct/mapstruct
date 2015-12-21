@@ -103,6 +103,7 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:parameternumber")
     public Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType,
         Type targetType, String targetPropertyName, String dateFormat, SelectionParameters selectionParameters,
         String sourceReference, boolean preferUpdateMapping) {
@@ -115,6 +116,7 @@ public class MappingResolverImpl implements MappingResolver {
             mappingMethod,
             mappedElement,
             dateFormat,
+            numberFormat,
             sourceReference,
             criteria
         );
@@ -139,6 +141,7 @@ public class MappingResolverImpl implements MappingResolver {
             null,
             null,
             null,
+            null,
             criteria
         );
 
@@ -157,6 +160,7 @@ public class MappingResolverImpl implements MappingResolver {
         private final String mappedElement;
         private final List<SourceMethod> methods;
         private final String dateFormat;
+        private final String numberFormat;
         private final SelectionCriteria selectionCriteria;
         private final String sourceReference;
         private final boolean savedPreferUpdateMapping;
@@ -167,12 +171,13 @@ public class MappingResolverImpl implements MappingResolver {
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
         private ResolvingAttempt(List<SourceMethod> sourceModel, Method mappingMethod, String mappedElement,
-            String dateFormat, String sourceReference, SelectionCriteria criteria) {
+            String dateFormat, String numberFormat, String sourceReference, SelectionCriteria criteria) {
 
             this.mappingMethod = mappingMethod;
             this.mappedElement = mappedElement;
             this.methods = filterPossibleCandidateMethods( sourceModel );
             this.dateFormat = dateFormat;
+            this.numberFormat = numberFormat;
             this.sourceReference = sourceReference;
             this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
             this.selectionCriteria = criteria;
@@ -257,7 +262,7 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             ConversionContext ctx =
-                new DefaultConversionContext( typeFactory, messager, sourceType, targetType, dateFormat );
+                new DefaultConversionContext( typeFactory, messager, sourceType, targetType, dateFormat, numberFormat);
             return conversionProvider.to( ctx );
         }
 
@@ -289,7 +294,7 @@ public class MappingResolverImpl implements MappingResolver {
                 virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod ) );
                 ConversionContext ctx = new DefaultConversionContext( typeFactory, messager,
                                                                       sourceType,
-                                                                      targetType, dateFormat );
+                                                                      targetType, dateFormat, numberFormat);
                 Assignment methodReference = AssignmentFactory.createMethodReference( matchingBuiltInMethod, ctx );
                 methodReference.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
                 return methodReference;

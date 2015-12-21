@@ -19,7 +19,6 @@
 package org.mapstruct.ap.internal.conversion;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
-import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -27,28 +26,24 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Gunnar Morling
  */
-public class WrapperToStringConversion extends SimpleConversion {
+public class WrapperToStringConversion extends PossibleNumberToStringConversion {
 
     private final Class<?> sourceType;
-    private final Class<?> primitiveType;
 
     public WrapperToStringConversion(Class<?> sourceType) {
-        if ( sourceType.isPrimitive() ) {
-            throw new IllegalArgumentException( sourceType + " is no wrapper type." );
-        }
-
+        super( sourceType );
         this.sourceType = sourceType;
-        this.primitiveType = NativeTypes.getPrimitiveType( sourceType );
     }
 
     @Override
-    public String getToExpression(ConversionContext conversionContext) {
+    protected String getFallbackToExpression(ConversionContext conversionContext) {
         return "String.valueOf( <SOURCE> )";
     }
 
     @Override
-    public String getFromExpression(ConversionContext conversionContext) {
+    protected String getFallbackFromExpression(ConversionContext conversionContext) {
         return sourceType.getSimpleName() + ".parse" +
-            Strings.capitalize( primitiveType.getSimpleName() ) + "( <SOURCE> )";
+                Strings.capitalize( primitiveType.getSimpleName() ) + "( <SOURCE> )";
     }
+
 }
