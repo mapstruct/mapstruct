@@ -16,37 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.spi;
+package org.mapstruct.ap.test.hascheck;
+
 
 /**
- * Different types of a method.
- *
- * @author Gunnar Morling
+ * @author Sean Huang
  */
-public enum MethodType {
+public class TargetDoesNotHave extends Target {
+	
+	private int noPrimitive;
+    private String noObject;
 
-    /**
-     * A JavaBeans getter method, e.g. {@code public String getName()}.
-     */
-    GETTER,
+    public int getNoPrimitive() {
+        return noPrimitive;
+    }
 
-    /**
-     * A JavaBeans setter method, e.g. {@code public void setName(String name)}.
-     */
-    SETTER,
+    public void setNoPrimitive(int noPrimitive) {
+        this.noPrimitive = noPrimitive;
+    }
 
-    /**
-     * An adder method, e.g. {@code public void addItem(String item)}.
-     */
-    ADDER,
+    public String getNoObject() {
+        return noObject;
+    }
 
-    /**
-     * Any method which is neither a JavaBeans getter, setter nor an adder method.
-     */
-    OTHER,
-
-    /**
-     * A JavaBeans hasser method, e.g. {@code public String hasName()}.
-     */
-    HASSER;
+    public void setNoObject(String noObject) {
+        this.noObject = noObject;
+    }
 }

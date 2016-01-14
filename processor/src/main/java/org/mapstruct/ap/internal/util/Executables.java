@@ -76,6 +76,12 @@ public class Executables {
             ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.GETTER;
     }
 
+    public static boolean isHasserMethod(ExecutableElement method) {
+        return isPublic( method ) &&
+            method.getParameters().isEmpty() &&
+            ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.HASSER;
+    }
+
     public static boolean isSetterMethod(ExecutableElement method) {
         return isPublic( method )
             && method.getParameters().size() == 1
@@ -92,8 +98,8 @@ public class Executables {
         return method.getModifiers().contains( Modifier.PUBLIC );
     }
 
-    public static String getPropertyName(ExecutableElement getterOrSetterMethod) {
-        return ACCESSOR_NAMING_STRATEGY.getPropertyName( getterOrSetterMethod );
+    public static String getPropertyName(ExecutableElement getterOrHasserOrSetterMethod) {
+        return ACCESSOR_NAMING_STRATEGY.getPropertyName( getterOrHasserOrSetterMethod );
     }
 
     public static boolean isDefaultMethod(ExecutableElement method) {

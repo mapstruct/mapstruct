@@ -42,6 +42,9 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         if ( isGetterMethod( method ) ) {
             return MethodType.GETTER;
         }
+        else if ( isHasserMethod( method ) ) {
+            return MethodType.HASSER;
+        }
         else if ( isSetterMethod( method ) ) {
             return MethodType.SETTER;
         }
@@ -66,6 +69,14 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         return isNonBooleanGetterName || ( isBooleanGetterName && returnTypeIsBoolean );
     }
 
+    private boolean isHasserMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+
+        return methodName.startsWith( "has" ) && methodName.length() > 3 &&
+            ( method.getReturnType().getKind() == TypeKind.BOOLEAN ||
+                    "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) ) );
+    }
+
     public boolean isSetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
@@ -80,8 +91,8 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
 
 
     @Override
-    public String getPropertyName(ExecutableElement getterOrSetterMethod) {
-        String methodName = getterOrSetterMethod.getSimpleName().toString();
+    public String getPropertyName(ExecutableElement getterOrHasserOrSetterMethod) {
+        String methodName = getterOrHasserOrSetterMethod.getSimpleName().toString();
         return Introspector.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
     }
 

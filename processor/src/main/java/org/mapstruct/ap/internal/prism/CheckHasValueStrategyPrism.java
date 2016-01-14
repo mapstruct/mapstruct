@@ -16,37 +16,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.spi;
+package org.mapstruct.ap.internal.prism;
 
 /**
- * Different types of a method.
+ * Prism for the enum {@link org.mapstruct.CheckHasValueMappingStrategy}
  *
- * @author Gunnar Morling
+ * @author Sean Huang
  */
-public enum MethodType {
+public enum CheckHasValueStrategyPrism {
 
-    /**
-     * A JavaBeans getter method, e.g. {@code public String getName()}.
-     */
-    GETTER,
-
-    /**
-     * A JavaBeans setter method, e.g. {@code public void setName(String name)}.
-     */
-    SETTER,
-
-    /**
-     * An adder method, e.g. {@code public void addItem(String item)}.
-     */
-    ADDER,
-
-    /**
-     * Any method which is neither a JavaBeans getter, setter nor an adder method.
-     */
-    OTHER,
-
-    /**
-     * A JavaBeans hasser method, e.g. {@code public String hasName()}.
-     */
-    HASSER;
+    CHECK_HAS_METHOD,
+    NO_CHECK_HAS_METHOD,
+    UN_DEFINED;
+    
+    public static Boolean parseToBoolean(String value) {
+    	CheckHasValueStrategyPrism strategy = valueOf(value);
+    	switch (strategy) {
+    		case CHECK_HAS_METHOD:
+    			return true;
+    		case NO_CHECK_HAS_METHOD:
+    			return false;
+    		default:
+    			return null;
+    	}
+    }
 }

@@ -16,37 +16,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.spi;
+package org.mapstruct.ap.test.hascheck;
+
+import org.mapstruct.CheckHasValueStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Different types of a method.
- *
- * @author Gunnar Morling
+ * @author Sean Huang
  */
-public enum MethodType {
+@Mapper(uses = { CustomMapper.class })
+public interface SourceTargetWtCheckMapper {
 
-    /**
-     * A JavaBeans getter method, e.g. {@code public String getName()}.
-     */
-    GETTER,
-
-    /**
-     * A JavaBeans setter method, e.g. {@code public void setName(String name)}.
-     */
-    SETTER,
-
-    /**
-     * An adder method, e.g. {@code public void addItem(String item)}.
-     */
-    ADDER,
-
-    /**
-     * Any method which is neither a JavaBeans getter, setter nor an adder method.
-     */
-    OTHER,
-
-    /**
-     * A JavaBeans hasser method, e.g. {@code public String hasName()}.
-     */
-    HASSER;
+    SourceTargetWtCheckMapper INSTANCE = Mappers.getMapper( SourceTargetWtCheckMapper.class );
+    
+    @Mappings( {
+        @Mapping(target="noCheckObject", checkHasValueStrategy = CheckHasValueStrategy.NO_CHECK_HAS_METHOD),
+        @Mapping(target="noCheckPrimitive", defaultValue = "111", 
+             checkHasValueStrategy = CheckHasValueStrategy.NO_CHECK_HAS_METHOD),
+    } )
+    TargetWtCheck sourceToTargetWtCheckConfigOff(SourceWtCheck source);
 }

@@ -87,6 +87,11 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
+    public String getSourceHasMethod() {
+        return assignment.getSourceHasMethod();
+    }
+
+    @Override
     public void setAssignment( Assignment assignment ) {
         this.assignment = assignment;
     }

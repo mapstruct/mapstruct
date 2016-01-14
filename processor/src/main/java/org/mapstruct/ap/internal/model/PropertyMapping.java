@@ -18,6 +18,12 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +35,7 @@ import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.assignment.HasCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
@@ -48,12 +55,6 @@ import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
-
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
  * {@code int Target#bar}. Name and type of source and target property can differ. If they have different types, the
@@ -70,6 +71,7 @@ public class PropertyMapping extends ModelElement {
     private final Type targetType;
     private final Assignment assignment;
     private final List<String> dependsOn;
+    private final boolean checkHasMethod;
     private final Assignment defaultValueAssignment;
 
     @SuppressWarnings("unchecked")
@@ -81,6 +83,7 @@ public class PropertyMapping extends ModelElement {
         protected ExecutableElement targetReadAccessor;
         protected String targetPropertyName;
         protected List<String> dependsOn;
+        protected boolean checkHasMethod;
         protected Set<String> existingVariableNames;
 
         public T mappingContext(MappingBuilderContext mappingContext) {
@@ -110,6 +113,11 @@ public class PropertyMapping extends ModelElement {
 
         public T dependsOn(List<String> dependsOn) {
             this.dependsOn = dependsOn;
+            return (T) this;
+        }
+
+        public T checkHasMethod(boolean checkHasMethod) {
+            this.checkHasMethod = checkHasMethod;
             return (T) this;
         }
 
@@ -246,6 +254,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
+                checkHasMethod,
                 getDefaultValueAssignment()
             );
         }
@@ -288,7 +297,8 @@ public class PropertyMapping extends ModelElement {
                         targetType );
                 }
                 else {
-                    result = new SetterWrapper( result, method.getThrownTypes() );
+                    result = checkHasMethod ? createHasCheckWrapper( result )
+                        : new SetterWrapper( result, method.getThrownTypes() );
                 }
                 if ( !sourceType.isPrimitive()
                     && !sourceReference.getPropertyEntries().isEmpty() ) { // parameter null taken care of by beanmapper
@@ -348,7 +358,8 @@ public class PropertyMapping extends ModelElement {
                         implementationTypes = targetType.getImportTypes();
                     }
                     newCollectionOrMap = new NewCollectionOrMapWrapper( result, implementationTypes );
-                    newCollectionOrMap = new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
+                    newCollectionOrMap = checkHasMethod ? this.createHasCheckWrapper( newCollectionOrMap )
+                        : new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
                 }
                 if ( result.isUpdateMethod() ) {
                     if ( targetReadAccessor == null ) {
@@ -460,6 +471,29 @@ public class PropertyMapping extends ModelElement {
 
                 return forgedName + "( " + sourceParam.getName() + " )";
             }
+        }
+
+        private Assignment createHasCheckWrapper(Assignment assignment) {
+            String hasMethod = this.getSourceHasMethod();
+
+            if (hasMethod == null) {
+                throw new IllegalArgumentException( sourceReference.getParameter().getName()
+                    + " does not have 'hasXXX()' method." );
+            }
+            return new HasCheckWrapper( assignment, method.getThrownTypes(), hasMethod );
+        }
+
+        private String getSourceHasMethod() {
+            Parameter sourceParam = sourceReference.getParameter();
+            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+
+            for (PropertyEntry property : propertyEntries) {
+                if (property.getHasAccessor() != null) {
+                     return sourceParam.getName() + "." + property.getHasAccessor().getSimpleName() + "()";
+                }
+            }
+
+            return null;
         }
 
         private String getSourceElement() {
@@ -695,6 +729,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
+                checkHasMethod,
                 null
             );
         }
@@ -741,6 +776,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
+                checkHasMethod,
                 null
             );
         }
@@ -749,14 +785,15 @@ public class PropertyMapping extends ModelElement {
 
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name, String targetWriteAccessorName, String targetReadAccessorName, Type targetType,
-                            Assignment propertyAssignment, List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            Assignment propertyAssignment, List<String> dependsOn, boolean checkHasMethod,
+                            Assignment defaultValueAssignment ) {
         this( name, null, targetWriteAccessorName, targetReadAccessorName,
-                        targetType, propertyAssignment, dependsOn, defaultValueAssignment );
+                        targetType, propertyAssignment, dependsOn, checkHasMethod, defaultValueAssignment );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             String targetReadAccessorName, Type targetType, Assignment assignment,
-                            List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            List<String> dependsOn, boolean checkHasMethod, Assignment defaultValueAssignment ) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -765,6 +802,7 @@ public class PropertyMapping extends ModelElement {
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
         this.defaultValueAssignment = defaultValueAssignment;
+        this.checkHasMethod = checkHasMethod;
     }
 
     /**
@@ -814,6 +852,10 @@ public class PropertyMapping extends ModelElement {
         return dependsOn;
     }
 
+    public boolean shouldCheckHasMethod() {
+        return checkHasMethod;
+    }
+
     @Override
     public String toString() {
         return "PropertyMapping {"
@@ -824,6 +866,7 @@ public class PropertyMapping extends ModelElement {
             + "\n    propertyAssignment=" + assignment + ","
             + "\n    defaultValueAssignment=" + defaultValueAssignment + ","
             + "\n    dependsOn=" + dependsOn
+            + "\n    checkHasMethod=" + checkHasMethod
             + "\n}";
     }
 }

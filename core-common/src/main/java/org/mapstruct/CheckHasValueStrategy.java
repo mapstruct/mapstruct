@@ -16,37 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.spi;
+package org.mapstruct;
 
 /**
- * Different types of a method.
+ * Strategy to decide whether we should check hasXXX method before mapping
  *
- * @author Gunnar Morling
+ *
+ * @author Sean Huang
  */
-public enum MethodType {
+public enum CheckHasValueStrategy {
 
     /**
-     * A JavaBeans getter method, e.g. {@code public String getName()}.
+     * Will check hasXXX method before mapping
      */
-    GETTER,
+    CHECK_HAS_METHOD,
 
     /**
-     * A JavaBeans setter method, e.g. {@code public void setName(String name)}.
+     * Will not check hasXXX method before mapping
+     *
      */
-    SETTER,
+    NO_CHECK_HAS_METHOD,
 
     /**
-     * An adder method, e.g. {@code public void addItem(String item)}.
+     * Undefined
+     *
      */
-    ADDER,
-
-    /**
-     * Any method which is neither a JavaBeans getter, setter nor an adder method.
-     */
-    OTHER,
-
-    /**
-     * A JavaBeans hasser method, e.g. {@code public String hasName()}.
-     */
-    HASSER;
+    UN_DEFINED;
 }

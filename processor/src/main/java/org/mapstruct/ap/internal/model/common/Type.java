@@ -84,6 +84,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final List<String> enumConstants;
 
     private Map<String, ExecutableElement> getters = null;
+    private Map<String, ExecutableElement> hassers = null;
 
     private List<ExecutableElement> allExecutables = null;
     private List<ExecutableElement> setters = null;
@@ -360,6 +361,23 @@ public class Type extends ModelElement implements Comparable<Type> {
             getters = Collections.unmodifiableMap( modifiableGetters );
         }
         return getters;
+    }
+
+    /**
+     * getPropertyHasAccessors
+     *
+     * @return an unmodifiable map of all has accessors, indexed by property name
+     */
+    public Map<String, ExecutableElement> getPropertyHasAccessors() {
+        if ( hassers == null ) {
+            List<ExecutableElement> hasserList = Filters.hasserMethodsIn( getAllExecutables() );
+            Map<String, ExecutableElement> modifiableHassers = new LinkedHashMap<String, ExecutableElement>();
+            for (ExecutableElement hasser : hasserList) {
+                modifiableHassers.put( Executables.getPropertyName( hasser ), hasser );
+            }
+            hassers = Collections.unmodifiableMap( modifiableHassers );
+        }
+        return hassers;
     }
 
     /**

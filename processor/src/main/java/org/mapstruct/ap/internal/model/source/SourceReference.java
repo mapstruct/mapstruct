@@ -174,10 +174,13 @@ public class SourceReference {
             for ( String entryName : entryNames ) {
                 boolean matchFound = false;
                 Map<String, ExecutableElement> sourceReadAccessors = newType.getPropertyReadAccessors();
+                Map<String, ExecutableElement> sourceHasAccessors = newType.getPropertyHasAccessors();
+
                 for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
                     if ( getter.getKey().equals( entryName ) ) {
                         newType = typeFactory.getReturnType( newType.getTypeElement(), getter.getValue() );
-                        sourceEntries.add( new PropertyEntry( entryName, getter.getValue(), newType ) );
+                        sourceEntries.add( new PropertyEntry( entryName, getter.getValue(),
+                              sourceHasAccessors.get( entryName), newType ) );
                         matchFound = true;
                         break;
                     }
@@ -201,7 +204,8 @@ public class SourceReference {
     public static class BuilderFromProperty {
 
         private String name;
-        private ExecutableElement accessor;
+        private ExecutableElement readAccessor;
+        private ExecutableElement hasAccessor;
         private Type type;
         private Parameter sourceParameter;
 
@@ -210,8 +214,13 @@ public class SourceReference {
             return this;
         }
 
-        public BuilderFromProperty accessor(ExecutableElement accessor) {
-            this.accessor = accessor;
+        public BuilderFromProperty readAccessor(ExecutableElement readAccessor) {
+            this.readAccessor = readAccessor;
+            return this;
+        }
+
+        public BuilderFromProperty hasAccessor(ExecutableElement hasAccessor) {
+            this.hasAccessor = hasAccessor;
             return this;
         }
 
@@ -227,8 +236,8 @@ public class SourceReference {
 
         public SourceReference build() {
             List<PropertyEntry> sourcePropertyEntries = new ArrayList<PropertyEntry>();
-            if ( accessor != null ) {
-                sourcePropertyEntries.add( new PropertyEntry( name, accessor, type ) );
+            if ( readAccessor != null ) {
+                sourcePropertyEntries.add( new PropertyEntry( name, readAccessor, hasAccessor, type ) );
             }
             return new SourceReference( sourceParameter, sourcePropertyEntries, true );
         }
@@ -268,11 +277,13 @@ public class SourceReference {
 
         private final String name;
         private final ExecutableElement accessor;
+        private final ExecutableElement hasAccessor;
         private final Type type;
 
-        public PropertyEntry(String name, ExecutableElement accessor, Type type) {
+        public PropertyEntry(String name, ExecutableElement readAccessor, ExecutableElement hasAccessor, Type type) {
             this.name = name;
-            this.accessor = accessor;
+            this.accessor = readAccessor;
+            this.hasAccessor = hasAccessor;
             this.type = type;
         }
 
@@ -282,6 +293,10 @@ public class SourceReference {
 
         public ExecutableElement getAccessor() {
             return accessor;
+        }
+
+        public ExecutableElement getHasAccessor() {
+            return hasAccessor;
         }
 
         public Type getType() {

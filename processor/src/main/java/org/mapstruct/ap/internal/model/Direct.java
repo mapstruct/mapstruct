@@ -45,6 +45,11 @@ public class Direct extends ModelElement implements Assignment {
     }
 
     @Override
+    public String getSourceHasMethod() {
+        return null;
+    }
+
+    @Override
     public Set<Type> getImportTypes() {
         return Collections.emptySet();
     }

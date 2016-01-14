@@ -165,4 +165,12 @@ public @interface Mapping {
      * @return Default value to set in case the source property is {@code null}.
      */
     String defaultValue() default "";
+
+     /**
+     * Decide whether we should check hasXXX method before mapping. By default, it is UN_DEFINED.
+     * So the value on {@link Mapper} can override this one.
+     *
+     * @return strategy about how to do has value check
+     */
+    CheckHasValueStrategy checkHasValueStrategy() default CheckHasValueStrategy.UN_DEFINED;
 }

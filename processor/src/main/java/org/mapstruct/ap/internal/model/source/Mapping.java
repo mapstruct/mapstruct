@@ -35,6 +35,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.CheckHasValueStrategyPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
@@ -60,6 +61,7 @@ public class Mapping {
     private final TypeMirror resultType;
     private final boolean isIgnored;
     private final List<String> dependsOn;
+    private final Boolean checkHasMethod;
 
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -153,7 +155,8 @@ public class Mapping {
             mappingPrism.values.target(),
             mappingPrism.values.dependsOn(),
             resultType,
-            dependsOn
+            dependsOn,
+            CheckHasValueStrategyPrism.parseToBoolean(mappingPrism.checkHasValueStrategy())
         );
     }
 
@@ -163,7 +166,7 @@ public class Mapping {
                     boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
                     AnnotationValue dependsOnAnnotationValue,
-                    TypeMirror resultType, List<String> dependsOn) {
+                    TypeMirror resultType, List<String> dependsOn, Boolean checkHasMethod) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -178,6 +181,7 @@ public class Mapping {
         this.dependsOnAnnotationValue = dependsOnAnnotationValue;
         this.resultType = resultType;
         this.dependsOn = dependsOn;
+        this.checkHasMethod = checkHasMethod;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
@@ -282,6 +286,10 @@ public class Mapping {
         return dependsOn;
     }
 
+    public Boolean shouldCheckHasMethod() {
+        return checkHasMethod;
+    }
+
     private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         return method.getResultType().getPropertyWriteAccessors( cms ).containsKey( name );
@@ -331,7 +339,8 @@ public class Mapping {
             targetAnnotationValue,
             dependsOnAnnotationValue,
             null,
-            Collections.<String>emptyList()
+            Collections.<String>emptyList(),
+            checkHasMethod
         );
 
         reverse.init( method, messager, typeFactory );
@@ -359,7 +368,8 @@ public class Mapping {
             targetAnnotationValue,
             dependsOnAnnotationValue,
             resultType,
-            dependsOn
+            dependsOn,
+            checkHasMethod
         );
 
         if ( sourceReference != null ) {

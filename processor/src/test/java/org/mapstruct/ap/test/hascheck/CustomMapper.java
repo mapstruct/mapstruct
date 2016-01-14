@@ -16,37 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.spi;
+package org.mapstruct.ap.test.hascheck;
+
+import org.mapstruct.CheckHasValueStrategy;
+import org.mapstruct.Mapper;
 
 /**
- * Different types of a method.
- *
- * @author Gunnar Morling
+ * @author Sean Huang
  */
-public enum MethodType {
-
-    /**
-     * A JavaBeans getter method, e.g. {@code public String getName()}.
-     */
-    GETTER,
-
-    /**
-     * A JavaBeans setter method, e.g. {@code public void setName(String name)}.
-     */
-    SETTER,
-
-    /**
-     * An adder method, e.g. {@code public void addItem(String item)}.
-     */
-    ADDER,
-
-    /**
-     * Any method which is neither a JavaBeans getter, setter nor an adder method.
-     */
-    OTHER,
-
-    /**
-     * A JavaBeans hasser method, e.g. {@code public String hasName()}.
-     */
-    HASSER;
+@Mapper( checkHasValueStrategy = CheckHasValueStrategy.CHECK_HAS_METHOD )
+public class CustomMapper {
+	
+    public MyLongWrapper toMyLongWrapperViaPrimitive(long primitive) {
+        MyLongWrapper wrapper = new MyLongWrapper();
+        wrapper.setMyLong( primitive );
+        return wrapper;
+    }
 }

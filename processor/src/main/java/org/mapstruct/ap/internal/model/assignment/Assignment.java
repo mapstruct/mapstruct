@@ -78,6 +78,13 @@ public interface Assignment {
     String getSourceReference();
 
     /**
+     * the name of source has method.
+     *
+     * @return source has method
+     */
+    String getSourceHasMethod();
+
+    /**
      * Returns whether the type of assignment
      *
      * @return {@link  AssignmentType}

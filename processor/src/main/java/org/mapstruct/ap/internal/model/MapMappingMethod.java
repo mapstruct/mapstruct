@@ -106,8 +106,6 @@ public class MapMappingMethod extends MappingMethod {
             return this;
         }
 
-
-
         public MapMappingMethod build() {
 
             List<Type> sourceTypeParams = first( method.getSourceParameters() ).getType().getTypeParameters();
