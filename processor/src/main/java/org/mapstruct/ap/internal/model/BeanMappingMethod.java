@@ -367,9 +367,6 @@ public class BeanMappingMethod extends MappingMethod {
             Iterator<Entry<String, ExecutableElement>> targetPropertiesIterator =
                 unprocessedTargetProperties.entrySet().iterator();
 
-            // usually there should be only one getter; only for Boolean there may be two: isFoo() and getFoo()
-            List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( 2 );
-
             while ( targetPropertiesIterator.hasNext() ) {
 
                 Entry<String, ExecutableElement> targetProperty = targetPropertiesIterator.next();
@@ -387,18 +384,24 @@ public class BeanMappingMethod extends MappingMethod {
                             continue;
                         }
 
-
                         PropertyMapping newPropertyMapping = null;
-                        ExecutableElement sourceAccessor = sourceType.getPropertyReadAccessors().get( propertyName );
-                        if ( sourceAccessor != null ) {
-                            Mapping mapping = method.getSingleMappingByTargetPropertyName( propertyName );
+
+                        ExecutableElement sourceReadAccessor =
+                            sourceParameter.getType().getPropertyReadAccessors().get( propertyName );
+
+                        ExecutableElement sourcePresenceChecker =
+                            sourceParameter.getType().getPropertyPresenceCheckers().get( propertyName );
+
+                        if ( sourceReadAccessor != null ) {
+                            Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
                             DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
 
                             SourceReference sourceRef = new SourceReference.BuilderFromProperty()
                                 .sourceParameter( sourceParameter )
-                                .type( ctx.getTypeFactory().getReturnType( declaredSourceType, sourceAccessor ) )
-                                .accessor( sourceAccessor )
-                                .name( propertyName )
+                                .type( ctx.getTypeFactory().getReturnType( declaredSourceType, sourceReadAccessor ) )
+                                .readAccessor( sourceReadAccessor )
+                                .presenceChecker( sourcePresenceChecker )
+                                .name( targetProperty.getKey() )
                                 .build();
 
                             newPropertyMapping = new PropertyMappingBuilder()
@@ -416,10 +419,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
-
                         }
-                        // candidates are handled
-                        candidates.clear();
 
                         if ( propertyMapping != null && newPropertyMapping != null ) {
                             // TODO improve error message

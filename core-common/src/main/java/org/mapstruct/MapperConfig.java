@@ -18,6 +18,8 @@
  */
 package org.mapstruct;
 
+import static org.mapstruct.SourceValuePresenceCheckStrategy.IS_NULL_INLINE;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -135,4 +137,12 @@ public @interface MapperConfig {
      */
     MappingInheritanceStrategy mappingInheritanceStrategy()
         default MappingInheritanceStrategy.EXPLICIT;
+
+    /**
+     * Decide how to do presence check, such as checking null or calling hasXXX method, before mapping.
+     * Can be overridden by the one on {@link Mapper} or {@link Mapping}.
+     *
+     * @return strategy about how to do null or presence check
+     */
+    SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() default IS_NULL_INLINE;
 }

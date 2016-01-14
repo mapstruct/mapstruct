@@ -85,6 +85,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final List<String> enumConstants;
 
     private Map<String, ExecutableElement> getters = null;
+    private Map<String, ExecutableElement> presenceCheckers = null;
 
     private List<ExecutableElement> allExecutables = null;
     private List<ExecutableElement> setters = null;
@@ -378,6 +379,23 @@ public class Type extends ModelElement implements Comparable<Type> {
             getters = Collections.unmodifiableMap( modifiableGetters );
         }
         return getters;
+    }
+
+    /**
+     * getPropertyPresenceCheckers
+     *
+     * @return an unmodifiable map of all presence checkers, indexed by property name
+     */
+    public Map<String, ExecutableElement> getPropertyPresenceCheckers() {
+        if ( presenceCheckers == null ) {
+            List<ExecutableElement> checkerList = Filters.presenceCheckMethodsIn( getAllExecutables() );
+            Map<String, ExecutableElement> modifiableCheckers = new LinkedHashMap<String, ExecutableElement>();
+            for (ExecutableElement checker : checkerList) {
+                modifiableCheckers.put( Executables.getPropertyName( checker ), checker );
+            }
+            presenceCheckers = Collections.unmodifiableMap( modifiableCheckers );
+        }
+        return presenceCheckers;
     }
 
     /**

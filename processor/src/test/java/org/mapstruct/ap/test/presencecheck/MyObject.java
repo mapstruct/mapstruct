@@ -16,37 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.spi;
+package org.mapstruct.ap.test.presencecheck;
 
 /**
- * Different types of a method.
- *
- * @author Gunnar Morling
+ * @author Sean Huang
  */
-public enum MethodType {
+public class MyObject {
+    @Override
+    public boolean equals(Object object) {
+         return this == object;
+    }
 
-    /**
-     * A JavaBeans getter method, e.g. {@code public String getName()}.
-     */
-    GETTER,
-
-    /**
-     * A JavaBeans setter method, e.g. {@code public void setName(String name)}.
-     */
-    SETTER,
-
-    /**
-     * An adder method, e.g. {@code public void addItem(String item)}.
-     */
-    ADDER,
-
-    /**
-     * Any method which is neither a JavaBeans getter, setter nor an adder method.
-     */
-    OTHER,
-
-    /**
-     * A method to check whether a property is present, e.g. {@code public String hasName()}.
-     */
-    PRESENCE_CHECKER;
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

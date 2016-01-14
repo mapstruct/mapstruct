@@ -175,12 +175,14 @@ public class SourceReference {
             for ( String entryName : entryNames ) {
                 boolean matchFound = false;
                 Map<String, ExecutableElement> sourceReadAccessors = newType.getPropertyReadAccessors();
+                Map<String, ExecutableElement> sourcePresenceCheckers = newType.getPropertyPresenceCheckers();
+
                 for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
                     if ( getter.getKey().equals( entryName ) ) {
-                        newType = typeFactory.getReturnType(
-                                (DeclaredType) newType.getTypeMirror(), getter.getValue()
-                        );
-                        sourceEntries.add( new PropertyEntry( entryName, getter.getValue(), newType ) );
+                        newType = typeFactory.getReturnType( (DeclaredType) newType.getTypeMirror(),
+                              getter.getValue() );
+                        sourceEntries.add( new PropertyEntry( entryName, getter.getValue(),
+                              sourcePresenceCheckers.get( entryName ), newType ) );
                         matchFound = true;
                         break;
                     }
@@ -204,7 +206,8 @@ public class SourceReference {
     public static class BuilderFromProperty {
 
         private String name;
-        private ExecutableElement accessor;
+        private ExecutableElement readAccessor;
+        private ExecutableElement presenceChecker;
         private Type type;
         private Parameter sourceParameter;
 
@@ -213,8 +216,13 @@ public class SourceReference {
             return this;
         }
 
-        public BuilderFromProperty accessor(ExecutableElement accessor) {
-            this.accessor = accessor;
+        public BuilderFromProperty readAccessor(ExecutableElement readAccessor) {
+            this.readAccessor = readAccessor;
+            return this;
+        }
+
+        public BuilderFromProperty presenceChecker(ExecutableElement presenceChecker) {
+            this.presenceChecker = presenceChecker;
             return this;
         }
 
@@ -230,8 +238,8 @@ public class SourceReference {
 
         public SourceReference build() {
             List<PropertyEntry> sourcePropertyEntries = new ArrayList<PropertyEntry>();
-            if ( accessor != null ) {
-                sourcePropertyEntries.add( new PropertyEntry( name, accessor, type ) );
+            if ( readAccessor != null ) {
+                sourcePropertyEntries.add( new PropertyEntry( name, readAccessor, presenceChecker, type ) );
             }
             return new SourceReference( sourceParameter, sourcePropertyEntries, true );
         }
@@ -271,11 +279,14 @@ public class SourceReference {
 
         private final String name;
         private final ExecutableElement accessor;
+        private final ExecutableElement presenceChecker;
         private final Type type;
 
-        public PropertyEntry(String name, ExecutableElement accessor, Type type) {
+        public PropertyEntry(String name, ExecutableElement readAccessor,
+                ExecutableElement presenceChecker, Type type) {
             this.name = name;
-            this.accessor = accessor;
+            this.accessor = readAccessor;
+            this.presenceChecker = presenceChecker;
             this.type = type;
         }
 
@@ -285,6 +296,10 @@ public class SourceReference {
 
         public ExecutableElement getAccessor() {
             return accessor;
+        }
+
+        public ExecutableElement getPresenceChecker() {
+            return presenceChecker;
         }
 
         public Type getType() {

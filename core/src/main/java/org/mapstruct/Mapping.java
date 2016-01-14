@@ -18,6 +18,8 @@
  */
 package org.mapstruct;
 
+import static org.mapstruct.SourceValuePresenceCheckStrategy.IS_NULL_INLINE;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -190,4 +192,12 @@ public @interface Mapping {
      * @return Default value to set in case the source property is {@code null}.
      */
     String defaultValue() default "";
+
+    /**
+     * Decide how to do presence check, such as checking null or calling hasXXX method, before mapping.
+     * If it is set to default, it can be overridden by the one on {@link MapperConfig} or {@link Mapper}.
+     *
+     * @return strategy about how to do null or presence check
+     */
+    SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() default IS_NULL_INLINE;
 }

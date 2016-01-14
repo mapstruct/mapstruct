@@ -32,6 +32,7 @@ import org.mapstruct.ap.internal.prism.MapperConfigPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy;
 
 /**
  * Provides an aggregated view to the settings given via {@link org.mapstruct.Mapper} and
@@ -182,5 +183,23 @@ public class MapperConfiguration {
 
     public AnnotationMirror getAnnotationMirror() {
         return mapperPrism.mirror;
+    }
+
+    public SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() {
+        if ( mapperConfigPrism != null && mapperPrism.values.sourceValuePresenceCheckStrategy() == null ) {
+             return SourceValuePresenceCheckStrategy.valueOf( mapperConfigPrism.sourceValuePresenceCheckStrategy() );
+        }
+        else {
+             return SourceValuePresenceCheckStrategy.valueOf( mapperPrism.sourceValuePresenceCheckStrategy() );
+        }
+    }
+
+    public boolean isSetSourceValuePresenceCheckStrategy() {
+       if ( mapperConfigPrism != null  && mapperPrism.values.sourceValuePresenceCheckStrategy() == null ) {
+            return  mapperConfigPrism.values.sourceValuePresenceCheckStrategy() != null;
+       }
+       else {
+            return  mapperPrism.values.sourceValuePresenceCheckStrategy() != null;
+       }
     }
 }

@@ -16,37 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.spi;
+package org.mapstruct.ap.internal.prism;
+
 
 /**
- * Different types of a method.
+ * Prism for the enum {@link org.mapstruct.SourceValuePresenceCheckStrategy}
  *
- * @author Gunnar Morling
+ * @author Sean Huang
  */
-public enum MethodType {
+public enum SourceValuePresenceCheckStrategy {
+     /**
+     * Only check != null for inline conversions
+     *
+     */
+    IS_NULL_INLINE,
 
     /**
-     * A JavaBeans getter method, e.g. {@code public String getName()}.
+     * Always check != null, no matter whether it's an inline or method conversion
+     *
      */
-    GETTER,
+    IS_NULL,
 
     /**
-     * A JavaBeans setter method, e.g. {@code public void setName(String name)}.
+     * Will invoke custom hasX() method, before mapping,
+     * name to be given through the accessor naming strategy
      */
-    SETTER,
-
-    /**
-     * An adder method, e.g. {@code public void addItem(String item)}.
-     */
-    ADDER,
-
-    /**
-     * Any method which is neither a JavaBeans getter, setter nor an adder method.
-     */
-    OTHER,
-
-    /**
-     * A method to check whether a property is present, e.g. {@code public String hasName()}.
-     */
-    PRESENCE_CHECKER;
+    CUSTOM;
 }

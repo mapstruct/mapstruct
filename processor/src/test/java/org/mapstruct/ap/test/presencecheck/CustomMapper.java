@@ -16,37 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.spi;
+package org.mapstruct.ap.test.presencecheck;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.SourceValuePresenceCheckStrategy;
 
 /**
- * Different types of a method.
- *
- * @author Gunnar Morling
+ * @author Sean Huang
  */
-public enum MethodType {
+@Mapper( sourceValuePresenceCheckStrategy = SourceValuePresenceCheckStrategy.IS_NULL_INLINE )
+public class CustomMapper {
 
-    /**
-     * A JavaBeans getter method, e.g. {@code public String getName()}.
-     */
-    GETTER,
-
-    /**
-     * A JavaBeans setter method, e.g. {@code public void setName(String name)}.
-     */
-    SETTER,
-
-    /**
-     * An adder method, e.g. {@code public void addItem(String item)}.
-     */
-    ADDER,
-
-    /**
-     * Any method which is neither a JavaBeans getter, setter nor an adder method.
-     */
-    OTHER,
-
-    /**
-     * A method to check whether a property is present, e.g. {@code public String hasName()}.
-     */
-    PRESENCE_CHECKER;
+    public MyLongWrapper toMyLongWrapperViaPrimitive(Long primitive) {
+        MyLongWrapper wrapper = new MyLongWrapper();
+        wrapper.setMyLong( primitive );
+        return wrapper;
+    }
 }

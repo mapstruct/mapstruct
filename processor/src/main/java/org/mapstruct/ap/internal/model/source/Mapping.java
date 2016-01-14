@@ -38,6 +38,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
+import org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
@@ -60,6 +61,9 @@ public class Mapping {
 
     private final boolean isIgnored;
     private final List<String> dependsOn;
+
+    private final SourceValuePresenceCheckStrategy valuePresenceCheckStrategy;
+    private final boolean isSetValuePresenceCheckStrategy;
 
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -95,7 +99,6 @@ public class Mapping {
 
     public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element,
                                            FormattingMessager messager) {
-
 
         if ( mappingPrism.target().isEmpty() ) {
             messager.printMessage(
@@ -139,12 +142,13 @@ public class Mapping {
         List<String> dependsOn =
             mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
 
+        boolean isSetValuePresenceCheckStrategy = mappingPrism.values.sourceValuePresenceCheckStrategy() != null;
+
+        FormattingParameters formattingParam = new FormattingParameters( dateFormat, numberFormat );
         SelectionParameters selectionParams = new SelectionParameters(
             mappingPrism.qualifiedBy(),
             mappingPrism.qualifiedByName(),
             resultTypeIsDefined ? mappingPrism.resultType() : null);
-
-        FormattingParameters formattingParam = new FormattingParameters( dateFormat, numberFormat );
 
         return new Mapping(
             source,
@@ -159,16 +163,20 @@ public class Mapping {
             formattingParam,
             selectionParams,
             mappingPrism.values.dependsOn(),
-            dependsOn
+            dependsOn,
+            SourceValuePresenceCheckStrategy.valueOf( mappingPrism.sourceValuePresenceCheckStrategy() ),
+            isSetValuePresenceCheckStrategy
         );
     }
 
     @SuppressWarnings("checkstyle:parameternumber")
-    private Mapping(String sourceName, String constant, String javaExpression, String targetName,
+    private Mapping( String sourceName, String constant, String javaExpression, String targetName,
                      String defaultValue, boolean isIgnored, AnnotationMirror mirror,
                      AnnotationValue sourceAnnotationValue,  AnnotationValue targetAnnotationValue,
                      FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-                     AnnotationValue dependsOnAnnotationValue, List<String> dependsOn) {
+                     AnnotationValue dependsOnAnnotationValue, List<String> dependsOn,
+                     SourceValuePresenceCheckStrategy valuePresenceCheckStrategy,
+                     boolean isSetValuePresenceCheckStrategy ) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -182,6 +190,8 @@ public class Mapping {
         this.selectionParameters = selectionParameters;
         this.dependsOnAnnotationValue = dependsOnAnnotationValue;
         this.dependsOn = dependsOn;
+        this.valuePresenceCheckStrategy = valuePresenceCheckStrategy;
+        this.isSetValuePresenceCheckStrategy = isSetValuePresenceCheckStrategy;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
@@ -282,6 +292,14 @@ public class Mapping {
         return dependsOn;
     }
 
+    public SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() {
+        return valuePresenceCheckStrategy;
+    }
+
+    public boolean isSetSourceValuePresenceCheckStrategy() {
+        return isSetValuePresenceCheckStrategy;
+    }
+
     private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         return method.getResultType().getPropertyWriteAccessors( cms ).containsKey( name );
@@ -330,7 +348,9 @@ public class Mapping {
             formattingParameters,
             selectionParameters,
             dependsOnAnnotationValue,
-            Collections.<String>emptyList()
+            Collections.<String>emptyList(),
+            valuePresenceCheckStrategy,
+            isSetValuePresenceCheckStrategy
         );
 
         reverse.init( method, messager, typeFactory );
@@ -357,7 +377,9 @@ public class Mapping {
             formattingParameters,
             selectionParameters,
             dependsOnAnnotationValue,
-            dependsOn
+            dependsOn,
+            valuePresenceCheckStrategy,
+            isSetValuePresenceCheckStrategy
         );
 
         if ( sourceReference != null ) {
@@ -375,3 +397,4 @@ public class Mapping {
             "\n}";
     }
 }
+
