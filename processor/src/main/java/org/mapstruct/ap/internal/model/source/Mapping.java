@@ -156,7 +156,7 @@ public class Mapping {
             mappingPrism.values.dependsOn(),
             resultType,
             dependsOn,
-            CheckHasValueStrategyPrism.parseToBoolean(mappingPrism.checkHasValueStrategy())
+            CheckHasValueStrategyPrism.parseToBoolean( mappingPrism.checkHasValueStrategy() )
         );
     }
 

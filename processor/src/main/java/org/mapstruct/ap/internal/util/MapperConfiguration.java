@@ -173,11 +173,11 @@ public class MapperConfiguration {
     }
 
     public Boolean checkHasStrategy() {
-    	 if ( mapperConfigPrism != null && mapperPrism.values.checkHasValueStrategy() == null ) {
+        if ( mapperConfigPrism != null && mapperPrism.values.checkHasValueStrategy() == null ) {
              return CheckHasValueStrategyPrism.parseToBoolean( mapperConfigPrism.checkHasValueStrategy() );
-         }
-         else {
+        }
+        else {
              return CheckHasValueStrategyPrism.parseToBoolean( mapperPrism.checkHasValueStrategy() );
-         }
+        }
     }
 }

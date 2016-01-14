@@ -43,8 +43,8 @@ public class Target {
         return someDouble;
     }
 
-    public void setSomeDouble(double SomeDouble) {
-        this.someDouble = SomeDouble;
+    public void setSomeDouble(double someDouble) {
+        this.someDouble = someDouble;
     }
 
     public Integer getSomeInteger() {

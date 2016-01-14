@@ -22,9 +22,13 @@ package org.mapstruct.ap.test.hascheck;
  * @author Sean Huang
  */
 public class MyObject {
-	
-	@Override
-	public boolean equals(Object object) {
-		return this == object;
-	}
+    @Override
+    public boolean equals(Object object) {
+         return this == object;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

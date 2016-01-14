@@ -424,7 +424,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
                                 .existingVariableNames( existingVariableNames )
                                 .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
-                                .checkHasMethod( shouldCheckHasMethod(method.getMapperConfiguration(), mapping ))
+                                .checkHasMethod( shouldCheckHasMethod( method.getMapperConfiguration(), mapping ))
                                 .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
@@ -491,7 +491,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .sourceParameter( sourceParameter )
                             .name( targetProperty.getKey() )
                             .build();
-                        
+
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
                             .sourceMethod( method )
@@ -504,7 +504,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
-                            .checkHasMethod( shouldCheckHasMethod(method.getMapperConfiguration(), mapping ))
+                            .checkHasMethod( shouldCheckHasMethod( method.getMapperConfiguration(), mapping ))
                             .build();
 
                         propertyMappings.add( propertyMapping );
@@ -517,7 +517,7 @@ public class BeanMappingMethod extends MappingMethod {
 
         private boolean shouldCheckHasMethod(MapperConfiguration mapper, Mapping mapping) {
              if ( mapping != null && mapping.shouldCheckHasMethod() != null) {
-            	 return mapping.shouldCheckHasMethod();
+                 return mapping.shouldCheckHasMethod();
              }
              return mapper.checkHasStrategy();
         }

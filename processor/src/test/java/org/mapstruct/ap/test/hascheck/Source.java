@@ -27,17 +27,17 @@ public class Source {
 
     private MyObject someObject;
     private double someDouble;
-    
+
     private Integer someInteger;
     private boolean hasSomeInteger = true;
-    
+
     private Long someLong;
     private List<String> someList;
 
     public boolean hasSomeObject() {
         return true;
     }
-    
+
     public MyObject getSomeObject() {
         return someObject;
     }
@@ -53,7 +53,7 @@ public class Source {
     public double getSomeDouble() {
         return someDouble;
     }
-  
+
     public void setSomeDouble(double someDouble) {
         this.someDouble = someDouble;
     }

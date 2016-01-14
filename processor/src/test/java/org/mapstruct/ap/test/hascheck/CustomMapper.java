@@ -26,7 +26,7 @@ import org.mapstruct.Mapper;
  */
 @Mapper( checkHasValueStrategy = CheckHasValueStrategy.CHECK_HAS_METHOD )
 public class CustomMapper {
-	
+
     public MyLongWrapper toMyLongWrapperViaPrimitive(long primitive) {
         MyLongWrapper wrapper = new MyLongWrapper();
         wrapper.setMyLong( primitive );

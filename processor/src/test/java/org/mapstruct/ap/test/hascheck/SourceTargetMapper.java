@@ -33,11 +33,11 @@ public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     Target sourceToTarget(Source source);
-    
+
     @Mappings( {
-    	@Mapping(target="someDouble", defaultValue = "111.1"),
-        @Mapping(target="someInteger", defaultValue = "222"),
-        @Mapping(target="someLong", defaultValue = "333"),
+        @Mapping(target = "someDouble", defaultValue = "111.1"),
+        @Mapping(target = "someInteger", defaultValue = "222"),
+        @Mapping(target = "someLong", defaultValue = "333"),
     } )
     Target sourceToTargetWithDefault(Source source);
 }

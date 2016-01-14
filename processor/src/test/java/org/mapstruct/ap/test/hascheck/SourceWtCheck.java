@@ -24,7 +24,7 @@ package org.mapstruct.ap.test.hascheck;
  */
 public class SourceWtCheck extends Source {
 
-	private int noCheckPrimitive;
+    private int noCheckPrimitive;
     private String noCheckObject;
 
     public int getNoCheckPrimitive() {

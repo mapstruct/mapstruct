@@ -23,8 +23,8 @@ package org.mapstruct.ap.test.hascheck;
  * @author Sean Huang
  */
 public class TargetDoesNotHave extends Target {
-	
-	private int noPrimitive;
+
+    private int noPrimitive;
     private String noObject;
 
     public int getNoPrimitive() {

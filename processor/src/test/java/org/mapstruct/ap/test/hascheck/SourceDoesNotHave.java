@@ -24,13 +24,13 @@ package org.mapstruct.ap.test.hascheck;
  */
 public class SourceDoesNotHave extends Source {
 
-	private int noPrimitive;
+    private int noPrimitive;
     private String noObject;
 
     public boolean hasNoPrimitive() {
         return false;
     }
-    
+
     public int getNoPrimitive() {
         return noPrimitive;
     }
@@ -42,7 +42,7 @@ public class SourceDoesNotHave extends Source {
     public boolean hasNoObject() {
         return false;
     }
-    
+
     public String getNoObject() {
         return noObject;
     }

@@ -61,7 +61,6 @@
                     <mapping>
                         <xjb>XML_STYLE</xjb>
                     </mapping>
-                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>

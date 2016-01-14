@@ -31,10 +31,10 @@ import org.mapstruct.factory.Mappers;
 public interface SourceTargetWtCheckMapper {
 
     SourceTargetWtCheckMapper INSTANCE = Mappers.getMapper( SourceTargetWtCheckMapper.class );
-    
+
     @Mappings( {
-        @Mapping(target="noCheckObject", checkHasValueStrategy = CheckHasValueStrategy.NO_CHECK_HAS_METHOD),
-        @Mapping(target="noCheckPrimitive", defaultValue = "111", 
+        @Mapping(target = "noCheckObject", checkHasValueStrategy = CheckHasValueStrategy.NO_CHECK_HAS_METHOD),
+        @Mapping(target = "noCheckPrimitive", defaultValue = "111",
              checkHasValueStrategy = CheckHasValueStrategy.NO_CHECK_HAS_METHOD),
     } )
     TargetWtCheck sourceToTargetWtCheckConfigOff(SourceWtCheck source);

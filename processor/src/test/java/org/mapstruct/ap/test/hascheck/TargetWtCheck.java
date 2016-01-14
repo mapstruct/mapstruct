@@ -23,9 +23,9 @@ package org.mapstruct.ap.test.hascheck;
  * @author Sean Huang
  */
 public class TargetWtCheck extends Target {
-	
-	private int noCheckPrimitive;
-	private String noCheckObject;
+
+    private int noCheckPrimitive;
+    private String noCheckObject;
 
     public int getNoCheckPrimitive() {
         return noCheckPrimitive;
