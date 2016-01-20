@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.test.hascheck;
 
-import org.mapstruct.CheckHasValueStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.ValueSetCheckStrategy;
 
 /**
  * @author Sean Huang
  */
-@Mapper( checkHasValueStrategy = CheckHasValueStrategy.CHECK_HAS_METHOD )
+@Mapper( valueSetCheckStrategy = ValueSetCheckStrategy.IS_NULL_INLINE )
 public class CustomMapper {
 
     public MyLongWrapper toMyLongWrapperViaPrimitive(long primitive) {

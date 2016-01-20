@@ -51,6 +51,7 @@ import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.ValueSetCheckStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -424,11 +425,11 @@ public class BeanMappingMethod extends MappingMethod {
                                 .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
                                 .existingVariableNames( existingVariableNames )
                                 .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
-                                .checkHasMethod( shouldCheckHasMethod( method.getMapperConfiguration(), mapping ))
+                                .valueSetCheckStrategy(
+                                     valueSetCheckStrategy( method.getMapperConfiguration(), mapping ))
                                 .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
-
                         }
 
                         if ( propertyMapping != null && newPropertyMapping != null ) {
@@ -504,7 +505,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
-                            .checkHasMethod( shouldCheckHasMethod( method.getMapperConfiguration(), mapping ))
+                            .valueSetCheckStrategy( valueSetCheckStrategy( method.getMapperConfiguration(), mapping ))
                             .build();
 
                         propertyMappings.add( propertyMapping );
@@ -515,11 +516,11 @@ public class BeanMappingMethod extends MappingMethod {
             }
         }
 
-        private boolean shouldCheckHasMethod(MapperConfiguration mapper, Mapping mapping) {
-             if ( mapping != null && mapping.shouldCheckHasMethod() != null) {
-                 return mapping.shouldCheckHasMethod();
+        private ValueSetCheckStrategyPrism valueSetCheckStrategy(MapperConfiguration mapper, Mapping mapping) {
+             if ( mapping != null && mapping.valueSetCheckStrategy() != ValueSetCheckStrategyPrism.UNDEFINED) {
+                 return mapping.valueSetCheckStrategy();
              }
-             return mapper.checkHasStrategy();
+             return mapper.valueSetCheckStrategy();
         }
 
         private ExecutableElement getSourceAccessor(String sourcePropertyName, List<ExecutableElement> candidates) {

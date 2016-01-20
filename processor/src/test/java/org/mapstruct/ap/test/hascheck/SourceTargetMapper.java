@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.hascheck;
 
-import org.mapstruct.CheckHasValueStrategy;
+import org.mapstruct.ValueSetCheckStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Sean Huang
  */
-@Mapper(uses = { CustomMapper.class }, checkHasValueStrategy = CheckHasValueStrategy.CHECK_HAS_METHOD)
+@Mapper(uses = { CustomMapper.class }, valueSetCheckStrategy = ValueSetCheckStrategy.CUSTOM)
 public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );

@@ -18,10 +18,10 @@
  */
 package org.mapstruct.ap.test.hascheck;
 
-import org.mapstruct.CheckHasValueStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ValueSetCheckStrategy;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -33,9 +33,9 @@ public interface SourceTargetWtCheckMapper {
     SourceTargetWtCheckMapper INSTANCE = Mappers.getMapper( SourceTargetWtCheckMapper.class );
 
     @Mappings( {
-        @Mapping(target = "noCheckObject", checkHasValueStrategy = CheckHasValueStrategy.NO_CHECK_HAS_METHOD),
+        @Mapping(target = "noCheckObject", valueSetCheckStrategy = ValueSetCheckStrategy.IS_NULL_INLINE),
         @Mapping(target = "noCheckPrimitive", defaultValue = "111",
-             checkHasValueStrategy = CheckHasValueStrategy.NO_CHECK_HAS_METHOD),
+             valueSetCheckStrategy = ValueSetCheckStrategy.IS_NULL_INLINE),
     } )
     TargetWtCheck sourceToTargetWtCheckConfigOff(SourceWtCheck source);
 }

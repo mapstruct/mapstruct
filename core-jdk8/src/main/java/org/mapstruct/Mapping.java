@@ -166,11 +166,11 @@ public @interface Mapping {
      */
     String defaultValue() default "";
 
-     /**
-     * Decide whether we should check hasXXX method before mapping. By default, it is UN_DEFINED.
+    /**
+     * Decide whether we should check null or hasX method before mapping. By default, it is UNDEFINED.
      * So the value on {@link Mapper} can override this one.
      *
-     * @return strategy about how to do has value check
+     * @return strategy about how to do null or has value check
      */
-    CheckHasValueStrategy checkHasValueStrategy() default CheckHasValueStrategy.UN_DEFINED;
+    ValueSetCheckStrategy valueSetCheckStrategy() default ValueSetCheckStrategy.UNDEFINED;
 }

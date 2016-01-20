@@ -92,16 +92,17 @@ public class HasCheckTest {
 
         Source source = new Source();
         source.setSomeList( list );
+
+        source.setHasSomeDouble( false );
         source.setHasSomeInteger( false );
+        source.setHasSomeLong( false );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTargetWithDefault( source );
 
         Assert.assertEquals( null, target.getSomeObject() );
 
-        //TODO Seems like currently MapStruct does not support default primitive type
-        //We can improve later since we have hasXXX method
-        //Assert.assertEquals(111.1, target.getSomeDouble(), 0.01);
-
+        //Support default value for primitive type if there is hasX method and config is on
+        Assert.assertEquals( 111.1, target.getSomeDouble(), 0.01);
         Assert.assertEquals( (Integer) 222, target.getSomeInteger() );
         Assert.assertEquals( (Long) 333L, target.getSomeLong().getMyLong() );
 

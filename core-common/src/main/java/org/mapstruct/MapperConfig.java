@@ -137,10 +137,10 @@ public @interface MapperConfig {
         default MappingInheritanceStrategy.EXPLICIT;
 
     /**
-     * Decide whether we should check hasXXX method before mapping.
-     * It is global, can only override the one on {@link Mapping} if it is UN_DEFINED.
+     * Decide whether we should check null or hasX method before mapping.
+     * It is global, can only override the one on {@link Mapping} if it is UNDEFINED.
      *
-     * @return strategy about how to do has value check
+     * @return strategy about how to do null or has value check
      */
-    CheckHasValueStrategy checkHasValueStrategy() default CheckHasValueStrategy.NO_CHECK_HAS_METHOD;
+    ValueSetCheckStrategy valueSetCheckStrategy() default ValueSetCheckStrategy.IS_NULL_INLINE;
 }

@@ -29,7 +29,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.ap.internal.prism.CheckHasValueStrategyPrism;
+import org.mapstruct.ap.internal.prism.ValueSetCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperConfigPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
@@ -172,12 +172,12 @@ public class MapperConfiguration {
         return mapperPrism.mirror;
     }
 
-    public Boolean checkHasStrategy() {
-        if ( mapperConfigPrism != null && mapperPrism.values.checkHasValueStrategy() == null ) {
-             return CheckHasValueStrategyPrism.parseToBoolean( mapperConfigPrism.checkHasValueStrategy() );
+    public ValueSetCheckStrategyPrism valueSetCheckStrategy() {
+        if ( mapperConfigPrism != null && mapperPrism.values.valueSetCheckStrategy() == null ) {
+             return ValueSetCheckStrategyPrism.valueOf( mapperConfigPrism.valueSetCheckStrategy() );
         }
         else {
-             return CheckHasValueStrategyPrism.parseToBoolean( mapperPrism.checkHasValueStrategy() );
+             return ValueSetCheckStrategyPrism.valueOf( mapperPrism.valueSetCheckStrategy() );
         }
     }
 }

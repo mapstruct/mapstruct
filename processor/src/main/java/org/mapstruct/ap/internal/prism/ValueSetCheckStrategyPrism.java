@@ -18,26 +18,15 @@
  */
 package org.mapstruct.ap.internal.prism;
 
+
 /**
  * Prism for the enum {@link org.mapstruct.CheckHasValueMappingStrategy}
  *
  * @author Sean Huang
  */
-public enum CheckHasValueStrategyPrism {
-
-    CHECK_HAS_METHOD,
-    NO_CHECK_HAS_METHOD,
-    UN_DEFINED;
-    
-    public static Boolean parseToBoolean(String value) {
-    	CheckHasValueStrategyPrism strategy = valueOf(value);
-    	switch (strategy) {
-    		case CHECK_HAS_METHOD:
-    			return true;
-    		case NO_CHECK_HAS_METHOD:
-    			return false;
-    		default:
-    			return null;
-    	}
-    }
+public enum ValueSetCheckStrategyPrism {
+    IS_NULL_INLINE,
+    IS_NULL,
+    CUSTOM,
+    UNDEFINED;
 }

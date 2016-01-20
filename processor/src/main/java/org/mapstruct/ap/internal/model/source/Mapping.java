@@ -35,10 +35,10 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.CheckHasValueStrategyPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
+import org.mapstruct.ap.internal.prism.ValueSetCheckStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
@@ -61,7 +61,7 @@ public class Mapping {
     private final TypeMirror resultType;
     private final boolean isIgnored;
     private final List<String> dependsOn;
-    private final Boolean checkHasMethod;
+    private final ValueSetCheckStrategyPrism valueSetCheckStrategyPrism;
 
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -97,7 +97,6 @@ public class Mapping {
 
     public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element,
                                            FormattingMessager messager) {
-
 
         if ( mappingPrism.target().isEmpty() ) {
             messager.printMessage(
@@ -156,7 +155,7 @@ public class Mapping {
             mappingPrism.values.dependsOn(),
             resultType,
             dependsOn,
-            CheckHasValueStrategyPrism.parseToBoolean( mappingPrism.checkHasValueStrategy() )
+            ValueSetCheckStrategyPrism.valueOf( mappingPrism.valueSetCheckStrategy() )
         );
     }
 
@@ -166,7 +165,7 @@ public class Mapping {
                     boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
                     AnnotationValue dependsOnAnnotationValue,
-                    TypeMirror resultType, List<String> dependsOn, Boolean checkHasMethod) {
+                    TypeMirror resultType, List<String> dependsOn, ValueSetCheckStrategyPrism valueSetCheckStrategy) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -181,7 +180,7 @@ public class Mapping {
         this.dependsOnAnnotationValue = dependsOnAnnotationValue;
         this.resultType = resultType;
         this.dependsOn = dependsOn;
-        this.checkHasMethod = checkHasMethod;
+        this.valueSetCheckStrategyPrism = valueSetCheckStrategy;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
@@ -286,8 +285,8 @@ public class Mapping {
         return dependsOn;
     }
 
-    public Boolean shouldCheckHasMethod() {
-        return checkHasMethod;
+    public ValueSetCheckStrategyPrism valueSetCheckStrategy() {
+        return valueSetCheckStrategyPrism;
     }
 
     private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
@@ -340,7 +339,7 @@ public class Mapping {
             dependsOnAnnotationValue,
             null,
             Collections.<String>emptyList(),
-            checkHasMethod
+            valueSetCheckStrategyPrism
         );
 
         reverse.init( method, messager, typeFactory );
@@ -369,7 +368,7 @@ public class Mapping {
             dependsOnAnnotationValue,
             resultType,
             dependsOn,
-            checkHasMethod
+            valueSetCheckStrategyPrism
         );
 
         if ( sourceReference != null ) {

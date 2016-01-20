@@ -19,27 +19,34 @@
 package org.mapstruct;
 
 /**
- * Strategy to decide whether we should check hasXXX method before mapping
- *
+ * Strategy to decide whether we should check null or hasX method before mapping
  *
  * @author Sean Huang
  */
-public enum CheckHasValueStrategy {
+public enum ValueSetCheckStrategy {
 
     /**
-     * Will check hasXXX method before mapping
-     */
-    CHECK_HAS_METHOD,
-
-    /**
-     * Will not check hasXXX method before mapping
+     * Check != null for inline conversions)
      *
      */
-    NO_CHECK_HAS_METHOD,
+    IS_NULL_INLINE,
 
     /**
-     * Undefined
+     * Always check != null, no matter whether it's an inline or method conversion
      *
      */
-    UN_DEFINED;
+    IS_NULL,
+
+    /**
+     * Will invoke custom hasX() method, before mapping,
+     * name to be given through the accessor naming strategy
+     */
+    CUSTOM,
+
+    /**
+     * Undefined, default value in {@link Mapping}, so it can be overridden
+     * by the value defined in {@link Mapper}
+     *
+     */
+    UNDEFINED;
 }

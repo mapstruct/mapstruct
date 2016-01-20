@@ -26,16 +26,26 @@ import java.util.List;
 public class Source {
 
     private MyObject someObject;
+    private boolean hasSomeObject = true;
+
     private double someDouble;
+    private boolean hasSomeDouble = true;
 
     private Integer someInteger;
     private boolean hasSomeInteger = true;
 
     private Long someLong;
+    private boolean hasSomeLong = true;
+
     private List<String> someList;
+    private boolean hasSomeList = true;
 
     public boolean hasSomeObject() {
-        return true;
+        return hasSomeObject;
+    }
+
+    public void setHasSomeObject(boolean has) {
+        this.hasSomeObject = has;
     }
 
     public MyObject getSomeObject() {
@@ -47,7 +57,11 @@ public class Source {
     }
 
     public boolean hasSomeDouble() {
-        return true;
+        return hasSomeDouble;
+    }
+
+    public void setHasSomeDouble(boolean has) {
+        this.hasSomeDouble = has;
     }
 
     public double getSomeDouble() {
@@ -56,18 +70,6 @@ public class Source {
 
     public void setSomeDouble(double someDouble) {
         this.someDouble = someDouble;
-    }
-
-    public boolean hasSomeList() {
-        return true;
-    }
-
-    public List<String> getSomeList() {
-        return someList;
-    }
-
-    public void setSomeList(List<String> someList) {
-        this.someList = someList;
     }
 
     public boolean hasSomeInteger() {
@@ -87,7 +89,11 @@ public class Source {
     }
 
     public boolean hasSomeLong() {
-        return true;
+        return hasSomeLong;
+    }
+
+    public void setHasSomeLong(boolean hasSomeInLong) {
+        this.hasSomeLong = hasSomeInLong;
     }
 
     public Long getSomeLong() {
@@ -96,5 +102,21 @@ public class Source {
 
     public void setSomeLong(Long someLong) {
         this.someLong = someLong;
+    }
+
+    public boolean hasSomeList() {
+        return hasSomeList;
+    }
+
+    public void setHasSomeList(boolean has) {
+        this.hasSomeList = has;
+    }
+
+    public List<String> getSomeList() {
+        return someList;
+    }
+
+    public void setSomeList(List<String> someList) {
+        this.someList = someList;
     }
 }

@@ -23,6 +23,7 @@ import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentTy
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+import static org.mapstruct.ap.internal.prism.ValueSetCheckStrategyPrism.CUSTOM;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,12 +36,13 @@ import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
-import org.mapstruct.ap.internal.model.assignment.HasCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
+import org.mapstruct.ap.internal.model.assignment.HasCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
+import org.mapstruct.ap.internal.model.assignment.UpdateHasCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateNullCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.ModelElement;
@@ -50,6 +52,7 @@ import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
+import org.mapstruct.ap.internal.prism.ValueSetCheckStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -71,7 +74,7 @@ public class PropertyMapping extends ModelElement {
     private final Type targetType;
     private final Assignment assignment;
     private final List<String> dependsOn;
-    private final boolean checkHasMethod;
+    private final ValueSetCheckStrategyPrism valueSetCheckStrategy;
     private final Assignment defaultValueAssignment;
 
     @SuppressWarnings("unchecked")
@@ -83,7 +86,7 @@ public class PropertyMapping extends ModelElement {
         protected ExecutableElement targetReadAccessor;
         protected String targetPropertyName;
         protected List<String> dependsOn;
-        protected boolean checkHasMethod;
+        protected ValueSetCheckStrategyPrism valueSetCheckStrategy;
         protected Set<String> existingVariableNames;
 
         public T mappingContext(MappingBuilderContext mappingContext) {
@@ -116,8 +119,8 @@ public class PropertyMapping extends ModelElement {
             return (T) this;
         }
 
-        public T checkHasMethod(boolean checkHasMethod) {
-            this.checkHasMethod = checkHasMethod;
+        public T valueSetCheckStrategy(ValueSetCheckStrategyPrism valueSetCheckStrategy) {
+            this.valueSetCheckStrategy = valueSetCheckStrategy;
             return (T) this;
         }
 
@@ -227,7 +230,7 @@ public class PropertyMapping extends ModelElement {
                         targetType,
                         existingVariableNames
                     );
-                    assignment = new NullCheckWrapper( assignment );
+                    assignment = getOrcreateWrapperByValueCheckStrategy( assignment, false );
                 }
                 else {
                     assignment = assignObject( sourceType, targetType, targetAccessorType, assignment );
@@ -254,13 +257,15 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
-                checkHasMethod,
+                valueSetCheckStrategy,
                 getDefaultValueAssignment()
             );
         }
 
         private Assignment getDefaultValueAssignment() {
-            if ( defaultValue != null && !getSourceType().isPrimitive() ) {
+            if ( defaultValue != null
+                    //Support default value for primitive type if strategy is set to custom
+                    && ( !getSourceType().isPrimitive() || valueSetCheckStrategy == CUSTOM )) {
                 PropertyMapping build = new ConstantMappingBuilder()
                         .constantExpression( '"' + defaultValue + '"' )
                         .dateFormat( dateFormat )
@@ -297,23 +302,28 @@ public class PropertyMapping extends ModelElement {
                         targetType );
                 }
                 else {
-                    result = checkHasMethod ? createHasCheckWrapper( result )
-                        : new SetterWrapper( result, method.getThrownTypes() );
+                    result = new SetterWrapper( result, method.getThrownTypes() );
                 }
                 if ( !sourceType.isPrimitive()
                     && !sourceReference.getPropertyEntries().isEmpty() ) { // parameter null taken care of by beanmapper
 
                     if ( result.isUpdateMethod() ) {
-                        result = new UpdateNullCheckWrapper( result );
+                        result = getOrcreateWrapperByValueCheckStrategy( result, true );
                     }
-                    else if ( result.getType() == TYPE_CONVERTED
-                        || result.getType() == TYPE_CONVERTED_MAPPED
-                        || result.getType() == MAPPED_TYPE_CONVERTED
-                        || ( result.getType() == DIRECT && targetType.isPrimitive() ) ) {
+                    else if (result.getType() == TYPE_CONVERTED
+                            || result.getType() == TYPE_CONVERTED_MAPPED
+                            || result.getType() == MAPPED_TYPE_CONVERTED
+                            || ( result.getType() == DIRECT && targetType.isPrimitive() ) ) {
                         // for primitive types null check is not possible at all, but a conversion needs
                         // a null check.
-                        result = new NullCheckWrapper( result );
+                        result = getOrcreateWrapperByValueCheckStrategy( result, false );
                     }
+                    else if (valueSetCheckStrategy == ValueSetCheckStrategyPrism.CUSTOM) {
+                        result = getOrcreateWrapperByValueCheckStrategy( result, false );
+                    }
+                }
+                else if (valueSetCheckStrategy == ValueSetCheckStrategyPrism.CUSTOM) {
+                    result = getOrcreateWrapperByValueCheckStrategy( result, false );
                 }
             }
             else {
@@ -325,12 +335,12 @@ public class PropertyMapping extends ModelElement {
                         getSourceRef(),
                         sourceType
                     );
-                    result = new NullCheckWrapper( result );
+                    result = getOrcreateWrapperByValueCheckStrategy( result, false );
                 }
                 else {
                     // Possibly adding null to a target collection. So should be surrounded by an null check.
                     result = new SetterWrapper( result, method.getThrownTypes() );
-                    result = new NullCheckWrapper( result );
+                    result = getOrcreateWrapperByValueCheckStrategy( result, false );
                 }
             }
             return result;
@@ -358,8 +368,7 @@ public class PropertyMapping extends ModelElement {
                         implementationTypes = targetType.getImportTypes();
                     }
                     newCollectionOrMap = new NewCollectionOrMapWrapper( result, implementationTypes );
-                    newCollectionOrMap = checkHasMethod ? this.createHasCheckWrapper( newCollectionOrMap )
-                        : new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
+                    newCollectionOrMap = new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
                 }
                 if ( result.isUpdateMethod() ) {
                     if ( targetReadAccessor == null ) {
@@ -399,10 +408,10 @@ public class PropertyMapping extends ModelElement {
             // for mapping methods (builtin / custom), the mapping method is responsible for the
             // null check. Typeconversions do not apply to collections and maps.
             if ( result.getType() == DIRECT ) {
-                result = new NullCheckWrapper( result );
+                result = getOrcreateWrapperByValueCheckStrategy( result, false );
             }
             else if ( result.getType() == MAPPED && result.isUpdateMethod() ) {
-                result = new UpdateNullCheckWrapper( result );
+                result = getOrcreateWrapperByValueCheckStrategy( result, true );
             }
 
             return result;
@@ -473,14 +482,35 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private Assignment createHasCheckWrapper(Assignment assignment) {
-            String hasMethod = this.getSourceHasMethod();
+        private Assignment getOrcreateWrapperByValueCheckStrategy(Assignment assignment, boolean isUpdate) {
 
-            if (hasMethod == null) {
-                throw new IllegalArgumentException( sourceReference.getParameter().getName()
-                    + " does not have 'hasXXX()' method." );
+            if ( valueSetCheckStrategy == null ) {
+                return createNullCheckWrapper( assignment, isUpdate );
             }
-            return new HasCheckWrapper( assignment, method.getThrownTypes(), hasMethod );
+
+            switch ( valueSetCheckStrategy ) {
+                case IS_NULL_INLINE:
+                    return createNullCheckWrapper( assignment, isUpdate );
+
+                case CUSTOM:
+                    String hasMethod = this.getSourceHasMethod();
+
+                    if ( hasMethod == null ) {
+                        throw new IllegalArgumentException( sourceReference.getParameter().getName()
+                            + " does not have 'hasX()' method." );
+                    }
+                    return isUpdate ? new UpdateHasCheckWrapper( assignment, method.getThrownTypes(), hasMethod )
+                        : new HasCheckWrapper( assignment, method.getThrownTypes(), hasMethod );
+
+                case IS_NULL:
+                default:
+                    //Currently, we don't really support other scenarios
+                    return assignment;
+            }
+        }
+
+        private Assignment createNullCheckWrapper(Assignment assignment, boolean isUpdate) {
+            return isUpdate ? new UpdateNullCheckWrapper( assignment ) : new NullCheckWrapper( assignment );
         }
 
         private String getSourceHasMethod() {
@@ -729,7 +759,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
-                checkHasMethod,
+                valueSetCheckStrategy,
                 null
             );
         }
@@ -776,7 +806,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
-                checkHasMethod,
+                valueSetCheckStrategy,
                 null
             );
         }
@@ -785,15 +815,16 @@ public class PropertyMapping extends ModelElement {
 
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name, String targetWriteAccessorName, String targetReadAccessorName, Type targetType,
-                            Assignment propertyAssignment, List<String> dependsOn, boolean checkHasMethod,
-                            Assignment defaultValueAssignment ) {
+                            Assignment propertyAssignment, List<String> dependsOn,
+                            ValueSetCheckStrategyPrism valueSetCheckStrategy, Assignment defaultValueAssignment ) {
         this( name, null, targetWriteAccessorName, targetReadAccessorName,
-                        targetType, propertyAssignment, dependsOn, checkHasMethod, defaultValueAssignment );
+                        targetType, propertyAssignment, dependsOn, valueSetCheckStrategy, defaultValueAssignment );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             String targetReadAccessorName, Type targetType, Assignment assignment,
-                            List<String> dependsOn, boolean checkHasMethod, Assignment defaultValueAssignment ) {
+                            List<String> dependsOn, ValueSetCheckStrategyPrism valueSetCheckStrategy,
+                            Assignment defaultValueAssignment ) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -802,7 +833,7 @@ public class PropertyMapping extends ModelElement {
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
         this.defaultValueAssignment = defaultValueAssignment;
-        this.checkHasMethod = checkHasMethod;
+        this.valueSetCheckStrategy = valueSetCheckStrategy;
     }
 
     /**
@@ -852,8 +883,8 @@ public class PropertyMapping extends ModelElement {
         return dependsOn;
     }
 
-    public boolean shouldCheckHasMethod() {
-        return checkHasMethod;
+    public ValueSetCheckStrategyPrism valueSetCheckStrategy() {
+        return valueSetCheckStrategy;
     }
 
     @Override
@@ -866,7 +897,7 @@ public class PropertyMapping extends ModelElement {
             + "\n    propertyAssignment=" + assignment + ","
             + "\n    defaultValueAssignment=" + defaultValueAssignment + ","
             + "\n    dependsOn=" + dependsOn
-            + "\n    checkHasMethod=" + checkHasMethod
+            + "\n    valueSetCheckStrategy=" + valueSetCheckStrategy
             + "\n}";
     }
 }
