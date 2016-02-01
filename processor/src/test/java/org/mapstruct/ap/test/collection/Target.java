@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.collection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,8 @@ public class Target {
 
     @SuppressWarnings("rawtypes")
     private Set set;
+
+    private EnumSet<Colour> enumSet;
 
     public Target() {
         otherStringLongMap = Maps.newHashMap();
@@ -174,4 +177,11 @@ public class Target {
         this.otherStringList = otherStringList;
     }
 
+    public EnumSet<Colour> getEnumSet() {
+        return enumSet;
+    }
+
+    public void setEnumSet(EnumSet<Colour> enumSet) {
+        this.enumSet = enumSet;
+    }
 }

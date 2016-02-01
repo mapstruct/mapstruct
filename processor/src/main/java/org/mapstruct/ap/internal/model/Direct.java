@@ -69,4 +69,8 @@ public class Direct extends ModelElement implements Assignment {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return sourceReference;
+    }
 }

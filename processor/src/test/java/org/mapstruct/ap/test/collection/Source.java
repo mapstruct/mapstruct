@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.collection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,8 @@ public class Source {
     private List<String> stringList2;
 
     private Set<String> stringSet2;
+
+    private EnumSet<Colour> enumSet;
 
     public List<String> getStringList() {
         return stringList;
@@ -164,4 +167,11 @@ public class Source {
         this.stringSet2 = stringSet2;
     }
 
+    public EnumSet<Colour> getEnumSet() {
+        return enumSet;
+    }
+
+    public void setEnumSet(EnumSet<Colour> enumSet) {
+        this.enumSet = enumSet;
+    }
 }
