@@ -544,8 +544,8 @@ public class MappingResolverImpl implements MappingResolver {
          */
         private boolean hasCompatibleCopyConstructor(Type sourceType, Type targetType) {
             if ( targetType.isPrimitive() ) {
-				return false;
-			}
+                return false;
+            }
 
             List<ExecutableElement> targetTypeConstructors = ElementFilter.constructorsIn(
                 targetType.getTypeElement().getEnclosedElements() );
