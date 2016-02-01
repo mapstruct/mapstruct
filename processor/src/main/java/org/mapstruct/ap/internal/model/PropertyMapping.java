@@ -35,6 +35,7 @@ import javax.lang.model.type.TypeMirror;
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.assignment.EnumSetCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
@@ -347,7 +348,14 @@ public class PropertyMapping extends ModelElement {
                     else {
                         implementationTypes = targetType.getImportTypes();
                     }
-                    newCollectionOrMap = new NewCollectionOrMapWrapper( result, implementationTypes );
+
+                    if ( "java.util.EnumSet".equals( targetType.getFullyQualifiedName() ) ) {
+                        newCollectionOrMap = new EnumSetCopyWrapper( ctx.getTypeFactory(), result );
+                    }
+                    else {
+                        newCollectionOrMap = new NewCollectionOrMapWrapper( result, implementationTypes );
+                    }
+
                     newCollectionOrMap = new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
                 }
                 if ( result.isUpdateMethod() ) {

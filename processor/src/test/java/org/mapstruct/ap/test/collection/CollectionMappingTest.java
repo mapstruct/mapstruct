@@ -376,4 +376,17 @@ public class CollectionMappingTest {
         assertThat( numbers ).isNotNull();
         assertThat( numbers ).containsOnly( 123, 456 );
     }
+
+    @Test
+    @IssueKey("732")
+    public void shouldEnumSetAsCopy() {
+        Source source = new Source();
+        source.setEnumSet( EnumSet.of( Colour.BLUE, Colour.GREEN ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        source.getEnumSet().add( Colour.RED );
+
+        assertThat( source.getEnumSet() ).containsOnly( Colour.BLUE, Colour.GREEN, Colour.RED );
+        assertThat( target.getEnumSet() ).containsOnly( Colour.BLUE, Colour.GREEN );
+    }
 }
