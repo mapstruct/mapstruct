@@ -69,6 +69,16 @@ public class GeneratedSource implements TestRule {
     }
 
     /**
+     * @param mapperClass the class annotated with {@code &#064;Mapper} and {@code &#064;DecoratedWith(..)}
+     *
+     * @return an assert for the *Impl_.java for the given mapper
+     */
+    public JavaFileAssert forDecoratedMapper(Class<?> mapperClass) {
+        String generatedJavaFileName = mapperClass.getName().replace( '.', '/' ).concat( "Impl_.java" );
+        return forJavaFile( generatedJavaFileName );
+    }
+
+    /**
      * @param path the path relative to the source output directory of the java file to return an assert for
      *
      * @return an assert for the file specified by the given path

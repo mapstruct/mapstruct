@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.decorator.jsr330;
 
+import static java.lang.System.lineSeparator;
 import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.Calendar;
@@ -27,6 +28,7 @@ import javax.inject.Named;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.decorator.Address;
@@ -36,6 +38,7 @@ import org.mapstruct.ap.test.decorator.PersonDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -60,10 +63,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class Jsr330DecoratorTest {
 
+    private final GeneratedSource generatedSource = new GeneratedSource();
+
     @Inject
     @Named
     private PersonMapper personMapper;
     private ConfigurableApplicationContext context;
+
+    @Rule
+    public GeneratedSource getGeneratedSource() {
+        return generatedSource;
+    }
 
     @Before
     public void springUp() {
@@ -80,15 +90,12 @@ public class Jsr330DecoratorTest {
 
     @Test
     public void shouldInvokeDecoratorMethods() {
-        //given
         Calendar birthday = Calendar.getInstance();
         birthday.set( 1928, 4, 23 );
         Person person = new Person( "Gary", "Crant", birthday.getTime(), new Address( "42 Ocean View Drive" ) );
 
-        //when
         PersonDto personDto = personMapper.personToPersonDto( person );
 
-        //then
         assertThat( personDto ).isNotNull();
         assertThat( personDto.getName() ).isEqualTo( "Gary Crant" );
         assertThat( personDto.getAddress() ).isNotNull();
@@ -97,14 +104,22 @@ public class Jsr330DecoratorTest {
 
     @Test
     public void shouldDelegateNonDecoratedMethodsToDefaultImplementation() {
-        //given
         Address address = new Address( "42 Ocean View Drive" );
 
-        //when
         AddressDto addressDto = personMapper.addressToAddressDto( address );
 
-        //then
         assertThat( addressDto ).isNotNull();
         assertThat( addressDto.getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
+    }
+
+    @IssueKey("664")
+    @Test
+    public void hasSingletonAnnotation() {
+        // check the decorator
+        generatedSource.forMapper( PersonMapper.class ).content()
+                       .contains( "@Singleton" + lineSeparator() + "@Named" );
+        // check the plain mapper
+        generatedSource.forDecoratedMapper( PersonMapper.class ).content()
+                       .contains( "@Singleton" + lineSeparator() + "@Named" );
     }
 }
