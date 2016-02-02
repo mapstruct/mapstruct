@@ -199,7 +199,8 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             // then direct assignable
-            if ( sourceType.isAssignableTo( targetType ) || isPropertyMappable( sourceType, targetType ) ) {
+            if ( sourceType.isAssignableTo( targetType ) ||
+                    isAssignableThroughCollectionCopyConstructor( sourceType, targetType ) ) {
                 Assignment simpleAssignment = AssignmentFactory.createDirect( sourceReference );
                 return simpleAssignment;
             }
@@ -503,32 +504,22 @@ public class MappingResolverImpl implements MappingResolver {
         }
 
         /**
-         * Whether the specified property can be mapped from source to target or not. A mapping if possible if one of
-         * the following conditions is true:
-         * <ul>
-         * <li>the source type is assignable to the target type</li>
-         * <li>a mapping method exists</li>
-         * <li>a built-in conversion exists</li>
-         * <li>the property is of a collection or map type and the constructor of the target type (either itself or its
-         * implementation type) accepts the source type.</li>
-         * </ul>
-         *
-         * @return {@code true} if the specified property can be mapped, {@code false} otherwise.
+         * Whether the given source and target type are both a collection type or both a map type and the source value
+         * can be propagated via a copy constructor.
          */
-        private boolean isPropertyMappable(Type sourceType, Type targetType) {
-            boolean collectionOrMapTargetTypeHasCompatibleConstructor = false;
+        private boolean isAssignableThroughCollectionCopyConstructor(Type sourceType, Type targetType) {
+            boolean bothCollectionOrMap = false;
 
-            if ( sourceType.isCollectionType() || targetType.isMapType() ) {
-                collectionOrMapTargetTypeHasCompatibleConstructor = hasCompatibleCopyConstructor(
-                    sourceType,
-                    targetType.getImplementationType() != null
-                                    ? targetType.getImplementationType() : targetType
-                );
+            if ( ( sourceType.isCollectionType() && targetType.isCollectionType() ) ||
+                    ( sourceType.isMapType() && targetType.isMapType() ) ) {
+                bothCollectionOrMap = true;
             }
 
-            if ( ( ( targetType.isCollectionType() || targetType.isMapType() )
-                && collectionOrMapTargetTypeHasCompatibleConstructor ) ) {
-                return true;
+            if ( bothCollectionOrMap ) {
+                return hasCompatibleCopyConstructor(
+                        sourceType,
+                        targetType.getImplementationType() != null ? targetType.getImplementationType() : targetType
+                );
             }
 
             return false;

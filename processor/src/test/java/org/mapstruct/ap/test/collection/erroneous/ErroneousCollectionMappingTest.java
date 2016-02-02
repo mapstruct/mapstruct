@@ -65,7 +65,9 @@ public class ErroneousCollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionToPrimitivePropertyMapper.class,
                 kind = Kind.ERROR,
                 line = 26,
-                messageRegExp = "Can't map property \"java.util.List<java.lang.String> strings\" to \"int strings\". Consider to declare/implement a mapping method: \"int map\\(java.util.List<java.lang.String> value\\)\"")
+                messageRegExp = "Can't map property \"java.util.List<java.lang.String> strings\" to \"int strings\". "
+                        + "Consider to declare/implement a mapping method: \"int map\\(java.util.List<java.lang.String>"
+                        + " value\\)\"")
         }
     )
     public void shouldFailToGenerateImplementationBetweenCollectionAndPrimitive() {
