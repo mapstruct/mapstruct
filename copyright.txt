@@ -1,4 +1,4 @@
-Contributors
+﻿Contributors
 ============
 
 Andreas Gudian
@@ -13,6 +13,7 @@ Mustafa Caylak
 Oliver Ehrenmüller
 Paul Strugnell
 Remko Plantenga
+Samuel Wright
 Sebastian Hasait
 Sjaak Derksen
 Timo Eckhardt
