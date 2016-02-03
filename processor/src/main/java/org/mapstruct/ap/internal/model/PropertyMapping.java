@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
@@ -130,16 +131,19 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Type determineTargetType() {
+            // This is a bean mapping method, so we know the result is a declared type
+            DeclaredType resultType = (DeclaredType) method.getResultType().getTypeMirror();
+
             switch ( targetWriteAccessorType ) {
                 case ADDER:
                 case SETTER:
                     return ctx.getTypeFactory()
-                        .getSingleParameter( method.getResultType().getTypeElement(), targetWriteAccessor )
+                        .getSingleParameter( resultType, targetWriteAccessor )
                         .getType();
                 case GETTER:
                 default:
                     return ctx.getTypeFactory()
-                        .getReturnType( method.getResultType().getTypeElement(), targetWriteAccessor );
+                        .getReturnType( resultType, targetWriteAccessor );
             }
         }
 
