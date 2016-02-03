@@ -32,7 +32,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -86,8 +85,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 mapperConfig.getAnnotationMirror() );
         }
 
-        List<SourceMethod> prototypeMethods =
-            retrievePrototypeMethods( mapperConfig.getMapperConfigMirror(), mapperConfig );
+        List<SourceMethod> prototypeMethods = retrievePrototypeMethods( mapperConfig );
         return retrieveMethods( mapperTypeElement, mapperTypeElement, mapperConfig, prototypeMethods );
     }
 
@@ -96,16 +94,16 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return 1;
     }
 
-    private List<SourceMethod> retrievePrototypeMethods(TypeMirror typeMirror, MapperConfiguration mapperConfig ) {
-        if ( typeMirror == null || typeMirror.getKind() == TypeKind.VOID ) {
+    private List<SourceMethod> retrievePrototypeMethods(MapperConfiguration mapperConfig ) {
+        if ( mapperConfig.config() == null ) {
             return Collections.emptyList();
         }
 
-        TypeElement typeElement = asTypeElement( typeMirror );
+        TypeElement typeElement = asTypeElement( mapperConfig.config() );
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
         for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, typeElement ) ) {
 
-            ExecutableType methodType = typeFactory.getMethodType( typeElement, executable );
+            ExecutableType methodType = typeFactory.getMethodType( mapperConfig.config(), executable );
             List<Parameter> parameters = typeFactory.getParameters( methodType, executable );
             boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
 
@@ -158,7 +156,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         //Add all methods of used mappers in order to reference them in the aggregated model
         if ( usedMapper.equals( mapperToImplement ) ) {
-            for ( TypeMirror mapper : mapperConfig.uses() ) {
+            for ( DeclaredType mapper : mapperConfig.uses() ) {
                 methods.addAll( retrieveMethods(
                     asTypeElement( mapper ),
                     mapperToImplement,
@@ -170,8 +168,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return methods;
     }
 
-    private TypeElement asTypeElement(TypeMirror usedMapper) {
-        return (TypeElement) ( (DeclaredType) usedMapper ).asElement();
+    private TypeElement asTypeElement(DeclaredType type) {
+        return (TypeElement) type.asElement();
     }
 
     private SourceMethod getMethod(TypeElement usedMapper,
@@ -180,7 +178,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                    MapperConfiguration mapperConfig,
                                    List<SourceMethod> prototypeMethods) {
 
-        ExecutableType methodType = typeFactory.getMethodType( usedMapper, method );
+        ExecutableType methodType = typeFactory.getMethodType( (DeclaredType) usedMapper.asType(), method );
         List<Parameter> parameters = typeFactory.getParameters( methodType, method );
         Type returnType = typeFactory.getReturnType( methodType );
 

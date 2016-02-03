@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -176,7 +177,9 @@ public class SourceReference {
                 Map<String, ExecutableElement> sourceReadAccessors = newType.getPropertyReadAccessors();
                 for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
                     if ( getter.getKey().equals( entryName ) ) {
-                        newType = typeFactory.getReturnType( newType.getTypeElement(), getter.getValue() );
+                        newType = typeFactory.getReturnType(
+                                (DeclaredType) newType.getTypeMirror(), getter.getValue()
+                        );
                         sourceEntries.add( new PropertyEntry( entryName, getter.getValue(), newType ) );
                         matchFound = true;
                         break;

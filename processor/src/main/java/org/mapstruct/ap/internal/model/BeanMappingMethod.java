@@ -33,7 +33,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
@@ -407,8 +407,7 @@ public class BeanMappingMethod extends MappingMethod {
                         ExecutableElement sourceAccessor = getSourceAccessor( targetProperty.getKey(), candidates );
                         if ( sourceAccessor != null ) {
                             Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
-
-                            TypeElement sourceType = sourceParameter.getType().getTypeElement();
+                            DeclaredType sourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
 
                             SourceReference sourceRef = new SourceReference.BuilderFromProperty()
                                 .sourceParameter( sourceParameter )

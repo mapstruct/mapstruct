@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -256,13 +254,12 @@ public class TypeFactory {
      * @param method the method
      * @return the ExecutableType representing the method as part of usedMapper
      */
-    public ExecutableType getMethodType(TypeElement includingType, ExecutableElement method) {
-        DeclaredType asType = (DeclaredType) replaceTypeElementIfNecessary( elementUtils, includingType ).asType();
-        TypeMirror asMemberOf = typeUtils.asMemberOf( asType, method );
+    public ExecutableType getMethodType(DeclaredType includingType, ExecutableElement method) {
+        TypeMirror asMemberOf = typeUtils.asMemberOf( includingType, method );
         return (ExecutableType) asMemberOf;
     }
 
-    public Parameter getSingleParameter(TypeElement includingType, ExecutableElement method) {
+    public Parameter getSingleParameter(DeclaredType includingType, ExecutableElement method) {
         List<? extends VariableElement> parameters = method.getParameters();
 
         if ( parameters.size() != 1 ) {
@@ -273,7 +270,7 @@ public class TypeFactory {
         return Collections.first( getParameters( includingType, method ) );
     }
 
-    public List<Parameter> getParameters(TypeElement includingType, ExecutableElement method) {
+    public List<Parameter> getParameters(DeclaredType includingType, ExecutableElement method) {
         return getParameters( getMethodType( includingType, method ), method );
     }
 
@@ -299,7 +296,7 @@ public class TypeFactory {
         return result;
     }
 
-    public Type getReturnType(TypeElement includingType, ExecutableElement method) {
+    public Type getReturnType(DeclaredType includingType, ExecutableElement method) {
         return getReturnType( getMethodType( includingType, method ) );
     }
 
@@ -307,7 +304,7 @@ public class TypeFactory {
         return getType( method.getReturnType() );
     }
 
-    public List<Type> getThrownTypes(TypeElement includingType, ExecutableElement method) {
+    public List<Type> getThrownTypes(DeclaredType includingType, ExecutableElement method) {
         return getThrownTypes( getMethodType( includingType, method ) );
     }
 
