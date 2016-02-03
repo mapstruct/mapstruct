@@ -73,14 +73,36 @@ public class PropertyMapping extends ModelElement {
     private final List<String> dependsOn;
     private final Assignment defaultValueAssignment;
 
+    private enum TargetWriteAccessorType {
+        GETTER,
+        SETTER,
+        ADDER;
+
+        public static TargetWriteAccessorType of(ExecutableElement accessor) {
+            if ( Executables.isSetterMethod( accessor ) ) {
+                return TargetWriteAccessorType.SETTER;
+            }
+            else if ( Executables.isAdderMethod( accessor ) ) {
+                return TargetWriteAccessorType.ADDER;
+            }
+            else {
+                return TargetWriteAccessorType.GETTER;
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private static class MappingBuilderBase<T extends MappingBuilderBase<T>> {
 
         protected MappingBuilderContext ctx;
         protected SourceMethod method;
+
         protected ExecutableElement targetWriteAccessor;
+        protected TargetWriteAccessorType targetWriteAccessorType;
+        protected Type targetType;
         protected ExecutableElement targetReadAccessor;
         protected String targetPropertyName;
+
         protected List<String> dependsOn;
         protected Set<String> existingVariableNames;
 
@@ -101,7 +123,24 @@ public class PropertyMapping extends ModelElement {
 
         public T targetWriteAccessor(ExecutableElement targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
+            this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
+            this.targetType = determineTargetType();
+
             return (T) this;
+        }
+
+        private Type determineTargetType() {
+            switch ( targetWriteAccessorType ) {
+                case ADDER:
+                case SETTER:
+                    return ctx.getTypeFactory()
+                        .getSingleParameter( method.getResultType().getTypeElement(), targetWriteAccessor )
+                        .getType();
+                case GETTER:
+                default:
+                    return ctx.getTypeFactory()
+                        .getReturnType( method.getResultType().getTypeElement(), targetWriteAccessor );
+            }
         }
 
         public T targetPropertyName(String targetPropertyName) {
@@ -154,23 +193,12 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        private enum TargetWriteAccessorType {
-            GETTER,
-            SETTER,
-            ADDER
-        }
-
         public PropertyMapping build() {
-
-            // handle target
-            TargetWriteAccessorType targetAccessorType = getTargetAcccessorType();
-            Type targetType = getTargetType( targetAccessorType );
-
             // handle source
             String sourceElement = getSourceElement();
             Type sourceType = getSourceType();
             String sourceRefStr;
-            if ( targetAccessorType == TargetWriteAccessorType.ADDER && sourceType.isCollectionType() ) {
+            if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER && sourceType.isCollectionType() ) {
                 // handle adder, if source is collection then use iterator element type as source type.
                 // sourceRef becomes a local variable in the itereation.
                 sourceType = sourceType.getTypeParameters().get( 0 );
@@ -182,7 +210,7 @@ public class PropertyMapping extends ModelElement {
 
             // all the tricky cases will be excluded for the time being.
             boolean preferUpdateMethods;
-            if ( targetAccessorType == TargetWriteAccessorType.ADDER ) {
+            if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER ) {
                 preferUpdateMethods = false;
             }
             else {
@@ -209,7 +237,7 @@ public class PropertyMapping extends ModelElement {
 
             if ( assignment != null ) {
                 if ( targetType.isCollectionOrMapType() ) {
-                    assignment = assignCollection( targetType, targetAccessorType, assignment );
+                    assignment = assignCollection( targetType, targetWriteAccessorType, assignment );
                 }
                 else if ( targetType.isArrayType() && sourceType.isArrayType() && assignment.getType() == DIRECT ) {
                     Type arrayType = ctx.getTypeFactory().getType( Arrays.class );
@@ -223,7 +251,7 @@ public class PropertyMapping extends ModelElement {
                     assignment = new NullCheckWrapper( assignment );
                 }
                 else {
-                    assignment = assignObject( sourceType, targetType, targetAccessorType, assignment );
+                    assignment = assignObject( sourceType, targetType, targetWriteAccessorType, assignment );
                 }
 
             }
@@ -491,33 +519,6 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private TargetWriteAccessorType getTargetAcccessorType() {
-            if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
-                return TargetWriteAccessorType.SETTER;
-            }
-            else if ( Executables.isAdderMethod( targetWriteAccessor ) ) {
-                return TargetWriteAccessorType.ADDER;
-            }
-            else {
-                return TargetWriteAccessorType.GETTER;
-            }
-        }
-
-        private Type getTargetType(TargetWriteAccessorType targetAccessorType) {
-            switch ( targetAccessorType ) {
-                case ADDER:
-                case SETTER:
-                    return ctx.getTypeFactory().getSingleParameter(
-                        method.getResultType().getTypeElement(),
-                        targetWriteAccessor ).getType();
-                case GETTER:
-                default:
-                    return ctx.getTypeFactory().getReturnType(
-                        method.getResultType().getTypeElement(),
-                        targetWriteAccessor );
-            }
-        }
-
         private Assignment forgeMapOrIterableMapping(Type sourceType, Type targetType, String sourceReference,
                                                      ExecutableElement element) {
 
@@ -623,23 +624,9 @@ public class PropertyMapping extends ModelElement {
         }
 
         public PropertyMapping build() {
-
             // source
             String mappedElement = "constant '" + constantExpression + "'";
             Type sourceType = ctx.getTypeFactory().getType( String.class );
-
-            // target
-            Type targetType;
-            if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
-                targetType = ctx.getTypeFactory().getSingleParameter(
-                    method.getResultType().getTypeElement(),
-                    targetWriteAccessor ).getType();
-            }
-            else {
-                targetType = ctx.getTypeFactory().getReturnType(
-                    method.getResultType().getTypeElement(),
-                    targetWriteAccessor );
-            }
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
@@ -718,21 +705,13 @@ public class PropertyMapping extends ModelElement {
         }
 
         public PropertyMapping build() {
-
             Assignment assignment = AssignmentFactory.createDirect( javaExpression );
 
-            Type targetType;
             if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
                 // setter, so wrap in setter
                 assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-                targetType = ctx.getTypeFactory().getSingleParameter(
-                    method.getResultType().getTypeElement(),
-                    targetWriteAccessor ).getType();
             }
             else {
-                targetType = ctx.getTypeFactory().getReturnType(
-                    method.getResultType().getTypeElement(),
-                    targetWriteAccessor );
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
                 assignment = new GetterWrapperForCollectionsAndMaps(
                     assignment,
@@ -752,7 +731,6 @@ public class PropertyMapping extends ModelElement {
                 null
             );
         }
-
     }
 
     // Constructor for creating mappings of constant expressions.
