@@ -43,7 +43,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <com.jolira.hickory.version>1.0.0</com.jolira.hickory.version>
         <org.apache.maven.plugins.enforcer.version>1.2</org.apache.maven.plugins.enforcer.version>
-        <org.apache.maven.plugins.surefire.version>2.18.1</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.surefire.version>2.19.1</org.apache.maven.plugins.surefire.version>
         <org.apache.maven.plugins.javadoc.version>2.10.3</org.apache.maven.plugins.javadoc.version>
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>0.23.1</org.eclipse.tycho.compiler-jdt.version>
