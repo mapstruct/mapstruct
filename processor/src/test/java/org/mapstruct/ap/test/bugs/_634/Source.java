@@ -16,21 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.generics.container;
+package org.mapstruct.ap.test.bugs._634;
 
-public class Foo {
+import java.util.List;
 
-    private String value;
+public class Source<T> {
 
-    public Foo(String value) {
-        this.value = value;
+    private final List<T> items;
+
+    public Source(List<T> items) {
+        this.items = items;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+    public List<T> getContent() {
+        return items;
     }
 }

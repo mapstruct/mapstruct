@@ -16,24 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.generics.container;
+package org.mapstruct.ap.test.bugs._634;
 
-public class Bar {
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-    private long value;
+@Mapper
+public interface SourceTargetMapper {
 
-    public Bar() {
-    }
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    public Bar(long value) {
-        this.value = value;
-    }
+    Bar mapFooToBar(Foo foo);
 
-    public long getValue() {
-        return value;
-    }
-
-    public void setValue(long value) {
-        this.value = value;
-    }
+    Target<Bar> mapSourceToTarget(Source<Foo> source);
 }

@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.generics.container;
+package org.mapstruct.ap.test.bugs._634;
 
 import static org.fest.assertions.Assertions.assertThat;
 
