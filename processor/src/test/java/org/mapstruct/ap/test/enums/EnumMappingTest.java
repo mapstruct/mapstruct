@@ -60,6 +60,9 @@ public class EnumMappingTest {
 
         target = OrderMapper.INSTANCE.orderTypeToExternalOrderType( OrderType.NORMAL );
         assertThat( target ).isEqualTo( ExternalOrderType.DEFAULT );
+
+        target = OrderMapper.INSTANCE.orderTypeToExternalOrderType( OrderType.NULLABLE );
+        assertThat( target ).isEqualTo( null );
     }
 
     @Test
@@ -79,7 +82,7 @@ public class EnumMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousOrderMapperMappingSameConstantTwice.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 43,
                 messageRegExp = "One enum constant must not be mapped to more than one target constant, but " +
                     "constant EXTRA is mapped to SPECIAL, DEFAULT\\.")
         }

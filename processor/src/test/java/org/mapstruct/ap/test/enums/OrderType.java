@@ -23,5 +23,5 @@ package org.mapstruct.ap.test.enums;
  */
 public enum OrderType {
 
-    RETAIL, B2B, EXTRA, STANDARD, NORMAL
+    RETAIL, B2B, EXTRA, STANDARD, NORMAL, NULLABLE
 }
