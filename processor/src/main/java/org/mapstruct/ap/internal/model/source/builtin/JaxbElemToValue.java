@@ -40,7 +40,7 @@ public class JaxbElemToValue extends BuiltInMethod {
     public JaxbElemToValue(TypeFactory typeFactory) {
         this.parameter = new Parameter( "element", typeFactory.getType( JAXBElement.class ) );
         this.returnType = typeFactory.getType( Object.class );
-        this.importTypes = asSet( typeFactory.getType( JAXBElement.class ) );
+        this.importTypes = asSet( parameter.getType() );
     }
 
     @Override
