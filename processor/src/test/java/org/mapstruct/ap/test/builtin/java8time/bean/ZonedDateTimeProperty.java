@@ -16,22 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin.source;
+package org.mapstruct.ap.test.builtin.java8time.bean;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 /**
  * @author Andreas Gudian
- *
  */
-public class SourceWithDate {
-    private Date date;
+public class ZonedDateTimeProperty {
+    private ZonedDateTime prop;
 
-    public Date getDate() {
-        return date;
+    public ZonedDateTime getProp() {
+        return prop;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setProp(ZonedDateTime prop) {
+        this.prop = prop;
     }
 }

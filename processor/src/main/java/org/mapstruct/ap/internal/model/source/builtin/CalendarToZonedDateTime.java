@@ -23,7 +23,6 @@ import static org.mapstruct.ap.internal.util.Collections.asSet;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -44,7 +43,7 @@ public class CalendarToZonedDateTime extends BuiltInMethod {
     CalendarToZonedDateTime(TypeFactory typeFactory) {
         this.returnType = typeFactory.getType( JavaTimeConstants.ZONED_DATE_TIME_FQN );
         this.parameter = new Parameter( "cal", typeFactory.getType( Calendar.class ) );
-        this.importedTypes = asSet( returnType, parameter.getType(), typeFactory.getType( TimeZone.class ) );
+        this.importedTypes = asSet( returnType, parameter.getType() );
     }
 
     @Override
