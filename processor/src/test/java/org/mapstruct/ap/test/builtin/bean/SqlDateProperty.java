@@ -16,25 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin._target;
+package org.mapstruct.ap.test.builtin.bean;
 
 import java.sql.Date;
 
 /**
- *
  * @author Sjaak Derksen
  */
-public class TargetWithSqlDate {
+public class SqlDateProperty {
 
-    private Date date;
+    private Date prop;
 
-    public Date getDate() {
-        return date;
+    public Date getProp() {
+        return prop;
     }
 
-    public void setDate( Date date ) {
-        this.date = date;
+    public void setProp(Date prop) {
+        this.prop = prop;
     }
-
-
 }

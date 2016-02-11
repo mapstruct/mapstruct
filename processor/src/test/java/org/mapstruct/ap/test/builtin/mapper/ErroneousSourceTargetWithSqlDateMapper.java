@@ -19,8 +19,8 @@
 package org.mapstruct.ap.test.builtin.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.builtin._target.TargetWithSqlDate;
-import org.mapstruct.ap.test.builtin.source.SourceWithDate;
+import org.mapstruct.ap.test.builtin.bean.DateProperty;
+import org.mapstruct.ap.test.builtin.bean.SqlDateProperty;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -32,6 +32,5 @@ public interface ErroneousSourceTargetWithSqlDateMapper {
 
     ErroneousSourceTargetWithSqlDateMapper INSTANCE = Mappers.getMapper( ErroneousSourceTargetWithSqlDateMapper.class );
 
-    TargetWithSqlDate toTargetWithSqlDate(SourceWithDate source);
-
+    SqlDateProperty toTargetWithSqlDate(DateProperty source);
 }

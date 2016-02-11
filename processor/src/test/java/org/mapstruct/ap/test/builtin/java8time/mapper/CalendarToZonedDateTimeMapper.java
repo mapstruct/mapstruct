@@ -16,21 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin.mapper;
+package org.mapstruct.ap.test.builtin.java8time.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.builtin._target.TargetWithDate;
-import org.mapstruct.ap.test.builtin.source.SourceWithDate;
+import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
+import org.mapstruct.ap.test.builtin.java8time.bean.ZonedDateTimeProperty;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
- *
  */
 @Mapper
-public interface SourceTargetWithDateMapper {
+public interface CalendarToZonedDateTimeMapper {
+    CalendarToZonedDateTimeMapper INSTANCE = Mappers.getMapper( CalendarToZonedDateTimeMapper.class );
 
-    SourceTargetWithDateMapper INSTANCE = Mappers.getMapper( SourceTargetWithDateMapper.class );
-
-    TargetWithDate toTargetWithDate(SourceWithDate source);
+    ZonedDateTimeProperty map(CalendarProperty source);
 }

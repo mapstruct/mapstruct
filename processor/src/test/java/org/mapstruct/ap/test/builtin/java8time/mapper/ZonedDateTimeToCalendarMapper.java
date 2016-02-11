@@ -16,22 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin._target;
+package org.mapstruct.ap.test.builtin.java8time.mapper;
 
-import javax.xml.datatype.XMLGregorianCalendar;
+import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
+import org.mapstruct.ap.test.builtin.java8time.bean.ZonedDateTimeProperty;
+import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
- *
  */
-public class TargetWithDate {
-    private XMLGregorianCalendar date;
+@Mapper
+public interface ZonedDateTimeToCalendarMapper {
+    ZonedDateTimeToCalendarMapper INSTANCE = Mappers.getMapper( ZonedDateTimeToCalendarMapper.class );
 
-    public XMLGregorianCalendar getDate() {
-        return date;
-    }
-
-    public void setDate(XMLGregorianCalendar date) {
-        this.date = date;
-    }
+    CalendarProperty map(ZonedDateTimeProperty source);
 }
