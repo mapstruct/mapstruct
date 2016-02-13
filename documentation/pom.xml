@@ -64,6 +64,13 @@
                       <version>${asciidoctorj.version}</version>
                   </dependency>
               </dependencies>
+              <configuration>
+                    <sourceHighlighter>coderay</sourceHighlighter>
+                    <attributes>
+                        <mapstructVersion>1.0.0.Final</mapstructVersion>
+                        <icons>font</icons>
+                    </attributes>
+                  </configuration>
               <executions>
                 <execution>
                   <id>output-html</id>
@@ -73,11 +80,6 @@
                   </goals>
                   <configuration>
                         <backend>html</backend>
-                        <sourceHighlighter>coderay</sourceHighlighter>
-                        <attributes>
-                            <mapstructVersion>1.0.0.Final</mapstructVersion>
-                            <icons>font</icons>
-                        </attributes>
                       </configuration>
                 </execution>
                 <execution>
@@ -88,10 +90,7 @@
                   </goals>
                   <configuration>
                         <backend>pdf</backend>
-                        <sourceHighlighter>coderay</sourceHighlighter>
                         <attributes>
-                            <mapstructVersion>1.0.0.Final</mapstructVersion>
-                            <icons>font</icons>
                             <pagenums/>
                             <toc/>
                             <idprefix/>
