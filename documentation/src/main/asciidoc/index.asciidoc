@@ -1160,8 +1160,152 @@ public class CarMapperImpl implements CarMapper {
 ----
 ====
 
+== Advanced mapping options
+This chapter describes several advanced options which allow to fine-tune the behavior of the generated mapping code as needed.
+
+[[default-values-and-constants]]
+=== Default values and constants
+
+Default values can be specified to set a predefined value to a target property if the corresponding source property is `null`. Constants can be specified to set such a predefined value in any case. Default values and constants are specified as String values and are subject to type conversion either via built-in conversions or the invocation of other mapping methods in order to match the type required by the target property.
+
+A mapping with a constant must not include a reference to a source property. The following examples shows some mappings using default values and constants:
+
+.Mapping method with default values and constants
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(uses = StringListMapper.class)
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mappings( {
+        @Mapping(target = "stringProperty", source = "stringProp", defaultValue = "undefined"),
+        @Mapping(target = "longProperty", defaultValue = "-1"),
+        @Mapping(target = "stringConstant", constant = "Constant Value"),
+        @Mapping(target = "integerConstant", constant = "14"),
+        @Mapping(target = "longWrapperConstant", constant = "3001"),
+        @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
+        @Mapping(target = "stringListConstants", constant = "jack-jill-tom")
+    } )
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+If `s.getStringProp() == null`, then the target property `stringProperty` will be set to `"undefined"` instead of applying the value from `s.getStringProp()`. If `s.getLongProp() == null`, then the target property `longProperty` will be set to `-1`.
+The String `"Constant Value"` is set as is to the target property `stringConstant`. The value `"3001"` is type-converted to the `Long` (wrapper) class of target property `longWrapperConstant`. Date properties also require a date format. The constant `"jack-jill-tom"` demonstrates how the hand-written class `StringListMapper` is invoked to map the dash-separated list into a `List<String>`.
+
+[[expressions]]
+=== Expressions
+
+By means of Expressions it will be possible to include constructs from a number of languages.
+
+Currently only Java is supported as language. This feature is e.g. useful to invoke constructors. The entire source object is available for usage in the expression. Care should be taken to insert only valid Java code: MapStruct will not validate the expression at generation-time, but errors will show up in the generated classes during compilation.
+
+The example below demonstrates how two source properties can be mapped to one target:
+
+.Mapping method using an expression
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target = "timeAndFormat",
+         expression = "java( new org.sample.TimeAndFormat( s.getTime(), s.getFormat() ) )")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+The example demonstrates how the source properties `time` and `format` are composed into one target property `TimeAndFormat`. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `TimeAndFormat` class (unless its used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining `imports` on the `@Mapper` annotation.
+
+.Declaring an import
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+imports org.sample.TimeAndFormat;
+
+@Mapper( imports = TimeAndFormat.class )
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target = "timeAndFormat",
+         expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ) )")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
+[[determining-result-type]]
+=== Determining the result type
+
+When result types have an inheritance relation, selecting either mapping method (`@Mapping`) or a factory method (`@BeanMapping`) can becomes ambigious. Suppose an Apple and a Banana, which is are both specializations of Fruit.
+
+.Specifying the result type of a bean mapping method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = FruitFactory.class )
+public interface FruitMapper {
+
+    @BeanMapping( resultType = Apple.class )
+    Fruit map( FruitDto source );
+
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class FruitFactory {
+
+    public Apple createApple() {
+        return new Apple( "Apple" );
+    }
+
+    public Banana createBanana() {
+        return new Banana( "Banana" );
+    }
+}
+----
+====
+
+So, which `Fruit` must be factorized in the mapping method `Fruit map(FruitDto source);`? A `Banana` or an `Apple`? Here's were the `@BeanMapping#resultType` comes in handy. It controls the factory method to select, or in absence of a factory method, the return type to create.
+
+[TIP]
+====
+The same mechanism is present on mapping: `@Mapping#resultType` and works like you expect it would: it selects the mapping method with the desired result type when present.
+====
+
+[TIP]
+====
+The mechanism is also present on iterable mapping and map mapping. `@IterableMapping#elementTargetType` is used to select the mapping method with the desired element in the resulting `Iterable`. For the `@MapMapping` a similar purpose is served by means of `#MapMapping#keyTargetType` and `MapMapping#valueTargetType`.
+====
+
+[[mapping-result-for-null-arguments]]
+=== Controlling mapping result for 'null' arguments
+
+MapStruct offers control over the object to create when the source argument of the mapping method equals `null`. By default `null` will be returned.
+
+However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT` on `@BeanMapping`, `@IterableMapping`, `@MapMapping`, or globally on `@Mapper` or `@MappingConfig`, the mapping result can be altered to return empty *default* values. This means for:
+
+* *Bean mappings*: an 'empty' target bean will be returned, with the exception of constants and expressions, they will be populated when present.
+* *Primitives*: the default values for primitives will be returned, e.g. `false` for `boolean` or `0` for `int`.
+* *Iterables / Arrays*: an empty iterable will be returned.
+* *Maps*: an empty map will be returned.
+
+The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy` on mapping method level will override `@Mapper#nullValueMappingStrategy`, and `@Mapper#nullValueMappingStrategy` will override `@MappingConfig#nullValueMappingStrategy`.
+
 [[exceptions]]
-== Exceptions
+=== Exceptions
 
 Calling applications may require handling of exceptions when calling a mapping method. These exceptions could be thrown by hand-written logic and by the generated built-in mapping methods or type-conversions of MapStruct. When the calling application requires handling of exceptions, a throws clause can be defined in the mapping method:
 
@@ -1232,149 +1376,12 @@ public CarDto carToCarDto(Car car) throws GearException {
 
 Some **notes** on null checks. MapStruct does provide null checking only when required: when applying type-conversions or constructing a new type by invoking its constructor. This means that the user is responsible in hand-written code for returning valid non-null objects. Also null objects can be handed to hand-written code, since MapStruct does not want to make assumptions on the meaning assigned by the user to a null object. Hand-written code has to deal with this.
 
-[[default-values-and-constants]]
-== Default values and constants
+== Reusing mapping configurations
 
-Default values can be specified to set a predefined value to a target property if the corresponding source property is `null`. Constants can be specified to set such a predefined value in any case. Default values and constants are specified as String values and are subject to type conversion either via built-in conversions or the invocation of other mapping methods in order to match the type required by the target property.
-
-A mapping with a constant must not include a reference to a source property. The following examples shows some mappings using default values and constants:
-
-.Mapping method with default values and constants
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Mapper(uses = StringListMapper.class)
-public interface SourceTargetMapper {
-
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    @Mappings( {
-        @Mapping(target = "stringProperty", source = "stringProp", defaultValue = "undefined"),
-        @Mapping(target = "longProperty", defaultValue = "-1"),
-        @Mapping(target = "stringConstant", constant = "Constant Value"),
-        @Mapping(target = "integerConstant", constant = "14"),
-        @Mapping(target = "longWrapperConstant", constant = "3001"),
-        @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
-        @Mapping(target = "stringListConstants", constant = "jack-jill-tom")
-    } )
-    Target sourceToTarget(Source s);
-}
-----
-====
-
-If `s.getStringProp() == null`, then the target property `stringProperty` will be set to `"undefined"` instead of applying the value from `s.getStringProp()`. If `s.getLongProp() == null`, then the target property `longProperty` will be set to `-1`.
-The String `"Constant Value"` is set as is to the target property `stringConstant`. The value `"3001"` is type-converted to the `Long` (wrapper) class of target property `longWrapperConstant`. Date properties also require a date format. The constant `"jack-jill-tom"` demonstrates how the hand-written class `StringListMapper` is invoked to map the dash-separated list into a `List<String>`.
-
-[[expressions]]
-== Expressions
-
-By means of Expressions it will be possible to include constructs from a number of languages.
-
-Currently only Java is supported as language. This feature is e.g. useful to invoke constructors. The entire source object is available for usage in the expression. Care should be taken to insert only valid Java code: MapStruct will not validate the expression at generation-time, but errors will show up in the generated classes during compilation.
-
-The example below demonstrates how two source properties can be mapped to one target:
-
-.Mapping method using an expression
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Mapper
-public interface SourceTargetMapper {
-
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    @Mapping(target = "timeAndFormat",
-         expression = "java( new org.sample.TimeAndFormat( s.getTime(), s.getFormat() ) )")
-    Target sourceToTarget(Source s);
-}
-----
-====
-
-The example demonstrates how the source properties `time` and `format` are composed into one target property `TimeAndFormat`. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `TimeAndFormat` class (unless its used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining `imports` on the `@Mapper` annotation.
-
-.Declaring an import
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-imports org.sample.TimeAndFormat;
-
-@Mapper( imports = TimeAndFormat.class )
-public interface SourceTargetMapper {
-
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    @Mapping(target = "timeAndFormat",
-         expression = "java( new TimeAndFormat( s.getTime(), s.getFormat() ) )")
-    Target sourceToTarget(Source s);
-}
-----
-====
-
-[[determining-result-type]]
-== Determining the result type
-
-When result types have an inheritance relation, selecting either mapping method (`@Mapping`) or a factory method (`@BeanMapping`) can becomes ambigious. Suppose an Apple and a Banana, which is are both specializations of Fruit.
-
-.Specifying the result type of a bean mapping method
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Mapper( uses = FruitFactory.class )
-public interface FruitMapper {
-
-    @BeanMapping( resultType = Apple.class )
-    Fruit map( FruitDto source );
-
-}
-----
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-public class FruitFactory {
-
-    public Apple createApple() {
-        return new Apple( "Apple" );
-    }
-
-    public Banana createBanana() {
-        return new Banana( "Banana" );
-    }
-}
-----
-====
-
-So, which `Fruit` must be factorized in the mapping method `Fruit map(FruitDto source);`? A `Banana` or an `Apple`? Here's were the `@BeanMapping#resultType` comes in handy. It controls the factory method to select, or in absence of a factory method, the return type to create.
-
-[TIP]
-====
-The same mechanism is present on mapping: `@Mapping#resultType` and works like you expect it would: it selects the mapping method with the desired result type when present.
-====
-
-[TIP]
-====
-The mechanism is also present on iterable mapping and map mapping. `@IterableMapping#elementTargetType` is used to select the mapping method with the desired element in the resulting `Iterable`. For the `@MapMapping` a similar purpose is served by means of `#MapMapping#keyTargetType` and `MapMapping#valueTargetType`.
-====
-
-[[mapping-result-for-null-arguments]]
-== Controlling mapping result for 'null' arguments
-
-MapStruct offers control over the object to create when the source argument of the mapping method equals `null`. By default `null` will be returned.
-
-However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT` on `@BeanMapping`, `@IterableMapping`, `@MapMapping`, or globally on `@Mapper` or `@MappingConfig`, the mapping result can be altered to return empty *default* values. This means for:
-
-* *Bean mappings*: an 'empty' target bean will be returned, with the exception of constants and expressions, they will be populated when present.
-* *Primitives*: the default values for primitives will be returned, e.g. `false` for `boolean` or `0` for `int`.
-* *Iterables / Arrays*: an empty iterable will be returned.
-* *Maps*: an empty map will be returned.
-
-The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy` on mapping method level will override `@Mapper#nullValueMappingStrategy`, and `@Mapper#nullValueMappingStrategy` will override `@MappingConfig#nullValueMappingStrategy`.
+This chapter discusses different means of reusing mapping configurations for several mapping methods: "inheritance" of configuration from other methods and sharing central configuration between multiple mapper types.
 
 [[mapping-configuration-inheritance]]
-== Mapping configuration inheritance
+=== Mapping configuration inheritance
 
 Method-level configuration annotations such as `@Mapping`, `@BeanMapping`, `@IterableMapping`, etc., can be *inherited* from one mapping method to a *similar* method using the annotation `@InheritConfiguration`:
 
@@ -1442,7 +1449,7 @@ If multiple methods qualify, the method from which to inherit the configuration 
 Nested properties are excluded (silently ignored) from reverse mapping. The same holds true for expressions and constants. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
 
 [[shared-configurations]]
-== Shared configurations
+=== Shared configurations
 
 MapStruct offers the possibility to define a shared configuration by pointing to a central interface annotated with `@MapperConfig`. For a mapper to use the shared configuration, the configuration interface needs to be defined in the `@Mapper#config` property.
 
@@ -1514,8 +1521,12 @@ The attributes `@Mapper#mappingInheritanceStrategy()` / `@MapperConfig#mappingIn
 * `EXPLICIT` (default): the configuration will only be inherited, if the target mapping method is annotated with `@InheritConfiguration` and the source and target types are assignable to the corresponding types of the prototype method, all as described in <<mapping-configuration-inheritance>>.
 * `AUTO_INHERIT_FROM_CONFIG`: the configuration will be inherited automatically, if the source and target types of the target mapping method are assignable to the corresponding types of the prototype method. If multiple prototype methods match, the ambiguity must be resolved using `@InheritConfiguration(name = ...)`.
 
+== Customizing mappings
+
+Sometimes it's needed to apply custom logic before or after certain mapping methods. MapStruct provides two ways for doing so: decorators which allow for a type-safe customization of specific mapping methods and the before-mapping and after-mapping lifecycle methods which allow for a generic customization of mapping methods with given source or target types.
+
 [[customizing-mappers-using-decorators]]
-== Customizing mappings using decorators
+=== Mapping customization with decorators
 
 In certain cases it may be required to customize a generated mapping method, e.g. to set an additional property in the target object which can't be set by a generated method implementation. MapStruct supports this requirement using decorators.
 
@@ -1576,7 +1587,7 @@ For a mapper with `componentModel = "default"`, define a constructor with a sing
 When working with the component models `spring` or `jsr330`, this needs to be handled differently.
 
 [[decorators-with-spring]]
-=== Decorators with Spring component model
+==== Decorators with the Spring component model
 
 When using `@DecoratedWith` on a mapper with component model `spring`, the generated implementation of the original mapper is annotated with the Spring annotation `@Qualifier("delegate")`. To autowire that bean in your decorator, add that qualifier annotation as well:
 
@@ -1615,7 +1626,7 @@ private PersonMapper personMapper; // injects the decorator, with the injected o
 ====
 
 [[decorators-with-jsr-330]]
-=== Decorators with JSR 330 component model
+==== Decorators with the JSR 330 component model
 
 JSR 330 doesn't specify qualifiers and only allows to specifically name the beans. Hence, the generated implementation of the original mapper is annotated with `@Named("fully-qualified-name-of-generated-implementation")` (please note that when using a decorator, the class name of the mapper implementation ends with an underscore). To inject that bean in your decorator, add the same annotation to the delegate field (e.g. by copy/pasting it from the generated class):
 
@@ -1660,7 +1671,7 @@ private PersonMapper personMapper; // injects the decorator, with the injected o
 ====
 
 [[customizing-mappings-with-before-and-after]]
-== Customizing mappings using BeforeMapping/AfterMapping methods
+=== Mapping customization with before-mapping and after-mapping methods
 
 Decorators may not always fit the needs when it comes to customizing mappers. For example, if you need to perform the customization not only for a few selected methods, but for all methods that map specific super-types: in that case, you can use *callback methods* that are invoked before the mapping starts or after the mapping finished.
 
