@@ -693,6 +693,138 @@ The algorithm for finding a mapping or factory method resembles Java's method re
 When working with JAXB, e.g. when converting a `String` to a corresponding `JAXBElement<String>`, MapStruct will take the `scope` and `name` attributes of `@XmlElementDecl` annotations into account when looking for a mapping method. This makes sure that the created `JAXBElement` instances will have the right QNAME value. You can find a test which maps JAXB objects https://github.com/mapstruct/mapstruct/blob/{mapstructVersion}/integrationtest/src/test/java/org/mapstruct/itest/jaxb/JaxbBasedMapperTest.java[here].
 ====
 
+[[selection-based-on-qualifiers]]
+=== Mapping method selection based on qualifiers
+
+In many occasions one requires mapping methods with the same method signature (appart from the name) that have different behavior. MapStruct has a handy mechanism to deal with such situations: `@Qualifier`. A ‘qualifier’ is a custom annotation that the user can write, ‘stick onto’ a mapping method which is included as used mapper, and can be referred to in a bean property mapping, iterable mapping or map mapping.  Multiple qualifiers can be ‘stuck onto’ a method and mapping.
+
+So, lets say there is a hand-written method to map titles with a `String` return type and `String` argument amongst many other referenced mappers with the same `String` return type  - `String` argument signature:
+
+.Several mapping methods with identical source and target types
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Titles {
+
+    public String translateTitleEG(String title) {
+        // some mapping logic
+    }
+
+    public String translateTitleGE(String title) {
+        // some mapping logic
+    }
+}
+----
+====
+
+And a mapper using this handwritten mapper, in which source and target have a property 'title' that should be mapped:
+
+.Mapper causing an ambiguous mapping method error
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = Titles.class )
+public interface MovieMapper {
+
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====
+
+Without the use of qualifiers, this would result in an ambiguous mapping method error, because 2 qualifying methods are found (`translateTitleEG`, `translateTitleGE`) and MapStruct would not have a hint which one to choose.
+
+Enter the qualifier approach:
+
+.Declaring a qualifier type
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Qualifier
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.SOURCE)
+public @interface TitleTranslator {
+}
+----
+====
+
+And, some qualifiers to indicate which translator to use to map from source language to target language:
+
+.Declaring qualifier types for mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Qualifier
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.SOURCE)
+public @interface EnglishToGerman {
+}
+----
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Qualifier
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.SOURCE)
+public @interface GermanToEnglish {
+}
+----
+====
+
+Please take note of the retention `TitleTranslator` on class level, `EnglishToGerman`, `GermanToEnglish` on method level!
+
+Then, using the qualifiers, the mapping could look like this:
+
+.Mapper using qualifiers
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = Titles.class )
+public interface MovieMapper {
+
+     @Mapping( target = "title", qualifiedBy = { TitleTranslator.class, EnglishToGerman.class } )
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====
+
+.Custom mapper qualifying the methods it provides
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@TitleTranslator
+public class Titles {
+
+    @EnglishToGerman
+    public String translateTitleEG(String title) {
+        // some mapping logic
+    }
+
+    @GermanToEnglish
+    public String translateTitleGE(String title) {
+        // some mapping logic
+    }
+}
+----
+====
+
+[WARNING]
+====
+A class / method annotated with a qualifier will not qualify anymore for mappings that do not have the `qualifiedBy` element.
+====
+
+[TIP]
+====
+The same mechanism is also present on bean mappings: `@BeanMapping#qualifiedBy`: it selects the factory method marked with the indicated qualifier.
+====
+
 [[mapping-collections]]
 == Mapping collections
 
@@ -1179,138 +1311,6 @@ public interface SourceTargetMapper {
     Target sourceToTarget(Source s);
 }
 ----
-====
-
-[[selection-based-on-qualifiers]]
-== Selection based on Qualifiers
-
-In many occasions one requires mapping methods with the same method signature (appart from the name) that have different behavior. MapStruct has a handy mechanism to deal with such situations: `@Qualifier`. A ‘qualifier’ is a custom annotation that the user can write, ‘stick onto’ a mapping method which is included as used mapper, and can be referred to in a bean property mapping, iterable mapping or map mapping.  Multiple qualifiers can be ‘stuck onto’ a method and mapping.
-
-So, lets say there is a hand-written method to map titles with a `String` return type and `String` argument amongst many other referenced mappers with the same `String` return type  - `String` argument signature:
-
-.Several mapping methods with identical source and target types
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-public class Titles {
-
-    public String translateTitleEG(String title) {
-        // some mapping logic
-    }
-
-    public String translateTitleGE(String title) {
-        // some mapping logic
-    }
-}
-----
-====
-
-And a mapper using this handwritten mapper, in which source and target have a property 'title' that should be mapped:
-
-.Mapper causing an ambiguous mapping method error
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Mapper( uses = Titles.class )
-public interface MovieMapper {
-
-     GermanRelease toGerman( OriginalRelease movies );
-
-}
-----
-====
-
-Without the use of qualifiers, this would result in an ambiguous mapping method error, because 2 qualifying methods are found (`translateTitleEG`, `translateTitleGE`) and MapStruct would not have a hint which one to choose.
-
-Enter the qualifier approach:
-
-.Declaring a qualifier type
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Qualifier
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.SOURCE)
-public @interface TitleTranslator {
-}
-----
-====
-
-And, some qualifiers to indicate which translator to use to map from source language to target language:
-
-.Declaring qualifier types for mapping methods
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Qualifier
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
-public @interface EnglishToGerman {
-}
-----
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Qualifier
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
-public @interface GermanToEnglish {
-}
-----
-====
-
-Please take note of the retention `TitleTranslator` on class level, `EnglishToGerman`, `GermanToEnglish` on method level!
-
-Then, using the qualifiers, the mapping could look like this:
-
-.Mapper using qualifiers
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Mapper( uses = Titles.class )
-public interface MovieMapper {
-
-     @Mapping( target = "title", qualifiedBy = { TitleTranslator.class, EnglishToGerman.class } )
-     GermanRelease toGerman( OriginalRelease movies );
-
-}
-----
-====
-
-.Custom mapper qualifying the methods it provides
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@TitleTranslator
-public class Titles {
-
-    @EnglishToGerman
-    public String translateTitleEG(String title) {
-        // some mapping logic
-    }
-
-    @GermanToEnglish
-    public String translateTitleGE(String title) {
-        // some mapping logic
-    }
-}
-----
-====
-
-[WARNING]
-====
-A class / method annotated with a qualifier will not qualify anymore for mappings that do not have the `qualifiedBy` element.
-====
-
-[TIP]
-====
-The same mechanism is also present on bean mappings: `@BeanMapping#qualifiedBy`: it selects the factory method marked with the indicated qualifier.
 ====
 
 [[determining-result-type]]
