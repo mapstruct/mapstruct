@@ -63,6 +63,14 @@
             <source>target/freemarker-unpacked/META-INF/LICENSE.txt</source>
             <outputDirectory>etc/freemarker</outputDirectory>
         </file>
+        <file>
+            <source>../documentation/target/generated-docs/mapstruct-reference-guide.html</source>
+            <outputDirectory>docs/reference/html</outputDirectory>
+        </file>
+        <file>
+            <source>../documentation/target/generated-docs/mapstruct-reference-guide.pdf</source>
+            <outputDirectory>docs/reference/pdf</outputDirectory>
+        </file>
     </files>
 
     <fileSets>
