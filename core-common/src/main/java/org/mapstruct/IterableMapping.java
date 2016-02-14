@@ -57,6 +57,15 @@ public @interface IterableMapping {
     Class<? extends Annotation>[] qualifiedBy() default { };
 
     /**
+     * See: { @link #qualifiedBy() }. String form of a predefined { @link @Qualifier }. The { @link @Qualifier }
+     * is more verbose, but offers more flexibility in terms of for instance refactoring. At the other hand, there
+     * is no need to define own annotations.
+     *
+     * @return the qualifiers
+     */
+    String[] qualifiedByName() default { };
+
+    /**
      * Specifies the type of the element to be used in the result of the mapping method in case multiple mapping
      * methods qualify.
      *

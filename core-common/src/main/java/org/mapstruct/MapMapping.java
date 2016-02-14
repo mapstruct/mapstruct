@@ -65,6 +65,15 @@ public @interface MapMapping {
      */
     Class<? extends Annotation>[] keyQualifiedBy() default { };
 
+    /**
+     * See: { @link #keyQualifiedBy() }. String form of a predefined { @link @Qualifier }. The { @link @Qualifier }
+     * is more verbose, but offers more flexibility in terms of for instance refactoring. At the other hand, there
+     * is no need to define own annotations.
+     *
+     * @return the qualifiers
+     */
+    String[] keyQualifiedByName() default { };
+
 
     /**
      * A value qualifier can be specified to aid the selection process of a suitable mapper for the values in the map.
@@ -76,6 +85,15 @@ public @interface MapMapping {
      * @return the qualifiers
      */
     Class<? extends Annotation>[] valueQualifiedBy() default { };
+
+    /**
+     * See: { @link #valueQualifiedBy() }. String form of a predefined { @link @Qualifier }. The { @link @Qualifier }
+     * is more verbose, but offers more flexibility in terms of for instance refactoring. At the other hand, there
+     * is no need to define own annotations.
+     *
+     * @return the qualifiers
+     */
+    String[] valueQualifiedByName() default { };
 
     /**
      * Specifies the type of the key to be used in the result of the mapping method in case multiple mapping
