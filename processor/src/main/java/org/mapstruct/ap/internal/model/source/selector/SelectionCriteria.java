@@ -18,9 +18,11 @@
  */
 package org.mapstruct.ap.internal.model.source.selector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.lang.model.type.TypeMirror;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
 /**
  * This class groups the selection criteria in one class
@@ -29,18 +31,23 @@ import javax.lang.model.type.TypeMirror;
  */
 public class SelectionCriteria {
 
-    private final List<TypeMirror> qualifiers;
-    private final List<String> qualifiedByNames;
+    private final List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+    private final List<String> qualifiedByNames = new ArrayList<String>();
     private final String targetPropertyName;
     private final TypeMirror qualifyingResultType;
     private boolean preferUpdateMapping;
 
-    public SelectionCriteria(List<TypeMirror> qualifiers, List<String> qualifiedByNames, String targetPropertyName,
-        TypeMirror qualifyingResultType, boolean preferUpdateMapping ) {
-        this.qualifiers = qualifiers;
-        this.qualifiedByNames = qualifiedByNames;
+    public SelectionCriteria( SelectionParameters selectionParameters,  String targetPropertyName,
+        boolean preferUpdateMapping ) {
+        if ( selectionParameters != null ) {
+            qualifiers.addAll( selectionParameters.getQualifiers() );
+            qualifiedByNames.addAll( selectionParameters.getQualifyingNames() );
+            qualifyingResultType = selectionParameters.getResultType();
+        }
+        else {
+            this.qualifyingResultType = null;
+        }
         this.targetPropertyName = targetPropertyName;
-        this.qualifyingResultType = qualifyingResultType;
         this.preferUpdateMapping = preferUpdateMapping;
     }
 

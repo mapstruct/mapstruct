@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -31,6 +30,7 @@ import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -79,10 +79,7 @@ public class MappingBuilderContext {
          * @param targetType return type to match
          * @param targetPropertyName name of the target property
          * @param dateFormat used for formatting dates in build in methods that need context information
-         * @param qualifiers used for further select the appropriate mapping method based on class and name
-         * @param qualifyingNames see qualifiers, used in combination with with @Named
-         * @param resultType used for further select the appropriate mapping method based on resultType (bean mapping)
-         * targetType (Iterable- and MapMapping)
+         * @param selectionParameters parameters used in the selection process
          * @param sourceReference call to source type as string
          * @param preferUpdateMethods selection should prefer update methods when present.
          *
@@ -94,10 +91,9 @@ public class MappingBuilderContext {
          * <li>null, no assignment found</li>
          * </ol>
          */
-        @SuppressWarnings("checkstyle:parameternumber")
         Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
-                                       String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
-                                       List<String> qualifyingNames, TypeMirror resultType, String sourceReference,
+                                       String targetPropertyName, String dateFormat,
+                                       SelectionParameters selectionParameters, String sourceReference,
                                        boolean preferUpdateMethods);
 
         /**
@@ -105,16 +101,12 @@ public class MappingBuilderContext {
          *
          * @param mappingMethod target mapping method
          * @param target return type to match
-         * @param qualifiers used for further select the appropriate mapping method based on class and name
-         * @param qualifyingNames see qualifiers, used in combination with with @Named
-         * @param resultType used for further select the appropriate mapping method based on resultType (bean mapping)
-         * targetType (Iterable- and MapMapping)         *
+         * @param selectionParameters parameters used in the selection process
          *
          * @return a method reference to the factory method, or null if no suitable, or ambiguous method found
          *
          */
-        MethodReference getFactoryMethod(Method mappingMethod, Type target, List<TypeMirror> qualifiers,
-            List<String> qualifyingNames, TypeMirror resultType);
+        MethodReference getFactoryMethod(Method mappingMethod, Type target, SelectionParameters selectionParameters);
 
         Set<VirtualMappingMethod> getUsedVirtualMappings();
     }

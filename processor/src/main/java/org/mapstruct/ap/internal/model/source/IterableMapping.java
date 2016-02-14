@@ -18,13 +18,10 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.List;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.prism.IterableMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
@@ -39,9 +36,7 @@ import org.mapstruct.ap.internal.util.Message;
 public class IterableMapping {
 
     private final String dateFormat;
-    private final List<TypeMirror> qualifiers;
-    private final List<String> qualifyingNames;
-    private final TypeMirror qualifyingElementTargetType;
+    private final SelectionParameters selectionParameters;
     private final AnnotationMirror mirror;
     private final AnnotationValue dateFormatAnnotationValue;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
@@ -68,24 +63,24 @@ public class IterableMapping {
             messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
         }
 
-        return new IterableMapping(iterableMapping.dateFormat(),
+        SelectionParameters selection = new SelectionParameters(
             iterableMapping.qualifiedBy(),
             iterableMapping.qualifiedByName(),
-            elementTargetTypeIsDefined ? iterableMapping.elementTargetType() : null,
+            elementTargetTypeIsDefined ? iterableMapping.elementTargetType() : null );
+
+        return new IterableMapping(iterableMapping.dateFormat(),
+            selection,
             iterableMapping.mirror,
             iterableMapping.values.dateFormat(),
             nullValueMappingStrategy
         );
     }
 
-    private IterableMapping(String dateFormat, List<TypeMirror> qualifiers, List<String> qualifyingNames,
-        TypeMirror resultType, AnnotationMirror mirror, AnnotationValue dateFormatAnnotationValue,
-        NullValueMappingStrategyPrism nvms) {
+    private IterableMapping(String dateFormat, SelectionParameters selectionParameters, AnnotationMirror mirror,
+        AnnotationValue dateFormatAnnotationValue, NullValueMappingStrategyPrism nvms) {
 
         this.dateFormat = dateFormat;
-        this.qualifiers = qualifiers;
-        this.qualifyingNames = qualifyingNames;
-        this.qualifyingElementTargetType = resultType;
+        this.selectionParameters = selectionParameters;
         this.mirror = mirror;
         this.dateFormatAnnotationValue = dateFormatAnnotationValue;
         this.nullValueMappingStrategy = nvms;
@@ -95,16 +90,8 @@ public class IterableMapping {
         return dateFormat;
     }
 
-    public List<TypeMirror> getQualifiers() {
-        return qualifiers;
-    }
-
-    public List<String> getQualifyingNames() {
-        return qualifyingNames;
-    }
-
-    public TypeMirror getQualifyingElementTargetType() {
-        return qualifyingElementTargetType;
+    public SelectionParameters getSelectionParameters() {
+        return selectionParameters;
     }
 
     public AnnotationMirror getMirror() {

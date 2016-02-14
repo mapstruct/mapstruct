@@ -34,7 +34,6 @@ import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
@@ -45,6 +44,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
 import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.option.ReportingPolicy;
@@ -79,10 +79,8 @@ public class BeanMappingMethod extends MappingMethod {
         private Set<String> targetProperties;
         private final List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<Parameter>();
-        private List<TypeMirror> qualifiers;
-        private List<String> qualifyingNames;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
-        private TypeMirror resultTypeMirror;
+        private SelectionParameters selectionParameters;
         private final Set<String> existingVariableNames = new HashSet<String>();
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
@@ -103,23 +101,13 @@ public class BeanMappingMethod extends MappingMethod {
             return this;
         }
 
-        public Builder qualifiers(List<TypeMirror> qualifiers) {
-            this.qualifiers = qualifiers;
-            return this;
-        }
-
-        public Builder qualifyingNames(List<String> qualifyingNames) {
-            this.qualifyingNames = qualifyingNames;
+        public Builder selectionParameters(SelectionParameters selectionParameters) {
+            this.selectionParameters = selectionParameters;
             return this;
         }
 
         public Builder nullValueMappingStrategy(NullValueMappingStrategyPrism nullValueMappingStrategy) {
             this.nullValueMappingStrategy = nullValueMappingStrategy;
-            return this;
-        }
-
-        public Builder resultType(TypeMirror resultType) {
-            this.resultTypeMirror = resultType;
             return this;
         }
 
@@ -150,16 +138,14 @@ public class BeanMappingMethod extends MappingMethod {
                 factoryMethod = ctx.getMappingResolver().getFactoryMethod(
                     method,
                     method.getResultType(),
-                    qualifiers,
-                    qualifyingNames,
-                    resultTypeMirror );
+                    selectionParameters );
             }
 
             // if there's no factory method, try the resultType in the @BeanMapping
             Type resultType = null;
             if ( factoryMethod == null ) {
-                if ( resultTypeMirror != null ) {
-                    resultType = ctx.getTypeFactory().getType( resultTypeMirror );
+                if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
+                    resultType = ctx.getTypeFactory().getType( selectionParameters.getResultType() );
                     if ( !resultType.isAssignableTo( method.getResultType() ) ) {
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
@@ -173,9 +159,9 @@ public class BeanMappingMethod extends MappingMethod {
             sortPropertyMappingsByDependencies();
 
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
-                LifecycleCallbackFactory.beforeMappingMethods( method, qualifiers, ctx );
+                LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, qualifiers, ctx );
+                LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx );
 
             return new BeanMappingMethod(
                 method,
@@ -306,9 +292,7 @@ public class BeanMappingMethod extends MappingMethod {
                                     .targetReadAccessor( getTargetPropertyReadAccessor( mapping.getTargetName() ) )
                                     .targetPropertyName( mapping.getTargetName() )
                                     .sourceReference( sourceRef )
-                                    .qualifiers( mapping.getQualifiers() )
-                                    .qualifyingNames( mapping.getQualifyingNames() )
-                                    .resultType( mapping.getResultType() )
+                                    .selectionParameters( mapping.getSelectionParameters() )
                                     .dateFormat( mapping.getDateFormat() )
                                     .existingVariableNames( existingVariableNames )
                                     .dependsOn( mapping.getDependsOn() )
@@ -334,9 +318,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .targetReadAccessor( getTargetPropertyReadAccessor( mapping.getTargetName() ) )
                             .targetPropertyName( mapping.getTargetName() )
                             .dateFormat( mapping.getDateFormat() )
-                            .qualifiers( mapping.getQualifiers() )
-                            .qualifyingNames( mapping.getQualifyingNames() )
-                            .resultType( mapping.getResultType() )
+                            .selectionParameters( mapping.getSelectionParameters() )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping.getDependsOn() )
                             .build();
@@ -383,14 +365,14 @@ public class BeanMappingMethod extends MappingMethod {
          * the set of remaining target properties.
          */
         private void applyPropertyNameBasedMapping() {
-            Iterator<Entry<String, ExecutableElement>> targetProperties =
+            Iterator<Entry<String, ExecutableElement>> targetPropertiesIterator =
                 unprocessedTargetProperties.entrySet().iterator();
 
             // usually there should be only one getter; only for Boolean there may be two: isFoo() and getFoo()
             List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( 2 );
 
-            while ( targetProperties.hasNext() ) {
-                Entry<String, ExecutableElement> targetProperty = targetProperties.next();
+            while ( targetPropertiesIterator.hasNext() ) {
+                Entry<String, ExecutableElement> targetProperty = targetPropertiesIterator.next();
 
                 PropertyMapping propertyMapping = null;
 
@@ -432,9 +414,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .targetReadAccessor( getTargetPropertyReadAccessor( targetProperty.getKey() ) )
                                 .targetPropertyName( targetProperty.getKey() )
                                 .sourceReference( sourceRef )
-                                .qualifiers( mapping != null ? mapping.getQualifiers() : null )
-                                .qualifyingNames( mapping != null ? mapping.getQualifyingNames() : null )
-                                .resultType( mapping != null ? mapping.getResultType() : null )
+                                .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
                                 .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                                 .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
                                 .existingVariableNames( existingVariableNames )
@@ -464,7 +444,7 @@ public class BeanMappingMethod extends MappingMethod {
 
                 if ( propertyMapping != null ) {
                     propertyMappings.add( propertyMapping );
-                    targetProperties.remove();
+                    targetPropertiesIterator.remove();
                 }
             }
         }
@@ -498,9 +478,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .targetReadAccessor( getTargetPropertyReadAccessor( targetProperty.getKey() ) )
                             .targetPropertyName( targetProperty.getKey() )
                             .sourceReference( sourceRef )
-                            .qualifiers( mapping != null ? mapping.getQualifiers() : null )
-                            .qualifyingNames( mapping != null ? mapping.getQualifyingNames() : null )
-                            .resultType( mapping != null ? mapping.getResultType() : null )
+                            .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )

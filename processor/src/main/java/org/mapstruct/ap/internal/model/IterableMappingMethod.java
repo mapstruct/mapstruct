@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
@@ -33,6 +32,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -56,9 +56,7 @@ public class IterableMappingMethod extends MappingMethod {
         private Method method;
         private MappingBuilderContext ctx;
         private String dateFormat;
-        private List<TypeMirror> qualifiers;
-        private List<String> qualifyingNames;
-        private TypeMirror qualifyingElementTargetType;
+        private SelectionParameters selectionParameters;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
@@ -76,18 +74,8 @@ public class IterableMappingMethod extends MappingMethod {
             return this;
         }
 
-        public Builder qualifiers(List<TypeMirror> qualifiers) {
-            this.qualifiers = qualifiers;
-            return this;
-        }
-
-        public Builder qualifyingNames(List<String> qualifyingNames) {
-            this.qualifyingNames = qualifyingNames;
-            return this;
-        }
-
-        public Builder qualifyingElementTargetType(TypeMirror qualifyingElementTargetType) {
-            this.qualifyingElementTargetType = qualifyingElementTargetType;
+        public Builder selectionParameters(SelectionParameters selectionParameters) {
+            this.selectionParameters = selectionParameters;
             return this;
         }
 
@@ -117,9 +105,7 @@ public class IterableMappingMethod extends MappingMethod {
                 targetElementType,
                 null, // there is no targetPropertyName
                 dateFormat,
-                qualifiers,
-                qualifyingNames,
-                qualifyingElementTargetType,
+                selectionParameters,
                 loopVariableName,
                 false
             );
@@ -155,14 +141,13 @@ public class IterableMappingMethod extends MappingMethod {
 
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
-                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null,
-                    null );
+                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null );
             }
 
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
-                LifecycleCallbackFactory.beforeMappingMethods( method, qualifiers, ctx );
+                LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, qualifiers, ctx );
+                LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx );
 
             return new IterableMappingMethod(
                     method,

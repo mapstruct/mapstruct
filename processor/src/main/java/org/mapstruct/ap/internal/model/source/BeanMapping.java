@@ -18,17 +18,13 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.List;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-
 
 /**
  * Represents an bean mapping as configured via {@code @BeanMapping}.
@@ -37,9 +33,7 @@ import org.mapstruct.ap.internal.util.Message;
  */
 public class BeanMapping {
 
-    private final List<TypeMirror> qualifiers;
-    private final List<String> qualifyingNames;
-    private final TypeMirror resultType;
+    private final SelectionParameters selectionParameters;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
     public static BeanMapping fromPrism(BeanMappingPrism beanMapping, ExecutableElement method,
@@ -62,33 +56,21 @@ public class BeanMapping {
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
         }
 
-        return new BeanMapping(
+        SelectionParameters cmp = new SelectionParameters(
             beanMapping.qualifiedBy(),
             beanMapping.qualifiedByName(),
-            resultTypeIsDefined ? beanMapping.resultType() : null,
-            nullValueMappingStrategy
-        );
+            resultTypeIsDefined ? beanMapping.resultType() : null );
+
+        return new BeanMapping(cmp, nullValueMappingStrategy );
     }
 
-    private BeanMapping(List<TypeMirror> qualifiers, List<String> qualyfyingNames, TypeMirror mirror,
-        NullValueMappingStrategyPrism nvms) {
-
-        this.qualifiers = qualifiers;
-        this.qualifyingNames = qualyfyingNames;
-        this.resultType = mirror;
+    private BeanMapping( SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms ) {
+        this.selectionParameters = selectionParameters;
         this.nullValueMappingStrategy = nvms;
     }
 
-    public List<TypeMirror> getQualifiers() {
-        return qualifiers;
-    }
-
-    public List<String> getQualifyingNames() {
-        return qualifyingNames;
-    }
-
-    public TypeMirror getResultType() {
-        return resultType;
+    public SelectionParameters getSelectionParameters() {
+        return selectionParameters;
     }
 
     public NullValueMappingStrategyPrism getNullValueMappingStrategy() {

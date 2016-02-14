@@ -48,6 +48,7 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
@@ -172,24 +173,20 @@ public class PropertyMapping extends ModelElement {
         private List<String> qualifyingNames;
         private TypeMirror resultType;
         private SourceReference sourceReference;
+        private SelectionParameters selectionParameters;
 
         public PropertyMappingBuilder sourceReference(SourceReference sourceReference) {
             this.sourceReference = sourceReference;
             return this;
         }
 
-        public PropertyMappingBuilder qualifiers(List<TypeMirror> qualifiers) {
-            this.qualifiers = qualifiers;
-            return this;
-        }
-
-        public PropertyMappingBuilder qualifyingNames(List<String> qualifyingNames) {
-            this.qualifyingNames = qualifyingNames;
-            return this;
-        }
-
-        public PropertyMappingBuilder resultType(TypeMirror resultType) {
-            this.resultType = resultType;
+        public PropertyMappingBuilder selectionParameters(SelectionParameters selectionParameters) {
+            if ( selectionParameters != null ) {
+                this.qualifiers = selectionParameters.getQualifiers();
+                this.qualifyingNames = selectionParameters.getQualifyingNames();
+                this.resultType = selectionParameters.getResultType();
+            }
+            this.selectionParameters = selectionParameters;
             return this;
         }
 
@@ -234,9 +231,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 targetPropertyName,
                 dateFormat,
-                qualifiers,
-                qualifyingNames,
-                resultType,
+                selectionParameters,
                 sourceRefStr,
                 preferUpdateMethods
             );
@@ -295,8 +290,7 @@ public class PropertyMapping extends ModelElement {
                 PropertyMapping build = new ConstantMappingBuilder()
                         .constantExpression( '"' + defaultValue + '"' )
                         .dateFormat( dateFormat )
-                        .qualifiers( qualifiers )
-                        .resultType( resultType )
+                        .selectionParameters( selectionParameters )
                         .dependsOn( dependsOn )
                         .existingVariableNames( existingVariableNames )
                         .mappingContext( ctx )
@@ -322,8 +316,7 @@ public class PropertyMapping extends ModelElement {
                             Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                             targetPropertyName );
                     }
-                    Assignment factoryMethod =
-                        ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null, null );
+                    Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                     result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
                         targetType );
                 }
@@ -403,8 +396,7 @@ public class PropertyMapping extends ModelElement {
                             Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                             targetPropertyName );
                     }
-                    Assignment factoryMethod
-                        = ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null, null );
+                    Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                     result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
                         targetType );
                 }
@@ -611,9 +603,7 @@ public class PropertyMapping extends ModelElement {
 
         private String constantExpression;
         private String dateFormat;
-        private List<TypeMirror> qualifiers;
-        private List<String> qualifyingNames;
-        private TypeMirror resultType;
+        private SelectionParameters selectionParameters;
 
         public ConstantMappingBuilder constantExpression(String constantExpression) {
             this.constantExpression = constantExpression;
@@ -625,18 +615,8 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public ConstantMappingBuilder qualifiers(List<TypeMirror> qualifiers) {
-            this.qualifiers = qualifiers;
-            return this;
-        }
-
-        public ConstantMappingBuilder qualifyingNames(List<String> qualifyingNames) {
-            this.qualifyingNames = qualifyingNames;
-            return this;
-        }
-
-        public ConstantMappingBuilder resultType(TypeMirror resultType) {
-            this.resultType = resultType;
+        public ConstantMappingBuilder selectionParameters(SelectionParameters selectionParameters) {
+            this.selectionParameters = selectionParameters;
             return this;
         }
 
@@ -652,9 +632,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 targetPropertyName,
                 dateFormat,
-                qualifiers,
-                qualifyingNames,
-                resultType,
+                selectionParameters,
                 constantExpression,
                 method.getMappingTargetParameter() != null
             );
@@ -671,7 +649,7 @@ public class PropertyMapping extends ModelElement {
                                 targetPropertyName );
                         }
                         Assignment factoryMethod =
-                            ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null, null );
+                            ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                         assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod,
                             targetType );
                     }

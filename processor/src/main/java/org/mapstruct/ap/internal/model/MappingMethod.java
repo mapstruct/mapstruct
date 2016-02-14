@@ -58,6 +58,8 @@ public abstract class MappingMethod extends ModelElement {
      *
      * @param method method
      * @param existingVariableNames existingVariableNames
+     * @param beforeMappingReferences
+     * @param afterMappingReferences
      */
     protected MappingMethod(Method method, Collection<String> existingVariableNames,
                             List<LifecycleCallbackMethodReference> beforeMappingReferences,

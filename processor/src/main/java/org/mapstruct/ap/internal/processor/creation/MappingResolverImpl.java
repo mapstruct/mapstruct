@@ -46,6 +46,7 @@ import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
@@ -102,13 +103,12 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    @SuppressWarnings("checkstyle:parameternumber")
     public Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType,
-        Type targetType, String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
-        List<String> qualifyingNames, TypeMirror resultType, String sourceReference, boolean preferUpdateMapping) {
+        Type targetType, String targetPropertyName, String dateFormat, SelectionParameters selectionParameters,
+        String sourceReference, boolean preferUpdateMapping) {
 
         SelectionCriteria criteria =
-            new SelectionCriteria(qualifiers, qualifyingNames, targetPropertyName, resultType, preferUpdateMapping );
+            new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
@@ -128,10 +128,10 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    public MethodReference getFactoryMethod( Method mappingMethod, Type targetType, List<TypeMirror> qualifiers,
-        List<String> qualifyingNames, TypeMirror resultType ) {
+    public MethodReference getFactoryMethod( Method mappingMethod, Type targetType,
+        SelectionParameters selectionParameters ) {
 
-        SelectionCriteria criteria = new SelectionCriteria( qualifiers, qualifyingNames, null, resultType, false );
+        SelectionCriteria criteria = new SelectionCriteria( selectionParameters, null, false );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,

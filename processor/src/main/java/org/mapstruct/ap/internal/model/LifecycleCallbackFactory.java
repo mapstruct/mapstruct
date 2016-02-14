@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.selector.QualifierSelector;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
@@ -45,57 +45,57 @@ public final class LifecycleCallbackFactory {
 
     /**
      * @param method the method to obtain the beforeMapping methods for
-     * @param qualifiers method qualifiers
+     * @param selectionParameters method selectionParameters
      * @param ctx the builder context
      * @return all applicable {@code @BeforeMapping} methods for the given method
      */
     public static List<LifecycleCallbackMethodReference> beforeMappingMethods(
-            Method method, List<TypeMirror> qualifiers, MappingBuilderContext ctx) {
+            Method method, SelectionParameters selectionParameters, MappingBuilderContext ctx) {
         return collectLifecycleCallbackMethods(
             method,
-            qualifiers,
+            selectionParameters,
             filterBeforeMappingMethods( ctx.getSourceModel() ),
             ctx );
     }
 
     /**
      * @param method the method to obtain the afterMapping methods for
-     * @param qualifiers method qualifiers
+     * @param selectionParameters method selectionParameters
      * @param ctx the builder context
      * @return all applicable {@code @AfterMapping} methods for the given method
      */
     public static List<LifecycleCallbackMethodReference> afterMappingMethods(
-            Method method, List<TypeMirror> qualifiers, MappingBuilderContext ctx) {
+            Method method, SelectionParameters selectionParameters, MappingBuilderContext ctx) {
         return collectLifecycleCallbackMethods(
             method,
-            qualifiers,
+            selectionParameters,
             filterAfterMappingMethods( ctx.getSourceModel() ),
             ctx );
     }
 
     private static List<LifecycleCallbackMethodReference> collectLifecycleCallbackMethods(
-            Method method, List<TypeMirror> qualifiers, List<SourceMethod> callbackMethods, MappingBuilderContext ctx) {
+        Method method, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
+        MappingBuilderContext ctx) {
 
-        Map<SourceMethod, List<Parameter>> parameterAssignmentsForSourceMethod =
-            new HashMap<SourceMethod, List<Parameter>>();
+        Map<SourceMethod, List<Parameter>> parameterAssignmentsForSourceMethod
+            = new HashMap<SourceMethod, List<Parameter>>();
 
         List<SourceMethod> candidates =
             filterCandidatesByType( method, callbackMethods, parameterAssignmentsForSourceMethod, ctx );
 
-        candidates = filterCandidatesByQualifiers( method, qualifiers, candidates, ctx );
+        candidates = filterCandidatesByQualifiers( method, selectionParameters, candidates, ctx );
 
         return toLifecycleCallbackMethodRefs( candidates, parameterAssignmentsForSourceMethod, ctx );
     }
 
-    private static List<SourceMethod> filterCandidatesByQualifiers(Method method, List<TypeMirror> qualifiers,
+    private static List<SourceMethod> filterCandidatesByQualifiers(Method method,
+                                                                   SelectionParameters selectionParameters,
                                                                    List<SourceMethod> candidates,
                                                                    MappingBuilderContext ctx) {
         QualifierSelector selector = new QualifierSelector( ctx.getTypeUtils(), ctx.getElementUtils() );
 
         return selector.getMatchingMethods( method, candidates, null, null, new SelectionCriteria(
-            qualifiers,
-            null, /* todo */
-            null,
+            selectionParameters,
             null,
             false ) );
     }

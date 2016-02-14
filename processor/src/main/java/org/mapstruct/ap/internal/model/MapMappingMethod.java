@@ -23,14 +23,13 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 import java.util.List;
 import java.util.Set;
 
-import javax.lang.model.type.TypeMirror;
-
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -53,15 +52,11 @@ public class MapMappingMethod extends MappingMethod {
 
         private String keyDateFormat;
         private String valueDateFormat;
-        private List<TypeMirror> keyQualifiers;
-        private List<String> keyQualifyingNames;
-        private List<TypeMirror> valueQualifiers;
-        private List<String> valueQualifyingNames;
-        private TypeMirror keyQualifyingTargetType;
-        private TypeMirror valueQualifyingTargetType;
         private Method method;
         private MappingBuilderContext ctx;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
+        private SelectionParameters keySelectionParameters;
+        private SelectionParameters valueSelectionParameters;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -70,6 +65,16 @@ public class MapMappingMethod extends MappingMethod {
 
         public Builder method(Method sourceMethod) {
             this.method = sourceMethod;
+            return this;
+        }
+
+        public Builder keySelectionParameters(SelectionParameters keySelectionParameters) {
+            this.keySelectionParameters = keySelectionParameters;
+            return this;
+        }
+
+        public Builder valueSelectionParameters(SelectionParameters valueSelectionParameters) {
+            this.valueSelectionParameters = valueSelectionParameters;
             return this;
         }
 
@@ -83,41 +88,10 @@ public class MapMappingMethod extends MappingMethod {
             return this;
         }
 
-        public Builder keyQualifiers(List<TypeMirror> keyQualifiers) {
-            this.keyQualifiers = keyQualifiers;
-            return this;
-        }
-
-        public Builder keyQualifyingNames(List<String> keyQualifyingNames) {
-            this.keyQualifyingNames = keyQualifyingNames;
-            return this;
-        }
-
-        public Builder valueQualifiers(List<TypeMirror> valueQualifiers) {
-            this.valueQualifiers = valueQualifiers;
-            return this;
-        }
-
-        public Builder valueQualifyingNames(List<String> valueQualifyingNames) {
-            this.valueQualifyingNames = valueQualifyingNames;
-            return this;
-        }
-
-        public Builder keyQualifyingTargetType(TypeMirror keyQualifyingTargetType) {
-            this.keyQualifyingTargetType = keyQualifyingTargetType;
-            return this;
-        }
-
-        public Builder valueQualifyingTargetType(TypeMirror valueQualifyingTargetType) {
-            this.valueQualifyingTargetType = valueQualifyingTargetType;
-            return this;
-        }
-
         public Builder nullValueMappingStrategy(NullValueMappingStrategyPrism nullValueMappingStrategy) {
             this.nullValueMappingStrategy = nullValueMappingStrategy;
             return this;
         }
-
 
 
         public MapMappingMethod build() {
@@ -136,9 +110,7 @@ public class MapMappingMethod extends MappingMethod {
                 keyTargetType,
                 null, // there is no targetPropertyName
                 keyDateFormat,
-                keyQualifiers,
-                keyQualifyingNames,
-                keyQualifyingTargetType,
+                keySelectionParameters,
                 "entry.getKey()",
                 false
             );
@@ -165,9 +137,7 @@ public class MapMappingMethod extends MappingMethod {
                 valueTargetType,
                 null, // there is no targetPropertyName
                 valueDateFormat,
-                valueQualifiers,
-                valueQualifyingNames,
-                valueQualifyingTargetType,
+                valueSelectionParameters,
                 "entry.getValue()",
                 false
             );
@@ -201,8 +171,7 @@ public class MapMappingMethod extends MappingMethod {
 
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
-                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null,
-                    null );
+                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null );
             }
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes() );
