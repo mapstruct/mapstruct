@@ -1,6 +1,6 @@
 = MapStruct {mapstructVersion} Reference Guide
 :revdate: {docdate}
-:toc: left
+:toc: right
 :Author: Gunnar Morling, Andreas Gudian, Sjaak Derksen
 
 [[Preface]]
