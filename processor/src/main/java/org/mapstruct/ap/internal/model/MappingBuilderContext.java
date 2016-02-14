@@ -93,9 +93,11 @@ public class MappingBuilderContext {
          * <li>null, no assignment found</li>
          * </ol>
          */
+        @SuppressWarnings("checkstyle:parameternumber")
         Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
-                                       String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
-                                       TypeMirror resultType, String sourceReference, boolean preferUpdateMethods);
+                                       String targetPropertyName, String dateFormat, String numberFormat,
+                                       List<TypeMirror> qualifiers, TypeMirror resultType, String sourceReference,
+                                       boolean preferUpdateMethods);
 
         /**
          * returns a no arg factory method

@@ -268,12 +268,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
 
                 String dateFormat = null;
+                String numberFormat = null;
                 List<TypeMirror> qualifiers = null;
                 TypeMirror qualifyingElementTargetType = null;
                 NullValueMappingStrategyPrism nullValueMappingStrategy = null;
 
                 if ( mappingOptions.getIterableMapping() != null ) {
                     dateFormat = mappingOptions.getIterableMapping().getDateFormat();
+                    numberFormat = mappingOptions.getIterableMapping().getNumberFormat();
                     qualifiers = mappingOptions.getIterableMapping().getQualifiers();
                     qualifyingElementTargetType = mappingOptions.getIterableMapping().getQualifyingElementTargetType();
                     nullValueMappingStrategy = mappingOptions.getIterableMapping().getNullValueMappingStrategy();
@@ -283,6 +285,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .mappingContext( mappingContext )
                     .method( method )
                     .dateFormat( dateFormat )
+                    .numberFormat( numberFormat )
                     .qualifiers( qualifiers )
                     .qualifyingElementTargetType( qualifyingElementTargetType )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
@@ -297,6 +300,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 String keyDateFormat = null;
                 String valueDateFormat = null;
+                String keyNumberFormat = null;
+                String valueNumberFormat = null;
                 List<TypeMirror> keyQualifiers = null;
                 List<TypeMirror> valueQualifiers = null;
                 TypeMirror keyQualifyingTargetType = null;
@@ -306,6 +311,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 if ( mappingOptions.getMapMapping() != null ) {
                     keyDateFormat = mappingOptions.getMapMapping().getKeyFormat();
                     valueDateFormat = mappingOptions.getMapMapping().getValueFormat();
+                    keyNumberFormat = mappingOptions.getMapMapping().getKeyFormat();
+                    valueNumberFormat = mappingOptions.getMapMapping().getValueFormat();
                     keyQualifiers = mappingOptions.getMapMapping().getKeyQualifiers();
                     valueQualifiers = mappingOptions.getMapMapping().getValueQualifiers();
                     keyQualifyingTargetType = mappingOptions.getMapMapping().getKeyQualifyingTargetType();
@@ -318,6 +325,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .method( method )
                     .keyDateFormat( keyDateFormat )
                     .valueDateFormat( valueDateFormat )
+                    .keyNumberFormat( keyNumberFormat )
+                    .valueNumberFormat( valueNumberFormat )
                     .keyQualifiers( keyQualifiers )
                     .valueQualifiers( valueQualifiers )
                     .keyQualifyingTargetType( keyQualifyingTargetType )

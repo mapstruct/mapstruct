@@ -39,10 +39,12 @@ import org.mapstruct.ap.internal.util.Message;
 public class IterableMapping {
 
     private final String dateFormat;
+    private final String numberFormat;
     private final List<TypeMirror> qualifiers;
     private final TypeMirror qualifyingElementTargetType;
     private final AnnotationMirror mirror;
     private final AnnotationValue dateFormatAnnotationValue;
+    private final AnnotationValue numberFormatAnnotationValue;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
     public static IterableMapping fromPrism(IterableMappingPrism iterableMapping, ExecutableElement method,
@@ -67,22 +69,28 @@ public class IterableMapping {
         }
 
         return new IterableMapping(iterableMapping.dateFormat(),
+                iterableMapping.numberFormat(),
             iterableMapping.qualifiedBy(),
             elementTargetTypeIsDefined ? iterableMapping.elementTargetType() : null,
             iterableMapping.mirror,
             iterableMapping.values.dateFormat(),
+            iterableMapping.values.numberFormat(),
             nullValueMappingStrategy
         );
     }
 
-    private IterableMapping(String dateFormat, List<TypeMirror> qualifiers, TypeMirror resultType,
-        AnnotationMirror mirror, AnnotationValue dateFormatAnnotationValue, NullValueMappingStrategyPrism nvms) {
+    private IterableMapping(String dateFormat, String numberFormat, List<TypeMirror> qualifiers, TypeMirror resultType,
+        AnnotationMirror mirror, AnnotationValue dateFormatAnnotationValue,
+                            AnnotationValue numberFormatAnnotationValue,
+                            NullValueMappingStrategyPrism nvms) {
 
         this.dateFormat = dateFormat;
+        this.numberFormat = numberFormat;
         this.qualifiers = qualifiers;
         this.qualifyingElementTargetType = resultType;
         this.mirror = mirror;
         this.dateFormatAnnotationValue = dateFormatAnnotationValue;
+        this.numberFormatAnnotationValue = numberFormatAnnotationValue;
         this.nullValueMappingStrategy = nvms;
     }
 
@@ -104,6 +112,14 @@ public class IterableMapping {
 
     public AnnotationValue getDateFormatAnnotationValue() {
         return dateFormatAnnotationValue;
+    }
+
+    public String getNumberFormat() {
+        return numberFormat;
+    }
+
+    public AnnotationValue getNumberFormatAnnotationValue() {
+        return numberFormatAnnotationValue;
     }
 
     public NullValueMappingStrategyPrism getNullValueMappingStrategy() {

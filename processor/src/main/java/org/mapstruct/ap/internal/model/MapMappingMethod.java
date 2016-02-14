@@ -52,7 +52,9 @@ public class MapMappingMethod extends MappingMethod {
     public static class Builder {
 
         private String keyDateFormat;
+        private String keyNumberFormat;
         private String valueDateFormat;
+        private String valueNumberFormat;
         private List<TypeMirror> keyQualifiers;
         private List<TypeMirror> valueQualifiers;
         private TypeMirror keyQualifyingTargetType;
@@ -78,6 +80,16 @@ public class MapMappingMethod extends MappingMethod {
 
         public Builder valueDateFormat(String valueDateFormat) {
             this.valueDateFormat = valueDateFormat;
+            return this;
+        }
+
+        public Builder keyNumberFormat(String keyNumberFormat) {
+            this.keyNumberFormat = keyNumberFormat;
+            return this;
+        }
+
+        public Builder valueNumberFormat(String valueNumberFormat) {
+            this.valueNumberFormat = valueNumberFormat;
             return this;
         }
 
@@ -124,6 +136,7 @@ public class MapMappingMethod extends MappingMethod {
                 keyTargetType,
                 null, // there is no targetPropertyName
                 keyDateFormat,
+                keyNumberFormat,
                 keyQualifiers,
                 keyQualifyingTargetType,
                 "entry.getKey()",
@@ -152,6 +165,7 @@ public class MapMappingMethod extends MappingMethod {
                 valueTargetType,
                 null, // there is no targetPropertyName
                 valueDateFormat,
+                valueNumberFormat,
                 valueQualifiers,
                 valueQualifyingTargetType,
                 "entry.getValue()",

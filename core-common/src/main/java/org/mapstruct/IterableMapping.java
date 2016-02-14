@@ -47,6 +47,14 @@ public @interface IterableMapping {
     String dateFormat() default "";
 
     /**
+     * A format string as processable by {@link java.text.DecimalFormat} if the annotated method maps from a
+     *  {@link Number} to a {@link String} or vice-versa. Will be ignored for all other element types.
+     *
+     * @return A decimal format string as processable by {@link java.text.DecimalFormat}.
+     */
+    String numberFormat() default "";
+
+    /**
      * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple
      * mappers (hand written of internal) qualify and result in an 'Ambiguous mapping methods found' error.
      *
