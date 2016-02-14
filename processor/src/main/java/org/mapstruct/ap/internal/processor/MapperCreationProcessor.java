@@ -269,12 +269,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 String dateFormat = null;
                 List<TypeMirror> qualifiers = null;
+                List<String> qualifyingNames = null;
                 TypeMirror qualifyingElementTargetType = null;
                 NullValueMappingStrategyPrism nullValueMappingStrategy = null;
 
                 if ( mappingOptions.getIterableMapping() != null ) {
                     dateFormat = mappingOptions.getIterableMapping().getDateFormat();
                     qualifiers = mappingOptions.getIterableMapping().getQualifiers();
+                    qualifyingNames = mappingOptions.getIterableMapping().getQualifyingNames();
                     qualifyingElementTargetType = mappingOptions.getIterableMapping().getQualifyingElementTargetType();
                     nullValueMappingStrategy = mappingOptions.getIterableMapping().getNullValueMappingStrategy();
                 }
@@ -284,6 +286,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .method( method )
                     .dateFormat( dateFormat )
                     .qualifiers( qualifiers )
+                    .qualifyingNames( qualifyingNames )
                     .qualifyingElementTargetType( qualifyingElementTargetType )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
                     .build();
@@ -298,7 +301,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 String keyDateFormat = null;
                 String valueDateFormat = null;
                 List<TypeMirror> keyQualifiers = null;
+                List<String> keyQualifyingNames = null;
                 List<TypeMirror> valueQualifiers = null;
+                List<String> valueQualifyingNames = null;
                 TypeMirror keyQualifyingTargetType = null;
                 TypeMirror valueQualifyingTargetType = null;
                 NullValueMappingStrategyPrism nullValueMappingStrategy = null;
@@ -307,7 +312,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     keyDateFormat = mappingOptions.getMapMapping().getKeyFormat();
                     valueDateFormat = mappingOptions.getMapMapping().getValueFormat();
                     keyQualifiers = mappingOptions.getMapMapping().getKeyQualifiers();
+                    keyQualifyingNames = mappingOptions.getMapMapping().getKeyQualifyingNames();
                     valueQualifiers = mappingOptions.getMapMapping().getValueQualifiers();
+                    valueQualifyingNames = mappingOptions.getMapMapping().getValueQualifyingNames();
                     keyQualifyingTargetType = mappingOptions.getMapMapping().getKeyQualifyingTargetType();
                     valueQualifyingTargetType = mappingOptions.getMapMapping().getValueQualifyingTargetType();
                     nullValueMappingStrategy = mappingOptions.getMapMapping().getNullValueMappingStrategy();
@@ -319,7 +326,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .keyDateFormat( keyDateFormat )
                     .valueDateFormat( valueDateFormat )
                     .keyQualifiers( keyQualifiers )
+                    .keyQualifyingNames( keyQualifyingNames )
                     .valueQualifiers( valueQualifiers )
+                    .valueQualifyingNames( valueQualifyingNames )
                     .keyQualifyingTargetType( keyQualifyingTargetType )
                     .valueQualifyingTargetType( valueQualifyingTargetType )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
@@ -345,11 +354,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 NullValueMappingStrategyPrism nullValueMappingStrategy = null;
                 TypeMirror resultType = null;
                 List<TypeMirror> qualifiers = null;
+                List<String> qualifyingNames = null;
 
                 if ( mappingOptions.getBeanMapping() != null ) {
                     nullValueMappingStrategy = mappingOptions.getBeanMapping().getNullValueMappingStrategy();
                     resultType = mappingOptions.getBeanMapping().getResultType();
                     qualifiers = mappingOptions.getBeanMapping().getQualifiers();
+                    qualifyingNames = mappingOptions.getBeanMapping().getQualifyingNames();
                 }
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
@@ -357,6 +368,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .souceMethod( method )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
                     .qualifiers( qualifiers )
+                    .qualifyingNames( qualifyingNames )
                     .resultType( resultType )
                     .build();
 

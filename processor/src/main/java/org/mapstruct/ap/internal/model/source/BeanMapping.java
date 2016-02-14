@@ -38,6 +38,7 @@ import org.mapstruct.ap.internal.util.Message;
 public class BeanMapping {
 
     private final List<TypeMirror> qualifiers;
+    private final List<String> qualifyingNames;
     private final TypeMirror resultType;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
@@ -55,7 +56,7 @@ public class BeanMapping {
                             ? null
                             : NullValueMappingStrategyPrism.valueOf( beanMapping.nullValueMappingStrategy() );
 
-        if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty()
+        if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() && beanMapping.qualifiedByName().isEmpty()
             && ( nullValueMappingStrategy == null ) ) {
 
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
@@ -63,20 +64,27 @@ public class BeanMapping {
 
         return new BeanMapping(
             beanMapping.qualifiedBy(),
+            beanMapping.qualifiedByName(),
             resultTypeIsDefined ? beanMapping.resultType() : null,
             nullValueMappingStrategy
         );
     }
 
-    private BeanMapping(List<TypeMirror> qualifiers, TypeMirror mirror, NullValueMappingStrategyPrism nvms) {
+    private BeanMapping(List<TypeMirror> qualifiers, List<String> qualyfyingNames, TypeMirror mirror,
+        NullValueMappingStrategyPrism nvms) {
 
         this.qualifiers = qualifiers;
+        this.qualifyingNames = qualyfyingNames;
         this.resultType = mirror;
         this.nullValueMappingStrategy = nvms;
     }
 
     public List<TypeMirror> getQualifiers() {
         return qualifiers;
+    }
+
+    public List<String> getQualifyingNames() {
+        return qualifyingNames;
     }
 
     public TypeMirror getResultType() {

@@ -80,6 +80,7 @@ public class BeanMappingMethod extends MappingMethod {
         private final List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<Parameter>();
         private List<TypeMirror> qualifiers;
+        private List<String> qualifyingNames;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
         private TypeMirror resultTypeMirror;
         private final Set<String> existingVariableNames = new HashSet<String>();
@@ -104,6 +105,11 @@ public class BeanMappingMethod extends MappingMethod {
 
         public Builder qualifiers(List<TypeMirror> qualifiers) {
             this.qualifiers = qualifiers;
+            return this;
+        }
+
+        public Builder qualifyingNames(List<String> qualifyingNames) {
+            this.qualifyingNames = qualifyingNames;
             return this;
         }
 
@@ -145,6 +151,7 @@ public class BeanMappingMethod extends MappingMethod {
                     method,
                     method.getResultType(),
                     qualifiers,
+                    qualifyingNames,
                     resultTypeMirror );
             }
 
@@ -300,6 +307,7 @@ public class BeanMappingMethod extends MappingMethod {
                                     .targetPropertyName( mapping.getTargetName() )
                                     .sourceReference( sourceRef )
                                     .qualifiers( mapping.getQualifiers() )
+                                    .qualifyingNames( mapping.getQualifyingNames() )
                                     .resultType( mapping.getResultType() )
                                     .dateFormat( mapping.getDateFormat() )
                                     .existingVariableNames( existingVariableNames )
@@ -327,6 +335,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .targetPropertyName( mapping.getTargetName() )
                             .dateFormat( mapping.getDateFormat() )
                             .qualifiers( mapping.getQualifiers() )
+                            .qualifyingNames( mapping.getQualifyingNames() )
                             .resultType( mapping.getResultType() )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping.getDependsOn() )
@@ -424,6 +433,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .targetPropertyName( targetProperty.getKey() )
                                 .sourceReference( sourceRef )
                                 .qualifiers( mapping != null ? mapping.getQualifiers() : null )
+                                .qualifyingNames( mapping != null ? mapping.getQualifyingNames() : null )
                                 .resultType( mapping != null ? mapping.getResultType() : null )
                                 .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                                 .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
@@ -489,6 +499,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .targetPropertyName( targetProperty.getKey() )
                             .sourceReference( sourceRef )
                             .qualifiers( mapping != null ? mapping.getQualifiers() : null )
+                            .qualifyingNames( mapping != null ? mapping.getQualifyingNames() : null )
                             .resultType( mapping != null ? mapping.getResultType() : null )
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                             .existingVariableNames( existingVariableNames )

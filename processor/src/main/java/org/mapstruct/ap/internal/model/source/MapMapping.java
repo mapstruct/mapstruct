@@ -39,8 +39,10 @@ public class MapMapping {
 
     private final String keyFormat;
     private final List<TypeMirror> keyQualifiers;
+    private final List<String> keyQualifyingNames;
     private final String valueFormat;
     private final List<TypeMirror> valueQualifiers;
+    private final List<String> valueQualifyingNames;
     private final AnnotationMirror mirror;
     private final TypeMirror keyQualifyingTargetType;
     private final TypeMirror valueQualifyingTargetType;
@@ -62,8 +64,10 @@ public class MapMapping {
         boolean valueTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.valueTargetType().getKind() );
         if ( mapMapping.keyDateFormat().isEmpty()
             && mapMapping.keyQualifiedBy().isEmpty()
+            && mapMapping.keyQualifiedByName().isEmpty()
             && mapMapping.valueDateFormat().isEmpty()
             && mapMapping.valueQualifiedBy().isEmpty()
+            && mapMapping.valueQualifiedByName().isEmpty()
             && !keyTargetTypeIsDefined
             && !valueTargetTypeIsDefined
             && ( nullValueMappingStrategy == null ) ) {
@@ -75,23 +79,28 @@ public class MapMapping {
         return new MapMapping(
             mapMapping.keyDateFormat(),
             mapMapping.keyQualifiedBy(),
+            mapMapping.keyQualifiedByName(),
             keyTargetTypeIsDefined ? mapMapping.keyTargetType() : null,
             mapMapping.valueDateFormat(),
             mapMapping.valueQualifiedBy(),
+            mapMapping.valueQualifiedByName(),
             valueTargetTypeIsDefined ? mapMapping.valueTargetType() : null,
             mapMapping.mirror,
             nullValueMappingStrategy
         );
     }
 
-    private MapMapping(String keyFormat, List<TypeMirror> keyQualifiers, TypeMirror keyResultType, String valueFormat,
-            List<TypeMirror> valueQualifiers, TypeMirror valueResultType, AnnotationMirror mirror,
+    private MapMapping(String keyFormat, List<TypeMirror> keyQualifiers, List<String> keyQualifyingNames,
+            TypeMirror keyResultType, String valueFormat, List<TypeMirror> valueQualifiers,
+            List<String> valueQualifyingNames, TypeMirror valueResultType, AnnotationMirror mirror,
             NullValueMappingStrategyPrism nvms ) {
         this.keyFormat = keyFormat;
         this.keyQualifiers = keyQualifiers;
+        this.keyQualifyingNames = keyQualifyingNames;
         this.keyQualifyingTargetType = keyResultType;
         this.valueFormat = valueFormat;
         this.valueQualifiers = valueQualifiers;
+        this.valueQualifyingNames = valueQualifyingNames;
         this.valueQualifyingTargetType = valueResultType;
         this.mirror = mirror;
         this.nullValueMappingStrategy = nvms;
@@ -105,6 +114,10 @@ public class MapMapping {
         return keyQualifiers;
     }
 
+    public List<String> getKeyQualifyingNames() {
+        return keyQualifyingNames;
+    }
+
     public TypeMirror getKeyQualifyingTargetType() {
         return keyQualifyingTargetType;
     }
@@ -115,6 +128,10 @@ public class MapMapping {
 
     public List<TypeMirror>  getValueQualifiers() {
         return valueQualifiers;
+    }
+
+    public List<String> getValueQualifyingNames() {
+        return valueQualifyingNames;
     }
 
     public TypeMirror getValueQualifyingTargetType() {

@@ -30,13 +30,15 @@ import javax.lang.model.type.TypeMirror;
 public class SelectionCriteria {
 
     private final List<TypeMirror> qualifiers;
+    private final List<String> qualifiedByNames;
     private final String targetPropertyName;
     private final TypeMirror qualifyingResultType;
     private boolean preferUpdateMapping;
 
-    public SelectionCriteria(List<TypeMirror> qualifiers, String targetPropertyName, TypeMirror qualifyingResultType,
-        boolean preferUpdateMapping ) {
+    public SelectionCriteria(List<TypeMirror> qualifiers, List<String> qualifiedByNames, String targetPropertyName,
+        TypeMirror qualifyingResultType, boolean preferUpdateMapping ) {
         this.qualifiers = qualifiers;
+        this.qualifiedByNames = qualifiedByNames;
         this.targetPropertyName = targetPropertyName;
         this.qualifyingResultType = qualifyingResultType;
         this.preferUpdateMapping = preferUpdateMapping;
@@ -44,6 +46,10 @@ public class SelectionCriteria {
 
     public List<TypeMirror> getQualifiers() {
         return qualifiers;
+    }
+
+    public List<String> getQualifiedByNames() {
+        return qualifiedByNames;
     }
 
     public String getTargetPropertyName() {

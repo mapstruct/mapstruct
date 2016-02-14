@@ -80,6 +80,7 @@ public class MappingBuilderContext {
          * @param targetPropertyName name of the target property
          * @param dateFormat used for formatting dates in build in methods that need context information
          * @param qualifiers used for further select the appropriate mapping method based on class and name
+         * @param qualifyingNames see qualifiers, used in combination with with @Named
          * @param resultType used for further select the appropriate mapping method based on resultType (bean mapping)
          * targetType (Iterable- and MapMapping)
          * @param sourceReference call to source type as string
@@ -93,9 +94,11 @@ public class MappingBuilderContext {
          * <li>null, no assignment found</li>
          * </ol>
          */
+        @SuppressWarnings("checkstyle:parameternumber")
         Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
                                        String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
-                                       TypeMirror resultType, String sourceReference, boolean preferUpdateMethods);
+                                       List<String> qualifyingNames, TypeMirror resultType, String sourceReference,
+                                       boolean preferUpdateMethods);
 
         /**
          * returns a no arg factory method
@@ -103,6 +106,7 @@ public class MappingBuilderContext {
          * @param mappingMethod target mapping method
          * @param target return type to match
          * @param qualifiers used for further select the appropriate mapping method based on class and name
+         * @param qualifyingNames see qualifiers, used in combination with with @Named
          * @param resultType used for further select the appropriate mapping method based on resultType (bean mapping)
          * targetType (Iterable- and MapMapping)         *
          *
@@ -110,7 +114,7 @@ public class MappingBuilderContext {
          *
          */
         MethodReference getFactoryMethod(Method mappingMethod, Type target, List<TypeMirror> qualifiers,
-            TypeMirror resultType);
+            List<String> qualifyingNames, TypeMirror resultType);
 
         Set<VirtualMappingMethod> getUsedVirtualMappings();
     }

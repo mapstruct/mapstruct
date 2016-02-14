@@ -40,6 +40,7 @@ public class IterableMapping {
 
     private final String dateFormat;
     private final List<TypeMirror> qualifiers;
+    private final List<String> qualifyingNames;
     private final TypeMirror qualifyingElementTargetType;
     private final AnnotationMirror mirror;
     private final AnnotationValue dateFormatAnnotationValue;
@@ -61,6 +62,7 @@ public class IterableMapping {
         if ( !elementTargetTypeIsDefined
             && iterableMapping.dateFormat().isEmpty()
             && iterableMapping.qualifiedBy().isEmpty()
+            && iterableMapping.qualifiedByName().isEmpty()
             && ( nullValueMappingStrategy == null ) ) {
 
             messager.printMessage( method, Message.ITERABLEMAPPING_NO_ELEMENTS );
@@ -68,6 +70,7 @@ public class IterableMapping {
 
         return new IterableMapping(iterableMapping.dateFormat(),
             iterableMapping.qualifiedBy(),
+            iterableMapping.qualifiedByName(),
             elementTargetTypeIsDefined ? iterableMapping.elementTargetType() : null,
             iterableMapping.mirror,
             iterableMapping.values.dateFormat(),
@@ -75,11 +78,13 @@ public class IterableMapping {
         );
     }
 
-    private IterableMapping(String dateFormat, List<TypeMirror> qualifiers, TypeMirror resultType,
-        AnnotationMirror mirror, AnnotationValue dateFormatAnnotationValue, NullValueMappingStrategyPrism nvms) {
+    private IterableMapping(String dateFormat, List<TypeMirror> qualifiers, List<String> qualifyingNames,
+        TypeMirror resultType, AnnotationMirror mirror, AnnotationValue dateFormatAnnotationValue,
+        NullValueMappingStrategyPrism nvms) {
 
         this.dateFormat = dateFormat;
         this.qualifiers = qualifiers;
+        this.qualifyingNames = qualifyingNames;
         this.qualifyingElementTargetType = resultType;
         this.mirror = mirror;
         this.dateFormatAnnotationValue = dateFormatAnnotationValue;
@@ -92,6 +97,10 @@ public class IterableMapping {
 
     public List<TypeMirror> getQualifiers() {
         return qualifiers;
+    }
+
+    public List<String> getQualifyingNames() {
+        return qualifyingNames;
     }
 
     public TypeMirror getQualifyingElementTargetType() {

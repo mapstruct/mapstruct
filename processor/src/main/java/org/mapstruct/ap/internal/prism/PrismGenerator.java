@@ -39,6 +39,7 @@ import org.mapstruct.TargetType;
 
 import net.java.dev.hickory.prism.GeneratePrism;
 import net.java.dev.hickory.prism.GeneratePrisms;
+import org.mapstruct.Named;
 
 /**
  * Triggers the generation of prism types using <a href="https://java.net/projects/hickory">Hickory</a>.
@@ -59,6 +60,7 @@ import net.java.dev.hickory.prism.GeneratePrisms;
     @GeneratePrism(value = InheritConfiguration.class, publicAccess = true),
     @GeneratePrism(value = InheritInverseConfiguration.class, publicAccess = true),
     @GeneratePrism(value = Qualifier.class, publicAccess = true),
+    @GeneratePrism(value = Named.class, publicAccess = true),
     @GeneratePrism(value = AfterMapping.class, publicAccess = true),
     @GeneratePrism(value = BeforeMapping.class, publicAccess = true),
 

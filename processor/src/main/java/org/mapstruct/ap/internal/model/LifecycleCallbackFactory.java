@@ -94,6 +94,7 @@ public final class LifecycleCallbackFactory {
 
         return selector.getMatchingMethods( method, candidates, null, null, new SelectionCriteria(
             qualifiers,
+            null, /* todo */
             null,
             null,
             false ) );

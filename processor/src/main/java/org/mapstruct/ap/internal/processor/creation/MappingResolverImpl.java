@@ -102,12 +102,13 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:parameternumber")
     public Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType,
         Type targetType, String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
-        TypeMirror resultType, String sourceReference, boolean preferUpdateMapping) {
+        List<String> qualifyingNames, TypeMirror resultType, String sourceReference, boolean preferUpdateMapping) {
 
         SelectionCriteria criteria =
-            new SelectionCriteria(qualifiers, targetPropertyName, resultType, preferUpdateMapping );
+            new SelectionCriteria(qualifiers, qualifyingNames, targetPropertyName, resultType, preferUpdateMapping );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
@@ -128,9 +129,9 @@ public class MappingResolverImpl implements MappingResolver {
 
     @Override
     public MethodReference getFactoryMethod( Method mappingMethod, Type targetType, List<TypeMirror> qualifiers,
-        TypeMirror resultType ) {
+        List<String> qualifyingNames, TypeMirror resultType ) {
 
-        SelectionCriteria criteria = new SelectionCriteria( qualifiers, null, resultType, false );
+        SelectionCriteria criteria = new SelectionCriteria( qualifiers, qualifyingNames, null, resultType, false );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,

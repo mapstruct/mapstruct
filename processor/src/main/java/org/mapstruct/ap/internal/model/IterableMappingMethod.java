@@ -57,6 +57,7 @@ public class IterableMappingMethod extends MappingMethod {
         private MappingBuilderContext ctx;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
+        private List<String> qualifyingNames;
         private TypeMirror qualifyingElementTargetType;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
 
@@ -77,6 +78,11 @@ public class IterableMappingMethod extends MappingMethod {
 
         public Builder qualifiers(List<TypeMirror> qualifiers) {
             this.qualifiers = qualifiers;
+            return this;
+        }
+
+        public Builder qualifyingNames(List<String> qualifyingNames) {
+            this.qualifyingNames = qualifyingNames;
             return this;
         }
 
@@ -112,6 +118,7 @@ public class IterableMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 dateFormat,
                 qualifiers,
+                qualifyingNames,
                 qualifyingElementTargetType,
                 loopVariableName,
                 false
@@ -148,7 +155,8 @@ public class IterableMappingMethod extends MappingMethod {
 
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
-                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null );
+                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null,
+                    null );
             }
 
             List<LifecycleCallbackMethodReference> beforeMappingMethods =

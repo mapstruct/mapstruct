@@ -54,7 +54,9 @@ public class MapMappingMethod extends MappingMethod {
         private String keyDateFormat;
         private String valueDateFormat;
         private List<TypeMirror> keyQualifiers;
+        private List<String> keyQualifyingNames;
         private List<TypeMirror> valueQualifiers;
+        private List<String> valueQualifyingNames;
         private TypeMirror keyQualifyingTargetType;
         private TypeMirror valueQualifyingTargetType;
         private Method method;
@@ -86,8 +88,18 @@ public class MapMappingMethod extends MappingMethod {
             return this;
         }
 
+        public Builder keyQualifyingNames(List<String> keyQualifyingNames) {
+            this.keyQualifyingNames = keyQualifyingNames;
+            return this;
+        }
+
         public Builder valueQualifiers(List<TypeMirror> valueQualifiers) {
             this.valueQualifiers = valueQualifiers;
+            return this;
+        }
+
+        public Builder valueQualifyingNames(List<String> valueQualifyingNames) {
+            this.valueQualifyingNames = valueQualifyingNames;
             return this;
         }
 
@@ -125,6 +137,7 @@ public class MapMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 keyDateFormat,
                 keyQualifiers,
+                keyQualifyingNames,
                 keyQualifyingTargetType,
                 "entry.getKey()",
                 false
@@ -153,6 +166,7 @@ public class MapMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 valueDateFormat,
                 valueQualifiers,
+                valueQualifyingNames,
                 valueQualifyingTargetType,
                 "entry.getValue()",
                 false
@@ -187,7 +201,8 @@ public class MapMappingMethod extends MappingMethod {
 
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
-                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null );
+                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null, null,
+                    null );
             }
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes() );

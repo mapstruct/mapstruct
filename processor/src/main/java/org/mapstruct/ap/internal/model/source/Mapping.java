@@ -57,6 +57,7 @@ public class Mapping {
     private final String dateFormat;
     private final String defaultValue;
     private final List<TypeMirror> qualifiers;
+    private final List<String> qualifyingNames;
     private final TypeMirror resultType;
     private final boolean isIgnored;
     private final List<String> dependsOn;
@@ -147,6 +148,7 @@ public class Mapping {
             dateFormat,
             defaultValue,
             mappingPrism.qualifiedBy(),
+            mappingPrism.qualifiedByName(),
             mappingPrism.ignore(),
             mappingPrism.mirror,
             mappingPrism.values.source(),
@@ -160,7 +162,7 @@ public class Mapping {
     @SuppressWarnings("checkstyle:parameternumber")
     private Mapping(String sourceName, String constant, String javaExpression, String targetName,
                     String dateFormat, String defaultValue, List<TypeMirror> qualifiers,
-                    boolean isIgnored, AnnotationMirror mirror,
+                    List<String> qualifyingNames, boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
                     AnnotationValue dependsOnAnnotationValue,
                     TypeMirror resultType, List<String> dependsOn) {
@@ -171,6 +173,7 @@ public class Mapping {
         this.dateFormat = dateFormat;
         this.defaultValue = defaultValue;
         this.qualifiers = qualifiers;
+        this.qualifyingNames = qualifyingNames;
         this.isIgnored = isIgnored;
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
@@ -250,6 +253,10 @@ public class Mapping {
         return qualifiers;
     }
 
+    public List<String> getQualifyingNames() {
+        return qualifyingNames;
+    }
+
     public boolean isIgnored() {
         return isIgnored;
     }
@@ -325,6 +332,7 @@ public class Mapping {
             dateFormat,
             null,
             qualifiers,
+            qualifyingNames,
             isIgnored,
             mirror,
             sourceAnnotationValue,
@@ -353,6 +361,7 @@ public class Mapping {
             dateFormat,
             defaultValue,
             qualifiers,
+            qualifyingNames,
             isIgnored,
             mirror,
             sourceAnnotationValue,

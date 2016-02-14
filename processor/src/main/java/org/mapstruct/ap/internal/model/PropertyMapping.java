@@ -169,6 +169,7 @@ public class PropertyMapping extends ModelElement {
         private String dateFormat;
         private String defaultValue;
         private List<TypeMirror> qualifiers;
+        private List<String> qualifyingNames;
         private TypeMirror resultType;
         private SourceReference sourceReference;
 
@@ -179,6 +180,11 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder qualifiers(List<TypeMirror> qualifiers) {
             this.qualifiers = qualifiers;
+            return this;
+        }
+
+        public PropertyMappingBuilder qualifyingNames(List<String> qualifyingNames) {
+            this.qualifyingNames = qualifyingNames;
             return this;
         }
 
@@ -229,6 +235,7 @@ public class PropertyMapping extends ModelElement {
                 targetPropertyName,
                 dateFormat,
                 qualifiers,
+                qualifyingNames,
                 resultType,
                 sourceRefStr,
                 preferUpdateMethods
@@ -316,7 +323,7 @@ public class PropertyMapping extends ModelElement {
                             targetPropertyName );
                     }
                     Assignment factoryMethod =
-                        ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
+                        ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null, null );
                     result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
                         targetType );
                 }
@@ -397,7 +404,7 @@ public class PropertyMapping extends ModelElement {
                             targetPropertyName );
                     }
                     Assignment factoryMethod
-                        = ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
+                        = ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null, null );
                     result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
                         targetType );
                 }
@@ -605,6 +612,7 @@ public class PropertyMapping extends ModelElement {
         private String constantExpression;
         private String dateFormat;
         private List<TypeMirror> qualifiers;
+        private List<String> qualifyingNames;
         private TypeMirror resultType;
 
         public ConstantMappingBuilder constantExpression(String constantExpression) {
@@ -619,6 +627,11 @@ public class PropertyMapping extends ModelElement {
 
         public ConstantMappingBuilder qualifiers(List<TypeMirror> qualifiers) {
             this.qualifiers = qualifiers;
+            return this;
+        }
+
+        public ConstantMappingBuilder qualifyingNames(List<String> qualifyingNames) {
+            this.qualifyingNames = qualifyingNames;
             return this;
         }
 
@@ -640,6 +653,7 @@ public class PropertyMapping extends ModelElement {
                 targetPropertyName,
                 dateFormat,
                 qualifiers,
+                qualifyingNames,
                 resultType,
                 constantExpression,
                 method.getMappingTargetParameter() != null
@@ -657,7 +671,7 @@ public class PropertyMapping extends ModelElement {
                                 targetPropertyName );
                         }
                         Assignment factoryMethod =
-                            ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
+                            ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null, null );
                         assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod,
                             targetType );
                     }

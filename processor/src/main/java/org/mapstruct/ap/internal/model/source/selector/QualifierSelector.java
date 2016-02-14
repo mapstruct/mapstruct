@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -31,6 +32,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.prism.NamedPrism;
 import org.mapstruct.ap.internal.prism.QualifierPrism;
 
 /**
@@ -53,10 +55,11 @@ import org.mapstruct.ap.internal.prism.QualifierPrism;
 public class QualifierSelector implements MethodSelector {
 
     private final Types typeUtils;
-
+    private final TypeMirror namedAnnotationTypeMirror;
 
     public QualifierSelector( Types typeUtils, Elements elementUtils ) {
         this.typeUtils = typeUtils;
+        namedAnnotationTypeMirror = elementUtils.getTypeElement( "org.mapstruct.Named" ).asType();
     }
 
     @Override
@@ -64,14 +67,33 @@ public class QualifierSelector implements MethodSelector {
                                                          Type sourceType, Type targetType,
                                                          SelectionCriteria criteria) {
 
-        List<TypeMirror> qualifiers = criteria.getQualifiers();
-        if ( qualifiers == null || qualifiers.isEmpty() ) {
-            // remove the method marked as qualifier from the list
+        int numberOfQualifiersToMatch = 0;
+
+        // Define some local collections and make sure that they are defined.
+        List<TypeMirror> qualifierTypes = new ArrayList<TypeMirror>();
+        if ( criteria.getQualifiers() != null ) {
+            qualifierTypes.addAll( criteria.getQualifiers() );
+            numberOfQualifiersToMatch += criteria.getQualifiers().size();
+        }
+        List<String> qualfiedByNames = new ArrayList<String>();
+        if ( criteria.getQualifiedByNames() != null ) {
+            qualfiedByNames.addAll( criteria.getQualifiedByNames() );
+            numberOfQualifiersToMatch += criteria.getQualifiedByNames().size();
+        }
+
+        // add the mapstruct @Named annotation as annotation to look for
+        if ( !qualfiedByNames.isEmpty() ) {
+            qualifierTypes.add( namedAnnotationTypeMirror );
+        }
+
+        // Check there are qualfiers for this mapping: Mapping#qualifier or Mapping#qualfiedByName
+        if ( qualifierTypes.isEmpty() ) {
+            // When no qualifiers, disqualify all methods marked with a qualifier by removing them from the candidates
             List<T> nonQualiferAnnotatedMethods = new ArrayList<T>();
             for ( T candidate : methods ) {
 
                 if ( candidate instanceof SourceMethod ) {
-                    Set<TypeMirror> qualifierAnnotations = getQualifierAnnotations( candidate );
+                    Set<AnnotationMirror> qualifierAnnotations = getQualifierAnnotationMirrors( candidate );
                     if ( qualifierAnnotations.isEmpty() ) {
                         nonQualiferAnnotatedMethods.add( candidate );
                     }
@@ -84,7 +106,7 @@ public class QualifierSelector implements MethodSelector {
             return nonQualiferAnnotatedMethods;
         }
         else {
-
+            // Check all methods marked with qualfier (or methods in Mappers marked wiht a qualfier) for matches.
             List<T> matches = new ArrayList<T>();
             for ( T candidate : methods ) {
 
@@ -93,21 +115,37 @@ public class QualifierSelector implements MethodSelector {
                 }
 
                 // retrieve annotations
-                Set<TypeMirror> qualifierAnnotations = getQualifierAnnotations( candidate );
+                Set<AnnotationMirror> qualifierAnnotationMirrors = getQualifierAnnotationMirrors( candidate );
 
                 // now count if all qualifiers are matched
                 int matchingQualifierCounter = 0;
-                for ( TypeMirror qualifier : qualifiers ) {
-                    for ( TypeMirror annotationType : qualifierAnnotations ) {
-                        if ( typeUtils.isSameType( qualifier, annotationType ) ) {
-                            matchingQualifierCounter++;
+                    for ( AnnotationMirror qualifierAnnotationMirror : qualifierAnnotationMirrors ) {
+                for ( TypeMirror qualifierType : qualifierTypes ) {
+
+                        // get the type of the annotation mirror.
+                        DeclaredType qualifierAnnotationType = qualifierAnnotationMirror.getAnnotationType();
+                        if ( typeUtils.isSameType( qualifierType, qualifierAnnotationType ) ) {
+                            // Match! we have an annotation which has the @Qualifer marker ( could be @Named as well )
+                            if ( typeUtils.isSameType( qualifierAnnotationType, namedAnnotationTypeMirror ) ) {
+                                // Match! its an @Named, so do the additional check on name.
+                                NamedPrism namedPrism = NamedPrism.getInstance( qualifierAnnotationMirror );
+                                if ( namedPrism.value() != null && qualfiedByNames.contains( namedPrism.value() ) ) {
+                                    // Match! its an @Name and the value matches as well. Oh boy.
+                                    matchingQualifierCounter++;
+                                }
+                            }
+                            else {
+                                // Match! its a self declared qualifer annoation (marked with @Qualifier)
+                                matchingQualifierCounter++;
+                            }
                             break;
                         }
+
                     }
                 }
 
-                if ( matchingQualifierCounter == qualifiers.size() ) {
-                    // all qualifiers are matched with a qualifying annotation, add candidate
+                if ( matchingQualifierCounter == numberOfQualifiersToMatch ) {
+                    // Only if all qualifiers are matched with a qualifying annotation, add candidate
                     matches.add( candidate );
                 }
             }
@@ -120,10 +158,10 @@ public class QualifierSelector implements MethodSelector {
         }
     }
 
-    private Set<TypeMirror> getQualifierAnnotations( Method candidate ) {
+    private Set<AnnotationMirror> getQualifierAnnotationMirrors( Method candidate ) {
 
         // retrieve annotations
-        Set<TypeMirror> qualiferAnnotations = new HashSet<TypeMirror>();
+        Set<AnnotationMirror> qualiferAnnotations = new HashSet<AnnotationMirror>();
 
         // first from the method itself
         SourceMethod candidateSM = (SourceMethod) candidate;
@@ -144,12 +182,11 @@ public class QualifierSelector implements MethodSelector {
         return qualiferAnnotations;
     }
 
-    private void addOnlyWhenQualifier( Set<TypeMirror> annotationSet, AnnotationMirror candidate ) {
+    private void addOnlyWhenQualifier( Set<AnnotationMirror> annotationSet, AnnotationMirror candidate ) {
         // only add the candidate annotation when the candidate itself has the annotation 'Qualifier'
         if ( QualifierPrism.getInstanceOn( candidate.getAnnotationType().asElement() ) != null ) {
-            annotationSet.add( candidate.getAnnotationType() );
+            annotationSet.add( candidate );
         }
     }
 
 }
-
