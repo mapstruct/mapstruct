@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.bean;
 
+import org.mapstruct.Named;
 import org.mapstruct.ap.test.selection.qualifier.annotation.CreateGermanRelease;
 
 /**
@@ -31,6 +32,7 @@ public class ReleaseFactory {
     }
 
     @CreateGermanRelease
+    @Named( "CreateGermanRelease" )
     public GermanRelease createGermanRelease() {
         return new GermanRelease();
     }

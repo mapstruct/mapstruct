@@ -16,34 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.selection.qualifier.handwritten;
-
-import java.util.Map;
-
-import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
-
-import com.google.common.collect.ImmutableMap;
-import org.mapstruct.Named;
+package org.mapstruct.ap.test.selection.qualifier.hybrid;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class Facts {
+public class TargetRelease {
 
-    private static final Map<String, String> EN_GER = ImmutableMap.<String, String>builder()
-            .put( "director", "Regisseur" )
-            .put( "cast", "Besetzung" )
-            .put( "cameo", "Kurzauftritt" )
-            .put( "soundtrack", "Filmmusik" )
-            .put( "plot keywords", "Handlungstichwörter" )
-            .build();
+    private String title;
 
-    @EnglishToGerman
-    @Named( "EnglishToGerman"  )
-    public String translateFactName( String fact ) {
-        String result = EN_GER.get( fact );
-        return result != null ? result : fact;
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }

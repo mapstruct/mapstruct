@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.handwritten;
 
+import org.mapstruct.Named;
 import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotated;
 
 /**
@@ -27,6 +28,7 @@ import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotate
 public class SomeOtherMapper {
 
     @NonQualifierAnnotated
+    @Named( "NonQualifierAnnotated" )
     public String methodNotToSelect( String title ) {
         throw new AssertionError( "method should not be called" );
     }

@@ -16,11 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.selection.qualifier.handwritten;
+package org.mapstruct.ap.test.selection.qualifier.named;
 
+import java.util.List;
 import java.util.Map;
 
-import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
+import org.mapstruct.IterableMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.selection.qualifier.handwritten.SomeOtherMapper;
+import org.mapstruct.factory.Mappers;
 
 import com.google.common.collect.ImmutableMap;
 import org.mapstruct.Named;
@@ -29,21 +33,24 @@ import org.mapstruct.Named;
  *
  * @author Sjaak Derksen
  */
-public class Facts {
+@Mapper( uses = { SomeOtherMapper.class } )
+public abstract class KeyWordMapper {
 
     private static final Map<String, String> EN_GER = ImmutableMap.<String, String>builder()
-            .put( "director", "Regisseur" )
-            .put( "cast", "Besetzung" )
-            .put( "cameo", "Kurzauftritt" )
-            .put( "soundtrack", "Filmmusik" )
-            .put( "plot keywords", "Handlungstichwörter" )
+            .put( "magnificent", "Großartig" )
+            .put( "evergreen", "Evergreen" )
+            .put( "classic", "Klassiker" )
+            .put( "box office flop", "Kasse Flop" )
             .build();
 
-    @EnglishToGerman
-    @Named( "EnglishToGerman"  )
-    public String translateFactName( String fact ) {
-        String result = EN_GER.get( fact );
-        return result != null ? result : fact;
-    }
 
+    public static final KeyWordMapper INSTANCE = Mappers.getMapper( KeyWordMapper.class );
+
+    @IterableMapping( dateFormat = "", qualifiedByName = "EnglishToGerman" )
+    abstract List<String> mapKeyWords( List<String> keyWords );
+
+    @Named( "EnglishToGerman" )
+    public String mapKeyWord( String keyword ) {
+        return EN_GER.get( keyword );
+    }
 }

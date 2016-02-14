@@ -25,6 +25,7 @@ import java.util.Map;
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 
 import com.google.common.collect.ImmutableMap;
+import org.mapstruct.Named;
 
 /**
  *
@@ -39,6 +40,7 @@ public class PlotWords {
             .build();
 
     @EnglishToGerman
+    @Named( "EnglishToGerman"  )
     public List<String> translate( List<String> keywords ) {
         List<String> result = new ArrayList<String>();
         for ( String keyword : keywords ) {

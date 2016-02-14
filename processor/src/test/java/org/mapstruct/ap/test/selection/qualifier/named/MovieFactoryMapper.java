@@ -16,34 +16,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.selection.qualifier.handwritten;
+package org.mapstruct.ap.test.selection.qualifier.named;
 
-import java.util.Map;
-
-import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
-
-import com.google.common.collect.ImmutableMap;
-import org.mapstruct.Named;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.selection.qualifier.bean.AbstractEntry;
+import org.mapstruct.ap.test.selection.qualifier.bean.OriginalRelease;
+import org.mapstruct.ap.test.selection.qualifier.bean.ReleaseFactory;
+import org.mapstruct.factory.Mappers;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class Facts {
+@Mapper( uses = ReleaseFactory.class )
+public interface MovieFactoryMapper {
 
-    private static final Map<String, String> EN_GER = ImmutableMap.<String, String>builder()
-            .put( "director", "Regisseur" )
-            .put( "cast", "Besetzung" )
-            .put( "cameo", "Kurzauftritt" )
-            .put( "soundtrack", "Filmmusik" )
-            .put( "plot keywords", "Handlungstichwörter" )
-            .build();
+    MovieFactoryMapper INSTANCE = Mappers.getMapper( MovieFactoryMapper.class );
 
-    @EnglishToGerman
-    @Named( "EnglishToGerman"  )
-    public String translateFactName( String fact ) {
-        String result = EN_GER.get( fact );
-        return result != null ? result : fact;
-    }
+    @BeanMapping(qualifiedByName = "CreateGermanRelease" )
+    AbstractEntry toGerman( OriginalRelease movies );
 
 }

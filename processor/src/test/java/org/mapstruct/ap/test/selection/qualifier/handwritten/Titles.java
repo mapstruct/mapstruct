@@ -22,15 +22,16 @@ import java.util.Map;
 
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
-//import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
 
 import com.google.common.collect.ImmutableMap;
+import org.mapstruct.Named;
 
 /**
  *
  * @author Sjaak Derksen
  */
 @TitleTranslator
+@Named( "TitleTranslator" )
 public class Titles {
 
     private static final Map<String, String> EN_GER = ImmutableMap.<String, String>builder()
@@ -42,6 +43,7 @@ public class Titles {
             .build();
 
     @EnglishToGerman
+    @Named( "EnglishToGerman" )
     public String translateTitle(String title) {
         return EN_GER.get( title );
     }
