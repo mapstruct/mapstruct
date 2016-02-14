@@ -35,6 +35,53 @@ import java.lang.annotation.Target;
  * <li>{@link MapMapping#valueQualifiedByName() }</li>
  * </ul>
  *
+ * <p>
+ * Example:
+ *
+ * <pre>
+ * <code>
+ * &#64;Named("TitleTranslator")
+ * public class Titles {
+ *
+ *   &#64;Named("EnglishToGerman")
+ *   public String translateTitleEG(String title) {
+ *       // some mapping logic
+ *   }
+ *
+ *   &#64;Named("GermanToEnglish")
+ *   public String translateTitleGE(String title) {
+ *       // some mapping logic
+ *   }
+ * }
+ *
+ * &#64;Mapper( uses = Titles.class )
+ * public interface MovieMapper {
+ *
+ *    &#64;Mapping( target = "title", qualifiedByName = { "TitleTranslator", "EnglishToGerman" } )
+ *    GermanRelease toGerman( OriginalRelease movies );
+ *
+ * }
+ *
+ * Will generate:
+ *
+ *  private final Titles titles = new Titles();
+ *
+ *  &#64;Override
+ *  public GermanRelease toGerman(OriginalRelease movies) {
+ *      if ( movies == null ) {
+ *          return null;
+ *      }
+ *
+ *      GermanRelease germanRelease = new GermanRelease();
+ *
+ *      germanRelease.setTitle( titles.translateTitleEG( movies.getTitle() ) );
+ *
+ *      return germanRelease;
+ *  }
+ * </code>
+ * </pre>
+ *
+ *
  * @author Sjaak Derksen
  */
 @Target( { ElementType.TYPE, ElementType.METHOD } )

@@ -796,7 +796,7 @@ public interface MovieMapper {
 
 }
 ----
-====
+====  
 
 .Custom mapper qualifying the methods it provides
 ====
@@ -828,6 +828,50 @@ A class / method annotated with a qualifier will not qualify anymore for mapping
 ====
 The same mechanism is also present on bean mappings: `@BeanMapping#qualifiedBy`: it selects the factory method marked with the indicated qualifier.
 ====
+
+In many occasions, declaring a new annotation to aid the selection process can be too much for what you try to achieve. For those situations, MapStruct has the `@Named` annotation. This annotation is a pre-defined qualifier (annotated with `@Qualifier` itself) and can be used to name a Mapper or, more directly a mapping method by means of its value. The same example above would look like:
+
+.Custom mapper, annotating the methods to qualify by means of `@Named`
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Named("TitleTranslator")
+public class Titles {
+
+    @Named("EnglishToGerman")
+    public String translateTitleEG(String title) {
+        // some mapping logic
+    }
+
+    @Named("GermanToEnglish")
+    public String translateTitleGE(String title) {
+        // some mapping logic
+    }
+}
+----
+====
+
+.Mapper using named
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( uses = Titles.class )
+public interface MovieMapper {
+
+     @Mapping( target = "title", qualifiedByName = { "TitleTranslator", "EnglishToGerman" } )
+     GermanRelease toGerman( OriginalRelease movies );
+
+}
+----
+====  
+
+[WARNING]
+====
+Although the used mechanism is the same, the user has to be a bit more careful. Refactoring the name of a defined qualifier in an IDE will neatly refactor all other occurrences as well. This is obviously not the case for changing a name.
+====
+
 
 [[mapping-collections]]
 == Mapping collections
