@@ -35,6 +35,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Qualifier;
+import org.mapstruct.ValueMapping;
+import org.mapstruct.ValueMappings;
 import org.mapstruct.TargetType;
 
 import net.java.dev.hickory.prism.GeneratePrism;
@@ -63,6 +65,8 @@ import org.mapstruct.Named;
     @GeneratePrism(value = Named.class, publicAccess = true),
     @GeneratePrism(value = AfterMapping.class, publicAccess = true),
     @GeneratePrism(value = BeforeMapping.class, publicAccess = true),
+    @GeneratePrism(value = ValueMapping.class, publicAccess = true),
+    @GeneratePrism(value = ValueMappings.class, publicAccess = true),
 
     // external types
     @GeneratePrism(value = XmlElementDecl.class, publicAccess = true),

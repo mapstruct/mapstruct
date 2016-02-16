@@ -72,9 +72,9 @@ public @interface ValueMapping {
     String target() default "";
 
     /**
-     * The {@link #target) should be considered {@code null}
+     * The {@link #target})should be considered {@code null}
      *
-     * @return true if {@link #target) is to be considered {@code null}
+     * @return true if {@link #target} is to be considered {@code null}
      */
     boolean targetIsNull() default false;
 

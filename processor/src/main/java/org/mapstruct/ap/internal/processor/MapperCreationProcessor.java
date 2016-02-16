@@ -47,6 +47,7 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
+import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
@@ -319,6 +320,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( mapMappingMethod );
+            }
+            else if ( method.isValueMapping() ) {
+                // prefer value mappings over enum mapping
+                ValueMappingMethod valueMappingMethod = new ValueMappingMethod.Builder()
+                    .mappingContext( mappingContext )
+                    .souceMethod( method )
+                    .valueMappings( mappingOptions.getValueMappings() )
+                    .build();
+                mappingMethods.add( valueMappingMethod );
             }
             else if ( method.isEnumMapping() ) {
 

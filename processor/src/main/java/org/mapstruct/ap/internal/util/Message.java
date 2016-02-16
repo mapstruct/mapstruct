@@ -28,6 +28,7 @@ import javax.tools.Diagnostic;
 public enum Message {
 
     // CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
     BEANMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in @BeanMapping, define at least one of them." ),
     BEANMAPPING_NOT_ASSIGNABLE( "%s not assignable to: %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE( "Unknown property \"%s\" in return type." ),
@@ -95,8 +96,6 @@ public enum Message {
     RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE( "Can't generate mapping method for a wildcard super bound source." ),
     RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT( "Can't generate mapping method for a wildcard extends bound result." ),
 
-
-
     INHERITCONFIGURATION_BOTH( "Method cannot be annotated with both a @InheritConfiguration and @InheritInverseConfiguration." ),
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),
     INHERITINVERSECONFIGURATION_INVALID_NAME( "None of the candidates %s() matches given name: \"%s\"." ),
@@ -107,7 +106,19 @@ public enum Message {
     INHERITCONFIGURATION_DUPLICATE_MATCHES( "Given name \"%s\" matches several candidate methods: %s." ),
     INHERITCONFIGURATION_NO_NAME_MATCH( "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\"." ),
     INHERITCONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH( "More than one configuration prototype method is applicable. Use @InheritConfiguration to select one of them explicitly: %s." ),
-    INHERITCONFIGURATION_CYCLE( "Cycle detected while evaluating inherited configurations. Inheritance path: %s" );
+    INHERITCONFIGURATION_CYCLE( "Cycle detected while evaluating inherited configurations. Inheritance path: %s" ),
+
+    VALUEMAPPING_DUPLICATE_SOURCE( "Source value mapping: \"%s\" cannot be mapped more than once." ),
+    VALUEMAPPING_DUPLICATE_NULL( "There can be only one default value mapping." ),
+    VALUEMAPPING_DUPLICATE_DEFAULT( "There can be only one value mapping for a null source value." ),
+    VALUEMAPPING_NON_EMPTY_SOURCE_FOR_NULL( "Source must be empty when @ValueMapping#valueMappingType == ValueMappingType.NULL." ),
+    VALUEMAPPING_NON_EMPTY_SOURCE_FOR_DEFAULT( "Source must be empty when @ValueMapping#valueMappingType == ValueMappingType.DEFAULT." ),
+    VALUEMAPPING_NON_EMPTY_TARGET( "Target must be empty in @ValueMapping when @ValueMapping#targetIsNull == true." ),
+    // TODO
+    VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." ),
+    VALUEMAPPING_UNDEFINED_TARGET( "A target constant must be specified for mappings of an enum mapping method." ),
+    VALUEMAPPING_UNMAPPED_TARGETS( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via @Mapping: %s." );
+
     // CHECKSTYLE:ON
 
     private final String description;

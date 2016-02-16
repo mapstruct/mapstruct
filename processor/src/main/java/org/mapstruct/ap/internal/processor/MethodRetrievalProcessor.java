@@ -23,8 +23,10 @@ import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutabl
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -43,11 +45,14 @@ import org.mapstruct.ap.internal.model.source.IterableMapping;
 import org.mapstruct.ap.internal.model.source.MapMapping;
 import org.mapstruct.ap.internal.model.source.Mapping;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.ValueMapping;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.IterableMappingPrism;
 import org.mapstruct.ap.internal.prism.MapMappingPrism;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
+import org.mapstruct.ap.internal.prism.ValueMappingPrism;
+import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -245,6 +250,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 .setBeanMapping(
                     BeanMapping.fromPrism( BeanMappingPrism.getInstanceOn( method ), method, messager )
                 )
+                .setValueMappings( getValueMappings( method ) )
                 .setTypeUtils( typeUtils )
                 .setMessager( messager )
                 .setTypeFactory( typeFactory )
@@ -480,5 +486,33 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         return mappings;
+    }
+
+    /**
+     * Retrieves the mappings configured via {@code @ValueMapping} from the given
+     * method.
+     *
+     * @param method The method of interest
+     *
+     * @return The mappings for the given method, keyed by target property name
+     */
+    private Set<ValueMapping> getValueMappings(ExecutableElement method) {
+        Set<ValueMapping> valueMappings = new HashSet<ValueMapping>();
+
+        ValueMappingPrism mappingAnnotation = ValueMappingPrism.getInstanceOn( method );
+        ValueMappingsPrism mappingsAnnotation = ValueMappingsPrism.getInstanceOn( method );
+
+        if ( mappingAnnotation != null ) {
+            ValueMapping valueMapping = ValueMapping.fromMappingPrism( mappingAnnotation, method, messager );
+            if ( valueMapping != null ) {
+                valueMappings.add( valueMapping );
+            }
+        }
+
+        if ( mappingsAnnotation != null ) {
+            ValueMapping.fromMappingsPrism( mappingsAnnotation, method, messager, valueMappings );
+        }
+
+        return valueMappings;
     }
 }
