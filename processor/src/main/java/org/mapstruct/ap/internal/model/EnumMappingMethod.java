@@ -90,7 +90,7 @@ public class EnumMappingMethod extends MappingMethod {
                         targetConstants.add( mapping.getTargetName() );
                     }
                     ctx.getMessager().printMessage( method.getExecutable(),
-                        Message.ENUMMAPPING_MULTIPLE_TARGETS,
+                        Message.ENUMMAPPING_MULTIPLE_SOURCES,
                         enumConstant,
                         Strings.join( targetConstants, ", " )
                     );
@@ -183,7 +183,7 @@ public class EnumMappingMethod extends MappingMethod {
 
             if ( !unmappedSourceEnumConstants.isEmpty() ) {
                 ctx.getMessager().printMessage( method.getExecutable(),
-                    Message.ENUMMAPPING_UNMAPPED_TARGETS,
+                    Message.ENUMMAPPING_UNMAPPED_SOURCES,
                     Strings.join( unmappedSourceEnumConstants, ", " )
                 );
             }

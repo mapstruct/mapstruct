@@ -37,11 +37,22 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @IssueKey("128")
-@WithClasses({ OrderMapper.class, OrderEntity.class, OrderType.class, OrderDto.class, ExternalOrderType.class })
+@WithClasses({ OrderEntity.class, OrderType.class, OrderDto.class, ExternalOrderType.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class EnumMappingTest {
 
     @Test
+    @WithClasses( OrderMapper.class )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = OrderMapper.class,
+                kind = Kind.WARNING,
+                line = 41,
+                messageRegExp = "Mapping of Enums via @Mapping is going to be removed in future versions of "
+                    + "MapStruct\\. Please use @ValueMapping instead!")
+        }
+    )
     public void shouldGenerateEnumMappingMethod() {
         ExternalOrderType target = OrderMapper.INSTANCE.orderTypeToExternalOrderType( OrderType.B2B );
         assertThat( target ).isEqualTo( ExternalOrderType.B2B );
@@ -51,6 +62,17 @@ public class EnumMappingTest {
     }
 
     @Test
+    @WithClasses(OrderMapper.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = OrderMapper.class,
+                kind = Kind.WARNING,
+                line = 41,
+                messageRegExp = "Mapping of Enums via @Mapping is going to be removed in future versions of "
+                    + "MapStruct\\. Please use @ValueMapping instead!")
+        }
+    )
     public void shouldConsiderConstantMappings() {
         ExternalOrderType target = OrderMapper.INSTANCE.orderTypeToExternalOrderType( OrderType.EXTRA );
         assertThat( target ).isEqualTo( ExternalOrderType.SPECIAL );
@@ -63,6 +85,17 @@ public class EnumMappingTest {
     }
 
     @Test
+    @WithClasses( OrderMapper.class )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = OrderMapper.class,
+                kind = Kind.WARNING,
+                line = 41,
+                messageRegExp = "Mapping of Enums via @Mapping is going to be removed in future versions of "
+                    + "MapStruct\\. Please use @ValueMapping instead!")
+        }
+    )
     public void shouldInvokeEnumMappingMethodForPropertyMapping() {
         OrderEntity order = new OrderEntity();
         order.setOrderType( OrderType.EXTRA );
@@ -73,15 +106,21 @@ public class EnumMappingTest {
     }
 
     @Test
-    @WithClasses(ErroneousOrderMapperMappingSameConstantTwice.class)
+    @WithClasses( ErroneousOrderMapperMappingSameConstantTwice.class )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
+
             @Diagnostic(type = ErroneousOrderMapperMappingSameConstantTwice.class,
                 kind = Kind.ERROR,
                 line = 42,
                 messageRegExp = "One enum constant must not be mapped to more than one target constant, but " +
-                    "constant EXTRA is mapped to SPECIAL, DEFAULT\\.")
+                    "constant EXTRA is mapped to SPECIAL, DEFAULT\\."),
+            @Diagnostic(type = ErroneousOrderMapperMappingSameConstantTwice.class,
+                kind = Kind.WARNING,
+                line = 42,
+                messageRegExp = "Mapping of Enums via @Mapping is going to be removed in future versions of "
+                    + "MapStruct\\. Please use @ValueMapping instead!")
         }
     )
     public void shouldRaiseErrorIfSameSourceEnumConstantIsMappedTwice() {
@@ -92,6 +131,11 @@ public class EnumMappingTest {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
+            @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
+                kind = Kind.WARNING,
+                line = 40,
+                messageRegExp = "Mapping of Enums via @Mapping is going to be removed in future versions of "
+                    + "MapStruct\\. Please use @ValueMapping instead!"),
             @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
                 kind = Kind.ERROR,
                 line = 37,
@@ -115,7 +159,7 @@ public class EnumMappingTest {
                 kind = Kind.ERROR,
                 line = 34,
                 messageRegExp = "The following constants from the source enum have no corresponding constant in the " +
-                    "target enum and must be be mapped via @Mapping: EXTRA, STANDARD, NORMAL")
+                    "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL")
         }
     )
     public void shouldRaiseErrorIfSourceConstantWithoutMatchingConstantInTargetTypeIsNotMapped() {

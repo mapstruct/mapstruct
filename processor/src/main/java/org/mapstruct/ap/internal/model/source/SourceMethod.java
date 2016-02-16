@@ -91,6 +91,7 @@ public class SourceMethod implements Method {
         private FormattingMessager messager = null;
         private MapperConfiguration mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
+        private List<ValueMapping> valueMappings;
 
         public Builder() {
         }
@@ -140,6 +141,11 @@ public class SourceMethod implements Method {
             return this;
         }
 
+        public Builder setValueMappings(List<ValueMapping> valueMappings) {
+            this.valueMappings = valueMappings;
+            return this;
+        }
+
         public Builder setTypeUtils(Types typeUtils) {
             this.typeUtils = typeUtils;
             return this;
@@ -173,7 +179,7 @@ public class SourceMethod implements Method {
         public SourceMethod build() {
 
             MappingOptions mappingOptions
-                = new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping );
+                = new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
 
 
             SourceMethod sourceMethod = new SourceMethod(
@@ -199,6 +205,8 @@ public class SourceMethod implements Method {
             }
             return sourceMethod;
         }
+
+
     }
 
     @SuppressWarnings("checkstyle:parameternumber")
@@ -372,6 +380,16 @@ public class SourceMethod implements Method {
     public boolean isEnumMapping() {
         return getSourceParameters().size() == 1 && first( getSourceParameters() ).getType().isEnumType()
             && getResultType().isEnumType();
+    }
+
+    /**
+     * The default enum mapping (no mappings specified) will from now on be handled as a value mapping. If there
+     * are any @Mapping / @Mappings defined on the method, then the deprecated enum behavior should be executed.
+     *
+     * @return whether (true) or not (false) to execute value mappings
+     */
+    public boolean isValueMapping() {
+        return isEnumMapping() && mappingOptions.getMappings().isEmpty();
     }
 
     private boolean equals(Object o1, Object o2) {
@@ -554,4 +572,5 @@ public class SourceMethod implements Method {
     public boolean isUpdateMethod() {
         return getMappingTargetParameter() != null;
     }
+
 }
