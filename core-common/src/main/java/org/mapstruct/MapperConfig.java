@@ -76,7 +76,7 @@ public @interface MapperConfig {
      * {@code spring}: the generated mapper is a Spring bean and
      * can be retrieved via {@code @Autowired}</li>
      * <li>
-     * {@code jsr330}: the generated mapper is annotated with {@code @Named} and
+     * {@code jsr330}: the generated mapper is annotated with {@code @javax.inject.Named} and
      * {@code @Singleton}, and can be retrieved via {@code @Inject}</li>
      * </ul>
      *
