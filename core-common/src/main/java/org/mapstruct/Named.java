@@ -24,19 +24,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * String-based qualifier.
- *
+ * Marks mapping methods with the given qualifier name. Can be used to qualify a single method or all methods of a given
+ * type by specifying this annotation on the type level.
  * <p>
- * For more info see:
- * <ul>
- * <li>{@link Mapping#qualifiedByName() }</li>
- * <li>{@link IterableMapping#qualifiedByName() }</li>
- * <li>{@link MapMapping#keyQualifiedByName() }</li>
- * <li>{@link MapMapping#valueQualifiedByName() }</li>
- * </ul>
- *
+ * Will be used to to select the correct mapping methods when mapping a bean property type, element of an iterable type
+ * or the key/value of a map type.
  * <p>
- * Example:
+ * Example (both methods of {@code Titles} are capable to convert a string, but the ambiguity is resolved by applying
+ * the qualifiers in {@code @Mapping}:
  *
  * <pre>
  * <code>
@@ -61,36 +56,46 @@ import java.lang.annotation.Target;
  *    GermanRelease toGerman( OriginalRelease movies );
  *
  * }
- *
- * Will generate:
- *
- *  private final Titles titles = new Titles();
- *
- *  &#64;Override
- *  public GermanRelease toGerman(OriginalRelease movies) {
- *      if ( movies == null ) {
- *          return null;
- *      }
- *
- *      GermanRelease germanRelease = new GermanRelease();
- *
- *      germanRelease.setTitle( titles.translateTitleEG( movies.getTitle() ) );
- *
- *      return germanRelease;
- *  }
  * </code>
  * </pre>
  *
+ * The following implementation of {@code MovieMapper} will be generated:
+ *
+ * <pre>
+ * <code>
+ *
+ * public class MovieMapperImpl implements MovieMapper {
+ *     private final Titles titles = new Titles();
+ *
+ *     &#64;Override
+ *     public GermanRelease toGerman(OriginalRelease movies) {
+ *         if ( movies == null ) {
+ *             return null;
+ *         }
+ *
+ *         GermanRelease germanRelease = new GermanRelease();
+ *
+ *         germanRelease.setTitle( titles.translateTitleEG( movies.getTitle() ) );
+ *
+ *         return germanRelease;
+ *     }
+ * }
+ * </code>
+ * </pre>
  *
  * @author Sjaak Derksen
+ * @see org.mapstruct.Mapping#qualifiedByName()
+ * @see IterableMapping#qualifiedByName()
+ * @see MapMapping#keyQualifiedByName()
+ * @see MapMapping#valueQualifiedByName()
  */
 @Target( { ElementType.TYPE, ElementType.METHOD } )
 @Retention( RetentionPolicy.RUNTIME )
 @Qualifier
 public @interface Named {
+
     /**
-     *
-     * @return the name
+     * A name qualifying the annotated element
      */
     String value();
 }

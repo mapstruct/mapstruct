@@ -66,11 +66,17 @@ public @interface MapMapping {
     Class<? extends Annotation>[] keyQualifiedBy() default { };
 
     /**
-     * See: { @link #keyQualifiedBy() }. String form of a predefined { @link @Qualifier }. The { @link @Qualifier }
-     * is more verbose, but offers more flexibility in terms of for instance refactoring. At the other hand, there
-     * is no need to define own annotations.
+     * String-based form of qualifiers; When looking for a suitable mapping method to map this map mapping method's key
+     * type, MapStruct will only consider those methods carrying directly or indirectly (i.e. on the class-level) a
+     * {@link Named} annotation for each of the specified qualifier names.
+     * <p>
+     * Note that annotation-based qualifiers are generally preferable as they allow more easily to find references and
+     * are safe for refactorings, but name-based qualifiers can be a less verbose alternative when requiring a large
+     * number of qualifiers as no custom annotation types are needed.
      *
-     * @return the qualifiers
+     * @return One or more qualifier name(s)
+     * @see #keyQualifiedBy()
+     * @see Named
      */
     String[] keyQualifiedByName() default { };
 
@@ -87,11 +93,17 @@ public @interface MapMapping {
     Class<? extends Annotation>[] valueQualifiedBy() default { };
 
     /**
-     * See: { @link #valueQualifiedBy() }. String form of a predefined { @link @Qualifier }. The { @link @Qualifier }
-     * is more verbose, but offers more flexibility in terms of for instance refactoring. At the other hand, there
-     * is no need to define own annotations.
+     * String-based form of qualifiers; When looking for a suitable mapping method to map this map mapping method's value
+     * type, MapStruct will only consider those methods carrying directly or indirectly (i.e. on the class-level) a
+     * {@link Named} annotation for each of the specified qualifier names.
+     * <p>
+     * Note that annotation-based qualifiers are generally preferable as they allow more easily to find references and
+     * are safe for refactorings, but name-based qualifiers can be a less verbose alternative when requiring a large
+     * number of qualifiers as no custom annotation types are needed.
      *
-     * @return the qualifiers
+     * @return One or more qualifier name(s)
+     * @see #valueQualifiedBy()
+     * @see Named
      */
     String[] valueQualifiedByName() default { };
 

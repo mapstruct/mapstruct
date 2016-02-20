@@ -138,11 +138,17 @@ public @interface Mapping {
     Class<? extends Annotation>[] qualifiedBy() default { };
 
     /**
-     * See: { @link #qualifiedBy() }. String form of a predefined { @link @Qualifier }. The { @link @Qualifier }
-     * is more verbose, but offers more flexibility in terms of for instance refactoring. At the other hand, there
-     * is no need to define own annotations.
+     * String-based form of qualifiers; When looking for a suitable mapping method for a given property, MapStruct will
+     * only consider those methods carrying directly or indirectly (i.e. on the class-level) a {@link Named} annotation
+     * for each of the specified qualifier names.
+     * <p>
+     * Note that annotation-based qualifiers are generally preferable as they allow more easily to find references and
+     * are safe for refactorings, but name-based qualifiers can be a less verbose alternative when requiring a large
+     * number of qualifiers as no custom annotation types are needed.
      *
-     * @return the qualifiers
+     * @return One or more qualifier name(s)
+     * @see #qualifiedBy()
+     * @see Named
      */
     String[] qualifiedByName() default { };
 
