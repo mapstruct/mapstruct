@@ -388,16 +388,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
             for ( MapperReference mapperReference : mapperReferences ) {
                 if ( sourceMethod.getReturnType().equals( mapperReference.getType() ) ) {
-                    if ( mapperReference.isUsed() ) {
-                        mapperReferenceAccessor.add( new ReferenceAccessor( sourceMethod, mapperReference ) );
+                    if ( !mapperReference.isUsed() ) {
+                        messager.printMessage(
+                            sourceMethod.getExecutable(),
+                            Message.GENERATING_NON_USED_GETTER );
                     }
-                    else {
-                        // TODO emit warning
-                    }
+                    mapperReferenceAccessor.add( new ReferenceAccessor( sourceMethod, mapperReference ) );
                 }
             }
         }
-        return  mapperReferenceAccessor;
+        return mapperReferenceAccessor;
     }
 
     private void mergeInheritedOptions(SourceMethod method, MapperConfiguration mapperConfig,

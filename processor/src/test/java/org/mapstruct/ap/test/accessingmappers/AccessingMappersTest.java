@@ -26,6 +26,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
@@ -58,5 +61,21 @@ public class AccessingMappersTest {
         assertThat( target.getTvs().get( 0 ).getInventorySequenceItem() )
             .isNotEqualTo( target.getRadios().get( 0 ).getInventorySequenceItem() );
 
+    }
+
+
+    @ExpectedCompilationOutcome(
+            value = CompilationResult.FAILED,
+            diagnostics = {
+                @Diagnostic( type = RadioMapperWithNonUsedReferenceMapper.class,
+                        kind = javax.tools.Diagnostic.Kind.ERROR,
+                        line = 45,
+                        messageRegExp = "The getter method is refering a used mapper which is not acually used in "
+                            + "the mappings." )
+            }
+    )
+    @Test
+    @WithClasses( RadioMapperWithNonUsedReferenceMapper.class )
+    public void shouldEmitWaringOnNonUsedMapper() {
     }
 }
