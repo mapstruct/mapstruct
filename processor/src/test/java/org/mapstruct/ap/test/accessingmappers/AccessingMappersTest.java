@@ -67,7 +67,7 @@ public class AccessingMappersTest {
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
             diagnostics = {
-                @Diagnostic( type = RadioMapperWithNonUsedReferenceMapper.class,
+                @Diagnostic( type = ErroneousMapperWithNonUsedReferenceMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 45,
                         messageRegExp = "The getter method is refering a used mapper which is not acually used in "
@@ -75,7 +75,7 @@ public class AccessingMappersTest {
             }
     )
     @Test
-    @WithClasses( RadioMapperWithNonUsedReferenceMapper.class )
+    @WithClasses( ErroneousMapperWithNonUsedReferenceMapper.class )
     public void shouldEmitWaringOnNonUsedMapper() {
     }
 }

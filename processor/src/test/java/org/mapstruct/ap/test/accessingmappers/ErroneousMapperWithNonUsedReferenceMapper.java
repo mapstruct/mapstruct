@@ -27,10 +27,10 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper( uses = TvMapper.class )
-public abstract class RadioMapperWithNonUsedReferenceMapper {
+public abstract class ErroneousMapperWithNonUsedReferenceMapper {
 
-    public static final RadioMapperWithNonUsedReferenceMapper INSTANCE =
-            Mappers.getMapper( RadioMapperWithNonUsedReferenceMapper.class );
+    public static final ErroneousMapperWithNonUsedReferenceMapper INSTANCE =
+            Mappers.getMapper( ErroneousMapperWithNonUsedReferenceMapper.class );
 
 
     protected InventorySequence sequence;
