@@ -29,6 +29,12 @@ public enum Message {
 
     // CHECKSTYLE:OFF
 // CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
     BEANMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in @BeanMapping, define at least one of them." ),
     BEANMAPPING_NOT_ASSIGNABLE( "%s not assignable to: %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE( "Unknown property \"%s\" in return type." ),
@@ -64,11 +70,11 @@ public enum Message {
     ITERABLEMAPPING_MAPPING_NOT_FOUND( "No implementation can be generated for this method. Found no method nor implicit conversion for mapping source element type into target element type." ),
     ITERABLEMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are undefined in @IterableMapping, define at least one of them." ),
 
-    ENUMMAPPING_MULTIPLE_TARGETS( "One enum constant must not be mapped to more than one target constant, but constant %s is mapped to %s." ),
+    ENUMMAPPING_MULTIPLE_SOURCES( "One enum constant must not be mapped to more than one target constant, but constant %s is mapped to %s." ),
     ENUMMAPPING_UNDEFINED_SOURCE( "A source constant must be specified for mappings of an enum mapping method." ),
     ENUMMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." ),
     ENUMMAPPING_UNDEFINED_TARGET( "A target constant must be specified for mappings of an enum mapping method." ),
-    ENUMMAPPING_UNMAPPED_TARGETS( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via @Mapping: %s." ),
+    ENUMMAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
 
     DECORATOR_NO_SUBTYPE( "Specified decorator type is no subtype of the annotated mapper type." ),
     DECORATOR_CONSTRUCTOR( "Specified decorator type has no default constructor nor a constructor with a single parameter accepting the decorated mapper type." ),
@@ -113,11 +119,10 @@ public enum Message {
     VALUEMAPPING_DUPLICATE_DEFAULT( "There can be only one value mapping for a null source value." ),
     VALUEMAPPING_NON_EMPTY_SOURCE_FOR_NULL( "Source must be empty when @ValueMapping#valueMappingType == ValueMappingType.NULL." ),
     VALUEMAPPING_NON_EMPTY_SOURCE_FOR_DEFAULT( "Source must be empty when @ValueMapping#valueMappingType == ValueMappingType.DEFAULT." ),
+    VALUEMAPPING_NON_EMPTY_SOURCE_FOR_DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS( "Source must be empty when @ValueMapping#valueMappingType == ValueMappingType.DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS." ),
     VALUEMAPPING_NON_EMPTY_TARGET( "Target must be empty in @ValueMapping when @ValueMapping#targetIsNull == true." ),
-    // TODO
-    VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." ),
-    VALUEMAPPING_UNDEFINED_TARGET( "A target constant must be specified for mappings of an enum mapping method." ),
-    VALUEMAPPING_UNMAPPED_TARGETS( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via @Mapping: %s." );
+    VALUE_MAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
+    VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." );
 
     // CHECKSTYLE:ON
 

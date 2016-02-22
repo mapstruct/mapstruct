@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.math.BigInteger;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.ArrayList;
@@ -92,7 +91,7 @@ public class SourceMethod implements Method {
         private FormattingMessager messager = null;
         private MapperConfiguration mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
-        private Set<ValueMapping> valueMappings;
+        private List<ValueMapping> valueMappings;
 
         public Builder() {
         }
@@ -142,7 +141,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setValueMappings(Set<ValueMapping> valueMappings) {
+        public Builder setValueMappings(List<ValueMapping> valueMappings) {
             this.valueMappings = valueMappings;
             return this;
         }
@@ -383,35 +382,14 @@ public class SourceMethod implements Method {
             && getResultType().isEnumType();
     }
 
+    /**
+     * The default enum mapping (no mappings specified) will from now on be handled as a value mapping. If there
+     * are any @Mapping / @Mappings defined on the method, then the deprecated enum behavior should be executed.
+     *
+     * @return whether (true) or not (false) to execute value mappings
+     */
     public boolean isValueMapping() {
-
-        // TODO; maak onderscheid tussen de huidige situatie, die ook zonder mapping kan en de nieuwe
-        // situatie.. Laat de situatie waarbij geen mapping is gedefinieerd ook afhandelen door de
-        // nieuwe.
-
-        // mischien moet de huidige set van mappings worden omgesmurfd naar een lijst waaraan je
-        // de default mapping en null mapping kunt vragen.
-
-        boolean isValueMapping = false;
-        if ( getSourceParameters().size() == 1 && !mappingOptions.getValueMappings().isEmpty() ) {
-            Type sourceType = first( getSourceParameters() ).getType();
-            isValueMapping = isValueMappable( sourceType ) && isValueMappable( getResultType() );
-        }
-        return isValueMapping;
-    }
-
-    private boolean isValueMappable(Type type) {
-        return byte.class.equals( type.getClass() )
-            || Byte.class.equals( type.getClass() )
-            || int.class.equals( type.getClass() )
-            || Integer.class.equals( type.getClass() )
-            || long.class.equals( type.getClass() )
-            || Long.class.equals( type.getClass() )
-            || boolean.class.equals( type.getClass() )
-            || Boolean.class.equals( type.getClass() )
-            || BigInteger.class.equals( type.getClass() )
-            || String.class.equals( type.getClass() )
-            || type.isEnumType();
+        return isEnumMapping() && mappingOptions.getMappings().isEmpty();
     }
 
     private boolean equals(Object o1, Object o2) {

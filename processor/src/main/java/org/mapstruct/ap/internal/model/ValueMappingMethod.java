@@ -1,28 +1,31 @@
 /**
- * Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/) and/or other contributors as indicated by the
- * @authors tag. See the copyright.txt file in the distribution for a full listing of all contributors.
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  and/or other contributors as indicated by the @authors tag. See the
+ *  copyright.txt file in the distribution for a full listing of all
+ *  contributors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.source.EnumMapping;
-import org.mapstruct.ap.internal.model.source.Mapping;
-import org.mapstruct.ap.internal.model.source.Method;
+ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.ValueMapping;
@@ -39,13 +42,20 @@ import org.mapstruct.ap.internal.util.Strings;
  */
 public class ValueMappingMethod extends MappingMethod {
 
-    private final List<EnumMapping> enumMappings;
+    private final List<MappingEntry> valueMappings;
+    private final String defaultTarget;
+    private final String nullTarget;
+    private final boolean throwIllegalArgumentException;
 
     public static class Builder {
 
         private SourceMethod method;
         private MappingBuilderContext ctx;
-        private Set<ValueMapping> valueMappings;
+        private final List<ValueMapping> trueValueMappings = new ArrayList<ValueMapping>();
+        private ValueMapping defaultTargetValue = null;
+        private ValueMapping nullTargetValue = null;
+        private boolean applyNamebasedMappings = true;
+
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -57,67 +67,108 @@ public class ValueMappingMethod extends MappingMethod {
             return this;
         }
 
-        public Builder valueMappings(Set<ValueMapping> valueMappings) {
-            this.valueMappings = valueMappings;
+        public Builder valueMappings(List<ValueMapping> valueMappings) {
+            for ( ValueMapping valueMapping : valueMappings ) {
+                switch ( valueMapping.getValueMappingType() ) {
+
+                    case SOURCE:
+                        trueValueMappings.add( valueMapping );
+                        break;
+                    case DEFAULT:
+                        defaultTargetValue = valueMapping;
+                        applyNamebasedMappings = false;
+                        break;
+                    case DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS:
+                        defaultTargetValue = valueMapping;
+                        break;
+                    default:
+                        nullTargetValue = valueMapping;
+                }
+            }
             return this;
         }
 
-        public ValueMappingMethod build() {
+        public ValueMappingMethod build( ) {
 
-            List<EnumMapping> enumMappings = new ArrayList<EnumMapping>();
+            // initialize all relevant parameters
+            List<MappingEntry> mappingEntries = new ArrayList<MappingEntry>();
+            String nullTarget = null;
+            String defaultTarget = null;
+            boolean throwIllegalArgumentException = false;
+
+            // for now, we're only dealing with enum mappings, populate relevant parameters based on enum-2-enum
             if ( first( method.getSourceParameters() ).getType().isEnumType() && method.getResultType().isEnumType() ) {
-                enumMappings.addAll( enumToEnumMapping( method ) );
+                mappingEntries.addAll( enumToEnumMapping( method ) );
+
+                if ( (nullTargetValue != null) && (nullTargetValue.getTarget() != null ) ) {
+                    // absense nulltargetvalue reverts to null. Or it could be a deliberate choice to return null
+                    nullTarget = nullTargetValue.getTarget();
+                }
+                if ( defaultTargetValue != null ) {
+                    defaultTarget = defaultTargetValue.getTarget();
+                }
+                else {
+                    throwIllegalArgumentException = true;
+                }
+
             }
 
+            // do before / after lifecycle mappings
             SelectionParameters selectionParameters = getSelectionParameters( method );
-
             List<LifecycleCallbackMethodReference> beforeMappingMethods
                 = LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx );
             List<LifecycleCallbackMethodReference> afterMappingMethods
                 = LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx );
 
-            return new ValueMappingMethod( method, enumMappings, beforeMappingMethods, afterMappingMethods );
+
+            // finallyn return a mapping
+            return new ValueMappingMethod( method, mappingEntries, nullTarget, defaultTarget,
+                throwIllegalArgumentException, beforeMappingMethods, afterMappingMethods );
         }
 
-        private List<EnumMapping> enumToEnumMapping(SourceMethod method) {
-            if ( !reportErrorIfMappedEnumConstantsDontExist( method )
-                || !reportErrorIfSourceEnumConstantsWithoutCorrespondingTargetConstantAreNotMapped( method ) ) {
-                return null;
+
+
+        private List<MappingEntry> enumToEnumMapping(SourceMethod method) {
+
+            List<MappingEntry> mappings = new ArrayList<MappingEntry>();
+            List<String> unmappedSourceConstants
+                = new ArrayList<String>( first( method.getSourceParameters() ).getType().getEnumConstants() );
+
+
+            if ( !reportErrorIfMappedEnumConstantsDontExist( method ) ) {
+                return mappings;
             }
 
-            List<EnumMapping> enumMappings = new ArrayList<EnumMapping>();
-            for ( ValueMapping valueMapping : valueMappings ) {
-                EnumMapping enumMapping = new EnumMapping( valueMapping.getSource(), valueMapping.getTarget() );
-                enumMappings.add( enumMapping );
+            // Start to fill the mappings with the defined valuemappings
+            for ( ValueMapping valueMapping : trueValueMappings ) {
+                mappings.add( new MappingEntry( valueMapping.getSource(), valueMapping.getTarget() ) );
+                unmappedSourceConstants.remove( valueMapping.getSource() );
             }
 
-            List<String> sourceEnumConstants = first( method.getSourceParameters() ).getType().getEnumConstants();
 
-            for ( String enumConstant : sourceEnumConstants ) {
+            // add mappings based on name
+            if ( applyNamebasedMappings ) {
 
-                List<String> targetEnumConstants = new ArrayList<String>();
-                for ( ValueMapping valueMapping : valueMappings ) {
-                    if ( valueMapping.getSource().equals( enumConstant ) ) {
-                        targetEnumConstants.add( valueMapping.getTarget() );
+                // get all target constants
+                List<String> targetConstants = method.getReturnType().getEnumConstants();
+                for ( String sourceConstant : new ArrayList<String>( unmappedSourceConstants ) ) {
+                    if ( targetConstants.contains( sourceConstant ) ) {
+                        mappings.add( new MappingEntry( sourceConstant, sourceConstant ) );
+                        unmappedSourceConstants.remove( sourceConstant );
                     }
                 }
 
-                if ( targetEnumConstants.isEmpty() ) {
-                    enumMappings.add( new EnumMapping( enumConstant, enumConstant ) );
-                }
-                else if ( targetEnumConstants.size() == 1 ) {
-                    enumMappings.add( new EnumMapping( enumConstant, first( targetEnumConstants ) ) );
-                }
-                else {
-                    // TODO why would you not map one source to several targets?
+                if ( defaultTargetValue == null && !unmappedSourceConstants.isEmpty() ) {
+                    // all sources should now be matched, there's no default to fall back to, so if sources remain,
+                    // we have an issue.
                     ctx.getMessager().printMessage( method.getExecutable(),
-                        Message.ENUMMAPPING_MULTIPLE_TARGETS,
-                        enumConstant,
-                        Strings.join( targetEnumConstants, ", " )
+                        Message.VALUE_MAPPING_UNMAPPED_SOURCES,
+                        Strings.join( unmappedSourceConstants, ", " )
                     );
+
                 }
             }
-            return enumMappings;
+            return mappings;
         }
 
         private SelectionParameters getSelectionParameters(SourceMethod method) {
@@ -137,95 +188,108 @@ public class ValueMappingMethod extends MappingMethod {
 
             boolean foundIncorrectMapping = false;
 
-            for ( List<Mapping> mappedConstants : method.getMappingOptions().getMappings().values() ) {
-                for ( Mapping mappedConstant : mappedConstants ) {
+            for ( ValueMapping mappedConstant : trueValueMappings ) {
 
-                    if ( mappedConstant.getSourceName() == null ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
-                            mappedConstant.getMirror(),
-                            Message.ENUMMAPPING_UNDEFINED_SOURCE
-                        );
-                        foundIncorrectMapping = true;
-                    }
-                    else if ( !sourceEnumConstants.contains( mappedConstant.getSourceName() ) ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
-                            mappedConstant.getMirror(),
-                            mappedConstant.getSourceAnnotationValue(),
-                            Message.ENUMMAPPING_NON_EXISTING_CONSTANT,
-                            mappedConstant.getSourceName(),
-                            first( method.getSourceParameters() ).getType()
-                        );
-                        foundIncorrectMapping = true;
-                    }
-                    if ( mappedConstant.getTargetName() == null ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
-                            mappedConstant.getMirror(),
-                            Message.ENUMMAPPING_UNDEFINED_TARGET
-                        );
-                        foundIncorrectMapping = true;
-                    }
-                    else if ( !targetEnumConstants.contains( mappedConstant.getTargetName() ) ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
-                            mappedConstant.getMirror(),
-                            mappedConstant.getTargetAnnotationValue(),
-                            Message.ENUMMAPPING_NON_EXISTING_CONSTANT,
-                            mappedConstant.getTargetName(),
-                            method.getReturnType()
-                        );
-                        foundIncorrectMapping = true;
-                    }
+                if ( !sourceEnumConstants.contains( mappedConstant.getSource() ) ) {
+                    ctx.getMessager().printMessage( method.getExecutable(),
+                        mappedConstant.getMirror(),
+                        mappedConstant.getSourceAnnotationValue(),
+                        Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
+                        mappedConstant.getSource(),
+                        first( method.getSourceParameters() ).getType()
+                    );
+                    foundIncorrectMapping = true;
                 }
+                if ( mappedConstant.getTarget() != null
+                    && !targetEnumConstants.contains( mappedConstant.getTarget() ) ) {
+                    ctx.getMessager().printMessage( method.getExecutable(),
+                        mappedConstant.getMirror(),
+                        mappedConstant.getTargetAnnotationValue(),
+                        Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
+                        mappedConstant.getTarget(),
+                        method.getReturnType()
+                    );
+                    foundIncorrectMapping = true;
+                }
+            }
+
+            if ( defaultTargetValue != null && defaultTargetValue.getTarget() != null
+                && !targetEnumConstants.contains( defaultTargetValue.getTarget() ) ) {
+                ctx.getMessager().printMessage( method.getExecutable(),
+                    defaultTargetValue.getMirror(),
+                    defaultTargetValue.getTargetAnnotationValue(),
+                    Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
+                    defaultTargetValue.getTarget(),
+                    method.getReturnType()
+                );
+                foundIncorrectMapping = true;
+            }
+
+            if ( nullTargetValue != null && nullTargetValue.getTarget() != null
+                && !targetEnumConstants.contains( nullTargetValue.getTarget() ) ) {
+                ctx.getMessager().printMessage( method.getExecutable(),
+                    nullTargetValue.getMirror(),
+                    nullTargetValue.getTargetAnnotationValue(),
+                    Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
+                    nullTargetValue.getTarget(),
+                    method.getReturnType()
+                );
+                foundIncorrectMapping = true;
             }
 
             return !foundIncorrectMapping;
         }
-
-        private boolean reportErrorIfSourceEnumConstantsWithoutCorrespondingTargetConstantAreNotMapped(
-            SourceMethod method) {
-
-            List<String> sourceEnumConstants = first( method.getSourceParameters() ).getType().getEnumConstants();
-            List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
-            List<String> unmappedSourceEnumConstants = new ArrayList<String>();
-
-            for ( String sourceEnumConstant : sourceEnumConstants ) {
-                if ( !targetEnumConstants.contains( sourceEnumConstant ) ) {
-                    boolean sourceMappingFound = false;
-                    for ( ValueMapping valueMapping : valueMappings ) {
-                        if ( valueMapping.getSource().equals( sourceEnumConstant ) ) {
-                            sourceMappingFound = true;
-                            break;
-                        }
-                    }
-                    if ( !sourceMappingFound ) {
-                        unmappedSourceEnumConstants.add( sourceEnumConstant );
-                    }
-                }
-            }
-
-            if ( !unmappedSourceEnumConstants.isEmpty() ) {
-                ctx.getMessager().printMessage( method.getExecutable(),
-                    Message.ENUMMAPPING_UNMAPPED_TARGETS,
-                    Strings.join( unmappedSourceEnumConstants, ", " )
-                );
-            }
-
-            return unmappedSourceEnumConstants.isEmpty();
-        }
-
     }
 
-    private ValueMappingMethod(Method method, List<EnumMapping> enumMappings,
-        List<LifecycleCallbackMethodReference> beforeMappingMethods,
+    private ValueMappingMethod(Method method, List<MappingEntry> enumMappings, String nullTarget, String defaultTarget,
+        boolean throwIllegalArgumentException, List<LifecycleCallbackMethodReference> beforeMappingMethods,
         List<LifecycleCallbackMethodReference> afterMappingMethods) {
         super( method, beforeMappingMethods, afterMappingMethods );
-        this.enumMappings = enumMappings;
+        this.valueMappings = enumMappings;
+        this.nullTarget = nullTarget;
+        this.defaultTarget = defaultTarget;
+        this.throwIllegalArgumentException = throwIllegalArgumentException;
     }
 
-    public List<EnumMapping> getEnumMappings() {
-        return enumMappings;
+    public List<MappingEntry> getValueMappings() {
+        return valueMappings;
+    }
+
+    public String getDefaultTarget() {
+        return defaultTarget;
+    }
+
+    public String getNullTarget() {
+        return nullTarget;
+    }
+
+    public boolean isThrowIllegalArgumentException() {
+        return throwIllegalArgumentException;
     }
 
     public Parameter getSourceParameter() {
         return first( getParameters() );
+    }
+
+    public static class MappingEntry {
+        private final String source;
+        private final String target;
+
+        MappingEntry( String source, String target ) {
+            this.source = source;
+            this.target = target;
+        }
+
+        public String getSource() {
+            return source;
+        }
+
+        public String getTarget() {
+            return target;
+        }
+
+
+
+
     }
 }

@@ -23,10 +23,8 @@ import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutabl
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -496,8 +494,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      *
      * @return The mappings for the given method, keyed by target property name
      */
-    private Set<ValueMapping> getValueMappings(ExecutableElement method) {
-        Set<ValueMapping> valueMappings = new HashSet<ValueMapping>();
+    private List<ValueMapping> getValueMappings(ExecutableElement method) {
+        List<ValueMapping> valueMappings = new ArrayList<ValueMapping>();
 
         ValueMappingPrism mappingAnnotation = ValueMappingPrism.getInstanceOn( method );
         ValueMappingsPrism mappingsAnnotation = ValueMappingsPrism.getInstanceOn( method );

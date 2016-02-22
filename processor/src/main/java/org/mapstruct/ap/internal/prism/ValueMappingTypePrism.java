@@ -28,5 +28,6 @@ public enum ValueMappingTypePrism {
 
     SOURCE,
     DEFAULT,
+    DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS,
     NULL;
 }

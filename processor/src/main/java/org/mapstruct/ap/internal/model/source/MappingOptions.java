@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -37,11 +36,11 @@ public class MappingOptions {
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
     private BeanMapping beanMapping;
-    private Set<ValueMapping> valueMappings;
+    private List<ValueMapping> valueMappings;
     private boolean fullyInitialized;
 
     public MappingOptions(Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
-        BeanMapping beanMapping, Set<ValueMapping> valueMappings ) {
+        BeanMapping beanMapping, List<ValueMapping> valueMappings ) {
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
@@ -69,7 +68,7 @@ public class MappingOptions {
         return beanMapping;
     }
 
-    public Set<ValueMapping> getValueMappings() {
+    public List<ValueMapping> getValueMappings() {
         return valueMappings;
     }
 
@@ -89,7 +88,7 @@ public class MappingOptions {
         this.beanMapping = beanMapping;
     }
 
-    public void setValueMappings(Set<ValueMapping> valueMappings) {
+    public void setValueMappings(List<ValueMapping> valueMappings) {
         this.valueMappings = valueMappings;
     }
 
