@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.value;
 import static org.fest.assertions.Assertions.assertThat;
 
 import javax.tools.Diagnostic.Kind;
+import org.junit.Ignore;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,8 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @IssueKey("128")
-@WithClasses({ OrderMapper.class, OrderEntity.class, OrderType.class, OrderDto.class, ExternalOrderType.class })
+@WithClasses({ OrderMapper.class, OrderEntity.class, OrderType.class, OrderDto.class, ExternalOrderType.class,
+    SpecialOrderMapper.class, DefaultOrderMapper.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class EnumToEnumMappingTest {
 
@@ -71,6 +73,90 @@ public class EnumToEnumMappingTest {
         assertThat( orderDto ).isNotNull();
         assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.SPECIAL );
     }
+
+    @Test
+    public void shouldApplyNullMapping() {
+        OrderEntity order = new OrderEntity();
+        order.setOrderType( null );
+
+        OrderDto orderDto = SpecialOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.DEFAULT );
+    }
+
+    @Test
+    public void shouldApplyTargetIsNullMapping() {
+        OrderEntity order = new OrderEntity();
+        order.setOrderType( OrderType.STANDARD );
+
+        OrderDto orderDto = SpecialOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isNull();
+    }
+
+    @Test
+    public void shouldApplyDefaultMappings() {
+        OrderEntity order = new OrderEntity();
+
+        // try all other
+        order.setOrderType( OrderType.B2B );
+
+        OrderDto orderDto = SpecialOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.SPECIAL );
+
+        order.setOrderType( OrderType.EXTRA );
+
+        orderDto = SpecialOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.SPECIAL );
+
+        order.setOrderType( OrderType.NORMAL );
+
+        orderDto = SpecialOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.SPECIAL );
+
+        order.setOrderType( OrderType.RETAIL );
+
+        orderDto = SpecialOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.SPECIAL );
+    }
+
+    @Test
+    public void shouldGenerateNamebasedMappingsAndThenApplyDefault() {
+
+        // Try all name based mappings
+        OrderEntity order = new OrderEntity();
+        order.setOrderType( OrderType.RETAIL );
+        OrderDto orderDto = DefaultOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.RETAIL );
+
+        order.setOrderType( OrderType.B2B );
+        orderDto = DefaultOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.B2B );
+
+        // Try the others
+        order.setOrderType( OrderType.EXTRA );
+        orderDto = DefaultOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.DEFAULT );
+
+        order.setOrderType( OrderType.STANDARD );
+        orderDto = DefaultOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.DEFAULT );
+
+        order.setOrderType( OrderType.NORMAL );
+        orderDto = DefaultOrderMapper.INSTANCE.orderEntityToDto( order );
+        assertThat( orderDto ).isNotNull();
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.DEFAULT );
+
+    }
+
 
     @Test
     @WithClasses(ErroneousOrderMapperMappingSameConstantTwice.class)
@@ -114,9 +200,80 @@ public class EnumToEnumMappingTest {
                 kind = Kind.ERROR,
                 line = 34,
                 messageRegExp = "The following constants from the source enum have no corresponding constant in the " +
-                    "target enum and must be be mapped via @Mapping: EXTRA, STANDARD, NORMAL")
+                    "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL")
         }
     )
     public void shouldRaiseErrorIfSourceConstantWithoutMatchingConstantInTargetTypeIsNotMapped() {
     }
+
+    @Test
+    @WithClasses( ErroneousOrderMapperDefaultSourceNotEmpty.class )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousOrderMapperDefaultSourceNotEmpty.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = "Source must be empty when @ValueMapping#valueMappingType == ValueMappingType.DEFAULT.")
+        }
+    )
+    public void shouldRaiseErrorIfSourceConstantNotEmptyForMappingTypeDefault() {
+    }
+
+    @Test
+    @Ignore // gives different results for eclipse and jdk (different line)
+    @WithClasses(ErroneousOrderMapperDefaultAfterApplyingMappingSourceNotEmpty.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousOrderMapperDefaultAfterApplyingMappingSourceNotEmpty.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = "Source must be empty when @ValueMapping#valueMappingType == "
+                    + "ValueMappingType\\.DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS\\.")
+        }
+    )
+    public void shouldRaiseErrorIfSourceConstantNotEmptyForMappingTypeDefaultAfterApplyingSourceMappings() {
+    }
+
+    @Test
+    @WithClasses(ErroneousOrderMapperNullSourceNotEmpty.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousOrderMapperNullSourceNotEmpty.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = "Source must be empty when @ValueMapping#valueMappingType == "
+                    + "ValueMappingType\\.NULL\\."),
+            @Diagnostic(type = ErroneousOrderMapperNullSourceNotEmpty.class,
+                kind = Kind.ERROR,
+                line = 36,
+                messageRegExp = "The following constants from the source enum have no corresponding constant in the "
+                    + "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL\\.")
+        }
+    )
+    public void shouldRaiseErrorIfSourceConstantNotEmptyForMappingTypeNull() {
+    }
+
+    @Test
+    @WithClasses(ErroneousOrderMapperNullTargetNotEmpty.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousOrderMapperNullTargetNotEmpty.class,
+                kind = Kind.ERROR,
+                line = 34,
+                messageRegExp = "Target must be empty in @ValueMapping when @ValueMapping#targetIsNull == true."),
+            @Diagnostic(type = ErroneousOrderMapperNullTargetNotEmpty.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = "The following constants from the source enum have no corresponding constant in the "
+                    + "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL\\.")
+        }
+    )
+    public void shouldRaiseErrorIfTargetConstantNotEmptyForMappingTypeNull() {
+    }
+
+
 }

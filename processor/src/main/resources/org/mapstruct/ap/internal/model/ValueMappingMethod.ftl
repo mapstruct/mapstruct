@@ -27,17 +27,17 @@ public <@includeModel object=returnType/> ${name}(<@includeModel object=sourcePa
         </#if>
     </#list>
     if ( ${sourceParameter.name} == null ) {
-        return  null;
+        return <#if nullTarget??><@includeModel object=returnType/>.${nullTarget}<#else>null</#if>;
     }
 
     <@includeModel object=resultType/> ${resultName};
 
     switch ( ${sourceParameter.name} ) {
-    <#list enumMappings as enumMapping>
-        case ${enumMapping.source}: ${resultName} = <@includeModel object=returnType/>.${enumMapping.target};
-            break;
+    <#list valueMappings as valueMapping>
+        case ${valueMapping.source}: ${resultName} = <#if valueMapping.target??><@includeModel object=returnType/>.${valueMapping.target}<#else>null</#if>;
+        break;
     </#list>
-    default: throw new IllegalArgumentException( "Unexpected enum constant: " + ${sourceParameter.name} );
+    default: <#if throwIllegalArgumentException>throw new IllegalArgumentException( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <#if defaultTarget??><@includeModel object=returnType/>.${defaultTarget}<#else>null</#if></#if>;
     }
     <#list beforeMappingReferencesWithMappingTarget as callback>
         <#if callback_index = 0>

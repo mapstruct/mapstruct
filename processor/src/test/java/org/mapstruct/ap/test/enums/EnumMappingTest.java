@@ -115,7 +115,7 @@ public class EnumMappingTest {
                 kind = Kind.ERROR,
                 line = 34,
                 messageRegExp = "The following constants from the source enum have no corresponding constant in the " +
-                    "target enum and must be be mapped via @Mapping: EXTRA, STANDARD, NORMAL")
+                    "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL")
         }
     )
     public void shouldRaiseErrorIfSourceConstantWithoutMatchingConstantInTargetTypeIsNotMapped() {
