@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.value;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
@@ -39,4 +40,8 @@ public interface OrderMapper {
         @ValueMapping(source = "NORMAL", target = "DEFAULT")
     })
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
+
+    @InheritInverseConfiguration
+    OrderType externalOrderTypeToOrderType(ExternalOrderType orderType);
+
 }

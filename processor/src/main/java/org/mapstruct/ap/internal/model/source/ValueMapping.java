@@ -187,6 +187,46 @@ public class ValueMapping {
         return targetAnnotationValue;
     }
 
+    public ValueMapping reverse() {
+        ValueMapping result;
+        if ( ValueMappingTypePrism.SOURCE.equals( valueMappingType ) ) {
+            ValueMappingTypePrism reverseMappingType;
+            if ( target != null ) {
+                // just reverse the mapping
+                reverseMappingType = ValueMappingTypePrism.SOURCE;
+            }
+            else {
+                // if the source would map to a null target, then in the reverse case, a null source
+                // would map to that source (now target)
+                reverseMappingType = ValueMappingTypePrism.NULL;
+            }
+            result = new ValueMapping(
+                target,
+                reverseMappingType,
+                source,
+                mirror,
+                sourceAnnotationValue,
+                targetAnnotationValue );
+        }
+        else if ( ValueMappingTypePrism.NULL.equals( valueMappingType ) ) {
+            // if all null sources would map to a default target, then its logical to assume that the same
+            // in the reverse case, that default target (now source) would map to null.
+            result = new ValueMapping(
+                target,
+                ValueMappingTypePrism.SOURCE,
+                null,
+                mirror,
+                sourceAnnotationValue,
+                targetAnnotationValue );
+        }
+        else {
+            result = null;
+        }
+        return result;
+
+    }
+
+
     @Override
     public int hashCode() {
         int hash = 5;

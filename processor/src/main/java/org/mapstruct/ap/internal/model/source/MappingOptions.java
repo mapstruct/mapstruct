@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,6 +133,29 @@ public class MappingOptions {
                 if ( inherited.getBeanMapping() != null ) {
                     setBeanMapping( inherited.getBeanMapping() );
                 }
+            }
+
+            if ( getValueMappings() == null ) {
+                if ( inherited.getValueMappings() != null ) {
+                    // there were no mappings, so the inherited mappings are the new ones
+                    setValueMappings( inherited.getValueMappings() );
+                }
+                else {
+                    setValueMappings( Collections.<ValueMapping>emptyList() );
+                }
+            }
+            else {
+                if ( inherited.getValueMappings() != null ) {
+                    // iff there are also inherited mappings, we reverse and add them.
+                    for ( ValueMapping inheritedValueMapping : inherited.getValueMappings() ) {
+                        ValueMapping reverseInheritedValueMapping = inheritedValueMapping.reverse();
+                        if ( reverseInheritedValueMapping != null
+                            && !getValueMappings().contains(  reverseInheritedValueMapping ) ) {
+                            getValueMappings().add( reverseInheritedValueMapping );
+                        }
+                    }
+                }
+
             }
 
             Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();

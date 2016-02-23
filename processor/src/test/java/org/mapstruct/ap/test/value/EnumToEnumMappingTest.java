@@ -38,12 +38,12 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Gunnar Morling
  */
 @IssueKey("128")
-@WithClasses({ OrderMapper.class, OrderEntity.class, OrderType.class, OrderDto.class, ExternalOrderType.class,
-    SpecialOrderMapper.class, DefaultOrderMapper.class })
+@WithClasses({ OrderEntity.class, OrderType.class, OrderDto.class, ExternalOrderType.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class EnumToEnumMappingTest {
 
     @Test
+    @WithClasses( OrderMapper.class )
     public void shouldGenerateEnumMappingMethod() {
         ExternalOrderType target = OrderMapper.INSTANCE.orderTypeToExternalOrderType( OrderType.B2B );
         assertThat( target ).isEqualTo( ExternalOrderType.B2B );
@@ -53,6 +53,7 @@ public class EnumToEnumMappingTest {
     }
 
     @Test
+    @WithClasses( OrderMapper.class )
     public void shouldConsiderConstantMappings() {
         ExternalOrderType target = OrderMapper.INSTANCE.orderTypeToExternalOrderType( OrderType.EXTRA );
         assertThat( target ).isEqualTo( ExternalOrderType.SPECIAL );
@@ -65,6 +66,7 @@ public class EnumToEnumMappingTest {
     }
 
     @Test
+    @WithClasses( OrderMapper.class )
     public void shouldInvokeEnumMappingMethodForPropertyMapping() {
         OrderEntity order = new OrderEntity();
         order.setOrderType( OrderType.EXTRA );
@@ -75,6 +77,25 @@ public class EnumToEnumMappingTest {
     }
 
     @Test
+    @WithClasses( OrderMapper.class )
+    public void shouldApplyReverseMappings() {
+
+        OrderType result =  OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.SPECIAL );
+        assertThat( result ).isEqualTo( OrderType.EXTRA );
+
+        result =  OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.DEFAULT );
+        assertThat( result ).isEqualTo( OrderType.STANDARD );
+
+        result =  OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.RETAIL );
+        assertThat( result ).isEqualTo( OrderType.RETAIL );
+
+        result =  OrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.B2B );
+        assertThat( result ).isEqualTo( OrderType.B2B );
+
+    }
+
+    @Test
+    @WithClasses( SpecialOrderMapper.class )
     public void shouldApplyNullMapping() {
         OrderEntity order = new OrderEntity();
         order.setOrderType( null );
@@ -85,6 +106,7 @@ public class EnumToEnumMappingTest {
     }
 
     @Test
+    @WithClasses( SpecialOrderMapper.class )
     public void shouldApplyTargetIsNullMapping() {
         OrderEntity order = new OrderEntity();
         order.setOrderType( OrderType.STANDARD );
@@ -95,6 +117,7 @@ public class EnumToEnumMappingTest {
     }
 
     @Test
+    @WithClasses( SpecialOrderMapper.class )
     public void shouldApplyDefaultMappings() {
         OrderEntity order = new OrderEntity();
 
@@ -125,6 +148,25 @@ public class EnumToEnumMappingTest {
     }
 
     @Test
+    @WithClasses( SpecialOrderMapper.class )
+    public void shouldApplyDefaultReverseMappings() {
+
+        OrderType result =  SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.SPECIAL );
+        assertThat( result ).isEqualTo( OrderType.EXTRA );
+
+        result =  SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.DEFAULT );
+        assertThat( result ).isNull();
+
+        result =  SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.RETAIL );
+        assertThat( result ).isEqualTo( OrderType.RETAIL );
+
+        result =  SpecialOrderMapper.INSTANCE.externalOrderTypeToOrderType( ExternalOrderType.B2B );
+        assertThat( result ).isEqualTo( OrderType.B2B );
+
+    }
+
+    @Test
+    @WithClasses( DefaultOrderMapper.class )
     public void shouldGenerateNamebasedMappingsAndThenApplyDefault() {
 
         // Try all name based mappings
