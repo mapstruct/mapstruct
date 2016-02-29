@@ -48,6 +48,7 @@
         <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>0.23.1</org.eclipse.tycho.compiler-jdt.version>
         <com.puppycrawl.tools.checkstyle.version>6.14.1</com.puppycrawl.tools.checkstyle.version>
+        <org.apidesign.javadoc.codesnippit.version>0.8</org.apidesign.javadoc.codesnippit.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
     </properties>
@@ -74,7 +75,7 @@
         <developerConnection>scm:git:git@github.com:mapstruct/mapstruct.git</developerConnection>
         <url>https://github.com/mapstruct/mapstruct/</url>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>
@@ -209,6 +210,13 @@
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-utils</artifactId>
                 <version>3.0.20</version>
+            </dependency>
+
+            <!-- Doclet for inclusion of code snippets -->
+            <dependency>
+                <groupId>org.apidesign.javadoc</groupId>
+                <artifactId>codesnippet-doclet</artifactId>
+                <version>${org.apidesign.javadoc.codesnippit.version}</version>
             </dependency>
 
             <!-- Project modules -->
