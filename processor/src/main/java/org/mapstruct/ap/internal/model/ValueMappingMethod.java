@@ -68,23 +68,24 @@ public class ValueMappingMethod extends MappingMethod {
         }
 
         public Builder valueMappings(List<ValueMapping> valueMappings) {
+            boolean valueToValueFound = false;
             for ( ValueMapping valueMapping : valueMappings ) {
-                switch ( valueMapping.getValueMappingType() ) {
-
-                    case SOURCE:
-                        trueValueMappings.add( valueMapping );
-                        break;
-                    case DEFAULT:
-                        defaultTargetValue = valueMapping;
-                        applyNamebasedMappings = false;
-                        break;
-                    case DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS:
-                        defaultTargetValue = valueMapping;
-                        break;
-                    default:
-                        nullTargetValue = valueMapping;
+                if ( ValueMapping.ANY.equals( valueMapping.getSource() ) ) {
+                    defaultTargetValue = valueMapping;
+                    applyNamebasedMappings = false;
+                }
+                else if ( ValueMapping.VALUE.equals( valueMapping.getSource() )
+                    || ValueMapping.VALUE.equals( valueMapping.getTarget() ) ) {
+                    valueToValueFound = true;
+                }
+                else if ( ValueMapping.NULL.equals( valueMapping.getSource() ) ) {
+                    nullTargetValue = valueMapping;
+                }
+                else {
+                    trueValueMappings.add( valueMapping );
                 }
             }
+            applyNamebasedMappings = applyNamebasedMappings || valueToValueFound;
             return this;
         }
 
@@ -100,7 +101,7 @@ public class ValueMappingMethod extends MappingMethod {
             if ( first( method.getSourceParameters() ).getType().isEnumType() && method.getResultType().isEnumType() ) {
                 mappingEntries.addAll( enumToEnumMapping( method ) );
 
-                if ( (nullTargetValue != null) && (nullTargetValue.getTarget() != null ) ) {
+                if ( (nullTargetValue != null) && !ValueMapping.NULL.equals( nullTargetValue.getTarget() ) ) {
                     // absense nulltargetvalue reverts to null. Or it could be a deliberate choice to return null
                     nullTarget = nullTargetValue.getTarget();
                 }
@@ -126,8 +127,6 @@ public class ValueMappingMethod extends MappingMethod {
                 throwIllegalArgumentException, beforeMappingMethods, afterMappingMethods );
         }
 
-
-
         private List<MappingEntry> enumToEnumMapping(SourceMethod method) {
 
             List<MappingEntry> mappings = new ArrayList<MappingEntry>();
@@ -141,7 +140,8 @@ public class ValueMappingMethod extends MappingMethod {
 
             // Start to fill the mappings with the defined valuemappings
             for ( ValueMapping valueMapping : trueValueMappings ) {
-                mappings.add( new MappingEntry( valueMapping.getSource(), valueMapping.getTarget() ) );
+                String target = ValueMapping.NULL.equals( valueMapping.getTarget() ) ? null : valueMapping.getTarget();
+                mappings.add( new MappingEntry( valueMapping.getSource(), target ) );
                 unmappedSourceConstants.remove( valueMapping.getSource() );
             }
 
@@ -200,7 +200,7 @@ public class ValueMappingMethod extends MappingMethod {
                     );
                     foundIncorrectMapping = true;
                 }
-                if ( mappedConstant.getTarget() != null
+                if ( !ValueMapping.NULL.equals( mappedConstant.getTarget() )
                     && !targetEnumConstants.contains( mappedConstant.getTarget() ) ) {
                     ctx.getMessager().printMessage( method.getExecutable(),
                         mappedConstant.getMirror(),
@@ -213,7 +213,7 @@ public class ValueMappingMethod extends MappingMethod {
                 }
             }
 
-            if ( defaultTargetValue != null && defaultTargetValue.getTarget() != null
+            if ( defaultTargetValue != null && !ValueMapping.NULL.equals( defaultTargetValue.getTarget() )
                 && !targetEnumConstants.contains( defaultTargetValue.getTarget() ) ) {
                 ctx.getMessager().printMessage( method.getExecutable(),
                     defaultTargetValue.getMirror(),
@@ -225,7 +225,7 @@ public class ValueMappingMethod extends MappingMethod {
                 foundIncorrectMapping = true;
             }
 
-            if ( nullTargetValue != null && nullTargetValue.getTarget() != null
+            if ( nullTargetValue != null && ValueMapping.NULL.equals( nullTargetValue.getTarget() )
                 && !targetEnumConstants.contains( nullTargetValue.getTarget() ) ) {
                 ctx.getMessager().printMessage( method.getExecutable(),
                     nullTargetValue.getMirror(),

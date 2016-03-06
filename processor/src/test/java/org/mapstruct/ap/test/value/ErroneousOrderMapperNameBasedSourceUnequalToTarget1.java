@@ -16,34 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
+package org.mapstruct.ap.test.value;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.ValueMapping;
+import org.mapstruct.ValueMappings;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Type of value mapping.
- *
  * @author Sjaak Derksen
  */
-public enum ValueMappingType {
+@Mapper
+public interface ErroneousOrderMapperNameBasedSourceUnequalToTarget1 {
 
-    /**
-     * The source will be mapped to target which will be returned. MapStruct will apply name based mappings
-     * to complete the list of mappings.
-     */
-    SOURCE,
+    ErroneousOrderMapperNameBasedSourceUnequalToTarget1 INSTANCE =
+        Mappers.getMapper( ErroneousOrderMapperNameBasedSourceUnequalToTarget1.class );
 
-    /**
-     * When no mapping is defined for the value passed to the value mapping method the target will be returned.
-     */
-    DEFAULT,
-
-    /**
-     * When no mapping found for the value passed to the value mapping method the target will be returned.
-     * but only after MapStruct tried to match the sources with the targets based on name.
-     */
-    DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS,
-
-    /**
-     * When {@code null} is passed (non primitive types) to a mapping method, the target will be returned.
-     */
-    NULL;
+    @ValueMappings( {
+        @ValueMapping(source = "EXTRA", target = "SPECIAL"),
+        @ValueMapping(source = "STANDARD", target = "DEFAULT"),
+        @ValueMapping(source = "NORMAL", target = "DEFAULT"),
+        @ValueMapping( source = "blah", target = "$" )
+    } )
+    ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 }

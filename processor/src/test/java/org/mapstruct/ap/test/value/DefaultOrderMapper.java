@@ -20,7 +20,7 @@ package org.mapstruct.ap.test.value;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ValueMapping;
-import org.mapstruct.ValueMappingType;
+import org.mapstruct.ValueMappings;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -34,7 +34,11 @@ public interface DefaultOrderMapper {
     OrderDto orderEntityToDto(OrderEntity order);
 
 // BEGIN: DefaultOrderMapper
-    @ValueMapping( valueMappingType = ValueMappingType.DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS, target = "DEFAULT" )
+    @ValueMappings( {
+        @ValueMapping( source = "$", target = "$" ),
+        @ValueMapping( source = "*", target = "DEFAULT" ),
+
+    } )
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 // FINISH: DefaultOrderMapper
 }

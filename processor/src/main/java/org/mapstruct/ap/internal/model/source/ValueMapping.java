@@ -23,7 +23,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import org.mapstruct.ap.internal.prism.ValueMappingPrism;
-import org.mapstruct.ap.internal.prism.ValueMappingTypePrism;
 import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
@@ -35,8 +34,11 @@ import org.mapstruct.ap.internal.util.Message;
  */
 public class ValueMapping {
 
+    public static final String ANY = "*";
+    public static final String NULL = "null";
+    public static final String VALUE = "$";
+
     private final String source;
-    private final ValueMappingTypePrism valueMappingType;
     private final String target;
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -53,32 +55,13 @@ public class ValueMapping {
                     mappings.add( mapping );
                 }
                 else {
-                    // do error handling
-                    if ( ValueMappingTypePrism.SOURCE.equals( mapping.valueMappingType ) ) {
-                        messager.printMessage(
-                            method,
-                            mappingPrism.mirror,
-                            mappingPrism.values.target(),
-                            Message.VALUEMAPPING_DUPLICATE_SOURCE,
-                            mappingPrism.source()
-                        );
-                    }
-                    else if ( ValueMappingTypePrism.DEFAULT.equals( mapping.valueMappingType ) ) {
-                        messager.printMessage(
-                            method,
-                            mappingPrism.mirror,
-                            mappingPrism.values.target(),
-                            Message.VALUEMAPPING_DUPLICATE_DEFAULT
-                        );
-                    }
-                    else {
-                        messager.printMessage(
-                            method,
-                            mappingPrism.mirror,
-                            mappingPrism.values.target(),
-                            Message.VALUEMAPPING_DUPLICATE_NULL
-                        );
-                    }
+                    messager.printMessage(
+                        method,
+                        mappingPrism.mirror,
+                        mappingPrism.values.target(),
+                        Message.VALUEMAPPING_DUPLICATE_SOURCE,
+                        mappingPrism.source()
+                    );
                 }
             }
         }
@@ -87,67 +70,26 @@ public class ValueMapping {
     public static ValueMapping fromMappingPrism(ValueMappingPrism mappingPrism, ExecutableElement element,
                                            FormattingMessager messager) {
 
-
-        if ( !mappingPrism.target().isEmpty() && mappingPrism.targetIsNull() ) {
-            messager.printMessage( element,
-                mappingPrism.mirror,
-                mappingPrism.values.target(),
-                Message.VALUEMAPPING_NON_EMPTY_TARGET
-            );
-            return null;
+        if ( ( VALUE.equals( mappingPrism.source() ) || VALUE.equals( mappingPrism.target() ) ) ) {
+            if ( !mappingPrism.source().equals( mappingPrism.target() ) ) {
+                    messager.printMessage(
+                        element,
+                        mappingPrism.mirror,
+                        mappingPrism.values.target(),
+                        Message.VALUEMAPPING_INCORRECT_NAME_BASE_CONTINUEATION,
+                        mappingPrism.source()
+                    );
+            }
         }
 
-        ValueMappingTypePrism valueMappingType
-            = mappingPrism.values.valueMappingType() == null
-                ? ValueMappingTypePrism.SOURCE
-                : ValueMappingTypePrism.valueOf( mappingPrism.valueMappingType() );
-
-        if ( !mappingPrism.source().isEmpty()
-            && valueMappingType == ValueMappingTypePrism.DEFAULT ) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                mappingPrism.values.target(),
-                Message.VALUEMAPPING_NON_EMPTY_SOURCE_FOR_DEFAULT
-            );
-        }
-
-       if ( !mappingPrism.source().isEmpty()
-           && valueMappingType == ValueMappingTypePrism.DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS )  {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                mappingPrism.values.target(),
-                Message.VALUEMAPPING_NON_EMPTY_SOURCE_FOR_DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS
-            );
-        }
-
-        if ( !mappingPrism.source().isEmpty() && valueMappingType == ValueMappingTypePrism.NULL) {
-            messager.printMessage(
-                element,
-                mappingPrism.mirror,
-                mappingPrism.values.target(),
-                Message.VALUEMAPPING_NON_EMPTY_SOURCE_FOR_NULL
-            );
-        }
-
-        String target;
-        if ( !mappingPrism.targetIsNull() ) {
-            target = mappingPrism.target();
-        }
-        else {
-            target = null;
-        }
-
-        return new ValueMapping( mappingPrism.source(), valueMappingType, target, mappingPrism.mirror,
+        return new ValueMapping( mappingPrism.source(), mappingPrism.target(), mappingPrism.mirror,
             mappingPrism.values.source(), mappingPrism.values.target() );
     }
 
 
-    private ValueMapping(String source, ValueMappingTypePrism valueMappingType, String target, AnnotationMirror mirror,
-                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue ) {
+    private ValueMapping(String source, String target, AnnotationMirror mirror, AnnotationValue sourceAnnotationValue,
+        AnnotationValue targetAnnotationValue ) {
         this.source = source;
-        this.valueMappingType = valueMappingType;
         this.target = target;
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
@@ -159,13 +101,6 @@ public class ValueMapping {
      */
     public String getSource() {
         return source;
-    }
-
-    /**
-     * @return the value mapping type.
-     */
-    public ValueMappingTypePrism getValueMappingType() {
-        return valueMappingType;
     }
 
     /**
@@ -189,32 +124,10 @@ public class ValueMapping {
 
     public ValueMapping reverse() {
         ValueMapping result;
-        if ( ValueMappingTypePrism.SOURCE.equals( valueMappingType ) ) {
-            ValueMappingTypePrism reverseMappingType;
-            if ( target != null ) {
-                // just reverse the mapping
-                reverseMappingType = ValueMappingTypePrism.SOURCE;
-            }
-            else {
-                // if the source would map to a null target, then in the reverse case, a null source
-                // would map to that source (now target)
-                reverseMappingType = ValueMappingTypePrism.NULL;
-            }
+        if ( !ANY.equals( source ) ) {
             result = new ValueMapping(
                 target,
-                reverseMappingType,
                 source,
-                mirror,
-                sourceAnnotationValue,
-                targetAnnotationValue );
-        }
-        else if ( ValueMappingTypePrism.NULL.equals( valueMappingType ) ) {
-            // if all null sources would map to a default target, then its logical to assume that the same
-            // in the reverse case, that default target (now source) would map to null.
-            result = new ValueMapping(
-                target,
-                ValueMappingTypePrism.SOURCE,
-                null,
                 mirror,
                 sourceAnnotationValue,
                 targetAnnotationValue );
@@ -223,13 +136,12 @@ public class ValueMapping {
             result = null;
         }
         return result;
-
     }
-
 
     @Override
     public int hashCode() {
         int hash = 5;
+        hash = 97 * hash + (this.source != null ? this.source.hashCode() : 0);
         return hash;
     }
 
@@ -245,15 +157,7 @@ public class ValueMapping {
         if ( (this.source == null) ? (other.source != null) : !this.source.equals( other.source ) ) {
             return false;
         }
-        switch ( this.valueMappingType ) {
-            case DEFAULT:
-            case DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS:
-                return ValueMappingTypePrism.DEFAULT.equals( other.valueMappingType )
-                   || ValueMappingTypePrism.DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS.equals( other.valueMappingType );
-            default:
-                return this.valueMappingType.equals( other.valueMappingType );
-        }
+        return true;
     }
-
 
 }

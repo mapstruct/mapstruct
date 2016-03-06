@@ -77,7 +77,7 @@ import java.lang.annotation.Target;
  * <tbody>
  *    <tr><td>&lt;null&gt;</td><td>ExternalOrderType.DEFAULT</td></tr>
  *    <tr><td>OrderType.STANDARD</td><td>&lt;null&gt;</td></tr>
- *    <tr><td>&lt;all other&gt;</td><td>ExternalOrderType.DEFAULT</td></tr>
+ *    <tr><td>&lt;all other&gt;</td><td>ExternalOrderType.SPECIAL</td></tr>
  * </tbody>
  * </table>
  * <p>
@@ -113,47 +113,38 @@ import java.lang.annotation.Target;
 public @interface ValueMapping {
 
     /**
-     * Controls the type of mapping.
-     *
-     * @return The mapping type.
-     */
-    ValueMappingType valueMappingType() default ValueMappingType.SOURCE;
-
-
-    /**
      * The source value constant to use for this mapping.
      *
-     * If the value is not of type {@code String}, the value will be converted by applying a matching conversion method
-     * or built-in conversion. Enumeration constants will be taken 'as is'.
-     *
      * <p>
-     * <b>NOTE:</b>
+     * <b>Valid values:</b>
      * <ol>
-     * <li> Mandatory for a mapping type {@link ValueMappingType#SOURCE} </li>
-     * <li>May not be defined for {@link ValueMappingType#DEFAULT} or {@link ValueMappingType#NULL}</li>
+     * <li>Enumeration Identifier</li>
+     * <li>null</li>
+     * <li>$</li>
+     * <li>*</li>
      * </ol>
+     * <B>NOTE:</B> '$' can only be used in when {@link #target() } == '$'. Its meant to signify automated mapping
+     * source to target based on identical names <B>before</B> applying a default ('*') mapping.
      *
      * @return The source value.
      */
-    String source() default "";
+    String source();
 
     /**
      * The target value constant to use for this mapping.
      *
-     * If the value is not of type {@code String}, the value will be converted by applying a matching
-     * conversion method or built-in conversion. Enumeration constants will be taken 'as is'.
+     * <p>
+     * <b>Valid values:</b>
+     * <ol>
+     * <li>Enumeration Identifier</li>
+     * <li>null</li>
+     * <li>$</li>
+     * </ol>
      *
-     * This is a mandatory property unless {@code target=true}
-     *
+     * <B>NOTE:</B> '$' can only be used in when {@link #source() } == '$'. Its meant to signify automated mapping
+     * source to target based on identical names <B>before</B> applying a default ('*') mapping.
      * @return The target value.
      */
-    String target() default "";
-
-    /**
-     * The {@link #target} should be considered {@code null}
-     *
-     * @return true if {@link #target} is to be considered {@code null}
-     */
-    boolean targetIsNull() default false;
+    String target();
 
 }

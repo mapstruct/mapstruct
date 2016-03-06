@@ -16,18 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.prism;
+package org.mapstruct.ap.test.value;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.ValueMapping;
+import org.mapstruct.ValueMappings;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Prism for the enum {@link org.mapstruct.ValueMappingType}
- *
  * @author Sjaak Derksen
  */
-public enum ValueMappingTypePrism {
+@Mapper
+public interface ErroneousOrderMapperNameBasedSourceUnequalToTarget2 {
 
+    ErroneousOrderMapperNameBasedSourceUnequalToTarget2 INSTANCE =
+        Mappers.getMapper( ErroneousOrderMapperNameBasedSourceUnequalToTarget2.class );
 
-    SOURCE,
-    DEFAULT,
-    DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS,
-    NULL;
+    @ValueMappings( {
+        @ValueMapping(source = "EXTRA", target = "SPECIAL"),
+        @ValueMapping(source = "STANDARD", target = "DEFAULT"),
+        @ValueMapping(source = "NORMAL", target = "DEFAULT"),
+        @ValueMapping( source = "$", target = "blah" )
+    } )
+    ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 }

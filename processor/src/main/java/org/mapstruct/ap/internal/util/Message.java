@@ -28,13 +28,6 @@ import javax.tools.Diagnostic;
 public enum Message {
 
     // CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
     BEANMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in @BeanMapping, define at least one of them." ),
     BEANMAPPING_NOT_ASSIGNABLE( "%s not assignable to: %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE( "Unknown property \"%s\" in return type." ),
@@ -115,12 +108,7 @@ public enum Message {
     INHERITCONFIGURATION_CYCLE( "Cycle detected while evaluating inherited configurations. Inheritance path: %s" ),
 
     VALUEMAPPING_DUPLICATE_SOURCE( "Source value mapping: \"%s\" cannot be mapped more than once." ),
-    VALUEMAPPING_DUPLICATE_NULL( "There can be only one default value mapping." ),
-    VALUEMAPPING_DUPLICATE_DEFAULT( "There can be only one value mapping for a null source value." ),
-    VALUEMAPPING_NON_EMPTY_SOURCE_FOR_NULL( "Source must be empty when @ValueMapping#valueMappingType == ValueMappingType.NULL." ),
-    VALUEMAPPING_NON_EMPTY_SOURCE_FOR_DEFAULT( "Source must be empty when @ValueMapping#valueMappingType == ValueMappingType.DEFAULT." ),
-    VALUEMAPPING_NON_EMPTY_SOURCE_FOR_DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS( "Source must be empty when @ValueMapping#valueMappingType == ValueMappingType.DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS." ),
-    VALUEMAPPING_NON_EMPTY_TARGET( "Target must be empty in @ValueMapping when @ValueMapping#targetIsNull == true." ),
+    VALUEMAPPING_INCORRECT_NAME_BASE_CONTINUEATION( "Source == \"?\" can only be used in combination with target == \"?\"." ),
     VALUE_MAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
     VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." );
 

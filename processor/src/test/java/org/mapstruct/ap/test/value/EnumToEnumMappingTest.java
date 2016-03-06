@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.value;
 import static org.fest.assertions.Assertions.assertThat;
 
 import javax.tools.Diagnostic.Kind;
-import org.junit.Ignore;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -249,72 +248,31 @@ public class EnumToEnumMappingTest {
     }
 
     @Test
-    @WithClasses( ErroneousOrderMapperDefaultSourceNotEmpty.class )
+    @WithClasses(ErroneousOrderMapperNameBasedSourceUnequalToTarget1.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousOrderMapperDefaultSourceNotEmpty.class,
+            @Diagnostic(type = ErroneousOrderMapperNameBasedSourceUnequalToTarget1.class,
                 kind = Kind.ERROR,
-                line = 35,
-                messageRegExp = "Source must be empty when @ValueMapping#valueMappingType == ValueMappingType.DEFAULT.")
+                line = 39,
+                messageRegExp = "Source == \"\\?\" can only be used in combination with target == \"\\?\"\\.")
         }
     )
-    public void shouldRaiseErrorIfSourceConstantNotEmptyForMappingTypeDefault() {
+    public void shouldRaiseErrorIfTargetDoesNotEqualSourceWhenUsingNameBasedContinuation1() {
     }
 
     @Test
-    @Ignore // gives different results for eclipse and jdk (different line)
-    @WithClasses(ErroneousOrderMapperDefaultAfterApplyingMappingSourceNotEmpty.class)
+    @WithClasses(ErroneousOrderMapperNameBasedSourceUnequalToTarget2.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousOrderMapperDefaultAfterApplyingMappingSourceNotEmpty.class,
+            @Diagnostic(type = ErroneousOrderMapperNameBasedSourceUnequalToTarget2.class,
                 kind = Kind.ERROR,
-                line = 35,
-                messageRegExp = "Source must be empty when @ValueMapping#valueMappingType == "
-                    + "ValueMappingType\\.DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS\\.")
+                line = 39,
+                messageRegExp = "Source == \"\\?\" can only be used in combination with target == \"\\?\"\\.")
         }
     )
-    public void shouldRaiseErrorIfSourceConstantNotEmptyForMappingTypeDefaultAfterApplyingSourceMappings() {
-    }
-
-    @Test
-    @WithClasses(ErroneousOrderMapperNullSourceNotEmpty.class)
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousOrderMapperNullSourceNotEmpty.class,
-                kind = Kind.ERROR,
-                line = 35,
-                messageRegExp = "Source must be empty when @ValueMapping#valueMappingType == "
-                    + "ValueMappingType\\.NULL\\."),
-            @Diagnostic(type = ErroneousOrderMapperNullSourceNotEmpty.class,
-                kind = Kind.ERROR,
-                line = 36,
-                messageRegExp = "The following constants from the source enum have no corresponding constant in the "
-                    + "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL\\.")
-        }
-    )
-    public void shouldRaiseErrorIfSourceConstantNotEmptyForMappingTypeNull() {
-    }
-
-    @Test
-    @WithClasses(ErroneousOrderMapperNullTargetNotEmpty.class)
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousOrderMapperNullTargetNotEmpty.class,
-                kind = Kind.ERROR,
-                line = 34,
-                messageRegExp = "Target must be empty in @ValueMapping when @ValueMapping#targetIsNull == true."),
-            @Diagnostic(type = ErroneousOrderMapperNullTargetNotEmpty.class,
-                kind = Kind.ERROR,
-                line = 35,
-                messageRegExp = "The following constants from the source enum have no corresponding constant in the "
-                    + "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL\\.")
-        }
-    )
-    public void shouldRaiseErrorIfTargetConstantNotEmptyForMappingTypeNull() {
+    public void shouldRaiseErrorIfTargetDoesNotEqualSourceWhenUsingNameBasedContinuation2() {
     }
 
 
