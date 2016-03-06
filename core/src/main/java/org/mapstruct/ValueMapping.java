@@ -82,7 +82,7 @@ import java.lang.annotation.Target;
  * <p>
  * <H3>Completing mappings based on name, then applying default</H3>
  * When MapStruct needs to complete mappings based on names and then map the remainder to a default, use the option
- * {@code ValueMappingType.DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS}
+ * <code>@ValueMapping( source = "$", target = "$" )</code>
  * <p>
  * <H4>Mapper Definition:</H4>
  * {@codesnippet DefaultOrderMapper}

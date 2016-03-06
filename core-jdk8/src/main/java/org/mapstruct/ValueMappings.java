@@ -26,16 +26,6 @@ import java.lang.annotation.Target;
 /**
  * Constructs a set of value (constant) mappings.
  *
- * Each mapping entry is provided by a mapping in {@link #value()}. There are three scenarios to consider:
- * <ol>
- * <li>There is a non null source and there's a match.</li>
- * <li>The source provided is null.</li>
- * <li>There is no match.</li>
- * </ol>
- *
- * {@link ValueMappingType} will be used to distinguish between those scenarios. Each source must be unique and the
- * latter 2 scenarios may only appear once in the provided values {@link #value() }
- *
  * @author Sjaak Derksen
  */
 @Target(ElementType.METHOD)
