@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -28,6 +29,7 @@ import javax.lang.model.util.Elements;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
@@ -54,7 +56,7 @@ public class Mapper extends GeneratedType {
                    String interfacePackage, String interfaceName, boolean customPackage, boolean customImplName,
                    List<MappingMethod> methods, Options options, VersionInformation versionInformation,
                    Accessibility accessibility, List<MapperReference> referencedMappers, Decorator decorator,
-                   SortedSet<Type> extraImportedTypes) {
+                   SortedSet<Type> extraImportedTypes, List<Constructor> constructors) {
 
         super(
             typeFactory,
@@ -69,7 +71,7 @@ public class Mapper extends GeneratedType {
             versionInformation,
             accessibility,
             extraImportedTypes,
-            null
+            constructors
         );
         this.customPackage = customPackage;
         this.customImplName = customImplName;
@@ -85,6 +87,7 @@ public class Mapper extends GeneratedType {
         private List<MappingMethod> mappingMethods;
         private List<MapperReference> mapperReferences;
         private SortedSet<Type> extraImportedTypes;
+        private List<SourceMethod> constructorMethods;
 
         private Elements elementUtils;
         private Options options;
@@ -97,6 +100,11 @@ public class Mapper extends GeneratedType {
 
         public Builder element(TypeElement element) {
             this.element = element;
+            return this;
+        }
+
+        public Builder constructors(List<SourceMethod> constructors) {
+            this.constructorMethods = constructors;
             return this;
         }
 
@@ -156,6 +164,11 @@ public class Mapper extends GeneratedType {
             String implementationName = implName.replace( CLASS_NAME_PLACEHOLDER, element.getSimpleName() ) +
                     ( decorator == null ? "" : "_" );
 
+            List<Constructor> constructors = new ArrayList<Constructor>();
+            for ( SourceMethod constructorMethod : constructorMethods ) {
+                constructors.add( new MapperConstructor( implementationName, constructorMethod ) );
+            }
+
             String elementPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
             String packageName = implPackage.replace( PACKAGE_NAME_PLACEHOLDER, elementPackage );
 
@@ -174,7 +187,8 @@ public class Mapper extends GeneratedType {
                 Accessibility.fromModifiers( element.getModifiers() ),
                 mapperReferences,
                 decorator,
-                extraImportedTypes
+                extraImportedTypes,
+                constructors
             );
         }
     }

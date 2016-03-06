@@ -162,7 +162,7 @@ public class Decorator extends GeneratedType {
             versionInformation,
             accessibility,
             extraImports,
-            decoratorConstructor
+            Arrays.asList( (Constructor) decoratorConstructor )
         );
 
         this.decoratorType = decoratorType;

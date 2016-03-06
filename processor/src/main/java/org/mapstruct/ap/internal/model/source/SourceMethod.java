@@ -67,12 +67,14 @@ public class SourceMethod implements Method {
     private final MappingOptions mappingOptions;
     private final List<SourceMethod> prototypeMethods;
     private final Type mapperToImplement;
+    private final boolean constructor;
 
     private List<Parameter> sourceParameters;
 
     private List<String> parameterNames;
 
     private List<SourceMethod> applicablePrototypeMethods;
+
 
     public static class Builder {
 
@@ -92,6 +94,7 @@ public class SourceMethod implements Method {
         private MapperConfiguration mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
         private List<ValueMapping> valueMappings;
+        private boolean isConstructor = false;
 
         public Builder() {
         }
@@ -176,6 +179,11 @@ public class SourceMethod implements Method {
             return this;
         }
 
+        public Builder setConstructor() {
+            isConstructor = true;
+            return this;
+        }
+
         public SourceMethod build() {
 
             MappingOptions mappingOptions
@@ -193,7 +201,8 @@ public class SourceMethod implements Method {
                 typeFactory,
                 mapperConfig,
                 prototypeMethods,
-                definingType
+                definingType,
+                isConstructor
             );
 
             if ( mappings != null ) {
@@ -213,7 +222,7 @@ public class SourceMethod implements Method {
     private SourceMethod(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
                          Type returnType, List<Type> exceptionTypes, MappingOptions mappingOptions, Types typeUtils,
                          TypeFactory typeFactory, MapperConfiguration config, List<SourceMethod> prototypeMethods,
-                         Type mapperToImplement) {
+                         Type mapperToImplement, boolean isConstructor) {
         this.declaringMapper = declaringMapper;
         this.executable = executable;
         this.parameters = parameters;
@@ -231,6 +240,7 @@ public class SourceMethod implements Method {
         this.config = config;
         this.prototypeMethods = prototypeMethods;
         this.mapperToImplement = mapperToImplement;
+        this.constructor = isConstructor;
     }
 
     private Parameter determineMappingTargetParameter(Iterable<Parameter> parameters) {
@@ -329,6 +339,10 @@ public class SourceMethod implements Method {
     @Override
     public Accessibility getAccessibility() {
         return accessibility;
+    }
+
+    public boolean isConstructor() {
+        return constructor;
     }
 
     public Mapping getSingleMappingByTargetPropertyName(String targetPropertyName) {

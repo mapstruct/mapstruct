@@ -32,6 +32,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -144,6 +145,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                MapperConfiguration mapperConfig, List<SourceMethod> prototypeMethods) {
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
 
+
+
         for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper ) ) {
             SourceMethod method = getMethod(
                 usedMapper,
@@ -166,6 +169,16 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     mapperConfig,
                     prototypeMethods ) );
             }
+
+            // Add all constructors
+            List<ExecutableElement> constructors =
+                ElementFilter.constructorsIn( mapperToImplement.getEnclosedElements() );
+            for ( ExecutableElement constructor :  constructors ) {
+                if ( constructor.getModifiers().contains( Modifier.PUBLIC )
+                    || constructor.getModifiers().contains( Modifier.PROTECTED ) ) {
+                    methods.add( getConstructorsToOveride( constructor, mapperConfig ) );
+                }
+            }
         }
 
         return methods;
@@ -184,6 +197,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         ExecutableType methodType = typeFactory.getMethodType( (DeclaredType) usedMapper.asType(), method );
         List<Parameter> parameters = typeFactory.getParameters( methodType, method );
         Type returnType = typeFactory.getReturnType( methodType );
+
 
         boolean methodRequiresImplementation = method.getModifiers().contains( Modifier.ABSTRACT );
         boolean containsTargetTypeParameter = SourceMethod.containsTargetTypeParameter( parameters );
@@ -254,6 +268,24 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 .setTypeFactory( typeFactory )
                 .setMapperConfiguration( mapperConfig )
                 .setPrototypeMethods( prototypeMethods )
+            .build();
+    }
+
+    private SourceMethod getConstructorsToOveride( ExecutableElement method, MapperConfiguration mapperConfig ) {
+
+        ExecutableType executableType = (ExecutableType) method.asType();
+        List<Type> exceptionTypes = typeFactory.getThrownTypes( executableType );
+        List<Parameter> parameters = typeFactory.getParameters( executableType, method );
+
+        return new SourceMethod.Builder()
+            .setExecutable( method )
+            .setParameters( parameters )
+            .setExceptionTypes( exceptionTypes )
+            .setTypeUtils( typeUtils )
+            .setMessager( messager )
+            .setTypeFactory( typeFactory )
+            .setMapperConfiguration( mapperConfig )
+            .setConstructor()
             .build();
     }
 

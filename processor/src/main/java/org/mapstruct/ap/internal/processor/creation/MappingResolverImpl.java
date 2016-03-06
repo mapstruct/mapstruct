@@ -90,7 +90,12 @@ public class MappingResolverImpl implements MappingResolver {
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
 
-        this.sourceModel = sourceModel;
+        this.sourceModel = new ArrayList<SourceMethod>();
+        for ( SourceMethod sourceMethod : sourceModel ) {
+            if ( !sourceMethod.isConstructor() ) {
+                this.sourceModel.add( sourceMethod );
+            }
+        }
         this.mapperReferences = mapperReferences;
 
         this.conversions = new Conversions( elementUtils, typeFactory );

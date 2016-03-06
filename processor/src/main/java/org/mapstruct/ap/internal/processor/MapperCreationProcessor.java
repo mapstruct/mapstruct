@@ -148,6 +148,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         Mapper mapper = new Mapper.Builder()
             .element( element )
+            .constructors( getConstructors( methods ) )
             .mappingMethods( mappingMethods )
             .mapperReferences( mapperReferences )
             .options( options )
@@ -163,6 +164,33 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         return mapper;
     }
+
+    private Mapper getFactory(TypeElement element, MapperConfiguration mapperConfig, List<SourceMethod> methods) {
+        List<MapperReference> mapperReferences = mappingContext.getMapperReferences();
+        List<MappingMethod> mappingMethods = getMappingMethods( mapperConfig, methods );
+        mappingMethods.addAll( mappingContext.getUsedVirtualMappings() );
+        mappingMethods.addAll( mappingContext.getMappingsToGenerate() );
+
+        Mapper mapper = new Mapper.Builder()
+            .element( element )
+            .constructors( getConstructors( methods ) )
+            .mappingMethods( mappingMethods )
+            .mapperReferences( mapperReferences )
+            .options( options )
+            .versionInformation( versionInformation )
+            .decorator( getDecorator( element, methods, mapperConfig.implementationName(),
+                        mapperConfig.implementationPackage() ) )
+            .typeFactory( typeFactory )
+            .elementUtils( elementUtils )
+            .extraImports( getExtraImports( element ) )
+            .implName( mapperConfig.implementationName() )
+            .implPackage( mapperConfig.implementationPackage() )
+            .build();
+
+        return mapper;
+    }
+
+
 
     private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, String implName,
                                    String implPackage) {
@@ -181,6 +209,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>( methods.size() );
 
         for ( SourceMethod mappingMethod : methods ) {
+
+            if ( mappingMethod.isConstructor() ) {
+                continue;
+            }
+
             boolean implementationRequired = true;
             for ( ExecutableElement method : ElementFilter.methodsIn( decoratorElement.getEnclosedElements() ) ) {
                 if ( elementUtils.overrides( method, mappingMethod.getExecutable(), decoratorElement ) ) {
@@ -231,6 +264,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
              .build();
 
         return decorator;
+    }
+
+    private List<SourceMethod> getConstructors(List<SourceMethod> sourceMethods ) {
+        List<SourceMethod> constructors = new ArrayList<SourceMethod>();
+        for ( SourceMethod sourceMethod : sourceMethods ) {
+            if ( sourceMethod.isConstructor() ) {
+                constructors.add( sourceMethod );
+            }
+        }
+        return constructors;
     }
 
     private SortedSet<Type> getExtraImports(TypeElement element) {

@@ -98,7 +98,7 @@ public interface ModelElementProcessor<P, R> {
     /**
      * Returns the priority value of this processor which must be between 1
      * (highest priority) and 10000 (lowest priority). Processors are invoked in
-     * order from highest to lowest priority, starting with the mapping method
+     * order from lowest to highest priority, starting with the mapping method
      * retrieval processor (priority 1) and finishing with the code generation
      * processor (priority 10000). Processors working on the built
      * {@code Mapper} model must have a priority &gt; 1000.

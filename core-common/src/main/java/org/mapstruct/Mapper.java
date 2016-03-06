@@ -116,6 +116,13 @@ public @interface Mapper {
     Class<?> config() default void.class;
 
     /**
+     * Factory for constructing the generated mapper when mapper is an abstract class.
+     *
+     * @return
+     */
+    Class<?> factory() default void.class;
+
+    /**
      * The strategy to be applied when propagating the value of collection-typed properties. By default, only JavaBeans
      * accessor methods (setters or getters) will be used, but it is also possible to invoke a corresponding adder
      * method for each element of the source collection (e.g. {@code orderDto.addOrderLine()}).

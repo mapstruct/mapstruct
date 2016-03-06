@@ -37,7 +37,9 @@ import ${importedType.importName};
 <#list fields as field><#if field.used><#nt>    <@includeModel object=field/>
 </#if></#list>
 
-<#if constructor??><#nt>    <@includeModel object=constructor/></#if>
+<#list constructors as constructor>
+<#nt>    <@includeModel object=constructor/>
+</#list>
 
 <#list methods as method>
 <#nt>    <@includeModel object=method/>

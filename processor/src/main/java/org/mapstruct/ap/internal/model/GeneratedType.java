@@ -58,7 +58,7 @@ public abstract class GeneratedType extends ModelElement {
     private final VersionInformation versionInformation;
     private final Accessibility accessibility;
     private List<? extends Field> fields;
-    private Constructor constructor;
+    private final List<Constructor> constructors = new ArrayList<Constructor>();
 
     /**
      * Type representing the {@code @Generated} annotation
@@ -74,7 +74,7 @@ public abstract class GeneratedType extends ModelElement {
                             VersionInformation versionInformation,
                             Accessibility accessibility,
                             SortedSet<Type> extraImportedTypes,
-                            Constructor constructor ) {
+                            List<Constructor> constructors ) {
         this.packageName = packageName;
         this.name = name;
         this.superClassName = superClassName;
@@ -92,7 +92,7 @@ public abstract class GeneratedType extends ModelElement {
         this.accessibility = accessibility;
 
         this.generatedType = typeFactory.getType( Generated.class );
-        this.constructor = constructor;
+        this.constructors.addAll( constructors );
     }
 
     // CHECKSTYLE:ON
@@ -183,12 +183,12 @@ public abstract class GeneratedType extends ModelElement {
         return importedTypes;
     }
 
-    public Constructor getConstructor() {
-        return constructor;
+    public List<Constructor> getConstructors() {
+        return constructors;
     }
 
     public void removeConstructor() {
-        constructor = null;
+        constructors.clear();
     }
 
     protected void addIfImportRequired(Collection<Type> collection, Type typeToAdd) {
