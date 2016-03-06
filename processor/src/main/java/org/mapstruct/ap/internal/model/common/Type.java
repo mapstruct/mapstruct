@@ -265,7 +265,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     public Set<Type> getImportTypes() {
         Set<Type> result = new HashSet<Type>();
 
-        result.add( this );
+        if ( getTypeMirror().getKind() == TypeKind.DECLARED ) {
+            result.add( this );
+        }
 
         if ( componentType != null ) {
             result.addAll( componentType.getImportTypes() );
@@ -273,6 +275,10 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         for ( Type parameter : typeParameters ) {
             result.addAll( parameter.getImportTypes() );
+        }
+
+        if ( boundingBase != null ) {
+            result.addAll( boundingBase.getImportTypes() );
         }
 
         return result;
