@@ -22,7 +22,9 @@ package org.mapstruct.ap.test.value;
 /**
  * @author Gunnar Morling
  */
+// BEGIN: ExternalOrderType
 public enum ExternalOrderType {
 
     RETAIL, B2B, SPECIAL, DEFAULT
 }
+// FINISH: ExternalOrderType

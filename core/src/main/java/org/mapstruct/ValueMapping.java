@@ -24,42 +24,84 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Configures the mapping of source constant value to target constant value.
- *
- * Assume the following enumerations:
+ * Configures the mapping of source constant value to target constant value. Supported mappings are
+ * <p>
+ * <ol>
+ * <li>Enumeration to Enumeration</li>
+ * </ol>
+ * <p>
+ * <H2>Enumeration to Enumeration</H2>
  * <p>
  * {@codesnippet OrderType}
  * {@codesnippet ExternalOrderType}
  * <p>
+ * <H3>Completing mappings based on name</H3>
  * MapStruct can complete mappings based on names. Just handle the non matching names and let MapStruct do the
  * remainder.
  * <p>
- * <em>Mapper Definition:</em>
+ * <H4>Mapper Definition:</H4>
  * {@codesnippet OrderMapper}
  * <p>
- * <em>Generated Implementation:</em>
- * {@codesnippet OrderMapperImpl}
+ * <H4>Results in:</H4>
+ * <table border="1" cellpadding="5">
+ * <thead>
+ *   <tr><th>Source</th><th>Target</th></tr>
+ * </thead>
+ * <tbody>
+ *    <tr><td>&lt;null&gt;</td><td>&lt;null&gt;</td></tr>
+ *    <tr><td>OrderType.EXTRA</td><td>ExternalOrderType.SPECIAL</td></tr>
+ *    <tr><td>OrderType.STANDARD</td><td>ExternalOrderType.DEFAULT</td></tr>
+ *    <tr><td>OrderType.NORMAL</td><td>ExternalOrderType.DEFAULT</td></tr>
+ *    <tr><td>OrderType.RETAIL</td><td>ExternalOrderType.RETAIL</td></tr>
+ *    <tr><td>OrderType.B2B</td><td>ExternalOrderType.B2B</td></tr>
+ * </tbody>
+ * </table>
+ * <p>
+ * Note how MapStruct completed the last two mappings based on a name match. If for some reason no match is found, for
+ * instance because the source enumeration has been extended without compilation, an
+ * {@link java.lang.IllegalStateException} will be thrown.
+ * <H3>Mapping null sources and null targets</H3>
  * <p>
  * When desired, handling null sources can be handled by specifying a mapping. And, just like a case statement, also
  * the default can be specified.
  * <p>
- * <em>Mapper Definition:</em>
+ * <H4>Mapper Definition:</H4>
  * {@codesnippet SpecialOrderMapper}
  * <p>
- * <em>Generated Implementation:</em>
+ * <H4>Results in:</H4>
+ * <table border="1" cellpadding="5">
+ * <thead>
+ *   <tr><th>Source</th><th>Target</th></tr>
+ * </thead>
+ * <tbody>
+ *    <tr><td>&lt;null&gt;</td><td>ExternalOrderType.DEFAULT</td></tr>
+ *    <tr><td>OrderType.STANDARD</td><td>&lt;null&gt;</td></tr>
+ *    <tr><td>&lt;all other&gt;</td><td>ExternalOrderType.DEFAULT</td></tr>
+ * </tbody>
+ * </table>
  * <p>
- * {@codesnippet SpecialOrderMapperImpl}
- * <p>
+ * <H3>Completing mappings based on name, then applying default</H3>
  * When MapStruct needs to complete mappings based on names and then map the remainder to a default, use the option
  * {@code ValueMappingType.DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS}
  * <p>
- * <em>Mapper Definition:</em>
+ * <H4>Mapper Definition:</H4>
  * {@codesnippet DefaultOrderMapper}
  * <p>
- * <em>Generated Implementation:</em>
+ * <H4>Results in:</H4>
  * <p>
- * {@codesnippet DefaultOrderMapperImpl}
+ * <table border="1" cellpadding="5">
+ * <thead>
+ *   <tr><th>Source</th><th>Target</th></tr>
+ * </thead>
+ * <tbody>
+ *    <tr><td>&lt;null&gt;</td><td>&lt;null&gt;</td></tr>
+ *    <tr><td>OrderType.RETAIL</td><td>ExternalOrderType.RETAIL</td></tr>
+ *    <tr><td>OrderType.B2B</td><td>ExternalOrderType.B2B</td></tr>
+ *    <tr><td>&lt;all other&gt;</td><td>ExternalOrderType.DEFAULT</td></tr>
+ * </tbody>
+ * </table>
  *
+ * <H3>Reverting</H3>
  * MapStruct can also revert all mappings. Use the {@link InheritInverseConfiguration} to do so.
  *
  * @author Sjaak Derksen

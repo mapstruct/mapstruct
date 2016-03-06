@@ -33,7 +33,8 @@ public interface DefaultOrderMapper {
 
     OrderDto orderEntityToDto(OrderEntity order);
 
-
+// BEGIN: DefaultOrderMapper
     @ValueMapping( valueMappingType = ValueMappingType.DEFAULT_AFTER_APPLYING_NAME_BASED_MAPPINGS, target = "DEFAULT" )
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
+// FINISH: DefaultOrderMapper
 }

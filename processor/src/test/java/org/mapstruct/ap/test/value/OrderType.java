@@ -22,7 +22,9 @@ package org.mapstruct.ap.test.value;
 /**
  * @author Gunnar Morling
  */
+// BEGIN: OrderType
 public enum OrderType {
 
     RETAIL, B2B, EXTRA, STANDARD, NORMAL
 }
+// FINISH: OrderType

@@ -167,7 +167,7 @@
                         <artifactId>codesnippet-doclet</artifactId>
                         <version>${org.apidesign.javadoc.codesnippit.version}</version>
                     </docletArtifact>
-                    <additionalparam>-snippetpath "${basedir}/src/test/java" -maxLineLength 120</additionalparam>
+                    <additionalparam>-snippetpath "${basedir}/../processor/src/test/java" -maxLineLength 120</additionalparam>
                 </configuration>
             </plugin>
         </plugins>
