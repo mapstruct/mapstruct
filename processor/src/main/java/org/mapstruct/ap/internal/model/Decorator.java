@@ -171,7 +171,7 @@ public class Decorator extends GeneratedType {
     @Override
     public SortedSet<Type> getImportTypes() {
         SortedSet<Type> importTypes = super.getImportTypes();
-        addWithDependents( importTypes, decoratorType );
+        addIfImportRequired( importTypes, decoratorType );
         return importTypes;
     }
 

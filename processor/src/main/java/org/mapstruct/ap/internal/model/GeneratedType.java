@@ -25,6 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.annotation.Generated;
+import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ModelElement;
@@ -159,24 +160,24 @@ public abstract class GeneratedType extends ModelElement {
 
         for ( MappingMethod mappingMethod : methods ) {
             for ( Type type : mappingMethod.getImportTypes() ) {
-                addWithDependents( importedTypes, type );
+                addIfImportRequired( importedTypes, type );
             }
         }
 
         for ( Field field : fields ) {
             if ( field.isTypeRequiresImport() ) {
                 for ( Type type : field.getImportTypes() ) {
-                    addWithDependents( importedTypes, type );
+                    addIfImportRequired( importedTypes, type );
                 }
             }
         }
 
         for ( Annotation annotation : annotations ) {
-            addWithDependents( importedTypes, annotation.getType() );
+            addIfImportRequired( importedTypes, annotation.getType() );
         }
 
         for ( Type extraImport : extraImportedTypes ) {
-            addWithDependents( importedTypes, extraImport );
+            addIfImportRequired( importedTypes, extraImport );
         }
 
         return importedTypes;
@@ -190,22 +191,13 @@ public abstract class GeneratedType extends ModelElement {
         constructor = null;
     }
 
-    protected void addWithDependents(Collection<Type> collection, Type typeToAdd) {
+    protected void addIfImportRequired(Collection<Type> collection, Type typeToAdd) {
         if ( typeToAdd == null ) {
             return;
         }
 
         if ( needsImportDeclaration( typeToAdd ) ) {
-            if ( typeToAdd.isArrayType() ) {
-                collection.add( typeToAdd.getComponentType() );
-            }
-            else {
-                collection.add( typeToAdd );
-            }
-        }
-
-        for ( Type type : typeToAdd.getTypeParameters() ) {
-            addWithDependents( collection, type );
+            collection.add( typeToAdd );
         }
     }
 
@@ -214,17 +206,19 @@ public abstract class GeneratedType extends ModelElement {
             return false;
         }
 
-        if ( typeToAdd.getPackageName() == null ) {
+        if ( typeToAdd.getTypeMirror().getKind() != TypeKind.DECLARED ) {
             return false;
         }
 
-        if ( typeToAdd.getPackageName().startsWith( JAVA_LANG_PACKAGE ) ) {
-            return false;
-        }
-
-        if ( typeToAdd.getPackageName().equals( packageName ) ) {
-            if ( !typeToAdd.getTypeElement().getNestingKind().isNested() ) {
+        if ( typeToAdd.getPackageName() != null ) {
+            if ( typeToAdd.getPackageName().startsWith( JAVA_LANG_PACKAGE ) ) {
                 return false;
+            }
+
+            if ( typeToAdd.getPackageName().equals( packageName ) ) {
+                if ( !typeToAdd.getTypeElement().getNestingKind().isNested() ) {
+                    return false;
+                }
             }
         }
 
