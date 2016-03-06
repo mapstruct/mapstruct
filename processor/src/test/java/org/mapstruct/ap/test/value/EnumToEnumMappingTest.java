@@ -255,7 +255,7 @@ public class EnumToEnumMappingTest {
             @Diagnostic(type = ErroneousOrderMapperNameBasedSourceUnequalToTarget1.class,
                 kind = Kind.ERROR,
                 line = 39,
-                messageRegExp = "Source == \"\\?\" can only be used in combination with target == \"\\?\"\\.")
+                messageRegExp = "Source == \"\\$\" can only be used in combination with target == \"\\$\"\\.")
         }
     )
     public void shouldRaiseErrorIfTargetDoesNotEqualSourceWhenUsingNameBasedContinuation1() {
@@ -269,7 +269,7 @@ public class EnumToEnumMappingTest {
             @Diagnostic(type = ErroneousOrderMapperNameBasedSourceUnequalToTarget2.class,
                 kind = Kind.ERROR,
                 line = 39,
-                messageRegExp = "Source == \"\\?\" can only be used in combination with target == \"\\?\"\\.")
+                messageRegExp = "Source == \"\\$\" can only be used in combination with target == \"\\$\"\\.")
         }
     )
     public void shouldRaiseErrorIfTargetDoesNotEqualSourceWhenUsingNameBasedContinuation2() {
