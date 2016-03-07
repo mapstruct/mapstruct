@@ -465,6 +465,11 @@ private CarMapper mapper;
 
 A mapper which uses other mapper classes (see <<invoking-other-mappers>>) will obtain these mappers using the configured component model. So if `CarMapper` from the previous example was using another mapper, this other mapper would have to be an injectable CDI bean as well.
 
+[TIP]
+====
+The used mapper can be made accessible (e.g. for initialization), by simply adding a getter to the mapper that returns the used mapper.
+====
+
 [[datatype-conversions]]
 == Data type conversions
 

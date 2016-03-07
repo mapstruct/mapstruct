@@ -47,6 +47,7 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
+import org.mapstruct.ap.internal.model.ReferenceAccessor;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
@@ -144,6 +145,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         List<MappingMethod> mappingMethods = getMappingMethods( mapperConfig, methods );
         mappingMethods.addAll( mappingContext.getUsedVirtualMappings() );
         mappingMethods.addAll( mappingContext.getMappingsToGenerate() );
+        mappingMethods.addAll( getMapperReferenceAccessors( mapperReferences, methods ) );
 
         Mapper mapper = new Mapper.Builder()
             .element( element )
@@ -258,6 +260,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 continue;
             }
 
+            if ( method.getSourceParameters().isEmpty() ) {
+                continue;
+            }
+
             mergeInheritedOptions( method, mapperConfig, methods, new ArrayList<SourceMethod>() );
 
             MappingOptions mappingOptions = method.getMappingOptions();
@@ -363,6 +369,35 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
         return mappingMethods;
+    }
+
+    private List<ReferenceAccessor> getMapperReferenceAccessors(List<MapperReference> mapperReferences,
+        List<SourceMethod> sourceMethods ) {
+
+
+        List<ReferenceAccessor> mapperReferenceAccessor = new ArrayList<ReferenceAccessor>();
+        for ( SourceMethod sourceMethod : sourceMethods ) {
+
+            if ( !sourceMethod.overridesMethod() ) {
+                continue;
+            }
+
+            if ( !sourceMethod.getParameters().isEmpty() ) {
+                continue;
+            }
+
+            for ( MapperReference mapperReference : mapperReferences ) {
+                if ( sourceMethod.getReturnType().equals( mapperReference.getType() ) ) {
+                    if ( !mapperReference.isUsed() ) {
+                        messager.printMessage(
+                            sourceMethod.getExecutable(),
+                            Message.GENERATING_NON_USED_GETTER );
+                    }
+                    mapperReferenceAccessor.add( new ReferenceAccessor( sourceMethod, mapperReference ) );
+                }
+            }
+        }
+        return mapperReferenceAccessor;
     }
 
     private void mergeInheritedOptions(SourceMethod method, MapperConfiguration mapperConfig,

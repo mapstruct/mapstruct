@@ -216,6 +216,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         Type resultType = selectResultType( returnType, targetParameter );
 
         boolean isValid = checkParameterAndReturnType(
+            mapperConfig,
             method,
             sourceParameters,
             targetParameter,
@@ -352,10 +353,21 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
     }
 
-    private boolean checkParameterAndReturnType(ExecutableElement method, List<Parameter> sourceParameters,
-                                                Parameter targetParameter, Type resultType, Type returnType,
-                                                boolean containsTargetTypeParameter) {
-        if ( sourceParameters.isEmpty() ) {
+    private boolean checkParameterAndReturnType(MapperConfiguration config, ExecutableElement method,
+                                                List<Parameter> sourceParameters, Parameter targetParameter,
+                                                Type resultType, Type returnType, boolean containsTargetTypeParameter) {
+
+        // we allow the user to declare a getter for obtaining access to used mappers. Note: we are a bit more
+        // lenient: modifier does not have to be public. Since the fact that the method requires implementation means
+        // that its somehow accessible. Also, there's no nead to apply the accessor naming strategy here.
+        boolean isUsedMapperAccessor = false;
+        if ( method.getParameters().isEmpty()
+            && method.getSimpleName().toString().startsWith( "get" )
+            && returnType.getTypeMirror() instanceof DeclaredType ) {
+            isUsedMapperAccessor = config.uses().contains( (DeclaredType) returnType.getTypeMirror() );
+        }
+
+        if ( sourceParameters.isEmpty() && !isUsedMapperAccessor ) {
             messager.printMessage( method, Message.RETRIEVAL_NO_INPUT_ARGS );
             return false;
         }
@@ -376,7 +388,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-      for ( Parameter sourceParameter : sourceParameters ) {
+        for ( Parameter sourceParameter : sourceParameters ) {
             if ( sourceParameter.getType().isTypeVar() ) {
                 messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
                 return false;
@@ -388,15 +400,36 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 return false;
         }
 
+        if ( containsTargetTypeParameter ) {
+            messager.printMessage( method, Message.RETRIEVAL_MAPPING_HAS_TARGET_TYPE_PARAMETER );
+            return false;
+        }
+
+        if ( resultType.isPrimitive() ) {
+            messager.printMessage( method, Message.RETRIEVAL_PRIMITIVE_RETURN );
+            return false;
+        }
+
+        for ( Type typeParameter : resultType.getTypeParameters() ) {
+            if ( typeParameter.isTypeVar() ) {
+                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
+                return false;
+            }
+            if ( typeParameter.isWildCardExtendsBound() ) {
+                messager.printMessage( method, Message.RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT );
+                return false;
+            }
+        }
+
+        // parameter checks, only when there is a parameter
+        if ( sourceParameters.isEmpty() ) {
+            return true;
+        }
+
         Type parameterType = sourceParameters.get( 0 ).getType();
 
         if ( parameterType.isIterableType() && !resultType.isIterableType() ) {
             messager.printMessage( method, Message.RETRIEVAL_ITERABLE_TO_NON_ITERABLE );
-            return false;
-        }
-
-        if ( containsTargetTypeParameter ) {
-            messager.printMessage( method, Message.RETRIEVAL_MAPPING_HAS_TARGET_TYPE_PARAMETER );
             return false;
         }
 
@@ -410,11 +443,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( resultType.isPrimitive() ) {
-            messager.printMessage( method, Message.RETRIEVAL_PRIMITIVE_RETURN );
-            return false;
-        }
-
         if ( parameterType.isEnumType() && !resultType.isEnumType() ) {
             messager.printMessage( method, Message.RETRIEVAL_ENUM_TO_NON_ENUM );
             return false;
@@ -423,17 +451,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         if ( !parameterType.isEnumType() && resultType.isEnumType() ) {
             messager.printMessage( method, Message.RETRIEVAL_NON_ENUM_TO_ENUM );
             return false;
-        }
-
-        for ( Type typeParameter : resultType.getTypeParameters() ) {
-            if ( typeParameter.isTypeVar() ) {
-                messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_RESULT );
-                return false;
-            }
-            if ( typeParameter.isWildCardExtendsBound() ) {
-                messager.printMessage( method, Message.RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT );
-                return false;
-            }
         }
 
         for ( Type typeParameter : parameterType.getTypeParameters() ) {
