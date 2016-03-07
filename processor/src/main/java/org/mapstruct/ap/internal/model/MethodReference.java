@@ -76,10 +76,16 @@ public class MethodReference extends MappingMethod implements Assignment {
         super( method );
         this.declaringMapper = declaringMapper;
         this.contextParam = null;
-        Set<Type> imported = new HashSet<Type>( method.getThrownTypes() );
-        if ( targetType != null ) {
-            imported.add( targetType );
+        Set<Type> imported = new HashSet<Type>();
+
+        for ( Type type : method.getThrownTypes() ) {
+            imported.addAll( type.getImportTypes() );
         }
+
+        if ( targetType != null ) {
+            imported.addAll( targetType.getImportTypes() );
+        }
+
         this.importTypes = Collections.<Type>unmodifiableSet( imported );
         this.thrownTypes = method.getThrownTypes();
         this.isUpdateMethod = method.getMappingTargetParameter() != null;

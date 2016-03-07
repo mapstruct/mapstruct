@@ -151,11 +151,15 @@ public abstract class MappingMethod extends ModelElement {
         Set<Type> types = new HashSet<Type>();
 
         for ( Parameter param : parameters ) {
-            types.add( param.getType() );
+            types.addAll( param.getType().getImportTypes() );
         }
 
-        types.add( getReturnType() );
-        types.addAll( thrownTypes );
+        types.addAll( getReturnType().getImportTypes() );
+
+        for ( Type type : thrownTypes ) {
+            types.addAll( type.getImportTypes() );
+        }
+
         return types;
     }
 
