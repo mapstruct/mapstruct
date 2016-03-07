@@ -68,15 +68,13 @@ public class ValueMappingMethod extends MappingMethod {
         }
 
         public Builder valueMappings(List<ValueMapping> valueMappings) {
-            boolean valueToValueFound = false;
             for ( ValueMapping valueMapping : valueMappings ) {
                 if ( ValueMapping.ANY.equals( valueMapping.getSource() ) ) {
                     defaultTargetValue = valueMapping;
-                    applyNamebasedMappings = false;
                 }
-                else if ( ValueMapping.VALUE.equals( valueMapping.getSource() )
-                    || ValueMapping.VALUE.equals( valueMapping.getTarget() ) ) {
-                    valueToValueFound = true;
+                else if ( ValueMapping.ANY_UNMAPPED.equals( valueMapping.getSource() ) ) {
+                    defaultTargetValue = valueMapping;
+                    applyNamebasedMappings = false;
                 }
                 else if ( ValueMapping.NULL.equals( valueMapping.getSource() ) ) {
                     nullTargetValue = valueMapping;
@@ -85,7 +83,6 @@ public class ValueMappingMethod extends MappingMethod {
                     trueValueMappings.add( valueMapping );
                 }
             }
-            applyNamebasedMappings = applyNamebasedMappings || valueToValueFound;
             return this;
         }
 

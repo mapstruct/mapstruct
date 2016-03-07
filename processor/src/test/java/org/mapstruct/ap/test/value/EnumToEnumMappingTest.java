@@ -125,7 +125,7 @@ public class EnumToEnumMappingTest {
 
         OrderDto orderDto = SpecialOrderMapper.INSTANCE.orderEntityToDto( order );
         assertThat( orderDto ).isNotNull();
-        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.SPECIAL );
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.B2B );
 
         order.setOrderType( OrderType.EXTRA );
 
@@ -143,7 +143,7 @@ public class EnumToEnumMappingTest {
 
         orderDto = SpecialOrderMapper.INSTANCE.orderEntityToDto( order );
         assertThat( orderDto ).isNotNull();
-        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.SPECIAL );
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.RETAIL );
     }
 
     @Test
@@ -166,21 +166,19 @@ public class EnumToEnumMappingTest {
 
     @Test
     @WithClasses( DefaultOrderMapper.class )
-    public void shouldGenerateNamebasedMappingsAndThenApplyDefault() {
+    public void shouldMappAllUnmappedToDefault() {
 
-        // Try all name based mappings
         OrderEntity order = new OrderEntity();
         order.setOrderType( OrderType.RETAIL );
         OrderDto orderDto = DefaultOrderMapper.INSTANCE.orderEntityToDto( order );
         assertThat( orderDto ).isNotNull();
-        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.RETAIL );
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.DEFAULT );
 
         order.setOrderType( OrderType.B2B );
         orderDto = DefaultOrderMapper.INSTANCE.orderEntityToDto( order );
         assertThat( orderDto ).isNotNull();
-        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.B2B );
+        assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.DEFAULT );
 
-        // Try the others
         order.setOrderType( OrderType.EXTRA );
         orderDto = DefaultOrderMapper.INSTANCE.orderEntityToDto( order );
         assertThat( orderDto ).isNotNull();
@@ -248,32 +246,19 @@ public class EnumToEnumMappingTest {
     }
 
     @Test
-    @WithClasses(ErroneousOrderMapperNameBasedSourceUnequalToTarget1.class)
+    @WithClasses(ErroneousOrderMapperDuplicateANY.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousOrderMapperNameBasedSourceUnequalToTarget1.class,
+            @Diagnostic(type = ErroneousOrderMapperDuplicateANY.class,
                 kind = Kind.ERROR,
                 line = 39,
-                messageRegExp = "Source = \"\\$\" can only be used in combination with target = \"\\$\"\\.")
+                messageRegExp = "Source = \"<ANY>\" or \"<ANY_UNMAPPED>\" can only be used once\\." )
         }
     )
-    public void shouldRaiseErrorIfTargetDoesNotEqualSourceWhenUsingNameBasedContinuation1() {
+    public void shouldRaiseErrorIfMappingsContainDuplicateANY() {
     }
 
-    @Test
-    @WithClasses(ErroneousOrderMapperNameBasedSourceUnequalToTarget2.class)
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousOrderMapperNameBasedSourceUnequalToTarget2.class,
-                kind = Kind.ERROR,
-                line = 39,
-                messageRegExp = "Source = \"\\$\" can only be used in combination with target = \"\\$\"\\.")
-        }
-    )
-    public void shouldRaiseErrorIfTargetDoesNotEqualSourceWhenUsingNameBasedContinuation2() {
-    }
 
 
 }

@@ -24,85 +24,63 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Configures the mapping of source constant value to target constant value. Supported mappings are
+ * Configures the mapping of source constant value to target constant value.
  * <p>
+ * Supported mappings are
  * <ol>
  * <li>Enumeration to Enumeration</li>
  * </ol>
  * <p>
- * <H2>Enumeration to Enumeration</H2>
- * <p>
- * {@codesnippet OrderType}
- * {@codesnippet ExternalOrderType}
- * <p>
- * <H3>Completing mappings based on name</H3>
- * MapStruct can complete mappings based on names. Just handle the non matching names and let MapStruct do the
- * remainder.
- * <p>
- * <H4>Mapper Definition:</H4>
- * {@codesnippet OrderMapper}
- * <p>
- * <H4>Results in:</H4>
- * <table border="1" cellpadding="5">
- * <thead>
- *   <tr><th>Source</th><th>Target</th></tr>
- * </thead>
- * <tbody>
- *    <tr><td>&lt;null&gt;</td><td>&lt;null&gt;</td></tr>
- *    <tr><td>OrderType.EXTRA</td><td>ExternalOrderType.SPECIAL</td></tr>
- *    <tr><td>OrderType.STANDARD</td><td>ExternalOrderType.DEFAULT</td></tr>
- *    <tr><td>OrderType.NORMAL</td><td>ExternalOrderType.DEFAULT</td></tr>
- *    <tr><td>OrderType.RETAIL</td><td>ExternalOrderType.RETAIL</td></tr>
- *    <tr><td>OrderType.B2B</td><td>ExternalOrderType.B2B</td></tr>
- * </tbody>
- * </table>
- * <p>
- * Note how MapStruct completed the last two mappings based on a name match. If for some reason no match is found, for
- * instance because the source enumeration has been extended without compilation, an
- * {@link java.lang.IllegalStateException} will be thrown.
- * <H3>Mapping null sources and null targets</H3>
- * <p>
- * When desired, handling null sources can be handled by specifying a mapping. And, just like a case statement, also
- * the default can be specified.
- * <p>
- * <H4>Mapper Definition:</H4>
- * {@codesnippet SpecialOrderMapper}
- * <p>
- * <H4>Results in:</H4>
- * <table border="1" cellpadding="5">
- * <thead>
- *   <tr><th>Source</th><th>Target</th></tr>
- * </thead>
- * <tbody>
- *    <tr><td>&lt;null&gt;</td><td>ExternalOrderType.DEFAULT</td></tr>
- *    <tr><td>OrderType.STANDARD</td><td>&lt;null&gt;</td></tr>
- *    <tr><td>&lt;all other&gt;</td><td>ExternalOrderType.SPECIAL</td></tr>
- * </tbody>
- * </table>
- * <p>
- * <H3>Completing mappings based on name, then applying default</H3>
- * When MapStruct needs to complete mappings based on names and then map the remainder to a default, use the option
- * <code>@ValueMapping( source = "$", target = "$" )</code>
- * <p>
- * <H4>Mapper Definition:</H4>
- * {@codesnippet DefaultOrderMapper}
- * <p>
- * <H4>Results in:</H4>
- * <p>
- * <table border="1" cellpadding="5">
- * <thead>
- *   <tr><th>Source</th><th>Target</th></tr>
- * </thead>
- * <tbody>
- *    <tr><td>&lt;null&gt;</td><td>&lt;null&gt;</td></tr>
- *    <tr><td>OrderType.RETAIL</td><td>ExternalOrderType.RETAIL</td></tr>
- *    <tr><td>OrderType.B2B</td><td>ExternalOrderType.B2B</td></tr>
- *    <tr><td>&lt;all other&gt;</td><td>ExternalOrderType.DEFAULT</td></tr>
- * </tbody>
- * </table>
+ * <B>Example 1:</B>
+ * <pre>
+ * <code>
+ * public enum OrderType { RETAIL, B2B, EXTRA, STANDARD, NORMAL }
  *
- * <H3>Reverting</H3>
- * MapStruct can also revert all mappings. Use the {@link InheritInverseConfiguration} to do so.
+ * public enum ExternalOrderType { RETAIL, B2B, SPECIAL, DEFAULT }
+ *
+ * &#64;ValueMappings({
+ *    &#64;ValueMapping(source = "EXTRA", target = "SPECIAL"),
+ *    &#64;ValueMapping(source = "STANDARD", target = "DEFAULT"),
+ *    &#64;ValueMapping(source = "NORMAL", target = "DEFAULT")
+ * })
+ * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
+ * </code>
+ * Mapping result:
+ * ╔═════════════════════╦════════════════════════════╗
+ * ║ OrderType           ║ ExternalOrderType          ║
+ * ╠═════════════════════╬════════════════════════════╣
+ * ║ &lt;NULL&gt;              ║ &lt;NULL&gt;                     ║
+ * ║ OrderType.EXTRA     ║ ExternalOrderType.SPECIAL  ║
+ * ║ OrderType.STANDARD  ║ ExternalOrderType.DEFAULT  ║
+ * ║ OrderType.NORMAL    ║ ExternalOrderType.DEFAULT  ║
+ * ║ OrderType.RETAIL    ║ ExternalOrderType.RETAIL   ║
+ * ║ OrderType.B2B       ║ ExternalOrderType.B2B      ║
+ * ╚═════════════════════╩════════════════════════════╝
+ * </pre>
+ * MapStruct will <B>WARN</B> on incomplete mappings. However, if for some reason no match is found an
+ * {@link java.lang.IllegalStateException} will be thrown.
+ * <p>
+ * <B>Example 2:</B>
+ * <pre>
+ * <code>
+ * &#64;ValueMappings({
+ *    &#64;ValueMapping( source = "&lt;NULL&gt;", target = "DEFAULT" ),
+ *    &#64;ValueMapping( source = "STANDARD", target = "&lt;NULL&gt;" ),
+ *    &#64;ValueMapping( source = "&lt;ANY&gt;", target = "SPECIAL" )
+ * })
+ * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
+ * </code>
+ * Mapping result:
+ * ╔═════════════════════╦════════════════════════════╗
+ * ║ OrderType           ║ ExternalOrderType          ║
+ * ╠═════════════════════╬════════════════════════════╣
+ * ║ &lt;NULL&gt;              ║ ExternalOrderType.DEFAULT  ║
+ * ║ OrderType.STANDARD  ║ &lt;NULL&gt;                     ║
+ * ║ OrderType.RETAIL    ║ ExternalOrderType.RETAIL   ║
+ * ║ OrderType.B2B       ║ ExternalOrderType.B2B      ║
+ * ║ &lt;ANY&gt;               ║ ExternalOrderType.SPECIAL  ║
+ * ╚═════════════════════╩════════════════════════════╝
+ * </pre>
  *
  * @author Sjaak Derksen
  */
@@ -116,13 +94,14 @@ public @interface ValueMapping {
      * <p>
      * <b>Valid values:</b>
      * <ol>
-     * <li>Enumeration Identifier</li>
-     * <li>null</li>
-     * <li>$</li>
-     * <li>*</li>
+     * <li>ENUM IDENTIFIER</li>
+     * <li>&lt;NULL&gt;</li>
+     * <li>&lt;ANY&gt;</li>
+     * <li>&lt;ANY_UNMAPPED&gt;</li>
      * </ol>
-     * <B>NOTE:</B> '$' can only be used in when {@link #target() } = '$'. Its meant to signify automated mapping
-     * source to target based on identical names <B>before</B> applying a default ('*') mapping.
+     * <p>
+     * <b>NOTE:</b>When using &lt;ANY&gt;, MapStruct will perform the normal name based mapping, in which source is
+     * mapped to target based on enum identifier equality. Using &lt;ANY_UNMAPPED&gt; will not apply name based mapping.
      *
      * @return The source value.
      */
@@ -134,13 +113,10 @@ public @interface ValueMapping {
      * <p>
      * <b>Valid values:</b>
      * <ol>
-     * <li>Enumeration Identifier</li>
-     * <li>null</li>
-     * <li>$</li>
+     * <li>ENUM IDENTIFIER</li>
+     * <li>&lt;NULL&gt;</li>
      * </ol>
      *
-     * <B>NOTE:</B> '$' can only be used in when {@link #source() } = '$'. Its meant to signify automated mapping
-     * source to target based on identical names <B>before</B> applying a default ('*') mapping.
      * @return The target value.
      */
     String target();

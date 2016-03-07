@@ -34,9 +34,9 @@ import org.mapstruct.ap.internal.util.Message;
  */
 public class ValueMapping {
 
-    public static final String ANY = "*";
-    public static final String NULL = "null";
-    public static final String VALUE = "$";
+    public static final String ANY = "<ANY>";
+    public static final String NULL = "<NULL>";
+    public static final String ANY_UNMAPPED = "<ANY_UNMAPPED>";
 
     private final String source;
     private final String target;
@@ -47,6 +47,7 @@ public class ValueMapping {
     public static void fromMappingsPrism(ValueMappingsPrism mappingsAnnotation, ExecutableElement method,
         FormattingMessager messager, List<ValueMapping> mappings) {
 
+        boolean anyFound = false;
         for ( ValueMappingPrism mappingPrism : mappingsAnnotation.value() ) {
             ValueMapping mapping = fromMappingPrism( mappingPrism, method, messager );
             if ( mapping != null ) {
@@ -63,24 +64,24 @@ public class ValueMapping {
                         mappingPrism.source()
                     );
                 }
+                if ( ANY.equals( mapping.source ) || ANY_UNMAPPED.equals( mapping.source ) ) {
+                    if ( anyFound ) {
+                        messager.printMessage(
+                            method,
+                            mappingPrism.mirror,
+                            mappingPrism.values.target(),
+                            Message.VALUEMAPPING_ANY_AREADY_DEFINED,
+                            mappingPrism.source()
+                        );
+                    }
+                    anyFound = true;
+                }
             }
         }
     }
 
     public static ValueMapping fromMappingPrism(ValueMappingPrism mappingPrism, ExecutableElement element,
                                            FormattingMessager messager) {
-
-        if ( ( VALUE.equals( mappingPrism.source() ) || VALUE.equals( mappingPrism.target() ) ) ) {
-            if ( !mappingPrism.source().equals( mappingPrism.target() ) ) {
-                    messager.printMessage(
-                        element,
-                        mappingPrism.mirror,
-                        mappingPrism.values.target(),
-                        Message.VALUEMAPPING_INCORRECT_NAME_BASE_CONTINUEATION,
-                        mappingPrism.source()
-                    );
-            }
-        }
 
         return new ValueMapping( mappingPrism.source(), mappingPrism.target(), mappingPrism.mirror,
             mappingPrism.values.source(), mappingPrism.values.target() );
@@ -159,5 +160,6 @@ public class ValueMapping {
         }
         return true;
     }
+
 
 }

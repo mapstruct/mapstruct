@@ -34,14 +34,12 @@ public interface SpecialOrderMapper {
 
     OrderDto orderEntityToDto(OrderEntity order);
 
-    // BEGIN: SpecialOrderMapper
     @ValueMappings({
-        @ValueMapping( source = "null", target = "DEFAULT" ),
-        @ValueMapping( source = "STANDARD", target = "null" ),
-        @ValueMapping( source = "*", target = "SPECIAL" )
+        @ValueMapping( source = "<NULL>", target = "DEFAULT" ),
+        @ValueMapping( source = "STANDARD", target = "<NULL>" ),
+        @ValueMapping( source = "<ANY>", target = "SPECIAL" )
     })
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
-    // FINISH: SpecialOrderMapper
 
     @InheritInverseConfiguration
     @ValueMapping( target = "EXTRA", source = "SPECIAL" )

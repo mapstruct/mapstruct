@@ -149,28 +149,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>include-snippets</id>
-                        <phase>generate-test-resources</phase>
-                        <goals>
-                            <goal>javadoc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <doclet>org.apidesign.javadoc.codesnippet.Doclet</doclet>
-                    <docletArtifact>
-                        <groupId>org.apidesign.javadoc</groupId>
-                        <artifactId>codesnippet-doclet</artifactId>
-                        <version>${org.apidesign.javadoc.codesnippit.version}</version>
-                    </docletArtifact>
-                    <additionalparam>-snippetpath "${basedir}/../processor/src/test/java" -maxLineLength 120</additionalparam>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>

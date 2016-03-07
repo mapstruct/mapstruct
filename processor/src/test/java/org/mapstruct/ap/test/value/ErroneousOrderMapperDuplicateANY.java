@@ -27,16 +27,16 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper
-public interface ErroneousOrderMapperNameBasedSourceUnequalToTarget2 {
+public interface ErroneousOrderMapperDuplicateANY {
 
-    ErroneousOrderMapperNameBasedSourceUnequalToTarget2 INSTANCE =
-        Mappers.getMapper( ErroneousOrderMapperNameBasedSourceUnequalToTarget2.class );
+    ErroneousOrderMapperDuplicateANY INSTANCE = Mappers.getMapper( ErroneousOrderMapperDuplicateANY.class );
 
     @ValueMappings( {
         @ValueMapping(source = "EXTRA", target = "SPECIAL"),
         @ValueMapping(source = "STANDARD", target = "DEFAULT"),
         @ValueMapping(source = "NORMAL", target = "DEFAULT"),
-        @ValueMapping( source = "$", target = "blah" )
+        @ValueMapping( source = "<ANY>", target = "DEFAULT" ),
+        @ValueMapping( source = "<ANY_UNMAPPED>", target = "DEFAULT" )
     } )
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 }
