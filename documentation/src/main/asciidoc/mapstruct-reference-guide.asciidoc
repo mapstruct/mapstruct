@@ -749,7 +749,7 @@ Enter the qualifier approach:
 ----
 @Qualifier
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface TitleTranslator {
 }
 ----
@@ -764,7 +764,7 @@ And, some qualifiers to indicate which translator to use to map from source lang
 ----
 @Qualifier
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface EnglishToGerman {
 }
 ----
@@ -773,7 +773,7 @@ public @interface EnglishToGerman {
 ----
 @Qualifier
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface GermanToEnglish {
 }
 ----
@@ -796,7 +796,7 @@ public interface MovieMapper {
 
 }
 ----
-====  
+====
 
 .Custom mapper qualifying the methods it provides
 ====
@@ -865,7 +865,7 @@ public interface MovieMapper {
 
 }
 ----
-====  
+====
 
 [WARNING]
 ====

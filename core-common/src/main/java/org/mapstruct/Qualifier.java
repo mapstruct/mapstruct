@@ -35,11 +35,13 @@ import java.lang.annotation.Target;
  * <li>{@link MapMapping#valueQualifiedBy() }</li>
  * </ul>
  * Example:
+ *
  * <pre>
  * &#64;Qualifier
  * &#64;Target(ElementType.METHOD)
- * &#64;Retention(RetentionPolicy.SOURCE)
- * public &#64;interface EnglishToGerman {}
+ * &#64;Retention(RetentionPolicy.CLASS)
+ * public &#64;interface EnglishToGerman {
+ * }
  * </pre>
  *
  * @author Sjaak Derksen
