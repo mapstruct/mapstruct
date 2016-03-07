@@ -69,9 +69,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <excludes>**/test/**/*.java</excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -154,10 +151,6 @@
                         <goals>
                             <goal>javadoc</goal>
                         </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/test-classes/</outputDirectory>
-                            <reportOutputDirectory>${project.build.directory}/test-classes/</reportOutputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
                 <configuration>

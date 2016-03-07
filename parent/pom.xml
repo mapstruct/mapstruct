@@ -212,13 +212,6 @@
                 <version>3.0.20</version>
             </dependency>
 
-            <!-- Doclet for inclusion of code snippets -->
-            <dependency>
-                <groupId>org.apidesign.javadoc</groupId>
-                <artifactId>codesnippet-doclet</artifactId>
-                <version>${org.apidesign.javadoc.codesnippit.version}</version>
-            </dependency>
-
             <!-- Project modules -->
             <dependency>
                 <groupId>${project.groupId}</groupId>

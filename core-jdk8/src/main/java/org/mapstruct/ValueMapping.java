@@ -123,7 +123,7 @@ public @interface ValueMapping {
      * <li>$</li>
      * <li>*</li>
      * </ol>
-     * <B>NOTE:</B> '$' can only be used in when {@link #target() } == '$'. Its meant to signify automated mapping
+     * <B>NOTE:</B> '$' can only be used in when {@link #target() } = '$'. Its meant to signify automated mapping
      * source to target based on identical names <B>before</B> applying a default ('*') mapping.
      *
      * @return The source value.
@@ -141,7 +141,7 @@ public @interface ValueMapping {
      * <li>$</li>
      * </ol>
      *
-     * <B>NOTE:</B> '$' can only be used in when {@link #source() } == '$'. Its meant to signify automated mapping
+     * <B>NOTE:</B> '$' can only be used in when {@link #source() } = '$'. Its meant to signify automated mapping
      * source to target based on identical names <B>before</B> applying a default ('*') mapping.
      * @return The target value.
      */

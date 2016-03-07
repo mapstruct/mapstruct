@@ -108,7 +108,7 @@ public enum Message {
     INHERITCONFIGURATION_CYCLE( "Cycle detected while evaluating inherited configurations. Inheritance path: %s" ),
 
     VALUEMAPPING_DUPLICATE_SOURCE( "Source value mapping: \"%s\" cannot be mapped more than once." ),
-    VALUEMAPPING_INCORRECT_NAME_BASE_CONTINUEATION( "Source == \"$\" can only be used in combination with target == \"$\"." ),
+    VALUEMAPPING_INCORRECT_NAME_BASE_CONTINUEATION( "Source = \"$\" can only be used in combination with target = \"$\"." ),
     VALUE_MAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
     VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." );
 
