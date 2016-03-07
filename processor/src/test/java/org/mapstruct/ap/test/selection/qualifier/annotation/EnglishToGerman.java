@@ -31,6 +31,6 @@ import org.mapstruct.Qualifier;
  */
 @Qualifier
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface EnglishToGerman {
 }
