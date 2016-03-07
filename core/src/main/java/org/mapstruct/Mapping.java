@@ -36,6 +36,10 @@ import java.util.Date;
  * In addition, the attributes {@link #dateFormat()} and {@link #qualifiedBy()} may be used to further define the
  * mapping.
  *
+ * <p>
+ * <b>IMPORTANT NOTE:</b> the enum mapping capability is deprecated and replaced by {@link ValueMapping} it
+ * will be removed in subsequent versions.
+ *
  * @author Gunnar Morling
  */
 @Retention(RetentionPolicy.CLASS)

@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +37,16 @@ public class MappingOptions {
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
     private BeanMapping beanMapping;
+    private List<ValueMapping> valueMappings;
     private boolean fullyInitialized;
 
     public MappingOptions(Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
-        BeanMapping beanMapping) {
+        BeanMapping beanMapping, List<ValueMapping> valueMappings ) {
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
         this.beanMapping = beanMapping;
+        this.valueMappings = valueMappings;
     }
 
     /**
@@ -66,6 +69,10 @@ public class MappingOptions {
         return beanMapping;
     }
 
+    public List<ValueMapping> getValueMappings() {
+        return valueMappings;
+    }
+
     public void setMappings(Map<String, List<Mapping>> mappings) {
         this.mappings = mappings;
     }
@@ -80,6 +87,10 @@ public class MappingOptions {
 
     public void setBeanMapping(BeanMapping beanMapping) {
         this.beanMapping = beanMapping;
+    }
+
+    public void setValueMappings(List<ValueMapping> valueMappings) {
+        this.valueMappings = valueMappings;
     }
 
     /**
@@ -122,6 +133,29 @@ public class MappingOptions {
                 if ( inherited.getBeanMapping() != null ) {
                     setBeanMapping( inherited.getBeanMapping() );
                 }
+            }
+
+            if ( getValueMappings() == null ) {
+                if ( inherited.getValueMappings() != null ) {
+                    // there were no mappings, so the inherited mappings are the new ones
+                    setValueMappings( inherited.getValueMappings() );
+                }
+                else {
+                    setValueMappings( Collections.<ValueMapping>emptyList() );
+                }
+            }
+            else {
+                if ( inherited.getValueMappings() != null ) {
+                    // iff there are also inherited mappings, we reverse and add them.
+                    for ( ValueMapping inheritedValueMapping : inherited.getValueMappings() ) {
+                        ValueMapping valueMapping = isInverse ? inheritedValueMapping.reverse() : inheritedValueMapping;
+                        if ( valueMapping != null
+                            && !getValueMappings().contains(  valueMapping ) ) {
+                            getValueMappings().add( valueMapping );
+                        }
+                    }
+                }
+
             }
 
             Map<String, List<Mapping>> newMappings = new HashMap<String, List<Mapping>>();

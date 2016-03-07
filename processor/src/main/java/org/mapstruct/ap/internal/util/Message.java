@@ -63,11 +63,11 @@ public enum Message {
     ITERABLEMAPPING_MAPPING_NOT_FOUND( "No implementation can be generated for this method. Found no method nor implicit conversion for mapping source element type into target element type." ),
     ITERABLEMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are undefined in @IterableMapping, define at least one of them." ),
 
-    ENUMMAPPING_MULTIPLE_TARGETS( "One enum constant must not be mapped to more than one target constant, but constant %s is mapped to %s." ),
+    ENUMMAPPING_MULTIPLE_SOURCES( "One enum constant must not be mapped to more than one target constant, but constant %s is mapped to %s." ),
     ENUMMAPPING_UNDEFINED_SOURCE( "A source constant must be specified for mappings of an enum mapping method." ),
     ENUMMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." ),
     ENUMMAPPING_UNDEFINED_TARGET( "A target constant must be specified for mappings of an enum mapping method." ),
-    ENUMMAPPING_UNMAPPED_TARGETS( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via @Mapping: %s." ),
+    ENUMMAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
 
     DECORATOR_NO_SUBTYPE( "Specified decorator type is no subtype of the annotated mapper type." ),
     DECORATOR_CONSTRUCTOR( "Specified decorator type has no default constructor nor a constructor with a single parameter accepting the decorated mapper type." ),
@@ -95,8 +95,6 @@ public enum Message {
     RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE( "Can't generate mapping method for a wildcard super bound source." ),
     RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT( "Can't generate mapping method for a wildcard extends bound result." ),
 
-
-
     INHERITCONFIGURATION_BOTH( "Method cannot be annotated with both a @InheritConfiguration and @InheritInverseConfiguration." ),
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),
     INHERITINVERSECONFIGURATION_INVALID_NAME( "None of the candidates %s() matches given name: \"%s\"." ),
@@ -107,7 +105,13 @@ public enum Message {
     INHERITCONFIGURATION_DUPLICATE_MATCHES( "Given name \"%s\" matches several candidate methods: %s." ),
     INHERITCONFIGURATION_NO_NAME_MATCH( "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\"." ),
     INHERITCONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH( "More than one configuration prototype method is applicable. Use @InheritConfiguration to select one of them explicitly: %s." ),
-    INHERITCONFIGURATION_CYCLE( "Cycle detected while evaluating inherited configurations. Inheritance path: %s" );
+    INHERITCONFIGURATION_CYCLE( "Cycle detected while evaluating inherited configurations. Inheritance path: %s" ),
+
+    VALUEMAPPING_DUPLICATE_SOURCE( "Source value mapping: \"%s\" cannot be mapped more than once." ),
+    VALUEMAPPING_ANY_AREADY_DEFINED( "Source = \"<ANY>\" or \"<ANY_UNMAPPED>\" can only be used once." ),
+    VALUE_MAPPING_UNMAPPED_SOURCES( "The following constants from the source enum have no corresponding constant in the target enum and must be be mapped via adding additional mappings: %s." ),
+    VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." );
+
     // CHECKSTYLE:ON
 
     private final String description;
