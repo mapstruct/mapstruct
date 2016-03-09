@@ -179,16 +179,10 @@ public class SourceReference {
 
                 for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
                     if ( getter.getKey().equals( entryName ) ) {
-<<<<<<< HEAD
-                        newType = typeFactory.getReturnType( newType.getTypeElement(), getter.getValue() );
+                        newType = typeFactory.getReturnType( (DeclaredType) newType.getTypeMirror(),
+                              getter.getValue() );
                         sourceEntries.add( new PropertyEntry( entryName, getter.getValue(),
-                              sourcePresenceCheckers.get( entryName), newType ) );
-=======
-                        newType = typeFactory.getReturnType(
-                                (DeclaredType) newType.getTypeMirror(), getter.getValue()
-                        );
-                        sourceEntries.add( new PropertyEntry( entryName, getter.getValue(), newType ) );
->>>>>>> remotes/origin/master
+                              sourcePresenceCheckers.get( entryName ), newType ) );
                         matchFound = true;
                         break;
                     }

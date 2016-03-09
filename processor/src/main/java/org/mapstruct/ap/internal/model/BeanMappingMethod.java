@@ -385,10 +385,10 @@ public class BeanMappingMethod extends MappingMethod {
                         PropertyMapping newPropertyMapping = null;
 
                         ExecutableElement sourceReadAccessor = getCandidateAccessor(
-                            sourceParameter.getType().getPropertyReadAccessors().values(), targetProperty.getKey());
+                            sourceParameter.getType().getPropertyReadAccessors().values(), targetProperty.getKey() );
 
                         ExecutableElement sourcePresenceCheckers = getCandidateAccessor(
-                            sourceParameter.getType().getPropertyPresenceCheckers().values(), targetProperty.getKey());
+                            sourceParameter.getType().getPropertyPresenceCheckers().values(), targetProperty.getKey() );
 
                         if ( sourceReadAccessor != null ) {
                             Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
@@ -398,7 +398,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .sourceParameter( sourceParameter )
                                 .type( ctx.getTypeFactory().getReturnType( sourceType, sourceReadAccessor ) )
                                 .readAccessor( sourceReadAccessor )
-                                .presenceChecker( sourcePresenceCheckers)
+                                .presenceChecker( sourcePresenceCheckers )
                                 .name( targetProperty.getKey() )
                                 .build();
 
@@ -415,7 +415,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .existingVariableNames( existingVariableNames )
                                 .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
                                 .valueSetCheckStrategy(
-                                     valueSetCheckStrategy( method.getMapperConfiguration(), mapping ))
+                                     valueSetCheckStrategy( method.getMapperConfiguration(), mapping ) )
                                 .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
@@ -493,7 +493,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
-                            .valueSetCheckStrategy( valueSetCheckStrategy( method.getMapperConfiguration(), mapping ))
+                            .valueSetCheckStrategy( valueSetCheckStrategy( method.getMapperConfiguration(), mapping ) )
                             .build();
 
                         propertyMappings.add( propertyMapping );

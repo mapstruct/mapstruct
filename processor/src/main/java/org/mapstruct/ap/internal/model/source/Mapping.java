@@ -141,14 +141,12 @@ public class Mapping {
         List<String> dependsOn =
             mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
 
-<<<<<<< HEAD
         boolean isSetValuePresenceCheckStrategy = mappingPrism.values.sourceValuePresenceCheckStrategy() != null;
-=======
+
         SelectionParameters selectionParams = new SelectionParameters(
             mappingPrism.qualifiedBy(),
             mappingPrism.qualifiedByName(),
             resultTypeIsDefined ? mappingPrism.resultType() : null);
->>>>>>> remotes/origin/master
 
         return new Mapping(
             source,
@@ -163,14 +161,9 @@ public class Mapping {
             mappingPrism.values.target(),
             selectionParams,
             mappingPrism.values.dependsOn(),
-<<<<<<< HEAD
-            resultType,
             dependsOn,
             SourceValuePresenceCheckStrategy.valueOf( mappingPrism.sourceValuePresenceCheckStrategy() ),
             isSetValuePresenceCheckStrategy
-=======
-            dependsOn
->>>>>>> remotes/origin/master
         );
     }
 
@@ -178,15 +171,10 @@ public class Mapping {
     private Mapping(String sourceName, String constant, String javaExpression, String targetName,
                     String dateFormat, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
-<<<<<<< HEAD
-                    AnnotationValue dependsOnAnnotationValue,
-                    TypeMirror resultType, List<String> dependsOn,
+                    SelectionParameters selectionParameters, AnnotationValue dependsOnAnnotationValue,
+                    List<String> dependsOn,
                     SourceValuePresenceCheckStrategy valuePresenceCheckStrategy,
                     boolean isSetValuePresenceCheckStrategy) {
-=======
-                    SelectionParameters selectionParameters, AnnotationValue dependsOnAnnotationValue,
-                    List<String> dependsOn) {
->>>>>>> remotes/origin/master
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -358,14 +346,9 @@ public class Mapping {
             targetAnnotationValue,
             selectionParameters,
             dependsOnAnnotationValue,
-<<<<<<< HEAD
-            null,
             Collections.<String>emptyList(),
             valuePresenceCheckStrategy,
             isSetValuePresenceCheckStrategy
-=======
-            Collections.<String>emptyList()
->>>>>>> remotes/origin/master
         );
 
         reverse.init( method, messager, typeFactory );
@@ -392,14 +375,9 @@ public class Mapping {
             targetAnnotationValue,
             selectionParameters,
             dependsOnAnnotationValue,
-<<<<<<< HEAD
-            resultType,
             dependsOn,
             valuePresenceCheckStrategy,
             isSetValuePresenceCheckStrategy
-=======
-            dependsOn
->>>>>>> remotes/origin/master
         );
 
         if ( sourceReference != null ) {
