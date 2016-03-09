@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -19,18 +19,22 @@
 package org.mapstruct.ap.test.template;
 
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.template.erroneous.SourceTargetMapperAmbiguous1;
+import org.mapstruct.ap.test.template.erroneous.SourceTargetMapperAmbiguous2;
+import org.mapstruct.ap.test.template.erroneous.SourceTargetMapperAmbiguous3;
+import org.mapstruct.ap.test.template.erroneous.SourceTargetMapperNonMatchingName;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
@@ -130,12 +134,12 @@ public class InheritConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.ERROR,
-                line = 54,
+                line = 56,
                 messageRegExp = "Several matching methods exist: forwardCreate\\(\\), "
                     + "forwardCreate1\\(\\). Specify a name explicitly."),
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.WARNING,
-                line = 55,
+                line = 57,
                 messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
                     + "expressionProp, nestedResultProp\"")
         }
@@ -150,12 +154,12 @@ public class InheritConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.ERROR,
-                line = 54,
+                line = 56,
                 messageRegExp = "None of the candidates forwardCreate\\(\\), forwardCreate1\\(\\) matches given "
                     + "name: \"blah\"."),
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.WARNING,
-                line = 55,
+                line = 57,
                 messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
                     + "expressionProp, nestedResultProp\"")
         }
@@ -170,12 +174,12 @@ public class InheritConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.ERROR,
-                line = 54,
+                line = 56,
                 messageRegExp = "Given name \"forwardCreate\" matches several candidate methods: "
                     + ".*forwardCreate.*, .*forwardCreate.*"),
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.WARNING,
-                line = 55,
+                line = 57,
                 messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
                         + "expressionProp, nestedResultProp\"")        }
     )
@@ -189,12 +193,12 @@ public class InheritConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                 kind = Kind.ERROR,
-                line = 45,
+                line = 47,
                 messageRegExp = "Given name \"blah\" does not match the only candidate. Did you mean: "
                     + "\"forwardCreate\"."),
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                         kind = Kind.WARNING,
-                        line = 46,
+                line = 48,
                 messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
                     + "expressionProp, nestedResultProp\"")
         }

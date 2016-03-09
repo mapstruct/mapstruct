@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import org.mapstruct.ap.internal.model.assignment.Assignment;
-import org.mapstruct.ap.internal.model.common.ModelElement;
-import org.mapstruct.ap.internal.model.common.Type;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.common.ModelElement;
+import org.mapstruct.ap.internal.model.common.Type;
 
 /**
  * Direct Assignment. Just a source reference
@@ -74,4 +74,8 @@ public class Direct extends ModelElement implements Assignment {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return sourceReference;
+    }
 }

@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -17,6 +17,8 @@
  *  limitations under the License.
  */
 package org.mapstruct.ap.test.updatemethods.selection;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,8 +41,6 @@ import org.mapstruct.ap.test.updatemethods.SecretaryEntity;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  *

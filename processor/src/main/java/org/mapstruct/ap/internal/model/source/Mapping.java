@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -57,8 +57,8 @@ public class Mapping {
     private final String targetName;
     private final String dateFormat;
     private final String defaultValue;
-    private final List<TypeMirror> qualifiers;
-    private final TypeMirror resultType;
+    private final SelectionParameters selectionParameters;
+
     private final boolean isIgnored;
     private final List<String> dependsOn;
 
@@ -138,11 +138,17 @@ public class Mapping {
         String defaultValue = mappingPrism.values.defaultValue() == null ? null : mappingPrism.defaultValue();
 
         boolean resultTypeIsDefined = mappingPrism.values.resultType() != null;
-        TypeMirror resultType = resultTypeIsDefined ? mappingPrism.resultType() : null;
         List<String> dependsOn =
             mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
 
+<<<<<<< HEAD
         boolean isSetValuePresenceCheckStrategy = mappingPrism.values.sourceValuePresenceCheckStrategy() != null;
+=======
+        SelectionParameters selectionParams = new SelectionParameters(
+            mappingPrism.qualifiedBy(),
+            mappingPrism.qualifiedByName(),
+            resultTypeIsDefined ? mappingPrism.resultType() : null);
+>>>>>>> remotes/origin/master
 
         return new Mapping(
             source,
@@ -151,41 +157,48 @@ public class Mapping {
             mappingPrism.target(),
             dateFormat,
             defaultValue,
-            mappingPrism.qualifiedBy(),
             mappingPrism.ignore(),
             mappingPrism.mirror,
             mappingPrism.values.source(),
             mappingPrism.values.target(),
+            selectionParams,
             mappingPrism.values.dependsOn(),
+<<<<<<< HEAD
             resultType,
             dependsOn,
             SourceValuePresenceCheckStrategy.valueOf( mappingPrism.sourceValuePresenceCheckStrategy() ),
             isSetValuePresenceCheckStrategy
+=======
+            dependsOn
+>>>>>>> remotes/origin/master
         );
     }
 
     @SuppressWarnings("checkstyle:parameternumber")
     private Mapping(String sourceName, String constant, String javaExpression, String targetName,
-                    String dateFormat, String defaultValue, List<TypeMirror> qualifiers,
-                    boolean isIgnored, AnnotationMirror mirror,
+                    String dateFormat, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
+<<<<<<< HEAD
                     AnnotationValue dependsOnAnnotationValue,
                     TypeMirror resultType, List<String> dependsOn,
                     SourceValuePresenceCheckStrategy valuePresenceCheckStrategy,
                     boolean isSetValuePresenceCheckStrategy) {
+=======
+                    SelectionParameters selectionParameters, AnnotationValue dependsOnAnnotationValue,
+                    List<String> dependsOn) {
+>>>>>>> remotes/origin/master
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
         this.targetName = targetName;
         this.dateFormat = dateFormat;
         this.defaultValue = defaultValue;
-        this.qualifiers = qualifiers;
         this.isIgnored = isIgnored;
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
+        this.selectionParameters = selectionParameters;
         this.dependsOnAnnotationValue = dependsOnAnnotationValue;
-        this.resultType = resultType;
         this.dependsOn = dependsOn;
         this.valuePresenceCheckStrategy = valuePresenceCheckStrategy;
         this.isSetValuePresenceCheckStrategy = isSetValuePresenceCheckStrategy;
@@ -257,8 +270,8 @@ public class Mapping {
         return defaultValue;
     }
 
-    public List<TypeMirror> getQualifiers() {
-        return qualifiers;
+    public SelectionParameters getSelectionParameters() {
+        return selectionParameters;
     }
 
     public boolean isIgnored() {
@@ -283,10 +296,6 @@ public class Mapping {
 
     public SourceReference getSourceReference() {
         return sourceReference;
-    }
-
-    public TypeMirror getResultType() {
-        return resultType;
     }
 
     public List<String> getDependsOn() {
@@ -343,16 +352,20 @@ public class Mapping {
             sourceName != null ? sourceName : targetName,
             dateFormat,
             null,
-            qualifiers,
             isIgnored,
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue,
+            selectionParameters,
             dependsOnAnnotationValue,
+<<<<<<< HEAD
             null,
             Collections.<String>emptyList(),
             valuePresenceCheckStrategy,
             isSetValuePresenceCheckStrategy
+=======
+            Collections.<String>emptyList()
+>>>>>>> remotes/origin/master
         );
 
         reverse.init( method, messager, typeFactory );
@@ -373,16 +386,20 @@ public class Mapping {
             targetName,
             dateFormat,
             defaultValue,
-            qualifiers,
             isIgnored,
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue,
+            selectionParameters,
             dependsOnAnnotationValue,
+<<<<<<< HEAD
             resultType,
             dependsOn,
             valuePresenceCheckStrategy,
             isSetValuePresenceCheckStrategy
+=======
+            dependsOn
+>>>>>>> remotes/origin/master
         );
 
         if ( sourceReference != null ) {

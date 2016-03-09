@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,28 +18,31 @@
  */
 package org.mapstruct.ap.test.selection.qualifier;
 
-import org.mapstruct.ap.test.selection.qualifier.bean.GermanRelease;
-import org.mapstruct.ap.test.selection.qualifier.bean.OriginalRelease;
-import org.mapstruct.ap.test.selection.qualifier.bean.AbstractEntry;
-import org.mapstruct.ap.test.selection.qualifier.handwritten.Titles;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.tools.Diagnostic.Kind;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.selection.qualifier.annotation.CreateGermanRelease;
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 import org.mapstruct.ap.test.selection.qualifier.annotation.NonQualifierAnnotated;
 import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
+import org.mapstruct.ap.test.selection.qualifier.bean.AbstractEntry;
+import org.mapstruct.ap.test.selection.qualifier.bean.GermanRelease;
+import org.mapstruct.ap.test.selection.qualifier.bean.OriginalRelease;
 import org.mapstruct.ap.test.selection.qualifier.bean.ReleaseFactory;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.Facts;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.PlotWords;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.Reverse;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.SomeOtherMapper;
+import org.mapstruct.ap.test.selection.qualifier.handwritten.Titles;
 import org.mapstruct.ap.test.selection.qualifier.handwritten.YetAnotherMapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -97,7 +100,7 @@ public class QualifierTest {
         assertThat( germanMovies.getFacts() ).includes(
                 entry( "Regisseur", Arrays.asList( "M. Night Shyamalan" ) ),
                 entry( "Besetzung", Arrays.asList( "Bruce Willis", "Haley Joel Osment", "Toni Collette" ) ),
-                entry( "Handlungstichwörter", Arrays.asList( "Jungen", "Kinderpsychologe", "Ich sehe tote Menschen" ) )
+            entry( "Handlungstichwörter", Arrays.asList( "Jungen", "Kinderpsychologe", "Ich sehe tote Menschen" ) )
         );
     }
 
@@ -136,7 +139,7 @@ public class QualifierTest {
 
         GermanRelease result = MapperWithoutQualifiedBy.INSTANCE.map( foreignMovies );
         assertThat( result ).isNotNull();
-        assertThat( result.getTitle() ).isEqualTo( "ehT ,esneS htxiS");
+        assertThat( result.getTitle() ).isEqualTo( "ehT ,esneS htxiS" );
 
     }
 

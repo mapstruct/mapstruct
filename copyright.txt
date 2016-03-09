@@ -1,4 +1,4 @@
-Contributors
+﻿Contributors
 ============
 
 Andreas Gudian
@@ -10,9 +10,12 @@ Gunnar Morling
 Ivo Smid
 Michael Pardo
 Mustafa Caylak
+Oliver Ehrenmüller
 Paul Strugnell
 Remko Plantenga
+Samuel Wright
 Sebastian Hasait
 Sjaak Derksen
 Timo Eckhardt
 Tomek Gubala
+Vincent Alexander Beelte

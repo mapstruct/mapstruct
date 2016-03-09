@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -52,6 +52,15 @@ public @interface BeanMapping {
      * @return the qualifiers
      */
     Class<? extends Annotation>[] qualifiedBy() default { };
+
+    /**
+     * See: { @link #qualifiedBy() }. String form of a predefined { @link @Qualifier }. The { @link @Qualifier }
+     * is more verbose, but offers more flexibility in terms of for instance refactoring. At the other hand, there
+     * is no need to define own annotations.
+     *
+     * @return the qualifiers
+     */
+    String[] qualifiedByName() default { };
 
     /**
      * The strategy to be applied when {@code null} is passed as source value to this bean mapping. If no

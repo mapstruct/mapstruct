@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,14 +18,15 @@
  */
 package org.mapstruct.ap.test.references.statics;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.references.statics.nonused.NonUsedMapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import static org.fest.assertions.Assertions.assertThat;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mapstruct.ap.test.references.statics.nonused.NonUsedMapper;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**

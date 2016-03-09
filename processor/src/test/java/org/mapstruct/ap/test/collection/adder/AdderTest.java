@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,10 +18,12 @@
  */
 package org.mapstruct.ap.test.collection.adder;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,18 +38,14 @@ import org.mapstruct.ap.test.collection.adder._target.TargetHuman;
 import org.mapstruct.ap.test.collection.adder._target.TargetOnlyGetter;
 import org.mapstruct.ap.test.collection.adder._target.TargetViaTargetType;
 import org.mapstruct.ap.test.collection.adder._target.TargetWithoutSetter;
+import org.mapstruct.ap.test.collection.adder.source.Foo;
 import org.mapstruct.ap.test.collection.adder.source.SingleElementSource;
 import org.mapstruct.ap.test.collection.adder.source.Source;
+import org.mapstruct.ap.test.collection.adder.source.Source2;
 import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.mapstruct.ap.test.collection.adder.source.Foo;
-import org.mapstruct.ap.test.collection.adder.source.Source2;
 
 /**
  * @author Sjaak Derksen

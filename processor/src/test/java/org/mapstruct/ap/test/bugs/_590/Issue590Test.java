@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -32,12 +32,12 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Andreas Gudian
  */
 @RunWith(AnnotationProcessorTestRunner.class)
-@WithClasses(SourceTargetMapper.class)
+@WithClasses(ErroneousSourceTargetMapper.class)
 public class Issue590Test {
 
     @Test
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-        diagnostics = { @Diagnostic(type = SourceTargetMapper.class,
+        diagnostics = { @Diagnostic(type = ErroneousSourceTargetMapper.class,
             kind = Kind.ERROR,
             messageRegExp = "Can't map property \"java\\.lang\\.String prop\" to \"[^ ]+ prop\"") })
     public void showsCantMapPropertyError() {

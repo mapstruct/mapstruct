@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -17,6 +17,8 @@
  *  limitations under the License.
  */
 package org.mapstruct.ap.internal.model.source;
+
+import static org.mapstruct.ap.internal.util.Collections.hasNonNullElements;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +39,6 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-
-import static org.mapstruct.ap.internal.util.Collections.hasNonNullElements;
 
 /**
  * SourceMethodMatcher $8.4 of the JavaLanguage specification describes a method body as such:

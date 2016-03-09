@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.imports;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,8 +33,6 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for generating a mapper which references types whose names clash with names of used annotations and exceptions.

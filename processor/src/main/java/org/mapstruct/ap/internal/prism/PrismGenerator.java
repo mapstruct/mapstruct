@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -19,9 +19,7 @@
 package org.mapstruct.ap.internal.prism;
 
 import javax.xml.bind.annotation.XmlElementDecl;
-
-import net.java.dev.hickory.prism.GeneratePrism;
-import net.java.dev.hickory.prism.GeneratePrisms;
+import javax.xml.bind.annotation.XmlElementRef;
 
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
@@ -38,6 +36,10 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Qualifier;
 import org.mapstruct.TargetType;
+
+import net.java.dev.hickory.prism.GeneratePrism;
+import net.java.dev.hickory.prism.GeneratePrisms;
+import org.mapstruct.Named;
 
 /**
  * Triggers the generation of prism types using <a href="https://java.net/projects/hickory">Hickory</a>.
@@ -58,11 +60,13 @@ import org.mapstruct.TargetType;
     @GeneratePrism(value = InheritConfiguration.class, publicAccess = true),
     @GeneratePrism(value = InheritInverseConfiguration.class, publicAccess = true),
     @GeneratePrism(value = Qualifier.class, publicAccess = true),
+    @GeneratePrism(value = Named.class, publicAccess = true),
     @GeneratePrism(value = AfterMapping.class, publicAccess = true),
     @GeneratePrism(value = BeforeMapping.class, publicAccess = true),
 
     // external types
-    @GeneratePrism(value = XmlElementDecl.class, publicAccess = true)
+    @GeneratePrism(value = XmlElementDecl.class, publicAccess = true),
+    @GeneratePrism(value = XmlElementRef.class, publicAccess = true)
 })
 public class PrismGenerator {
 

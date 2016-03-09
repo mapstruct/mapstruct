@@ -1,6 +1,6 @@
 <#--
 
-     Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+     Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
      and/or other contributors as indicated by the @authors tag. See the
      copyright.txt file in the distribution for a full listing of all
      contributors.
@@ -84,7 +84,7 @@
     <#if (thrownTypes?size > 0)><#lt> throws </#if><@compress single_line=true>
         <#list thrownTypes as exceptionType>
             <@includeModel object=exceptionType/>
-            <#if exceptionType_has_next>, </#if>
+            <#if exceptionType_has_next>, </#if><#t>
         </#list>
     </@compress>
 </#macro>

@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -21,18 +21,25 @@ package org.mapstruct.ap.internal.model.source.selector;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.xml.bind.annotation.XmlElementDecl;
+import javax.xml.bind.annotation.XmlElementRef;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.prism.XmlElementDeclPrism;
+import org.mapstruct.ap.internal.prism.XmlElementRefPrism;
 
 /**
- * Selects those methods with matching {@code name} and {@code scope} attributes of the {@link XmlElementDecl}
- * annotation, if that is present. Matching happens in the following order:
+ * Finds the {@link XmlElementRef} annotation on a field (of the mapping result type or its super types) matching the
+ * target property name. Then selects those methods with matching {@code name} and {@code scope} attributes of the
+ * {@link XmlElementDecl} annotation, if that is present. Matching happens in the following order:
  * <ol>
  * <li>Name and Scope matches</li>
  * <li>Scope matches</li>
@@ -46,9 +53,11 @@ import org.mapstruct.ap.internal.prism.XmlElementDeclPrism;
 public class XmlElementDeclSelector implements MethodSelector {
 
     private final Types typeUtils;
+    private final Elements elementUtils;
 
-    public XmlElementDeclSelector(Types typeUtils) {
+    public XmlElementDeclSelector( Types typeUtils, Elements elementUtils) {
         this.typeUtils = typeUtils;
+        this.elementUtils = elementUtils;
     }
 
     @Override
@@ -66,6 +75,8 @@ public class XmlElementDeclSelector implements MethodSelector {
         List<T> nameMatches = new ArrayList<T>();
         List<T> scopeMatches = new ArrayList<T>();
         List<T> nameAndScopeMatches = new ArrayList<T>();
+        XmlElementRefInfo xmlElementRefInfo =
+            findXmlElementRef( sourceMappingMethod.getResultType(), criteria.getTargetPropertyName() );
 
         for ( T candidate : methods ) {
             if ( !( candidate instanceof SourceMethod ) ) {
@@ -81,10 +92,10 @@ public class XmlElementDeclSelector implements MethodSelector {
 
             String name = xmlElememtDecl.name();
             TypeMirror scope = xmlElememtDecl.scope();
-            TypeMirror target = sourceMappingMethod.getExecutable().getReturnType();
 
-            boolean nameIsSetAndMatches = name != null && name.equals( criteria.getTargetPropertyName() );
-            boolean scopeIsSetAndMatches = scope != null && typeUtils.isSameType( scope, target );
+            boolean nameIsSetAndMatches = name != null && name.equals( xmlElementRefInfo.nameValue() );
+            boolean scopeIsSetAndMatches =
+                scope != null && typeUtils.isSameType( scope, xmlElementRefInfo.sourceType() );
 
             if ( nameIsSetAndMatches ) {
                 if ( scopeIsSetAndMatches ) {
@@ -110,6 +121,74 @@ public class XmlElementDeclSelector implements MethodSelector {
         }
         else {
             return methods;
+        }
+    }
+
+    /**
+     * Iterate through resultType and its super types to find a field named targetPropertyName and return information
+     * about:
+     * <ul>
+     * <li>what the value of the name property of the XmlElementRef annotation on that field was</li>
+     * <li>on which type the field was found</li>
+     * </ul>
+     *
+     * @param resultType starting point of the iteration
+     * @param targetPropertyName name of the field we are looking for
+     * @return an XmlElementRefInfo containing the information
+     */
+    private XmlElementRefInfo findXmlElementRef(Type resultType, String targetPropertyName) {
+        TypeMirror startingMirror = resultType.getTypeMirror();
+        XmlElementRefInfo defaultInfo = new XmlElementRefInfo( targetPropertyName, startingMirror );
+        if ( targetPropertyName == null ) {
+            /*
+             * sometimes MethodSelectors seem to be called with criteria.getTargetPropertyName() == null so we need to
+             * avoid NPEs for that case.
+             */
+            return defaultInfo;
+        }
+
+        TypeMirror currentMirror = startingMirror;
+        TypeElement currentElement = resultType.getTypeElement();
+
+        /*
+         * Outer loop for resultType and its super types. "currentElement" will be null once we reach Object and try to
+         * get a TypeElement for its super type.
+         */
+        while ( currentElement != null ) {
+            /*
+             * Inner loop tries to find a field with the targetPropertyName and assumes that where the XmlElementRef is
+             * set
+             */
+            for ( Element enclosed : currentElement.getEnclosedElements() ) {
+                if ( enclosed.getKind().equals( ElementKind.FIELD )
+                    && enclosed.getSimpleName().contentEquals( targetPropertyName ) ) {
+                    XmlElementRefPrism xmlElementRef = XmlElementRefPrism.getInstanceOn( enclosed );
+                    if ( xmlElementRef != null ) {
+                        return new XmlElementRefInfo( xmlElementRef.name(), currentMirror );
+                    }
+                }
+            }
+            currentMirror = currentElement.getSuperclass();
+            currentElement = elementUtils.getTypeElement( currentMirror.toString() );
+        }
+        return defaultInfo;
+    }
+
+    private static class XmlElementRefInfo {
+        private final String nameValue;
+        private final TypeMirror sourceType;
+
+        XmlElementRefInfo(String nameValue, TypeMirror sourceType) {
+            this.nameValue = nameValue;
+            this.sourceType = sourceType;
+        }
+
+        public String nameValue() {
+            return nameValue;
+        }
+
+        public TypeMirror sourceType() {
+            return sourceType;
         }
     }
 }

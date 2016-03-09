@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -76,10 +76,16 @@ public class MethodReference extends MappingMethod implements Assignment {
         super( method );
         this.declaringMapper = declaringMapper;
         this.contextParam = null;
-        Set<Type> imported = new HashSet<Type>( method.getThrownTypes() );
-        if ( targetType != null ) {
-            imported.add( targetType );
+        Set<Type> imported = new HashSet<Type>();
+
+        for ( Type type : method.getThrownTypes() ) {
+            imported.addAll( type.getImportTypes() );
         }
+
+        if ( targetType != null ) {
+            imported.addAll( targetType.getImportTypes() );
+        }
+
         this.importTypes = Collections.<Type>unmodifiableSet( imported );
         this.thrownTypes = method.getThrownTypes();
         this.isUpdateMethod = method.getMappingTargetParameter() != null;

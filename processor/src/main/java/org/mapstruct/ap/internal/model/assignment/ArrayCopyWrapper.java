@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
+import static org.mapstruct.ap.internal.util.Strings.decapitalize;
+import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,9 +28,6 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.util.Strings.decapitalize;
-import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
 
 /**
  * Decorates the assignment as a Map or Collection constructor

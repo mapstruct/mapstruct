@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,11 @@
  */
 package org.mapstruct.ap.test.bugs._394;
 
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._394.source.AnotherCar;
@@ -25,11 +30,6 @@ import org.mapstruct.ap.test.bugs._394.source.Cars;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 @WithClasses( {
     SameNameForSourceAndTargetCarsMapper.class,

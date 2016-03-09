@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.updatemethods;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -26,8 +28,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  *
@@ -76,7 +76,7 @@ public class UpdateMethodsTest {
         assertThat( organizationEntity.getCompany() ).isEqualTo( companyEntity );
         assertThat( organizationEntity.getCompany().getName() ).isEqualTo( "PepsiCo" );
         assertThat( organizationEntity.getType().getType() ).isEqualTo( "commercial" );
-        assertThat( organizationEntity.getTypeNr().getNumber()).isEqualTo( 5 );
+        assertThat( organizationEntity.getTypeNr().getNumber() ).isEqualTo( 5 );
         assertThat( organizationEntity.getCompany().getDepartment().getName() ).isEqualTo( "finance" );
     }
 
@@ -124,7 +124,7 @@ public class UpdateMethodsTest {
 
         assertThat( organizationEntity.getCompany().getName() ).isEqualTo( "PepsiCo" );
         assertThat( organizationEntity.getType().getType() ).isEqualTo( "commercial" );
-        assertThat( organizationEntity.getTypeNr().getNumber()).isEqualTo( 5 );
+        assertThat( organizationEntity.getTypeNr().getNumber() ).isEqualTo( 5 );
         assertThat( organizationEntity.getCompany().getDepartment().getName() ).isEqualTo( "finance" );
     }
 

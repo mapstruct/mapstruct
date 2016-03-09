@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -63,7 +63,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             }
             List<SafePropertyEntry> safePropertyEntries = new ArrayList<SafePropertyEntry>();
             for ( PropertyEntry propertyEntry : propertyEntries ) {
-                String safeName = Strings.getSaveVariableName( propertyEntry.getName(), existingVariableNames);
+                String safeName = Strings.getSaveVariableName( propertyEntry.getName(), existingVariableNames );
                 safePropertyEntries.add( new SafePropertyEntry( propertyEntry, safeName ) );
                 existingVariableNames.add( safeName );
             }

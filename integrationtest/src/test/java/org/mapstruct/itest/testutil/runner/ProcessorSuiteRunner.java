@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -25,6 +25,7 @@ import static org.apache.maven.shared.utils.io.FileUtils.deleteDirectory;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,6 +44,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runner.notification.StoppedByUserException;
 import org.junit.runners.ParentRunner;
 import org.junit.runners.model.InitializationError;
+import org.mapstruct.itest.testutil.runner.ProcessorSuite.CommandLineEnhancer;
 import org.mapstruct.itest.testutil.runner.ProcessorSuite.ProcessorType;
 import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner.ProcessorTestCase;
 import org.mapstruct.itest.testutil.runner.xml.Toolchains;
@@ -73,10 +75,13 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
         private final String baseDir;
         private final ProcessorType processor;
         private final boolean ignored;
+        private final Constructor<? extends CommandLineEnhancer> cliEnhancerConstructor;
 
-        public ProcessorTestCase(String baseDir, ProcessorType processor) {
+        public ProcessorTestCase(String baseDir, ProcessorType processor,
+                                 Constructor<? extends CommandLineEnhancer> cliEnhancerConstructor) {
             this.baseDir = baseDir;
             this.processor = processor;
+            this.cliEnhancerConstructor = cliEnhancerConstructor;
             this.ignored = !ENABLED_PROCESSOR_TYPES.contains( processor );
         }
     }
@@ -100,10 +105,25 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
             throw new InitializationError( "ProcessorSuite#processorTypes must not be empty" );
         }
 
-        methods = initializeTestCases( suite );
+        Constructor<? extends CommandLineEnhancer> cliEnhancerConstructor = null;
+        if ( suite.commandLineEnhancer() != CommandLineEnhancer.class ) {
+            try {
+                cliEnhancerConstructor = suite.commandLineEnhancer().getConstructor();
+            }
+            catch ( NoSuchMethodException e ) {
+                throw new InitializationError(
+                    suite.commandLineEnhancer().getName() + " does not have a default constructor." );
+            }
+            catch ( SecurityException e ) {
+                throw new InitializationError( e );
+            }
+        }
+
+        methods = initializeTestCases( suite, cliEnhancerConstructor );
     }
 
-    private List<ProcessorTestCase> initializeTestCases(ProcessorSuite suite) {
+    private List<ProcessorTestCase> initializeTestCases(ProcessorSuite suite,
+                Constructor<? extends CommandLineEnhancer> cliEnhancerConstructor) {
         List<ProcessorType> types = new ArrayList<ProcessorType>();
 
         for ( ProcessorType compiler : suite.processorTypes() ) {
@@ -118,7 +138,7 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
         List<ProcessorTestCase> result = new ArrayList<ProcessorTestCase>( types.size() );
 
         for ( ProcessorType type : types ) {
-            result.add( new ProcessorTestCase( suite.baseDir(), type ) );
+            result.add( new ProcessorTestCase( suite.baseDir(), type, cliEnhancerConstructor ) );
         }
 
         return result;
@@ -208,6 +228,8 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
 
             goals.add( "test" );
 
+            addAdditionalCliArguments( child, verifier );
+
             originalOut.println( "executing " + child.processor.name().toLowerCase() );
 
             verifier.executeGoals( goals );
@@ -215,6 +237,19 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
         }
         finally {
             verifier.resetStreams();
+        }
+    }
+
+    private void addAdditionalCliArguments(ProcessorTestCase child, final Verifier verifier) throws Exception {
+        if ( child.cliEnhancerConstructor != null ) {
+            CommandLineEnhancer enhancer = child.cliEnhancerConstructor.newInstance();
+            Collection<String> additionalArgs = enhancer.getAdditionalCommandLineArguments( child.processor );
+
+            if ( additionalArgs != null ) {
+                for ( String arg : additionalArgs ) {
+                    verifier.addCliOption( arg );
+                }
+            }
         }
     }
 

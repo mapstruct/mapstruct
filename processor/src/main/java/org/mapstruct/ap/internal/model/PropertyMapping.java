@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -24,18 +24,19 @@ import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentTy
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
 import static org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy.CUSTOM;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.assignment.EnumSetCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.PresenceCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
@@ -49,6 +50,7 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
@@ -77,14 +79,36 @@ public class PropertyMapping extends ModelElement {
     private final SourceValuePresenceCheckStrategy valueSetCheckStrategy;
     private final Assignment defaultValueAssignment;
 
+    private enum TargetWriteAccessorType {
+        GETTER,
+        SETTER,
+        ADDER;
+
+        public static TargetWriteAccessorType of(ExecutableElement accessor) {
+            if ( Executables.isSetterMethod( accessor ) ) {
+                return TargetWriteAccessorType.SETTER;
+            }
+            else if ( Executables.isAdderMethod( accessor ) ) {
+                return TargetWriteAccessorType.ADDER;
+            }
+            else {
+                return TargetWriteAccessorType.GETTER;
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private static class MappingBuilderBase<T extends MappingBuilderBase<T>> {
 
         protected MappingBuilderContext ctx;
         protected SourceMethod method;
+
         protected ExecutableElement targetWriteAccessor;
+        protected TargetWriteAccessorType targetWriteAccessorType;
+        protected Type targetType;
         protected ExecutableElement targetReadAccessor;
         protected String targetPropertyName;
+
         protected List<String> dependsOn;
         protected SourceValuePresenceCheckStrategy valueSetCheckStrategy;
         protected Set<String> existingVariableNames;
@@ -106,7 +130,27 @@ public class PropertyMapping extends ModelElement {
 
         public T targetWriteAccessor(ExecutableElement targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
+            this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
+            this.targetType = determineTargetType();
+
             return (T) this;
+        }
+
+        private Type determineTargetType() {
+            // This is a bean mapping method, so we know the result is a declared type
+            DeclaredType resultType = (DeclaredType) method.getResultType().getTypeMirror();
+
+            switch ( targetWriteAccessorType ) {
+                case ADDER:
+                case SETTER:
+                    return ctx.getTypeFactory()
+                        .getSingleParameter( resultType, targetWriteAccessor )
+                        .getType();
+                case GETTER:
+                default:
+                    return ctx.getTypeFactory()
+                        .getReturnType( resultType, targetWriteAccessor );
+            }
         }
 
         public T targetPropertyName(String targetPropertyName) {
@@ -136,21 +180,23 @@ public class PropertyMapping extends ModelElement {
         private String dateFormat;
         private String defaultValue;
         private List<TypeMirror> qualifiers;
+        private List<String> qualifyingNames;
         private TypeMirror resultType;
         private SourceReference sourceReference;
+        private SelectionParameters selectionParameters;
 
         public PropertyMappingBuilder sourceReference(SourceReference sourceReference) {
             this.sourceReference = sourceReference;
             return this;
         }
 
-        public PropertyMappingBuilder qualifiers(List<TypeMirror> qualifiers) {
-            this.qualifiers = qualifiers;
-            return this;
-        }
-
-        public PropertyMappingBuilder resultType(TypeMirror resultType) {
-            this.resultType = resultType;
+        public PropertyMappingBuilder selectionParameters(SelectionParameters selectionParameters) {
+            if ( selectionParameters != null ) {
+                this.qualifiers = selectionParameters.getQualifiers();
+                this.qualifyingNames = selectionParameters.getQualifyingNames();
+                this.resultType = selectionParameters.getResultType();
+            }
+            this.selectionParameters = selectionParameters;
             return this;
         }
 
@@ -164,23 +210,12 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        private enum TargetWriteAccessorType {
-            GETTER,
-            SETTER,
-            ADDER
-        }
-
         public PropertyMapping build() {
-
-            // handle target
-            TargetWriteAccessorType targetAccessorType = getTargetAcccessorType();
-            Type targetType = getTargetType( targetAccessorType );
-
             // handle source
             String sourceElement = getSourceElement();
             Type sourceType = getSourceType();
             String sourceRefStr;
-            if ( targetAccessorType == TargetWriteAccessorType.ADDER && sourceType.isCollectionType() ) {
+            if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER && sourceType.isCollectionType() ) {
                 // handle adder, if source is collection then use iterator element type as source type.
                 // sourceRef becomes a local variable in the itereation.
                 sourceType = sourceType.getTypeParameters().get( 0 );
@@ -192,7 +227,7 @@ public class PropertyMapping extends ModelElement {
 
             // all the tricky cases will be excluded for the time being.
             boolean preferUpdateMethods;
-            if ( targetAccessorType == TargetWriteAccessorType.ADDER ) {
+            if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER ) {
                 preferUpdateMethods = false;
             }
             else {
@@ -206,8 +241,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 targetPropertyName,
                 dateFormat,
-                qualifiers,
-                resultType,
+                selectionParameters,
                 sourceRefStr,
                 preferUpdateMethods
             );
@@ -219,7 +253,7 @@ public class PropertyMapping extends ModelElement {
 
             if ( assignment != null ) {
                 if ( targetType.isCollectionOrMapType() ) {
-                    assignment = assignCollection( targetType, targetAccessorType, assignment );
+                    assignment = assignCollection( targetType, targetWriteAccessorType, assignment );
                 }
                 else if ( targetType.isArrayType() && sourceType.isArrayType() && assignment.getType() == DIRECT ) {
                     Type arrayType = ctx.getTypeFactory().getType( Arrays.class );
@@ -233,7 +267,7 @@ public class PropertyMapping extends ModelElement {
                     assignment = getOrcreateWrapperByValueCheckStrategy( assignment, false );
                 }
                 else {
-                    assignment = assignObject( sourceType, targetType, targetAccessorType, assignment );
+                    assignment = assignObject( sourceType, targetType, targetWriteAccessorType, assignment );
                 }
 
             }
@@ -269,8 +303,7 @@ public class PropertyMapping extends ModelElement {
                 PropertyMapping build = new ConstantMappingBuilder()
                         .constantExpression( '"' + defaultValue + '"' )
                         .dateFormat( dateFormat )
-                        .qualifiers( qualifiers )
-                        .resultType( resultType )
+                        .selectionParameters( selectionParameters )
                         .dependsOn( dependsOn )
                         .existingVariableNames( existingVariableNames )
                         .mappingContext( ctx )
@@ -296,8 +329,7 @@ public class PropertyMapping extends ModelElement {
                             Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                             targetPropertyName );
                     }
-                    Assignment factoryMethod =
-                        ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
+                    Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                     result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
                         targetType );
                 }
@@ -367,7 +399,14 @@ public class PropertyMapping extends ModelElement {
                     else {
                         implementationTypes = targetType.getImportTypes();
                     }
-                    newCollectionOrMap = new NewCollectionOrMapWrapper( result, implementationTypes );
+
+                    if ( "java.util.EnumSet".equals( targetType.getFullyQualifiedName() ) ) {
+                        newCollectionOrMap = new EnumSetCopyWrapper( ctx.getTypeFactory(), result );
+                    }
+                    else {
+                        newCollectionOrMap = new NewCollectionOrMapWrapper( result, implementationTypes );
+                    }
+
                     newCollectionOrMap = new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
                 }
                 if ( result.isUpdateMethod() ) {
@@ -376,8 +415,7 @@ public class PropertyMapping extends ModelElement {
                             Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                             targetPropertyName );
                     }
-                    Assignment factoryMethod
-                        = ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
+                    Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                     result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
                         targetType );
                 }
@@ -548,33 +586,6 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private TargetWriteAccessorType getTargetAcccessorType() {
-            if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
-                return TargetWriteAccessorType.SETTER;
-            }
-            else if ( Executables.isAdderMethod( targetWriteAccessor ) ) {
-                return TargetWriteAccessorType.ADDER;
-            }
-            else {
-                return TargetWriteAccessorType.GETTER;
-            }
-        }
-
-        private Type getTargetType(TargetWriteAccessorType targetAccessorType) {
-            switch ( targetAccessorType ) {
-                case ADDER:
-                case SETTER:
-                    return ctx.getTypeFactory().getSingleParameter(
-                        method.getResultType().getTypeElement(),
-                        targetWriteAccessor ).getType();
-                case GETTER:
-                default:
-                    return ctx.getTypeFactory().getReturnType(
-                        method.getResultType().getTypeElement(),
-                        targetWriteAccessor );
-            }
-        }
-
         private Assignment forgeMapOrIterableMapping(Type sourceType, Type targetType, String sourceReference,
                                                      ExecutableElement element) {
 
@@ -656,8 +667,7 @@ public class PropertyMapping extends ModelElement {
 
         private String constantExpression;
         private String dateFormat;
-        private List<TypeMirror> qualifiers;
-        private TypeMirror resultType;
+        private SelectionParameters selectionParameters;
 
         public ConstantMappingBuilder constantExpression(String constantExpression) {
             this.constantExpression = constantExpression;
@@ -669,34 +679,15 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public ConstantMappingBuilder qualifiers(List<TypeMirror> qualifiers) {
-            this.qualifiers = qualifiers;
-            return this;
-        }
-
-        public ConstantMappingBuilder resultType(TypeMirror resultType) {
-            this.resultType = resultType;
+        public ConstantMappingBuilder selectionParameters(SelectionParameters selectionParameters) {
+            this.selectionParameters = selectionParameters;
             return this;
         }
 
         public PropertyMapping build() {
-
             // source
             String mappedElement = "constant '" + constantExpression + "'";
             Type sourceType = ctx.getTypeFactory().getType( String.class );
-
-            // target
-            Type targetType;
-            if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
-                targetType = ctx.getTypeFactory().getSingleParameter(
-                    method.getResultType().getTypeElement(),
-                    targetWriteAccessor ).getType();
-            }
-            else {
-                targetType = ctx.getTypeFactory().getReturnType(
-                    method.getResultType().getTypeElement(),
-                    targetWriteAccessor );
-            }
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
@@ -705,8 +696,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 targetPropertyName,
                 dateFormat,
-                qualifiers,
-                resultType,
+                selectionParameters,
                 constantExpression,
                 method.getMappingTargetParameter() != null
             );
@@ -723,7 +713,7 @@ public class PropertyMapping extends ModelElement {
                                 targetPropertyName );
                         }
                         Assignment factoryMethod =
-                            ctx.getMappingResolver().getFactoryMethod( method, targetType, null, null );
+                            ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                         assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod,
                             targetType );
                     }
@@ -776,21 +766,13 @@ public class PropertyMapping extends ModelElement {
         }
 
         public PropertyMapping build() {
-
             Assignment assignment = AssignmentFactory.createDirect( javaExpression );
 
-            Type targetType;
             if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
                 // setter, so wrap in setter
                 assignment = new SetterWrapper( assignment, method.getThrownTypes() );
-                targetType = ctx.getTypeFactory().getSingleParameter(
-                    method.getResultType().getTypeElement(),
-                    targetWriteAccessor ).getType();
             }
             else {
-                targetType = ctx.getTypeFactory().getReturnType(
-                    method.getResultType().getTypeElement(),
-                    targetWriteAccessor );
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
                 assignment = new GetterWrapperForCollectionsAndMaps(
                     assignment,
@@ -811,7 +793,6 @@ public class PropertyMapping extends ModelElement {
                 null
             );
         }
-
     }
 
     // Constructor for creating mappings of constant expressions.

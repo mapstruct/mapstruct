@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 import java.util.Date;
 import java.util.Set;
 
@@ -26,8 +28,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * @author Sjaak Derksen

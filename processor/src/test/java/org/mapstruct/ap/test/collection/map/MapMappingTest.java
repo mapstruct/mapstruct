@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.test.collection.map;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -29,10 +32,6 @@ import org.mapstruct.ap.test.collection.map.other.ImportedType;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
-
-import static org.fest.assertions.MapAssert.entry;
 
 /**
  * Test for implementation of {@code Map} mapping methods.

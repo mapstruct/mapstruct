@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -17,6 +17,8 @@
  *  limitations under the License.
  */
 package org.mapstruct.ap.test.decorator.spring;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.Calendar;
 
@@ -36,8 +38,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for the application of decorators using component model spring.

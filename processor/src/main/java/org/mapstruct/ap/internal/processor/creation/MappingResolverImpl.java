@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -46,6 +46,7 @@ import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
@@ -103,11 +104,11 @@ public class MappingResolverImpl implements MappingResolver {
 
     @Override
     public Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType,
-        Type targetType, String targetPropertyName, String dateFormat, List<TypeMirror> qualifiers,
-        TypeMirror resultType, String sourceReference, boolean preferUpdateMapping) {
+        Type targetType, String targetPropertyName, String dateFormat, SelectionParameters selectionParameters,
+        String sourceReference, boolean preferUpdateMapping) {
 
         SelectionCriteria criteria =
-            new SelectionCriteria(qualifiers, targetPropertyName, resultType, preferUpdateMapping );
+            new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
@@ -127,10 +128,10 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    public MethodReference getFactoryMethod( Method mappingMethod, Type targetType, List<TypeMirror> qualifiers,
-        TypeMirror resultType ) {
+    public MethodReference getFactoryMethod( Method mappingMethod, Type targetType,
+        SelectionParameters selectionParameters ) {
 
-        SelectionCriteria criteria = new SelectionCriteria( qualifiers, null, resultType, false );
+        SelectionCriteria criteria = new SelectionCriteria( selectionParameters, null, false );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
@@ -199,7 +200,8 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             // then direct assignable
-            if ( sourceType.isAssignableTo( targetType ) || isPropertyMappable( sourceType, targetType ) ) {
+            if ( sourceType.isAssignableTo( targetType ) ||
+                    isAssignableThroughCollectionCopyConstructor( sourceType, targetType ) ) {
                 Assignment simpleAssignment = AssignmentFactory.createDirect( sourceReference );
                 return simpleAssignment;
             }
@@ -503,32 +505,22 @@ public class MappingResolverImpl implements MappingResolver {
         }
 
         /**
-         * Whether the specified property can be mapped from source to target or not. A mapping if possible if one of
-         * the following conditions is true:
-         * <ul>
-         * <li>the source type is assignable to the target type</li>
-         * <li>a mapping method exists</li>
-         * <li>a built-in conversion exists</li>
-         * <li>the property is of a collection or map type and the constructor of the target type (either itself or its
-         * implementation type) accepts the source type.</li>
-         * </ul>
-         *
-         * @return {@code true} if the specified property can be mapped, {@code false} otherwise.
+         * Whether the given source and target type are both a collection type or both a map type and the source value
+         * can be propagated via a copy constructor.
          */
-        private boolean isPropertyMappable(Type sourceType, Type targetType) {
-            boolean collectionOrMapTargetTypeHasCompatibleConstructor = false;
+        private boolean isAssignableThroughCollectionCopyConstructor(Type sourceType, Type targetType) {
+            boolean bothCollectionOrMap = false;
 
-            if ( sourceType.isCollectionType() || targetType.isMapType() ) {
-                collectionOrMapTargetTypeHasCompatibleConstructor = hasCompatibleCopyConstructor(
-                    sourceType,
-                    targetType.getImplementationType() != null
-                                    ? targetType.getImplementationType() : targetType
-                );
+            if ( ( sourceType.isCollectionType() && targetType.isCollectionType() ) ||
+                    ( sourceType.isMapType() && targetType.isMapType() ) ) {
+                bothCollectionOrMap = true;
             }
 
-            if ( ( ( targetType.isCollectionType() || targetType.isMapType() )
-                && collectionOrMapTargetTypeHasCompatibleConstructor ) ) {
-                return true;
+            if ( bothCollectionOrMap ) {
+                return hasCompatibleCopyConstructor(
+                        sourceType,
+                        targetType.getImplementationType() != null ? targetType.getImplementationType() : targetType
+                );
             }
 
             return false;
@@ -543,6 +535,10 @@ public class MappingResolverImpl implements MappingResolver {
          *         otherwise.
          */
         private boolean hasCompatibleCopyConstructor(Type sourceType, Type targetType) {
+            if ( targetType.isPrimitive() ) {
+                return false;
+            }
+
             List<ExecutableElement> targetTypeConstructors = ElementFilter.constructorsIn(
                 targetType.getTypeElement().getEnclosedElements() );
 

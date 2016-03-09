@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 import java.math.BigInteger;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
-
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link BigInteger} and native number types.

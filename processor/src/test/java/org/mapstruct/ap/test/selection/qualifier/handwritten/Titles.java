@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,17 +18,20 @@
  */
 package org.mapstruct.ap.test.selection.qualifier.handwritten;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
-//import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
+
+import com.google.common.collect.ImmutableMap;
+import org.mapstruct.Named;
 
 /**
  *
  * @author Sjaak Derksen
  */
 @TitleTranslator
+@Named( "TitleTranslator" )
 public class Titles {
 
     private static final Map<String, String> EN_GER = ImmutableMap.<String, String>builder()
@@ -40,6 +43,7 @@ public class Titles {
             .build();
 
     @EnglishToGerman
+    @Named( "EnglishToGerman" )
     public String translateTitle(String title) {
         return EN_GER.get( title );
     }

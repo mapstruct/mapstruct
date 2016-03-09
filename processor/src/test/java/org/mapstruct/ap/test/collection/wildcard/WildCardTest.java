@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,10 +18,13 @@
  */
 package org.mapstruct.ap.test.collection.wildcard;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.math.BigDecimal;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -79,13 +82,13 @@ public class WildCardTest {
     }
 
     @Test
-    @WithClasses({ IterableSuperBoundSourceMapper.class })
+    @WithClasses({ ErroneousIterableSuperBoundSourceMapper.class })
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
             diagnostics = {
-                @Diagnostic( type = IterableSuperBoundSourceMapper.class,
+                @Diagnostic( type = ErroneousIterableSuperBoundSourceMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 32,
+                        line = 33,
                         messageRegExp = "Can't generate mapping method for a wildcard super bound source." )
             }
     )
@@ -93,13 +96,13 @@ public class WildCardTest {
     }
 
     @Test
-    @WithClasses({ IterableExtendsBoundTargetMapper.class })
+    @WithClasses({ ErroneousIterableExtendsBoundTargetMapper.class })
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
             diagnostics = {
-                @Diagnostic( type = IterableExtendsBoundTargetMapper.class,
+                @Diagnostic( type = ErroneousIterableExtendsBoundTargetMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 32,
+                        line = 33,
                         messageRegExp = "Can't generate mapping method for a wildcard extends bound result." )
             }
     )
@@ -107,13 +110,13 @@ public class WildCardTest {
     }
 
    @Test
-    @WithClasses({ IterableTypeVarBoundMapperOnMethod.class })
+    @WithClasses({ ErroneousIterableTypeVarBoundMapperOnMethod.class })
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
             diagnostics = {
-                @Diagnostic( type = IterableTypeVarBoundMapperOnMethod.class,
+            @Diagnostic(type = ErroneousIterableTypeVarBoundMapperOnMethod.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 32,
+                        line = 33,
                         messageRegExp = "Can't generate mapping method for a generic type variable target." )
             }
     )
@@ -121,13 +124,13 @@ public class WildCardTest {
     }
 
     @Test
-    @WithClasses({ IterableTypeVarBoundMapperOnMapper.class })
+    @WithClasses({ ErroneousIterableTypeVarBoundMapperOnMapper.class })
     @ExpectedCompilationOutcome(
             value = CompilationResult.FAILED,
             diagnostics = {
-                @Diagnostic( type = IterableTypeVarBoundMapperOnMapper.class,
+                @Diagnostic( type = ErroneousIterableTypeVarBoundMapperOnMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 32,
+                        line = 33,
                         messageRegExp = "Can't generate mapping method for a generic type variable source." )
             }
     )

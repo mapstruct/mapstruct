@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,17 +18,13 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.List;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-
 
 /**
  * Represents an bean mapping as configured via {@code @BeanMapping}.
@@ -37,8 +33,7 @@ import org.mapstruct.ap.internal.util.Message;
  */
 public class BeanMapping {
 
-    private final List<TypeMirror> qualifiers;
-    private final TypeMirror resultType;
+    private final SelectionParameters selectionParameters;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
     public static BeanMapping fromPrism(BeanMappingPrism beanMapping, ExecutableElement method,
@@ -55,32 +50,27 @@ public class BeanMapping {
                             ? null
                             : NullValueMappingStrategyPrism.valueOf( beanMapping.nullValueMappingStrategy() );
 
-        if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty()
+        if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() && beanMapping.qualifiedByName().isEmpty()
             && ( nullValueMappingStrategy == null ) ) {
 
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
         }
 
-        return new BeanMapping(
+        SelectionParameters cmp = new SelectionParameters(
             beanMapping.qualifiedBy(),
-            resultTypeIsDefined ? beanMapping.resultType() : null,
-            nullValueMappingStrategy
-        );
+            beanMapping.qualifiedByName(),
+            resultTypeIsDefined ? beanMapping.resultType() : null );
+
+        return new BeanMapping(cmp, nullValueMappingStrategy );
     }
 
-    private BeanMapping(List<TypeMirror> qualifiers, TypeMirror mirror, NullValueMappingStrategyPrism nvms) {
-
-        this.qualifiers = qualifiers;
-        this.resultType = mirror;
+    private BeanMapping( SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms ) {
+        this.selectionParameters = selectionParameters;
         this.nullValueMappingStrategy = nvms;
     }
 
-    public List<TypeMirror> getQualifiers() {
-        return qualifiers;
-    }
-
-    public TypeMirror getResultType() {
-        return resultType;
+    public SelectionParameters getSelectionParameters() {
+        return selectionParameters;
     }
 
     public NullValueMappingStrategyPrism getNullValueMappingStrategy() {

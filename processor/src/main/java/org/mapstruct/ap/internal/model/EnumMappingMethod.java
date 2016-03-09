@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +29,11 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.source.EnumMapping;
 import org.mapstruct.ap.internal.model.source.Mapping;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link MappingMethod} which maps one enum type to another, optionally configured by one or more
@@ -96,23 +97,24 @@ public class EnumMappingMethod extends MappingMethod {
                 }
             }
 
-            List<TypeMirror> qualifiers = getQualifiers( method );
+            SelectionParameters selectionParameters = getSelecionParameters( method );
 
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
-                LifecycleCallbackFactory.beforeMappingMethods( method, qualifiers, ctx );
+                LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, qualifiers, ctx );
+                LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx );
 
             return new EnumMappingMethod( method, enumMappings, beforeMappingMethods, afterMappingMethods );
         }
 
-        private static List<TypeMirror> getQualifiers(SourceMethod method) {
+        private static SelectionParameters getSelecionParameters(SourceMethod method) {
             BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
-
             if ( beanMappingPrism != null ) {
-                return beanMappingPrism.qualifiedBy();
+                List<TypeMirror> qualifiers = beanMappingPrism.qualifiedBy();
+                List<String> qualifyingNames = beanMappingPrism.qualifiedByName();
+                TypeMirror resultType = beanMappingPrism.resultType();
+                return new SelectionParameters( qualifiers, qualifyingNames, resultType );
             }
-
             return null;
         }
 

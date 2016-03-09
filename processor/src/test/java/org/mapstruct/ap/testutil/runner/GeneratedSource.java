@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -65,6 +65,16 @@ public class GeneratedSource implements TestRule {
      */
     public JavaFileAssert forMapper(Class<?> mapperClass) {
         String generatedJavaFileName = mapperClass.getName().replace( '.', '/' ).concat( "Impl.java" );
+        return forJavaFile( generatedJavaFileName );
+    }
+
+    /**
+     * @param mapperClass the class annotated with {@code &#064;Mapper} and {@code &#064;DecoratedWith(..)}
+     *
+     * @return an assert for the *Impl_.java for the given mapper
+     */
+    public JavaFileAssert forDecoratedMapper(Class<?> mapperClass) {
+        String generatedJavaFileName = mapperClass.getName().replace( '.', '/' ).concat( "Impl_.java" );
         return forJavaFile( generatedJavaFileName );
     }
 

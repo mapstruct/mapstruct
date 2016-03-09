@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,18 +18,22 @@
  */
 package org.mapstruct.ap.test.reverse;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperAmbiguous1;
+import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperAmbiguous2;
+import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperAmbiguous3;
+import org.mapstruct.ap.test.reverse.erroneous.SourceTargetMapperNonMatchingName;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * @author Sjaak Derksen
@@ -69,12 +73,12 @@ public class InheritInverseConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.ERROR,
-                line = 49,
+                line = 51,
                 messageRegExp = "Several matching inverse methods exist: forward\\(\\), "
                     + "forwardNotToReverse\\(\\). Specify a name explicitly."),
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.WARNING,
-                line = 54,
+                line = 56,
                 messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
         }
     )
@@ -88,12 +92,12 @@ public class InheritInverseConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.ERROR,
-                line = 49,
+                line = 51,
                 messageRegExp = "None of the candidates forward\\(\\), forwardNotToReverse\\(\\) matches given "
                     + "name: \"blah\"."),
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.WARNING,
-                line = 54,
+                line = 56,
                 messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
         }
     )
@@ -107,12 +111,12 @@ public class InheritInverseConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.ERROR,
-                line = 50,
+                line = 52,
                 messageRegExp = "Given name \"forward\" matches several candidate methods: .*forward\\(.+\\), "
                     + ".*forward\\(.+\\)"),
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.WARNING,
-                line = 55,
+                line = 57,
                 messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
         }
     )
@@ -126,12 +130,12 @@ public class InheritInverseConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 44,
                 messageRegExp = "Given name \"blah\" does not match the only candidate. Did you mean: "
                     + "\"forward\"."),
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                 kind = Kind.WARNING,
-                line = 47,
+                line = 49,
                 messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
         }
     )

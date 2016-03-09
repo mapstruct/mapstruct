@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.dependency;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.Mapping;
@@ -27,8 +29,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test for ordering mapped attributes by means of {@link Mapping#dependsOn()}.
@@ -69,13 +69,13 @@ public class OrderingTest {
 
     @Test
     @IssueKey("304")
-    @WithClasses(AddressMapperWithCyclicDependency.class)
+    @WithClasses(ErroneousAddressMapperWithCyclicDependency.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = AddressMapperWithCyclicDependency.class,
+            @Diagnostic(type = ErroneousAddressMapperWithCyclicDependency.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 36,
+                line = 37,
                 messageRegExp = "Cycle\\(s\\) between properties given via dependsOn\\(\\): firstName -> lastName -> "
                     + "middleName -> firstName"
             )
@@ -86,11 +86,11 @@ public class OrderingTest {
 
     @Test
     @IssueKey("304")
-    @WithClasses(AddressMapperWithUnknownPropertyInDependsOn.class)
+    @WithClasses(ErroneousAddressMapperWithUnknownPropertyInDependsOn.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = AddressMapperWithUnknownPropertyInDependsOn.class,
+            @Diagnostic(type = ErroneousAddressMapperWithUnknownPropertyInDependsOn.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 32,
                 messageRegExp = "\"doesnotexist\" is no property of the method return type"

@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,8 +18,11 @@
  */
 package org.mapstruct.ap.internal.model.source.selector;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.lang.model.type.TypeMirror;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
 /**
  * This class groups the selection criteria in one class
@@ -28,21 +31,32 @@ import javax.lang.model.type.TypeMirror;
  */
 public class SelectionCriteria {
 
-    private final List<TypeMirror> qualifiers;
+    private final List<TypeMirror> qualifiers = new ArrayList<TypeMirror>();
+    private final List<String> qualifiedByNames = new ArrayList<String>();
     private final String targetPropertyName;
     private final TypeMirror qualifyingResultType;
     private boolean preferUpdateMapping;
 
-    public SelectionCriteria(List<TypeMirror> qualifiers, String targetPropertyName, TypeMirror qualifyingResultType,
+    public SelectionCriteria( SelectionParameters selectionParameters,  String targetPropertyName,
         boolean preferUpdateMapping ) {
-        this.qualifiers = qualifiers;
+        if ( selectionParameters != null ) {
+            qualifiers.addAll( selectionParameters.getQualifiers() );
+            qualifiedByNames.addAll( selectionParameters.getQualifyingNames() );
+            qualifyingResultType = selectionParameters.getResultType();
+        }
+        else {
+            this.qualifyingResultType = null;
+        }
         this.targetPropertyName = targetPropertyName;
-        this.qualifyingResultType = qualifyingResultType;
         this.preferUpdateMapping = preferUpdateMapping;
     }
 
     public List<TypeMirror> getQualifiers() {
         return qualifiers;
+    }
+
+    public List<String> getQualifiedByNames() {
+        return qualifiedByNames;
     }
 
     public String getTargetPropertyName() {

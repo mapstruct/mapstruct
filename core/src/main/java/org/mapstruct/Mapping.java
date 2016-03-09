@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -136,6 +136,22 @@ public @interface Mapping {
      * @return the qualifiers
      */
     Class<? extends Annotation>[] qualifiedBy() default { };
+
+    /**
+     * String-based form of qualifiers; When looking for a suitable mapping method for a given property, MapStruct will
+     * only consider those methods carrying directly or indirectly (i.e. on the class-level) a {@link Named} annotation
+     * for each of the specified qualifier names.
+     * <p>
+     * Note that annotation-based qualifiers are generally preferable as they allow more easily to find references and
+     * are safe for refactorings, but name-based qualifiers can be a less verbose alternative when requiring a large
+     * number of qualifiers as no custom annotation types are needed.
+     *
+     * @return One or more qualifier name(s)
+     * @see #qualifiedBy()
+     * @see Named
+     */
+    String[] qualifiedByName() default { };
+
 
     /**
      * Specifies the result type of the mapping method to be used in case multiple mapping methods qualify.

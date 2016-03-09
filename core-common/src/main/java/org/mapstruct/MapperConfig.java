@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -78,8 +78,8 @@ public @interface MapperConfig {
      * {@code spring}: the generated mapper is a Spring bean and
      * can be retrieved via {@code @Autowired}</li>
      * <li>
-     * {@code jsr330}: the generated mapper is annotated with {@code @Named} and
-     * can be retrieved via {@code @Inject}</li>
+     * {@code jsr330}: the generated mapper is annotated with {@code @javax.inject.Named} and
+     * {@code @Singleton}, and can be retrieved via {@code @Inject}</li>
      * </ul>
      *
      * @return The component model for the generated mapper.

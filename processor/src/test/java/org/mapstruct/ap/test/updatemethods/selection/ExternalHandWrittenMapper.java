@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.updatemethods.selection;
 
 import java.util.List;
 import java.util.Map;
+
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ap.test.updatemethods.DepartmentDto;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntity;
@@ -56,7 +57,8 @@ public class ExternalHandWrittenMapper {
 
         if ( entityMap != null && dtoMap != null ) {
             for ( Map.Entry<SecretaryDto, EmployeeDto> dtoEntry : dtoMap.entrySet() ) {
-                entityMap.put( DepartmentMapper.INSTANCE.toSecretaryEntity( dtoEntry.getKey() ) ,
+                entityMap.put(
+                    DepartmentMapper.INSTANCE.toSecretaryEntity( dtoEntry.getKey() ),
                     DepartmentMapper.INSTANCE.toEmployeeEntity( dtoEntry.getValue() )  );
             }
         }

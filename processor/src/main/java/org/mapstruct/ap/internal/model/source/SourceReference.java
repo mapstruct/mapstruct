@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -178,9 +179,16 @@ public class SourceReference {
 
                 for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
                     if ( getter.getKey().equals( entryName ) ) {
+<<<<<<< HEAD
                         newType = typeFactory.getReturnType( newType.getTypeElement(), getter.getValue() );
                         sourceEntries.add( new PropertyEntry( entryName, getter.getValue(),
                               sourcePresenceCheckers.get( entryName), newType ) );
+=======
+                        newType = typeFactory.getReturnType(
+                                (DeclaredType) newType.getTypeMirror(), getter.getValue()
+                        );
+                        sourceEntries.add( new PropertyEntry( entryName, getter.getValue(), newType ) );
+>>>>>>> remotes/origin/master
                         matchFound = true;
                         break;
                     }

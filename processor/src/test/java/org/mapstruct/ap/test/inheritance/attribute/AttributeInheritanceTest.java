@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -50,11 +50,11 @@ public class AttributeInheritanceTest {
     }
 
     @Test
-    @WithClasses({ Source.class, Target.class, TargetSourceMapper.class })
+    @WithClasses({ Source.class, Target.class, ErroneousTargetSourceMapper.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = @Diagnostic(
-            type = TargetSourceMapper.class,
+            type = ErroneousTargetSourceMapper.class,
             kind = Kind.ERROR,
             line = 29,
             messageRegExp = "Can't map property \"java.lang.CharSequence foo\" to \"java.lang.String foo\""

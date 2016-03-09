@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.model.common;
 
 import java.util.Set;
+
 import javax.lang.model.element.Modifier;
 
 /**
@@ -31,7 +32,7 @@ public enum Accessibility {
 
     private final String keyword;
 
-    private Accessibility(String keyword) {
+    Accessibility(String keyword) {
         this.keyword = keyword;
     }
 

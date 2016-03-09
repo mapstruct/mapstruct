@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -77,10 +77,10 @@ public class ConfigTest {
     }
 
     @Test
-    @WithClasses( { TargetNoFoo.class, SourceTargetMapperError.class } )
+    @WithClasses( { TargetNoFoo.class, SourceTargetMapperErroneous.class } )
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = SourceTargetMapperError.class,
+            @Diagnostic(type = SourceTargetMapperErroneous.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR, line = 33,
                 messageRegExp = "Unmapped target property: \"noFoo\"")
         })

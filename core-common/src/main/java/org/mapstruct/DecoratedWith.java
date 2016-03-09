@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -89,13 +89,14 @@ import java.lang.annotation.Target;
  * <h4>Referencing the original mapper in the decorator</h4>
  * <p>
  * The generated implementation of the original mapper is annotated with the Spring annotation
- * {@code @Qualifier("delegate")}. To autowire that bean in your decorator, add that qualifier annotation as well:
+ * {@code @org.springframework.beans.factory.annotation.Qualifier("delegate")}. To autowire that bean in your decorator,
+ * add that qualifier annotation as well:
  *
  * <pre>
  * public abstract class PersonMapperDecorator implements PersonMapper {
  *
  *     &#64;Autowired
- *     &#64;Qualifier("delegate")
+ *     &#64;org.springframework.beans.factory.annotation.Qualifier("delegate")
  *     private PersonMapper delegate;
  *
  *     &#64;Override
@@ -122,16 +123,16 @@ import java.lang.annotation.Target;
  * <h4>Referencing the original mapper</h4>
  * <p>
  * JSR 330 doesn't specify qualifiers and only allows to specifically name the beans. Hence, the generated
- * implementation of the original mapper is annotated with {@code @Named("fully-qualified-name-of-generated-impl")}
- * (please note that when using a decorator, the class name of the mapper implementation ends with an underscore). To
- * inject that bean in your decorator, add the same annotation to the delegate field (e.g. by copy/pasting it from the
- * generated class):
+ * implementation of the original mapper is annotated with
+ * {@code @javax.inject.Named("fully-qualified-name-of-generated-impl")} and {@code @Singleton} (please note that when
+ * using a decorator, the class name of the mapper implementation ends with an underscore). To inject that bean in your
+ * decorator, add the same annotation to the delegate field (e.g. by copy/pasting it from the generated class):
  *
  * <pre>
  * public abstract class PersonMapperDecorator implements PersonMapper {
  *
  *     &#64;Inject
- *     &#64;Named("org.examples.PersonMapperImpl_")
+ *     &#64;javax.inject.Named("org.examples.PersonMapperImpl_")
  *     private PersonMapper delegate;
  *
  *     &#64;Override
@@ -147,12 +148,12 @@ import java.lang.annotation.Target;
  * <h4>Using the decorated mapper in the decorator</h4>
  * <p>
  * Unlike with the other component models, the usage site must be aware if a mapper is decorated or not, as for
- * decorated mappers, the parameterless {@code @Named} annotation must be added to select the <em>decorator</em> to be
- * injected:
+ * decorated mappers, the parameterless {@code @javax.inject.Named} annotation must be added to select the
+ * <em>decorator</em> to be injected:
  *
  * <pre>
  * &#64;Inject
- * &#64;Named
+ * &#64;javax.inject.Named
  * private PersonMapper personMapper; // injects the decorator, with the injected original mapper
  * </pre>
  * <p>

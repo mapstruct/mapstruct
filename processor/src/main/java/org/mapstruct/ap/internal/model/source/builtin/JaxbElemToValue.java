@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
@@ -25,8 +27,6 @@ import javax.xml.bind.JAXBElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * @author Sjaak Derksen
@@ -40,7 +40,7 @@ public class JaxbElemToValue extends BuiltInMethod {
     public JaxbElemToValue(TypeFactory typeFactory) {
         this.parameter = new Parameter( "element", typeFactory.getType( JAXBElement.class ) );
         this.returnType = typeFactory.getType( Object.class );
-        this.importTypes = asSet( typeFactory.getType( JAXBElement.class ) );
+        this.importTypes = asSet( parameter.getType() );
     }
 
     @Override

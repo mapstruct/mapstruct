@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,12 +18,9 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.List;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.prism.MapMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
@@ -38,12 +35,10 @@ import org.mapstruct.ap.internal.util.Message;
 public class MapMapping {
 
     private final String keyFormat;
-    private final List<TypeMirror> keyQualifiers;
+    private final SelectionParameters keySelectionParameters;
     private final String valueFormat;
-    private final List<TypeMirror> valueQualifiers;
+    private final SelectionParameters valueSelectionParameters;
     private final AnnotationMirror mirror;
-    private final TypeMirror keyQualifyingTargetType;
-    private final TypeMirror valueQualifyingTargetType;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
     public static MapMapping fromPrism(MapMappingPrism mapMapping, ExecutableElement method,
@@ -62,8 +57,10 @@ public class MapMapping {
         boolean valueTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.valueTargetType().getKind() );
         if ( mapMapping.keyDateFormat().isEmpty()
             && mapMapping.keyQualifiedBy().isEmpty()
+            && mapMapping.keyQualifiedByName().isEmpty()
             && mapMapping.valueDateFormat().isEmpty()
             && mapMapping.valueQualifiedBy().isEmpty()
+            && mapMapping.valueQualifiedByName().isEmpty()
             && !keyTargetTypeIsDefined
             && !valueTargetTypeIsDefined
             && ( nullValueMappingStrategy == null ) ) {
@@ -71,28 +68,32 @@ public class MapMapping {
             messager.printMessage( method, Message.MAPMAPPING_NO_ELEMENTS );
         }
 
+        SelectionParameters keySelection = new SelectionParameters(
+            mapMapping.keyQualifiedBy(),
+            mapMapping.keyQualifiedByName(),
+            keyTargetTypeIsDefined ? mapMapping.keyTargetType() : null);
+
+        SelectionParameters valueSelection = new SelectionParameters(
+            mapMapping.valueQualifiedBy(),
+            mapMapping.valueQualifiedByName(),
+            valueTargetTypeIsDefined ? mapMapping.valueTargetType() : null);
 
         return new MapMapping(
             mapMapping.keyDateFormat(),
-            mapMapping.keyQualifiedBy(),
-            keyTargetTypeIsDefined ? mapMapping.keyTargetType() : null,
+            keySelection,
             mapMapping.valueDateFormat(),
-            mapMapping.valueQualifiedBy(),
-            valueTargetTypeIsDefined ? mapMapping.valueTargetType() : null,
+            valueSelection,
             mapMapping.mirror,
             nullValueMappingStrategy
         );
     }
 
-    private MapMapping(String keyFormat, List<TypeMirror> keyQualifiers, TypeMirror keyResultType, String valueFormat,
-            List<TypeMirror> valueQualifiers, TypeMirror valueResultType, AnnotationMirror mirror,
-            NullValueMappingStrategyPrism nvms ) {
+    private MapMapping(String keyFormat, SelectionParameters keySelectionParameters, String valueFormat,
+        SelectionParameters valueSelectionParameters, AnnotationMirror mirror, NullValueMappingStrategyPrism nvms ) {
         this.keyFormat = keyFormat;
-        this.keyQualifiers = keyQualifiers;
-        this.keyQualifyingTargetType = keyResultType;
+        this.keySelectionParameters = keySelectionParameters;
         this.valueFormat = valueFormat;
-        this.valueQualifiers = valueQualifiers;
-        this.valueQualifyingTargetType = valueResultType;
+        this.valueSelectionParameters = valueSelectionParameters;
         this.mirror = mirror;
         this.nullValueMappingStrategy = nvms;
     }
@@ -101,24 +102,16 @@ public class MapMapping {
         return keyFormat;
     }
 
-    public List<TypeMirror>  getKeyQualifiers() {
-        return keyQualifiers;
-    }
-
-    public TypeMirror getKeyQualifyingTargetType() {
-        return keyQualifyingTargetType;
+    public SelectionParameters getKeySelectionParameters() {
+        return keySelectionParameters;
     }
 
     public String getValueFormat() {
         return valueFormat;
     }
 
-    public List<TypeMirror>  getValueQualifiers() {
-        return valueQualifiers;
-    }
-
-    public TypeMirror getValueQualifyingTargetType() {
-        return valueQualifyingTargetType;
+    public SelectionParameters getValueSelectionParameters() {
+        return valueSelectionParameters;
     }
 
     public AnnotationMirror getMirror() {

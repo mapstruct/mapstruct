@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,11 +18,11 @@
  */
 package org.mapstruct.ap.test.bugs._581;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.bugs._581.source.Car;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 @Mapper
 public interface SourceTargetMapper {

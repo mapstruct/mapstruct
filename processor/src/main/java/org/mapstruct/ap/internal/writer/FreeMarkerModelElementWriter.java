@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -21,6 +21,8 @@ package org.mapstruct.ap.internal.writer;
 import java.io.Writer;
 import java.util.Map;
 
+import org.mapstruct.ap.internal.writer.Writable.Context;
+
 import freemarker.ext.beans.BeanModel;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.SimpleMapModel;
@@ -29,8 +31,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
-
-import org.mapstruct.ap.internal.writer.Writable.Context;
 
 /**
  * Delegate for writing given {@link Writable}s into a {@link Writer} using
@@ -59,7 +59,7 @@ public class FreeMarkerModelElementWriter {
         private final BeanModel object;
         private final SimpleMapModel extParams;
 
-        public ExternalParamsTemplateModel(BeanModel object, SimpleMapModel extParams) {
+        ExternalParamsTemplateModel(BeanModel object, SimpleMapModel extParams) {
             this.object = object;
             this.extParams = extParams;
         }

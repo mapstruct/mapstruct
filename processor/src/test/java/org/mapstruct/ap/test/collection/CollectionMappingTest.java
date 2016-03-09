@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -375,5 +375,18 @@ public class CollectionMappingTest {
 
         assertThat( numbers ).isNotNull();
         assertThat( numbers ).containsOnly( 123, 456 );
+    }
+
+    @Test
+    @IssueKey("732")
+    public void shouldEnumSetAsCopy() {
+        Source source = new Source();
+        source.setEnumSet( EnumSet.of( Colour.BLUE, Colour.GREEN ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        source.getEnumSet().add( Colour.RED );
+
+        assertThat( source.getEnumSet() ).containsOnly( Colour.BLUE, Colour.GREEN, Colour.RED );
+        assertThat( target.getEnumSet() ).containsOnly( Colour.BLUE, Colour.GREEN );
     }
 }

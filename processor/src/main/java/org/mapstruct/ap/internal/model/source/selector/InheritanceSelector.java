@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,14 +18,14 @@
  */
 package org.mapstruct.ap.internal.model.source.selector;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Selects on inheritance distance, e.g. the amount of inheritance steps from the parameter type.

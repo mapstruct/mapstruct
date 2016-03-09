@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -35,6 +35,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
@@ -265,7 +266,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     public Set<Type> getImportTypes() {
         Set<Type> result = new HashSet<Type>();
 
-        result.add( this );
+        if ( getTypeMirror().getKind() == TypeKind.DECLARED ) {
+            result.add( this );
+        }
 
         if ( componentType != null ) {
             result.addAll( componentType.getImportTypes() );
@@ -273,6 +276,10 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         for ( Type parameter : typeParameters ) {
             result.addAll( parameter.getImportTypes() );
+        }
+
+        if ( boundingBase != null ) {
+            result.addAll( boundingBase.getImportTypes() );
         }
 
         return result;
@@ -414,7 +421,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 // first check if there's a setter method.
                 ExecutableElement adderMethod = null;
                 if ( Executables.isSetterMethod( candidate ) ) {
-                    Type targetType = typeFactory.getSingleParameter( typeElement, candidate ).getType();
+                    Type targetType = typeFactory.getSingleParameter( (DeclaredType) typeMirror, candidate ).getType();
                     // ok, the current accessor is a setter. So now the strategy determines what to use
                     if ( cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
                         adderMethod = getAdderForType( targetType, targetPropertyName );
@@ -423,7 +430,9 @@ public class Type extends ModelElement implements Comparable<Type> {
                 else if ( Executables.isGetterMethod( candidate ) ) {
                         // the current accessor is a getter (no setter available). But still, an add method is according
                     // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
-                    Type targetType = typeFactory.getReturnType( typeFactory.getMethodType( typeElement, candidate ) );
+                    Type targetType = typeFactory.getReturnType(
+                            typeFactory.getMethodType( (DeclaredType) typeMirror, candidate )
+                    );
                     adderMethod = getAdderForType( targetType, targetPropertyName );
                 }
                 if ( adderMethod != null ) {

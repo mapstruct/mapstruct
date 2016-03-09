@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -19,8 +19,10 @@
 package org.mapstruct.ap.test.collection.wildcard;
 
 import java.math.BigDecimal;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

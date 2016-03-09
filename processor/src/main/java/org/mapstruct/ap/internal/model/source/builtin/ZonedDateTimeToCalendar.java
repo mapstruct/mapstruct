@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,14 +18,16 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.JavaTimeConstants;
 
 /**
@@ -41,7 +43,7 @@ public class ZonedDateTimeToCalendar extends BuiltInMethod {
     ZonedDateTimeToCalendar(TypeFactory typeFactory) {
         this.returnType = typeFactory.getType( Calendar.class );
         this.parameter = new Parameter( "dateTime", typeFactory.getType( JavaTimeConstants.ZONED_DATE_TIME_FQN ) );
-        this.importedTypes = Collections.asSet( returnType, parameter.getType() );
+        this.importedTypes = asSet( returnType, parameter.getType(), typeFactory.getType( TimeZone.class ) );
     }
 
     @Override

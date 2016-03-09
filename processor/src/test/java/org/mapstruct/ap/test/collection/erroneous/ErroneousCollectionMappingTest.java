@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -57,6 +57,23 @@ public class ErroneousCollectionMappingTest {
     }
 
     @Test
+    @IssueKey("729")
+    @WithClasses({ ErroneousCollectionToPrimitivePropertyMapper.class, Source.class, Target.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousCollectionToPrimitivePropertyMapper.class,
+                kind = Kind.ERROR,
+                line = 26,
+                messageRegExp = "Can't map property \"java.util.List<java.lang.String> strings\" to \"int strings\". "
+                        + "Consider to declare/implement a mapping method: \"int map\\(java.util.List<java.lang.String>"
+                        + " value\\)\"")
+        }
+    )
+    public void shouldFailToGenerateImplementationBetweenCollectionAndPrimitive() {
+    }
+
+    @Test
     @IssueKey("417")
     @WithClasses({ EmptyItererableMappingMapper.class })
     @ExpectedCompilationOutcome(
@@ -64,7 +81,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = EmptyItererableMappingMapper.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 36,
                 messageRegExp = "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are "
                     + "undefined in @IterableMapping, define at least one of them.")
         }
@@ -80,7 +97,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = EmptyMapMappingMapper.class,
                 kind = Kind.ERROR,
-                line = 34,
+                line = 35,
                 messageRegExp = "'nullValueMappingStrategy', 'keyDateFormat', 'keyQualifiedBy', 'keyTargetType', "
                     + "'valueDateFormat', 'valueQualfiedBy' and 'valueTargetType' are all undefined in @MapMapping, "
                     + "define at least one of them.")
@@ -97,7 +114,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 37,
                 messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
                     + "conversion for mapping source element type into target element type.")
         }
@@ -113,7 +130,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoKeyMappingFound.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 37,
                 messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
                     + "conversion for mapping source key type to target key type.")
         }
@@ -129,7 +146,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoValueMappingFound.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 37,
                 messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
                     + "conversion for mapping source value type to target value type.")
         }

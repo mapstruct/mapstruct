@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-     Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+     Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
      and/or other contributors as indicated by the @authors tag. See the
      copyright.txt file in the distribution for a full listing of all
      contributors.
@@ -62,6 +62,14 @@
         <file>
             <source>target/freemarker-unpacked/META-INF/LICENSE.txt</source>
             <outputDirectory>etc/freemarker</outputDirectory>
+        </file>
+        <file>
+            <source>../documentation/target/generated-docs/mapstruct-reference-guide.html</source>
+            <outputDirectory>docs/reference/html</outputDirectory>
+        </file>
+        <file>
+            <source>../documentation/target/generated-docs/mapstruct-reference-guide.pdf</source>
+            <outputDirectory>docs/reference/pdf</outputDirectory>
         </file>
     </files>
 

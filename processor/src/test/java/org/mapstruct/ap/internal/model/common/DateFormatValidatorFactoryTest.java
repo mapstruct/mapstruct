@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,20 +18,20 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import org.junit.Test;
-import org.mapstruct.ap.internal.util.JavaTimeConstants;
-import org.mapstruct.ap.internal.util.JodaTimeConstants;
-import org.mapstruct.ap.testutil.IssueKey;
+import static org.fest.assertions.Assertions.assertThat;
+
+import java.lang.annotation.Annotation;
+import java.util.List;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.junit.Test;
+import org.mapstruct.ap.internal.util.JavaTimeConstants;
+import org.mapstruct.ap.internal.util.JodaTimeConstants;
+import org.mapstruct.ap.testutil.IssueKey;
 
 /**
  * Tests for {@link org.mapstruct.ap.internal.model.common.DateFormatValidatorFactory}.

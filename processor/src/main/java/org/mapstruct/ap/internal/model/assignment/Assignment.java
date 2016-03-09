@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -30,7 +30,7 @@ import org.mapstruct.ap.internal.model.common.Type;
  */
 public interface Assignment {
 
-    public static enum AssignmentType {
+    enum AssignmentType {
         /** assignment is direct */
         DIRECT,
         /** assignment is type converted */

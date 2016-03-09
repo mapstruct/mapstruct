@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -37,7 +37,7 @@ public enum ReportingPolicy {
     private final boolean requiresReport;
     private final boolean failsBuild;
 
-    private ReportingPolicy(Diagnostic.Kind diagnosticKind, boolean requiresReport, boolean failsBuild) {
+    ReportingPolicy(Diagnostic.Kind diagnosticKind, boolean requiresReport, boolean failsBuild) {
         this.requiresReport = requiresReport;
         this.diagnosticKind = diagnosticKind;
         this.failsBuild = failsBuild;

@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import static org.mapstruct.ap.internal.conversion.ReverseConversion.reverse;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
@@ -31,8 +33,6 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
-
-import static org.mapstruct.ap.internal.conversion.ReverseConversion.reverse;
 
 /**
  * Holds built-in {@link ConversionProvider}s such as from {@code int} to {@code String}.

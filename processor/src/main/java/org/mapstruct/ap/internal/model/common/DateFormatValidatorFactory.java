@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,13 +18,13 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import org.mapstruct.ap.internal.util.JavaTimeConstants;
-import org.mapstruct.ap.internal.util.JodaTimeConstants;
-import org.mapstruct.ap.internal.util.Message;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+
+import org.mapstruct.ap.internal.util.JavaTimeConstants;
+import org.mapstruct.ap.internal.util.JodaTimeConstants;
+import org.mapstruct.ap.internal.util.Message;
 
 /**
  * Factory for {@link DateFormatValidator}. <p> Based on the types of source / target type  a specific {@link

@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -65,6 +65,21 @@ public @interface MapMapping {
      */
     Class<? extends Annotation>[] keyQualifiedBy() default { };
 
+    /**
+     * String-based form of qualifiers; When looking for a suitable mapping method to map this map mapping method's key
+     * type, MapStruct will only consider those methods carrying directly or indirectly (i.e. on the class-level) a
+     * {@link Named} annotation for each of the specified qualifier names.
+     * <p>
+     * Note that annotation-based qualifiers are generally preferable as they allow more easily to find references and
+     * are safe for refactorings, but name-based qualifiers can be a less verbose alternative when requiring a large
+     * number of qualifiers as no custom annotation types are needed.
+     *
+     * @return One or more qualifier name(s)
+     * @see #keyQualifiedBy()
+     * @see Named
+     */
+    String[] keyQualifiedByName() default { };
+
 
     /**
      * A value qualifier can be specified to aid the selection process of a suitable mapper for the values in the map.
@@ -76,6 +91,21 @@ public @interface MapMapping {
      * @return the qualifiers
      */
     Class<? extends Annotation>[] valueQualifiedBy() default { };
+
+    /**
+     * String-based form of qualifiers; When looking for a suitable mapping method to map this map mapping method's
+     * value type, MapStruct will only consider those methods carrying directly or indirectly (i.e. on the class-level)
+     * a {@link Named} annotation for each of the specified qualifier names.
+     * <p>
+     * Note that annotation-based qualifiers are generally preferable as they allow more easily to find references and
+     * are safe for refactorings, but name-based qualifiers can be a less verbose alternative when requiring a large
+     * number of qualifiers as no custom annotation types are needed.
+     *
+     * @return One or more qualifier name(s)
+     * @see #valueQualifiedBy()
+     * @see Named
+     */
+    String[] valueQualifiedByName() default { };
 
     /**
      * Specifies the type of the key to be used in the result of the mapping method in case multiple mapping

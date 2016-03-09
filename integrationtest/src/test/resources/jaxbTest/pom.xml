@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
- Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  and/or other contributors as indicated by the @authors tag. See the
  copyright.txt file in the distribution for a full listing of all
  contributors.
@@ -50,6 +50,7 @@
                     <schemaDirectory>\${project.build.resources[0].directory}/schema/</schemaDirectory>
                     <schemaIncludes>
                         <include>**/test1.xsd</include>
+                        <include>**/underscores.xsd</include>
                     </schemaIncludes>
                     <bindingDirectory>\${project.build.resources[0].directory}/binding</bindingDirectory>
                     <bindingIncludes>

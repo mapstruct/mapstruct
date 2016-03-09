@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import static java.util.Arrays.asList;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -27,9 +30,6 @@ import org.mapstruct.ap.internal.model.AssignmentFactory;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
-
-import static java.util.Arrays.asList;
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link String} and {@link Date}.

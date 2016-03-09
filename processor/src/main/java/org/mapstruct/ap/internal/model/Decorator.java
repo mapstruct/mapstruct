@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,19 +18,20 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedSet;
+
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.prism.DecoratedWithPrism;
 import org.mapstruct.ap.internal.version.VersionInformation;
-
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import java.util.Arrays;
-import java.util.List;
-import java.util.SortedSet;
 
 /**
  * Represents a decorator applied to a generated mapper type.
@@ -130,7 +131,7 @@ public class Decorator extends GeneratedType {
                 elementPackage,
                 mapperElement.getKind() == ElementKind.INTERFACE ? mapperElement.getSimpleName().toString() : null,
                 methods,
-                Arrays.asList(  new Field( typeFactory.getType( mapperElement ), "delegate", true ) ) ,
+                Arrays.asList( new Field( typeFactory.getType( mapperElement ), "delegate", true ) ),
                 options,
                 versionInformation,
                 Accessibility.fromModifiers( mapperElement.getModifiers() ),
@@ -170,7 +171,7 @@ public class Decorator extends GeneratedType {
     @Override
     public SortedSet<Type> getImportTypes() {
         SortedSet<Type> importTypes = super.getImportTypes();
-        addWithDependents( importTypes, decoratorType );
+        addIfImportRequired( importTypes, decoratorType );
         return importTypes;
     }
 

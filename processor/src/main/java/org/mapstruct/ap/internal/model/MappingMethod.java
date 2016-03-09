@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
+import static org.mapstruct.ap.internal.util.Strings.join;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,9 +32,6 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
-
-import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
-import static org.mapstruct.ap.internal.util.Strings.join;
 
 /**
  * A method implemented or referenced by a {@link Mapper} class.
@@ -58,6 +58,8 @@ public abstract class MappingMethod extends ModelElement {
      *
      * @param method method
      * @param existingVariableNames existingVariableNames
+     * @param beforeMappingReferences
+     * @param afterMappingReferences
      */
     protected MappingMethod(Method method, Collection<String> existingVariableNames,
                             List<LifecycleCallbackMethodReference> beforeMappingReferences,
@@ -149,11 +151,15 @@ public abstract class MappingMethod extends ModelElement {
         Set<Type> types = new HashSet<Type>();
 
         for ( Parameter param : parameters ) {
-            types.add( param.getType() );
+            types.addAll( param.getType().getImportTypes() );
         }
 
-        types.add( getReturnType() );
-        types.addAll( thrownTypes );
+        types.addAll( getReturnType().getImportTypes() );
+
+        for ( Type type : thrownTypes ) {
+            types.addAll( type.getImportTypes() );
+        }
+
         return types;
     }
 

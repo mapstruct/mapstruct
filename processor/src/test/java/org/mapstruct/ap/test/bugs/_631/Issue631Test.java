@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.bugs._631;
 
 
 import javax.tools.Diagnostic.Kind;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -40,17 +41,17 @@ public class Issue631Test {
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = SourceTargetMapper.class,
+            @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 35,
                 messageRegExp = "Can't generate mapping method for a generic type variable target."),
-            @Diagnostic(type = SourceTargetMapper.class,
+            @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
                 line = 37,
                 messageRegExp = "Can't generate mapping method for a generic type variable source.")
         }
     )
-    @WithClasses({SourceTargetMapper.class, Base1.class, Base2.class})
+    @WithClasses({ErroneousSourceTargetMapper.class, Base1.class, Base2.class})
     public void showsCantMapPropertyError() {
 
     }

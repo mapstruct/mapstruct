@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -22,12 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
-
 import org.mapstruct.TargetType;
 import org.mapstruct.ap.test.collection.adder._target.IndoorPet;
 import org.mapstruct.ap.test.collection.adder._target.OutdoorPet;
 import org.mapstruct.ap.test.collection.adder._target.Pet;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Sjaak Derksen

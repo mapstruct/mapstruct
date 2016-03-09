@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -17,6 +17,8 @@
  *  limitations under the License.
  */
 package org.mapstruct.ap.testutil.runner;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -49,8 +51,6 @@ import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
 import com.puppycrawl.tools.checkstyle.DefaultLogger;
 import com.puppycrawl.tools.checkstyle.PropertiesExpander;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * A JUnit4 statement that performs source generation using the annotation processor and compiles those sources.

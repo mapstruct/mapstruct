@@ -1,6 +1,6 @@
 <#--
 
-     Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+     Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
      and/or other contributors as indicated by the @authors tag. See the
      copyright.txt file in the distribution for a full listing of all
      contributors.
@@ -27,7 +27,7 @@ public <@includeModel object=returnType/> ${name}(<#list parameters as param><@i
         <#if (thrownTypes?size > 0)>throws </#if>
         <#list thrownTypes as exceptionType>
             <@includeModel object=exceptionType/>
-            <#if exceptionType_has_next>, </#if>
+            <#if exceptionType_has_next>, </#if><#t>
         </#list>
     </@compress>
 </#macro>

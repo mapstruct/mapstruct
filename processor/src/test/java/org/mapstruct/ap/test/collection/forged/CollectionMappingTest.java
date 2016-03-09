@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -19,6 +19,8 @@
 package org.mapstruct.ap.test.collection.forged;
 
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import java.util.Map;
 
 import javax.tools.Diagnostic.Kind;
@@ -35,8 +37,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import com.google.common.collect.ImmutableMap;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 /**
  * Test for mappings between collection types,
  *
@@ -51,7 +51,7 @@ public class CollectionMappingTest {
     public void shouldForgeNewIterableMappingMethod() {
 
         Source source = new Source();
-        source.setFooSet( Collections.asSet( "1", "2") );
+        source.setFooSet( Collections.asSet( "1", "2" ) );
 
         Target target = CollectionMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();

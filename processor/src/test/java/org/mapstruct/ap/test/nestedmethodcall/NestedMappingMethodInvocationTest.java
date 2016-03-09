@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -31,8 +31,8 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
-import org.junit.Before;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -106,7 +106,7 @@ public class NestedMappingMethodInvocationTest {
 
         assertThat( source ).isNotNull();
         assertThat( source.getDate().getValue() ).isEqualTo( "06.07.2013" );
-        assertThat( source.getDate().getName()).isEqualTo( QNAME );
+        assertThat( source.getDate().getName() ).isEqualTo( QNAME );
     }
 
     private OrderType createOrderType() throws DatatypeConfigurationException {
