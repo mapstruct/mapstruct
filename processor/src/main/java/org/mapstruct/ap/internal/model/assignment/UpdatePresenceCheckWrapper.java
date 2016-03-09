@@ -16,20 +16,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.hascheck;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.ValueSetCheckStrategy;
+package org.mapstruct.ap.internal.model.assignment;
 
 /**
+ * Wraps the assignment in a target setter, if {@link org.mapstruct.Mapper#sourceValuePresenceCheckStrategy}
+ * or {@link org.mapstruct.Mapping#sourceValuePresenceCheckStrategy} is set to
+ * {@link org.mapstruct.SourceValuePresenceCheckStrategy#CUSTOM}.
+ *
  * @author Sean Huang
  */
-@Mapper( valueSetCheckStrategy = ValueSetCheckStrategy.IS_NULL_INLINE )
-public class CustomMapper {
+public class UpdatePresenceCheckWrapper extends AssignmentWrapper {
 
-    public MyLongWrapper toMyLongWrapperViaPrimitive(long primitive) {
-        MyLongWrapper wrapper = new MyLongWrapper();
-        wrapper.setMyLong( primitive );
-        return wrapper;
+    private final String sourcePresenceChecker;
+
+    public UpdatePresenceCheckWrapper( Assignment decoratedAssignment, String sourceHasMethod) {
+        super( decoratedAssignment );
+        this.sourcePresenceChecker = sourceHasMethod;
+    }
+
+    @Override
+    public String getSourcePresenceCheckMethod() {
+        return sourcePresenceChecker;
     }
 }

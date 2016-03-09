@@ -38,7 +38,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
-import org.mapstruct.ap.internal.prism.ValueSetCheckStrategyPrism;
+import org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
@@ -61,7 +61,9 @@ public class Mapping {
     private final TypeMirror resultType;
     private final boolean isIgnored;
     private final List<String> dependsOn;
-    private final ValueSetCheckStrategyPrism valueSetCheckStrategyPrism;
+
+    private final SourceValuePresenceCheckStrategy valuePresenceCheckStrategy;
+    private final boolean isSetValuePresenceCheckStrategy;
 
     private final AnnotationMirror mirror;
     private final AnnotationValue sourceAnnotationValue;
@@ -140,6 +142,8 @@ public class Mapping {
         List<String> dependsOn =
             mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
 
+        boolean isSetValuePresenceCheckStrategy = mappingPrism.values.sourceValuePresenceCheckStrategy() != null;
+
         return new Mapping(
             source,
             constant,
@@ -155,7 +159,8 @@ public class Mapping {
             mappingPrism.values.dependsOn(),
             resultType,
             dependsOn,
-            ValueSetCheckStrategyPrism.valueOf( mappingPrism.valueSetCheckStrategy() )
+            SourceValuePresenceCheckStrategy.valueOf( mappingPrism.sourceValuePresenceCheckStrategy() ),
+            isSetValuePresenceCheckStrategy
         );
     }
 
@@ -165,7 +170,9 @@ public class Mapping {
                     boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
                     AnnotationValue dependsOnAnnotationValue,
-                    TypeMirror resultType, List<String> dependsOn, ValueSetCheckStrategyPrism valueSetCheckStrategy) {
+                    TypeMirror resultType, List<String> dependsOn,
+                    SourceValuePresenceCheckStrategy valuePresenceCheckStrategy,
+                    boolean isSetValuePresenceCheckStrategy) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -180,7 +187,8 @@ public class Mapping {
         this.dependsOnAnnotationValue = dependsOnAnnotationValue;
         this.resultType = resultType;
         this.dependsOn = dependsOn;
-        this.valueSetCheckStrategyPrism = valueSetCheckStrategy;
+        this.valuePresenceCheckStrategy = valuePresenceCheckStrategy;
+        this.isSetValuePresenceCheckStrategy = isSetValuePresenceCheckStrategy;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
@@ -285,8 +293,12 @@ public class Mapping {
         return dependsOn;
     }
 
-    public ValueSetCheckStrategyPrism valueSetCheckStrategy() {
-        return valueSetCheckStrategyPrism;
+    public SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() {
+        return valuePresenceCheckStrategy;
+    }
+
+    public boolean isSetSourceValuePresenceCheckStrategy() {
+        return isSetValuePresenceCheckStrategy;
     }
 
     private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
@@ -339,7 +351,8 @@ public class Mapping {
             dependsOnAnnotationValue,
             null,
             Collections.<String>emptyList(),
-            valueSetCheckStrategyPrism
+            valuePresenceCheckStrategy,
+            isSetValuePresenceCheckStrategy
         );
 
         reverse.init( method, messager, typeFactory );
@@ -368,7 +381,8 @@ public class Mapping {
             dependsOnAnnotationValue,
             resultType,
             dependsOn,
-            valueSetCheckStrategyPrism
+            valuePresenceCheckStrategy,
+            isSetValuePresenceCheckStrategy
         );
 
         if ( sourceReference != null ) {

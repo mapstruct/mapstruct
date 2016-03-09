@@ -84,7 +84,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final List<String> enumConstants;
 
     private Map<String, ExecutableElement> getters = null;
-    private Map<String, ExecutableElement> hassers = null;
+    private Map<String, ExecutableElement> presenceCheckers = null;
 
     private List<ExecutableElement> allExecutables = null;
     private List<ExecutableElement> setters = null;
@@ -364,20 +364,20 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * getPropertyHasAccessors
+     * getPropertyPresenceCheckers
      *
-     * @return an unmodifiable map of all has accessors, indexed by property name
+     * @return an unmodifiable map of all presence checkers, indexed by property name
      */
-    public Map<String, ExecutableElement> getPropertyHasAccessors() {
-        if ( hassers == null ) {
-            List<ExecutableElement> hasserList = Filters.hasserMethodsIn( getAllExecutables() );
-            Map<String, ExecutableElement> modifiableHassers = new LinkedHashMap<String, ExecutableElement>();
-            for (ExecutableElement hasser : hasserList) {
-                modifiableHassers.put( Executables.getPropertyName( hasser ), hasser );
+    public Map<String, ExecutableElement> getPropertyPresenceCheckers() {
+        if ( presenceCheckers == null ) {
+            List<ExecutableElement> checkerList = Filters.presenceCheckMethodsIn( getAllExecutables() );
+            Map<String, ExecutableElement> modifiableCheckers = new LinkedHashMap<String, ExecutableElement>();
+            for (ExecutableElement checker : checkerList) {
+                modifiableCheckers.put( Executables.getPropertyName( checker ), checker );
             }
-            hassers = Collections.unmodifiableMap( modifiableHassers );
+            presenceCheckers = Collections.unmodifiableMap( modifiableCheckers );
         }
-        return hassers;
+        return presenceCheckers;
     }
 
     /**

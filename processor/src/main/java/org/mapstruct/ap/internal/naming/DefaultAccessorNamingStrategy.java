@@ -43,7 +43,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
             return MethodType.GETTER;
         }
         else if ( isHasserMethod( method ) ) {
-            return MethodType.HASSER;
+            return MethodType.PRESENCE_CHECKER;
         }
         else if ( isSetterMethod( method ) ) {
             return MethodType.SETTER;

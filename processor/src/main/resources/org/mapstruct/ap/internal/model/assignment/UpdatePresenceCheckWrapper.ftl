@@ -18,7 +18,7 @@
      limitations under the License.
 
 -->
-if ( ${sourceHasMethod} ) {
+if ( ${sourcePresenceCheckMethod} ) {
     <@includeModel object=assignment
                 targetBeanName=ext.targetBeanName
                 existingInstanceMapping=ext.existingInstanceMapping

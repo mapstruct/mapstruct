@@ -23,7 +23,7 @@ package org.mapstruct;
  *
  * @author Sean Huang
  */
-public enum ValueSetCheckStrategy {
+public enum SourceValuePresenceCheckStrategy {
 
     /**
      * Check != null for inline conversions)
@@ -41,12 +41,5 @@ public enum ValueSetCheckStrategy {
      * Will invoke custom hasX() method, before mapping,
      * name to be given through the accessor naming strategy
      */
-    CUSTOM,
-
-    /**
-     * Undefined, default value in {@link Mapping}, so it can be overridden
-     * by the value defined in {@link Mapper}
-     *
-     */
-    UNDEFINED;
+    CUSTOM;
 }

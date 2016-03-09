@@ -45,7 +45,7 @@ public class Direct extends ModelElement implements Assignment {
     }
 
     @Override
-    public String getSourceHasMethod() {
+    public String getSourcePresenceCheckMethod() {
         return null;
     }
 

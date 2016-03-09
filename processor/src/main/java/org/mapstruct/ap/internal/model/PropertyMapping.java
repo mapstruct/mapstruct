@@ -23,7 +23,7 @@ import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentTy
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
-import static org.mapstruct.ap.internal.prism.ValueSetCheckStrategyPrism.CUSTOM;
+import static org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy.CUSTOM;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,12 +37,12 @@ import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
-import org.mapstruct.ap.internal.model.assignment.HasCheckWrapper;
+import org.mapstruct.ap.internal.model.assignment.PresenceCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
-import org.mapstruct.ap.internal.model.assignment.UpdateHasCheckWrapper;
+import org.mapstruct.ap.internal.model.assignment.UpdatePresenceCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateNullCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.ModelElement;
@@ -52,7 +52,7 @@ import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
-import org.mapstruct.ap.internal.prism.ValueSetCheckStrategyPrism;
+import org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -74,7 +74,7 @@ public class PropertyMapping extends ModelElement {
     private final Type targetType;
     private final Assignment assignment;
     private final List<String> dependsOn;
-    private final ValueSetCheckStrategyPrism valueSetCheckStrategy;
+    private final SourceValuePresenceCheckStrategy valueSetCheckStrategy;
     private final Assignment defaultValueAssignment;
 
     @SuppressWarnings("unchecked")
@@ -86,7 +86,7 @@ public class PropertyMapping extends ModelElement {
         protected ExecutableElement targetReadAccessor;
         protected String targetPropertyName;
         protected List<String> dependsOn;
-        protected ValueSetCheckStrategyPrism valueSetCheckStrategy;
+        protected SourceValuePresenceCheckStrategy valueSetCheckStrategy;
         protected Set<String> existingVariableNames;
 
         public T mappingContext(MappingBuilderContext mappingContext) {
@@ -119,7 +119,7 @@ public class PropertyMapping extends ModelElement {
             return (T) this;
         }
 
-        public T valueSetCheckStrategy(ValueSetCheckStrategyPrism valueSetCheckStrategy) {
+        public T valueSetCheckStrategy(SourceValuePresenceCheckStrategy valueSetCheckStrategy) {
             this.valueSetCheckStrategy = valueSetCheckStrategy;
             return (T) this;
         }
@@ -318,11 +318,11 @@ public class PropertyMapping extends ModelElement {
                         // a null check.
                         result = getOrcreateWrapperByValueCheckStrategy( result, false );
                     }
-                    else if (valueSetCheckStrategy == ValueSetCheckStrategyPrism.CUSTOM) {
+                    else if (valueSetCheckStrategy == SourceValuePresenceCheckStrategy.CUSTOM) {
                         result = getOrcreateWrapperByValueCheckStrategy( result, false );
                     }
                 }
-                else if (valueSetCheckStrategy == ValueSetCheckStrategyPrism.CUSTOM) {
+                else if (valueSetCheckStrategy == SourceValuePresenceCheckStrategy.CUSTOM) {
                     result = getOrcreateWrapperByValueCheckStrategy( result, false );
                 }
             }
@@ -489,20 +489,21 @@ public class PropertyMapping extends ModelElement {
             }
 
             switch ( valueSetCheckStrategy ) {
+                case IS_NULL:
                 case IS_NULL_INLINE:
                     return createNullCheckWrapper( assignment, isUpdate );
 
                 case CUSTOM:
-                    String hasMethod = this.getSourceHasMethod();
+                    String presenceChecker = this.getPresenceChecker();
 
-                    if ( hasMethod == null ) {
-                        throw new IllegalArgumentException( sourceReference.getParameter().getName()
-                            + " does not have 'hasX()' method." );
+                    if ( presenceChecker == null ) {
+                        ctx.getMessager().printMessage( method.getExecutable(),
+                                 Message.PROPERTYMAPPING_NO_PRESENCE_CHECKER_FOR_SOURCE_TYPE,
+                                 sourceReference.getParameter().getName() );
                     }
-                    return isUpdate ? new UpdateHasCheckWrapper( assignment, method.getThrownTypes(), hasMethod )
-                        : new HasCheckWrapper( assignment, method.getThrownTypes(), hasMethod );
+                    return isUpdate ? new UpdatePresenceCheckWrapper( assignment, presenceChecker )
+                        : new PresenceCheckWrapper( assignment, presenceChecker );
 
-                case IS_NULL:
                 default:
                     //Currently, we don't really support other scenarios
                     return assignment;
@@ -513,7 +514,7 @@ public class PropertyMapping extends ModelElement {
             return isUpdate ? new UpdateNullCheckWrapper( assignment ) : new NullCheckWrapper( assignment );
         }
 
-        private String getSourceHasMethod() {
+        private String getPresenceChecker() {
             Parameter sourceParam = sourceReference.getParameter();
             List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
 
@@ -816,14 +817,15 @@ public class PropertyMapping extends ModelElement {
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name, String targetWriteAccessorName, String targetReadAccessorName, Type targetType,
                             Assignment propertyAssignment, List<String> dependsOn,
-                            ValueSetCheckStrategyPrism valueSetCheckStrategy, Assignment defaultValueAssignment ) {
+                            SourceValuePresenceCheckStrategy valueSetCheckStrategy,
+                            Assignment defaultValueAssignment ) {
         this( name, null, targetWriteAccessorName, targetReadAccessorName,
                         targetType, propertyAssignment, dependsOn, valueSetCheckStrategy, defaultValueAssignment );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             String targetReadAccessorName, Type targetType, Assignment assignment,
-                            List<String> dependsOn, ValueSetCheckStrategyPrism valueSetCheckStrategy,
+                            List<String> dependsOn, SourceValuePresenceCheckStrategy valueSetCheckStrategy,
                             Assignment defaultValueAssignment ) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
@@ -883,7 +885,7 @@ public class PropertyMapping extends ModelElement {
         return dependsOn;
     }
 
-    public ValueSetCheckStrategyPrism valueSetCheckStrategy() {
+    public SourceValuePresenceCheckStrategy valueSetCheckStrategy() {
         return valueSetCheckStrategy;
     }
 

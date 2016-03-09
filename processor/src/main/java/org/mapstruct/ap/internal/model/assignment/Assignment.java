@@ -82,7 +82,7 @@ public interface Assignment {
      *
      * @return source has method
      */
-    String getSourceHasMethod();
+    String getSourcePresenceCheckMethod();
 
     /**
      * Returns whether the type of assignment

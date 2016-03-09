@@ -16,38 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.hascheck;
+package org.mapstruct.ap.test.presencecheck;
 
 
 /**
  * @author Sean Huang
  */
-public class SourceDoesNotHave extends Source {
+public class SourceWtCheck extends Source {
 
-    private int noPrimitive;
-    private String noObject;
+    private int noCheckPrimitive;
+    private String noCheckObject;
 
-    public boolean hasNoPrimitive() {
-        return false;
+    public int getNoCheckPrimitive() {
+        return noCheckPrimitive;
     }
 
-    public int getNoPrimitive() {
-        return noPrimitive;
+    public void setNoCheckPrimitive(int noCheckPrimitive) {
+        this.noCheckPrimitive = noCheckPrimitive;
     }
 
-    public void setNoPrimitive(int noPrimitive) {
-        this.noPrimitive = noPrimitive;
+    public String getNoCheckObject() {
+        return noCheckObject;
     }
 
-    public boolean hasNoObject() {
-        return false;
-    }
-
-    public String getNoObject() {
-        return noObject;
-    }
-
-    public void setNoObject(String noObject) {
-        this.noObject = noObject;
+    public void setNoCheckObject(String noCheckObject) {
+        this.noCheckObject = noCheckObject;
     }
 }

@@ -16,11 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.hascheck;
+package org.mapstruct.ap.test.presencecheck;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fest.assertions.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,13 +29,13 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
- * Test for correct handling of has checks.
+ * Test for correct handling of source presence checks.
  *
  * @author Sean Huang
  */
 @WithClasses({
-    SourceTargetMapper.class,
-    SourceTargetWtCheckMapper.class,
+    SourceTargetPresenceCheckMapper.class,
+    SourceTargetWtPresenceCheckMapper.class,
     MyObject.class,
     CustomMapper.class,
     MyLongWrapper.class,
@@ -44,12 +45,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     TargetWtCheck.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
-public class HasCheckTest {
-    @Test //Can't test seeing exception if config is on, as there is compilation error
+public class PresenceCheckTest {
+
+    @Test
     public void testNoHasMethodAndConfigOff() {
         SourceWtCheck source = new SourceWtCheck();
 
-        TargetWtCheck target = SourceTargetWtCheckMapper.INSTANCE.sourceToTargetWtCheckConfigOff( source );
+        TargetWtCheck target = SourceTargetWtPresenceCheckMapper.INSTANCE.sourceToTargetWtCheckConfigOff( source );
 
         Assert.assertEquals( 0, target.getNoCheckPrimitive() );
         Assert.assertEquals( null, target.getNoCheckObject() );
@@ -72,16 +74,14 @@ public class HasCheckTest {
         source.setSomeLong( 2L );
         source.setSomeList( list );
 
-        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        Target target = SourceTargetPresenceCheckMapper.INSTANCE.sourceToTarget( source );
 
         Assert.assertEquals( object, target.getSomeObject() );
         Assert.assertEquals( 5.0, target.getSomeDouble(), 0.01 );
         Assert.assertEquals( (Integer) 7, target.getSomeInteger() );
         Assert.assertEquals( longWrapper.getMyLong(), target.getSomeLong().getMyLong() );
 
-        for (int i = 0; i < list.size(); i++) {
-              Assert.assertEquals( list.get( i ), target.getSomeList().get( i) );
-        }
+        Assertions.assertThat( target.getSomeList() ).containsExactly( "first", "second" );
     }
 
     @Test
@@ -97,7 +97,7 @@ public class HasCheckTest {
         source.setHasSomeInteger( false );
         source.setHasSomeLong( false );
 
-        Target target = SourceTargetMapper.INSTANCE.sourceToTargetWithDefault( source );
+        Target target = SourceTargetPresenceCheckMapper.INSTANCE.sourceToTargetWithDefault( source );
 
         Assert.assertEquals( null, target.getSomeObject() );
 

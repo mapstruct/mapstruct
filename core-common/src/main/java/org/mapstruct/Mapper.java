@@ -18,6 +18,8 @@
  */
 package org.mapstruct;
 
+import static org.mapstruct.SourceValuePresenceCheckStrategy.IS_NULL_INLINE;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -151,9 +153,9 @@ public @interface Mapper {
 
     /**
      * Decide whether we should check null or hasX method before mapping.
-     * It is global, can only override the one on {@link Mapping} if it is UNDEFINED.
+     * It is global, can override the one on {@link Mapping}.
      *
      * @return strategy about how to do null or has value check
      */
-    ValueSetCheckStrategy valueSetCheckStrategy() default ValueSetCheckStrategy.IS_NULL_INLINE;
+    SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() default IS_NULL_INLINE;
 }

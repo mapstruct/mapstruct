@@ -87,8 +87,8 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
-    public String getSourceHasMethod() {
-        return assignment.getSourceHasMethod();
+    public String getSourcePresenceCheckMethod() {
+        return assignment.getSourcePresenceCheckMethod();
     }
 
     @Override

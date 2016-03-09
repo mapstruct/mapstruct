@@ -46,7 +46,7 @@ public enum MethodType {
     OTHER,
 
     /**
-     * A JavaBeans hasser method, e.g. {@code public String hasName()}.
+     * A method to check whether a property is present, e.g. {@code public String hasName()}.
      */
-    HASSER;
+    PRESENCE_CHECKER;
 }

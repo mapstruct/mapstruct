@@ -51,7 +51,7 @@ import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.ValueSetCheckStrategyPrism;
+import org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -396,8 +396,8 @@ public class BeanMappingMethod extends MappingMethod {
                         ExecutableElement sourceReadAccessor = getCandidateAccessor(
                             sourceParameter.getType().getPropertyReadAccessors().values(), targetProperty.getKey());
 
-                        ExecutableElement sourceHasAccessor = getCandidateAccessor(
-                            sourceParameter.getType().getPropertyHasAccessors().values(), targetProperty.getKey());
+                        ExecutableElement sourcePresenceCheckers = getCandidateAccessor(
+                            sourceParameter.getType().getPropertyPresenceCheckers().values(), targetProperty.getKey());
 
                         if ( sourceReadAccessor != null ) {
                             Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
@@ -408,7 +408,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .sourceParameter( sourceParameter )
                                 .type( ctx.getTypeFactory().getReturnType( sourceType, sourceReadAccessor ) )
                                 .readAccessor( sourceReadAccessor )
-                                .hasAccessor( sourceHasAccessor)
+                                .presenceChecker( sourcePresenceCheckers)
                                 .name( targetProperty.getKey() )
                                 .build();
 
@@ -454,17 +454,17 @@ public class BeanMappingMethod extends MappingMethod {
             }
         }
 
-        private ExecutableElement getCandidateAccessor(Collection<ExecutableElement> sourceReadOrHasAccessors,
+        private ExecutableElement getCandidateAccessor(Collection<ExecutableElement> sourceReadOrPresenceCheckers,
             String targetPropertyKey) {
 
             // usually there should be only one getter; only for Boolean there may be two: isFoo() and getFoo()
             List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( 2 );
 
-            for ( ExecutableElement sourceReadOrHasAccessor : sourceReadOrHasAccessors ) {
-                String sourcePropertyName = Executables.getPropertyName( sourceReadOrHasAccessor );
+            for ( ExecutableElement sourceReadOrPresenceChecker : sourceReadOrPresenceCheckers ) {
+                String sourcePropertyName = Executables.getPropertyName( sourceReadOrPresenceChecker );
 
                 if ( sourcePropertyName.equals( targetPropertyKey ) ) {
-                    candidates.add( sourceReadOrHasAccessor );
+                    candidates.add( sourceReadOrPresenceChecker );
                 }
             }
 
@@ -516,11 +516,14 @@ public class BeanMappingMethod extends MappingMethod {
             }
         }
 
-        private ValueSetCheckStrategyPrism valueSetCheckStrategy(MapperConfiguration mapper, Mapping mapping) {
-             if ( mapping != null && mapping.valueSetCheckStrategy() != ValueSetCheckStrategyPrism.UNDEFINED) {
-                 return mapping.valueSetCheckStrategy();
+        private SourceValuePresenceCheckStrategy valueSetCheckStrategy(MapperConfiguration mapper, Mapping mapping) {
+             if ( mapping != null && mapping.isSetSourceValuePresenceCheckStrategy()) {
+                 return mapping.sourceValuePresenceCheckStrategy();
              }
-             return mapper.valueSetCheckStrategy();
+             if (mapping == null || mapper.isSetSourceValuePresenceCheckStrategy()) {
+                 return mapper.sourceValuePresenceCheckStrategy();
+             }
+             return mapping.sourceValuePresenceCheckStrategy();
         }
 
         private ExecutableElement getSourceAccessor(String sourcePropertyName, List<ExecutableElement> candidates) {

@@ -16,26 +16,38 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.hascheck;
+package org.mapstruct.ap.test.presencecheck;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.ValueSetCheckStrategy;
-import org.mapstruct.factory.Mappers;
 
 /**
  * @author Sean Huang
  */
-@Mapper(uses = { CustomMapper.class })
-public interface SourceTargetWtCheckMapper {
+public class SourceDoesNotHave extends Source {
 
-    SourceTargetWtCheckMapper INSTANCE = Mappers.getMapper( SourceTargetWtCheckMapper.class );
+    private int noPrimitive;
+    private String noObject;
 
-    @Mappings( {
-        @Mapping(target = "noCheckObject", valueSetCheckStrategy = ValueSetCheckStrategy.IS_NULL_INLINE),
-        @Mapping(target = "noCheckPrimitive", defaultValue = "111",
-             valueSetCheckStrategy = ValueSetCheckStrategy.IS_NULL_INLINE),
-    } )
-    TargetWtCheck sourceToTargetWtCheckConfigOff(SourceWtCheck source);
+    public boolean hasNoPrimitive() {
+        return false;
+    }
+
+    public int getNoPrimitive() {
+        return noPrimitive;
+    }
+
+    public void setNoPrimitive(int noPrimitive) {
+        this.noPrimitive = noPrimitive;
+    }
+
+    public boolean hasNoObject() {
+        return false;
+    }
+
+    public String getNoObject() {
+        return noObject;
+    }
+
+    public void setNoObject(String noObject) {
+        this.noObject = noObject;
+    }
 }

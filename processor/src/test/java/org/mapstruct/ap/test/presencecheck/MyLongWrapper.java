@@ -16,30 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.hascheck;
+package org.mapstruct.ap.test.presencecheck;
 
 
 /**
- * @author Sean Huang
+ * @author Sjaak Derksen
  */
-public class TargetWtCheck extends Target {
+public class MyLongWrapper {
 
-    private int noCheckPrimitive;
-    private String noCheckObject;
+    private Long myLong;
 
-    public int getNoCheckPrimitive() {
-        return noCheckPrimitive;
+    public Long getMyLong() {
+        return myLong;
     }
 
-    public void setNoCheckPrimitive(int noCheckPrimitive) {
-        this.noCheckPrimitive = noCheckPrimitive;
+    public void setMyLong(Long myLong) {
+        this.myLong = myLong;
     }
 
-    public String getNoCheckObject() {
-        return noCheckObject;
-    }
-
-    public void setNoCheckObject(String noCheckObject) {
-        this.noCheckObject = noCheckObject;
-    }
 }

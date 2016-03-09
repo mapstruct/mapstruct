@@ -16,19 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.hascheck;
+package org.mapstruct.ap.test.presencecheck;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.SourceValuePresenceCheckStrategy;
 
 /**
  * @author Sean Huang
  */
-public class MyObject {
-    @Override
-    public boolean equals(Object object) {
-         return this == object;
-    }
+@Mapper( sourceValuePresenceCheckStrategy = SourceValuePresenceCheckStrategy.IS_NULL_INLINE )
+public class CustomMapper {
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
+    public MyLongWrapper toMyLongWrapperViaPrimitive(long primitive) {
+        MyLongWrapper wrapper = new MyLongWrapper();
+        wrapper.setMyLong( primitive );
+        return wrapper;
     }
 }

@@ -16,30 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.hascheck;
+package org.mapstruct.ap.internal.prism;
 
 
 /**
+ * Prism for the enum {@link org.mapstruct.CheckHasValueMappingStrategy}
+ *
  * @author Sean Huang
  */
-public class SourceWtCheck extends Source {
-
-    private int noCheckPrimitive;
-    private String noCheckObject;
-
-    public int getNoCheckPrimitive() {
-        return noCheckPrimitive;
-    }
-
-    public void setNoCheckPrimitive(int noCheckPrimitive) {
-        this.noCheckPrimitive = noCheckPrimitive;
-    }
-
-    public String getNoCheckObject() {
-        return noCheckObject;
-    }
-
-    public void setNoCheckObject(String noCheckObject) {
-        this.noCheckObject = noCheckObject;
-    }
+public enum SourceValuePresenceCheckStrategy {
+    IS_NULL_INLINE,
+    IS_NULL,
+    CUSTOM;
 }

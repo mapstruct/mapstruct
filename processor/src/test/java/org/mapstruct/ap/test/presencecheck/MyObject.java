@@ -16,30 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.hascheck;
-
+package org.mapstruct.ap.test.presencecheck;
 
 /**
  * @author Sean Huang
  */
-public class TargetDoesNotHave extends Target {
-
-    private int noPrimitive;
-    private String noObject;
-
-    public int getNoPrimitive() {
-        return noPrimitive;
+public class MyObject {
+    @Override
+    public boolean equals(Object object) {
+         return this == object;
     }
 
-    public void setNoPrimitive(int noPrimitive) {
-        this.noPrimitive = noPrimitive;
-    }
-
-    public String getNoObject() {
-        return noObject;
-    }
-
-    public void setNoObject(String noObject) {
-        this.noObject = noObject;
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

@@ -29,12 +29,12 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.ap.internal.prism.ValueSetCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperConfigPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy;
 
 /**
  * Provides an aggregated view to the settings given via {@link org.mapstruct.Mapper} and
@@ -172,12 +172,21 @@ public class MapperConfiguration {
         return mapperPrism.mirror;
     }
 
-    public ValueSetCheckStrategyPrism valueSetCheckStrategy() {
-        if ( mapperConfigPrism != null && mapperPrism.values.valueSetCheckStrategy() == null ) {
-             return ValueSetCheckStrategyPrism.valueOf( mapperConfigPrism.valueSetCheckStrategy() );
+    public SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() {
+        if ( mapperConfigPrism != null && mapperPrism.values.sourceValuePresenceCheckStrategy() == null ) {
+             return SourceValuePresenceCheckStrategy.valueOf( mapperConfigPrism.sourceValuePresenceCheckStrategy() );
         }
         else {
-             return ValueSetCheckStrategyPrism.valueOf( mapperPrism.valueSetCheckStrategy() );
+             return SourceValuePresenceCheckStrategy.valueOf( mapperPrism.sourceValuePresenceCheckStrategy() );
         }
+    }
+
+    public boolean isSetSourceValuePresenceCheckStrategy() {
+       if ( mapperConfigPrism != null  && mapperPrism.values.sourceValuePresenceCheckStrategy() == null ) {
+            return  mapperConfigPrism.values.sourceValuePresenceCheckStrategy() != null;
+       }
+       else {
+            return  mapperPrism.values.sourceValuePresenceCheckStrategy() != null;
+       }
     }
 }

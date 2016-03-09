@@ -46,16 +46,16 @@ public class Filters {
         return getterMethods;
     }
 
-    public static List<ExecutableElement> hasserMethodsIn(Iterable<ExecutableElement> elements) {
-        List<ExecutableElement> hasserMethods = new LinkedList<ExecutableElement>();
+    public static List<ExecutableElement> presenceCheckMethodsIn(Iterable<ExecutableElement> elements) {
+        List<ExecutableElement> presenceCheckMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : elements ) {
             if ( Executables.isHasserMethod( method ) ) {
-                hasserMethods.add( method );
+                presenceCheckMethods.add( method );
             }
         }
 
-        return hasserMethods;
+        return presenceCheckMethods;
     }
 
     public static List<ExecutableElement> setterMethodsIn(Iterable<ExecutableElement> elements) {

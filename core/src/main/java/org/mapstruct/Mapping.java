@@ -18,6 +18,8 @@
  */
 package org.mapstruct;
 
+import static org.mapstruct.SourceValuePresenceCheckStrategy.IS_NULL_INLINE;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -165,10 +167,10 @@ public @interface Mapping {
     String defaultValue() default "";
 
     /**
-     * Decide whether we should check null or hasX method before mapping. By default, it is UNDEFINED.
-     * So the value on {@link Mapper} can override this one.
+     * Decide whether we should check null or hasX method before mapping.
+     * The value on {@link Mapper} can override this one.
      *
      * @return strategy about how to do null or has value check
      */
-    ValueSetCheckStrategy valueSetCheckStrategy() default ValueSetCheckStrategy.UNDEFINED;
+    SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() default IS_NULL_INLINE;
 }

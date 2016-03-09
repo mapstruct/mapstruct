@@ -174,13 +174,13 @@ public class SourceReference {
             for ( String entryName : entryNames ) {
                 boolean matchFound = false;
                 Map<String, ExecutableElement> sourceReadAccessors = newType.getPropertyReadAccessors();
-                Map<String, ExecutableElement> sourceHasAccessors = newType.getPropertyHasAccessors();
+                Map<String, ExecutableElement> sourcePresenceCheckers = newType.getPropertyPresenceCheckers();
 
                 for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
                     if ( getter.getKey().equals( entryName ) ) {
                         newType = typeFactory.getReturnType( newType.getTypeElement(), getter.getValue() );
                         sourceEntries.add( new PropertyEntry( entryName, getter.getValue(),
-                              sourceHasAccessors.get( entryName), newType ) );
+                              sourcePresenceCheckers.get( entryName), newType ) );
                         matchFound = true;
                         break;
                     }
@@ -205,7 +205,7 @@ public class SourceReference {
 
         private String name;
         private ExecutableElement readAccessor;
-        private ExecutableElement hasAccessor;
+        private ExecutableElement presenceChecker;
         private Type type;
         private Parameter sourceParameter;
 
@@ -219,8 +219,8 @@ public class SourceReference {
             return this;
         }
 
-        public BuilderFromProperty hasAccessor(ExecutableElement hasAccessor) {
-            this.hasAccessor = hasAccessor;
+        public BuilderFromProperty presenceChecker(ExecutableElement presenceChecker) {
+            this.presenceChecker = presenceChecker;
             return this;
         }
 
@@ -237,7 +237,7 @@ public class SourceReference {
         public SourceReference build() {
             List<PropertyEntry> sourcePropertyEntries = new ArrayList<PropertyEntry>();
             if ( readAccessor != null ) {
-                sourcePropertyEntries.add( new PropertyEntry( name, readAccessor, hasAccessor, type ) );
+                sourcePropertyEntries.add( new PropertyEntry( name, readAccessor, presenceChecker, type ) );
             }
             return new SourceReference( sourceParameter, sourcePropertyEntries, true );
         }

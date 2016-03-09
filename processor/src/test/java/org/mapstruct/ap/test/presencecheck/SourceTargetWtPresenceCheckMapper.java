@@ -16,9 +16,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.hascheck;
+package org.mapstruct.ap.test.presencecheck;
 
-import org.mapstruct.ValueSetCheckStrategy;
+import static org.mapstruct.SourceValuePresenceCheckStrategy.IS_NULL_INLINE;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -27,17 +28,15 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Sean Huang
  */
-@Mapper(uses = { CustomMapper.class }, valueSetCheckStrategy = ValueSetCheckStrategy.CUSTOM)
-public interface SourceTargetMapper {
+@Mapper(uses = { CustomMapper.class })
+public interface SourceTargetWtPresenceCheckMapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
-
-    Target sourceToTarget(Source source);
+    SourceTargetWtPresenceCheckMapper INSTANCE = Mappers.getMapper( SourceTargetWtPresenceCheckMapper.class );
 
     @Mappings( {
-        @Mapping(target = "someDouble", defaultValue = "111.1"),
-        @Mapping(target = "someInteger", defaultValue = "222"),
-        @Mapping(target = "someLong", defaultValue = "333"),
+        @Mapping(target = "noCheckObject", sourceValuePresenceCheckStrategy = IS_NULL_INLINE),
+        @Mapping(target = "noCheckPrimitive", defaultValue = "111",
+             sourceValuePresenceCheckStrategy = IS_NULL_INLINE),
     } )
-    Target sourceToTargetWithDefault(Source source);
+    TargetWtCheck sourceToTargetWtCheckConfigOff(SourceWtCheck source);
 }

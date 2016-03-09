@@ -123,8 +123,8 @@ public class MethodReference extends MappingMethod implements Assignment {
     }
 
     @Override
-    public String getSourceHasMethod() {
-        return assignment.getSourceHasMethod();
+    public String getSourcePresenceCheckMethod() {
+        return assignment.getSourcePresenceCheckMethod();
     }
 
     /**

@@ -16,17 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.prism;
-
+package org.mapstruct.ap.internal.model.assignment;
 
 /**
- * Prism for the enum {@link org.mapstruct.CheckHasValueMappingStrategy}
+ * Wraps the assignment in a target setter, if {@link org.mapstruct.Mapper#sourceValuePresenceCheckStrategy}
+ * or {@link org.mapstruct.Mapping#sourceValuePresenceCheckStrategy} is set to
+ * {@link org.mapstruct.SourceValuePresenceCheckStrategy#CUSTOM}.
  *
  * @author Sean Huang
  */
-public enum ValueSetCheckStrategyPrism {
-    IS_NULL_INLINE,
-    IS_NULL,
-    CUSTOM,
-    UNDEFINED;
+public class PresenceCheckWrapper extends AssignmentWrapper {
+
+    private final String sourcegetPresenceChecker;
+
+    public PresenceCheckWrapper( Assignment decoratedAssignment, String sourcegetPresenceChecker) {
+        super( decoratedAssignment );
+        this.sourcegetPresenceChecker = sourcegetPresenceChecker;
+    }
+
+    @Override
+    public String getSourcePresenceCheckMethod() {
+        return sourcegetPresenceChecker;
+    }
+
 }
