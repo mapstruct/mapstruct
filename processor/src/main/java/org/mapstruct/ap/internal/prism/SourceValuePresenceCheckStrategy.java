@@ -20,13 +20,13 @@ package org.mapstruct.ap.internal.prism;
 
 
 /**
- * Prism for the enum {@link org.mapstruct.CheckHasValueMappingStrategy}
+ * Prism for the enum {@link org.mapstruct.SourceValuePresenceCheckStrategy}
  *
  * @author Sean Huang
  */
 public enum SourceValuePresenceCheckStrategy {
      /**
-     * Check != null for inline conversions)
+     * Only check != null for inline conversions
      *
      */
     IS_NULL_INLINE,

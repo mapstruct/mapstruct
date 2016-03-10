@@ -23,6 +23,38 @@ package org.mapstruct.ap.internal.model.assignment;
  * or {@link org.mapstruct.Mapping#sourceValuePresenceCheckStrategy} is set to
  * {@link org.mapstruct.SourceValuePresenceCheckStrategy#CUSTOM}.
  *
+ * <pre>
+ * {@code
+ * public Target sourceToTargetWithCustomAndDefault(Source source) {
+ *      if ( source == null ) {
+ *          return null;
+ *      }
+ *
+ *      Target target = new Target();
+ *
+ *      if ( source.hasSomeObject() ) {
+ *          target.setSomeObject( source.getSomeObject() );
+ *      }
+ *      if ( source.hasSomePrimitiveDouble() ) {
+ *          target.setSomePrimitiveDouble( source.getSomePrimitiveDouble() );
+ *      }
+ *      else {
+ *          target.setSomePrimitiveDouble( Double.parseDouble( "111.1" ) );
+ *      }
+ *      if ( source.hasSomeLong1() ) {
+ *          target.setSomeLong1( customMapper.toMyLongWrapperViaPrimitive( source.getSomeLong1() ) );
+ *      }
+ *      else {
+ *          target.setSomeLong1( customMapper.toMyLongWrapperViaPrimitive( Long.parseLong( "333" ) ) );
+ *      }
+ *      if ( source.hasSomeList() ) {
+ *          target.setSomeList( new ArrayList<String>( source.getSomeList() ) );
+ *      }
+ *
+ *      return target;
+ *  }
+ * }
+ * </pre>
  * @author Sean Huang
  */
 public class PresenceCheckWrapper extends AssignmentWrapper {

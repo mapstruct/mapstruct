@@ -505,7 +505,7 @@ public class PropertyMapping extends ModelElement {
 
             switch ( valueSetCheckStrategy ) {
                 case IS_NULL:
-                    // for primitive types null check is not possible at all, but a conversion needs a null check.
+                    // for primitive types null check is not possible at all
                     if (getSourceType().isPrimitive() )  {
                         return assignment;
                     }
@@ -514,7 +514,7 @@ public class PropertyMapping extends ModelElement {
                 case IS_NULL_INLINE:
                     if (isUpdate
                         || ( (assignment.getType().isTypeRelated() ||  assignment.getType().isDirect() )
-                            && !getSourceType().isPrimitive() ) ) {
+                                && !getSourceType().isPrimitive() ) ) {
                         return createNullCheckWrapper( assignment, isUpdate );
                     }
                     return assignment;

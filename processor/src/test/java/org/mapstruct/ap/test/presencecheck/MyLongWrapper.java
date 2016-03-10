@@ -31,6 +31,7 @@ public class MyLongWrapper {
     }
 
     public void setMyLong(Long myLong) {
+        myLong.longValue();
         this.myLong = myLong;
     }
 

@@ -19,14 +19,14 @@
 package org.mapstruct;
 
 /**
- * Strategy to decide whether we should check null or hasX method before mapping
+ * Strategy to decide how to check null or hasX method before mapping
  *
  * @author Sean Huang
  */
 public enum SourceValuePresenceCheckStrategy {
 
     /**
-     * Check != null for inline conversions)
+     * Only check != null for inline conversions
      *
      */
     IS_NULL_INLINE,

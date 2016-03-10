@@ -152,10 +152,10 @@ public @interface Mapper {
     MappingInheritanceStrategy mappingInheritanceStrategy() default MappingInheritanceStrategy.EXPLICIT;
 
     /**
-     * Decide whether we should check null or hasX method before mapping.
-     * It is global, can override the one on {@link Mapping}.
+     * Decide how to do presence check, such as checking null or calling hasX method, before mapping.
+     * Can be overridden by the one on {@link MapperConfig} or {@link Mapping}.
      *
-     * @return strategy about how to do null or has value check
+     * @return strategy about how to do null or presence check
      */
     SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() default IS_NULL_INLINE;
 }

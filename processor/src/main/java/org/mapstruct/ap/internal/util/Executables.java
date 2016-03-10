@@ -76,7 +76,7 @@ public class Executables {
             ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.GETTER;
     }
 
-    public static boolean isHasserMethod(ExecutableElement method) {
+    public static boolean isPresenceCheckMethod(ExecutableElement method) {
         return isPublic( method ) &&
             method.getParameters().isEmpty() &&
             ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.PRESENCE_CHECKER;

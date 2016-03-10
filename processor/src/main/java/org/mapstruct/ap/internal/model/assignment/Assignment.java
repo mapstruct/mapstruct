@@ -91,9 +91,9 @@ public interface Assignment {
     String getSourceReference();
 
     /**
-     * the name of source has method.
+     * the name of source presence check method.
      *
-     * @return source has method
+     * @return source presence check method
      */
     String getSourcePresenceCheckMethod();
 

@@ -47,18 +47,35 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class PresenceCheckTest {
 
     @Test
-    public void testNoPresenceCheckWithOtherCheckers() {
+    public void testSourceNoPresenceCheckWithIsNullheck() {
+        SourceWtCheck source = new SourceWtCheck();
+        source.setHasSomeList( false );
+        source.setHasSomeLong2( false );
+
+        TargetWtCheck target = SourceTargetMapper.INSTANCE.sourceToTargetWithIsNullCheck( source );
+
+        //No null check for primitive type
+        Assert.assertEquals( 0, target.getSomePrimitiveDouble(), 0.01 );
+        Assert.assertEquals( null, target.getSomeInteger() );
+        Assert.assertEquals( null, target.getNoCheckObject() );
+        Assert.assertEquals( 0, target.getNoCheckPrimitive() );
+        Assert.assertEquals( null, target.getSomeLong1() );
+        Assert.assertEquals( null, target.getSomeLong2() );
+    }
+
+    @Test( expected = NullPointerException.class )
+    public void testSourceNoPresenceCheckWithIsNullInlineCheck() {
         SourceWtCheck source = new SourceWtCheck();
         source.setHasSomeList( false );
 
-        TargetWtCheck target = SourceTargetMapper.INSTANCE.sourceToTargetWithOtherCheckers( source );
+        //No null check for Mapper, if sourceValuePresenceCheckStrategy = IS_NULL_INLINE
+        TargetWtCheck target = SourceTargetMapper.INSTANCE.sourceToTargetWithIsNullInlineCheck( source );
 
-        Assert.assertEquals( 0, target.getNoCheckPrimitive() );
-        Assert.assertEquals( null, target.getNoCheckObject() );
+        Assert.assertEquals( null, target.getSomeLong2() );
     }
 
     @Test
-    public void testPresenceCheckWithCustom() {
+    public void testSourcePresenceCheckWithCustom() {
         MyObject object = new MyObject();
         MyLongWrapper longWrapper = new MyLongWrapper();
         longWrapper.setMyLong( 2L );
@@ -71,7 +88,8 @@ public class PresenceCheckTest {
         source.setSomeObject( object );
         source.setSomePrimitiveDouble( 5.0 );
         source.setSomeInteger( 7 );
-        source.setSomeLong( 2L );
+        source.setSomeLong1( 2L );
+        source.setHasSomeLong2( false );
         source.setSomeList( list );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTargetWithCustom( source );
@@ -80,12 +98,50 @@ public class PresenceCheckTest {
         Assert.assertEquals( 5.0, target.getSomePrimitiveDouble(), 0.01 );
         Assert.assertEquals( (Integer) 7, target.getSomeInteger() );
         Assert.assertEquals( longWrapper.getMyLong(), target.getSomeLong1().getMyLong() );
+        Assert.assertEquals( null, target.getSomeLong2() );
 
         Assertions.assertThat( target.getSomeList() ).containsExactly( "first", "second" );
     }
 
     @Test
-    public void testPresenceCheckWithCustomAndDefaultValue() {
+    public void testUpdateWithCustom() {
+        MyObject object = new MyObject();
+        MyLongWrapper longWrapper = new MyLongWrapper();
+        longWrapper.setMyLong( 2L );
+        List<String> list = new ArrayList<String>();
+        list.add( "first" );
+        list.add( "second" );
+
+        Source source = new Source();
+
+        source.setSomeObject( object );
+
+        source.setSomePrimitiveDouble( 5.0 );
+        source.setHasSomePrimitiveDouble( false );
+
+        source.setSomeInteger( 7 );
+        source.setSomeLong1( 2L );
+
+        source.setSomeLong2( 4L );
+        source.setHasSomeLong2( false );
+
+        source.setSomeList( list );
+
+        Target target = new Target();
+
+        SourceTargetMapper.INSTANCE.sourceToTargetWithCustom( source, target );
+
+        Assert.assertEquals( object, target.getSomeObject() );
+        Assert.assertEquals( 0, target.getSomePrimitiveDouble(), 0.01 );
+        Assert.assertEquals( (Integer) 7, target.getSomeInteger() );
+        Assert.assertEquals( longWrapper.getMyLong(), target.getSomeLong1().getMyLong() );
+        Assert.assertEquals( null, target.getSomeLong2() );
+
+        Assertions.assertThat( target.getSomeList() ).containsExactly( "first", "second" );
+    }
+
+    @Test
+    public void testSourcePresenceCheckWithCustomAndDefaultValue() {
         List<String> list = new ArrayList<String>();
         list.add( "first" );
         list.add( "second" );
@@ -96,6 +152,7 @@ public class PresenceCheckTest {
         source.setHasSomePrimitiveDouble( false );
         source.setHasSomeInteger( false );
         source.setHasSomeLong1( false );
+        source.setHasSomeLong2( false );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTargetWithCustomAndDefault( source );
 
@@ -105,6 +162,7 @@ public class PresenceCheckTest {
         Assert.assertEquals( 111.1, target.getSomePrimitiveDouble(), 0.01 );
         Assert.assertEquals( (Integer) 222, target.getSomeInteger() );
         Assert.assertEquals( (Long) 333L, target.getSomeLong1().getMyLong() );
+        Assert.assertEquals( (Long) 444L, target.getSomeLong2().getMyLong() );
 
         for (int i = 0; i < list.size(); i++) {
             Assert.assertEquals( list.get( i ), target.getSomeList().get( i ) );

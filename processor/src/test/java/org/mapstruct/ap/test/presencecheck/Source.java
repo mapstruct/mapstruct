@@ -115,8 +115,12 @@ public class Source {
         return someLong2;
     }
 
-    public void setSomeLong(Long someLong) {
+    public void setSomeLong1(Long someLong) {
         this.someLong1 = someLong;
+    }
+
+    public void setSomeLong2(Long someLong) {
+        this.someLong2 = someLong;
     }
 
     public boolean hasSomeList() {

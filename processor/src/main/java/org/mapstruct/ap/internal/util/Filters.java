@@ -50,7 +50,7 @@ public class Filters {
         List<ExecutableElement> presenceCheckMethods = new LinkedList<ExecutableElement>();
 
         for ( ExecutableElement method : elements ) {
-            if ( Executables.isHasserMethod( method ) ) {
+            if ( Executables.isPresenceCheckMethod( method ) ) {
                 presenceCheckMethods.add( method );
             }
         }

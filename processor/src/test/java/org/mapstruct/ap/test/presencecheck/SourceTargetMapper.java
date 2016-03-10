@@ -24,6 +24,7 @@ import static org.mapstruct.SourceValuePresenceCheckStrategy.IS_NULL_INLINE;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
@@ -37,6 +38,8 @@ public interface SourceTargetMapper {
 
     Target sourceToTargetWithCustom(Source source);
 
+    void sourceToTargetWithCustom(Source source, @MappingTarget Target target);
+
     @Mappings( {
         @Mapping(target = "somePrimitiveDouble", defaultValue = "111.1"),
         @Mapping(target = "someInteger", defaultValue = "222"),
@@ -46,16 +49,20 @@ public interface SourceTargetMapper {
     Target sourceToTargetWithCustomAndDefault(Source source);
 
     @Mappings( {
-        @Mapping(target = "somePrimitiveDouble", sourceValuePresenceCheckStrategy = IS_NULL_INLINE),
+        @Mapping(target = "somePrimitiveDouble", sourceValuePresenceCheckStrategy = IS_NULL),
         @Mapping(target = "someInteger", sourceValuePresenceCheckStrategy = IS_NULL),
-
-        @Mapping(target = "noCheckObject", sourceValuePresenceCheckStrategy = IS_NULL_INLINE),
+        @Mapping(target = "noCheckObject", sourceValuePresenceCheckStrategy = IS_NULL),
         @Mapping(target = "noCheckPrimitive", sourceValuePresenceCheckStrategy = IS_NULL),
-
-        @Mapping(target = "someLong1", sourceValuePresenceCheckStrategy = IS_NULL_INLINE),
-        @Mapping(target = "someLong2", sourceValuePresenceCheckStrategy = IS_NULL),
+        @Mapping(target = "someLong1", sourceValuePresenceCheckStrategy = IS_NULL),
     } )
-    TargetWtCheck sourceToTargetWithOtherCheckers(SourceWtCheck source);
+    TargetWtCheck sourceToTargetWithIsNullCheck(SourceWtCheck source);
+
+    @Mappings( {
+        @Mapping(target = "noCheckObject", sourceValuePresenceCheckStrategy = IS_NULL),
+        @Mapping(target = "noCheckPrimitive", sourceValuePresenceCheckStrategy = IS_NULL),
+        @Mapping(target = "someLong2", sourceValuePresenceCheckStrategy = IS_NULL_INLINE),
+    } )
+    TargetWtCheck sourceToTargetWithIsNullInlineCheck(SourceWtCheck source);
 
     /*
      * Seeing exception below since there is no presence check method on source.

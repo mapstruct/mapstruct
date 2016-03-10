@@ -43,7 +43,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         if ( isGetterMethod( method ) ) {
             return MethodType.GETTER;
         }
-        else if ( isHasserMethod( method ) ) {
+        else if ( isPresenceCheckMethod( method ) ) {
             return MethodType.PRESENCE_CHECKER;
         }
         else if ( isSetterMethod( method ) ) {
@@ -70,7 +70,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         return isNonBooleanGetterName || ( isBooleanGetterName && returnTypeIsBoolean );
     }
 
-    private boolean isHasserMethod(ExecutableElement method) {
+    private boolean isPresenceCheckMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
         return methodName.startsWith( "has" ) && methodName.length() > 3 &&
