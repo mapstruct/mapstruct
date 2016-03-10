@@ -279,13 +279,14 @@ public class SourceReference {
 
         private final String name;
         private final ExecutableElement accessor;
-        private final ExecutableElement hasAccessor;
+        private final ExecutableElement presenceChecker;
         private final Type type;
 
-        public PropertyEntry(String name, ExecutableElement readAccessor, ExecutableElement hasAccessor, Type type) {
+        public PropertyEntry(String name, ExecutableElement readAccessor,
+                ExecutableElement presenceChecker, Type type) {
             this.name = name;
             this.accessor = readAccessor;
-            this.hasAccessor = hasAccessor;
+            this.presenceChecker = presenceChecker;
             this.type = type;
         }
 
@@ -297,8 +298,8 @@ public class SourceReference {
             return accessor;
         }
 
-        public ExecutableElement getHasAccessor() {
-            return hasAccessor;
+        public ExecutableElement getPresenceChecker() {
+            return presenceChecker;
         }
 
         public Type getType() {

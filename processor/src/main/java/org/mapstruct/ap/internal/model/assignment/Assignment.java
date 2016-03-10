@@ -42,7 +42,20 @@ public interface Assignment {
         /** assignment is first mapped (builtin/custom), then the result is type converted */
         MAPPED_TYPE_CONVERTED,
         /** assignment is first type converted, and then mapped (builtin/custom) */
-        TYPE_CONVERTED_MAPPED
+        TYPE_CONVERTED_MAPPED;
+
+        public boolean isDirect() {
+            return this == DIRECT;
+        }
+
+        public boolean isTypeRelated() {
+            return this == TYPE_CONVERTED || this == TYPE_CONVERTED_MAPPED || this == MAPPED_TYPE_CONVERTED;
+        }
+
+        public boolean isMapRelated() {
+            return this == MAPPED || this == MAPPED_TWICE || this == MAPPED_TYPE_CONVERTED
+                || this == TYPE_CONVERTED_MAPPED;
+        }
     }
 
     /**

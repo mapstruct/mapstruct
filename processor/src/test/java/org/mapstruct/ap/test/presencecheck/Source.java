@@ -28,14 +28,17 @@ public class Source {
     private MyObject someObject;
     private boolean hasSomeObject = true;
 
-    private double someDouble;
-    private boolean hasSomeDouble = true;
+    private double somePrimitiveDouble;
+    private boolean hasPrimitiveSomeDouble = true;
 
     private Integer someInteger;
     private boolean hasSomeInteger = true;
 
-    private Long someLong;
-    private boolean hasSomeLong = true;
+    private Long someLong1;
+    private boolean hasSomeLong1 = true;
+
+    private Long someLong2;
+    private boolean hasSomeLong2 = true;
 
     private List<String> someList;
     private boolean hasSomeList = true;
@@ -56,20 +59,20 @@ public class Source {
         this.someObject = someObject;
     }
 
-    public boolean hasSomeDouble() {
-        return hasSomeDouble;
+    public boolean hasSomePrimitiveDouble() {
+        return hasPrimitiveSomeDouble;
     }
 
-    public void setHasSomeDouble(boolean has) {
-        this.hasSomeDouble = has;
+    public void setHasSomePrimitiveDouble(boolean has) {
+        this.hasPrimitiveSomeDouble = has;
     }
 
-    public double getSomeDouble() {
-        return someDouble;
+    public double getSomePrimitiveDouble() {
+        return somePrimitiveDouble;
     }
 
-    public void setSomeDouble(double someDouble) {
-        this.someDouble = someDouble;
+    public void setSomePrimitiveDouble(double someDouble) {
+        this.somePrimitiveDouble = someDouble;
     }
 
     public boolean hasSomeInteger() {
@@ -88,20 +91,32 @@ public class Source {
         this.someInteger = someInteger;
     }
 
-    public boolean hasSomeLong() {
-        return hasSomeLong;
+    public boolean hasSomeLong1() {
+        return hasSomeLong1;
     }
 
-    public void setHasSomeLong(boolean hasSomeInLong) {
-        this.hasSomeLong = hasSomeInLong;
+    public void setHasSomeLong1(boolean hasSomeInLong) {
+        this.hasSomeLong1 = hasSomeInLong;
     }
 
-    public Long getSomeLong() {
-        return someLong;
+    public boolean hasSomeLong2() {
+        return hasSomeLong2;
+    }
+
+    public void setHasSomeLong2(boolean hasSomeInLong) {
+        this.hasSomeLong2 = hasSomeInLong;
+    }
+
+    public Long getSomeLong1() {
+        return someLong1;
+    }
+
+    public Long getSomeLong2() {
+        return someLong2;
     }
 
     public void setSomeLong(Long someLong) {
-        this.someLong = someLong;
+        this.someLong1 = someLong;
     }
 
     public boolean hasSomeList() {

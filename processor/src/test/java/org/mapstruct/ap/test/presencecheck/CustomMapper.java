@@ -27,7 +27,7 @@ import org.mapstruct.SourceValuePresenceCheckStrategy;
 @Mapper( sourceValuePresenceCheckStrategy = SourceValuePresenceCheckStrategy.IS_NULL_INLINE )
 public class CustomMapper {
 
-    public MyLongWrapper toMyLongWrapperViaPrimitive(long primitive) {
+    public MyLongWrapper toMyLongWrapperViaPrimitive(Long primitive) {
         MyLongWrapper wrapper = new MyLongWrapper();
         wrapper.setMyLong( primitive );
         return wrapper;

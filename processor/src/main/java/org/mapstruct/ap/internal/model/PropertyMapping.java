@@ -20,10 +20,8 @@ package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
 import static org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy.CUSTOM;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,13 +36,13 @@ import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.EnumSetCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
-import org.mapstruct.ap.internal.model.assignment.PresenceCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
+import org.mapstruct.ap.internal.model.assignment.PresenceCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
-import org.mapstruct.ap.internal.model.assignment.UpdatePresenceCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateNullCheckWrapper;
+import org.mapstruct.ap.internal.model.assignment.UpdatePresenceCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -336,25 +334,22 @@ public class PropertyMapping extends ModelElement {
                 else {
                     result = new SetterWrapper( result, method.getThrownTypes() );
                 }
+
                 if ( !sourceType.isPrimitive()
                     && !sourceReference.getPropertyEntries().isEmpty() ) { // parameter null taken care of by beanmapper
 
                     if ( result.isUpdateMethod() ) {
                         result = getOrcreateWrapperByValueCheckStrategy( result, true );
                     }
-                    else if (result.getType() == TYPE_CONVERTED
-                            || result.getType() == TYPE_CONVERTED_MAPPED
-                            || result.getType() == MAPPED_TYPE_CONVERTED
-                            || ( result.getType() == DIRECT && targetType.isPrimitive() ) ) {
-                        // for primitive types null check is not possible at all, but a conversion needs
-                        // a null check.
+                    else if ( result.getType().isTypeRelated()
+                        || ( result.getType().isDirect() && targetType.isPrimitive() ) ) {
                         result = getOrcreateWrapperByValueCheckStrategy( result, false );
                     }
-                    else if (valueSetCheckStrategy == SourceValuePresenceCheckStrategy.CUSTOM) {
+                    else if (valueSetCheckStrategy == CUSTOM) {
                         result = getOrcreateWrapperByValueCheckStrategy( result, false );
                     }
                 }
-                else if (valueSetCheckStrategy == SourceValuePresenceCheckStrategy.CUSTOM) {
+                else if (valueSetCheckStrategy == CUSTOM) {
                     result = getOrcreateWrapperByValueCheckStrategy( result, false );
                 }
             }
@@ -528,22 +523,31 @@ public class PropertyMapping extends ModelElement {
 
             switch ( valueSetCheckStrategy ) {
                 case IS_NULL:
-                case IS_NULL_INLINE:
+                    // for primitive types null check is not possible at all, but a conversion needs a null check.
+                    if (assignment.getType().isDirect() && getSourceType().isPrimitive() )  {
+                        return assignment;
+                    }
                     return createNullCheckWrapper( assignment, isUpdate );
 
+                case IS_NULL_INLINE:
+                    if (assignment.getType().isTypeRelated() ) {
+                        return createNullCheckWrapper( assignment, isUpdate );
+                    }
+                    return assignment;
+
                 case CUSTOM:
-                    String presenceChecker = this.getPresenceChecker();
+                    String presenceChecker = getPresenceChecker();
 
                     if ( presenceChecker == null ) {
                         ctx.getMessager().printMessage( method.getExecutable(),
                                  Message.PROPERTYMAPPING_NO_PRESENCE_CHECKER_FOR_SOURCE_TYPE,
-                                 sourceReference.getParameter().getName() );
+                                 getSourceElement() );
                     }
                     return isUpdate ? new UpdatePresenceCheckWrapper( assignment, presenceChecker )
                         : new PresenceCheckWrapper( assignment, presenceChecker );
 
                 default:
-                    //Currently, we don't really support other scenarios
+                    //Currently, we don't support other strategy
                     return assignment;
             }
         }
@@ -557,8 +561,8 @@ public class PropertyMapping extends ModelElement {
             List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
 
             for (PropertyEntry property : propertyEntries) {
-                if (property.getHasAccessor() != null) {
-                     return sourceParam.getName() + "." + property.getHasAccessor().getSimpleName() + "()";
+                if (property.getPresenceChecker() != null) {
+                     return sourceParam.getName() + "." + property.getPresenceChecker().getSimpleName() + "()";
                 }
             }
 

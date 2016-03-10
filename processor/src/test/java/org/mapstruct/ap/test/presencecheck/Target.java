@@ -26,9 +26,10 @@ import java.util.List;
 public class Target {
 
     private MyObject someObject;
-    private double someDouble;
+    private double somePrimitiveDouble;
     private Integer someInteger;
-    private MyLongWrapper someLong;
+    private MyLongWrapper someLong1;
+    private MyLongWrapper someLong2;
     private List<String> someList;
 
     public MyObject getSomeObject() {
@@ -39,12 +40,12 @@ public class Target {
         this.someObject = someObject;
     }
 
-    public double getSomeDouble() {
-        return someDouble;
+    public double getSomePrimitiveDouble() {
+        return somePrimitiveDouble;
     }
 
-    public void setSomeDouble(double someDouble) {
-        this.someDouble = someDouble;
+    public void setSomePrimitiveDouble(double someDouble) {
+        this.somePrimitiveDouble = someDouble;
     }
 
     public Integer getSomeInteger() {
@@ -55,12 +56,20 @@ public class Target {
         this.someInteger = someInteger;
     }
 
-    public MyLongWrapper getSomeLong() {
-        return someLong;
+    public MyLongWrapper getSomeLong1() {
+        return someLong1;
     }
 
-    public void setSomeLong(MyLongWrapper someLong) {
-        this.someLong = someLong;
+    public void setSomeLong1(MyLongWrapper someLong) {
+        this.someLong1 = someLong;
+    }
+
+    public MyLongWrapper getSomeLong2() {
+        return someLong2;
+    }
+
+    public void setSomeLong2(MyLongWrapper someLong) {
+        this.someLong2 = someLong;
     }
 
     public List<String> getSomeList() {

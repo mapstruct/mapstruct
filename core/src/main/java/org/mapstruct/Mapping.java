@@ -18,7 +18,7 @@
  */
 package org.mapstruct;
 
-import static org.mapstruct.SourceValuePresenceCheckStrategy.IS_NULL_INLINE;
+import static org.mapstruct.SourceValuePresenceCheckStrategy.IS_NULL;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -188,5 +188,5 @@ public @interface Mapping {
      *
      * @return strategy about how to do null or has value check
      */
-    SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() default IS_NULL_INLINE;
+    SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() default IS_NULL;
 }

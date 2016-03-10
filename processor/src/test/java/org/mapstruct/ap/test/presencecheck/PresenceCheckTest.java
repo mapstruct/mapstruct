@@ -34,8 +34,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Sean Huang
  */
 @WithClasses({
-    SourceTargetPresenceCheckMapper.class,
-    SourceTargetWtPresenceCheckMapper.class,
+    SourceTargetMapper.class,
     MyObject.class,
     CustomMapper.class,
     MyLongWrapper.class,
@@ -48,17 +47,18 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class PresenceCheckTest {
 
     @Test
-    public void testNoHasMethodAndConfigOff() {
+    public void testNoPresenceCheckWithOtherCheckers() {
         SourceWtCheck source = new SourceWtCheck();
+        source.setHasSomeList( false );
 
-        TargetWtCheck target = SourceTargetWtPresenceCheckMapper.INSTANCE.sourceToTargetWtCheckConfigOff( source );
+        TargetWtCheck target = SourceTargetMapper.INSTANCE.sourceToTargetWithOtherCheckers( source );
 
         Assert.assertEquals( 0, target.getNoCheckPrimitive() );
         Assert.assertEquals( null, target.getNoCheckObject() );
     }
 
     @Test
-    public void testHasChecks() {
+    public void testPresenceCheckWithCustom() {
         MyObject object = new MyObject();
         MyLongWrapper longWrapper = new MyLongWrapper();
         longWrapper.setMyLong( 2L );
@@ -69,23 +69,23 @@ public class PresenceCheckTest {
         Source source = new Source();
 
         source.setSomeObject( object );
-        source.setSomeDouble( 5.0 );
+        source.setSomePrimitiveDouble( 5.0 );
         source.setSomeInteger( 7 );
         source.setSomeLong( 2L );
         source.setSomeList( list );
 
-        Target target = SourceTargetPresenceCheckMapper.INSTANCE.sourceToTarget( source );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTargetWithCustom( source );
 
         Assert.assertEquals( object, target.getSomeObject() );
-        Assert.assertEquals( 5.0, target.getSomeDouble(), 0.01 );
+        Assert.assertEquals( 5.0, target.getSomePrimitiveDouble(), 0.01 );
         Assert.assertEquals( (Integer) 7, target.getSomeInteger() );
-        Assert.assertEquals( longWrapper.getMyLong(), target.getSomeLong().getMyLong() );
+        Assert.assertEquals( longWrapper.getMyLong(), target.getSomeLong1().getMyLong() );
 
         Assertions.assertThat( target.getSomeList() ).containsExactly( "first", "second" );
     }
 
     @Test
-    public void testDefaultValue() {
+    public void testPresenceCheckWithCustomAndDefaultValue() {
         List<String> list = new ArrayList<String>();
         list.add( "first" );
         list.add( "second" );
@@ -93,18 +93,18 @@ public class PresenceCheckTest {
         Source source = new Source();
         source.setSomeList( list );
 
-        source.setHasSomeDouble( false );
+        source.setHasSomePrimitiveDouble( false );
         source.setHasSomeInteger( false );
-        source.setHasSomeLong( false );
+        source.setHasSomeLong1( false );
 
-        Target target = SourceTargetPresenceCheckMapper.INSTANCE.sourceToTargetWithDefault( source );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTargetWithCustomAndDefault( source );
 
         Assert.assertEquals( null, target.getSomeObject() );
 
         //Support default value for primitive type if there is hasX method and config is on
-        Assert.assertEquals( 111.1, target.getSomeDouble(), 0.01 );
+        Assert.assertEquals( 111.1, target.getSomePrimitiveDouble(), 0.01 );
         Assert.assertEquals( (Integer) 222, target.getSomeInteger() );
-        Assert.assertEquals( (Long) 333L, target.getSomeLong().getMyLong() );
+        Assert.assertEquals( (Long) 333L, target.getSomeLong1().getMyLong() );
 
         for (int i = 0; i < list.size(); i++) {
             Assert.assertEquals( list.get( i ), target.getSomeList().get( i ) );

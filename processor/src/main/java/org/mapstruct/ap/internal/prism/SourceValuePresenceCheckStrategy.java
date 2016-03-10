@@ -25,7 +25,21 @@ package org.mapstruct.ap.internal.prism;
  * @author Sean Huang
  */
 public enum SourceValuePresenceCheckStrategy {
+     /**
+     * Check != null for inline conversions)
+     *
+     */
     IS_NULL_INLINE,
+
+    /**
+     * Always check != null, no matter whether it's an inline or method conversion
+     *
+     */
     IS_NULL,
+
+    /**
+     * Will invoke custom hasX() method, before mapping,
+     * name to be given through the accessor naming strategy
+     */
     CUSTOM;
 }

@@ -145,7 +145,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
         private final String safeName;
 
         public SafePropertyEntry( PropertyEntry entry, String safeName ) {
-            super( entry.getName(), entry.getAccessor(), entry.getHasAccessor(), entry.getType() );
+            super( entry.getName(), entry.getAccessor(), entry.getPresenceChecker(), entry.getType() );
             this.safeName = safeName;
         }
 
