@@ -262,12 +262,11 @@ public class PropertyMapping extends ModelElement {
                         targetType,
                         existingVariableNames
                     );
-                    assignment = getOrcreateWrapperByValueCheckStrategy( assignment, false );
+                    assignment = getOrcreateWrapperByValueCheckStrategy( assignment, assignment.isUpdateMethod() );
                 }
                 else {
                     assignment = assignObject( sourceType, targetType, targetWriteAccessorType, assignment );
                 }
-
             }
             else {
                 ctx.getMessager().printMessage(
@@ -334,24 +333,7 @@ public class PropertyMapping extends ModelElement {
                 else {
                     result = new SetterWrapper( result, method.getThrownTypes() );
                 }
-
-                if ( !sourceType.isPrimitive()
-                    && !sourceReference.getPropertyEntries().isEmpty() ) { // parameter null taken care of by beanmapper
-
-                    if ( result.isUpdateMethod() ) {
-                        result = getOrcreateWrapperByValueCheckStrategy( result, true );
-                    }
-                    else if ( result.getType().isTypeRelated()
-                        || ( result.getType().isDirect() && targetType.isPrimitive() ) ) {
-                        result = getOrcreateWrapperByValueCheckStrategy( result, false );
-                    }
-                    else if (valueSetCheckStrategy == CUSTOM) {
-                        result = getOrcreateWrapperByValueCheckStrategy( result, false );
-                    }
-                }
-                else if (valueSetCheckStrategy == CUSTOM) {
-                    result = getOrcreateWrapperByValueCheckStrategy( result, false );
-                }
+                result = getOrcreateWrapperByValueCheckStrategy( result, result.isUpdateMethod() );
             }
             else {
                 // TargetAccessorType must be ADDER
@@ -441,7 +423,7 @@ public class PropertyMapping extends ModelElement {
             // for mapping methods (builtin / custom), the mapping method is responsible for the
             // null check. Typeconversions do not apply to collections and maps.
             if ( result.getType() == DIRECT ) {
-                result = getOrcreateWrapperByValueCheckStrategy( result, false );
+                result = getOrcreateWrapperByValueCheckStrategy( result, result.isUpdateMethod() );
             }
             else if ( result.getType() == MAPPED && result.isUpdateMethod() ) {
                 result = getOrcreateWrapperByValueCheckStrategy( result, true );
@@ -524,13 +506,15 @@ public class PropertyMapping extends ModelElement {
             switch ( valueSetCheckStrategy ) {
                 case IS_NULL:
                     // for primitive types null check is not possible at all, but a conversion needs a null check.
-                    if (assignment.getType().isDirect() && getSourceType().isPrimitive() )  {
+                    if (getSourceType().isPrimitive() )  {
                         return assignment;
                     }
                     return createNullCheckWrapper( assignment, isUpdate );
 
                 case IS_NULL_INLINE:
-                    if (assignment.getType().isTypeRelated() ) {
+                    if (isUpdate
+                        || ( (assignment.getType().isTypeRelated() ||  assignment.getType().isDirect() )
+                            && !getSourceType().isPrimitive() ) ) {
                         return createNullCheckWrapper( assignment, isUpdate );
                     }
                     return assignment;

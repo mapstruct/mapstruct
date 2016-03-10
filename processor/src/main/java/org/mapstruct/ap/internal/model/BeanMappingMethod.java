@@ -298,6 +298,8 @@ public class BeanMappingMethod extends MappingMethod {
                                     .existingVariableNames( existingVariableNames )
                                     .dependsOn( mapping.getDependsOn() )
                                     .defaultValue( mapping.getDefaultValue() )
+                                    .valueSetCheckStrategy(
+                                         valueSetCheckStrategy( method.getMapperConfiguration(), mapping ) )
                                     .build();
                                 handledTargets.add( mapping.getTargetName() );
                                 unprocessedSourceParameters.remove( sourceRef.getParameter() );
