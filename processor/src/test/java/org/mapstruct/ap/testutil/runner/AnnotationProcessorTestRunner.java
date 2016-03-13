@@ -60,7 +60,18 @@ public class AnnotationProcessorTestRunner extends ParentRunner<Runner> {
     public AnnotationProcessorTestRunner(Class<?> klass) throws Exception {
         super( klass );
 
-        runners = Arrays.<Runner> asList(
+        runners = createRunners( klass );
+    }
+
+    @SuppressWarnings("deprecation")
+    private List<Runner> createRunners(Class<?> klass) throws Exception {
+        WithSingleCompiler singleCompiler = klass.getAnnotation( WithSingleCompiler.class );
+
+        if (singleCompiler != null) {
+            return Arrays.<Runner> asList( new InnerAnnotationProcessorRunner( klass, singleCompiler.value() ) );
+        }
+
+        return Arrays.<Runner> asList(
             new InnerAnnotationProcessorRunner( klass, Compiler.JDK ),
             new InnerAnnotationProcessorRunner( klass, Compiler.ECLIPSE ) );
     }
