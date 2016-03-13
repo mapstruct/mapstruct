@@ -31,7 +31,6 @@ import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
@@ -169,9 +168,6 @@ public class PropertyMapping extends ModelElement {
         // initial properties
         private String dateFormat;
         private String defaultValue;
-        private List<TypeMirror> qualifiers;
-        private List<String> qualifyingNames;
-        private TypeMirror resultType;
         private SourceReference sourceReference;
         private SelectionParameters selectionParameters;
 
@@ -181,11 +177,6 @@ public class PropertyMapping extends ModelElement {
         }
 
         public PropertyMappingBuilder selectionParameters(SelectionParameters selectionParameters) {
-            if ( selectionParameters != null ) {
-                this.qualifiers = selectionParameters.getQualifiers();
-                this.qualifyingNames = selectionParameters.getQualifyingNames();
-                this.resultType = selectionParameters.getResultType();
-            }
             this.selectionParameters = selectionParameters;
             return this;
         }

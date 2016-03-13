@@ -193,8 +193,6 @@ public class Mapper extends GeneratedType {
 
     /**
      * Checks if the mapper has a custom implementation that is a custom suffix of an explicit destination package.
-     *
-     * @return
      */
     public boolean hasCustomImplementation() {
         return customImplName || customPackage;

@@ -27,6 +27,7 @@ import javax.lang.model.element.TypeElement;
  *
  */
 public class TypeHierarchyErroneousException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
     private TypeElement element;
 

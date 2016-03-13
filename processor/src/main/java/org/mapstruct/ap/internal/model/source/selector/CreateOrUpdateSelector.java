@@ -46,7 +46,6 @@ public class CreateOrUpdateSelector implements MethodSelector {
                                                          Type sourceType, Type targetType,
                                                          SelectionCriteria criteria) {
 
-        boolean isCreateMethod = mappingMethod.getMappingTargetParameter() == null;
         List<T> createCandidates = new ArrayList<T>();
         List<T> updateCandidates = new ArrayList<T>();
         for ( T method : methods ) {

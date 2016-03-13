@@ -55,11 +55,6 @@ public abstract class MappingMethod extends ModelElement {
     /**
      * constructor to be overloaded when local variable names are required prior to calling this constructor. (e.g. for
      * property mappings). It is supposed to be initialized with at least the parameter names.
-     *
-     * @param method method
-     * @param existingVariableNames existingVariableNames
-     * @param beforeMappingReferences
-     * @param afterMappingReferences
      */
     protected MappingMethod(Method method, Collection<String> existingVariableNames,
                             List<LifecycleCallbackMethodReference> beforeMappingReferences,
