@@ -224,17 +224,32 @@ public class MethodMatcher {
     }
 
     private enum Assignability {
-        VISITED_ASSIGNABLE_FROM, VISITED_ASSIGNABLE_TO
+        VISITED_ASSIGNABLE_FROM, VISITED_ASSIGNABLE_TO;
+
+        Assignability invert() {
+            return this == VISITED_ASSIGNABLE_FROM
+                            ? VISITED_ASSIGNABLE_TO
+                            : VISITED_ASSIGNABLE_FROM;
+        }
     }
 
     private class TypeMatcher extends SimpleTypeVisitor6<Boolean, TypeMirror> {
         private final Assignability assignability;
         private final Map<TypeVariable, TypeMirror> genericTypesMap;
+        private final TypeMatcher inverse;
 
         TypeMatcher(Assignability assignability, Map<TypeVariable, TypeMirror> genericTypesMap) {
             super( Boolean.FALSE ); // default value
             this.assignability = assignability;
             this.genericTypesMap = genericTypesMap;
+            this.inverse = new TypeMatcher( this, genericTypesMap );
+        }
+
+        TypeMatcher(TypeMatcher inverse, Map<TypeVariable, TypeMirror> genericTypesMap) {
+            super( Boolean.FALSE ); // default value
+            this.assignability = inverse.assignability.invert();
+            this.genericTypesMap = genericTypesMap;
+            this.inverse = inverse;
         }
 
         @Override
@@ -262,7 +277,7 @@ public class MethodMatcher {
                 if ( assignabilityMatches( t, t1 )
                     && t.getTypeArguments().size() == t1.getTypeArguments().size() ) {
                     for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
-                        if ( !t.getTypeArguments().get( i ).accept( this, t1.getTypeArguments().get( i ) ) ) {
+                        if ( !visit( t.getTypeArguments().get( i ), t1.getTypeArguments().get( i ) ) ) {
                             return Boolean.FALSE;
                         }
                     }
@@ -271,6 +286,9 @@ public class MethodMatcher {
                 else {
                     return Boolean.FALSE;
                 }
+            }
+            else if ( p.getKind() == TypeKind.WILDCARD ) {
+                return inverse.visit( p, t ); // inverse, as we switch the params
             }
             else {
                 return Boolean.FALSE;
@@ -326,7 +344,7 @@ public class MethodMatcher {
                     case DECLARED:
                         // for example method: String method(? extends String)
                         // isSubType checks range [subtype, type], e.g. isSubtype [Object, String]==true
-                        return typeUtils.isSubtype( p, extendsBound );
+                        return visit( extendsBound, p );
 
                     case TYPEVAR:
                         // for example method: <T extends String & Serializable> T method(? extends T)
@@ -401,7 +419,7 @@ public class MethodMatcher {
      * @return true if within bounds
      */
     private boolean isWithinBounds(TypeMirror t, TypeParameterElement tpe) {
-        List<? extends TypeMirror> bounds = tpe.getBounds();
+        List<? extends TypeMirror> bounds = tpe != null ? tpe.getBounds() : null;
         if ( t != null && bounds != null ) {
             for ( TypeMirror bound : bounds ) {
                 if ( !( bound.getKind() == TypeKind.DECLARED && typeUtils.isSubtype( t, bound ) ) ) {

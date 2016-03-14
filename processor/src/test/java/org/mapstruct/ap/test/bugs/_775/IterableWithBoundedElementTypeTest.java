@@ -32,6 +32,8 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * Verifies:
  * <ul>
  * <li>For target properties of type {@link Iterable}, a forged method can be created.
+ * <li>For target properties of type {@code Iterable<? extends Integer>}, a custom mapping method that returns
+ * {@code List<Integer>} is chosen as property mapping method.
  * </ul>
  *
  * @author Andreas Gudian
@@ -40,6 +42,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @IssueKey("775")
 @WithClasses({
     MapperWithForgedIterableMapping.class,
+    MapperWithCustomListMapping.class,
     ListContainer.class,
     IterableContainer.class
 })
@@ -53,5 +56,15 @@ public class IterableWithBoundedElementTypeTest {
         IterableContainer result = MapperWithForgedIterableMapping.INSTANCE.toContainerWithIterable( source );
 
         assertThat( result.getValues() ).contains( Integer.valueOf( 42 ), Integer.valueOf( 47 ) );
+    }
+
+    @Test
+    public void usesListIntegerMethodForIterableLowerBoundInteger() {
+        ListContainer source = new ListContainer();
+
+        source.setValues( Arrays.asList( "42", "47" ) );
+        IterableContainer result = MapperWithCustomListMapping.INSTANCE.toContainerWithIterable( source );
+
+        assertThat( result.getValues() ).contains( Integer.valueOf( 66 ), Integer.valueOf( 71 ) );
     }
 }
