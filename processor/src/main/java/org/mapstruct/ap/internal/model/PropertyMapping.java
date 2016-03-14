@@ -522,7 +522,7 @@ public class PropertyMapping extends ModelElement {
             name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
             if ( ( sourceType.isCollectionType() || sourceType.isArrayType() )
-                && ( targetType.isCollectionType() || targetType.isArrayType() ) ) {
+                && ( targetType.isIterableType() ) ) {
 
                 // copy mapper configuration from the source method, its the same mapper
                 MapperConfiguration config = method.getMapperConfiguration();
