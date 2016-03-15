@@ -96,6 +96,8 @@ public @interface Named {
 
     /**
      * A name qualifying the annotated element
+     *
+     * @return the name.
      */
     String value();
 }
