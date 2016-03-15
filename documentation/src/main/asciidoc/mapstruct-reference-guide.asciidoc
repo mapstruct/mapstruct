@@ -63,37 +63,36 @@ For Maven based projects add the following to your POM file in order to use MapS
 <build>
     <plugins>
         <plugin>
-  <groupId>org.bsc.maven</groupId>
-  <artifactId>maven-processor-plugin</artifactId>
-  <version>2.2.4</version>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.5.1</version>
             <configuration>
-                <defaultOutputDirectory>
-                    ${project.build.directory}/generated-sources
-                </defaultOutputDirectory>
-                <processors>
-                    <processor>org.mapstruct.ap.MappingProcessor</processor>
-                </processors>
+                <source>1.8</source>
+                <target>1.8</target>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct-processor</artifactId>
+                        <version>${org.mapstruct.version}</version>
+                    </path>
+                </annotationProcessorPaths>
             </configuration>
-            <executions>
-                <execution>
-                    <id>process</id>
-                    <phase>generate-sources</phase>
-                    <goals>
-                        <goal>process</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <dependencies>
-                <dependency>
-                    <groupId>org.mapstruct</groupId>
-                    <artifactId>mapstruct-processor</artifactId>
-                    <version>${org.mapstruct.version}</version>
-                </dependency>
-            </dependencies>
         </plugin>
     </plugins>
 </build>
+...
 ----
+====
+
+[TIP]
+====
+If you are working with the Eclipse IDE, make sure to have a current version of the http://www.eclipse.org/m2e/[M2E plug-in].
+When importing a Maven project configured as shown above, it will set up the MapStruct annotation processor so it runs right in the IDE, whenever you save a mapper type.
+Neat, isn't it?
+
+To double check that everything is working as expected, go to your project's properties and select "Java Compiler" -> "Annotation Processing" -> "Factory Path".
+The MapStruct processor JAR should be listed and enabled there.
+Any processor options configured via the compiler plug-in (see below) should be listed under "Java Compiler" -> "Annotation Processing".
 ====
 
 [[configuration-options]]
@@ -110,20 +109,29 @@ When invoking javac directly, these options are passed to the compiler in the fo
 ----
 ...
 <plugin>
-    <groupId>org.bsc.maven</groupId>
-    <artifactId>maven-processor-plugin</artifactId>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.5.1</version>
     <configuration>
-        <processors>
-            <processor>org.mapstruct.ap.MappingProcessor</processor>
-        </processors>
-        <options>
-            <mapstruct.suppressGeneratorTimestamp>true</mapstruct.suppressGeneratorTimestamp>
-            <mapstruct.defaultComponentModel>cdi</mapstruct.defaultComponentModel>
-        </options>
-        ...
+        <source>1.8</source>
+        <target>1.8</target>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${org.mapstruct.version}</version>
+            </path>
+        </annotationProcessorPaths>
+        <compilerArgs>
+            <compilerArg>
+                -Amapstruct.suppressGeneratorTimestamp=true
+            </compilerArg>
+            <compilerArg>
+                -Amapstruct.suppressGeneratorVersionInfoComment=true
+            </compilerArg>
+        </compilerArgs>
     </configuration>
-    ...
-<plugin>
+</plugin>
 ...
 ----
 ====
