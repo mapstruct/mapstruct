@@ -38,7 +38,6 @@ import java.lang.annotation.Target;
  * <p>
  * <b>NOTE:</b> The decorator feature when used with component model {@code jsr330} is considered <em>experimental</em>
  * and it may change in future releases.
- * <p>
  * <h2>Examples</h2>
  * <p>
  * For the examples below, consider the following mapper declaration:

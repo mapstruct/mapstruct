@@ -97,15 +97,13 @@ public @interface Mapping {
      * An expression {@link String} based on which the specified target property is to be set.
      * <p>
      * Currently, Java is the only supported "expression language" and expressions must be given in form of Java
-     * expressions using the following format: {@code java(<EXPRESSION>)}. For instance the mapping
-     * <p>
-     *
-     * <pre>
-     * {@code @Mapping(
+     * expressions using the following format: {@code java(<EXPRESSION>)}. For instance the mapping:
+     * <pre><code>
+     * &#64;Mapping(
      *     target = "someProp",
      *     expression = "java(new TimeAndFormat( s.getTime(), s.getFormat() ))"
-     * )}
-     * </pre>
+     * )
+     * </code></pre>
      * <p>
      * will cause the following target property assignment to be generated:
      * <p>
