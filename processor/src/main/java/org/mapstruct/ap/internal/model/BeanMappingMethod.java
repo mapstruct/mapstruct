@@ -82,6 +82,7 @@ public class BeanMappingMethod extends MappingMethod {
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
         private SelectionParameters selectionParameters;
         private final Set<String> existingVariableNames = new HashSet<String>();
+        private boolean hasHibernateLazy;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -171,7 +172,8 @@ public class BeanMappingMethod extends MappingMethod {
                 resultType,
                 existingVariableNames,
                 beforeMappingMethods,
-                afterMappingMethods
+                afterMappingMethods,
+                hasHibernateLazy
             );
         }
 
@@ -183,6 +185,9 @@ public class BeanMappingMethod extends MappingMethod {
             GraphAnalyzerBuilder graphAnalyzerBuilder = GraphAnalyzer.builder();
 
             for ( PropertyMapping propertyMapping : propertyMappings ) {
+                if ( propertyMapping.isHibernateLazy() ) {
+                    hasHibernateLazy = true;
+                }
                 graphAnalyzerBuilder.withNode( propertyMapping.getName(), propertyMapping.getDependsOn() );
             }
 
@@ -297,6 +302,7 @@ public class BeanMappingMethod extends MappingMethod {
                                     .existingVariableNames( existingVariableNames )
                                     .dependsOn( mapping.getDependsOn() )
                                     .defaultValue( mapping.getDefaultValue() )
+                                    .hibernateLazy( mapping.isHibernateLazy() )
                                     .build();
                                 handledTargets.add( mapping.getTargetName() );
                                 unprocessedSourceParameters.remove( sourceRef.getParameter() );
@@ -419,6 +425,7 @@ public class BeanMappingMethod extends MappingMethod {
                                 .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
                                 .existingVariableNames( existingVariableNames )
                                 .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
+                                .hibernateLazy( mapping != null ? mapping.isHibernateLazy() : false )
                                 .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
@@ -482,6 +489,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
+                            .hibernateLazy( mapping != null ? mapping.isHibernateLazy() : false )
                             .build();
 
                         propertyMappings.add( propertyMapping );
@@ -576,8 +584,9 @@ public class BeanMappingMethod extends MappingMethod {
                               Type resultType,
                               Collection<String> existingVariableNames,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                              List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences );
+                              List<LifecycleCallbackMethodReference> afterMappingReferences,
+                              boolean hasHibernateLazy) {
+        super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences, hasHibernateLazy );
         this.propertyMappings = propertyMappings;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a

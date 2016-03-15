@@ -133,6 +133,7 @@ abstract class CompilingStatement extends Statement {
                 "guava",
                 "javax.inject",
                 "spring-beans",
+                "hibernate",
                 "spring-context",
                 "joda-time" };
 

@@ -59,6 +59,7 @@ public class Mapping {
     private final SelectionParameters selectionParameters;
 
     private final boolean isIgnored;
+    private final boolean isHibernateLazy;
     private final List<String> dependsOn;
 
     private final AnnotationMirror mirror;
@@ -133,7 +134,7 @@ public class Mapping {
         String expression = getExpression( mappingPrism, element, messager );
         String dateFormat = mappingPrism.values.dateFormat() == null ? null : mappingPrism.dateFormat();
         String defaultValue = mappingPrism.values.defaultValue() == null ? null : mappingPrism.defaultValue();
-
+        boolean hibernateLazy = mappingPrism.hibernateLazy() == null ? false : mappingPrism.hibernateLazy();
         boolean resultTypeIsDefined = mappingPrism.values.resultType() != null;
         List<String> dependsOn =
             mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
@@ -156,7 +157,8 @@ public class Mapping {
             mappingPrism.values.target(),
             selectionParams,
             mappingPrism.values.dependsOn(),
-            dependsOn
+            dependsOn,
+            hibernateLazy
         );
     }
 
@@ -165,7 +167,7 @@ public class Mapping {
                     String dateFormat, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
                     SelectionParameters selectionParameters, AnnotationValue dependsOnAnnotationValue,
-                    List<String> dependsOn) {
+                    List<String> dependsOn, boolean isHibernateLazy) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -179,6 +181,7 @@ public class Mapping {
         this.selectionParameters = selectionParameters;
         this.dependsOnAnnotationValue = dependsOnAnnotationValue;
         this.dependsOn = dependsOn;
+        this.isHibernateLazy = isHibernateLazy;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
@@ -279,6 +282,10 @@ public class Mapping {
         return dependsOn;
     }
 
+    public boolean isHibernateLazy() {
+        return isHibernateLazy;
+    }
+
     private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         return method.getResultType().getPropertyWriteAccessors( cms ).containsKey( name );
@@ -327,7 +334,8 @@ public class Mapping {
             targetAnnotationValue,
             selectionParameters,
             dependsOnAnnotationValue,
-            Collections.<String>emptyList()
+            Collections.<String>emptyList(),
+            isHibernateLazy
         );
 
         reverse.init( method, messager, typeFactory );
@@ -354,7 +362,8 @@ public class Mapping {
             targetAnnotationValue,
             selectionParameters,
             dependsOnAnnotationValue,
-            dependsOn
+            dependsOn,
+            isHibernateLazy
         );
 
         if ( sourceReference != null ) {

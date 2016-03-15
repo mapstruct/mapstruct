@@ -73,6 +73,7 @@ public class PropertyMapping extends ModelElement {
     private final Assignment assignment;
     private final List<String> dependsOn;
     private final Assignment defaultValueAssignment;
+    protected boolean hibernateLazy;
 
     private enum TargetWriteAccessorType {
         GETTER,
@@ -106,6 +107,7 @@ public class PropertyMapping extends ModelElement {
 
         protected List<String> dependsOn;
         protected Set<String> existingVariableNames;
+        protected boolean hibernateLazy;
 
         public T mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -154,6 +156,11 @@ public class PropertyMapping extends ModelElement {
 
         public T dependsOn(List<String> dependsOn) {
             this.dependsOn = dependsOn;
+            return (T) this;
+        }
+
+        public T hibernateLazy(boolean hibernateLazy) {
+            this.hibernateLazy = hibernateLazy;
             return (T) this;
         }
 
@@ -272,7 +279,8 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
-                getDefaultValueAssignment()
+                getDefaultValueAssignment(),
+                hibernateLazy
             );
         }
 
@@ -677,7 +685,8 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
-                null
+                null,
+                hibernateLazy
             );
         }
     }
@@ -715,21 +724,23 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
-                null
+                null,
+                false
             );
         }
     }
 
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name, String targetWriteAccessorName, String targetReadAccessorName, Type targetType,
-                            Assignment propertyAssignment, List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            Assignment propertyAssignment, List<String> dependsOn, Assignment defaultValueAssignment,
+                            boolean hibernateLazy ) {
         this( name, null, targetWriteAccessorName, targetReadAccessorName,
-                        targetType, propertyAssignment, dependsOn, defaultValueAssignment );
+                targetType, propertyAssignment, dependsOn, defaultValueAssignment, hibernateLazy );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             String targetReadAccessorName, Type targetType, Assignment assignment,
-                            List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            List<String> dependsOn, Assignment defaultValueAssignment, boolean hibernateLazy ) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -738,6 +749,7 @@ public class PropertyMapping extends ModelElement {
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
         this.defaultValueAssignment = defaultValueAssignment;
+        this.hibernateLazy = hibernateLazy;
     }
 
     /**
@@ -765,6 +777,10 @@ public class PropertyMapping extends ModelElement {
 
     public Assignment getAssignment() {
         return assignment;
+    }
+
+    public boolean isHibernateLazy() {
+        return hibernateLazy;
     }
 
     public Assignment getDefaultValueAssignment() {

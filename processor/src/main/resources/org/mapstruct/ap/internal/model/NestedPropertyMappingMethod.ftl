@@ -19,19 +19,23 @@
 
 -->
 <#lt>private <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
-
-    if ( ${sourceParameter.name} == null ) {
-        return ${returnType.null};
-    }
-    <#list propertyEntries as entry>
+if ( ${sourceParameter.name} == null ) {
+return ${returnType.null};
+}
+<#list propertyEntries as entry>
     <@includeModel object=entry.type/> ${entry.name} = <#if entry_index == 0>${sourceParameter.name}.${entry.accessorName}()<#else>${propertyEntries[entry_index-1].name}.${entry.accessorName}()</#if>;
+    <#if hibernateLazy>
+    if ( !Hibernate.isInitialized( ${entry.name} ) ) {
+    return ${returnType.null};
+    }
+    </#if>
     <#if !entry.type.primitive>
     if ( ${entry.name} == null ) {
-        return ${returnType.null};
+    return ${returnType.null};
     }
     </#if>
     <#if !entry_has_next>
     return ${entry.name};
     </#if>
-    </#list>
+</#list>
 }
