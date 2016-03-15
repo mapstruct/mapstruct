@@ -93,6 +93,13 @@ Neat, isn't it?
 To double check that everything is working as expected, go to your project's properties and select "Java Compiler" -> "Annotation Processing" -> "Factory Path".
 The MapStruct processor JAR should be listed and enabled there.
 Any processor options configured via the compiler plug-in (see below) should be listed under "Java Compiler" -> "Annotation Processing".
+
+If the processor is not kicking in, check that the configuration of annotion processors through M2E is enabled.
+To do so, go to "Preferences" -> "Maven" -> "Annotation Processing" and select "Automatically configure JDT APT".
+Alternatively, specify the following in the `properties` section of your POM file: `<m2e.apt.activation>jdt_apt</m2e.apt.activation>`.
+
+Also make sure that your project is using Java 1.6 or later (project properties -> "Java Compiler" -> "Compile Compliance Level").
+It will not work with older versions.
 ====
 
 [[configuration-options]]
