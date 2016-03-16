@@ -51,6 +51,7 @@ import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -297,6 +298,8 @@ public class BeanMappingMethod extends MappingMethod {
                                     .existingVariableNames( existingVariableNames )
                                     .dependsOn( mapping.getDependsOn() )
                                     .defaultValue( mapping.getDefaultValue() )
+                                    .valueSetCheckStrategy(
+                                         valueSetCheckStrategy( method.getMapperConfiguration(), mapping ) )
                                     .build();
                                 handledTargets.add( mapping.getTargetName() );
                                 unprocessedSourceParameters.remove( sourceRef.getParameter() );
@@ -368,9 +371,6 @@ public class BeanMappingMethod extends MappingMethod {
             Iterator<Entry<String, ExecutableElement>> targetPropertiesIterator =
                 unprocessedTargetProperties.entrySet().iterator();
 
-            // usually there should be only one getter; only for Boolean there may be two: isFoo() and getFoo()
-            List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( 2 );
-
             while ( targetPropertiesIterator.hasNext() ) {
                 Entry<String, ExecutableElement> targetProperty = targetPropertiesIterator.next();
 
@@ -384,26 +384,23 @@ public class BeanMappingMethod extends MappingMethod {
                             continue;
                         }
 
-                        Collection<ExecutableElement> sourceReadAccessors =
-                            sourceParameter.getType().getPropertyReadAccessors().values();
-                        for ( ExecutableElement sourceReadAccessor : sourceReadAccessors ) {
-                            String sourcePropertyName = Executables.getPropertyName( sourceReadAccessor );
-
-                            if ( sourcePropertyName.equals( targetProperty.getKey() ) ) {
-                                candidates.add( sourceReadAccessor );
-                            }
-                        }
-
                         PropertyMapping newPropertyMapping = null;
-                        ExecutableElement sourceAccessor = getSourceAccessor( targetProperty.getKey(), candidates );
-                        if ( sourceAccessor != null ) {
+
+                        ExecutableElement sourceReadAccessor = getCandidateAccessor(
+                            sourceParameter.getType().getPropertyReadAccessors().values(), targetProperty.getKey() );
+
+                        ExecutableElement sourcePresenceCheckers = getCandidateAccessor(
+                            sourceParameter.getType().getPropertyPresenceCheckers().values(), targetProperty.getKey() );
+
+                        if ( sourceReadAccessor != null ) {
                             Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
                             DeclaredType sourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
 
                             SourceReference sourceRef = new SourceReference.BuilderFromProperty()
                                 .sourceParameter( sourceParameter )
-                                .type( ctx.getTypeFactory().getReturnType( sourceType, sourceAccessor ) )
-                                .accessor( sourceAccessor )
+                                .type( ctx.getTypeFactory().getReturnType( sourceType, sourceReadAccessor ) )
+                                .readAccessor( sourceReadAccessor )
+                                .presenceChecker( sourcePresenceCheckers )
                                 .name( targetProperty.getKey() )
                                 .build();
 
@@ -419,13 +416,12 @@ public class BeanMappingMethod extends MappingMethod {
                                 .defaultValue( mapping != null ? mapping.getDefaultValue() : null )
                                 .existingVariableNames( existingVariableNames )
                                 .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
+                                .valueSetCheckStrategy(
+                                     valueSetCheckStrategy( method.getMapperConfiguration(), mapping ) )
                                 .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
-
                         }
-                        // candidates are handled
-                        candidates.clear();
 
                         if ( propertyMapping != null && newPropertyMapping != null ) {
                             // TODO improve error message
@@ -447,6 +443,23 @@ public class BeanMappingMethod extends MappingMethod {
                     targetPropertiesIterator.remove();
                 }
             }
+        }
+
+        private ExecutableElement getCandidateAccessor(Collection<ExecutableElement> sourceReadOrPresenceCheckers,
+            String targetPropertyKey) {
+
+            // usually there should be only one getter; only for Boolean there may be two: isFoo() and getFoo()
+            List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( 2 );
+
+            for ( ExecutableElement sourceReadOrPresenceChecker : sourceReadOrPresenceCheckers ) {
+                String sourcePropertyName = Executables.getPropertyName( sourceReadOrPresenceChecker );
+
+                if ( sourcePropertyName.equals( targetPropertyKey ) ) {
+                    candidates.add( sourceReadOrPresenceChecker );
+                }
+            }
+
+            return getSourceAccessor( targetPropertyKey, candidates );
         }
 
         private void applyParameterNameBasedMapping() {
@@ -482,6 +495,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
+                            .valueSetCheckStrategy( valueSetCheckStrategy( method.getMapperConfiguration(), mapping ) )
                             .build();
 
                         propertyMappings.add( propertyMapping );
@@ -490,6 +504,16 @@ public class BeanMappingMethod extends MappingMethod {
                     }
                 }
             }
+        }
+
+        private SourceValuePresenceCheckStrategy valueSetCheckStrategy(MapperConfiguration mapper, Mapping mapping) {
+             if ( mapping != null && mapping.isSetSourceValuePresenceCheckStrategy()) {
+                 return mapping.sourceValuePresenceCheckStrategy();
+             }
+             if (mapping == null || mapper.isSetSourceValuePresenceCheckStrategy()) {
+                 return mapper.sourceValuePresenceCheckStrategy();
+             }
+             return mapping.sourceValuePresenceCheckStrategy();
         }
 
         private ExecutableElement getSourceAccessor(String sourcePropertyName, List<ExecutableElement> candidates) {
@@ -501,7 +525,8 @@ public class BeanMappingMethod extends MappingMethod {
             }
             // can only be the case for Booleans: isFoo() and getFoo(); The latter is preferred then
             else if ( candidates.size() == 2 ) {
-                if ( candidates.get( 0 ).getSimpleName().toString().startsWith( "get" ) ) {
+                if ( candidates.get( 0 ).getSimpleName().toString().startsWith( "get" ) ||
+                    candidates.get( 0 ).getSimpleName().toString().startsWith( "has" )) {
                     return candidates.get( 0 );
                 }
                 else {

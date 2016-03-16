@@ -20,9 +20,7 @@ package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+import static org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy.CUSTOM;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,9 +37,11 @@ import org.mapstruct.ap.internal.model.assignment.EnumSetCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
+import org.mapstruct.ap.internal.model.assignment.PresenceCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.UpdateNullCheckWrapper;
+import org.mapstruct.ap.internal.model.assignment.UpdatePresenceCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -51,6 +51,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
+import org.mapstruct.ap.internal.prism.SourceValuePresenceCheckStrategy;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -72,6 +73,7 @@ public class PropertyMapping extends ModelElement {
     private final Type targetType;
     private final Assignment assignment;
     private final List<String> dependsOn;
+    private final SourceValuePresenceCheckStrategy valueSetCheckStrategy;
     private final Assignment defaultValueAssignment;
 
     private enum TargetWriteAccessorType {
@@ -105,6 +107,7 @@ public class PropertyMapping extends ModelElement {
         protected String targetPropertyName;
 
         protected List<String> dependsOn;
+        protected SourceValuePresenceCheckStrategy valueSetCheckStrategy;
         protected Set<String> existingVariableNames;
 
         public T mappingContext(MappingBuilderContext mappingContext) {
@@ -154,6 +157,11 @@ public class PropertyMapping extends ModelElement {
 
         public T dependsOn(List<String> dependsOn) {
             this.dependsOn = dependsOn;
+            return (T) this;
+        }
+
+        public T valueSetCheckStrategy(SourceValuePresenceCheckStrategy valueSetCheckStrategy) {
+            this.valueSetCheckStrategy = valueSetCheckStrategy;
             return (T) this;
         }
 
@@ -245,12 +253,11 @@ public class PropertyMapping extends ModelElement {
                         targetType,
                         existingVariableNames
                     );
-                    assignment = new NullCheckWrapper( assignment );
+                    assignment = getOrcreateWrapperByValueCheckStrategy( assignment, assignment.isUpdateMethod() );
                 }
                 else {
                     assignment = assignObject( sourceType, targetType, targetWriteAccessorType, assignment );
                 }
-
             }
             else {
                 ctx.getMessager().printMessage(
@@ -272,12 +279,15 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
+                valueSetCheckStrategy,
                 getDefaultValueAssignment()
             );
         }
 
         private Assignment getDefaultValueAssignment() {
-            if ( defaultValue != null && !getSourceType().isPrimitive() ) {
+            if ( defaultValue != null
+                    //Support default value for primitive type if strategy is set to custom
+                    && ( !getSourceType().isPrimitive() || valueSetCheckStrategy == CUSTOM )) {
                 PropertyMapping build = new ConstantMappingBuilder()
                         .constantExpression( '"' + defaultValue + '"' )
                         .dateFormat( dateFormat )
@@ -314,21 +324,7 @@ public class PropertyMapping extends ModelElement {
                 else {
                     result = new SetterWrapper( result, method.getThrownTypes() );
                 }
-                if ( !sourceType.isPrimitive()
-                    && !sourceReference.getPropertyEntries().isEmpty() ) { // parameter null taken care of by beanmapper
-
-                    if ( result.isUpdateMethod() ) {
-                        result = new UpdateNullCheckWrapper( result );
-                    }
-                    else if ( result.getType() == TYPE_CONVERTED
-                        || result.getType() == TYPE_CONVERTED_MAPPED
-                        || result.getType() == MAPPED_TYPE_CONVERTED
-                        || ( result.getType() == DIRECT && targetType.isPrimitive() ) ) {
-                        // for primitive types null check is not possible at all, but a conversion needs
-                        // a null check.
-                        result = new NullCheckWrapper( result );
-                    }
-                }
+                result = getOrcreateWrapperByValueCheckStrategy( result, result.isUpdateMethod() );
             }
             else {
                 // TargetAccessorType must be ADDER
@@ -339,12 +335,12 @@ public class PropertyMapping extends ModelElement {
                         getSourceRef(),
                         sourceType
                     );
-                    result = new NullCheckWrapper( result );
+                    result = getOrcreateWrapperByValueCheckStrategy( result, false );
                 }
                 else {
                     // Possibly adding null to a target collection. So should be surrounded by an null check.
                     result = new SetterWrapper( result, method.getThrownTypes() );
-                    result = new NullCheckWrapper( result );
+                    result = getOrcreateWrapperByValueCheckStrategy( result, false );
                 }
             }
             return result;
@@ -418,10 +414,10 @@ public class PropertyMapping extends ModelElement {
             // for mapping methods (builtin / custom), the mapping method is responsible for the
             // null check. Typeconversions do not apply to collections and maps.
             if ( result.getType() == DIRECT ) {
-                result = new NullCheckWrapper( result );
+                result = getOrcreateWrapperByValueCheckStrategy( result, result.isUpdateMethod() );
             }
             else if ( result.getType() == MAPPED && result.isUpdateMethod() ) {
-                result = new UpdateNullCheckWrapper( result );
+                result = getOrcreateWrapperByValueCheckStrategy( result, true );
             }
 
             return result;
@@ -490,6 +486,62 @@ public class PropertyMapping extends ModelElement {
 
                 return forgedName + "( " + sourceParam.getName() + " )";
             }
+        }
+
+        private Assignment getOrcreateWrapperByValueCheckStrategy(Assignment assignment, boolean isUpdate) {
+
+            if ( valueSetCheckStrategy == null ) {
+                return createNullCheckWrapper( assignment, isUpdate );
+            }
+
+            switch ( valueSetCheckStrategy ) {
+                case IS_NULL:
+                    // for primitive types null check is not possible at all
+                    if (getSourceType().isPrimitive() )  {
+                        return assignment;
+                    }
+                    return createNullCheckWrapper( assignment, isUpdate );
+
+                case IS_NULL_INLINE:
+                    if (isUpdate
+                        || ( (assignment.getType().isTypeRelated() ||  assignment.getType().isDirect() )
+                                && !getSourceType().isPrimitive() ) ) {
+                        return createNullCheckWrapper( assignment, isUpdate );
+                    }
+                    return assignment;
+
+                case CUSTOM:
+                    String presenceChecker = getPresenceChecker();
+
+                    if ( presenceChecker == null ) {
+                        ctx.getMessager().printMessage( method.getExecutable(),
+                                 Message.PROPERTYMAPPING_NO_PRESENCE_CHECKER_FOR_SOURCE_TYPE,
+                                 getSourceElement() );
+                    }
+                    return isUpdate ? new UpdatePresenceCheckWrapper( assignment, presenceChecker )
+                        : new PresenceCheckWrapper( assignment, presenceChecker );
+
+                default:
+                    //Currently, we don't support other strategy
+                    return assignment;
+            }
+        }
+
+        private Assignment createNullCheckWrapper(Assignment assignment, boolean isUpdate) {
+            return isUpdate ? new UpdateNullCheckWrapper( assignment ) : new NullCheckWrapper( assignment );
+        }
+
+        private String getPresenceChecker() {
+            Parameter sourceParam = sourceReference.getParameter();
+            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+
+            for (PropertyEntry property : propertyEntries) {
+                if (property.getPresenceChecker() != null) {
+                     return sourceParam.getName() + "." + property.getPresenceChecker().getSimpleName() + "()";
+                }
+            }
+
+            return null;
         }
 
         private String getSourceElement() {
@@ -677,6 +729,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
+                valueSetCheckStrategy,
                 null
             );
         }
@@ -715,6 +768,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
+                valueSetCheckStrategy,
                 null
             );
         }
@@ -722,14 +776,17 @@ public class PropertyMapping extends ModelElement {
 
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name, String targetWriteAccessorName, String targetReadAccessorName, Type targetType,
-                            Assignment propertyAssignment, List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            Assignment propertyAssignment, List<String> dependsOn,
+                            SourceValuePresenceCheckStrategy valueSetCheckStrategy,
+                            Assignment defaultValueAssignment ) {
         this( name, null, targetWriteAccessorName, targetReadAccessorName,
-                        targetType, propertyAssignment, dependsOn, defaultValueAssignment );
+                        targetType, propertyAssignment, dependsOn, valueSetCheckStrategy, defaultValueAssignment );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             String targetReadAccessorName, Type targetType, Assignment assignment,
-                            List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            List<String> dependsOn, SourceValuePresenceCheckStrategy valueSetCheckStrategy,
+                            Assignment defaultValueAssignment ) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -738,6 +795,7 @@ public class PropertyMapping extends ModelElement {
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
         this.defaultValueAssignment = defaultValueAssignment;
+        this.valueSetCheckStrategy = valueSetCheckStrategy;
     }
 
     /**
@@ -787,6 +845,10 @@ public class PropertyMapping extends ModelElement {
         return dependsOn;
     }
 
+    public SourceValuePresenceCheckStrategy valueSetCheckStrategy() {
+        return valueSetCheckStrategy;
+    }
+
     @Override
     public String toString() {
         return "PropertyMapping {"
@@ -797,6 +859,7 @@ public class PropertyMapping extends ModelElement {
             + "\n    propertyAssignment=" + assignment + ","
             + "\n    defaultValueAssignment=" + defaultValueAssignment + ","
             + "\n    dependsOn=" + dependsOn
+            + "\n    valueSetCheckStrategy=" + valueSetCheckStrategy
             + "\n}";
     }
 }

@@ -46,6 +46,18 @@ public class Filters {
         return getterMethods;
     }
 
+    public static List<ExecutableElement> presenceCheckMethodsIn(Iterable<ExecutableElement> elements) {
+        List<ExecutableElement> presenceCheckMethods = new LinkedList<ExecutableElement>();
+
+        for ( ExecutableElement method : elements ) {
+            if ( Executables.isPresenceCheckMethod( method ) ) {
+                presenceCheckMethods.add( method );
+            }
+        }
+
+        return presenceCheckMethods;
+    }
+
     public static List<ExecutableElement> setterMethodsIn(Iterable<ExecutableElement> elements) {
         List<ExecutableElement> setterMethods = new LinkedList<ExecutableElement>();
 

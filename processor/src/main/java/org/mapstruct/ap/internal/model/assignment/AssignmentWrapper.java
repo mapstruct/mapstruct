@@ -62,6 +62,11 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     }
 
     @Override
+    public String getSourcePresenceCheckMethod() {
+        return decoratedAssignment.getSourcePresenceCheckMethod();
+    }
+
+    @Override
     public AssignmentType getType() {
         return decoratedAssignment.getType();
     }

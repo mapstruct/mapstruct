@@ -128,6 +128,11 @@ public class MethodReference extends MappingMethod implements Assignment {
         return assignment.getSourceReference();
     }
 
+    @Override
+    public String getSourcePresenceCheckMethod() {
+        return assignment.getSourcePresenceCheckMethod();
+    }
+
     /**
      * @return the type of the single source parameter that is not the {@code @TargetType} parameter
      */
