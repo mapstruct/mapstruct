@@ -67,7 +67,7 @@
               <configuration>
                     <sourceHighlighter>coderay</sourceHighlighter>
                     <attributes>
-                        <mapstructVersion>1.0.0.Final</mapstructVersion>
+                        <mapstructVersion>1.1.0.Beta1</mapstructVersion>
                         <icons>font</icons>
                     </attributes>
                   </configuration>
@@ -99,6 +99,13 @@
                       </configuration>
                 </execution>
               </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
         </plugins>
     </build>
