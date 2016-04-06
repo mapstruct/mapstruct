@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -47,11 +47,9 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
-import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
-import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.prism.DecoratedWithPrism;
@@ -270,12 +268,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
 
                 String dateFormat = null;
-                SelectionParameters selectionParameters = null;
+                List<TypeMirror> qualifiers = null;
+                TypeMirror qualifyingElementTargetType = null;
                 NullValueMappingStrategyPrism nullValueMappingStrategy = null;
 
                 if ( mappingOptions.getIterableMapping() != null ) {
                     dateFormat = mappingOptions.getIterableMapping().getDateFormat();
-                    selectionParameters = mappingOptions.getIterableMapping().getSelectionParameters();
+                    qualifiers = mappingOptions.getIterableMapping().getQualifiers();
+                    qualifyingElementTargetType = mappingOptions.getIterableMapping().getQualifyingElementTargetType();
                     nullValueMappingStrategy = mappingOptions.getIterableMapping().getNullValueMappingStrategy();
                 }
 
@@ -283,7 +283,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .mappingContext( mappingContext )
                     .method( method )
                     .dateFormat( dateFormat )
-                    .selectionParameters( selectionParameters )
+                    .qualifiers( qualifiers )
+                    .qualifyingElementTargetType( qualifyingElementTargetType )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
                     .build();
 
@@ -296,15 +297,19 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 String keyDateFormat = null;
                 String valueDateFormat = null;
-                SelectionParameters keySelectionParameters = null;
-                SelectionParameters valueSelectionParameters = null;
+                List<TypeMirror> keyQualifiers = null;
+                List<TypeMirror> valueQualifiers = null;
+                TypeMirror keyQualifyingTargetType = null;
+                TypeMirror valueQualifyingTargetType = null;
                 NullValueMappingStrategyPrism nullValueMappingStrategy = null;
 
                 if ( mappingOptions.getMapMapping() != null ) {
                     keyDateFormat = mappingOptions.getMapMapping().getKeyFormat();
-                    keySelectionParameters = mappingOptions.getMapMapping().getKeySelectionParameters();
-                    valueSelectionParameters = mappingOptions.getMapMapping().getValueSelectionParameters();
                     valueDateFormat = mappingOptions.getMapMapping().getValueFormat();
+                    keyQualifiers = mappingOptions.getMapMapping().getKeyQualifiers();
+                    valueQualifiers = mappingOptions.getMapMapping().getValueQualifiers();
+                    keyQualifyingTargetType = mappingOptions.getMapMapping().getKeyQualifyingTargetType();
+                    valueQualifyingTargetType = mappingOptions.getMapMapping().getValueQualifyingTargetType();
                     nullValueMappingStrategy = mappingOptions.getMapMapping().getNullValueMappingStrategy();
                 }
 
@@ -312,34 +317,23 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .mappingContext( mappingContext )
                     .method( method )
                     .keyDateFormat( keyDateFormat )
-                    .keySelectionParameters( keySelectionParameters )
                     .valueDateFormat( valueDateFormat )
-                    .valueSelectionParameters( valueSelectionParameters )
+                    .keyQualifiers( keyQualifiers )
+                    .valueQualifiers( valueQualifiers )
+                    .keyQualifyingTargetType( keyQualifyingTargetType )
+                    .valueQualifyingTargetType( valueQualifyingTargetType )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
                     .build();
 
                 hasFactoryMethod = mapMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( mapMappingMethod );
             }
-            else if ( method.isValueMapping() ) {
-                // prefer value mappings over enum mapping
-                ValueMappingMethod valueMappingMethod = new ValueMappingMethod.Builder()
-                    .mappingContext( mappingContext )
-                    .souceMethod( method )
-                    .valueMappings( mappingOptions.getValueMappings() )
-                    .build();
-                mappingMethods.add( valueMappingMethod );
-            }
             else if ( method.isEnumMapping() ) {
-
-                messager.printMessage(
-                    method.getExecutable(),
-                    Message.ENUMMAPPING_DEPRECATED );
 
                 EnumMappingMethod.Builder builder = new EnumMappingMethod.Builder();
                 MappingMethod enumMappingMethod = builder
                     .mappingContext( mappingContext )
-                    .souceMethod( method )
+                    .sourceMethod( method )
                     .build();
 
                 if ( enumMappingMethod != null ) {
@@ -349,18 +343,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else {
 
                 NullValueMappingStrategyPrism nullValueMappingStrategy = null;
-                SelectionParameters selectionParameters = null;
+                TypeMirror resultType = null;
+                List<TypeMirror> qualifiers = null;
 
                 if ( mappingOptions.getBeanMapping() != null ) {
                     nullValueMappingStrategy = mappingOptions.getBeanMapping().getNullValueMappingStrategy();
-                    selectionParameters = mappingOptions.getBeanMapping().getSelectionParameters();
+                    resultType = mappingOptions.getBeanMapping().getResultType();
+                    qualifiers = mappingOptions.getBeanMapping().getQualifiers();
                 }
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
                     .souceMethod( method )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
-                    .selectionParameters( selectionParameters )
+                    .qualifiers( qualifiers )
+                    .resultType( resultType )
                     .build();
 
                 if ( beanMappingMethod != null ) {
