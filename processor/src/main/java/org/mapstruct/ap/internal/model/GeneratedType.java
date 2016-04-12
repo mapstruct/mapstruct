@@ -59,6 +59,7 @@ public abstract class GeneratedType extends ModelElement {
     private final Accessibility accessibility;
     private List<? extends Field> fields;
     private Constructor constructor;
+    private TypeFactory typeFactory;
 
     /**
      * Type representing the {@code @Generated} annotation
@@ -75,6 +76,7 @@ public abstract class GeneratedType extends ModelElement {
                             Accessibility accessibility,
                             SortedSet<Type> extraImportedTypes,
                             Constructor constructor ) {
+        this.typeFactory = typeFactory;
         this.packageName = packageName;
         this.name = name;
         this.superClassName = superClassName;
@@ -159,6 +161,12 @@ public abstract class GeneratedType extends ModelElement {
         importedTypes.add( generatedType );
 
         for ( MappingMethod mappingMethod : methods ) {
+            if ( mappingMethod.hasHibernateLazy() ) {
+                Type hibernateType = typeFactory.getType( "org.hibernate.Hibernate" );
+                if (!importedTypes.contains( hibernateType ) ) {
+                    importedTypes.add( hibernateType );
+                }
+            }
             for ( Type type : mappingMethod.getImportTypes() ) {
                 addIfImportRequired( importedTypes, type );
             }

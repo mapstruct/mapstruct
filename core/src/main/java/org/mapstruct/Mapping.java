@@ -46,6 +46,8 @@ import java.util.Date;
 @Target(ElementType.METHOD)
 public @interface Mapping {
 
+    boolean hibernateLazy() default false;
+
     /**
      * The target name of the configured property as defined by the JavaBeans specification. The same target property
      * must not be mapped more than once.

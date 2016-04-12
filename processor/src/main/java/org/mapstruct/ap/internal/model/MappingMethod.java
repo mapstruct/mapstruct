@@ -47,6 +47,7 @@ public abstract class MappingMethod extends ModelElement {
     private final Accessibility accessibility;
     private final List<Type> thrownTypes;
     private final boolean isStatic;
+    private final boolean hasHibernateLazy;
     private final String resultName;
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithMappingTarget;
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithoutMappingTarget;
@@ -58,7 +59,8 @@ public abstract class MappingMethod extends ModelElement {
      */
     protected MappingMethod(Method method, Collection<String> existingVariableNames,
                             List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                            List<LifecycleCallbackMethodReference> afterMappingReferences) {
+                            List<LifecycleCallbackMethodReference> afterMappingReferences,
+                            boolean hasHibernateLazy) {
         this.name = method.getName();
         this.parameters = method.getParameters();
         this.returnType = method.getReturnType();
@@ -70,15 +72,16 @@ public abstract class MappingMethod extends ModelElement {
         this.beforeMappingReferencesWithMappingTarget = filterMappingTarget( beforeMappingReferences, true );
         this.beforeMappingReferencesWithoutMappingTarget = filterMappingTarget( beforeMappingReferences, false );
         this.afterMappingReferences = afterMappingReferences;
+        this.hasHibernateLazy = hasHibernateLazy;
     }
 
     protected MappingMethod(Method method) {
-        this( method, method.getParameterNames(), null, null );
+        this( method, method.getParameterNames(), null, null, false );
     }
 
     protected MappingMethod(Method method, List<LifecycleCallbackMethodReference> beforeMappingReferences,
                             List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        this( method, method.getParameterNames(), beforeMappingReferences, afterMappingReferences );
+        this( method, method.getParameterNames(), beforeMappingReferences, afterMappingReferences, false );
     }
 
     private String initResultName(Collection<String> existingVarNames) {
@@ -135,6 +138,10 @@ public abstract class MappingMethod extends ModelElement {
 
     public boolean isExistingInstanceMapping() {
         return targetParameter != null;
+    }
+
+    public boolean hasHibernateLazy() {
+        return hasHibernateLazy;
     }
 
     public boolean isStatic() {

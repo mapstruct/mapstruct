@@ -41,10 +41,13 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
     private final List<SafePropertyEntry> safePropertyEntries;
 
+    private final boolean hibernateLazy;
+
     public static class Builder {
 
         private Method method;
         private List<PropertyEntry> propertyEntries;
+        private boolean hibernateLazy;
 
         public Builder method( Method sourceMethod ) {
             this.method = sourceMethod;
@@ -55,6 +58,13 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             this.propertyEntries = propertyEntries;
             return this;
         }
+
+        public Builder hibernateLazy( boolean hibernateLazy ) {
+            this.hibernateLazy = hibernateLazy;
+            return this;
+        }
+
+
 
         public NestedPropertyMappingMethod build() {
             List<String> existingVariableNames = new ArrayList<String>();
@@ -67,13 +77,16 @@ public class NestedPropertyMappingMethod extends MappingMethod {
                 safePropertyEntries.add( new SafePropertyEntry( propertyEntry, safeName ) );
                 existingVariableNames.add( safeName );
             }
-            return new NestedPropertyMappingMethod( method, safePropertyEntries );
+            return new NestedPropertyMappingMethod( method, safePropertyEntries, hibernateLazy );
         }
     }
 
-    private NestedPropertyMappingMethod( Method method, List<SafePropertyEntry> sourcePropertyEntries ) {
+    private NestedPropertyMappingMethod( Method method,
+                                         List<SafePropertyEntry> sourcePropertyEntries,
+                                         boolean hibernateLazy ) {
         super( method );
         this.safePropertyEntries = sourcePropertyEntries;
+        this.hibernateLazy = hibernateLazy;
     }
 
     public Parameter getSourceParameter() {
@@ -87,6 +100,10 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
     public List<SafePropertyEntry> getPropertyEntries() {
         return safePropertyEntries;
+    }
+
+    public boolean isHibernateLazy() {
+        return hibernateLazy;
     }
 
     @Override
