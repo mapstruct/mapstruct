@@ -41,10 +41,10 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  */
 public class Mapper extends GeneratedType {
 
-    static final String CLASS_NAME_PLACEHOLDER = "<CLASS_NAME>";
-    static final String PACKAGE_NAME_PLACEHOLDER = "<PACKAGE_NAME>";
-    static final String DEFAULT_IMPLEMENTATION_CLASS = CLASS_NAME_PLACEHOLDER + "Impl";
-    static final String DEFAULT_IMPLEMENTATION_PACKAGE = PACKAGE_NAME_PLACEHOLDER;
+    public static final String CLASS_NAME_PLACEHOLDER = "<CLASS_NAME>";
+    public static final String PACKAGE_NAME_PLACEHOLDER = "<PACKAGE_NAME>";
+    public static final String DEFAULT_IMPLEMENTATION_CLASS = CLASS_NAME_PLACEHOLDER + "Impl";
+    public static final String DEFAULT_IMPLEMENTATION_PACKAGE = PACKAGE_NAME_PLACEHOLDER;
 
     private final boolean customPackage;
     private final boolean customImplName;

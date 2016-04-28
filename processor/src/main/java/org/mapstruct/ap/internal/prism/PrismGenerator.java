@@ -41,6 +41,7 @@ import org.mapstruct.TargetType;
 
 import net.java.dev.hickory.prism.GeneratePrism;
 import net.java.dev.hickory.prism.GeneratePrisms;
+import org.mapstruct.factory.MapperFactory;
 import org.mapstruct.Named;
 
 /**
@@ -51,6 +52,7 @@ import org.mapstruct.Named;
 @GeneratePrisms({
     @GeneratePrism(value = Mapper.class, publicAccess = true),
     @GeneratePrism(value = Mapping.class, publicAccess = true),
+    @GeneratePrism(value = MapperFactory.class, publicAccess = true),
     @GeneratePrism(value = Mappings.class, publicAccess = true),
     @GeneratePrism(value = IterableMapping.class, publicAccess = true),
     @GeneratePrism(value = BeanMapping.class, publicAccess = true),

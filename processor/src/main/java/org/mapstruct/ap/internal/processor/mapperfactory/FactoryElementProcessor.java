@@ -16,36 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.statefullmappers;
+package org.mapstruct.ap.internal.processor.mapperfactory;
 
+import org.mapstruct.ap.internal.processor.ModelElementProcessor;
+import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.runner.WithSingleCompiler;
 
 /**
+ * A processor which performs one task of the factory generation, e.g. retrieving
+ * methods from the source {@link FactoryGenerationInfo}, performing validity checks or
+ * generating the output source file.
+ *
+ * @param <P> The parameter type processed by this processor
+ * @param <R> The return type created by this processor
  *
  * @author Sjaak Derksen
  */
-@IssueKey( "751" )
-@WithClasses({
-    UniversityDto.class,
-    UniversityEntity.class,
-    Criterium.class,
-    MapperWithFactory.class,
-    DummyMapper.class,
-    MyMapperFactory.class
-})
-@RunWith(AnnotationProcessorTestRunner.class)
-@WithSingleCompiler(org.mapstruct.ap.testutil.runner.Compiler.JDK)
-public class MapperFactoryTest {
+public interface FactoryElementProcessor<P, R> extends ModelElementProcessor {
 
-    @Test
-    public void shouldGenerateMapperWithOverloadedConstructor() {
-        // empty for now
-    }
+    R process(ProcessorContext context, FactoryGenerationInfo factoryInfo, P sourceModel);
 
 }

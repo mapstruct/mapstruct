@@ -30,20 +30,15 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
- * A processor which performs one task of the mapper generation, e.g. retrieving
- * methods from the source {@link TypeElement}, performing validity checks or
- * generating the output source file.
- *
- * @param <P> The parameter type processed by this processor
- * @param <R> The return type created by this processor
+ * Base interface for all ModelElementProcessor's.
  *
  * @author Gunnar Morling
  */
-public interface ModelElementProcessor<P, R> {
+public interface ModelElementProcessor {
 
     /**
      * Context object passed to
-     * {@link ModelElementProcessor#process(ProcessorContext, TypeElement, Object)}
+     * {@link MapperElementProcessor#process(ProcessorContext, TypeElement, Object)}
      * providing access to common infrastructure objects such as {@link Types}
      * etc.
      *
@@ -75,25 +70,6 @@ public interface ModelElementProcessor<P, R> {
          */
         boolean isErroneous();
     }
-
-    /**
-     * Processes the given source element, representing a Java bean mapper in
-     * one form or another.
-     *
-     * @param context Context providing common infrastructure objects.
-     * @param mapperTypeElement The original type element from which the given mapper object
-     * is derived.
-     * @param sourceModel The current representation of the bean mapper. Never
-     * {@code null} (the very first processor receives the original
-     * type element).
-     *
-     * @return The resulting representation of the bean mapper; may be the same
-     *         as the source representation, e.g. if a given implementation just
-     *         performs some sort of validity check. Implementations must never
-     *         return {@code null} except for the very last processor which
-     *         generates the resulting Java source file.
-     */
-    R process(ProcessorContext context, TypeElement mapperTypeElement, P sourceModel);
 
     /**
      * Returns the priority value of this processor which must be between 1

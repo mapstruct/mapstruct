@@ -59,14 +59,14 @@ import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
- * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
+ * A {@link MapperElementProcessor} which retrieves a list of {@link SourceMethod}s
  * representing all the mapping methods of the given bean mapper type as well as
  * all referenced mapper methods declared by other mappers referenced by the
  * current mapper.
  *
  * @author Gunnar Morling
  */
-public class MethodRetrievalProcessor implements ModelElementProcessor<Void, List<SourceMethod>> {
+public class MethodRetrievalProcessor implements MapperElementProcessor<Void, List<SourceMethod>> {
 
     private FormattingMessager messager;
     private TypeFactory typeFactory;

@@ -45,12 +45,16 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.option.ReportingPolicy;
+import org.mapstruct.ap.internal.prism.MapperFactoryPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.processor.DefaultModelElementProcessorContext;
-import org.mapstruct.ap.internal.processor.ModelElementProcessor;
-import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
+import org.mapstruct.ap.internal.processor.mapperfactory.FactoryElementProcessor;
+import org.mapstruct.ap.internal.processor.mapperfactory.FactoryGenerationInfo;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
+import org.mapstruct.ap.internal.processor.MapperElementProcessor;
+import org.mapstruct.ap.internal.processor.ModelElementProcessor;
+import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
 
 /**
  * A JSR 269 annotation {@link Processor} which generates the implementations for mapper interfaces (interfaces
@@ -62,8 +66,8 @@ import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
  * {@link Mapper} object), which is then written into the resulting Java source file.
  * <p>
  * The model instantiation and processing happens in several phases/passes by applying a sequence of
- * {@link ModelElementProcessor}s. The processors to apply are retrieved using the Java service loader mechanism and are
- * processed in order of their {@link ModelElementProcessor#getPriority() priority}. The general processing flow is
+ * {@link MapperElementProcessor}s. The processors to apply are retrieved using the Java service loader mechanism and
+ * are processed in order of their {@link MapperElementProcessor#getPriority() priority}. The general processing flow is
  * this:
  * <ul>
  * <li>retrieve mapping methods</li>
@@ -84,7 +88,7 @@ import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
  *
  * @author Gunnar Morling
  */
-@SupportedAnnotationTypes("org.mapstruct.Mapper")
+@SupportedAnnotationTypes({ "org.mapstruct.factory.MapperFactory", "org.mapstruct.Mapper" } )
 @SupportedOptions({
     MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,
     MappingProcessor.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT,
@@ -154,6 +158,11 @@ public class MappingProcessor extends AbstractProcessor {
             // get and process any mappers from this round
             Set<TypeElement> mappers = getMappers( annotations, roundEnvironment );
             processMapperElements( mappers );
+
+            TypeElement factory = getFactory( annotations, roundEnvironment );
+            if ( factory != null ) {
+                processFactoryElement( factory, mappers );
+            }
         }
 
         return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
@@ -204,6 +213,37 @@ public class MappingProcessor extends AbstractProcessor {
         return mapperTypes;
     }
 
+    private TypeElement getFactory(final Set<? extends TypeElement> annotations,
+                                        final RoundEnvironment roundEnvironment) {
+        TypeElement factory = null;
+
+        for ( TypeElement annotation : annotations ) {
+            //Indicates that the annotation's type isn't on the class path of the compiled
+            //project. Let the compiler deal with that and print an appropriate error.
+            if ( annotation.getKind() != ElementKind.ANNOTATION_TYPE ) {
+                continue;
+            }
+
+            try {
+                Set<? extends Element> annotatedElements = roundEnvironment.getElementsAnnotatedWith( annotation );
+                for (Element annotatedElement : annotatedElements) {
+                    TypeElement annotatedTypeElement = asTypeElement( annotatedElement );
+
+                    if ( annotatedTypeElement != null
+                        && MapperFactoryPrism.getInstanceOn( annotatedTypeElement ) != null ) {
+                        factory = annotatedTypeElement;
+                        // TODO error when there's already one defined
+                        // TODO error when not interface
+                    }
+                }
+            }
+            catch ( Throwable t ) { // whenever that may happen, but just to stay on the save side
+                handleUncaughtError( annotation, t );
+            }
+        }
+        return factory;
+    }
+
     private void processMapperElements(Set<TypeElement> mapperElements) {
         for ( TypeElement mapperElement : mapperElements ) {
             try {
@@ -225,6 +265,34 @@ public class MappingProcessor extends AbstractProcessor {
         }
     }
 
+    private void processFactoryElement(TypeElement factoryElement, Set<TypeElement> mapperElements) {
+        try {
+            FactoryGenerationInfo factoryGenerationInfo = new FactoryGenerationInfo(factoryElement, mapperElements );
+            ProcessorContext context = new DefaultModelElementProcessorContext( processingEnv, options );
+            Object model = null;
+            for ( FactoryElementProcessor<?, ?> processor : getFactoryProcessors() ) {
+                try {
+                    model = process( context, processor, factoryGenerationInfo, model );
+                }
+                catch ( AnnotationProcessingException e ) {
+                    processingEnv.getMessager()
+                        .printMessage(
+                            Kind.ERROR,
+                            e.getMessage(),
+                            e.getElement(),
+                            e.getAnnotationMirror(),
+                            e.getAnnotationValue()
+                        );
+                    break;
+                }
+            }
+        }
+        catch ( Throwable t ) {
+            handleUncaughtError( factoryElement, t );
+        }
+    }
+
+
     private void handleUncaughtError(Element element, Throwable thrown) {
         StringWriter sw = new StringWriter();
         thrown.printStackTrace( new PrintWriter( sw ) );
@@ -236,7 +304,7 @@ public class MappingProcessor extends AbstractProcessor {
     }
 
     /**
-     * Applies all registered {@link ModelElementProcessor}s to the given mapper
+     * Applies all registered {@link MapperElementProcessor}s to the given mapper
      * type.
      *
      * @param context The processor context.
@@ -245,7 +313,7 @@ public class MappingProcessor extends AbstractProcessor {
     private void processMapperTypeElement(ProcessorContext context, TypeElement mapperTypeElement) {
         Object model = null;
 
-        for ( ModelElementProcessor<?, ?> processor : getProcessors() ) {
+        for ( MapperElementProcessor<?, ?> processor : getProcessors() ) {
             try {
                 model = process( context, processor, mapperTypeElement, model );
             }
@@ -263,11 +331,18 @@ public class MappingProcessor extends AbstractProcessor {
         }
     }
 
-    private <P, R> R process(ProcessorContext context, ModelElementProcessor<P, R> processor,
+    private <P, R> R process(ProcessorContext context, MapperElementProcessor<P, R> processor,
                              TypeElement mapperTypeElement, Object modelElement) {
         @SuppressWarnings("unchecked")
         P sourceElement = (P) modelElement;
         return processor.process( context, mapperTypeElement, sourceElement );
+    }
+
+    private <P, R> R process(ProcessorContext context, FactoryElementProcessor<P, R> processor,
+                             FactoryGenerationInfo factoryGenerationInfo, Object modelElement) {
+        @SuppressWarnings("unchecked")
+        P sourceElement = (P) modelElement;
+        return processor.process( context, factoryGenerationInfo, sourceElement );
     }
 
     /**
@@ -277,16 +352,42 @@ public class MappingProcessor extends AbstractProcessor {
      *
      * @return A list with all model element processors.
      */
-    private Iterable<ModelElementProcessor<?, ?>> getProcessors() {
+    private Iterable<MapperElementProcessor<?, ?>> getProcessors() {
         // TODO Re-consider which class loader to use in case processors are
         // loaded from other modules, too
         @SuppressWarnings("rawtypes")
-        Iterator<ModelElementProcessor> processorIterator = ServiceLoader.load(
-            ModelElementProcessor.class,
+        Iterator<MapperElementProcessor> processorIterator = ServiceLoader.load( MapperElementProcessor.class,
             MappingProcessor.class.getClassLoader()
         )
             .iterator();
-        List<ModelElementProcessor<?, ?>> processors = new ArrayList<ModelElementProcessor<?, ?>>();
+        List<MapperElementProcessor<?, ?>> processors = new ArrayList<MapperElementProcessor<?, ?>>();
+
+        while ( processorIterator.hasNext() ) {
+            processors.add( processorIterator.next() );
+        }
+
+        Collections.sort( processors, new ProcessorComparator() );
+
+        return processors;
+    }
+
+  /**
+     * Retrieves all factory element processors, ordered by their priority value
+     * (with the method retrieval processor having the lowest priority value (1)
+     * and the code generation processor the highest priority value.
+     *
+     * @return A list with all model element processors.
+     */
+    private Iterable<FactoryElementProcessor<?, ?>> getFactoryProcessors() {
+        // TODO Re-consider which class loader to use in case processors are
+        // loaded from other modules, too
+        @SuppressWarnings("rawtypes")
+        Iterator<FactoryElementProcessor> processorIterator = ServiceLoader.load(
+            FactoryElementProcessor.class,
+            MappingProcessor.class.getClassLoader()
+        )
+            .iterator();
+        List<FactoryElementProcessor<?, ?>> processors = new ArrayList<FactoryElementProcessor<?, ?>>();
 
         while ( processorIterator.hasNext() ) {
             processors.add( processorIterator.next() );
@@ -314,10 +415,10 @@ public class MappingProcessor extends AbstractProcessor {
         );
     }
 
-    private static class ProcessorComparator implements Comparator<ModelElementProcessor<?, ?>> {
+    private static class ProcessorComparator implements Comparator<ModelElementProcessor> {
 
         @Override
-        public int compare(ModelElementProcessor<?, ?> o1, ModelElementProcessor<?, ?> o2) {
+        public int compare(ModelElementProcessor o1, ModelElementProcessor o2) {
             return
                 o1.getPriority() < o2.getPriority() ? -1 :
                     o1.getPriority() == o2.getPriority() ? 0 :

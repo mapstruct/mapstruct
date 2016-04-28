@@ -18,34 +18,17 @@
  */
 package org.mapstruct.ap.test.statefullmappers;
 
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.runner.WithSingleCompiler;
+import org.mapstruct.factory.MapperFactory;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@IssueKey( "751" )
-@WithClasses({
-    UniversityDto.class,
-    UniversityEntity.class,
-    Criterium.class,
-    MapperWithFactory.class,
-    DummyMapper.class,
-    MyMapperFactory.class
-})
-@RunWith(AnnotationProcessorTestRunner.class)
-@WithSingleCompiler(org.mapstruct.ap.testutil.runner.Compiler.JDK)
-public class MapperFactoryTest {
+@MapperFactory
+public interface MyMapperFactory {
 
-    @Test
-    public void shouldGenerateMapperWithOverloadedConstructor() {
-        // empty for now
-    }
+    DummyMapper createDummyMapper(Criterium criterium);
+
+    MapperWithFactory createMapperWithFactory(Criterium criterium);
 
 }

@@ -72,6 +72,7 @@ public class SourceMethod implements Method {
     private List<Parameter> sourceParameters;
 
     private List<String> parameterNames;
+    private List<Type> parameterTypes;
 
     private List<SourceMethod> applicablePrototypeMethods;
 
@@ -321,6 +322,18 @@ public class SourceMethod implements Method {
         }
 
         return parameterNames;
+    }
+
+
+    public List<Type> getParameterTypes() {
+        if ( parameterTypes == null ) {
+            parameterTypes = new ArrayList<Type>( parameters.size() );
+            for ( Parameter parameter : parameters ) {
+                parameterTypes.add( parameter.getType() );
+            }
+        }
+
+        return parameterTypes;
     }
 
     @Override

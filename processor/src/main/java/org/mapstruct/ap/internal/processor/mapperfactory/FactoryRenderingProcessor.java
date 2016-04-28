@@ -16,28 +16,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.processor;
+package org.mapstruct.ap.internal.processor.mapperfactory;
 
 import java.io.IOException;
 
 import javax.annotation.processing.Filer;
-import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 
-import org.mapstruct.ap.internal.model.GeneratedType;
-import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.model.mapperfactory.MapperFactory;
 import org.mapstruct.ap.internal.writer.ModelWriter;
 
 /**
- * A {@link MapperElementProcessor} which creates a Java source file representing
- * the given {@link Mapper} object, unless the given mapper type is erroneous.
+ * A {@link FactoryRenderingProcessor} which creates a Java source file representing
+ * the given {@link MapperFactory} object, unless the given mapper type is erroneous.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class MapperRenderingProcessor implements MapperElementProcessor<Mapper, Mapper> {
+public class FactoryRenderingProcessor implements FactoryElementProcessor<MapperFactory, MapperFactory> {
 
     @Override
-    public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
+    public MapperFactory process(ProcessorContext context, FactoryGenerationInfo info, MapperFactory mapper) {
         if ( !context.isErroneous() ) {
             writeToSourceFile( context.getFiler(), mapper );
             return mapper;
@@ -46,17 +44,12 @@ public class MapperRenderingProcessor implements MapperElementProcessor<Mapper, 
         return null;
     }
 
-    private void writeToSourceFile(Filer filer, Mapper model) {
+    private void writeToSourceFile(Filer filer, MapperFactory model) {
         ModelWriter modelWriter = new ModelWriter();
-
         createSourceFile( model, modelWriter, filer );
-
-        if ( model.getDecorator() != null ) {
-            createSourceFile( model.getDecorator(), modelWriter, filer );
-        }
     }
 
-    private void createSourceFile(GeneratedType model, ModelWriter modelWriter, Filer filer) {
+    private void createSourceFile(MapperFactory model, ModelWriter modelWriter, Filer filer) {
         String fileName = model.getPackageName() + "." + model.getName();
 
         JavaFileObject sourceFile;

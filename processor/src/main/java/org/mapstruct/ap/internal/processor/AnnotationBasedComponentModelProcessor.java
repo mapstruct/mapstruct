@@ -36,14 +36,14 @@ import org.mapstruct.ap.internal.option.OptionsHelper;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 
 /**
- * An {@link ModelElementProcessor} which converts the given {@link Mapper}
+ * An {@link MapperElementProcessor} which converts the given {@link Mapper}
  * object into an annotation based component model in case a matching model is selected as
  * target component model for this mapper.
  *
  * @author Gunnar Morling
  * @author Andreas Gudian
  */
-public abstract class AnnotationBasedComponentModelProcessor implements ModelElementProcessor<Mapper, Mapper> {
+public abstract class AnnotationBasedComponentModelProcessor implements MapperElementProcessor<Mapper, Mapper> {
 
     private TypeFactory typeFactory;
 

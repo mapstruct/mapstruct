@@ -16,36 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.statefullmappers;
+package org.mapstruct.ap.internal.processor.mapperfactory;
 
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.runner.WithSingleCompiler;
+import java.util.Set;
+import javax.lang.model.element.TypeElement;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@IssueKey( "751" )
-@WithClasses({
-    UniversityDto.class,
-    UniversityEntity.class,
-    Criterium.class,
-    MapperWithFactory.class,
-    DummyMapper.class,
-    MyMapperFactory.class
-})
-@RunWith(AnnotationProcessorTestRunner.class)
-@WithSingleCompiler(org.mapstruct.ap.testutil.runner.Compiler.JDK)
-public class MapperFactoryTest {
+public class FactoryGenerationInfo {
 
-    @Test
-    public void shouldGenerateMapperWithOverloadedConstructor() {
-        // empty for now
+     private final TypeElement factoryElement;
+     private final Set<TypeElement> mapperElements;
+
+    public FactoryGenerationInfo(TypeElement factoryElement, Set<TypeElement> mapperElements) {
+        this.factoryElement = factoryElement;
+        this.mapperElements = mapperElements;
     }
 
+    public TypeElement getFactoryElement() {
+        return factoryElement;
+    }
+
+    public Set<TypeElement> getMapperElements() {
+        return mapperElements;
+    }
 }

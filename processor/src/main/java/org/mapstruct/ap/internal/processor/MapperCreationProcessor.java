@@ -67,12 +67,12 @@ import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
- * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
+ * A {@link MapperElementProcessor} which creates a {@link Mapper} from the given
  * list of {@link SourceMethod}s.
  *
  * @author Gunnar Morling
  */
-public class MapperCreationProcessor implements ModelElementProcessor<List<SourceMethod>, Mapper> {
+public class MapperCreationProcessor implements MapperElementProcessor<List<SourceMethod>, Mapper> {
 
     private Elements elementUtils;
     private Types typeUtils;
@@ -164,33 +164,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         return mapper;
     }
-
-    private Mapper getFactory(TypeElement element, MapperConfiguration mapperConfig, List<SourceMethod> methods) {
-        List<MapperReference> mapperReferences = mappingContext.getMapperReferences();
-        List<MappingMethod> mappingMethods = getMappingMethods( mapperConfig, methods );
-        mappingMethods.addAll( mappingContext.getUsedVirtualMappings() );
-        mappingMethods.addAll( mappingContext.getMappingsToGenerate() );
-
-        Mapper mapper = new Mapper.Builder()
-            .element( element )
-            .constructors( getConstructors( methods ) )
-            .mappingMethods( mappingMethods )
-            .mapperReferences( mapperReferences )
-            .options( options )
-            .versionInformation( versionInformation )
-            .decorator( getDecorator( element, methods, mapperConfig.implementationName(),
-                        mapperConfig.implementationPackage() ) )
-            .typeFactory( typeFactory )
-            .elementUtils( elementUtils )
-            .extraImports( getExtraImports( element ) )
-            .implName( mapperConfig.implementationName() )
-            .implPackage( mapperConfig.implementationPackage() )
-            .build();
-
-        return mapper;
-    }
-
-
 
     private Decorator getDecorator(TypeElement element, List<SourceMethod> methods, String implName,
                                    String implPackage) {
