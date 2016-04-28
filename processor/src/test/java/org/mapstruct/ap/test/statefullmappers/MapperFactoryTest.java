@@ -25,6 +25,7 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.WithSingleCompiler;
+import org.mapstruct.factory.Mappers;
 
 /**
  *
@@ -45,7 +46,10 @@ public class MapperFactoryTest {
 
     @Test
     public void shouldGenerateMapperWithOverloadedConstructor() {
-        // empty for now
+        MyMapperFactory myMapperFactory = Mappers.getMapperFactory( MyMapperFactory.class );
+        Criterium criterium = new Criterium();
+        myMapperFactory.createDummyMapper( criterium );
+
     }
 
 }

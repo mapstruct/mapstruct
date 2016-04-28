@@ -41,11 +41,6 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  */
 public class Mapper extends GeneratedType {
 
-    public static final String CLASS_NAME_PLACEHOLDER = "<CLASS_NAME>";
-    public static final String PACKAGE_NAME_PLACEHOLDER = "<PACKAGE_NAME>";
-    public static final String DEFAULT_IMPLEMENTATION_CLASS = CLASS_NAME_PLACEHOLDER + "Impl";
-    public static final String DEFAULT_IMPLEMENTATION_PACKAGE = PACKAGE_NAME_PLACEHOLDER;
-
     private final boolean customPackage;
     private final boolean customImplName;
     private final List<MapperReference> referencedMappers;
@@ -93,9 +88,9 @@ public class Mapper extends GeneratedType {
         private Options options;
         private VersionInformation versionInformation;
         private Decorator decorator;
-        private String implName;
+        private String implNameProperty;
         private boolean customName;
-        private String implPackage;
+        private String implPackageProperty;
         private boolean customPackage;
 
         public Builder element(TypeElement element) {
@@ -148,21 +143,21 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
-        public Builder implName(String implName) {
-            this.implName = implName;
-            this.customName = !DEFAULT_IMPLEMENTATION_CLASS.equals( this.implName );
+        public Builder implNameProperty(String implProperty) {
+            this.implNameProperty = implProperty;
+            this.customName = !DEFAULT_IMPLEMENTATION_CLASS.equals( this.implNameProperty );
             return this;
         }
 
-        public Builder implPackage(String implPackage) {
-            this.implPackage = implPackage;
-            this.customPackage = !DEFAULT_IMPLEMENTATION_PACKAGE.equals( this.implPackage );
+        public Builder implPackageProperty(String implPackageProperty) {
+            this.implPackageProperty = implPackageProperty;
+            this.customPackage = !DEFAULT_IMPLEMENTATION_PACKAGE.equals( this.implPackageProperty );
             return this;
         }
 
         public Mapper build() {
-            String implementationName = implName.replace( CLASS_NAME_PLACEHOLDER, element.getSimpleName() ) +
-                    ( decorator == null ? "" : "_" );
+            String implementationName = getImplementationName( implNameProperty, element.getSimpleName().toString() )
+                + (decorator == null ? "" : "_");
 
             List<Constructor> constructors = new ArrayList<Constructor>();
             for ( SourceMethod constructorMethod : constructorMethods ) {
@@ -170,7 +165,7 @@ public class Mapper extends GeneratedType {
             }
 
             String elementPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
-            String packageName = implPackage.replace( PACKAGE_NAME_PLACEHOLDER, elementPackage );
+            String packageName = getImplementationPackageName( implPackageProperty, elementPackage );
 
             return new Mapper(
                 typeFactory,

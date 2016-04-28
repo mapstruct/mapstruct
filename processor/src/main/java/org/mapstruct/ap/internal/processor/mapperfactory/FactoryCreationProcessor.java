@@ -22,10 +22,8 @@ package org.mapstruct.ap.internal.processor.mapperfactory;
 import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.TypeElement;
+import org.mapstruct.ap.internal.model.GeneratedType;
 import org.mapstruct.ap.internal.model.Mapper;
-import static org.mapstruct.ap.internal.model.Mapper.CLASS_NAME_PLACEHOLDER;
-import static org.mapstruct.ap.internal.model.Mapper.PACKAGE_NAME_PLACEHOLDER;
-import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.mapperfactory.MapperFactory;
 import org.mapstruct.ap.internal.model.mapperfactory.MapperFactoryMethod;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
@@ -48,14 +46,12 @@ public class FactoryCreationProcessor implements FactoryElementProcessor<List<So
         List<MapperFactoryMethod> mapperFactoryMethods = new ArrayList<MapperFactoryMethod>();
         for ( SourceMethod mapperFactoryMethod : sourceModel ) {
 
-            // TODO: decorators?
+            // TODO: decorators? Other package
             // TODO: I'm doing this trick now on the 3rd place.. Refactor?
             TypeElement mapperElement = mapperFactoryMethod.getReturnType().getTypeElement();
             MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperElement );
-            String implName =
-                mapperConfig.implementationName().replace( CLASS_NAME_PLACEHOLDER, mapperElement.getSimpleName() );
-            //String elemPackage = context.getElementUtils().getPackageOf( mapperElement ).getQualifiedName().toString();
-            //String implPackage = mapperConfig.implementationPackage().replace( PACKAGE_NAME_PLACEHOLDER, elemPackage );
+            String implName = GeneratedType.getImplementationName( mapperConfig.implementationName(),
+                mapperElement.getSimpleName().toString() );
             mapperFactoryMethods.add( new MapperFactoryMethod( mapperFactoryMethod, implName ) );
         }
 
@@ -69,8 +65,8 @@ public class FactoryCreationProcessor implements FactoryElementProcessor<List<So
             .typeFactory( context.getTypeFactory() )
             .versionInformation( context.getVersionInformation() )
             .options( context.getOptions() )
-            .implName( mapperFactoryPrism.implementationName() )
-            .implPackage( mapperFactoryPrism.implementationPackage() )
+            .implNameProperty( mapperFactoryPrism.implementationName() )
+            .implPackageProperty( mapperFactoryPrism.implementationPackage() )
             .build();
     }
 

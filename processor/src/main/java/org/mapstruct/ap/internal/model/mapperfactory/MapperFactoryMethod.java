@@ -24,18 +24,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.mapstruct.ap.internal.model.MethodBase;
 
-import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
- * A method implemented or referenced by a {@link MapperFactory} class.
+ * A method implemented by a {@link MapperFactory} class.
+ *
+ * Constructs and returns a {@link org.mapstruct.Mapper} by calling the provided arguments and delegating them to
+ * the constructor of the mapper.
  *
  * @author Sjaak Derksen
  */
-public class MapperFactoryMethod extends ModelElement {
+public class MapperFactoryMethod extends MethodBase {
 
     private final String name;
     private final List<Parameter> parameters;

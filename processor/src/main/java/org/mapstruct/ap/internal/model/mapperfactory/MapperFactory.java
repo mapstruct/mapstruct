@@ -18,18 +18,15 @@
  */
 package org.mapstruct.ap.internal.model.mapperfactory;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.annotation.Generated;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
-import static org.mapstruct.ap.internal.model.Mapper.CLASS_NAME_PLACEHOLDER;
-import static org.mapstruct.ap.internal.model.Mapper.PACKAGE_NAME_PLACEHOLDER;
-import org.mapstruct.ap.internal.model.common.ModelElement;
+import org.mapstruct.ap.internal.model.Constructor;
+import org.mapstruct.ap.internal.model.Field;
+import org.mapstruct.ap.internal.model.GeneratedType;
+import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
@@ -39,25 +36,16 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  *
  * @author Sjaak Derksen
  */
-public class MapperFactory extends ModelElement {
+public class MapperFactory extends GeneratedType {
 
-    private static final String JAVA_LANG_PACKAGE = "java.lang";
 
-    private final List<MapperFactoryMethod> methods;
-    private final VersionInformation versionInformation;
-    private final String interfaceName;
-    private final String name;
-    private final String packageName;
-    private final boolean suppressGeneratorTimestamp;
-    private final boolean suppressGeneratorVersionComment;
-    private final Type generatedType; // Type representing the {@code @Generated} annotation
 
     public static class Builder {
 
         private List<MapperFactoryMethod> factoryMethods;
         private VersionInformation versionInformation;
-        private String implName;
-        private String implPackage;
+        private String implNameProperty;
+        private String implPackageProperty;
         private TypeElement element;
         private Elements elementUtils;
         private TypeFactory typeFactory;
@@ -93,123 +81,58 @@ public class MapperFactory extends ModelElement {
             return this;
         }
 
-        public Builder implName(String implName) {
-            this.implName = implName;
+        public Builder implNameProperty(String implName) {
+            this.implNameProperty = implName;
             return this;
         }
 
-        public Builder implPackage(String implPackage) {
-            this.implPackage = implPackage;
+        public Builder implPackageProperty(String implPackage) {
+            this.implPackageProperty = implPackage;
             return this;
         }
 
         public MapperFactory build() {
-            String lInterfaceName = element.getSimpleName().toString();
-            String lImplName = implName.replace( CLASS_NAME_PLACEHOLDER, element.getSimpleName() );
-            String elemPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
-            String lPackageName = implPackage.replace( PACKAGE_NAME_PLACEHOLDER, elemPackage );
+            String interfacePackageName = elementUtils.getPackageOf( element ).getQualifiedName().toString();
             return new MapperFactory(
+                typeFactory,
+                getImplementationPackageName( implPackageProperty, interfacePackageName ),
+                getImplementationName( implNameProperty, element.getSimpleName().toString() ),
+                interfacePackageName,
+                element.getSimpleName().toString(),
                 factoryMethods,
-                versionInformation,
-                lInterfaceName,
-                lImplName,
-                lPackageName,
-                options.isSuppressGeneratorTimestamp(),
-                options.isSuppressGeneratorVersionComment(),
-                typeFactory.getType( Generated.class )
+                options,
+                versionInformation
 
             );
         }
     }
 
-    public MapperFactory(List<MapperFactoryMethod> methods, VersionInformation versionInformation, String interfaceName,
-        String name, String packageName, boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
-        Type generatedType ) {
-        this.methods = methods;
-        this.versionInformation = versionInformation;
-        this.interfaceName = interfaceName;
-        this.name = name;
-        this.packageName = packageName;
-        this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
-        this.suppressGeneratorVersionComment = suppressGeneratorVersionComment;
-        this.generatedType = generatedType;
+    public MapperFactory(
+        TypeFactory typeFactory,
+        String packageName,
+        String name,
+        String interfacePackage,
+        String interfaceName,
+        List<MapperFactoryMethod> methods,
+        Options options,
+        VersionInformation versionInformation) {
+        super( typeFactory,
+            packageName,
+            name,
+            null,
+            interfacePackage,
+            interfaceName,
+            methods,
+            Collections.<Field>emptyList(),
+            options,
+            versionInformation,
+            Accessibility.PUBLIC,
+            new TreeSet<Type>(),
+            Collections.<Constructor>emptyList() );
     }
 
     @Override
-    public Set<Type> getImportTypes() {
-        SortedSet<Type> importedTypes = new TreeSet<Type>();
-
-        importedTypes.add( generatedType );
-
-        for ( MapperFactoryMethod factoryMethod : methods ) {
-            for ( Type type : factoryMethod.getImportTypes() ) {
-                addIfImportRequired( importedTypes, type );
-            }
-
-        }
-        return importedTypes;
+    protected String getTemplateName() {
+        return getTemplateNameForClass( GeneratedType.class );
     }
-
-    public List<MapperFactoryMethod> getMethods() {
-        return methods;
-    }
-
-    public VersionInformation getVersionInformation() {
-        return versionInformation;
-    }
-
-    public String getInterfaceName() {
-        return interfaceName;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    protected void addIfImportRequired(Collection<Type> collection, Type typeToAdd) {
-        if ( typeToAdd == null ) {
-            return;
-        }
-
-        if ( needsImportDeclaration( typeToAdd ) ) {
-            collection.add( typeToAdd );
-        }
-    }
-
-    private boolean needsImportDeclaration(Type typeToAdd) {
-        if ( !typeToAdd.isImported() ) {
-            return false;
-        }
-
-        if ( typeToAdd.getTypeMirror().getKind() != TypeKind.DECLARED ) {
-            return false;
-        }
-
-        if ( typeToAdd.getPackageName() != null ) {
-            if ( typeToAdd.getPackageName().startsWith( JAVA_LANG_PACKAGE ) ) {
-                return false;
-            }
-
-            if ( typeToAdd.getPackageName().equals( packageName ) ) {
-                if ( !typeToAdd.getTypeElement().getNestingKind().isNested() ) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    public boolean isSuppressGeneratorTimestamp() {
-        return suppressGeneratorTimestamp;
-    }
-
-    public boolean isSuppressGeneratorVersionComment() {
-        return suppressGeneratorVersionComment;
-    }
-
 }

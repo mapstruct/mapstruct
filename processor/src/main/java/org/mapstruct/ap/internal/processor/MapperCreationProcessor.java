@@ -158,8 +158,8 @@ public class MapperCreationProcessor implements MapperElementProcessor<List<Sour
             .typeFactory( typeFactory )
             .elementUtils( elementUtils )
             .extraImports( getExtraImports( element ) )
-            .implName( mapperConfig.implementationName() )
-            .implPackage( mapperConfig.implementationPackage() )
+            .implNameProperty( mapperConfig.implementationName() )
+            .implPackageProperty( mapperConfig.implementationPackage() )
             .build();
 
         return mapper;

@@ -18,3 +18,4 @@
 org.mapstruct.ap.internal.processor.mapperfactory.FactoryMethodRetrievalProcessor
 org.mapstruct.ap.internal.processor.mapperfactory.FactoryCreationProcessor
 org.mapstruct.ap.internal.processor.mapperfactory.FactoryRenderingProcessor
+org.mapstruct.ap.internal.processor.mapperfactory.FactoryServiceProcessor

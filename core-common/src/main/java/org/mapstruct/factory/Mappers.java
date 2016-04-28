@@ -98,4 +98,41 @@ public class Mappers {
             throw new RuntimeException( e );
         }
     }
+
+   /**
+     * Returns an instance of the given MapperFactory type.
+     *
+     * @param clazz The type of the mapper factory to return.
+     * @param <T> The type of the mapper factory to create.
+     *
+     * @return An instance of the given mapper type.
+     */
+    public static <T> T getMapperFactory(Class<T> clazz) {
+        try {
+
+            // Check that
+            // - clazz is an interface
+            // - the implementation type implements clazz
+            // - clazz is annotated with @Mapper
+            //
+            // Use privileged action
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+            ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
+
+            if ( loader != null ) {
+                for ( T mapperfactory : loader ) {
+                    if ( mapperfactory != null ) {
+                        return mapperfactory;
+                    }
+                }
+            }
+
+            throw new ClassNotFoundException( "Cannot find implementation for " + clazz.getName() );
+
+        }
+        catch ( Exception e ) {
+            throw new RuntimeException( e );
+        }
+    }
 }

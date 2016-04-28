@@ -26,6 +26,8 @@ import java.util.TreeSet;
 
 import javax.annotation.Generated;
 import javax.lang.model.type.TypeKind;
+import static org.mapstruct.ap.internal.model.Mapper.CLASS_NAME_PLACEHOLDER;
+import static org.mapstruct.ap.internal.model.Mapper.PACKAGE_NAME_PLACEHOLDER;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ModelElement;
@@ -41,6 +43,11 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  */
 public abstract class GeneratedType extends ModelElement {
 
+    public static final String CLASS_NAME_PLACEHOLDER = "<CLASS_NAME>";
+    public static final String PACKAGE_NAME_PLACEHOLDER = "<PACKAGE_NAME>";
+    public static final String DEFAULT_IMPLEMENTATION_CLASS = CLASS_NAME_PLACEHOLDER + "Impl";
+    public static final String DEFAULT_IMPLEMENTATION_PACKAGE = PACKAGE_NAME_PLACEHOLDER;
+
     private static final String JAVA_LANG_PACKAGE = "java.lang";
 
     private final String packageName;
@@ -50,7 +57,7 @@ public abstract class GeneratedType extends ModelElement {
     private final String interfaceName;
 
     private final List<Annotation> annotations;
-    private final List<MappingMethod> methods;
+    private final List<? extends MethodBase> methods;
     private final SortedSet<Type> extraImportedTypes;
 
     private final boolean suppressGeneratorTimestamp;
@@ -68,7 +75,7 @@ public abstract class GeneratedType extends ModelElement {
     // CHECKSTYLE:OFF
     protected GeneratedType(TypeFactory typeFactory, String packageName, String name, String superClassName,
                             String interfacePackage, String interfaceName,
-                            List<MappingMethod> methods,
+                            List<? extends MethodBase> methods,
                             List<? extends Field> fields,
                             Options options,
                             VersionInformation versionInformation,
@@ -125,7 +132,7 @@ public abstract class GeneratedType extends ModelElement {
         annotations.add( annotation );
     }
 
-    public List<MappingMethod> getMethods() {
+    public List<? extends MethodBase> getMethods() {
         return methods;
     }
 
@@ -158,7 +165,7 @@ public abstract class GeneratedType extends ModelElement {
         SortedSet<Type> importedTypes = new TreeSet<Type>();
         importedTypes.add( generatedType );
 
-        for ( MappingMethod mappingMethod : methods ) {
+        for ( MethodBase mappingMethod : methods ) {
             for ( Type type : mappingMethod.getImportTypes() ) {
                 addIfImportRequired( importedTypes, type );
             }
@@ -223,5 +230,13 @@ public abstract class GeneratedType extends ModelElement {
         }
 
         return true;
+    }
+
+    public static String getImplementationName(String implProperty, String simpleName) {
+        return implProperty.replace( CLASS_NAME_PLACEHOLDER, simpleName );
+    }
+
+    public static String getImplementationPackageName(String packageProperty, String packageName) {
+        return packageProperty.replace( PACKAGE_NAME_PLACEHOLDER, packageName );
     }
 }
