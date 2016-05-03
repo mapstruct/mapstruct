@@ -18,10 +18,25 @@
  */
 package org.mapstruct.ap.test.statefullmappers;
 
+import org.mapstruct.HandleAsMapper;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
 /**
  *
  * @author Sjaak Derksen
  */
-public class Criterium {
+@Mapper
+public abstract class MapperReferencingStatefullMapper {
+
+    @HandleAsMapper
+    protected StatefullMapper sfm;
+
+    public MapperReferencingStatefullMapper( StatefullMapper sfm ) {
+        this.sfm = sfm;
+    }
+
+    @Mapping( target = "classNameEntity", source = "classNumber")
+    public abstract UniversityEntity toUniversityEntity(UniversityDto university);
 
 }

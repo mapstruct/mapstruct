@@ -25,6 +25,7 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.DecoratedWith;
+import org.mapstruct.HandleAsMapper;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
@@ -60,6 +61,7 @@ import org.mapstruct.Named;
     @GeneratePrism(value = TargetType.class, publicAccess = true),
     @GeneratePrism(value = MappingTarget.class, publicAccess = true),
     @GeneratePrism(value = DecoratedWith.class, publicAccess = true),
+    @GeneratePrism(value = HandleAsMapper.class, publicAccess = true),
     @GeneratePrism(value = MapperConfig.class, publicAccess = true),
     @GeneratePrism(value = InheritConfiguration.class, publicAccess = true),
     @GeneratePrism(value = InheritInverseConfiguration.class, publicAccess = true),

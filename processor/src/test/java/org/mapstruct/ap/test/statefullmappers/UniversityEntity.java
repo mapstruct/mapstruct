@@ -24,14 +24,14 @@ package org.mapstruct.ap.test.statefullmappers;
  */
 public class UniversityEntity {
 
-    private String name;
+    private ClassNameEntity classNameEntity;
 
-    public String getName() {
-        return name;
+    public ClassNameEntity getClassNameEntity() {
+        return classNameEntity;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setClassNameEntity(ClassNameEntity classNameEntity) {
+        this.classNameEntity = classNameEntity;
     }
 
 }

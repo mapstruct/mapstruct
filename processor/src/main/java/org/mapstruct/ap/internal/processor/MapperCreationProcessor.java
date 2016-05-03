@@ -30,6 +30,7 @@ import java.util.TreeSet;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -60,6 +61,7 @@ import org.mapstruct.ap.internal.prism.InheritInverseConfigurationPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
+import org.mapstruct.ap.internal.util.Fields;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -124,6 +126,17 @@ public class MapperCreationProcessor implements MapperElementProcessor<List<Sour
     private List<MapperReference> initReferencedMappers(TypeElement element, MapperConfiguration mapperConfig) {
         List<MapperReference> result = new LinkedList<MapperReference>();
         List<String> variableNames = new LinkedList<String>();
+
+        for ( VariableElement fieldBeingMapper : Fields.getEnclosedFieldThatAreMappers( element ) ) {
+            String variableName = fieldBeingMapper.getSimpleName().toString();
+            DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
+                typeFactory.getType( fieldBeingMapper.asType() ),
+                variableName,
+                typeFactory );
+
+            result.add( mapperReference );
+            variableNames.add( mapperReference.getVariableName() );
+        }
 
         for ( TypeMirror usedMapper : mapperConfig.uses() ) {
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(

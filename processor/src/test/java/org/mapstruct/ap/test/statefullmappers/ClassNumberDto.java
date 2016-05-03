@@ -18,21 +18,20 @@
  */
 package org.mapstruct.ap.test.statefullmappers;
 
-import org.mapstruct.Mapper;
-
 /**
  *
  * @author Sjaak Derksen
  */
-@Mapper
-public abstract class DummyMapper {
+public class ClassNumberDto {
 
-    private Criterium criterium;
+    private Integer number;
 
-    public DummyMapper( Criterium criterium ) {
-        this.criterium = criterium;
+    public Integer getNumber() {
+        return number;
     }
 
-    public abstract UniversityEntity toUniversityEntity(UniversityDto university);
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
 
 }

@@ -18,21 +18,17 @@
  */
 package org.mapstruct.ap.test.statefullmappers;
 
-import org.mapstruct.Mapper;
+import org.mapstruct.factory.MapperFactory;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@Mapper
-public abstract class MapperWithFactory {
+@MapperFactory
+public interface FactoryOfMappers {
 
-    private Criterium criterium;
+    MapperReferencingStatefullMapper createMapperReferencingStatefullMapper(StatefullMapper criterium);
 
-    public MapperWithFactory( Criterium criterium ) {
-        this.criterium = criterium;
-    }
-
-    public abstract UniversityEntity toUniversityEntity(UniversityDto university);
+    StatefullMapper createMapperStatefullMapper(State criterium);
 
 }

@@ -58,6 +58,14 @@ public class DefaultMapperReference extends MapperReference {
         return new DefaultMapperReference( type, isAnnotatedMapper, importTypes, variableName );
     }
 
+    public static DefaultMapperReference getInstance( Type type, String variableName, TypeFactory typeFactory ) {
+        Set<Type> importTypes = Collections.asSet( type );
+
+        DefaultMapperReference ref = new DefaultMapperReference( type, false, importTypes, variableName );
+        ref.setInherited( true );
+        return ref;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
         return importTypes;

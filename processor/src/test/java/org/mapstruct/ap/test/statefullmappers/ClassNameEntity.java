@@ -18,17 +18,20 @@
  */
 package org.mapstruct.ap.test.statefullmappers;
 
-import org.mapstruct.factory.MapperFactory;
-
 /**
  *
  * @author Sjaak Derksen
  */
-@MapperFactory
-public interface MyMapperFactory {
+public class ClassNameEntity {
 
-    DummyMapper createDummyMapper(Criterium criterium);
+    private String name;
 
-    MapperWithFactory createMapperWithFactory(Criterium criterium);
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
 }

@@ -35,6 +35,7 @@ public class Field extends ModelElement {
     private final String variableName;
     private boolean used;
     private boolean typeRequiresImport;
+    private boolean inherited;
 
     public Field(Type type, String variableName, boolean used) {
         this.type = type;
@@ -102,6 +103,14 @@ public class Field extends ModelElement {
      */
     public void setTypeRequiresImport(boolean typeRequiresImport) {
         this.typeRequiresImport = typeRequiresImport;
+    }
+
+    public boolean isInherited() {
+        return inherited;
+    }
+
+    public void setInherited(boolean inherited) {
+        this.inherited = inherited;
     }
 
 }

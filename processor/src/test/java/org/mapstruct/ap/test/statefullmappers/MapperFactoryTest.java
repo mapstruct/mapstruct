@@ -19,12 +19,12 @@
 package org.mapstruct.ap.test.statefullmappers;
 
 
+import static org.fest.assertions.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.runner.WithSingleCompiler;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -35,20 +35,51 @@ import org.mapstruct.factory.Mappers;
 @WithClasses({
     UniversityDto.class,
     UniversityEntity.class,
-    Criterium.class,
-    MapperWithFactory.class,
-    DummyMapper.class,
-    MyMapperFactory.class
+    ClassNumberDto.class,
+    ClassNameEntity.class,
+    State.class,
+    StatefullMapper.class,
+    MapperReferencingStatefullMapper.class,
+    FactoryOfMappers.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
-@WithSingleCompiler(org.mapstruct.ap.testutil.runner.Compiler.JDK)
 public class MapperFactoryTest {
 
     @Test
+    @IssueKey( "751" )
     public void shouldGenerateMapperWithOverloadedConstructor() {
-        MyMapperFactory myMapperFactory = Mappers.getMapperFactory( MyMapperFactory.class );
-        Criterium criterium = new Criterium();
-        myMapperFactory.createDummyMapper( criterium );
+
+        FactoryOfMappers mf = Mappers.getMapperFactory( FactoryOfMappers.class );
+
+        // create a state object, hey.. its a real state :).
+        StatefullMapper statefullMapperNY = mf.createMapperStatefullMapper( new State( "New York" ) );
+        MapperReferencingStatefullMapper otherMapperNY = mf.createMapperReferencingStatefullMapper( statefullMapperNY );
+
+        // create a DTO
+        UniversityDto universityDto = new UniversityDto();
+        ClassNumberDto classNumberDto = new ClassNumberDto();
+        classNumberDto.setNumber( 1 );
+        universityDto.setClassNumber( classNumberDto );
+        UniversityEntity universtityEntityCU = otherMapperNY.toUniversityEntity( universityDto );
+
+        // expect
+        assertThat( universtityEntityCU ).isNotNull();
+        assertThat( universtityEntityCU.getClassNameEntity() ).isNotNull();
+        assertThat( universtityEntityCU.getClassNameEntity().getName() ).isEqualTo( "English" );
+
+        // create new mappers
+        StatefullMapper statefullMapperCAL = mf.createMapperStatefullMapper( new State( "California" ) );
+
+        MapperReferencingStatefullMapper otherMapperCAL =
+            mf.createMapperReferencingStatefullMapper( statefullMapperCAL );
+
+        // create a DTO
+        UniversityEntity universtityEntityUCLA = otherMapperCAL.toUniversityEntity( universityDto );
+
+        // expect
+        assertThat( universtityEntityUCLA ).isNotNull();
+        assertThat( universtityEntityUCLA.getClassNameEntity() ).isNotNull();
+        assertThat( universtityEntityUCLA.getClassNameEntity().getName() ).isEqualTo( "Math" );
 
     }
 

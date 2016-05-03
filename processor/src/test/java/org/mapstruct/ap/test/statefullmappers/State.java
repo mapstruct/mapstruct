@@ -22,16 +22,17 @@ package org.mapstruct.ap.test.statefullmappers;
  *
  * @author Sjaak Derksen
  */
-public class UniversityDto {
+public class State {
 
-    private ClassNumberDto classNumber;
+    private final String name;
 
-    public ClassNumberDto getClassNumber() {
-        return classNumber;
+    public State(String name) {
+        this.name = name;
     }
 
-    public void setClassNumber(ClassNumberDto classNumber) {
-        this.classNumber = classNumber;
+    public String getName() {
+        return name;
     }
+
 
 }

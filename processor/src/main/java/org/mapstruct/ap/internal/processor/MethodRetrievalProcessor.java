@@ -25,10 +25,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.lang.model.element.Element;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
@@ -57,6 +59,7 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
+import static org.mapstruct.ap.internal.util.Fields.getEnclosedFieldThatAreMappers;
 
 /**
  * A {@link MapperElementProcessor} which retrieves a list of {@link SourceMethod}s
@@ -168,6 +171,18 @@ public class MethodRetrievalProcessor implements MapperElementProcessor<Void, Li
                     mapperToImplement,
                     mapperConfig,
                     prototypeMethods ) );
+            }
+
+            List<VariableElement> fieldsBeingAMapper = getEnclosedFieldThatAreMappers( usedMapper );
+            for ( VariableElement fieldBeingMapper : fieldsBeingAMapper ) {
+                Element typeElement = typeUtils.asElement( fieldBeingMapper.asType() );
+                if ( typeElement instanceof TypeElement ) {
+                    methods.addAll( retrieveMethods(
+                        (TypeElement) typeElement,
+                        mapperToImplement,
+                        mapperConfig,
+                        prototypeMethods ) );
+                }
             }
 
             // Add all constructors
