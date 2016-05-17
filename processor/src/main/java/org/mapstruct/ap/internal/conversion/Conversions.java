@@ -178,8 +178,8 @@ public class Conversions {
         registerToStringConversion( Boolean.class );
         register( char.class, String.class, new CharToStringConversion() );
         register( Character.class, String.class, new CharWrapperToStringConversion() );
-        register( BigInteger.class, String.class, new BigIntegerToStringConversion() );
-        register( BigDecimal.class, String.class, new BigDecimalToStringConversion() );
+        register( BigInteger.class, String.class, new BigIntegerToStringConversion( ) );
+        register( BigDecimal.class, String.class, new BigDecimalToStringConversion( ) );
 
         registerJodaConversions();
 

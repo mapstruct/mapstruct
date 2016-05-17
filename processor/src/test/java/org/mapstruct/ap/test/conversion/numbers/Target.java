@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -24,6 +24,8 @@ public class Target {
     private String ii;
     private String d;
     private String dd;
+    private String f;
+    private String ff;
     private String l;
     private String ll;
     private String b;
@@ -65,6 +67,22 @@ public class Target {
 
     public void setDd(String dd) {
         this.dd = dd;
+    }
+
+    public String getF() {
+        return f;
+    }
+
+    public void setF(String f) {
+        this.f = f;
+    }
+
+    public String getFf() {
+        return ff;
+    }
+
+    public void setFf(String ff) {
+        this.ff = ff;
     }
 
     public String getL() {

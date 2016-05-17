@@ -47,6 +47,7 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
+import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SourceReference;
@@ -166,10 +167,9 @@ public class PropertyMapping extends ModelElement {
     public static class PropertyMappingBuilder extends MappingBuilderBase<PropertyMappingBuilder> {
 
         // initial properties
-        private String dateFormat;
-        private String numberFormat;
         private String defaultValue;
         private SourceReference sourceReference;
+        private FormattingParameters formattingParameters;
         private SelectionParameters selectionParameters;
 
         public PropertyMappingBuilder sourceReference(SourceReference sourceReference) {
@@ -182,13 +182,8 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public PropertyMappingBuilder dateFormat(String dateFormat) {
-            this.dateFormat = dateFormat;
-            return this;
-        }
-
-        public PropertyMappingBuilder numberFormat(String numberFormat) {
-            this.numberFormat = numberFormat;
+        public PropertyMappingBuilder formattingParameters(FormattingParameters formattingParameters) {
+            this.formattingParameters = formattingParameters;
             return this;
         }
 
@@ -227,7 +222,7 @@ public class PropertyMapping extends ModelElement {
                 sourceType,
                 targetType,
                 targetPropertyName,
-                dateFormat,
+                formattingParameters,
                 selectionParameters,
                 sourceRefStr,
                 preferUpdateMethods
@@ -286,7 +281,7 @@ public class PropertyMapping extends ModelElement {
             if ( defaultValue != null && !getSourceType().isPrimitive() ) {
                 PropertyMapping build = new ConstantMappingBuilder()
                         .constantExpression( '"' + defaultValue + '"' )
-                        .dateFormat( dateFormat )
+                        .formattingParameters( formattingParameters )
                         .selectionParameters( selectionParameters )
                         .dependsOn( dependsOn )
                         .existingVariableNames( existingVariableNames )
@@ -599,7 +594,7 @@ public class PropertyMapping extends ModelElement {
     public static class ConstantMappingBuilder extends MappingBuilderBase<ConstantMappingBuilder> {
 
         private String constantExpression;
-        private String dateFormat;
+        private FormattingParameters formattingParameters;
         private SelectionParameters selectionParameters;
 
         public ConstantMappingBuilder constantExpression(String constantExpression) {
@@ -607,8 +602,8 @@ public class PropertyMapping extends ModelElement {
             return this;
         }
 
-        public ConstantMappingBuilder dateFormat(String dateFormat) {
-            this.dateFormat = dateFormat;
+        public ConstantMappingBuilder formattingParameters(FormattingParameters formattingParameters) {
+            this.formattingParameters = formattingParameters;
             return this;
         }
 
@@ -628,7 +623,7 @@ public class PropertyMapping extends ModelElement {
                 sourceType,
                 targetType,
                 targetPropertyName,
-                dateFormat,
+                formattingParameters,
                 selectionParameters,
                 constantExpression,
                 method.getMappingTargetParameter() != null

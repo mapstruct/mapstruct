@@ -18,39 +18,81 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import org.mapstruct.ap.internal.model.common.ConversionContext;
-import org.mapstruct.ap.internal.model.common.Type;
 
 import java.math.BigInteger;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import org.mapstruct.ap.internal.model.HelperMethod;
+
+import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link BigInteger} and {@link String}.
  *
  * @author Gunnar Morling
  */
-public class BigIntegerToStringConversion extends PossibleNumberToStringConversion {
+public class BigIntegerToStringConversion extends AbstractNumberToStringConversion  {
 
     public BigIntegerToStringConversion() {
-        super( BigInteger.class );
+        super( true );
     }
 
     @Override
-    protected String getFallbackToExpression(ConversionContext conversionContext) {
-        return "<SOURCE>.toString()";
+    public String getToExpression(ConversionContext conversionContext) {
+        if ( requiresDecimalFormat( conversionContext ) ) {
+            StringBuilder sb = new StringBuilder();
+            appendDecimalFormatter( sb, conversionContext );
+            sb.append( ".format( <SOURCE> )" );
+            return sb.toString();
+        }
+        else {
+            return "<SOURCE>.toString()";
+        }
     }
 
     @Override
-    protected String getFallbackFromExpression(ConversionContext conversionContext) {
-        return "new BigInteger( <SOURCE> )";
+    public String getFromExpression(ConversionContext conversionContext) {
+        if ( requiresDecimalFormat( conversionContext ) ) {
+            StringBuilder sb = new StringBuilder();
+            sb.append( "( (BigDecimal) " );
+            appendDecimalFormatter( sb, conversionContext );
+            sb.append( ".parse( <SOURCE> )" );
+            sb.append( " ).toBigInteger()" );
+            return sb.toString();
+        }
+        else {
+            return "new BigInteger( <SOURCE> )";
+        }
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
-        Set<Type> importTypes = new HashSet<Type>();
-        importTypes.addAll( super.getFromConversionImportTypes( conversionContext ) );
-        importTypes.add( conversionContext.getTypeFactory().getType( BigInteger.class ) );
-        return importTypes;
+        if ( requiresDecimalFormat( conversionContext ) ) {
+            // no imports are required when decimal format is used.
+            return super.getFromConversionImportTypes( conversionContext );
+        }
+        else {
+            return asSet( conversionContext.getTypeFactory().getType( BigInteger.class ) );
+        }
+    }
+
+    @Override
+    public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
+        HelperMethod helperMethod = new CreateDecimalFormat( conversionContext.getTypeFactory() );
+        return Arrays.asList( helperMethod );
+    }
+
+    private void appendDecimalFormatter(StringBuilder sb, ConversionContext conversionContext) {
+        sb.append( "createDecimalFormat( " );
+        if ( conversionContext.getNumberFormat() != null ) {
+            sb.append( "\"" );
+            sb.append( conversionContext.getNumberFormat() );
+            sb.append( "\"" );
+        }
+
+        sb.append( " )" );
     }
 }

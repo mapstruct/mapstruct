@@ -25,6 +25,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 import java.util.Date;
 
 /**
@@ -85,10 +86,10 @@ public @interface Mapping {
     String dateFormat() default "";
 
     /**
-     * A format string as processable by {@link java.text.DecimalFormat} if the annotated method maps from a
+     * A format string as processable by {@link DecimalFormat} if the annotated method maps from a
      *  {@link Number} to a {@link String} or vice-versa. Will be ignored for all other element types.
      *
-     * @return A decimal format string as processable by {@link java.text.DecimalFormat}.
+     * @return A decimal format string as processable by {@link DecimalFormat}.
      */
     String numberFormat() default "";
 

@@ -26,6 +26,7 @@ import org.mapstruct.ap.internal.model.AssignmentFactory;
 import org.mapstruct.ap.internal.model.TypeConversion;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
@@ -54,6 +55,12 @@ public abstract class SimpleConversion implements ConversionProvider {
             fromExpression
         );
     }
+
+    @Override
+    public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
+        return Collections.emptyList();
+    }
+
 
     /**
      * Returns the conversion string from source to target. The placeholder {@code <SOURCE>} can be used to represent a

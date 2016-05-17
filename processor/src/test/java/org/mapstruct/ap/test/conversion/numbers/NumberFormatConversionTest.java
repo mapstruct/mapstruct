@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -26,9 +26,14 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.MapAssert.entry;
 
 @WithClasses({
         Source.class,
@@ -50,6 +55,8 @@ public class NumberFormatConversionTest {
         source.setIi( 2 );
         source.setD( 3.0 );
         source.setDd( 4.0 );
+        source.setF( 3.0f );
+        source.setFf( 4.0f );
         source.setL( 5L );
         source.setLl( 6L );
         source.setB( (byte) 7 );
@@ -68,6 +75,8 @@ public class NumberFormatConversionTest {
         assertThat( target.getIi() ).isEqualTo( "2.00" );
         assertThat( target.getD() ).isEqualTo( "3.00" );
         assertThat( target.getDd() ).isEqualTo( "4.00" );
+        assertThat( target.getF() ).isEqualTo( "3.00" );
+        assertThat( target.getFf() ).isEqualTo( "4.00" );
         assertThat( target.getL() ).isEqualTo( "5.00" );
         assertThat( target.getLl() ).isEqualTo( "6.00" );
         assertThat( target.getB() ).isEqualTo( "7.00" );
@@ -87,6 +96,8 @@ public class NumberFormatConversionTest {
         target.setIi( "2.00" );
         target.setD( "3.00" );
         target.setDd( "4.00" );
+        target.setF( "3.00" );
+        target.setFf( "4.00" );
         target.setL( "5.00" );
         target.setLl( "6.00" );
         target.setB( "7.00" );
@@ -105,6 +116,8 @@ public class NumberFormatConversionTest {
         assertThat( source.getIi() ).isEqualTo( Integer.valueOf( 2 ) );
         assertThat( source.getD() ).isEqualTo( 3.0 );
         assertThat( source.getDd() ).isEqualTo( Double.valueOf( 4.0 ) );
+        assertThat( source.getF() ).isEqualTo( 3.0f );
+        assertThat( source.getFf() ).isEqualTo( Float.valueOf( 4.0f ) );
         assertThat( source.getL() ).isEqualTo( 5L );
         assertThat( source.getLl() ).isEqualTo( Long.valueOf( 6L ) );
         assertThat( source.getB() ).isEqualTo( (byte) 7 );
@@ -117,4 +130,32 @@ public class NumberFormatConversionTest {
         assertThat( source.getBigInteger1() ).isEqualTo( new BigInteger( "1234567890000" ) );
     }
 
+    @Test
+    public void shouldApplyStringConversionsToIterables() {
+
+        List<String> target = SourceTargetMapper.INSTANCE.sourceToTarget( Arrays.asList( 2f ) );
+
+        assertThat( target ).hasSize( 1 );
+        assertThat( target ).isEqualTo( Arrays.asList( "2.00" ) );
+
+        List<Float> source = SourceTargetMapper.INSTANCE.targetToSource( target );
+        assertThat( source  ).hasSize( 1 );
+        assertThat( source ).isEqualTo( Arrays.asList( 2.00f ) );
+    }
+
+    @Test
+    public void shouldApplyStringConversionsToMaps() {
+
+        Map<Float, Float> source1 = new HashMap<Float, Float>();
+        source1.put( 1.0001f, 2.01f );
+
+        Map<String, String> target = SourceTargetMapper.INSTANCE.sourceToTarget( source1 );
+        assertThat( target  ).hasSize( 1 );
+        assertThat( target ).includes( entry( "1.00", "2" ) );
+
+        Map<Float, Float> source2 = SourceTargetMapper.INSTANCE.targetToSource( target );
+        assertThat( source2  ).hasSize( 1 );
+        assertThat( source2 ).includes( entry( 1.00f, 2f ) );
+
+    }
 }

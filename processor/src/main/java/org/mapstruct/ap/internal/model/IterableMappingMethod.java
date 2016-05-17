@@ -31,6 +31,7 @@ import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
+import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
@@ -55,8 +56,8 @@ public class IterableMappingMethod extends MappingMethod {
 
         private Method method;
         private MappingBuilderContext ctx;
-        private String dateFormat;
         private SelectionParameters selectionParameters;
+        private FormattingParameters formattingParameters;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
@@ -69,8 +70,8 @@ public class IterableMappingMethod extends MappingMethod {
             return this;
         }
 
-        public Builder dateFormat(String dateFormat) {
-            this.dateFormat = dateFormat;
+        public Builder formattingParameters(FormattingParameters formattingParameters) {
+            this.formattingParameters = formattingParameters;
             return this;
         }
 
@@ -104,7 +105,7 @@ public class IterableMappingMethod extends MappingMethod {
                 sourceElementType,
                 targetElementType,
                 null, // there is no targetPropertyName
-                dateFormat,
+                formattingParameters,
                 selectionParameters,
                 loopVariableName,
                 false
