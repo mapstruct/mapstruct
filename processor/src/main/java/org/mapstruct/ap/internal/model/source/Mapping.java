@@ -54,9 +54,8 @@ public class Mapping {
     private final String constant;
     private final String javaExpression;
     private final String targetName;
-    private final String dateFormat;
-    private final String numberFormat;
     private final String defaultValue;
+    private final FormattingParameters formattingParameters;
     private final SelectionParameters selectionParameters;
 
     private final boolean isIgnored;
@@ -145,18 +144,19 @@ public class Mapping {
             mappingPrism.qualifiedByName(),
             resultTypeIsDefined ? mappingPrism.resultType() : null);
 
+        FormattingParameters formattingParam = new FormattingParameters( dateFormat, numberFormat );
+
         return new Mapping(
             source,
             constant,
             expression,
             mappingPrism.target(),
-            dateFormat,
-            numberFormat,
             defaultValue,
             mappingPrism.ignore(),
             mappingPrism.mirror,
             mappingPrism.values.source(),
             mappingPrism.values.target(),
+            formattingParam,
             selectionParams,
             mappingPrism.values.dependsOn(),
             dependsOn
@@ -165,21 +165,20 @@ public class Mapping {
 
     @SuppressWarnings("checkstyle:parameternumber")
     private Mapping(String sourceName, String constant, String javaExpression, String targetName,
-                    String dateFormat, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
-                    AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
-                    SelectionParameters selectionParameters, AnnotationValue dependsOnAnnotationValue,
-                    List<String> dependsOn) {
+                     String defaultValue, boolean isIgnored, AnnotationMirror mirror,
+                     AnnotationValue sourceAnnotationValue,  AnnotationValue targetAnnotationValue,
+                     FormattingParameters formattingParameters, SelectionParameters selectionParameters,
+                     AnnotationValue dependsOnAnnotationValue, List<String> dependsOn) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
         this.targetName = targetName;
-        this.dateFormat = dateFormat;
-        this.numberFormat = numberFormat;
         this.defaultValue = defaultValue;
         this.isIgnored = isIgnored;
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
+        this.formattingParameters = formattingParameters;
         this.selectionParameters = selectionParameters;
         this.dependsOnAnnotationValue = dependsOnAnnotationValue;
         this.dependsOn = dependsOn;
@@ -243,16 +242,12 @@ public class Mapping {
         return targetName;
     }
 
-    public String getDateFormat() {
-        return dateFormat;
-    }
-
-    public String getNumberFormat() {
-        return numberFormat;
-    }
-
     public String getDefaultValue() {
         return defaultValue;
+    }
+
+    public FormattingParameters getFormattingParameters() {
+        return formattingParameters;
     }
 
     public SelectionParameters getSelectionParameters() {
@@ -327,13 +322,12 @@ public class Mapping {
             null, // constant
             null, // expression
             sourceName != null ? sourceName : targetName,
-            dateFormat,
-            numberFormat,
             null,
             isIgnored,
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue,
+            formattingParameters,
             selectionParameters,
             dependsOnAnnotationValue,
             Collections.<String>emptyList()
@@ -355,13 +349,12 @@ public class Mapping {
             constant,
             javaExpression,
             targetName,
-            dateFormat,
-            numberFormat,
             defaultValue,
             isIgnored,
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue,
+            formattingParameters,
             selectionParameters,
             dependsOnAnnotationValue,
             dependsOn

@@ -43,8 +43,10 @@ import org.mapstruct.ap.internal.model.VirtualMappingMethod;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
+import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
@@ -105,11 +107,18 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     @SuppressWarnings("checkstyle:parameternumber")
     public Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType,
-        Type targetType, String targetPropertyName, String dateFormat, SelectionParameters selectionParameters,
-        String sourceReference, boolean preferUpdateMapping) {
+        Type targetType, String targetPropertyName, FormattingParameters formattingParameters,
+        SelectionParameters selectionParameters, String sourceReference, boolean preferUpdateMapping) {
 
         SelectionCriteria criteria =
             new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping );
+
+        String dateFormat = null;
+        String numberFormat = null;
+        if ( formattingParameters != null ) {
+            dateFormat = formattingParameters.getDate();
+            numberFormat = formattingParameters.getNumber();
+        }
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
@@ -260,9 +269,13 @@ public class MappingResolverImpl implements MappingResolver {
             if ( conversionProvider == null ) {
                 return null;
             }
+            ConversionContext ctx = new DefaultConversionContext( typeFactory, messager, sourceType, targetType,
+                dateFormat, numberFormat );
 
-            ConversionContext ctx =
-                new DefaultConversionContext( typeFactory, messager, sourceType, targetType, dateFormat, numberFormat);
+            // add helper methods required in conversion
+            for ( HelperMethod helperMethod : conversionProvider.getRequiredHelperMethods( ctx ) ) {
+                usedVirtualMappings.add( new VirtualMappingMethod( helperMethod ) );
+            }
             return conversionProvider.to( ctx );
         }
 

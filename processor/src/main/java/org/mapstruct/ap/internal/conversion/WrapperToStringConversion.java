@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.conversion;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -26,24 +27,58 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Gunnar Morling
  */
-public class WrapperToStringConversion extends PossibleNumberToStringConversion {
+public class WrapperToStringConversion extends AbstractNumberToStringConversion  {
 
     private final Class<?> sourceType;
+    private final Class<?> primitiveType;
 
     public WrapperToStringConversion(Class<?> sourceType) {
-        super( sourceType );
+        super( NativeTypes.isNumber( sourceType ) );
+        if ( sourceType.isPrimitive() ) {
+            throw new IllegalArgumentException( sourceType + " is no wrapper type." );
+        }
+
         this.sourceType = sourceType;
+        this.primitiveType = NativeTypes.getPrimitiveType( sourceType );
     }
 
     @Override
-    protected String getFallbackToExpression(ConversionContext conversionContext) {
-        return "String.valueOf( <SOURCE> )";
+    public String getToExpression(ConversionContext conversionContext) {
+        if ( requiresDecimalFormat( conversionContext ) ) {
+            StringBuilder sb = new StringBuilder();
+            appendDecimalFormatter( sb, conversionContext );
+            sb.append( ".format( <SOURCE> )" );
+            return sb.toString();
+        }
+        else {
+            return "String.valueOf( <SOURCE> )";
+        }
     }
 
     @Override
-    protected String getFallbackFromExpression(ConversionContext conversionContext) {
-        return sourceType.getSimpleName() + ".parse" +
-                Strings.capitalize( primitiveType.getSimpleName() ) + "( <SOURCE> )";
+    public String getFromExpression(ConversionContext conversionContext) {
+        if ( requiresDecimalFormat( conversionContext ) ) {
+            StringBuilder sb = new StringBuilder();
+            appendDecimalFormatter( sb, conversionContext );
+            sb.append( ".parse( <SOURCE> )." );
+            sb.append( primitiveType.getSimpleName() );
+            sb.append( "Value()" );
+            return sb.toString();
+        }
+        else {
+            return sourceType.getSimpleName() + ".parse"
+                + Strings.capitalize( primitiveType.getSimpleName() ) + "( <SOURCE> )";
+        }
     }
 
+    private void appendDecimalFormatter(StringBuilder sb, ConversionContext conversionContext) {
+        sb.append( "new DecimalFormat( " );
+        if ( conversionContext.getNumberFormat() != null ) {
+            sb.append( "\"" );
+            sb.append( conversionContext.getNumberFormat() );
+            sb.append( "\"" );
+        }
+
+        sb.append( " )" );
+    }
 }

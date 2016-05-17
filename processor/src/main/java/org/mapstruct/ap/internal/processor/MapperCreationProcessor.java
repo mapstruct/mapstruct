@@ -50,6 +50,7 @@ import org.mapstruct.ap.internal.model.MappingMethod;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
@@ -269,12 +270,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
 
-                String dateFormat = null;
+                FormattingParameters formattingParameters = null;
                 SelectionParameters selectionParameters = null;
                 NullValueMappingStrategyPrism nullValueMappingStrategy = null;
 
                 if ( mappingOptions.getIterableMapping() != null ) {
-                    dateFormat = mappingOptions.getIterableMapping().getDateFormat();
+                    formattingParameters = mappingOptions.getIterableMapping().getFormattingParameters();
                     selectionParameters = mappingOptions.getIterableMapping().getSelectionParameters();
                     nullValueMappingStrategy = mappingOptions.getIterableMapping().getNullValueMappingStrategy();
                 }
@@ -282,7 +283,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 IterableMappingMethod iterableMappingMethod = builder
                     .mappingContext( mappingContext )
                     .method( method )
-                    .dateFormat( dateFormat )
+                    .formattingParameters( formattingParameters )
                     .selectionParameters( selectionParameters )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
                     .build();
@@ -294,26 +295,26 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
                 MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
 
-                String keyDateFormat = null;
-                String valueDateFormat = null;
                 SelectionParameters keySelectionParameters = null;
+                FormattingParameters keyFormattingParameters = null;
                 SelectionParameters valueSelectionParameters = null;
+                FormattingParameters valueFormattingParameters = null;
                 NullValueMappingStrategyPrism nullValueMappingStrategy = null;
 
                 if ( mappingOptions.getMapMapping() != null ) {
-                    keyDateFormat = mappingOptions.getMapMapping().getKeyFormat();
                     keySelectionParameters = mappingOptions.getMapMapping().getKeySelectionParameters();
+                    keyFormattingParameters = mappingOptions.getMapMapping().getKeyFormattingParameters();
                     valueSelectionParameters = mappingOptions.getMapMapping().getValueSelectionParameters();
-                    valueDateFormat = mappingOptions.getMapMapping().getValueFormat();
+                    valueFormattingParameters = mappingOptions.getMapMapping().getValueFormattingParameters();
                     nullValueMappingStrategy = mappingOptions.getMapMapping().getNullValueMappingStrategy();
                 }
 
                 MapMappingMethod mapMappingMethod = builder
                     .mappingContext( mappingContext )
                     .method( method )
-                    .keyDateFormat( keyDateFormat )
+                    .keyFormattingParameters( keyFormattingParameters )
                     .keySelectionParameters( keySelectionParameters )
-                    .valueDateFormat( valueDateFormat )
+                    .valueFormattingParameters( valueFormattingParameters )
                     .valueSelectionParameters( valueSelectionParameters )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
                     .build();

@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -18,7 +18,11 @@
  */
 package org.mapstruct.ap.test.conversion.numbers;
 
+import java.util.List;
+import java.util.Map;
 import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.IterableMapping;
+import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -36,6 +40,8 @@ public interface SourceTargetMapper {
             @Mapping( target = "ii", numberFormat = NUMBER_FORMAT ),
             @Mapping( target = "d", numberFormat = NUMBER_FORMAT ),
             @Mapping( target = "dd", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "f", numberFormat = NUMBER_FORMAT ),
+            @Mapping( target = "ff", numberFormat = NUMBER_FORMAT ),
             @Mapping( target = "l", numberFormat = NUMBER_FORMAT ),
             @Mapping( target = "ll", numberFormat = NUMBER_FORMAT ),
             @Mapping( target = "b", numberFormat = NUMBER_FORMAT ),
@@ -50,4 +56,19 @@ public interface SourceTargetMapper {
 
     @InheritInverseConfiguration
     Source targetToSource(Target target);
+
+    @IterableMapping( numberFormat = NUMBER_FORMAT )
+    List<String> sourceToTarget(List<Float> source);
+
+    @InheritInverseConfiguration
+    List<Float> targetToSource(List<String> source);
+
+    @MapMapping( keyNumberFormat = NUMBER_FORMAT, valueNumberFormat = "##" )
+    Map<String, String> sourceToTarget(Map<Float, Float> source);
+
+    @InheritInverseConfiguration
+    Map<Float, Float> targetToSource(Map<String, String> source);
+
 }
+
+

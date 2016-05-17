@@ -29,6 +29,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
@@ -78,7 +79,7 @@ public class MappingBuilderContext {
          * @param sourceType parameter to match
          * @param targetType return type to match
          * @param targetPropertyName name of the target property
-         * @param dateFormat used for formatting dates in build in methods that need context information
+         * @param formattingParameters used for formatting dates and numbers
          * @param selectionParameters parameters used in the selection process
          * @param sourceReference call to source type as string
          * @param preferUpdateMethods selection should prefer update methods when present.
@@ -93,7 +94,7 @@ public class MappingBuilderContext {
          */
         @SuppressWarnings("checkstyle:parameternumber")
         Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
-                                       String targetPropertyName, String dateFormat,
+                                       String targetPropertyName, FormattingParameters formattingParameters,
                                        SelectionParameters selectionParameters, String sourceReference,
                                        boolean preferUpdateMethods);
 

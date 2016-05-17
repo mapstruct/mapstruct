@@ -18,8 +18,11 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import java.util.Collections;
+import java.util.List;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.HelperMethod;
 
 /**
  * A {@link ConversionProvider} which creates the reversed conversions for a
@@ -48,4 +51,10 @@ public class ReverseConversion implements ConversionProvider {
     public Assignment from(ConversionContext conversionContext) {
         return conversionProvider.to( conversionContext );
     }
+
+    @Override
+    public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
+        return Collections.emptyList();
+    }
+
 }

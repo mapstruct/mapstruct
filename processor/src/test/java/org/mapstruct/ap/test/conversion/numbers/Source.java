@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2015 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -27,6 +27,8 @@ public class Source {
     private Integer ii;
     private double d;
     private Double dd;
+    private float f;
+    private Float ff;
     private long l;
     private Long ll;
     private byte b;
@@ -68,6 +70,22 @@ public class Source {
 
     public void setDd(Double dd) {
         this.dd = dd;
+    }
+
+    public float getF() {
+        return f;
+    }
+
+    public void setF(float f) {
+        this.f = f;
+    }
+
+    public Float getFf() {
+        return ff;
+    }
+
+    public void setFf(Float ff) {
+        this.ff = ff;
     }
 
     public long getL() {

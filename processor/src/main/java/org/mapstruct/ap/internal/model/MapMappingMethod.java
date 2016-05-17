@@ -28,6 +28,7 @@ import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
+import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
@@ -50,9 +51,8 @@ public class MapMappingMethod extends MappingMethod {
 
     public static class Builder {
 
-        private String keyDateFormat;
-        private String keyNumberFormat;
-        private String valueDateFormat;
+        private FormattingParameters keyFormattingParameters;
+        private FormattingParameters valueFormattingParameters;
         private Method method;
         private MappingBuilderContext ctx;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
@@ -79,13 +79,13 @@ public class MapMappingMethod extends MappingMethod {
             return this;
         }
 
-        public Builder keyDateFormat(String keyDateFormat) {
-            this.keyDateFormat = keyDateFormat;
+        public Builder keyFormattingParameters(FormattingParameters keyFormattingParameters) {
+            this.keyFormattingParameters = keyFormattingParameters;
             return this;
         }
 
-        public Builder valueDateFormat(String valueDateFormat) {
-            this.valueDateFormat = valueDateFormat;
+        public Builder valueFormattingParameters(FormattingParameters valueFormattingParameters) {
+            this.valueFormattingParameters = valueFormattingParameters;
             return this;
         }
 
@@ -93,7 +93,6 @@ public class MapMappingMethod extends MappingMethod {
             this.nullValueMappingStrategy = nullValueMappingStrategy;
             return this;
         }
-
 
         public MapMappingMethod build() {
 
@@ -110,7 +109,7 @@ public class MapMappingMethod extends MappingMethod {
                 keySourceType,
                 keyTargetType,
                 null, // there is no targetPropertyName
-                keyDateFormat,
+                keyFormattingParameters,
                 keySelectionParameters,
                 "entry.getKey()",
                 false
@@ -137,7 +136,7 @@ public class MapMappingMethod extends MappingMethod {
                 valueSourceType,
                 valueTargetType,
                 null, // there is no targetPropertyName
-                valueDateFormat,
+                valueFormattingParameters,
                 valueSelectionParameters,
                 "entry.getValue()",
                 false

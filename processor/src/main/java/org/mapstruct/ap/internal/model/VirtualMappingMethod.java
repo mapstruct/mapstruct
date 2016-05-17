@@ -40,6 +40,12 @@ public class VirtualMappingMethod extends MappingMethod {
         this.templateName = getTemplateNameForClass( method.getClass() );
     }
 
+    public VirtualMappingMethod(HelperMethod method) {
+        super( method );
+        this.importTypes = method.getImportTypes();
+        this.templateName = getTemplateNameForClass( method.getClass() );
+    }
+
     @Override
     public String getTemplateName() {
         return templateName;

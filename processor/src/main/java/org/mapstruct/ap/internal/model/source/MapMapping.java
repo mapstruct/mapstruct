@@ -34,10 +34,10 @@ import org.mapstruct.ap.internal.util.Message;
  */
 public class MapMapping {
 
-    private final String keyFormat;
     private final SelectionParameters keySelectionParameters;
-    private final String valueFormat;
     private final SelectionParameters valueSelectionParameters;
+    private final FormattingParameters keyFormattingParameters;
+    private final FormattingParameters valueFormattingParameters;
     private final AnnotationMirror mirror;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
@@ -56,9 +56,11 @@ public class MapMapping {
         boolean keyTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.keyTargetType().getKind() );
         boolean valueTargetTypeIsDefined = !TypeKind.VOID.equals( mapMapping.valueTargetType().getKind() );
         if ( mapMapping.keyDateFormat().isEmpty()
+            && mapMapping.keyNumberFormat().isEmpty()
             && mapMapping.keyQualifiedBy().isEmpty()
             && mapMapping.keyQualifiedByName().isEmpty()
             && mapMapping.valueDateFormat().isEmpty()
+            && mapMapping.valueNumberFormat().isEmpty()
             && mapMapping.valueQualifiedBy().isEmpty()
             && mapMapping.valueQualifiedByName().isEmpty()
             && !keyTargetTypeIsDefined
@@ -78,36 +80,45 @@ public class MapMapping {
             mapMapping.valueQualifiedByName(),
             valueTargetTypeIsDefined ? mapMapping.valueTargetType() : null);
 
-        return new MapMapping(
+        FormattingParameters keyFormatting = new FormattingParameters(
             mapMapping.keyDateFormat(),
-            keySelection,
+            mapMapping.keyNumberFormat() );
+
+        FormattingParameters valueFormatting = new FormattingParameters(
             mapMapping.valueDateFormat(),
+            mapMapping.valueNumberFormat() );
+
+        return new MapMapping(
+            keyFormatting,
+            keySelection,
+            valueFormatting,
             valueSelection,
             mapMapping.mirror,
             nullValueMappingStrategy
         );
     }
 
-    private MapMapping(String keyFormat, SelectionParameters keySelectionParameters, String valueFormat,
-        SelectionParameters valueSelectionParameters, AnnotationMirror mirror, NullValueMappingStrategyPrism nvms ) {
-        this.keyFormat = keyFormat;
+    private MapMapping(FormattingParameters keyFormatting, SelectionParameters keySelectionParameters,
+        FormattingParameters valueFormatting, SelectionParameters valueSelectionParameters, AnnotationMirror mirror,
+        NullValueMappingStrategyPrism nvms ) {
+        this.keyFormattingParameters = keyFormatting;
         this.keySelectionParameters = keySelectionParameters;
-        this.valueFormat = valueFormat;
+        this.valueFormattingParameters = valueFormatting;
         this.valueSelectionParameters = valueSelectionParameters;
         this.mirror = mirror;
         this.nullValueMappingStrategy = nvms;
     }
 
-    public String getKeyFormat() {
-        return keyFormat;
+    public FormattingParameters getKeyFormattingParameters() {
+        return keyFormattingParameters;
     }
 
     public SelectionParameters getKeySelectionParameters() {
         return keySelectionParameters;
     }
 
-    public String getValueFormat() {
-        return valueFormat;
+    public FormattingParameters getValueFormattingParameters() {
+        return valueFormattingParameters;
     }
 
     public SelectionParameters getValueSelectionParameters() {

@@ -25,10 +25,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.mapstruct.ap.internal.model.AssignmentFactory;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
@@ -54,6 +56,11 @@ public class DateToStringConversion implements ConversionProvider {
             asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
             getConversionExpression( conversionContext, "parse" )
         );
+    }
+
+    @Override
+    public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
+        return Collections.emptyList();
     }
 
     private String getConversionExpression(ConversionContext conversionContext, String method) {
