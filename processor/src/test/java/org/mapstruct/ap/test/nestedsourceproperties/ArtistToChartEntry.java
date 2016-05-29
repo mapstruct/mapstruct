@@ -54,16 +54,6 @@ public interface ArtistToChartEntry {
     })
     ChartEntry map(Song song);
 
-//    TODO: behaviour will change after introduction of reverse mapping
-//
-//    @InheritInverseConfiguration
-//    @Mappings({
-//        @Mapping(target = "artist", ignore = true),
-//        @Mapping(target = "positions", ignore = true)
-//    })
-//    Song map(ChartEntry song);
-
-
     @Mappings({
         @Mapping(target = "chartName", source = "name"),
         @Mapping(target = "songTitle", ignore = true),

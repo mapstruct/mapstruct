@@ -30,21 +30,25 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper
-public interface ArtistToChartEntryReverse {
+public abstract class ArtistToChartEntryReverse {
 
-    ArtistToChartEntryReverse MAPPER = Mappers.getMapper( ArtistToChartEntryReverse.class );
+    public static final ArtistToChartEntryReverse MAPPER = Mappers.getMapper( ArtistToChartEntryReverse.class );
 
     @Mappings({
-        @Mapping(target = "chartName", ignore = true),
+
         @Mapping(target = "songTitle", source = "title"),
         @Mapping(target = "artistName", source = "artist.name"),
         @Mapping(target = "recordedAt", source = "artist.label.studio.name"),
         @Mapping(target = "city", source = "artist.label.studio.city"),
-        @Mapping(target = "position", ignore = true)
+        @Mapping(target = "position", ignore = true),
+        @Mapping(target = "chartName", ignore = true )
     })
-    ChartEntry mapForward(Song song);
+    abstract ChartEntry mapForward(Song song);
 
     @InheritInverseConfiguration
-    Song mapReverse(ChartEntry song);
+    @Mapping(target = "positions", ignore = true)
+    abstract Song mapReverse(ChartEntry ce);
+
+
 
 }

@@ -66,8 +66,8 @@ public class Mapping {
     private final AnnotationValue targetAnnotationValue;
     private final AnnotationValue dependsOnAnnotationValue;
 
-    private NestedReference sourceReference;
-    private NestedReference targetReference;
+    private SourceReference sourceReference;
+    private TargetReference targetReference;
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
                                                                ExecutableElement method,
@@ -209,14 +209,14 @@ public class Mapping {
     public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory, boolean isReverse) {
 
         if ( !method.isEnumMapping() ) {
-            sourceReference = new NestedReference.BuilderFromSourceMapping()
+            sourceReference = new SourceReference.BuilderFromMapping()
                 .mapping( this )
                 .method( method )
                 .messager( messager )
                 .typeFactory( typeFactory )
                 .build();
 
-            targetReference = new NestedReference.BuilderFromTargetMapping()
+            targetReference = new TargetReference.BuilderFromTargetMapping()
                 .mapping( this )
                 .isReverse( isReverse )
                 .method( method )
@@ -280,11 +280,11 @@ public class Mapping {
         return dependsOnAnnotationValue;
     }
 
-    public NestedReference getSourceReference() {
+    public SourceReference getSourceReference() {
         return sourceReference;
     }
 
-    public NestedReference getTargetReference() {
+    public TargetReference getTargetReference() {
         return targetReference;
     }
 
