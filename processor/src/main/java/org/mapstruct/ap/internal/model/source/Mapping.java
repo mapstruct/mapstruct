@@ -67,6 +67,7 @@ public class Mapping {
     private final AnnotationValue dependsOnAnnotationValue;
 
     private SourceReference sourceReference;
+    private TargetReference targetReference;
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
                                                                ExecutableElement method,
@@ -205,11 +206,19 @@ public class Mapping {
             ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
     }
 
-    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
+    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory, boolean isReverse) {
 
         if ( !method.isEnumMapping() ) {
             sourceReference = new SourceReference.BuilderFromMapping()
                 .mapping( this )
+                .method( method )
+                .messager( messager )
+                .typeFactory( typeFactory )
+                .build();
+
+            targetReference = new TargetReference.BuilderFromTargetMapping()
+                .mapping( this )
+                .isReverse( isReverse )
                 .method( method )
                 .messager( messager )
                 .typeFactory( typeFactory )
@@ -275,6 +284,10 @@ public class Mapping {
         return sourceReference;
     }
 
+    public TargetReference getTargetReference() {
+        return targetReference;
+    }
+
     public List<String> getDependsOn() {
         return dependsOn;
     }
@@ -299,9 +312,9 @@ public class Mapping {
         }
 
         // should not reverse a nested property
-        if ( sourceReference != null && sourceReference.getPropertyEntries().size() > 1 ) {
-            return null;
-        }
+//        if ( sourceReference != null && sourceReference.getPropertyEntries().size() > 1 ) {
+//            return null;
+//        }
 
         // should generate error when parameter
         if ( sourceReference != null && sourceReference.getPropertyEntries().isEmpty() ) {
@@ -330,7 +343,7 @@ public class Mapping {
             Collections.<String>emptyList()
         );
 
-        reverse.init( method, messager, typeFactory );
+        reverse.init( method, messager, typeFactory, true );
         return reverse;
     }
 
@@ -360,6 +373,9 @@ public class Mapping {
         if ( sourceReference != null ) {
             mapping.sourceReference = sourceReference.copyForInheritanceTo( method );
         }
+
+        // TODO... must something be done here? Andreas?
+        mapping.targetReference = targetReference;
 
         return mapping;
     }

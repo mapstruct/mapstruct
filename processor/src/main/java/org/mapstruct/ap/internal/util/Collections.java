@@ -77,6 +77,10 @@ public class Collections {
         return collection.iterator().next();
     }
 
+    public static <T> T last(List<T> list) {
+        return list.get( list.size() - 1 );
+    }
+
     public static <T> List<T> join(List<T> a, List<T> b) {
         List<T> result = new ArrayList<T>( a.size() + b.size() );
 

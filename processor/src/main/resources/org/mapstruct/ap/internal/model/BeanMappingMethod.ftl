@@ -42,6 +42,7 @@
 
     	</#if>
     </#list>
+    <@nestedTargetObjects/>
     <#if (sourceParameters?size > 1)>
         <#list sourceParametersExcludingPrimitives as sourceParam>
             <#if (propertyMappingsByParameter[sourceParam.name]?size > 0)>
@@ -87,4 +88,12 @@
             <#if exceptionType_has_next>, </#if><#t>
         </#list>
     </@compress>
+</#macro>
+<#macro nestedTargetObjects>
+    <#list localVariablesToCreate as localVariable>
+    <@includeModel object=localVariable/> = new <@includeModel object=localVariable.type/>();
+    </#list>
+    <#list nestedLocalVariableAssignments as nestedLocalVariableAssignment>
+    <@includeModel object=nestedLocalVariableAssignment/>
+    </#list>
 </#macro>

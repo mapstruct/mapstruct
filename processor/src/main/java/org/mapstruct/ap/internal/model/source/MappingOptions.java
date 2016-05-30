@@ -51,7 +51,7 @@ public class MappingOptions {
 
     /**
      * @return the {@link Mapping}s configured for this method, keyed by target property name. Only for enum mapping
-     * methods a target will be mapped by several sources.
+     * methods a target will be mapped by several sources. TODO. Remove the value list when 2.0
      */
     public Map<String, List<Mapping>> getMappings() {
         return mappings;

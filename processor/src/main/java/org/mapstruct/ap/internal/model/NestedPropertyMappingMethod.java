@@ -25,7 +25,7 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
+import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -145,7 +145,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
         private final String safeName;
 
         public SafePropertyEntry( PropertyEntry entry, String safeName ) {
-            super( entry.getName(), entry.getAccessor(), entry.getType() );
+            super( entry.getName(), entry.getReadAccessor(), entry.getType() );
             this.safeName = safeName;
         }
 
@@ -155,7 +155,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
         }
 
         public String getAccessorName() {
-            return getAccessor().getSimpleName().toString();
+            return getReadAccessor().getSimpleName().toString();
         }
     }
 
