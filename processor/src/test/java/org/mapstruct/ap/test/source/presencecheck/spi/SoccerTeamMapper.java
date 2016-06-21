@@ -16,24 +16,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model.assignment;
+package org.mapstruct.ap.test.source.presencecheck.spi;
+
+import org.mapstruct.CollectionMappingStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Wraps the assignment in a null check.
  *
  * @author Sjaak Derksen
  */
-public class NullCheckWrapper extends AssignmentWrapper {
+@Mapper( collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED )
+public interface SoccerTeamMapper {
 
-    private final String sourcePresenceChecker;
+    SoccerTeamMapper INSTANCE = Mappers.getMapper( SoccerTeamMapper.class );
+
+    @Mapping( target = "goalKeeperName", ignore = true )
+    SoccerTeamTarget mapAdder( SoccerTeamSource in );
 
 
-    public NullCheckWrapper( Assignment decoratedAssignment, String sourcePresenceChecker ) {
-        super( decoratedAssignment );
-        this.sourcePresenceChecker = sourcePresenceChecker;
-    }
+    @Mappings({
+        @Mapping(target = "players", ignore = true),
+        @Mapping(target = "goalKeeperName", source = "goalKeeper.name")
+    })
+    SoccerTeamTarget mapNested( SoccerTeamSource in );
 
-    public String getSourcePresenceChecker() {
-        return sourcePresenceChecker;
-    }
 }

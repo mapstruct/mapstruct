@@ -18,14 +18,13 @@
  */
 package org.mapstruct;
 
-import static org.mapstruct.SourceValuePresenceCheckStrategy.IS_NULL_INLINE;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.mapstruct.factory.Mappers;
+import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 
 /**
  * Marks an interface or abstract class as a mapper and activates the generation of a implementation of that type via
@@ -152,10 +151,11 @@ public @interface Mapper {
     MappingInheritanceStrategy mappingInheritanceStrategy() default MappingInheritanceStrategy.EXPLICIT;
 
     /**
-     * Decide how to do presence check, such as checking null or calling hasX method, before mapping.
+     * Determines when to include a null check on the source property value of a bean mapping.
+     *
      * Can be overridden by the one on {@link MapperConfig} or {@link Mapping}.
      *
-     * @return strategy about how to do null or presence check
+     * @return strategy how to do null checking
      */
-    SourceValuePresenceCheckStrategy sourceValuePresenceCheckStrategy() default IS_NULL_INLINE;
+    NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
 }

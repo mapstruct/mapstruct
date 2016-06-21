@@ -16,30 +16,38 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.presencecheck;
+package org.mapstruct.ap.test.source.nullvaluecheckstrategy;
 
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * @author Sean Huang
+ *
+ * @author Sjaak Derksen
  */
-public class TargetWtCheck extends Target {
+public enum Stage {
 
-    private int noCheckPrimitive;
-    private String noCheckObject;
+    MAIN("Paul McCartney", "Ellie Goulding", "Disclosure", "Kaiser Chiefs", "Rammstein"),
+    KLUB_C("James Blake", "Lost Frequencies"),
+    THE_BARN("New Order", "Year and Years");
 
-    public int getNoCheckPrimitive() {
-        return noCheckPrimitive;
+    private final List<String> artists;
+
+    Stage(String... artist) {
+        this.artists = Arrays.asList( artist );
     }
 
-    public void setNoCheckPrimitive(int noCheckPrimitive) {
-        this.noCheckPrimitive = noCheckPrimitive;
-    }
+    public static Stage forArtist( String name ) {
 
-    public String getNoCheckObject() {
-        return noCheckObject;
-    }
+        if ( name == null ) {
+            throw new IllegalArgumentException();
+        }
 
-    public void setNoCheckObject(String noCheckObject) {
-        this.noCheckObject = noCheckObject;
+        for ( Stage value : Stage.values() ) {
+            if ( value.artists.contains( name ) ) {
+                return value;
+            }
+        }
+        return null;
     }
 }

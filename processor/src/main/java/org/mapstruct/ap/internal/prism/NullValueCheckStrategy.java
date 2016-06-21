@@ -16,24 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model.assignment;
+package org.mapstruct.ap.internal.prism;
+
 
 /**
- * Wraps the assignment in a null check.
+ * Prism for the enum {@link org.mapstruct.SourceValuePresenceCheckStrategy}
  *
- * @author Sjaak Derksen
+ * @author Sean Huang
  */
-public class NullCheckWrapper extends AssignmentWrapper {
+public enum NullValueCheckStrategy {
 
-    private final String sourcePresenceChecker;
-
-
-    public NullCheckWrapper( Assignment decoratedAssignment, String sourcePresenceChecker ) {
-        super( decoratedAssignment );
-        this.sourcePresenceChecker = sourcePresenceChecker;
-    }
-
-    public String getSourcePresenceChecker() {
-        return sourcePresenceChecker;
-    }
+    ON_IMPLICIT_CONVERSION,
+    ALLWAYS;
 }

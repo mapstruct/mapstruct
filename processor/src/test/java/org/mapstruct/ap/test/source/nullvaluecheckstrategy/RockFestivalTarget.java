@@ -16,23 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.presencecheck;
-
+package org.mapstruct.ap.test.source.nullvaluecheckstrategy;
 
 /**
+ *
  * @author Sjaak Derksen
  */
-public class MyLongWrapper {
+public class RockFestivalTarget {
 
-    private Long myLong;
+    private Stage stage;
 
-    public Long getMyLong() {
-        return myLong;
+    public Stage getStage() {
+        return stage;
     }
 
-    public void setMyLong(Long myLong) {
-        myLong.longValue();
-        this.myLong = myLong;
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
 }

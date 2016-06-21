@@ -16,19 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.presencecheck;
+package org.mapstruct.ap.test.source.nullvaluecheckstrategy;
 
 /**
- * @author Sean Huang
+ *
+ * @author Sjaak Derksen
  */
-public class MyObject {
-    @Override
-    public boolean equals(Object object) {
-         return this == object;
+public class RockFestivalSource {
+
+    private String artistName;
+
+    public String getArtistName() {
+        return artistName;
     }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
+    public void setArtistName(String artistName) {
+        this.artistName = artistName;
     }
+
 }

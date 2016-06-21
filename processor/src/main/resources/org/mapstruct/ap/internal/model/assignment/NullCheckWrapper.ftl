@@ -18,7 +18,7 @@
      limitations under the License.
 
 -->
-if ( ${sourceReference} != null ) {
+if ( <#if sourcePresenceChecker?? >${sourcePresenceChecker}<#else>${sourceReference} != null</#if> ) {
     <@includeModel object=assignment
                 targetBeanName=ext.targetBeanName
                 existingInstanceMapping=ext.existingInstanceMapping

@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.presencecheck;
+package org.mapstruct.ap.test.source.presencecheck.spi;
 
 import java.util.List;
 
@@ -25,39 +25,17 @@ import java.util.List;
  */
 public class Source {
 
-    private MyObject someObject;
-    private boolean hasSomeObject = true;
-
     private double somePrimitiveDouble;
     private boolean hasPrimitiveSomeDouble = true;
 
     private Integer someInteger;
     private boolean hasSomeInteger = true;
 
-    private Long someLong1;
-    private boolean hasSomeLong1 = true;
-
-    private Long someLong2;
-    private boolean hasSomeLong2 = true;
-
     private List<String> someList;
     private boolean hasSomeList = true;
 
-    public boolean hasSomeObject() {
-        return hasSomeObject;
-    }
-
-    public void setHasSomeObject(boolean has) {
-        this.hasSomeObject = has;
-    }
-
-    public MyObject getSomeObject() {
-        return someObject;
-    }
-
-    public void setSomeObject(MyObject someObject) {
-        this.someObject = someObject;
-    }
+    private String[] someArray;
+    private boolean hasSomeArray = true;
 
     public boolean hasSomePrimitiveDouble() {
         return hasPrimitiveSomeDouble;
@@ -91,38 +69,6 @@ public class Source {
         this.someInteger = someInteger;
     }
 
-    public boolean hasSomeLong1() {
-        return hasSomeLong1;
-    }
-
-    public void setHasSomeLong1(boolean hasSomeInLong) {
-        this.hasSomeLong1 = hasSomeInLong;
-    }
-
-    public boolean hasSomeLong2() {
-        return hasSomeLong2;
-    }
-
-    public void setHasSomeLong2(boolean hasSomeInLong) {
-        this.hasSomeLong2 = hasSomeInLong;
-    }
-
-    public Long getSomeLong1() {
-        return someLong1;
-    }
-
-    public Long getSomeLong2() {
-        return someLong2;
-    }
-
-    public void setSomeLong1(Long someLong) {
-        this.someLong1 = someLong;
-    }
-
-    public void setSomeLong2(Long someLong) {
-        this.someLong2 = someLong;
-    }
-
     public boolean hasSomeList() {
         return hasSomeList;
     }
@@ -138,4 +84,21 @@ public class Source {
     public void setSomeList(List<String> someList) {
         this.someList = someList;
     }
+
+    public String[] getSomeArray() {
+        return someArray;
+    }
+
+    public void setSomeArray(String[] someArray) {
+        this.someArray = someArray;
+    }
+
+    public boolean hasSomeArray() {
+        return hasSomeArray;
+    }
+
+    public void setHasSomeArray(boolean hasSomeArray) {
+        this.hasSomeArray = hasSomeArray;
+    }
+
 }

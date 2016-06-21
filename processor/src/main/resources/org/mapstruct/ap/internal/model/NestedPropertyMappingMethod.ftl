@@ -23,15 +23,23 @@
     if ( ${sourceParameter.name} == null ) {
         return ${returnType.null};
     }
-    <#list propertyEntries as entry>
-    <@includeModel object=entry.type/> ${entry.name} = <#if entry_index == 0>${sourceParameter.name}.${entry.accessorName}()<#else>${propertyEntries[entry_index-1].name}.${entry.accessorName}()</#if>;
+<#list propertyEntries as entry>
+    <#if entry.presenceChecker?? >
+    if ( !<@localVarName index=entry_index/>.${entry.presenceChecker.simpleName}() ) {
+        return ${returnType.null};
+    }
+    </#if>
+    <@includeModel object=entry.type/> ${entry.name} = <@localVarName index=entry_index/>.${entry.accessorName}();
+    <#if !entry.presenceChecker?? >
     <#if !entry.type.primitive>
     if ( ${entry.name} == null ) {
         return ${returnType.null};
     }
     </#if>
+    </#if>
     <#if !entry_has_next>
     return ${entry.name};
     </#if>
-    </#list>
+</#list>
 }
+<#macro localVarName index><#if index == 0>${sourceParameter.name}<#else>${propertyEntries[index-1].name}</#if></#macro>

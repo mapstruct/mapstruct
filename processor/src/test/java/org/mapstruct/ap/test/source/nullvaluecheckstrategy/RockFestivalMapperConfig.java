@@ -16,30 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.presencecheck;
+package org.mapstruct.ap.test.source.nullvaluecheckstrategy;
 
-
+import org.mapstruct.MapperConfig;
+import org.mapstruct.NullValueCheckStrategy;
 /**
- * @author Sean Huang
+ *
+ * @author Sjaak Derksen
  */
-public class SourceWtCheck extends Source {
+@MapperConfig( nullValueCheckStrategy = NullValueCheckStrategy.ALLWAYS )
+public interface RockFestivalMapperConfig {
 
-    private int noCheckPrimitive;
-    private String noCheckObject;
-
-    public int getNoCheckPrimitive() {
-        return noCheckPrimitive;
-    }
-
-    public void setNoCheckPrimitive(int noCheckPrimitive) {
-        this.noCheckPrimitive = noCheckPrimitive;
-    }
-
-    public String getNoCheckObject() {
-        return noCheckObject;
-    }
-
-    public void setNoCheckObject(String noCheckObject) {
-        this.noCheckObject = noCheckObject;
-    }
 }

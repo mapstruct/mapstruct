@@ -35,11 +35,10 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
-import org.mapstruct.ap.internal.naming.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.internal.prism.AfterMappingPrism;
 import org.mapstruct.ap.internal.prism.BeforeMappingPrism;
-import org.mapstruct.ap.internal.services.Services;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
+import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.MethodType;
 
 /**
@@ -63,8 +62,7 @@ public class Executables {
     }
 
     private static final AccessorNamingStrategy ACCESSOR_NAMING_STRATEGY = Services.get(
-        AccessorNamingStrategy.class,
-        new DefaultAccessorNamingStrategy()
+        AccessorNamingStrategy.class, new DefaultAccessorNamingStrategy()
     );
 
     private Executables() {
@@ -98,8 +96,8 @@ public class Executables {
         return method.getModifiers().contains( Modifier.PUBLIC );
     }
 
-    public static String getPropertyName(ExecutableElement getterOrHasserOrSetterMethod) {
-        return ACCESSOR_NAMING_STRATEGY.getPropertyName( getterOrHasserOrSetterMethod );
+    public static String getPropertyName(ExecutableElement getterOrPresenceCheckerOrSetterMethod) {
+        return ACCESSOR_NAMING_STRATEGY.getPropertyName( getterOrPresenceCheckerOrSetterMethod );
     }
 
     public static boolean isDefaultMethod(ExecutableElement method) {

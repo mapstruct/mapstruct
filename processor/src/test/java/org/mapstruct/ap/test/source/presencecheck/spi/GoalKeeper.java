@@ -16,30 +16,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.prism;
-
+package org.mapstruct.ap.test.source.presencecheck.spi;
 
 /**
- * Prism for the enum {@link org.mapstruct.SourceValuePresenceCheckStrategy}
  *
- * @author Sean Huang
+ * @author Sjaak Derksen
  */
-public enum SourceValuePresenceCheckStrategy {
-     /**
-     * Only check != null for inline conversions
-     *
-     */
-    IS_NULL_INLINE,
+public class GoalKeeper {
 
-    /**
-     * Always check != null, no matter whether it's an inline or method conversion
-     *
-     */
-    IS_NULL,
+    private String name;
+    private boolean hasName = true;
 
-    /**
-     * Will invoke custom hasX() method, before mapping,
-     * name to be given through the accessor naming strategy
-     */
-    CUSTOM;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean hasName() {
+        return hasName;
+    }
+
+    public void setHasName(boolean hasName) {
+        this.hasName = hasName;
+    }
+
 }

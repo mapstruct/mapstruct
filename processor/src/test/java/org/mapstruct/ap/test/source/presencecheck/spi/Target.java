@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.presencecheck;
+package org.mapstruct.ap.test.source.presencecheck.spi;
 
 import java.util.List;
 
@@ -25,20 +25,10 @@ import java.util.List;
  */
 public class Target {
 
-    private MyObject someObject;
     private double somePrimitiveDouble;
     private Integer someInteger;
-    private MyLongWrapper someLong1;
-    private MyLongWrapper someLong2;
     private List<String> someList;
-
-    public MyObject getSomeObject() {
-        return someObject;
-    }
-
-    public void setSomeObject(MyObject someObject) {
-        this.someObject = someObject;
-    }
+    private String[] someArray;
 
     public double getSomePrimitiveDouble() {
         return somePrimitiveDouble;
@@ -56,22 +46,6 @@ public class Target {
         this.someInteger = someInteger;
     }
 
-    public MyLongWrapper getSomeLong1() {
-        return someLong1;
-    }
-
-    public void setSomeLong1(MyLongWrapper someLong) {
-        this.someLong1 = someLong;
-    }
-
-    public MyLongWrapper getSomeLong2() {
-        return someLong2;
-    }
-
-    public void setSomeLong2(MyLongWrapper someLong) {
-        this.someLong2 = someLong;
-    }
-
     public List<String> getSomeList() {
         return someList;
     }
@@ -79,4 +53,13 @@ public class Target {
     public void setSomeList(List<String> someList) {
         this.someList = someList;
     }
+
+    public String[] getSomeArray() {
+        return someArray;
+    }
+
+    public void setSomeArray(String[] someArray) {
+        this.someArray = someArray;
+    }
+
 }

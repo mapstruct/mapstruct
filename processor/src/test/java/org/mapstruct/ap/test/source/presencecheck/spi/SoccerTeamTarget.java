@@ -16,30 +16,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
+package org.mapstruct.ap.test.source.presencecheck.spi;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Strategy to decide how to check null or hasX method before mapping
- *
- * @author Sean Huang
+ * @author Sjaak Derksen
  */
-public enum SourceValuePresenceCheckStrategy {
+public class SoccerTeamTarget {
 
-    /**
-     * Only check != null for inline conversions
-     *
-     */
-    IS_NULL_INLINE,
+    private List<String> players;
+    private String goalKeeperName;
 
-    /**
-     * Always check != null, no matter whether it's an inline or method conversion
-     *
-     */
-    IS_NULL,
 
-    /**
-     * Will invoke custom hasX() method, before mapping,
-     * name to be given through the accessor naming strategy
-     */
-    CUSTOM;
+    public List<String> getPlayers() {
+        return players;
+    }
+
+    public void addPlayer(String player) {
+        if ( this.players == null ) {
+            this.players = new ArrayList<String>();
+        }
+        this.players.add( player );
+    }
+
+    public String getGoalKeeperName() {
+        return goalKeeperName;
+    }
+
+    public void setGoalKeeperName(String goalKeeperName) {
+        this.goalKeeperName = goalKeeperName;
+    }
+
 }

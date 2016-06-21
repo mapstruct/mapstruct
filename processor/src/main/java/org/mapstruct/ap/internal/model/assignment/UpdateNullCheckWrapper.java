@@ -26,7 +26,15 @@ package org.mapstruct.ap.internal.model.assignment;
  */
 public class UpdateNullCheckWrapper extends AssignmentWrapper {
 
-    public UpdateNullCheckWrapper( Assignment decoratedAssignment ) {
+    private final String sourcePresenceChecker;
+
+    public UpdateNullCheckWrapper( Assignment decoratedAssignment, String sourcePresenceChecker ) {
         super( decoratedAssignment );
+        this.sourcePresenceChecker = sourcePresenceChecker;
     }
+
+    public String getSourcePresenceChecker() {
+        return sourcePresenceChecker;
+    }
+
 }

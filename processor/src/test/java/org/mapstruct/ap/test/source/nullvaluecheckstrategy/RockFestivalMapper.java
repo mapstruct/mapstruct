@@ -16,24 +16,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model.assignment;
+package org.mapstruct.ap.test.source.nullvaluecheckstrategy;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Wraps the assignment in a null check.
  *
  * @author Sjaak Derksen
  */
-public class NullCheckWrapper extends AssignmentWrapper {
+@Mapper( nullValueCheckStrategy = NullValueCheckStrategy.ALLWAYS )
+public abstract class RockFestivalMapper {
 
-    private final String sourcePresenceChecker;
+    public static final RockFestivalMapper INSTANCE = Mappers.getMapper( RockFestivalMapper.class );
 
+    @Mapping( target = "stage", source = "artistName" )
+    public abstract RockFestivalTarget map( RockFestivalSource in );
 
-    public NullCheckWrapper( Assignment decoratedAssignment, String sourcePresenceChecker ) {
-        super( decoratedAssignment );
-        this.sourcePresenceChecker = sourcePresenceChecker;
+    public Stage artistToStage( String name ) {
+        return Stage.forArtist( name );
     }
 
-    public String getSourcePresenceChecker() {
-        return sourcePresenceChecker;
-    }
+
 }

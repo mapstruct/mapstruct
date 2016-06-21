@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.naming;
+package org.mapstruct.ap.spi;
 
 import java.beans.Introspector;
 
@@ -28,8 +28,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
-import org.mapstruct.ap.spi.AccessorNamingStrategy;
-import org.mapstruct.ap.spi.MethodType;
 
 /**
  * The default JavaBeans-compliant implementation of the {@link AccessorNamingStrategy} service provider interface.
@@ -42,9 +40,6 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     public MethodType getMethodType(ExecutableElement method) {
         if ( isGetterMethod( method ) ) {
             return MethodType.GETTER;
-        }
-        else if ( isPresenceCheckMethod( method ) ) {
-            return MethodType.PRESENCE_CHECKER;
         }
         else if ( isSetterMethod( method ) ) {
             return MethodType.SETTER;
@@ -70,14 +65,6 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         return isNonBooleanGetterName || ( isBooleanGetterName && returnTypeIsBoolean );
     }
 
-    private boolean isPresenceCheckMethod(ExecutableElement method) {
-        String methodName = method.getSimpleName().toString();
-
-        return methodName.startsWith( "has" ) && methodName.length() > 3 &&
-            ( method.getReturnType().getKind() == TypeKind.BOOLEAN ||
-                    "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) ) );
-    }
-
     public boolean isSetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
@@ -92,8 +79,8 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
 
 
     @Override
-    public String getPropertyName(ExecutableElement getterOrHasserOrSetterMethod) {
-        String methodName = getterOrHasserOrSetterMethod.getSimpleName().toString();
+    public String getPropertyName(ExecutableElement getterOrSetterMethod) {
+        String methodName = getterOrSetterMethod.getSimpleName().toString();
         return Introspector.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
     }
 
@@ -108,7 +95,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         return "get" + property.substring( 0, 1 ).toUpperCase() + property.substring( 1 );
     }
 
-    private static String getQualifiedName(TypeMirror type) {
+    protected static String getQualifiedName(TypeMirror type) {
         DeclaredType declaredType = type.accept(
             new SimpleTypeVisitor6<DeclaredType, Void>() {
                 @Override

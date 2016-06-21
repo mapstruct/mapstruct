@@ -16,24 +16,36 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model.assignment;
+package org.mapstruct.ap.internal.util;
+
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 /**
- * Wraps the assignment in a null check.
+ * A simple locator for SPI implementations.
  *
- * @author Sjaak Derksen
+ * @author Christian Schuster
  */
-public class NullCheckWrapper extends AssignmentWrapper {
+public class Services {
 
-    private final String sourcePresenceChecker;
-
-
-    public NullCheckWrapper( Assignment decoratedAssignment, String sourcePresenceChecker ) {
-        super( decoratedAssignment );
-        this.sourcePresenceChecker = sourcePresenceChecker;
+    private Services() {
     }
 
-    public String getSourcePresenceChecker() {
-        return sourcePresenceChecker;
+    public static <T> T get(Class<T> serviceType, T defaultValue) {
+
+        Iterator<T> services = ServiceLoader.load( serviceType, Services.class.getClassLoader() ).iterator();
+
+        T result;
+        if ( services.hasNext() ) {
+            result = services.next();
+        }
+        else {
+            result = defaultValue;
+        }
+        if ( services.hasNext() ) {
+           throw new IllegalStateException(
+               "Multiple implementations have been found for the service provider interface" );
+        }
+        return result;
     }
 }

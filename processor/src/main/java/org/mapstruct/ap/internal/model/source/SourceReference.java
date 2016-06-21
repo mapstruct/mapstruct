@@ -283,7 +283,7 @@ public class SourceReference {
         private final Type type;
 
         public PropertyEntry(String name, ExecutableElement readAccessor,
-                ExecutableElement presenceChecker, Type type) {
+            ExecutableElement presenceChecker, Type type) {
             this.name = name;
             this.accessor = readAccessor;
             this.presenceChecker = presenceChecker;

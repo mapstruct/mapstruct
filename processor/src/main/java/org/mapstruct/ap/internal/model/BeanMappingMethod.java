@@ -370,7 +370,7 @@ public class BeanMappingMethod extends MappingMethod {
             while ( targetPropertiesIterator.hasNext() ) {
 
                 Entry<String, ExecutableElement> targetProperty = targetPropertiesIterator.next();
-                String propertyName = targetProperty.getKey();
+                String targetPropertyName = targetProperty.getKey();
 
                 PropertyMapping propertyMapping = null;
 
@@ -387,10 +387,10 @@ public class BeanMappingMethod extends MappingMethod {
                         PropertyMapping newPropertyMapping = null;
 
                         ExecutableElement sourceReadAccessor =
-                            sourceParameter.getType().getPropertyReadAccessors().get( propertyName );
+                            sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
 
                         ExecutableElement sourcePresenceChecker =
-                            sourceParameter.getType().getPropertyPresenceCheckers().get( propertyName );
+                            sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
 
                         if ( sourceReadAccessor != null ) {
                             Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
@@ -408,8 +408,8 @@ public class BeanMappingMethod extends MappingMethod {
                                 .mappingContext( ctx )
                                 .sourceMethod( method )
                                 .targetWriteAccessor( targetProperty.getValue() )
-                                .targetReadAccessor( getTargetPropertyReadAccessor( propertyName ) )
-                                .targetPropertyName( propertyName )
+                                .targetReadAccessor( getTargetPropertyReadAccessor( targetPropertyName ) )
+                                .targetPropertyName( targetPropertyName )
                                 .sourceReference( sourceRef )
                                 .formattingParameters( mapping != null ? mapping.getFormattingParameters() : null )
                                 .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
@@ -426,7 +426,7 @@ public class BeanMappingMethod extends MappingMethod {
                             ctx.getMessager().printMessage(
                                 method.getExecutable(),
                                 Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
-                                propertyName
+                                targetPropertyName
                             );
                             break;
                         }

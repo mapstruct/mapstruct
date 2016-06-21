@@ -23,6 +23,7 @@ import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentTy
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategy.ALLWAYS;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,6 +53,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.model.source.SourceReference.PropertyEntry;
+import static org.mapstruct.ap.internal.util.Collections.first;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -235,23 +237,14 @@ public class PropertyMapping extends ModelElement {
 
             if ( assignment != null ) {
                 if ( targetType.isCollectionOrMapType() ) {
-                    assignment = assignCollection( targetType, targetWriteAccessorType, assignment );
+                    assignment = assignToCollection( targetType, targetWriteAccessorType, assignment );
                 }
                 else if ( targetType.isArrayType() && sourceType.isArrayType() && assignment.getType() == DIRECT ) {
-                    Type arrayType = ctx.getTypeFactory().getType( Arrays.class );
-                    assignment = new ArrayCopyWrapper(
-                        assignment,
-                        targetPropertyName,
-                        arrayType,
-                        targetType,
-                        existingVariableNames
-                    );
-                    assignment = new NullCheckWrapper( assignment );
+                    assignment = assignToArray( targetType, assignment );
                 }
                 else {
-                    assignment = assignObject( sourceType, targetType, targetWriteAccessorType, assignment );
+                    assignment = assignToPlain( sourceType, targetType, targetWriteAccessorType, assignment );
                 }
-
             }
             else {
                 ctx.getMessager().printMessage(
@@ -278,7 +271,9 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment getDefaultValueAssignment() {
-            if ( defaultValue != null && !getSourceType().isPrimitive() ) {
+            if ( defaultValue != null
+                &&  ( !getSourceType().isPrimitive()  || getSourcePresenceCheckerRef() != null) ) {
+                // cannot check on null source if source is primitive unless it has a presenche checker
                 PropertyMapping build = new ConstantMappingBuilder()
                         .constantExpression( '"' + defaultValue + '"' )
                         .formattingParameters( formattingParameters )
@@ -296,63 +291,98 @@ public class PropertyMapping extends ModelElement {
             return null;
         }
 
-        private Assignment assignObject(Type sourceType, Type targetType, TargetWriteAccessorType targetAccessorType,
-                                        Assignment rhs) {
+        private Assignment assignToPlain(Type sourceType, Type targetType, TargetWriteAccessorType targetAccessorType,
+                                        Assignment rightHandSide) {
 
-            Assignment result = rhs;
+            Assignment result;
 
             if ( targetAccessorType == TargetWriteAccessorType.SETTER ) {
-                if ( result.isUpdateMethod() ) {
-                    if ( targetReadAccessor == null ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
-                            Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
-                            targetPropertyName );
-                    }
-                    Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
-                    result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
-                        targetType );
-                }
-                else {
-                    result = new SetterWrapper( result, method.getThrownTypes() );
-                }
-                if ( !sourceType.isPrimitive()
-                    && !sourceReference.getPropertyEntries().isEmpty() ) { // parameter null taken care of by beanmapper
-
-                    if ( result.isUpdateMethod() ) {
-                        result = new UpdateNullCheckWrapper( result );
-                    }
-                    else if ( result.getType() == TYPE_CONVERTED
-                        || result.getType() == TYPE_CONVERTED_MAPPED
-                        || result.getType() == MAPPED_TYPE_CONVERTED
-                        || ( result.getType() == DIRECT && targetType.isPrimitive() ) ) {
-                        // for primitive types null check is not possible at all, but a conversion needs
-                        // a null check.
-                        result = new NullCheckWrapper( result );
-                    }
-                }
+                result = assignToPlainViaSetter( sourceType, targetType, rightHandSide );
             }
             else {
-                // TargetAccessorType must be ADDER
-                if ( getSourceType().isCollectionType() ) {
-                    result = new AdderWrapper(
-                        result,
-                        method.getThrownTypes(),
-                        getSourceRef(),
-                        sourceType
-                    );
-                    result = new NullCheckWrapper( result );
-                }
-                else {
-                    // Possibly adding null to a target collection. So should be surrounded by an null check.
-                    result = new SetterWrapper( result, method.getThrownTypes() );
-                    result = new NullCheckWrapper( result );
-                }
+                result = assignToPlainViaAdder( sourceType, rightHandSide );
             }
             return result;
 
         }
 
-        private Assignment assignCollection(Type targetType,
+        private Assignment assignToPlainViaSetter(Type sourceType, Type targetType, Assignment rightHandSide) {
+
+            Assignment result;
+
+            if ( rightHandSide.isUpdateMethod() ) {
+                if ( targetReadAccessor == null ) {
+                    ctx.getMessager().printMessage( method.getExecutable(),
+                        Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
+                        targetPropertyName );
+                }
+                Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
+                result = new UpdateWrapper( rightHandSide, method.getThrownTypes(), factoryMethod,
+                    targetType );
+            }
+            else {
+                result = new SetterWrapper( rightHandSide, method.getThrownTypes() );
+            }
+
+            // if the sourceReference is the bean mapping method parameter itself, no null check is required
+            // since this is handled by the BeanMapping
+            if ( sourceReference.getPropertyEntries().isEmpty() ) {
+                return result;
+            }
+
+            // add a null / presence checked when required
+            if ( sourceType.isPrimitive() ) {
+                if ( getSourcePresenceCheckerRef() != null ) {
+                    result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                }
+            }
+            else {
+
+                if ( result.isUpdateMethod() ) {
+                    result = new UpdateNullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                }
+                else if ( getSourcePresenceCheckerRef() != null ) {
+                    result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                }
+                else if ( ALLWAYS.equals( method.getMapperConfiguration().getNullValueCheckStrategy() ) ) {
+                    result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                }
+                else if ( result.getType() == TYPE_CONVERTED
+                    || result.getType() == TYPE_CONVERTED_MAPPED
+                    || result.getType() == MAPPED_TYPE_CONVERTED
+                    || (result.getType() == DIRECT && targetType.isPrimitive()) ) {
+                    // for primitive types null check is not possible at all, but a conversion needs
+                    // a null check.
+                    result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                }
+            }
+
+            return result;
+        }
+
+
+        private Assignment assignToPlainViaAdder(Type sourceType, Assignment rightHandSide) {
+
+            Assignment result = rightHandSide;
+
+            if ( getSourceType().isCollectionType() ) {
+                result = new AdderWrapper(
+                    result,
+                    method.getThrownTypes(),
+                    getSourceRef(),
+                    sourceType
+                );
+                result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+            }
+            else {
+                // Possibly adding null to a target collection. So should be surrounded by an null check.
+                result = new SetterWrapper( result, method.getThrownTypes() );
+                result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+            }
+            return result;
+        }
+
+        private Assignment assignToCollection(Type targetType,
                                             TargetWriteAccessorType targetAccessorType,
                                             Assignment rhs) {
 
@@ -419,13 +449,26 @@ public class PropertyMapping extends ModelElement {
             // for mapping methods (builtin / custom), the mapping method is responsible for the
             // null check. Typeconversions do not apply to collections and maps.
             if ( result.getType() == DIRECT ) {
-                result = new NullCheckWrapper( result );
+                result = new NullCheckWrapper( result,  getSourcePresenceCheckerRef() );
             }
             else if ( result.getType() == MAPPED && result.isUpdateMethod() ) {
-                result = new UpdateNullCheckWrapper( result );
+                result = new UpdateNullCheckWrapper( result, getSourcePresenceCheckerRef() );
             }
 
             return result;
+        }
+
+        private Assignment assignToArray(Type targetType, Assignment rightHandSide) {
+
+            Type arrayType = ctx.getTypeFactory().getType( Arrays.class );
+            Assignment assignment = new ArrayCopyWrapper(
+                rightHandSide,
+                targetPropertyName,
+                arrayType,
+                targetType,
+                existingVariableNames
+            );
+            return new NullCheckWrapper( assignment, getSourcePresenceCheckerRef() );
         }
 
         private Type getSourceType() {
@@ -512,6 +555,19 @@ public class PropertyMapping extends ModelElement {
                     Strings.join( sourceReference.getElementNames(), "." )
                 );
             }
+        }
+
+        private String getSourcePresenceCheckerRef() {
+            String sourcePresenceChecker = null;
+            if ( !sourceReference.getPropertyEntries().isEmpty() ) {
+                Parameter sourceParam = sourceReference.getParameter();
+                PropertyEntry propertyEntry = first( sourceReference.getPropertyEntries() );
+                if ( propertyEntry.getPresenceChecker() != null ) {
+                    sourcePresenceChecker = sourceParam.getName()
+                        + "." + propertyEntry.getPresenceChecker().getSimpleName() + "()";
+                }
+            }
+            return sourcePresenceChecker;
         }
 
         private Assignment forgeMapOrIterableMapping(Type sourceType, Type targetType, String sourceReference,

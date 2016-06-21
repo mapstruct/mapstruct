@@ -16,20 +16,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.presencecheck;
+package org.mapstruct.ap.test.source.nullvaluecheckstrategy;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.SourceValuePresenceCheckStrategy;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 
 /**
- * @author Sean Huang
+ *
+ * @author Sjaak Derksen
  */
-@Mapper( sourceValuePresenceCheckStrategy = SourceValuePresenceCheckStrategy.IS_NULL_INLINE )
-public class CustomMapper {
+@Mapper( config = RockFestivalMapperConfig.class, nullValueCheckStrategy = ON_IMPLICIT_CONVERSION )
+public abstract class RockFestivalMapperOveridingConfig {
 
-    public MyLongWrapper toMyLongWrapperViaPrimitive(Long primitive) {
-        MyLongWrapper wrapper = new MyLongWrapper();
-        wrapper.setMyLong( primitive );
-        return wrapper;
+    public static final RockFestivalMapperOveridingConfig INSTANCE =
+        Mappers.getMapper( RockFestivalMapperOveridingConfig.class );
+
+    @Mapping( target = "stage", source = "artistName" )
+    public abstract RockFestivalTarget map( RockFestivalSource in );
+
+    public Stage artistToStage( String name ) {
+        return Stage.forArtist( name );
     }
+
+
 }
