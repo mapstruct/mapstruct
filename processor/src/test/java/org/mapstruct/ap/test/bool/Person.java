@@ -33,13 +33,15 @@ public class Person {
         this.married = married;
     }
 
-    public Boolean isEngaged() {
-        return engaged != null && !engaged;
-    }
-
+    // START: please note: deliberately ordered, first getEngaged, then isEngaged.
     public Boolean getEngaged() {
         return engaged;
     }
+
+    public Boolean isEngaged() {
+        return engaged != null && !engaged;
+    }
+    // END
 
     public void setEngaged(Boolean engaged) {
         this.engaged = engaged;
