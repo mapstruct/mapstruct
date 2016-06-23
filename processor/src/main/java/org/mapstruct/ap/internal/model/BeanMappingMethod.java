@@ -51,7 +51,6 @@ import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -372,7 +371,9 @@ public class BeanMappingMethod extends MappingMethod {
             List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( 2 );
 
             while ( targetPropertiesIterator.hasNext() ) {
+
                 Entry<String, ExecutableElement> targetProperty = targetPropertiesIterator.next();
+                String propertyName = targetProperty.getKey();
 
                 PropertyMapping propertyMapping = null;
 
@@ -380,39 +381,32 @@ public class BeanMappingMethod extends MappingMethod {
 
                     for ( Parameter sourceParameter : method.getSourceParameters() ) {
 
-                        if ( sourceParameter.getType().isPrimitive() ) {
+                        Type sourceType = sourceParameter.getType();
+
+                        if ( sourceType.isPrimitive() ) {
                             continue;
                         }
 
-                        Collection<ExecutableElement> sourceReadAccessors =
-                            sourceParameter.getType().getPropertyReadAccessors().values();
-                        for ( ExecutableElement sourceReadAccessor : sourceReadAccessors ) {
-                            String sourcePropertyName = Executables.getPropertyName( sourceReadAccessor );
-
-                            if ( sourcePropertyName.equals( targetProperty.getKey() ) ) {
-                                candidates.add( sourceReadAccessor );
-                            }
-                        }
 
                         PropertyMapping newPropertyMapping = null;
-                        ExecutableElement sourceAccessor = getSourceAccessor( targetProperty.getKey(), candidates );
+                        ExecutableElement sourceAccessor = sourceType.getPropertyReadAccessors().get( propertyName );
                         if ( sourceAccessor != null ) {
-                            Mapping mapping = method.getSingleMappingByTargetPropertyName( targetProperty.getKey() );
-                            DeclaredType sourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
+                            Mapping mapping = method.getSingleMappingByTargetPropertyName( propertyName );
+                            DeclaredType declaredSourceType = (DeclaredType) sourceParameter.getType().getTypeMirror();
 
                             SourceReference sourceRef = new SourceReference.BuilderFromProperty()
                                 .sourceParameter( sourceParameter )
-                                .type( ctx.getTypeFactory().getReturnType( sourceType, sourceAccessor ) )
+                                .type( ctx.getTypeFactory().getReturnType( declaredSourceType, sourceAccessor ) )
                                 .accessor( sourceAccessor )
-                                .name( targetProperty.getKey() )
+                                .name( propertyName )
                                 .build();
 
                             newPropertyMapping = new PropertyMappingBuilder()
                                 .mappingContext( ctx )
                                 .sourceMethod( method )
                                 .targetWriteAccessor( targetProperty.getValue() )
-                                .targetReadAccessor( getTargetPropertyReadAccessor( targetProperty.getKey() ) )
-                                .targetPropertyName( targetProperty.getKey() )
+                                .targetReadAccessor( getTargetPropertyReadAccessor( propertyName ) )
+                                .targetPropertyName( propertyName )
                                 .sourceReference( sourceRef )
                                 .formattingParameters( mapping != null ? mapping.getFormattingParameters() : null )
                                 .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
@@ -432,7 +426,7 @@ public class BeanMappingMethod extends MappingMethod {
                             ctx.getMessager().printMessage(
                                 method.getExecutable(),
                                 Message.BEANMAPPING_SEVERAL_POSSIBLE_SOURCES,
-                                targetProperty.getKey()
+                                propertyName
                             );
                             break;
                         }
@@ -489,34 +483,6 @@ public class BeanMappingMethod extends MappingMethod {
                         sourceParameters.remove();
                     }
                 }
-            }
-        }
-
-        private ExecutableElement getSourceAccessor(String sourcePropertyName, List<ExecutableElement> candidates) {
-            if ( candidates.isEmpty() ) {
-                return null;
-            }
-            else if ( candidates.size() == 1 ) {
-                return candidates.get( 0 );
-            }
-            // can only be the case for Booleans: isFoo() and getFoo(); The latter is preferred then
-            else if ( candidates.size() == 2 ) {
-                if ( candidates.get( 0 ).getSimpleName().toString().startsWith( "get" ) ) {
-                    return candidates.get( 0 );
-                }
-                else {
-                    return candidates.get( 1 );
-                }
-            }
-            // Should never really happen
-            else {
-                ctx.getMessager().printMessage(
-                    method.getExecutable(),
-                    Message.BEANMAPPING_SEVERAL_POSSIBLE_TARGET_ACCESSORS,
-                    sourcePropertyName
-                );
-
-                return null;
             }
         }
 

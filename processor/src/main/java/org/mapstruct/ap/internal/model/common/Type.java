@@ -361,8 +361,19 @@ public class Type extends ModelElement implements Comparable<Type> {
         if ( getters == null ) {
             List<ExecutableElement> getterList = Filters.getterMethodsIn( getAllExecutables() );
             Map<String, ExecutableElement> modifiableGetters = new LinkedHashMap<String, ExecutableElement>();
-            for (ExecutableElement getter : getterList) {
-                modifiableGetters.put( Executables.getPropertyName( getter ), getter );
+            for ( ExecutableElement getter : getterList ) {
+                String propertyName = Executables.getPropertyName( getter );
+                if ( modifiableGetters.containsKey( propertyName ) ) {
+                    // In the DefaultAccessorNamingStrategy, this can only be the case for Booleans: isFoo() and
+                    // getFoo(); The latter is preferred.
+                    if ( !getter.getSimpleName().toString().startsWith( "is" ) ) {
+                        modifiableGetters.put( Executables.getPropertyName( getter ), getter );
+                    }
+
+                }
+                else {
+                    modifiableGetters.put( Executables.getPropertyName( getter ), getter );
+                }
             }
             getters = Collections.unmodifiableMap( modifiableGetters );
         }
