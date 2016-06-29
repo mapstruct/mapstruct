@@ -33,6 +33,7 @@ import java.lang.annotation.Target;
  * </ol>
  * <p>
  * <B>Example 1:</B>
+ *
  * <pre>
  * <code>
  * public enum OrderType { RETAIL, B2B, EXTRA, STANDARD, NORMAL }
@@ -45,21 +46,23 @@ import java.lang.annotation.Target;
  * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
  * </code>
  * Mapping result:
- * ╔═════════════════════╦════════════════════════════╗
- * ║ OrderType           ║ ExternalOrderType          ║
- * ╠═════════════════════╬════════════════════════════╣
- * ║ null                ║ null                       ║
- * ║ OrderType.EXTRA     ║ ExternalOrderType.SPECIAL  ║
- * ║ OrderType.STANDARD  ║ ExternalOrderType.DEFAULT  ║
- * ║ OrderType.NORMAL    ║ ExternalOrderType.DEFAULT  ║
- * ║ OrderType.RETAIL    ║ ExternalOrderType.RETAIL   ║
- * ║ OrderType.B2B       ║ ExternalOrderType.B2B      ║
- * ╚═════════════════════╩════════════════════════════╝
+ * +---------------------+----------------------------+
+ * | OrderType           | ExternalOrderType          |
+ * +---------------------+----------------------------+
+ * | null                | null                       |
+ * | OrderType.EXTRA     | ExternalOrderType.SPECIAL  |
+ * | OrderType.STANDARD  | ExternalOrderType.DEFAULT  |
+ * | OrderType.NORMAL    | ExternalOrderType.DEFAULT  |
+ * | OrderType.RETAIL    | ExternalOrderType.RETAIL   |
+ * | OrderType.B2B       | ExternalOrderType.B2B      |
+ * +---------------------+----------------------------+
  * </pre>
+ *
  * MapStruct will <B>WARN</B> on incomplete mappings. However, if for some reason no match is found an
  * {@link java.lang.IllegalStateException} will be thrown.
  * <p>
  * <B>Example 2:</B>
+ *
  * <pre>
  * <code>
  * &#64;ValueMapping( source = "&lt;NULL&gt;", target = "DEFAULT" ),
@@ -68,16 +71,16 @@ import java.lang.annotation.Target;
  * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
  * </code>
  * Mapping result:
- * ╔═════════════════════╦════════════════════════════╗
- * ║ OrderType           ║ ExternalOrderType          ║
- * ╠═════════════════════╬════════════════════════════╣
- * ║ null                ║ ExternalOrderType.DEFAULT  ║
- * ║ OrderType.STANDARD  ║ null                       ║
- * ║ OrderType.RETAIL    ║ ExternalOrderType.RETAIL   ║
- * ║ OrderType.B2B       ║ ExternalOrderType.B2B      ║
- * ║ OrderType.NORMAL    ║ ExternalOrderType.SPECIAL  ║
- * ║ OrderType.EXTRA     ║ ExternalOrderType.SPECIAL  ║
- * ╚═════════════════════╩════════════════════════════╝
+ * +---------------------+----------------------------+
+ * | OrderType           | ExternalOrderType          |
+ * +---------------------+----------------------------+
+ * | null                | ExternalOrderType.DEFAULT  |
+ * | OrderType.STANDARD  | null                       |
+ * | OrderType.RETAIL    | ExternalOrderType.RETAIL   |
+ * | OrderType.B2B       | ExternalOrderType.B2B      |
+ * | OrderType.NORMAL    | ExternalOrderType.SPECIAL  |
+ * | OrderType.EXTRA     | ExternalOrderType.SPECIAL  |
+ * +---------------------+----------------------------+
  * </pre>
  *
  * @author Sjaak Derksen
