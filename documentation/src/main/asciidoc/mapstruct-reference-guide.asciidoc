@@ -1209,11 +1209,11 @@ public class OrderMapperImpl implements OrderMapper {
 By default an error will be raised by MapStruct in case a constant of the source enum type does not have a corresponding constant with the same name in the target type and also is not mapped to another constant via `@ValueMapping`. This ensures that all constants are mapped in a safe and predictable manner. The generated
 mapping method will throw an IllegalStateException if for some reason an unrecognized source value occurs.
 
-MapStruct also has a mechanism for mapping any remaining (unspecified) mappings to a default. This can be used only once in a set of value mappings. It comes in two flavors: `<ANY_REMAINING>` and `<ANY_UNMATCHED>`.
+MapStruct also has a mechanism for mapping any remaining (unspecified) mappings to a default. This can be used only once in a set of value mappings. It comes in two flavors: `<ANY_REMAINING>` and `<ANY_UNMAPPED>`.
 
 In case of source `<ANY_REMAINING>` MapStruct will continue to map a source enum constant to a target enum constant with the same name. The remainder of the source enum constants will be mapped to the target specified in the `@ValueMapping` with `<ANY_REMAINING>` source.
 
-MapStruct will *not* attempt such name based mapping for `<ANY_UNMATCHED>` and directly apply the target specified in the `@ValueMapping` with `<ANY_UNMATCHED>` source to the remainder.
+MapStruct will *not* attempt such name based mapping for `<ANY_UNMAPPED>` and directly apply the target specified in the `@ValueMapping` with `<ANY_UNMAPPED>` source to the remainder.
 
 MapStruct is able to handle `null` sources and `null` targets by means of the `<NULL>` keyword.
 
