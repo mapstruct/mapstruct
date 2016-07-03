@@ -19,6 +19,8 @@
 package org.mapstruct.ap.testutil.runner;
 
 import java.io.File;
+import java.util.List;
+import java.util.Set;
 
 import org.codehaus.plexus.compiler.CompilerConfiguration;
 import org.codehaus.plexus.compiler.CompilerException;
@@ -36,6 +38,14 @@ import org.mapstruct.ap.testutil.compilation.model.CompilationOutcomeDescriptor;
  */
 class EclipseCompilingStatement extends CompilingStatement {
 
+    private static final List<String> ECLIPSE_COMPILER_CLASSPATH = buildEclipseCompilerClasspath();
+
+    private static final ClassLoader DEFAULT_ECLIPSE_COMPILER_CLASSLOADER =
+        new ModifiableURLClassLoader( newFilteringClassLoaderForEclipse() )
+            .withPaths( ECLIPSE_COMPILER_CLASSPATH )
+            .withPaths( PROCESSOR_CLASSPATH )
+            .withOriginOf( ClassLoaderExecutor.class );
+
     EclipseCompilingStatement(FrameworkMethod method, CompilationCache compilationCache) {
         super( method, compilationCache );
     }
@@ -43,36 +53,105 @@ class EclipseCompilingStatement extends CompilingStatement {
     @Override
     protected CompilationOutcomeDescriptor compileWithSpecificCompiler(CompilationRequest compilationRequest,
                                                                        String sourceOutputDir,
-                                                                       String classOutputDir) {
-        JDTCompiler compiler = new JDTCompiler();
-        compiler.enableLogging( new ConsoleLogger( 5, "JDT-Compiler" ) );
+                                                                       String classOutputDir,
+                                                                       String additionalCompilerClasspath) {
+        ClassLoader compilerClassloader;
+        if ( additionalCompilerClasspath == null ) {
+            compilerClassloader = DEFAULT_ECLIPSE_COMPILER_CLASSLOADER;
+        }
+        else {
+            ModifiableURLClassLoader loader = new ModifiableURLClassLoader(
+                newFilteringClassLoaderForEclipse()
+                .hidingClasses( compilationRequest.getServices().values() ) );
 
-        CompilerConfiguration config = new CompilerConfiguration();
-
-        config.setClasspathEntries( COMPILER_CLASSPATH );
-        config.setOutputLocation( classOutputDir );
-        config.setGeneratedSourcesDirectory( new File( sourceOutputDir ) );
-        config.setAnnotationProcessors( new String[] { MappingProcessor.class.getName() } );
-        config.setSourceFiles( getSourceFiles( compilationRequest.getSourceClasses() ) );
-        config.setShowWarnings( false );
-        config.setSourceVersion( "1.8" );
-        config.setTargetVersion( "1.8" );
-
-        for ( String option : compilationRequest.getProcessorOptions() ) {
-            config.addCompilerCustomArgument( option, null );
+            compilerClassloader = loader.withPaths( ECLIPSE_COMPILER_CLASSPATH )
+                  .withPaths( PROCESSOR_CLASSPATH )
+                  .withOriginOf( ClassLoaderExecutor.class )
+                  .withPath( additionalCompilerClasspath )
+                  .withOriginsOf( compilationRequest.getServices().values() );
         }
 
-        CompilerResult compilerResult;
-        try {
-            compilerResult = compiler.performCompile( config );
-        }
-        catch ( CompilerException e ) {
-            throw new RuntimeException( e );
-        }
+        ClassLoaderHelper clHelper =
+            (ClassLoaderHelper) loadAndInstantiate( compilerClassloader, ClassLoaderExecutor.class );
 
-        return CompilationOutcomeDescriptor.forResult(
+        return clHelper.compileInOtherClassloader(
+            compilationRequest,
+            TEST_COMPILATION_CLASSPATH,
+            getSourceFiles( compilationRequest.getSourceClasses() ),
             SOURCE_DIR,
-            compilerResult );
+            sourceOutputDir,
+            classOutputDir );
+    }
+
+    private static FilteringParentClassLoader newFilteringClassLoaderForEclipse() {
+        return new FilteringParentClassLoader(
+            // reload eclipse compiler classes
+            "org.eclipse.",
+            // reload mapstruct processor classes
+            "org.mapstruct.ap.internal.",
+            "org.mapstruct.ap.spi.",
+            "org.mapstruct.ap.MappingProcessor")
+        .hidingClass( ClassLoaderExecutor.class );
+    }
+
+    public interface ClassLoaderHelper {
+        CompilationOutcomeDescriptor compileInOtherClassloader(CompilationRequest compilationRequest,
+                                                               List<String> testCompilationClasspath,
+                                                               Set<File> sourceFiles,
+                                                               String sourceDir,
+                                                               String sourceOutputDir,
+                                                               String classOutputDir);
+    }
+
+    public static final class ClassLoaderExecutor implements ClassLoaderHelper {
+        @Override
+        public CompilationOutcomeDescriptor compileInOtherClassloader(CompilationRequest compilationRequest,
+                                                                      List<String> testCompilationClasspath,
+                                                                      Set<File> sourceFiles,
+                                                                      String sourceDir,
+                                                                      String sourceOutputDir,
+                                                                      String classOutputDir) {
+            JDTCompiler compiler = new JDTCompiler();
+            compiler.enableLogging( new ConsoleLogger( 5, "JDT-Compiler" ) );
+
+            CompilerConfiguration config = new CompilerConfiguration();
+
+            config.setClasspathEntries( testCompilationClasspath );
+            config.setOutputLocation( classOutputDir );
+            config.setGeneratedSourcesDirectory( new File( sourceOutputDir ) );
+            config.setAnnotationProcessors( new String[] { MappingProcessor.class.getName() } );
+            config.setSourceFiles( sourceFiles );
+            config.setShowWarnings( false );
+            config.setSourceVersion( "1.8" );
+            config.setTargetVersion( "1.8" );
+
+            for ( String option : compilationRequest.getProcessorOptions() ) {
+                config.addCompilerCustomArgument( option, null );
+            }
+
+            CompilerResult compilerResult;
+            try {
+                compilerResult = compiler.performCompile( config );
+            }
+            catch ( CompilerException e ) {
+                throw new RuntimeException( e );
+            }
+
+            return CompilationOutcomeDescriptor.forResult(
+                sourceDir,
+                compilerResult );
+        }
+    }
+
+    private static List<String> buildEclipseCompilerClasspath() {
+        String[] whitelist =
+            new String[] {
+                "tycho-compiler",
+                "org.eclipse.jdt.",
+                "plexus-compiler-api",
+                "plexus-component-annotations" };
+
+        return filterBootClassPath( whitelist );
     }
 
     @Override

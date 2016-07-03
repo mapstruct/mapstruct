@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -45,7 +46,11 @@ import org.mapstruct.ap.testutil.compilation.model.DiagnosticDescriptor;
  */
 class JdkCompilingStatement extends CompilingStatement {
 
-    private static final List<File> COMPILER_CLASSPATH_FILES = asFiles( COMPILER_CLASSPATH );
+    private static final List<File> COMPILER_CLASSPATH_FILES = asFiles( TEST_COMPILATION_CLASSPATH );
+
+    private static final ClassLoader DEFAULT_PROCESSOR_CLASSLOADER =
+        new ModifiableURLClassLoader( new FilteringParentClassLoader( "org.mapstruct." ) )
+                .withPaths( PROCESSOR_CLASSPATH );
 
     JdkCompilingStatement(FrameworkMethod method, CompilationCache compilationCache) {
         super( method, compilationCache );
@@ -54,7 +59,8 @@ class JdkCompilingStatement extends CompilingStatement {
     @Override
     protected CompilationOutcomeDescriptor compileWithSpecificCompiler(CompilationRequest compilationRequest,
                                                                        String sourceOutputDir,
-                                                                       String classOutputDir) {
+                                                                       String classOutputDir,
+                                                                       String additionalCompilerClasspath) {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager( null, null, null );
@@ -71,6 +77,18 @@ class JdkCompilingStatement extends CompilingStatement {
             throw new RuntimeException( e );
         }
 
+        ClassLoader processorClassloader;
+        if ( additionalCompilerClasspath == null ) {
+            processorClassloader = DEFAULT_PROCESSOR_CLASSLOADER;
+        }
+        else {
+            processorClassloader = new ModifiableURLClassLoader(
+                new FilteringParentClassLoader( "org.mapstruct." ) )
+                    .withPaths( PROCESSOR_CLASSPATH )
+                    .withPath( additionalCompilerClasspath )
+                    .withOriginsOf( compilationRequest.getServices().values() );
+        }
+
         CompilationTask task =
             compiler.getTask(
                 null,
@@ -80,9 +98,10 @@ class JdkCompilingStatement extends CompilingStatement {
                 null,
                 compilationUnits );
 
-        task.setProcessors( Arrays.asList( new MappingProcessor() ) );
+        task.setProcessors(
+            Arrays.asList( (Processor) loadAndInstantiate( processorClassloader, MappingProcessor.class ) ) );
 
-        Boolean compilationSuccessful = task.call();
+        boolean compilationSuccessful = task.call();
 
         return CompilationOutcomeDescriptor.forResult(
             SOURCE_DIR,

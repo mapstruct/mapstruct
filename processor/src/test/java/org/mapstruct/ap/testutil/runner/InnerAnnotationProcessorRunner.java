@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.testutil.runner;
 
-import java.net.URL;
-
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -70,13 +68,7 @@ class InnerAnnotationProcessorRunner extends BlockJUnit4ClassRunner {
     }
 
     private static void replaceContextClassLoader(Class<?> klass) {
-        String classFileName = klass.getName().replace( ".", "/" ) + ".class";
-        URL classResource = klass.getClassLoader().getResource( classFileName );
-        String fullyQualifiedUrl = classResource.toExternalForm();
-        String basePath = fullyQualifiedUrl.substring( 0, fullyQualifiedUrl.length() - classFileName.length() );
-
-        ModifiableURLClassLoader testClassLoader = new ModifiableURLClassLoader();
-        testClassLoader.addURL( basePath );
+        ModifiableURLClassLoader testClassLoader = new ModifiableURLClassLoader().withOriginOf( klass );
 
         Thread.currentThread().setContextClassLoader( testClassLoader );
     }

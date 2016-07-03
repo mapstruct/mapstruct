@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -32,11 +33,11 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author Andreas Gudian
  */
-public class ModifiableURLClassLoader extends URLClassLoader {
+final class ModifiableURLClassLoader extends URLClassLoader {
 
     private static final String ORG_MAPSTRUCT_AP_TEST = "org.mapstruct.ap.test.";
 
-    private static final FilteringParentClassLoader PARENT_CLASS_LOADER = new FilteringParentClassLoader(
+    private static final FilteringParentClassLoader DEFAULT_PARENT_CLASS_LOADER = new FilteringParentClassLoader(
         ORG_MAPSTRUCT_AP_TEST );
 
     static {
@@ -45,8 +46,12 @@ public class ModifiableURLClassLoader extends URLClassLoader {
 
     private final ConcurrentMap<URL, URL> addedURLs = new ConcurrentHashMap<URL, URL>();
 
-    public ModifiableURLClassLoader() {
-        super( new URL[] { }, PARENT_CLASS_LOADER );
+    ModifiableURLClassLoader(ClassLoader parent) {
+        super( new URL[] { }, parent );
+    }
+
+    ModifiableURLClassLoader() {
+        this( DEFAULT_PARENT_CLASS_LOADER );
     }
 
     @Override
@@ -56,22 +61,51 @@ public class ModifiableURLClassLoader extends URLClassLoader {
         }
     }
 
-    public void addURL(String basePath) {
-        try {
-            addURL( new URL( basePath ) );
+    ModifiableURLClassLoader withOriginsOf(Collection<Class<?>> classes) {
+        for ( Class<?> c : classes ) {
+            withOriginOf( c );
         }
-        catch ( MalformedURLException e ) {
-            throw new RuntimeException( e );
-        }
+
+        return this;
     }
 
-    public void addOutputDir(String outputDir) {
+    ModifiableURLClassLoader withOriginOf(Class<?> clazz) {
+        String classFileName = clazz.getName().replace( ".", "/" ) + ".class";
+        URL classResource = clazz.getClassLoader().getResource( classFileName );
+        String fullyQualifiedUrl = classResource.toExternalForm();
+        String basePath = fullyQualifiedUrl.substring( 0, fullyQualifiedUrl.length() - classFileName.length() );
+
+        return withURL( basePath );
+    }
+
+    ModifiableURLClassLoader withPaths(Collection<String> baseUrls) {
+        for ( String url : baseUrls ) {
+            withPath( url );
+        }
+
+        return this;
+    }
+
+    ModifiableURLClassLoader withURL(String baseUrl) {
         try {
-            addURL( new File( outputDir ).toURI().toURL() );
+            addURL( new URL( baseUrl ) );
         }
         catch ( MalformedURLException e ) {
             throw new RuntimeException( e );
         }
+
+        return this;
+    }
+
+    ModifiableURLClassLoader withPath(String path) {
+        try {
+            addURL( new File( path ).toURI().toURL() );
+        }
+        catch ( MalformedURLException e ) {
+            throw new RuntimeException( e );
+        }
+
+        return this;
     }
 
     private static void tryRegisterAsParallelCapable() {
@@ -92,23 +126,6 @@ public class ModifiableURLClassLoader extends URLClassLoader {
         }
         catch ( InvocationTargetException e ) {
             return; // ignore
-        }
-    }
-
-    private static final class FilteringParentClassLoader extends ClassLoader {
-        private String excludedPackage;
-
-        FilteringParentClassLoader(String excludedPackage) {
-            this.excludedPackage = excludedPackage;
-        }
-
-        @Override
-        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-            if ( name.startsWith( excludedPackage ) ) {
-                return null;
-            }
-
-            return super.loadClass( name, resolve );
         }
     }
 }

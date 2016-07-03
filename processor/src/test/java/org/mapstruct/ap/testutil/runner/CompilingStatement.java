@@ -22,21 +22,26 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithServiceImplementation;
+import org.mapstruct.ap.testutil.WithServiceImplementations;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
@@ -67,7 +72,9 @@ abstract class CompilingStatement extends Statement {
 
     protected static final String SOURCE_DIR = getBasePath() + "/src/test/java";
 
-    protected static final List<String> COMPILER_CLASSPATH = buildCompilerClasspath();
+    protected static final List<String> TEST_COMPILATION_CLASSPATH = buildTestCompilationClasspath();
+
+    protected static final List<String> PROCESSOR_CLASSPATH = buildProcessorClasspath();
 
     private final FrameworkMethod method;
     private final CompilationCache compilationCache;
@@ -75,13 +82,14 @@ abstract class CompilingStatement extends Statement {
 
     private String classOutputDir;
     private String sourceOutputDir;
+    private String additionalCompilerClasspath;
     private CompilationRequest compilationRequest;
 
     CompilingStatement(FrameworkMethod method, CompilationCache compilationCache) {
         this.method = method;
         this.compilationCache = compilationCache;
 
-        this.compilationRequest = new CompilationRequest( getTestClasses(), getProcessorOptions() );
+        this.compilationRequest = new CompilationRequest( getTestClasses(), getServices(), getProcessorOptions() );
     }
 
     void setNextStatement(Statement next) {
@@ -110,31 +118,47 @@ abstract class CompilingStatement extends Statement {
 
         classOutputDir = compilationRoot + "/classes";
         sourceOutputDir = compilationRoot + "/generated-sources";
+        additionalCompilerClasspath = compilationRoot + "/compiler";
 
         createOutputDirs();
 
-        ( (ModifiableURLClassLoader) Thread.currentThread().getContextClassLoader() ).addOutputDir( classOutputDir );
+        ( (ModifiableURLClassLoader) Thread.currentThread().getContextClassLoader() ).withPath( classOutputDir );
     }
 
     protected abstract String getPathSuffix();
 
-    private static List<String> buildCompilerClasspath() {
-        String[] bootClasspath =
-            System.getProperty( "java.class.path" ).split( System.getProperty( "path.separator" ) );
-        String fs = System.getProperty( "file.separator" );
-        String testClasses = "target" + fs + "test-classes";
-
+    private static List<String> buildTestCompilationClasspath() {
         String[] whitelist =
             new String[] {
-                "processor" + fs + "target",  // the processor itself
-                "core" + fs + "target",  // MapStruct annotations in multi-module reactor build or IDE
-                "org" + fs + "mapstruct" + fs + "mapstruct" + fs,  // MapStruct annotations in single module build
-                "freemarker",
+                // MapStruct annotations in multi-module reactor build or IDE
+                "core" + File.separator + "target",
+                // MapStruct annotations in single module build
+                "org" + File.separator + "mapstruct" + File.separator + "mapstruct" + File.separator,
                 "guava",
                 "javax.inject",
                 "spring-beans",
                 "spring-context",
                 "joda-time" };
+
+        return filterBootClassPath( whitelist );
+    }
+
+    private static List<String> buildProcessorClasspath() {
+        String[] whitelist =
+            new String[] {
+                "processor" + File.separator + "target",  // the processor itself,
+                "freemarker",
+                "javax.inject",
+                "spring-context",
+                "joda-time" };
+
+        return filterBootClassPath( whitelist );
+    }
+
+    protected static List<String> filterBootClassPath(String[] whitelist) {
+        String[] bootClasspath =
+            System.getProperty( "java.class.path" ).split( File.pathSeparator );
+        String testClasses = "target" + File.separator + "test-classes";
 
         List<String> classpath = new ArrayList<String>();
         for ( String path : bootClasspath ) {
@@ -304,6 +328,55 @@ abstract class CompilingStatement extends Statement {
     }
 
     /**
+     * Returns the resources to be compiled for this test.
+     *
+     * @return A map containing the package were to look for a resource (key) and the resource (value) to be compiled
+     * for this test
+     */
+    private Map<Class<?>, Class<?>> getServices() {
+        Map<Class<?>, Class<?>> services = new HashMap<Class<?>, Class<?>>();
+
+        addServices( services, method.getAnnotation( WithServiceImplementations.class ) );
+        addService( services, method.getAnnotation( WithServiceImplementation.class ) );
+
+        Class<?> declaringClass = method.getMethod().getDeclaringClass();
+        addServices( services, declaringClass.getAnnotation( WithServiceImplementations.class ) );
+        addService( services, declaringClass.getAnnotation( WithServiceImplementation.class ) );
+
+        return services;
+    }
+
+    private void addServices(Map<Class<?>, Class<?>> services, WithServiceImplementations withImplementations) {
+        if ( withImplementations != null ) {
+            for ( WithServiceImplementation resource : withImplementations.value() ) {
+                addService( services, resource );
+            }
+        }
+    }
+
+    private void addService(Map<Class<?>, Class<?>> services, WithServiceImplementation annoation) {
+        if ( annoation == null ) {
+            return;
+        }
+
+        Class<?> provides = annoation.provides();
+        Class<?> implementor = annoation.value();
+        if ( provides == Object.class ) {
+            Class<?>[] implemented = implementor.getInterfaces();
+            if ( implemented.length != 1 ) {
+                throw new IllegalArgumentException(
+                    "The class " + implementor.getName()
+                        + " either needs to implement exactly one interface, or \"provides\" needs to be specified"
+                        + " as well in the annotation " + WithServiceImplementation.class.getSimpleName() + "." );
+            }
+
+            provides = implemented[0];
+        }
+
+        services.put( provides, implementor );
+    }
+
+    /**
      * Returns the processor options to be used this test.
      *
      * @return A list containing the processor options to be used for this test
@@ -344,7 +417,7 @@ abstract class CompilingStatement extends Statement {
         return String.format( "-A%s=%s", processorOption.name(), processorOption.value() );
     }
 
-    protected Set<File> getSourceFiles(Collection<Class<?>> classes) {
+    protected static Set<File> getSourceFiles(Collection<Class<?>> classes) {
         Set<File> sourceFiles = new HashSet<File>( classes.size() );
 
         for ( Class<?> clazz : classes ) {
@@ -369,17 +442,33 @@ abstract class CompilingStatement extends Statement {
         setupDirectories();
         compilationCache.setLastSourceOutputDir( sourceOutputDir );
 
-        CompilationOutcomeDescriptor resultHolder =
-            compileWithSpecificCompiler( compilationRequest, sourceOutputDir, classOutputDir );
+        boolean needsAdditionalCompilerClasspath = prepareServices();
+        CompilationOutcomeDescriptor resultHolder;
+
+        resultHolder = compileWithSpecificCompiler(
+            compilationRequest,
+            sourceOutputDir,
+            classOutputDir,
+            needsAdditionalCompilerClasspath ? additionalCompilerClasspath : null );
 
         compilationCache.update( compilationRequest, resultHolder );
         return resultHolder;
     }
 
+    protected Object loadAndInstantiate(ClassLoader processorClassloader, Class<?> clazz) {
+        try {
+            return processorClassloader.loadClass( clazz.getName() ).newInstance();
+        }
+        catch ( Exception e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
     protected abstract CompilationOutcomeDescriptor compileWithSpecificCompiler(
                                                                                 CompilationRequest compilationRequest,
                                                                                 String sourceOutputDir,
-                                                                                String classOutputDir);
+                                                                                String classOutputDir,
+                                                                                String additionalCompilerClasspath);
 
     boolean needsRecompilation() {
         return !compilationRequest.equals( compilationCache.getLastRequest() );
@@ -402,6 +491,10 @@ abstract class CompilingStatement extends Statement {
         directory = new File( sourceOutputDir );
         deleteDirectory( directory );
         directory.mkdirs();
+
+        directory = new File( additionalCompilerClasspath );
+        deleteDirectory( directory );
+        directory.mkdirs();
     }
 
     private void deleteDirectory(File path) {
@@ -417,6 +510,32 @@ abstract class CompilingStatement extends Statement {
             }
         }
         path.delete();
+    }
+
+    private boolean prepareServices() {
+        if ( !compilationRequest.getServices().isEmpty() ) {
+            String servicesDir =
+                additionalCompilerClasspath + File.separator + "META-INF" + File.separator + "services";
+            File directory = new File( servicesDir );
+            deleteDirectory( directory );
+            directory.mkdirs();
+            for ( Map.Entry<Class<?>, Class<?>> serviceEntry : compilationRequest.getServices().entrySet() ) {
+                try {
+                    File file = new File( servicesDir + File.separator + serviceEntry.getKey().getName() );
+                    FileWriter fileWriter = new FileWriter( file );
+                    fileWriter.append( serviceEntry.getValue().getName() ).append( "\n" );
+                    fileWriter.flush();
+                    fileWriter.close();
+                }
+                catch ( IOException e ) {
+                    throw new RuntimeException( e );
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     private static class DiagnosticDescriptorComparator implements Comparator<DiagnosticDescriptor> {

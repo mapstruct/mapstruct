@@ -19,17 +19,20 @@
 package org.mapstruct.ap.testutil.runner;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Represents a compilation task for a number of sources with given processor options.
  */
-class CompilationRequest {
+public class CompilationRequest {
     private final Set<Class<?>> sourceClasses;
+    private final Map<Class<?>, Class<?>> services;
     private final List<String> processorOptions;
 
-    CompilationRequest(Set<Class<?>> sourceClasses, List<String> processorOptions) {
+    CompilationRequest(Set<Class<?>> sourceClasses, Map<Class<?>, Class<?>> services, List<String> processorOptions) {
         this.sourceClasses = sourceClasses;
+        this.services = services;
         this.processorOptions = processorOptions;
     }
 
@@ -38,6 +41,7 @@ class CompilationRequest {
         final int prime = 31;
         int result = 1;
         result = prime * result + ( ( processorOptions == null ) ? 0 : processorOptions.hashCode() );
+        result = prime * result + ( ( services == null ) ? 0 : services.hashCode() );
         result = prime * result + ( ( sourceClasses == null ) ? 0 : sourceClasses.hashCode() );
         return result;
     }
@@ -55,7 +59,9 @@ class CompilationRequest {
         }
         CompilationRequest other = (CompilationRequest) obj;
 
-        return processorOptions.equals( other.processorOptions ) && sourceClasses.equals( other.sourceClasses );
+        return processorOptions.equals( other.processorOptions )
+            && services.equals( other.services )
+            && sourceClasses.equals( other.sourceClasses );
     }
 
     public Set<Class<?>> getSourceClasses() {
@@ -64,5 +70,9 @@ class CompilationRequest {
 
     public List<String> getProcessorOptions() {
         return processorOptions;
+    }
+
+    public Map<Class<?>, Class<?>> getServices() {
+        return services;
     }
 }
