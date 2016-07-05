@@ -18,9 +18,11 @@
  */
 package org.mapstruct.factory;
 
-import org.mapstruct.Mapper;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ServiceLoader;
+
+import org.mapstruct.Mapper;
 
 /**
  * Factory for obtaining mapper instances if no explicit component model such as CDI is configured via
@@ -62,39 +64,58 @@ public class Mappers {
      */
     public static <T> T getMapper(Class<T> clazz) {
         try {
+            List<ClassLoader> classLoaders = new ArrayList<ClassLoader>( 3 );
+            classLoaders.add( clazz.getClassLoader() );
 
-            // Check that
-            // - clazz is an interface
-            // - the implementation type implements clazz
-            // - clazz is annotated with @Mapper
-            //
-            // Use privileged action
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-            if ( classLoader == null ) {
-                classLoader = Mappers.class.getClassLoader();
+            if ( Thread.currentThread().getContextClassLoader() != null ) {
+                classLoaders.add( Thread.currentThread().getContextClassLoader() );
             }
 
-            try {
-                @SuppressWarnings("unchecked")
-                T mapper = (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
+            classLoaders.add( Mappers.class.getClassLoader() );
+
+            return getMapper( clazz, classLoaders );
+        }
+        catch ( ClassNotFoundException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    private static <T> T getMapper(
+            Class<T> mapperType, Iterable<ClassLoader> classLoaders) throws ClassNotFoundException {
+
+        for ( ClassLoader classLoader : classLoaders ) {
+            T mapper = doGetMapper( mapperType, classLoader );
+            if ( mapper != null ) {
                 return mapper;
             }
-            catch (ClassNotFoundException e) {
-                ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
+        }
 
-                if ( loader != null ) {
-                    for ( T mapper : loader ) {
-                        if ( mapper != null ) {
-                            return mapper;
-                        }
+        throw new ClassNotFoundException("Cannot find implementation for " + mapperType.getName() );
+    }
+
+    private static <T> T doGetMapper(Class<T> clazz, ClassLoader classLoader) {
+        try {
+            @SuppressWarnings("unchecked")
+            T mapper = (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
+            return mapper;
+        }
+        catch (ClassNotFoundException e) {
+            ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
+
+            if ( loader != null ) {
+                for ( T mapper : loader ) {
+                    if ( mapper != null ) {
+                        return mapper;
                     }
                 }
-
-                throw new ClassNotFoundException("Cannot find implementation for " + clazz.getName());
             }
+
+            return null;
         }
-        catch ( Exception e ) {
+        catch (InstantiationException e) {
+            throw new RuntimeException( e );
+        }
+        catch (IllegalAccessException e) {
             throw new RuntimeException( e );
         }
     }
