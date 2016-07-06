@@ -47,6 +47,9 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         else if ( isAdderMethod( method ) ) {
             return MethodType.ADDER;
         }
+        else if ( isPresenceCheckMethod( method ) ) {
+            return MethodType.PRESENCE_CHECKER;
+        }
         else {
             return MethodType.OTHER;
         }
@@ -121,6 +124,14 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         );
 
         return typeElement != null ? typeElement.getQualifiedName().toString() : null;
+    }
+
+    private boolean isPresenceCheckMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+
+        return methodName.startsWith( "has" ) && methodName.length() > 3 &&
+            ( method.getReturnType().getKind() == TypeKind.BOOLEAN ||
+                    "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) ) );
     }
 
 }

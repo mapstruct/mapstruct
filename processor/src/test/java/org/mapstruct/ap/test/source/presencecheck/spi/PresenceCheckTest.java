@@ -23,10 +23,8 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.spi.PresenceCheckAccessorNamingStrategy;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.WithServiceImplementation;
 
 /**
  * Test for correct handling of source presence checks.
@@ -42,7 +40,6 @@ import org.mapstruct.ap.testutil.WithServiceImplementation;
     GoalKeeper.class,
     SoccerTeamTarget.class
 })
-@WithServiceImplementation( PresenceCheckAccessorNamingStrategy.class )
 @RunWith(AnnotationProcessorTestRunner.class)
 public class PresenceCheckTest {
 
