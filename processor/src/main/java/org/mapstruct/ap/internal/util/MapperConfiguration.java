@@ -32,7 +32,7 @@ import org.mapstruct.ap.internal.prism.MapperConfigPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategy;
+import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 
 /**
  * Provides an aggregated view to the settings given via {@link org.mapstruct.Mapper} and
@@ -136,12 +136,12 @@ public class MapperConfiguration {
         }
     }
 
-    public NullValueCheckStrategy getNullValueCheckStrategy() {
+    public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
         if ( mapperConfigPrism != null && mapperPrism.values.nullValueCheckStrategy() == null ) {
-            return NullValueCheckStrategy.valueOf( mapperConfigPrism.nullValueCheckStrategy() );
+            return NullValueCheckStrategyPrism.valueOf( mapperConfigPrism.nullValueCheckStrategy() );
         }
         else {
-            return NullValueCheckStrategy.valueOf( mapperPrism.nullValueCheckStrategy() );
+            return NullValueCheckStrategyPrism.valueOf( mapperPrism.nullValueCheckStrategy() );
         }
     }
 

@@ -24,7 +24,7 @@ import org.mapstruct.NullValueCheckStrategy;
  *
  * @author Sjaak Derksen
  */
-@MapperConfig( nullValueCheckStrategy = NullValueCheckStrategy.ALLWAYS )
+@MapperConfig( nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS )
 public interface RockFestivalMapperConfig {
 
 }

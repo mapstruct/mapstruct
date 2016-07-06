@@ -1512,6 +1512,33 @@ However, by specifying `nullValueMappingStrategy = NullValueMappingStrategy.RETU
 
 The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy` on mapping method level will override `@Mapper#nullValueMappingStrategy`, and `@Mapper#nullValueMappingStrategy` will override `@MappingConfig#nullValueMappingStrategy`.
 
+
+[[checking-source-property-for-null-arguments]]
+=== Controlling checking result for 'null' properties in bean mapping
+
+MapStruct offers control over when to generate a `null` check. By default (`nullValueCheckStrategy = NullValueMappingStrategy.ON_IMPLICIT_CONVERSION`) a `null` check will be generated for:
+
+* direct setting of source value to target value when target is primitive and is source not.
+* applying type conversion and then:
+.. calling the setter on the target.
+.. calling another type conversion and subsequently calling the setter on the target.
+.. calling a mapping method and subsequently calling the setter on the target.
+
+First calling a mapping method on the source property is not protected by a null check. Therefor generated mapping methods will do a null check prior to carrying out mapping on a source property. Handwritten mapping methods must take care of null value checking. They have the possibility to add 'meaning' to `null`. For instance: mapping `null` to a default value.
+
+The option `nullValueCheckStrategy = NullValueMappingStrategy.ALWAYS` will always include a null check when source is non primitive, unless a source presence checker is defined on the source bean.
+
+The strategy works in a hierarchical fashion. `@Mapper#nullValueMappingStrategy` will override `@MappingConfig#nullValueMappingStrategy`.
+
+[[source-presence-check]]
+=== Source presence checking
+Some frameworks generate bean properties that have a source presence checker. Often this is in the form of a method `hasXYZ`, `XYZ` being a property on the source bean in a bean mapping method. MapStruct will call this `hasXYZ` instead of performing a `null` check when it finds such `hasXYZ` method.
+
+[TIP]
+====
+The source presence checker name can be changed in the MapStruct service provider interface (SPI). It can also be deactivated in this way.
+====
+
 [[exceptions]]
 === Exceptions
 

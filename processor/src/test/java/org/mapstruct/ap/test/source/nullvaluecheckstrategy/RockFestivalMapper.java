@@ -27,7 +27,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author Sjaak Derksen
  */
-@Mapper( nullValueCheckStrategy = NullValueCheckStrategy.ALLWAYS )
+@Mapper( nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS )
 public abstract class RockFestivalMapper {
 
     public static final RockFestivalMapper INSTANCE = Mappers.getMapper( RockFestivalMapper.class );

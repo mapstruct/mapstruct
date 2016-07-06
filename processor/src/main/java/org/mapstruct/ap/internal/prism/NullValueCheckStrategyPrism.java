@@ -24,8 +24,8 @@ package org.mapstruct.ap.internal.prism;
  *
  * @author Sean Huang
  */
-public enum NullValueCheckStrategy {
+public enum NullValueCheckStrategyPrism {
 
     ON_IMPLICIT_CONVERSION,
-    ALLWAYS;
+    ALWAYS;
 }

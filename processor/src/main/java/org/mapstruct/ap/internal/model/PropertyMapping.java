@@ -23,7 +23,6 @@ import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentTy
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategy.ALLWAYS;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,6 +57,7 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -344,7 +344,7 @@ public class PropertyMapping extends ModelElement {
                 else if ( getSourcePresenceCheckerRef() != null ) {
                     result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
                 }
-                else if ( ALLWAYS.equals( method.getMapperConfiguration().getNullValueCheckStrategy() ) ) {
+                else if ( ALWAYS.equals( method.getMapperConfiguration().getNullValueCheckStrategy() ) ) {
                     result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
                 }
                 else if ( result.getType() == TYPE_CONVERTED
