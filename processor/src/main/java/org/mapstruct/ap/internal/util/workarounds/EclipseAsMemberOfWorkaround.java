@@ -41,7 +41,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 /**
  * Contains the workaround for {@link Types#asMemberOf(DeclaredType, Element)} using Eclipse implementation types.
  * <p>
- * <strong>This class may only be loaded when running within Eclipse</strong>
+ * <strong>This class may only be accessed through {@link EclipseClassLoaderBridge} when running within Eclipse</strong>
  *
  * @author Andreas Gudian
  */

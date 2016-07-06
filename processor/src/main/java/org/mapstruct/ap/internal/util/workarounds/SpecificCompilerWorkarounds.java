@@ -36,7 +36,8 @@ import org.mapstruct.ap.internal.version.VersionInformation;
  * @author Andreas Gudian
  */
 public class SpecificCompilerWorkarounds {
-    private SpecificCompilerWorkarounds() { }
+    private SpecificCompilerWorkarounds() {
+    }
 
     /**
      * Tests whether one type is assignable to another, checking for VOID first.
@@ -120,7 +121,7 @@ public class SpecificCompilerWorkarounds {
     /**
      * Workaround for Bugs in the Eclipse implementation of {@link Types#asMemberOf(DeclaredType, Element)}.
      *
-     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590">Eclipse Bug 382590</a>
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382590">Eclipse Bug 382590 (fixed in Eclipse 4.6)</a>
      * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=481555">Eclipse Bug 481555</a>
      */
     static TypeMirror asMemberOf(Types typeUtils, ProcessingEnvironment env, VersionInformation versionInformation,
@@ -134,7 +135,7 @@ public class SpecificCompilerWorkarounds {
             catch ( IllegalArgumentException e ) {
                 lastException = e;
                 if ( versionInformation.isEclipseJDTCompiler() ) {
-                    result = EclipseAsMemberOfWorkaround.asMemberOf( env, containing, element );
+                    result = EclipseClassLoaderBridge.invokeAsMemberOfWorkaround( env, containing, element );
                 }
             }
         }
