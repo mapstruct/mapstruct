@@ -18,12 +18,16 @@
  */
 package org.mapstruct.ap.test.ignore;
 
+import javax.tools.Diagnostic.Kind;
 import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
@@ -73,5 +77,20 @@ public class IgnorePropertyTest {
         assertThat( animalDto.getName() ).isEqualTo( "Bruno" );
         assertThat( animalDto.getSize() ).isEqualTo( 100 );
         assertThat( animal.getColour() ).isNull();
+    }
+
+    @Test
+    @IssueKey("833")
+    @WithClasses({Preditor.class, PreditorDto.class, ErroneousTargetHasNoWriteAccessorMapper.class})
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousTargetHasNoWriteAccessorMapper.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = "Property \"hasTallons\" has no write accessor\\.")
+        }
+    )
+    public void shouldGiveWringingOnUnmapped() {
     }
 }

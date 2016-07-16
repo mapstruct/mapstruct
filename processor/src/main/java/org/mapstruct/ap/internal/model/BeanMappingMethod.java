@@ -242,11 +242,14 @@ public class BeanMappingMethod extends MappingMethod {
                     // fetch the target property
                     ExecutableElement targetWriteAccessor = unprocessedTargetProperties.get( mapping.getTargetName() );
                     if ( targetWriteAccessor == null ) {
+                        boolean hasReadAccessor =
+                            method.getResultType().getPropertyReadAccessors().containsKey( mapping.getTargetName() );
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
                             mapping.getMirror(),
                             mapping.getSourceAnnotationValue(),
-                            Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE,
+                            hasReadAccessor ? Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RETURNTYPE :
+                                Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE,
                             mapping.getTargetName()
                         );
                         errorOccurred = true;
