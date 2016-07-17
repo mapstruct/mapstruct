@@ -31,6 +31,7 @@ public enum Message {
     BEANMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in @BeanMapping, define at least one of them." ),
     BEANMAPPING_NOT_ASSIGNABLE( "%s not assignable to: %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_RETURNTYPE( "Unknown property \"%s\" in return type." ),
+    BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RETURNTYPE( "Property \"%s\" has no write accessor." ),
     BEANMAPPING_SEVERAL_POSSIBLE_SOURCES( "Several possible source properties for target property \"%s\"." ),
     BEANMAPPING_SEVERAL_POSSIBLE_TARGET_ACCESSORS( "Found several matching getters for property \"%s\"." ),
     BEANMAPPING_UNMAPPED_TARGETS_WARNING( "Unmapped target %s.", Diagnostic.Kind.WARNING ),
