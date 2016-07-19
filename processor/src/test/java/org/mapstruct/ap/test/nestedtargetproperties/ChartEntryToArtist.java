@@ -21,12 +21,12 @@ package org.mapstruct.ap.test.nestedtargetproperties;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -39,28 +39,29 @@ public abstract class ChartEntryToArtist {
 
     @Mappings({
         @Mapping(target = "type", ignore = true),
-        @Mapping(target = "name", source = "chartEntry.chartName"),
-        @Mapping(target = "song.title", source = "chartEntry.songTitle" ),
-        @Mapping(target = "song.artist.name", source = "chartEntry.artistName" ),
-        @Mapping(target = "song.artist.label.studio.name", source = "chartEntry.recordedAt"),
-        @Mapping(target = "song.artist.label.studio.city", source = "chartEntry.city" ),
+        @Mapping(target = "name", source = "chartName"),
+        @Mapping(target = "song.title", source = "songTitle" ),
+        @Mapping(target = "song.artist.name", source = "artistName" ),
+        @Mapping(target = "song.artist.label.studio.name", source = "recordedAt"),
+        @Mapping(target = "song.artist.label.studio.city", source = "city" ),
         @Mapping(target = "song.positions", source = "position" )
     })
-    public abstract Chart map(ChartEntry chartEntry, Integer position);
-//
-//    @Mappings({
-//        @Mapping(target = "title", source = "songTitle" ),
-//        @Mapping(target = "artist.name", source = "artistName"),
-//        @Mapping(target = "artist.label.studio.name", source = "recordedAt" ),
-//        @Mapping(target = "artist.label.studio.city",  source = "city" )
-//    })
-//    Song mapToSong(ChartEntry chartEntry);
-//
-//    @Mappings({
-//        @Mapping( target = "name", source = "chartName"),
-//
-//    })
-//    Chart mapToChart(ChartEntry chartEntry);
+    public abstract Chart map(ChartEntry chartEntry);
+
+
+    @Mappings({
+        @Mapping(target = "type", ignore = true),
+        @Mapping(target = "name", source = "chartEntry2.chartName"),
+        @Mapping(target = "song.title", source = "chartEntry1.songTitle" ),
+        @Mapping(target = "song.artist.name", source = "chartEntry1.artistName" ),
+        @Mapping(target = "song.artist.label.studio.name", source = "chartEntry1.recordedAt"),
+        @Mapping(target = "song.artist.label.studio.city", source = "chartEntry1.city" ),
+        @Mapping(target = "song.positions", source = "chartEntry2.position" )
+    })
+    public abstract Chart map(ChartEntry chartEntry1, ChartEntry chartEntry2);
+
+    @InheritInverseConfiguration
+    public abstract ChartEntry map(Chart chart);
 
     protected List<Integer> mapPosition(Integer in) {
         if ( in != null ) {
@@ -68,6 +69,14 @@ public abstract class ChartEntryToArtist {
         }
         else {
             return Collections.<Integer>emptyList();
+        }
+    }
+    protected Integer mapPosition(List<Integer> in) {
+        if ( in != null && !in.isEmpty() ) {
+            return in.get( 0 );
+        }
+        else {
+            return null;
         }
     }
 

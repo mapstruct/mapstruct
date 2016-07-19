@@ -28,13 +28,6 @@ import javax.tools.Diagnostic;
 public enum Message {
 
     // CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
-// CHECKSTYLE:OFF
     BEANMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in @BeanMapping, define at least one of them." ),
     BEANMAPPING_NOT_ASSIGNABLE( "%s not assignable to: %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE( "Unknown property \"%s\" in return type." ),

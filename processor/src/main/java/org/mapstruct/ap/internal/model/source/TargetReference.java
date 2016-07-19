@@ -212,6 +212,4 @@ public class TargetReference {
         }
         return elementName;
     }
-
-
 }

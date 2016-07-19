@@ -147,7 +147,6 @@ public class PropertyMapping extends ModelElement {
         public T localTargetVarName( String localTargetVarName ) {
             this.localTargetVarName = localTargetVarName;
             return (T) this;
-
         }
 
         private Type determineTargetType() {

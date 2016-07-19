@@ -18,10 +18,9 @@
  */
 package org.mapstruct.ap.test.nestedtargetproperties;
 
-import javax.inject.Singleton;
+import static org.fest.assertions.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.nestedsourceproperties.ArtistToChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Artist;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
@@ -31,7 +30,6 @@ import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.runner.WithSingleCompiler;
 
 /**
  *
@@ -40,12 +38,91 @@ import org.mapstruct.ap.testutil.runner.WithSingleCompiler;
 @WithClasses({Song.class, Artist.class, Chart.class, Label.class, Studio.class, ChartEntry.class})
 @IssueKey("389")
 @RunWith(AnnotationProcessorTestRunner.class)
-@WithSingleCompiler(org.mapstruct.ap.testutil.runner.Compiler.JDK)
 public class NestedTargetPropertiesTest {
 
     @Test
     @WithClasses({ChartEntryToArtist.class})
-    public void shouldMap() {
+    public void shouldMapNestedTarget() {
+
+        ChartEntry chartEntry = new ChartEntry();
+        chartEntry.setArtistName( "Prince" );
+        chartEntry.setChartName( "US Billboard Hot Rock Songs" );
+        chartEntry.setCity( "Minneapolis" );
+        chartEntry.setPosition( 1 );
+        chartEntry.setRecordedAt( "Live, First Avenue, Minneapolis" );
+        chartEntry.setSongTitle( "Purple Rain" );
+
+        Chart result = ChartEntryToArtist.MAPPER.map( chartEntry );
+
+        assertThat( result.getName() ).isEqualTo( "US Billboard Hot Rock Songs" );
+        assertThat( result.getSong() ).isNotNull();
+        assertThat( result.getSong().getArtist() ).isNotNull();
+        assertThat( result.getSong().getTitle() ).isEqualTo( "Purple Rain" );
+        assertThat( result.getSong().getArtist().getName() ).isEqualTo( "Prince" );
+        assertThat( result.getSong().getArtist().getLabel() ).isNotNull();
+        assertThat( result.getSong().getArtist().getLabel().getStudio() ).isNotNull();
+        assertThat( result.getSong().getArtist().getLabel().getStudio().getName() )
+            .isEqualTo( "Live, First Avenue, Minneapolis" );
+        assertThat( result.getSong().getArtist().getLabel().getStudio().getCity() )
+            .isEqualTo( "Minneapolis" );
+        assertThat( result.getSong().getPositions() ).hasSize( 1 );
+        assertThat( result.getSong().getPositions().get( 0 ) ).isEqualTo( 1 );
+
     }
 
+    @Test
+    @WithClasses({ChartEntryToArtist.class})
+    public void shouldMapNestedComposedTarget() {
+
+        ChartEntry chartEntry1 = new ChartEntry();
+        chartEntry1.setArtistName( "Prince" );
+        chartEntry1.setCity( "Minneapolis" );
+        chartEntry1.setRecordedAt( "Live, First Avenue, Minneapolis" );
+        chartEntry1.setSongTitle( "Purple Rain" );
+
+        ChartEntry chartEntry2 = new ChartEntry();
+        chartEntry2.setChartName( "Italian Singles Chart" );
+        chartEntry2.setPosition( 32 );
+
+        Chart result = ChartEntryToArtist.MAPPER.map( chartEntry1, chartEntry2 );
+
+        assertThat( result.getName() ).isEqualTo( "Italian Singles Chart" );
+        assertThat( result.getSong() ).isNotNull();
+        assertThat( result.getSong().getArtist() ).isNotNull();
+        assertThat( result.getSong().getTitle() ).isEqualTo( "Purple Rain" );
+        assertThat( result.getSong().getArtist().getName() ).isEqualTo( "Prince" );
+        assertThat( result.getSong().getArtist().getLabel() ).isNotNull();
+        assertThat( result.getSong().getArtist().getLabel().getStudio() ).isNotNull();
+        assertThat( result.getSong().getArtist().getLabel().getStudio().getName() )
+            .isEqualTo( "Live, First Avenue, Minneapolis" );
+        assertThat( result.getSong().getArtist().getLabel().getStudio().getCity() )
+            .isEqualTo( "Minneapolis" );
+        assertThat( result.getSong().getPositions() ).hasSize( 1 );
+        assertThat( result.getSong().getPositions().get( 0 ) ).isEqualTo( 32 );
+
+    }
+
+    @Test
+    @WithClasses({ChartEntryToArtist.class})
+    public void shouldReverseNestedTarget() {
+
+        ChartEntry chartEntry = new ChartEntry();
+        chartEntry.setArtistName( "Prince" );
+        chartEntry.setChartName( "US Billboard Hot Rock Songs" );
+        chartEntry.setCity( "Minneapolis" );
+        chartEntry.setPosition( 1 );
+        chartEntry.setRecordedAt( "Live, First Avenue, Minneapolis" );
+        chartEntry.setSongTitle( "Purple Rain" );
+
+        Chart chart = ChartEntryToArtist.MAPPER.map( chartEntry );
+        ChartEntry result = ChartEntryToArtist.MAPPER.map( chart );
+
+        assertThat( result ).isNotNull();
+        assertThat( result.getArtistName() ).isEqualTo( "Prince" );
+        assertThat( result.getChartName() ).isEqualTo( "US Billboard Hot Rock Songs" );
+        assertThat( result.getCity() ).isEqualTo( "Minneapolis" );
+        assertThat( result.getPosition() ).isEqualTo( 1 );
+        assertThat( result.getRecordedAt() ).isEqualTo( "Live, First Avenue, Minneapolis" );
+        assertThat( result.getSongTitle() ).isEqualTo( "Purple Rain" );
+    }
 }

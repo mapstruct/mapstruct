@@ -47,7 +47,4 @@ public abstract class ArtistToChartEntryWithConfigReverse {
     @InheritInverseConfiguration
     @Mapping(target = "positions", ignore = true)
     abstract Song mapReverse(ChartEntryWithBase ce);
-
-
-
 }

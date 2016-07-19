@@ -26,6 +26,21 @@ import org.mapstruct.ap.internal.model.common.Type;
 /**
  *
  * @author Sjaak Derksen
+ *
+ * In the process of creating target mappings, MapStruct creates local variables.
+ * <pre>
+ * {@code Chart chart = new Chart();
+ *
+ *       Label label = new Label();
+ *       Artist artist = new Artist();
+ *       Song song = new Song();
+ *       Studio studio = new Studio();
+ *       artist.setLabel( label ); // NestedLocalVariableAssignment
+ *       song.setArtist( artist ); // NestedLocalVariableAssignment
+ *       label.setStudio( studio );// NestedLocalVariableAssignment
+ *       chart.setSong( song ); // NestedLocalVariableAssignment
+ * }
+ *</pre>
  */
 public class NestedLocalVariableAssignment extends ModelElement {
 
@@ -39,18 +54,34 @@ public class NestedLocalVariableAssignment extends ModelElement {
         this.sourceRef = sourceRef;
     }
 
+    /**
+     *
+     * @return the targetBean on which the property setter with {@link setterName} is called
+     */
     public String getTargetBean() {
         return targetBean;
     }
 
+    /**
+     *
+     * @param targetBean the targetBean on which the property setter with {@link setterName} is called
+     */
     public void setTargetBean( String targetBean ) {
         this.targetBean = targetBean;
     }
 
+    /**
+     *
+     * @return the name of the setter (target accessor for the property)
+     */
     public String getSetterName() {
         return setterName;
     }
 
+    /**
+     *
+     * @return source reference, to be used a argument in the setter.
+     */
     public String getSourceRef() {
         return sourceRef;
     }

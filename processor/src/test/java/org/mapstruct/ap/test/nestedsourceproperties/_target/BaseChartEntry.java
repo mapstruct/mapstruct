@@ -50,6 +50,4 @@ public class BaseChartEntry  {
     public void setArtistName(String artistName) {
         this.artistName = artistName;
     }
-
-
 }

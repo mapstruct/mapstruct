@@ -39,4 +39,3 @@ public interface ArtistToChartEntryConfig {
     })
     BaseChartEntry mapForward( Song song );
 }
-

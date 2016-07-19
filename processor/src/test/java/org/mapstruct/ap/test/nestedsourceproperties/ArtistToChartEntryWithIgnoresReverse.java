@@ -51,7 +51,4 @@ public abstract class ArtistToChartEntryWithIgnoresReverse {
         @Mapping(target = "artist", ignore = true)
     })
     abstract Song mapReverse(ChartEntry ce);
-
-
-
 }

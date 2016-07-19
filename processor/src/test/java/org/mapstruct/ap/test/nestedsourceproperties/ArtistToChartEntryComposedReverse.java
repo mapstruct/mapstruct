@@ -53,13 +53,10 @@ public abstract class ArtistToChartEntryComposedReverse {
     })
     abstract ChartEntryLabel mapForward(Label label);
 
-
     @InheritInverseConfiguration
     @Mapping(target = "positions", ignore = true)
     abstract Song mapReverse(ChartEntryComposed ce);
 
     @InheritInverseConfiguration
     abstract Label mapReverse(ChartEntryLabel label);
-
-
 }

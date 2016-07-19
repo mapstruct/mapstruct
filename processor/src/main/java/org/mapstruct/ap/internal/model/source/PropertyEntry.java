@@ -62,7 +62,6 @@ public class PropertyEntry {
         this.type = type;
     }
 
-
     /**
      * Constructor used to create {@link TargetReference} property entries
      *
@@ -72,7 +71,6 @@ public class PropertyEntry {
      * @param type type of the property
      * @return the property entry for given parameters.
      */
-
     public static PropertyEntry forTargetReference( String[] fullName, ExecutableElement readAccessor,
         ExecutableElement writeAccessor, Type type) {
         return new PropertyEntry( fullName, readAccessor, writeAccessor, null, type );

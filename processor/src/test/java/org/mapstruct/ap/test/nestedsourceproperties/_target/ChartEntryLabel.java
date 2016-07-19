@@ -24,7 +24,6 @@ package org.mapstruct.ap.test.nestedsourceproperties._target;
  */
 public class ChartEntryLabel {
 
-
     private String name;
     private String city;
     private String recordedAt;
@@ -52,6 +51,4 @@ public class ChartEntryLabel {
     public void setRecordedAt(String recordedAt) {
         this.recordedAt = recordedAt;
     }
-
-
 }
