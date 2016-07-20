@@ -39,6 +39,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -95,6 +96,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private Type boundingBase = null;
 
+    private Boolean hasEmptyAccessibleContructor;
 
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
@@ -769,5 +771,23 @@ public class Type extends ModelElement implements Comparable<Type> {
         boundingBase = typeFactory.getType( typeFactory.getTypeBound( getTypeMirror() ) );
 
         return boundingBase;
+    }
+
+
+    public boolean hasEmptyAccessibleContructor() {
+
+        if ( this.hasEmptyAccessibleContructor == null ) {
+            hasEmptyAccessibleContructor = false;
+            List<ExecutableElement> constructors = ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
+            for ( ExecutableElement constructor : constructors ) {
+                if ( (constructor.getModifiers().contains( Modifier.PUBLIC )
+                    || constructor.getModifiers().contains( Modifier.PROTECTED ) )
+                    && constructor.getParameters().isEmpty() ) {
+                    hasEmptyAccessibleContructor = true;
+                    break;
+                }
+            }
+        }
+        return hasEmptyAccessibleContructor;
     }
 }

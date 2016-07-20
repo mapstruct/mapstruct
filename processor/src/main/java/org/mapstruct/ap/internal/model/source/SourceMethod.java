@@ -73,6 +73,12 @@ public class SourceMethod implements Method {
 
     private List<SourceMethod> applicablePrototypeMethods;
 
+    private Boolean isBeanMapping;
+    private Boolean isEnumMapping;
+    private Boolean isValueMapping;
+    private Boolean isIterableMapping;
+    private Boolean isMapMapping;
+
     public static class Builder {
 
         private Type declaringMapper = null;
@@ -367,18 +373,40 @@ public class SourceMethod implements Method {
     }
 
     public boolean isIterableMapping() {
-        return getSourceParameters().size() == 1 && first( getSourceParameters() ).getType().isIterableType()
-            && getResultType().isIterableType();
+        if ( isIterableMapping == null ) {
+            isIterableMapping = getSourceParameters().size() == 1
+                && first( getSourceParameters() ).getType().isIterableType()
+                && getResultType().isIterableType();
+        }
+        return isIterableMapping;
     }
 
     public boolean isMapMapping() {
-        return getSourceParameters().size() == 1 && first( getSourceParameters() ).getType().isMapType()
-            && getResultType().isMapType();
+        if ( isMapMapping == null ) {
+            isMapMapping = getSourceParameters().size() == 1
+                && first( getSourceParameters() ).getType().isMapType()
+                && getResultType().isMapType();
+        }
+        return isMapMapping;
     }
 
     public boolean isEnumMapping() {
-        return getSourceParameters().size() == 1 && first( getSourceParameters() ).getType().isEnumType()
-            && getResultType().isEnumType();
+        if ( isEnumMapping == null ) {
+            isEnumMapping = getSourceParameters().size() == 1
+                && first( getSourceParameters() ).getType().isEnumType()
+                && getResultType().isEnumType();
+        }
+        return isEnumMapping;
+    }
+
+    public boolean isBeanMapping() {
+        if ( isBeanMapping == null ) {
+            isBeanMapping = !isIterableMapping()
+                && !isMapMapping()
+                && !isEnumMapping()
+                && !isValueMapping();
+        }
+        return isBeanMapping;
     }
 
     /**
@@ -388,7 +416,11 @@ public class SourceMethod implements Method {
      * @return whether (true) or not (false) to execute value mappings
      */
     public boolean isValueMapping() {
-        return isEnumMapping() && mappingOptions.getMappings().isEmpty();
+
+        if ( isValueMapping == null ) {
+            isValueMapping = isEnumMapping() && mappingOptions.getMappings().isEmpty();
+        }
+        return isValueMapping;
     }
 
     private boolean equals(Object o1, Object o2) {

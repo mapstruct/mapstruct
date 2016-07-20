@@ -171,17 +171,17 @@ public class NestedSourcePropertiesTest {
     }
 
     @Test
-    @IssueKey( "337" )
+    @IssueKey( "838" )
     @ExpectedCompilationOutcome(
              value = CompilationResult.FAILED,
             diagnostics = {
                 @Diagnostic( type = ArtistToChartEntryErroneous.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 47,
-                        messageRegExp = "Parameter java.lang.Integer position cannot be reversed" )
+                        line = 46,
+                        messageRegExp = "There is no suitable result type constructor for reversing this method\\." )
             }
     )
     @WithClasses({ ArtistToChartEntryErroneous.class })
-    public void reverseShouldIgnoreParameter() {
+    public void reverseShouldRaiseErrorForEmptyContructor() {
     }
 }
