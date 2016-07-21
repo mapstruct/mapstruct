@@ -313,17 +313,6 @@ public class Mapping {
             }
         }
 
-        // should generate error when parameter
-        if ( sourceReference != null && sourceReference.getPropertyEntries().isEmpty() ) {
-            // parameter mapping only, apparently the @InheritReverseConfiguration is intentional
-            // but erroneous. Lets raise an error to warn.
-            messager.printMessage(
-                method.getExecutable(), Message.PROPERTYMAPPING_REVERSAL_PROBLEM,
-                sourceReference.getParameter()
-            );
-            return null;
-        }
-
         Mapping reverse = new Mapping(
             sourceName != null ? targetName : null,
             null, // constant
