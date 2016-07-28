@@ -35,7 +35,7 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-@WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class, TestList.class, TestMap.class })
+@WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class, TestList.class, TestMap.class, TestNonGenericList.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class CollectionMappingTest {
 
@@ -388,5 +388,28 @@ public class CollectionMappingTest {
 
         assertThat( source.getEnumSet() ).containsOnly( Colour.BLUE, Colour.GREEN, Colour.RED );
         assertThat( target.getEnumSet() ).containsOnly( Colour.BLUE, Colour.GREEN );
+    }
+
+    @Test
+    @IssueKey("TODO")
+    public void shouldMapNonGenericList() {
+        Source source = new Source();
+        source.setStringList3( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getNonGenericStringList() ).containsExactly( "Bob", "Alice" );
+        
+        // Inverse direction
+        Target newTarget = new Target();
+        TestNonGenericList nonGenericStringList = new TestNonGenericList();
+        nonGenericStringList.addAll( Arrays.asList( "Bill", "Bob" ) );
+        newTarget.setNonGenericStringList( nonGenericStringList );
+        
+        Source mappedSource = SourceTargetMapper.INSTANCE.targetToSource( newTarget );
+        
+        assertThat( mappedSource ).isNotNull();
+        assertThat( mappedSource.getStringList3() ).containsExactly( "Bill", "Bob" );
     }
 }

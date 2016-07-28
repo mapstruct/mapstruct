@@ -53,10 +53,12 @@ public class Target {
 
     private List<String> stringListNoSetter2;
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings( "rawtypes" )
     private Set set;
 
     private EnumSet<Colour> enumSet;
+
+    private TestNonGenericList nonGenericStringList;
 
     public Target() {
         otherStringLongMap = Maps.newHashMap();
@@ -183,5 +185,13 @@ public class Target {
 
     public void setEnumSet(EnumSet<Colour> enumSet) {
         this.enumSet = enumSet;
+    }
+
+    public TestNonGenericList getNonGenericStringList() {
+        return nonGenericStringList;
+    }
+
+    public void setNonGenericStringList(TestNonGenericList nonGenericStringList) {
+        this.nonGenericStringList = nonGenericStringList;
     }
 }

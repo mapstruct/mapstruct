@@ -91,10 +91,12 @@ public class IterableMappingMethod extends MappingMethod {
             Type sourceParameterType = first( method.getSourceParameters() ).getType();
             Type resultType = method.getResultType();
 
-            Type sourceElementType  = sourceParameterType.isArrayType() ? sourceParameterType.getComponentType()
-                : first( sourceParameterType.getTypeParameters() ).getTypeBound();
-            Type targetElementType = resultType.isArrayType() ? resultType.getComponentType()
-                : first( resultType.getTypeParameters() ).getTypeBound();
+            Type sourceElementType =
+                sourceParameterType.isArrayType() ? sourceParameterType.getComponentType() : first(
+                    sourceParameterType.determineTypeArguments( Iterable.class ) ).getTypeBound();
+            Type targetElementType =
+                resultType.isArrayType() ? resultType.getComponentType() : first(
+                    resultType.determineTypeArguments( Iterable.class ) ).getTypeBound();
 
             String loopVariableName =
                 Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
@@ -246,7 +248,7 @@ public class IterableMappingMethod extends MappingMethod {
             return sourceParameterType.getComponentType();
         }
         else {
-            return sourceParameterType.getTypeParameters().get( 0 ).getTypeBound();
+            return sourceParameterType.determineTypeArguments( Iterable.class ).get( 0 ).getTypeBound();
         }
     }
 
@@ -255,7 +257,7 @@ public class IterableMappingMethod extends MappingMethod {
             return getResultType().getComponentType();
         }
         else {
-            return getResultType().getTypeParameters().get( 0 );
+            return getResultType().determineTypeArguments( Iterable.class ).get( 0 );
         }
     }
 

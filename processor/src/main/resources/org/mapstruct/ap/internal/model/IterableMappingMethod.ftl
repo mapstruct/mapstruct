@@ -132,8 +132,7 @@
             <#if resultType.implementationType??>
                 <@includeModel object=resultType.implementationType/>
             <#else>
-                <@includeModel object=resultType/>
-            </#if>()
+                <@includeModel object=resultType/></#if>()
         </#if>
     </@compress>
 </#macro>

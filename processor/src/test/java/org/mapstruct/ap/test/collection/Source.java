@@ -55,6 +55,8 @@ public class Source {
 
     private EnumSet<Colour> enumSet;
 
+    private List<String> stringList3;
+
     public List<String> getStringList() {
         return stringList;
     }
@@ -173,5 +175,13 @@ public class Source {
 
     public void setEnumSet(EnumSet<Colour> enumSet) {
         this.enumSet = enumSet;
+    }
+
+    public List<String> getStringList3() {
+        return stringList3;
+    }
+
+    public void setStringList3(List<String> stringList3) {
+        this.stringList3 = stringList3;
     }
 }
