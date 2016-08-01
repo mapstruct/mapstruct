@@ -59,6 +59,8 @@ public class Target {
     private EnumSet<Colour> enumSet;
 
     private TestNonGenericList nonGenericStringList;
+    
+    private StringToLongMap nonGenericMapStringtoLong;
 
     public Target() {
         otherStringLongMap = Maps.newHashMap();
@@ -193,5 +195,13 @@ public class Target {
 
     public void setNonGenericStringList(TestNonGenericList nonGenericStringList) {
         this.nonGenericStringList = nonGenericStringList;
+    }
+    
+    public StringToLongMap getNonGenericMapStringtoLong() {
+        return nonGenericMapStringtoLong;
+    }
+    
+    public void setNonGenericMapStringtoLong(StringToLongMap nonGenericMapStringtoLong) {
+        this.nonGenericMapStringtoLong = nonGenericMapStringtoLong;
     }
 }

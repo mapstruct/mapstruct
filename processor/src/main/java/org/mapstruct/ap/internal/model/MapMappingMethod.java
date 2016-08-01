@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
@@ -38,7 +39,7 @@ import org.mapstruct.ap.internal.util.Strings;
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one {@code Map} type to another. Keys and
  * values are mapped either by a {@link TypeConversion} or another mapping method if required.
- *
+ * 
  * @author Gunnar Morling
  */
 public class MapMappingMethod extends MappingMethod {
@@ -96,24 +97,23 @@ public class MapMappingMethod extends MappingMethod {
 
         public MapMappingMethod build() {
 
-            List<Type> sourceTypeParams = first( method.getSourceParameters() ).getType().getTypeParameters();
-            List<Type> resultTypeParams = method.getResultType().getTypeParameters();
+            List<Type> sourceTypeParams =
+                first( method.getSourceParameters() ).getType().determineTypeArguments( Map.class );
+            List<Type> resultTypeParams = method.getResultType().determineTypeArguments( Map.class );
 
             // find mapping method or conversion for key
             Type keySourceType = sourceTypeParams.get( 0 ).getTypeBound();
             Type keyTargetType = resultTypeParams.get( 0 ).getTypeBound();
 
-            Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment(
-                method,
-                "map key",
-                keySourceType,
-                keyTargetType,
-                null, // there is no targetPropertyName
-                keyFormattingParameters,
-                keySelectionParameters,
-                "entry.getKey()",
-                false
-            );
+            Assignment keyAssignment =
+                ctx.getMappingResolver().getTargetAssignment( method, "map key", keySourceType, keyTargetType, null, // there
+                                                                                                                     // is
+                                                                                                                     // no
+                                                                                                                     // targetPropertyName
+                    keyFormattingParameters,
+                    keySelectionParameters,
+                    "entry.getKey()",
+                    false );
 
             if ( keyAssignment == null ) {
                 if ( method instanceof ForgedMethod ) {
@@ -121,8 +121,7 @@ public class MapMappingMethod extends MappingMethod {
                     return null;
                 }
                 else {
-                    ctx.getMessager().printMessage( method.getExecutable(),
-                        Message.MAPMAPPING_KEY_MAPPING_NOT_FOUND );
+                    ctx.getMessager().printMessage( method.getExecutable(), Message.MAPMAPPING_KEY_MAPPING_NOT_FOUND );
                 }
             }
 
@@ -130,17 +129,17 @@ public class MapMappingMethod extends MappingMethod {
             Type valueSourceType = sourceTypeParams.get( 1 ).getTypeBound();
             Type valueTargetType = resultTypeParams.get( 1 ).getTypeBound();
 
-            Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
-                method,
-                "map value",
-                valueSourceType,
-                valueTargetType,
-                null, // there is no targetPropertyName
-                valueFormattingParameters,
-                valueSelectionParameters,
-                "entry.getValue()",
-                false
-            );
+            Assignment valueAssignment =
+                ctx.getMappingResolver().getTargetAssignment(
+                    method,
+                    "map value",
+                    valueSourceType,
+                    valueTargetType,
+                    null, // there is no targetPropertyName
+                    valueFormattingParameters,
+                    valueSelectionParameters,
+                    "entry.getValue()",
+                    false );
 
             if ( method instanceof ForgedMethod ) {
                 ForgedMethod forgedMethod = (ForgedMethod) method;
@@ -158,15 +157,14 @@ public class MapMappingMethod extends MappingMethod {
                     return null;
                 }
                 else {
-                    ctx.getMessager().printMessage( method.getExecutable(),
-                        Message.MAPMAPPING_VALUE_MAPPING_NOT_FOUND );
+                    ctx.getMessager().printMessage( method.getExecutable(), Message.MAPMAPPING_VALUE_MAPPING_NOT_FOUND );
                 }
             }
 
             // mapNullToDefault
             boolean mapNullToDefault = false;
             if ( method.getMapperConfiguration() != null ) {
-                 mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
+                mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
             }
 
             MethodReference factoryMethod = null;
@@ -189,8 +187,7 @@ public class MapMappingMethod extends MappingMethod {
                 factoryMethod,
                 mapNullToDefault,
                 beforeMappingMethods,
-                afterMappingMethods
-            );
+                afterMappingMethods );
         }
     }
 
@@ -215,6 +212,15 @@ public class MapMappingMethod extends MappingMethod {
         }
 
         throw new IllegalStateException( "Method " + this + " has no source parameter." );
+    }
+
+    public List<Type> getSourceElementTypes() {
+        Type sourceParameterType = getSourceParameter().getType();
+        return sourceParameterType.determineTypeArguments( Map.class );
+    }
+
+    public List<Type> getResultElementTypes() {
+        return getResultType().determineTypeArguments( Map.class );
     }
 
     public Assignment getKeyAssignment() {
@@ -246,24 +252,15 @@ public class MapMappingMethod extends MappingMethod {
     }
 
     public String getKeyVariableName() {
-        return Strings.getSaveVariableName(
-            "key",
-            getParameterNames()
-        );
+        return Strings.getSaveVariableName( "key", getParameterNames() );
     }
 
     public String getValueVariableName() {
-        return Strings.getSaveVariableName(
-            "value",
-            getParameterNames()
-        );
+        return Strings.getSaveVariableName( "value", getParameterNames() );
     }
 
     public String getEntryVariableName() {
-        return Strings.getSaveVariableName(
-            "entry",
-            getParameterNames()
-        );
+        return Strings.getSaveVariableName( "entry", getParameterNames() );
     }
 
     public MethodReference getFactoryMethod() {
@@ -308,8 +305,13 @@ public class MapMappingMethod extends MappingMethod {
         }
 
         for ( int i = 0; i < getSourceParameters().size(); i++ ) {
-            if ( !getSourceParameters().get( i ).getType().getTypeParameters().get( 0 )
-                .equals( other.getSourceParameters().get( i ).getType().getTypeParameters().get( 0 ) ) ) {
+            if ( !getSourceParameters()
+                                       .get( i )
+                                       .getType()
+                                       .getTypeParameters()
+                                       .get( 0 )
+                                       .equals(
+                                           other.getSourceParameters().get( i ).getType().getTypeParameters().get( 0 ) ) ) {
                 return false;
             }
         }
