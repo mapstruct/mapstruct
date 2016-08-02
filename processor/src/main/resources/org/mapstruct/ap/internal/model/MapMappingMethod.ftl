@@ -56,11 +56,11 @@
     <#-- key -->
         <@includeModel object=keyAssignment
                    targetWriteAccessorName=keyVariableName
-                   targetType=resultType.typeParameters[0].typeBound/>
+                   targetType=resultElementTypes[0].typeBound/>
     <#-- value -->
         <@includeModel object=valueAssignment
                    targetWriteAccessorName=valueVariableName
-                   targetType=resultType.typeParameters[1].typeBound/>
+                   targetType=resultElementTypes[1].typeBound/>
         ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
     }
     <#list afterMappingReferences as callback>
@@ -91,8 +91,7 @@
              <#if resultType.implementationType??>
                   <@includeModel object=resultType.implementationType />
              <#else>
-                  <@includeModel object=resultType />
-             </#if>()
+                  <@includeModel object=resultType /></#if>()
         </#if>
     </@compress>
 </#macro>

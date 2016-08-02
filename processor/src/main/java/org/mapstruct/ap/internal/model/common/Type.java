@@ -790,4 +790,30 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         return hasEmptyAccessibleContructor;
     }
+
+    /**
+     * Searches for the given superclass and collects all type arguments for the given class
+     *
+     * @param superclass the superclass or interface the generic type arguments are searched for
+     * @return a list of type arguments or null, if superclass was not found
+     */
+    public List<Type> determineTypeArguments(Class<?> superclass) {
+        TypeMirror superclassMirror =
+            typeUtils.erasure( elementUtils.getTypeElement( superclass.getCanonicalName() ).asType() );
+        if ( typeUtils.isAssignable( superclassMirror, typeMirror )
+            && typeUtils.isAssignable( typeMirror, superclassMirror ) ) {
+            return getTypeParameters();
+        }
+
+        List<? extends TypeMirror> directSupertypes = typeUtils.directSupertypes( typeMirror );
+        for ( TypeMirror supertypemirror : directSupertypes ) {
+            Type supertype = typeFactory.getType( supertypemirror );
+            List<Type> supertypeTypeArguments = supertype.determineTypeArguments( superclass );
+            if ( supertypeTypeArguments != null ) {
+                return supertypeTypeArguments;
+            }
+        }
+
+        return null;
+    }
 }
