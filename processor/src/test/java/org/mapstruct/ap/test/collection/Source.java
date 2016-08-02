@@ -186,11 +186,11 @@ public class Source {
     public void setStringList3(List<String> stringList3) {
         this.stringList3 = stringList3;
     }
-    
+
     public Map<String, Long> getStringLongMapForNonGeneric() {
         return stringLongMapForNonGeneric;
     }
-    
+
     public void setStringLongMapForNonGeneric(Map<String, Long> stringLongMapForNonGeneric) {
         this.stringLongMapForNonGeneric = stringLongMapForNonGeneric;
     }

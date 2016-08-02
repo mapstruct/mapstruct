@@ -793,7 +793,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * Searches for the given superclass and collects all type arguments for the given class
-     * 
+     *
      * @param superclass the superclass or interface the generic type arguments are searched for
      * @return a list of type arguments or null, if superclass was not found
      */
