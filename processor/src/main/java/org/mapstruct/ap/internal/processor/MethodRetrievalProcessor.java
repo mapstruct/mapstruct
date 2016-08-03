@@ -211,7 +211,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                           List<Parameter> parameters,
                                                           boolean containsTargetTypeParameter,
                                                           MapperConfiguration mapperConfig,
-                                                          List<SourceMethod> prototypeMethods ) {
+                                                          List<SourceMethod> prototypeMethods) {
         Type returnType = typeFactory.getReturnType( methodType );
         List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
         List<Parameter> sourceParameters = extractSourceParameters( parameters );

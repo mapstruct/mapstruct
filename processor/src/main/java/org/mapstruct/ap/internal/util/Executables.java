@@ -92,6 +92,12 @@ public class Executables {
             && ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.ADDER;
     }
 
+    public static boolean isConstructorMethod(ExecutableElement method) {
+        return isPublic( method ) &&
+                method.getReturnType().getKind() == TypeKind.VOID &&
+                method.getSimpleName().contentEquals( "<init>" );
+    }
+
     private static boolean isPublic(ExecutableElement method) {
         return method.getModifiers().contains( Modifier.PUBLIC );
     }

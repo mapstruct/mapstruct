@@ -18,6 +18,33 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
+import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
+import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
+import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.Constructor;
+import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
+import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
+import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.PropertyEntry;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.SourceReference;
+import org.mapstruct.ap.internal.model.source.TargetReference;
+import org.mapstruct.ap.internal.option.ReportingPolicy;
+import org.mapstruct.ap.internal.prism.BeanMappingPrism;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.Strings;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.tools.Diagnostic;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,33 +59,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.tools.Diagnostic;
-
-import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
-import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
-import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
-import org.mapstruct.ap.internal.model.assignment.Assignment;
-import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
-import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
-import org.mapstruct.ap.internal.model.source.Mapping;
-import org.mapstruct.ap.internal.model.source.PropertyEntry;
-import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.model.source.TargetReference;
-import org.mapstruct.ap.internal.model.source.SourceReference;
-import org.mapstruct.ap.internal.option.ReportingPolicy;
-import org.mapstruct.ap.internal.prism.BeanMappingPrism;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
-import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.Strings;
 import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
 
 /**
@@ -70,6 +72,7 @@ import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
 public class BeanMappingMethod extends MappingMethod {
 
     private final List<PropertyMapping> propertyMappings;
+    private final ConstructorMapping constructorMapping;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
     private final MethodReference factoryMethod;
@@ -84,6 +87,8 @@ public class BeanMappingMethod extends MappingMethod {
         private Map<String, ExecutableElement> unprocessedTargetProperties;
         private Set<String> targetProperties;
         private final List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
+        private final Map<String, PropertyMapping> constructorPropertyMappings = new HashMap<String, PropertyMapping>();
+        private ConstructorMapping constructorMapping;
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<Parameter>();
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
         private SelectionParameters selectionParameters;
@@ -112,6 +117,14 @@ public class BeanMappingMethod extends MappingMethod {
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
             }
+
+            if ( method.getResultType().getConstructor() != null ) {
+                for (String property : method.getResultType().getConstructor().getPropertyNames()) {
+                    unprocessedTargetProperties.put( property,
+                            method.getResultType().getConstructor().getExecutableElement() );
+                }
+            }
+
             existingVariableNames.addAll( method.getParameterNames() );
             return this;
         }
@@ -138,6 +151,8 @@ public class BeanMappingMethod extends MappingMethod {
 
             // map parameters without a mapping
             applyParameterNameBasedMapping();
+
+            constructorMapping = createConstructorMapping();
 
             // report errors on unmapped properties
             reportErrorForUnmappedTargetPropertiesIfRequired();
@@ -181,6 +196,7 @@ public class BeanMappingMethod extends MappingMethod {
             return new BeanMappingMethod(
                 method,
                 propertyMappings,
+                constructorMapping,
                 factoryMethod,
                 mapNullToDefault,
                 resultType,
@@ -367,7 +383,12 @@ public class BeanMappingMethod extends MappingMethod {
                     // remaining are the mappings without a 'source' so, 'only' a date format or qualifiers
 
                     if ( propertyMapping != null ) {
-                        propertyMappings.add( propertyMapping );
+                        if ( propertyMapping.isConstructorMapping() ) {
+                            constructorPropertyMappings.put( propertyMapping.getName(), propertyMapping );
+                        }
+                        else {
+                            propertyMappings.add( propertyMapping );
+                        }
                     }
                 }
             }
@@ -432,9 +453,9 @@ public class BeanMappingMethod extends MappingMethod {
                             newPropertyMapping = new PropertyMappingBuilder()
                                 .mappingContext( ctx )
                                 .sourceMethod( method )
+                                .targetPropertyName( targetPropertyName )
                                 .targetWriteAccessor( targetProperty.getValue() )
                                 .targetReadAccessor( getTargetPropertyReadAccessor( targetPropertyName ) )
-                                .targetPropertyName( targetPropertyName )
                                 .sourceReference( sourceRef )
                                 .formattingParameters( mapping != null ? mapping.getFormattingParameters() : null )
                                 .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
@@ -462,7 +483,13 @@ public class BeanMappingMethod extends MappingMethod {
                 }
 
                 if ( propertyMapping != null ) {
-                    propertyMappings.add( propertyMapping );
+                    if ( propertyMapping.isConstructorMapping() ) {
+                        constructorPropertyMappings.put( propertyMapping.getName(), propertyMapping );
+                    }
+                    else {
+                        propertyMappings.add( propertyMapping );
+                    }
+
                     targetPropertyEntriesIterator.remove();
                 }
             }
@@ -493,9 +520,9 @@ public class BeanMappingMethod extends MappingMethod {
                         PropertyMapping propertyMapping = new PropertyMappingBuilder()
                             .mappingContext( ctx )
                             .sourceMethod( method )
+                            .targetPropertyName( targetProperty.getKey() )
                             .targetWriteAccessor( targetProperty.getValue() )
                             .targetReadAccessor( getTargetPropertyReadAccessor( targetProperty.getKey() ) )
-                            .targetPropertyName( targetProperty.getKey() )
                             .sourceReference( sourceRef )
                             .formattingParameters( mapping != null ? mapping.getFormattingParameters() : null )
                             .selectionParameters( mapping != null ? mapping.getSelectionParameters() : null )
@@ -508,6 +535,76 @@ public class BeanMappingMethod extends MappingMethod {
                         sourceParameters.remove();
                     }
                 }
+            }
+        }
+
+
+        private ConstructorMapping createConstructorMapping() {
+            Constructor constructor = method.getResultType().getConstructor();
+
+            if (constructor != null) {
+                LinkedHashMap<String, PropertyMapping> mappings = new LinkedHashMap<String, PropertyMapping>(  );
+
+                for (String propertyName : constructor.getPropertyNames()) {
+                    if ( constructorPropertyMappings.containsKey( propertyName ) ) {
+                        mappings.put( propertyName, constructorPropertyMappings.get( propertyName ) );
+                    }
+                    else {
+                        Parameter parameter = constructor.getParameter( propertyName );
+                        PropertyMapping nullMapping = new ConstantMappingBuilder()
+                                .mappingContext( ctx )
+                                .sourceMethod( method )
+                                .constantExpression( "\"" + getConstructorConstantExpression( parameter ) + "\"" )
+                                .targetProperty( PropertyEntry.forTargetReference(
+                                        propertyName.split( "\\." ),
+                                        null,
+                                        constructor.getExecutableElement(),
+                                        parameter.getType() ) )
+                                .targetPropertyName( propertyName )
+                                .existingVariableNames( existingVariableNames )
+                                .build();
+
+                        mappings.put( propertyName, nullMapping );
+                    }
+                }
+
+                return new ConstructorMapping( constructor, mappings );
+            }
+
+            return null;
+        }
+
+        private String getConstructorConstantExpression(Parameter parameter) {
+            if ( parameter.getType().isPrimitive() ) {
+                TypeKind kind = parameter.getType().getTypeMirror().getKind();
+                if ( kind == TypeKind.BOOLEAN ) {
+                    return "false";
+                }
+                else if ( kind == TypeKind.BYTE ) {
+                    return "(byte) 0";
+                }
+                else if ( kind == TypeKind.SHORT ) {
+                    return "(short) 0";
+                }
+                else if ( kind == TypeKind.INT ) {
+                    return "0";
+                }
+                else if ( kind == TypeKind.LONG ) {
+                    return "0L";
+                }
+                else if ( kind == TypeKind.FLOAT ) {
+                    return "0.0";
+                }
+                else if ( kind == TypeKind.DOUBLE ) {
+                    return "0.0";
+                }
+                else {
+                    // This should not be possible ?
+                    return "null";
+                }
+            }
+            else {
+                return "null";
             }
         }
 
@@ -562,6 +659,7 @@ public class BeanMappingMethod extends MappingMethod {
 
     private BeanMappingMethod(SourceMethod method,
                               List<PropertyMapping> propertyMappings,
+                              ConstructorMapping constructorMapping,
                               MethodReference factoryMethod,
                               boolean mapNullToDefault,
                               Type resultType,
@@ -571,6 +669,7 @@ public class BeanMappingMethod extends MappingMethod {
                               NestedTargetObjects nestedTargetObjects ) {
         super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences );
         this.propertyMappings = propertyMappings;
+        this.constructorMapping = constructorMapping;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
@@ -594,6 +693,10 @@ public class BeanMappingMethod extends MappingMethod {
 
     public List<PropertyMapping> getPropertyMappings() {
         return propertyMappings;
+    }
+
+    public ConstructorMapping getConstructorMapping() {
+        return constructorMapping;
     }
 
     public List<PropertyMapping> getConstantMappings() {
@@ -774,7 +877,7 @@ public class BeanMappingMethod extends MappingMethod {
         /**
          * returns a local vaRriable name when relevant (so when not the 'parameter' targetBean should be used)
          *
-         * @param targefetRef
+         * @param targetRef
          * @return generated local variable name
          */
         private String getLocalVariableName(TargetReference targetRef) {

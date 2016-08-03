@@ -44,6 +44,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.ConstructorPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.Nouns;
@@ -97,6 +98,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private Type boundingBase = null;
 
     private Boolean hasEmptyAccessibleContructor;
+    private final Constructor constructor;
 
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
@@ -142,6 +144,12 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         else {
             enumConstants = Collections.emptyList();
+        }
+
+        if ( typeElement != null ) {
+            constructor = findConstructor();
+        } else {
+            constructor = null;
         }
     }
     //CHECKSTYLE:ON
@@ -421,6 +429,13 @@ public class Type extends ModelElement implements Comparable<Type> {
         candidates.addAll( getAlternativeTargetAccessors() );
 
         Map<String, ExecutableElement> result = new LinkedHashMap<String, ExecutableElement>();
+
+        // Side of effect of being first is that setters will overwrite
+        if ( constructor != null ) {
+            for (String property : constructor.getPropertyNames()) {
+                result.put( property, constructor.getExecutableElement() );
+            }
+        }
 
         for ( ExecutableElement candidate : candidates ) {
             String targetPropertyName = Executables.getPropertyName( candidate );
@@ -773,6 +788,33 @@ public class Type extends ModelElement implements Comparable<Type> {
         return boundingBase;
     }
 
+    public Constructor getConstructor() {
+        return constructor;
+    }
+
+    private Constructor findConstructor() {
+        List<ExecutableElement> constructors = Filters.constructorsIn( typeElement.getEnclosedElements() );
+
+        for (ExecutableElement constructor : constructors) {
+            ConstructorPrism constructorPrism = ConstructorPrism.getInstanceOn( constructor );
+
+            if ( constructorPrism != null ) {
+                List<String> propertyNames = constructorPrism.value();
+                LinkedHashMap<String, Parameter> parameterMap = new LinkedHashMap<String, Parameter>(  );
+                List<Parameter> parameters = typeFactory.getParameters( (DeclaredType) typeMirror, constructor );
+
+                // TODO check list is the same length
+
+                for (int i = 0; i < parameters.size(); i++) {
+                    parameterMap.put( propertyNames.get( i ), parameters.get( i ) );
+                }
+
+                return new Constructor( parameterMap, constructor );
+            }
+        }
+
+        return null;
+    }
 
     public boolean hasEmptyAccessibleContructor() {
 

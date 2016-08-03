@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
+import org.mapstruct.Constructor;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
@@ -67,6 +68,7 @@ import org.mapstruct.Named;
     @GeneratePrism(value = BeforeMapping.class, publicAccess = true),
     @GeneratePrism(value = ValueMapping.class, publicAccess = true),
     @GeneratePrism(value = ValueMappings.class, publicAccess = true),
+    @GeneratePrism(value = Constructor.class, publicAccess = true),
 
     // external types
     @GeneratePrism(value = XmlElementDecl.class, publicAccess = true),

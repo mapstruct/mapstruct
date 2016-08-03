@@ -33,7 +33,7 @@
     </#if>
 
     <#if !existingInstanceMapping>
-        <@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else>new <@includeModel object=resultType/>()</#if>;
+        <@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else><@constructor/></#if>;
 
     </#if>
     <#list beforeMappingReferencesWithMappingTarget as callback>
@@ -97,3 +97,5 @@
     <@includeModel object=nestedLocalVariableAssignment/>
     </#list>
 </#macro>
+<#macro constructor>new <@includeModel object=resultType/>(<#if !constructorMapping??>)<#else>
+    <@includeModel object=constructorMapping/>)</#if></#macro>

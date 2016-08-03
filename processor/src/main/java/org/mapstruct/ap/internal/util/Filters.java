@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.util.ElementFilter;
 
 /**
  * Filter methods for working with {@link Element} collections.
@@ -79,5 +80,9 @@ public class Filters {
         }
 
         return adderMethods;
+    }
+
+    public static List<ExecutableElement> constructorsIn( Iterable<? extends Element> elements ) {
+        return ElementFilter.constructorsIn( elements );
     }
 }

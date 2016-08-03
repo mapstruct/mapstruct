@@ -35,6 +35,7 @@ import javax.lang.model.type.DeclaredType;
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.assignment.ConstructorWrapper;
 import org.mapstruct.ap.internal.model.assignment.EnumSetCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
@@ -78,11 +79,13 @@ public class PropertyMapping extends ModelElement {
     private final Assignment assignment;
     private final List<String> dependsOn;
     private final Assignment defaultValueAssignment;
+    private final boolean constructorMapping;
 
     private enum TargetWriteAccessorType {
         GETTER,
         SETTER,
-        ADDER;
+        ADDER,
+        CONSTRUCTOR;
 
         public static TargetWriteAccessorType of(ExecutableElement accessor) {
             if ( Executables.isSetterMethod( accessor ) ) {
@@ -91,9 +94,13 @@ public class PropertyMapping extends ModelElement {
             else if ( Executables.isAdderMethod( accessor ) ) {
                 return TargetWriteAccessorType.ADDER;
             }
+            else if ( Executables.isConstructorMethod( accessor ) ) {
+                return TargetWriteAccessorType.CONSTRUCTOR;
+            }
             else {
                 return TargetWriteAccessorType.GETTER;
             }
+
         }
     }
 
@@ -159,6 +166,8 @@ public class PropertyMapping extends ModelElement {
                     return ctx.getTypeFactory()
                         .getSingleParameter( resultType, targetWriteAccessor )
                         .getType();
+                case CONSTRUCTOR:
+                    return method.getResultType().getConstructor().getParameter( this.targetPropertyName ).getType();
                 case GETTER:
                 default:
                     return ctx.getTypeFactory()
@@ -179,6 +188,15 @@ public class PropertyMapping extends ModelElement {
         public T existingVariableNames(Set<String> existingVariableNames) {
             this.existingVariableNames = existingVariableNames;
             return (T) this;
+        }
+
+
+        protected static boolean isConstructorMapping(SourceMethod method, String targetPropertyName) {
+            if (method.getReturnType().getConstructor() != null) {
+                return method.getResultType().getConstructor().hasProperty( targetPropertyName );
+            }
+
+            return false;
         }
     }
 
@@ -283,7 +301,8 @@ public class PropertyMapping extends ModelElement {
                 localTargetVarName,
                 assignment,
                 dependsOn,
-                getDefaultValueAssignment()
+                getDefaultValueAssignment(),
+                isConstructorMapping( method, targetPropertyName )
             );
         }
 
@@ -313,7 +332,10 @@ public class PropertyMapping extends ModelElement {
 
             Assignment result;
 
-            if ( targetAccessorType == TargetWriteAccessorType.SETTER ) {
+            if ( isConstructorMapping( method, targetPropertyName ) ) {
+                result = new ConstructorWrapper( rightHandSide, method.getThrownTypes() );
+            }
+            else if ( targetAccessorType == TargetWriteAccessorType.SETTER ) {
                 result = assignToPlainViaSetter( sourceType, targetType, rightHandSide );
             }
             else {
@@ -718,6 +740,9 @@ public class PropertyMapping extends ModelElement {
                         assignment = new SetterWrapper( assignment, method.getThrownTypes() );
                     }
                 }
+                else if ( Executables.isConstructorMethod( targetWriteAccessor ) ) {
+                    assignment = new ConstructorWrapper( assignment, method.getThrownTypes() );
+                }
                 else {
 
                     // target accessor is getter, so getter map/ collection handling
@@ -748,7 +773,8 @@ public class PropertyMapping extends ModelElement {
                 localTargetVarName,
                 assignment,
                 dependsOn,
-                null
+                null,
+                isConstructorMapping( method, targetPropertyName )
             );
         }
     }
@@ -769,6 +795,9 @@ public class PropertyMapping extends ModelElement {
                 // setter, so wrap in setter
                 assignment = new SetterWrapper( assignment, method.getThrownTypes() );
             }
+            else if ( Executables.isConstructorMethod( targetWriteAccessor ) ) {
+                assignment = new ConstructorWrapper( assignment, method.getThrownTypes() );
+            }
             else {
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
                 assignment = new GetterWrapperForCollectionsAndMaps(
@@ -787,7 +816,8 @@ public class PropertyMapping extends ModelElement {
                 localTargetVarName,
                 assignment,
                 dependsOn,
-                null
+                null,
+                isConstructorMapping( method, targetPropertyName )
             );
         }
     }
@@ -795,15 +825,18 @@ public class PropertyMapping extends ModelElement {
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name,  String targetWriteAccessorName, String targetReadAccessorName,
                             Type targetType, String localTargetVarName, Assignment propertyAssignment,
-                            List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            List<String> dependsOn, Assignment defaultValueAssignment,
+                            boolean constructorMapping) {
         this( name, null, targetWriteAccessorName, targetReadAccessorName,
-                        targetType, localTargetVarName, propertyAssignment, dependsOn, defaultValueAssignment );
+                        targetType, localTargetVarName, propertyAssignment, dependsOn, defaultValueAssignment,
+                        constructorMapping );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             String targetReadAccessorName, Type targetType, String localTargetVarName,
                             Assignment assignment,
-                            List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            List<String> dependsOn, Assignment defaultValueAssignment,
+                            boolean constructorMapping) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -814,6 +847,7 @@ public class PropertyMapping extends ModelElement {
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
         this.defaultValueAssignment = defaultValueAssignment;
+        this.constructorMapping = constructorMapping;
     }
 
     /**
@@ -849,6 +883,10 @@ public class PropertyMapping extends ModelElement {
 
     public Assignment getDefaultValueAssignment() {
         return defaultValueAssignment;
+    }
+
+    public boolean isConstructorMapping() {
+        return constructorMapping;
     }
 
     @Override

@@ -158,6 +158,9 @@ public class TargetReference {
                             (DeclaredType) nextType.getTypeMirror(),
                             targetWriteAccessor );
                     }
+                    else if ( Executables.isConstructorMethod( targetWriteAccessor ) ) {
+                        nextType = method.getResultType().getConstructor().getParameter( entryNames[i] ).getType();
+                    }
                     else {
                         nextType = typeFactory.getSingleParameter(
                             (DeclaredType) nextType.getTypeMirror(),
