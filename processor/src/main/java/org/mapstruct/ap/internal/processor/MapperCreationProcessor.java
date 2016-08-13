@@ -460,8 +460,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
             // is there a suitable constructor
             if ( method.isBeanMapping()
-                && !method.getResultType().isCollectionOrMapType()
-                && !method.getResultType().hasEmptyAccessibleContructor() ) {
+                && !method.isUpdateMethod()
+                && !method.getReturnType().isCollectionOrMapType()
+                && !method.getReturnType().hasEmptyAccessibleContructor() ) {
                 reportErrorWhenNoSuitableConstrutor( method, reversePrism );
                 return null;
             }
