@@ -22,7 +22,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -216,23 +215,24 @@ public class BeanMappingMethod extends MappingMethod {
                 );
             }
             else {
-                Collections.sort(
-                    propertyMappings, new Comparator<PropertyMapping>() {
+                List<PropertyMapping> sortedPropertyMappings = new ArrayList<PropertyMapping>( );
+                Set<String> fullfilledDependencies = new HashSet<String>();
 
-                        @Override
-                        public int compare(PropertyMapping o1, PropertyMapping o2) {
-                            if ( graphAnalyzer.getAllDescendants( o1.getName() ).contains( o2.getName() ) ) {
-                                return 1;
-                            }
-                            else if ( graphAnalyzer.getAllDescendants( o2.getName() ).contains( o1.getName() ) ) {
-                                return -1;
-                            }
-                            else {
-                                return 0;
-                            }
+                while ( !propertyMappings.isEmpty() ) {
+                    //find the first property mapping that has all dependencies filled
+                    for ( PropertyMapping propertyMapping: new ArrayList<PropertyMapping>( propertyMappings )) {
+                        if ( fullfilledDependencies.containsAll(
+                                graphAnalyzer.getAllDescendants( propertyMapping.getName() ) )) {
+                            sortedPropertyMappings.add( propertyMapping );
+                            fullfilledDependencies.add( propertyMapping.getName() );
+                            propertyMappings.remove( propertyMapping );
+                            //we need to break out, so that we continue with the outer loop, to keep the correct order
+                            break;
                         }
                     }
-                );
+                }
+
+                propertyMappings.addAll( sortedPropertyMappings );
             }
         }
 
