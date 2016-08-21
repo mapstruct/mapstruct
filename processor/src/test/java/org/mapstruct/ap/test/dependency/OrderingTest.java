@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.dependency;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.Mapping;
@@ -28,26 +30,14 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 /**
  * Test for ordering mapped attributes by means of {@link Mapping#dependsOn()}.
  *
  * @author Gunnar Morling
  */
-@WithClasses({ Person.class, PersonDto.class, Address.class, AddressDto.class, AddressMapper.class,
-        Demo.class, DemoDTO.class })
+@WithClasses({ Person.class, PersonDto.class, Address.class, AddressDto.class, AddressMapper.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class OrderingTest {
-
-    @Test
-    public void shouldApplyCorrectOrdering() {
-        Demo source = new Demo();
-
-        DemoDTO target = AddressMapper.INSTANCE.demoToDemoDto( source );
-
-        assertThat( target.getOrder() ).containsExactly( "field1", "field2", "field0", "field3", "field4" );
-    }
 
     @Test
     @IssueKey("304")

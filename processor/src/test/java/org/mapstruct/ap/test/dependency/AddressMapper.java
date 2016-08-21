@@ -39,10 +39,4 @@ public interface AddressMapper {
         @Mapping(target = "lastName", dependsOn = { "firstName", "middleName" })
     })
     PersonDto personToDto(Person person);
-
-    @Mappings({
-            @Mapping(target = "field0", dependsOn = "field2"),
-            @Mapping(target = "order", ignore = true)
-    })
-    DemoDTO demoToDemoDto(Demo demo);
 }

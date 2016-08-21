@@ -19,9 +19,7 @@
 package org.mapstruct.ap.internal.model.dependency;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * A node of a directed graph.
@@ -32,22 +30,16 @@ class Node {
 
     private final String name;
     private boolean visited;
-    private boolean processed;
+    private int traversalSequence = -1;
 
     /**
      * The direct descendants of this node.
      */
     private final List<Node> descendants;
 
-    /**
-     * All descendants of this node, direct and transitive ones, as discovered through graph traversal.
-     */
-    private final Set<String> allDescendants;
-
     Node(String name) {
         this.name = name;
         descendants = new ArrayList<Node>();
-        allDescendants = new HashSet<String>();
     }
 
     public String getName() {
@@ -63,24 +55,23 @@ class Node {
     }
 
     public boolean isProcessed() {
-        return processed;
+        return traversalSequence >= 0;
     }
 
-    public void setProcessed(boolean processed) {
-        this.processed = processed;
+    public int getTraversalSequence() {
+        return traversalSequence;
+    }
+
+    public void setTraversalSequence(int traversalSequence) {
+        this.traversalSequence = traversalSequence;
     }
 
     public void addDescendant(Node node) {
         descendants.add( node );
-        allDescendants.add( node.getName() );
     }
 
     public List<Node> getDescendants() {
         return descendants;
-    }
-
-    public Set<String> getAllDescendants() {
-        return allDescendants;
     }
 
     @Override

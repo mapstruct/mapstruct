@@ -18,6 +18,10 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
+import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,18 +52,15 @@ import org.mapstruct.ap.internal.model.source.Mapping;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.model.source.TargetReference;
 import org.mapstruct.ap.internal.model.source.SourceReference;
+import org.mapstruct.ap.internal.model.source.TargetReference;
 import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.last;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -218,18 +219,10 @@ public class BeanMappingMethod extends MappingMethod {
             else {
                 Collections.sort(
                     propertyMappings, new Comparator<PropertyMapping>() {
-
                         @Override
                         public int compare(PropertyMapping o1, PropertyMapping o2) {
-                            if ( graphAnalyzer.getAllDescendants( o1.getName() ).contains( o2.getName() ) ) {
-                                return 1;
-                            }
-                            else if ( graphAnalyzer.getAllDescendants( o2.getName() ).contains( o1.getName() ) ) {
-                                return -1;
-                            }
-                            else {
-                                return 0;
-                            }
+                            return graphAnalyzer.getTraversalSequence( o1.getName() )
+                                - graphAnalyzer.getTraversalSequence( o2.getName() );
                         }
                     }
                 );

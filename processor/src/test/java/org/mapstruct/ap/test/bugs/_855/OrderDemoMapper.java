@@ -16,37 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.dependency;
+package org.mapstruct.ap.test.bugs._855;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 
-public class DemoDTO {
-    private List<String> order = new LinkedList<String>();
+@Mapper
+public interface OrderDemoMapper {
+    OrderDemoMapper INSTANCE = Mappers.getMapper( OrderDemoMapper.class );
 
-    public void setField0(String field0) {
-        order.add( "field0" );
-    }
+    @Mappings({
+        @Mapping(target = "field0", dependsOn = "field2"),
+        @Mapping(target = "order", ignore = true)
+    })
+    OrderedTarget orderedWithDependsOn(OrderedSource source);
 
-    public void setField1(String field1) {
-        order.add( "field1" );
-    }
-
-    public void setField2(String field2) {
-        order.add( "field2" );
-    }
-
-
-    public void setField3(String field3) {
-        order.add( "field3" );
-    }
-
-
-    public void setField4(String field4) {
-        order.add( "field4" );
-    }
-
-    public List<String> getOrder() {
-        return order;
-    }
+    @Mapping(target = "order", ignore = true)
+    OrderedTarget orderedWithoutDependsOn(OrderedSource source);
 }
