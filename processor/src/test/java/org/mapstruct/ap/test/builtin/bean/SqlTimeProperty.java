@@ -16,21 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin.mapper;
+package org.mapstruct.ap.test.builtin.bean;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.builtin.bean.DateProperty;
-import org.mapstruct.ap.test.builtin.bean.SqlDateProperty;
-import org.mapstruct.factory.Mappers;
+import java.sql.Time;
 
 /**
- * @author Andreas Gudian
- *
+ * @author Filip Hrisafov
  */
-@Mapper
-public interface ErroneousSourceTargetWithSqlDateMapper {
+public class SqlTimeProperty {
 
-    ErroneousSourceTargetWithSqlDateMapper INSTANCE = Mappers.getMapper( ErroneousSourceTargetWithSqlDateMapper.class );
+    private Time prop;
 
-    SqlDateProperty toTargetWithSqlDate(DateProperty source);
+    public Time getProp() {
+        return prop;
+    }
+
+    public void setProp(Time prop) {
+        this.prop = prop;
+    }
 }
