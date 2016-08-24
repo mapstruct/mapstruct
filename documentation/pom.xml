@@ -67,7 +67,7 @@
               <configuration>
                     <sourceHighlighter>coderay</sourceHighlighter>
                     <attributes>
-                        <mapstructVersion>1.1.0.Beta1</mapstructVersion>
+                        <mapstructVersion>${project.version}</mapstructVersion>
                         <icons>font</icons>
                     </attributes>
                   </configuration>
