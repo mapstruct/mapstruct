@@ -20,8 +20,6 @@ package org.mapstruct.ap.test.builtin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -54,8 +52,6 @@ import org.mapstruct.ap.test.builtin.bean.DateProperty;
 import org.mapstruct.ap.test.builtin.bean.JaxbElementListProperty;
 import org.mapstruct.ap.test.builtin.bean.JaxbElementProperty;
 import org.mapstruct.ap.test.builtin.bean.SqlDateProperty;
-import org.mapstruct.ap.test.builtin.bean.SqlTimeProperty;
-import org.mapstruct.ap.test.builtin.bean.SqlTimestampProperty;
 import org.mapstruct.ap.test.builtin.bean.StringListProperty;
 import org.mapstruct.ap.test.builtin.bean.StringProperty;
 import org.mapstruct.ap.test.builtin.bean.XmlGregorianCalendarProperty;
@@ -66,14 +62,11 @@ import org.mapstruct.ap.test.builtin.mapper.CalendarToDateMapper;
 import org.mapstruct.ap.test.builtin.mapper.CalendarToStringMapper;
 import org.mapstruct.ap.test.builtin.mapper.CalendarToXmlGregCalMapper;
 import org.mapstruct.ap.test.builtin.mapper.DateToCalendarMapper;
-import org.mapstruct.ap.test.builtin.mapper.DateToSqlDateMapper;
 import org.mapstruct.ap.test.builtin.mapper.DateToXmlGregCalMapper;
 import org.mapstruct.ap.test.builtin.mapper.IterableSourceTargetMapper;
 import org.mapstruct.ap.test.builtin.mapper.JaxbListMapper;
 import org.mapstruct.ap.test.builtin.mapper.JaxbMapper;
 import org.mapstruct.ap.test.builtin.mapper.MapSourceTargetMapper;
-import org.mapstruct.ap.test.builtin.mapper.SqlTimeMapper;
-import org.mapstruct.ap.test.builtin.mapper.SqlTimestampMapper;
 import org.mapstruct.ap.test.builtin.mapper.StringToCalendarMapper;
 import org.mapstruct.ap.test.builtin.mapper.StringToXmlGregCalMapper;
 import org.mapstruct.ap.test.builtin.mapper.XmlGregCalToCalendarMapper;
@@ -94,8 +87,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     IterableTarget.class,
     MapTarget.class,
     SqlDateProperty.class,
-    SqlTimeProperty.class,
-    SqlTimestampProperty.class,
     CalendarProperty.class,
     DateProperty.class,
     JaxbElementListProperty.class,
@@ -111,9 +102,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     CalendarToXmlGregCalMapper.class,
     DateToCalendarMapper.class,
     DateToXmlGregCalMapper.class,
-    DateToSqlDateMapper.class,
-    SqlTimeMapper.class,
-    SqlTimestampMapper.class,
     IterableSourceTargetMapper.class,
     JaxbListMapper.class,
     JaxbMapper.class,
@@ -270,7 +258,7 @@ public class BuiltInTest {
 
         DateProperty target = CalendarToDateMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
-        assertThat( target.getProp() ).isNotNull().isInstanceOf( Date.class );
+        assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( createCalendar( "02.03.1999" ).getTime() );
     }
 
@@ -360,89 +348,6 @@ public class BuiltInTest {
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( createCalendar( "02.03.1999" ) );
     }
-
-    @Test
-    public void shouldApplyBuiltInOnDateToSqlDate() throws ParseException {
-        assertThat( DateToSqlDateMapper.INSTANCE.toTargetWithSqlDate( null ) ).isNull();
-        DateProperty source = new DateProperty();
-        source.setProp( createDate( "31-08-1982 10:20:56" ) );
-
-        SqlDateProperty target = DateToSqlDateMapper.INSTANCE.toTargetWithSqlDate( source );
-
-        assertThat( target ).isNotNull();
-        assertThat( target.getProp() ).isNotNull().isInstanceOf( java.sql.Date.class );
-        assertThat( target.getProp().toString() ).isEqualTo( "1982-08-31" );
-    }
-
-    @Test
-    public void shouldUseSqlDateWhenMappingToDate() throws ParseException {
-        assertThat( DateToSqlDateMapper.INSTANCE.fromSqlDate( null ) ).isNull();
-
-        SqlDateProperty source = new SqlDateProperty();
-        source.setProp( new java.sql.Date( createDate( "31-08-1982 10:20:56" ).getTime() ) );
-
-        DateProperty target = DateToSqlDateMapper.INSTANCE.fromSqlDate( source );
-        assertThat( target ).isNotNull();
-        assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp().toString() ).isEqualTo( "1982-08-31" );
-    }
-
-    @Test
-    public void shouldApplyBuiltInOnDateToSqlTime() throws ParseException {
-        SqlTimeMapper mapper = SqlTimeMapper.INSTANCE;
-        assertThat( mapper.map( null ) ).isNull();
-        DateProperty source = new DateProperty();
-        source.setProp( createDate( "31-08-1982 10:20:56" ) );
-
-        SqlTimeProperty target = mapper.map( source );
-
-        assertThat( target ).isNotNull();
-        assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp().toString() ).isEqualTo( "10:20:56" );
-    }
-
-    @Test
-    public void shouldUseSqlTimeWhenMappingToDate() throws ParseException {
-        SqlTimeMapper mapper = SqlTimeMapper.INSTANCE;
-        assertThat( mapper.fromTime( null ) ).isNull();
-
-        SqlTimeProperty source = new SqlTimeProperty();
-        source.setProp( new Time( createDate( "31-08-1982 10:20:56" ).getTime() ) );
-
-        DateProperty target = mapper.fromTime( source );
-        assertThat( target ).isNotNull();
-        assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp().toString() ).isEqualTo( "10:20:56" );
-    }
-
-    @Test
-    public void shouldApplyBuiltInOnDateToSqlTimestamp() throws ParseException {
-        SqlTimestampMapper mapper = SqlTimestampMapper.INSTANCE;
-        assertThat( mapper.map( null ) ).isNull();
-        DateProperty source = new DateProperty();
-        source.setProp( createDate( "31-08-1982 10:20:56" ) );
-
-        SqlTimestampProperty target = mapper.map( source );
-
-        assertThat( target ).isNotNull();
-        assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp().toString() ).isEqualTo( "1982-08-31 10:20:56.0" );
-    }
-
-    @Test
-    public void shouldUseSqlTimestampWhenMappingToDate() throws ParseException {
-        SqlTimestampMapper mapper = SqlTimestampMapper.INSTANCE;
-        assertThat( mapper.fromTimestamp( null ) ).isNull();
-
-        SqlTimestampProperty source = new SqlTimestampProperty();
-        source.setProp( new Timestamp( createDate( "31-08-1982 10:20:56" ).getTime() ) );
-
-        DateProperty target = mapper.fromTimestamp( source );
-        assertThat( target ).isNotNull();
-        assertThat( target.getProp() ).isNotNull();
-        assertThat( target.getProp().toString() ).isEqualTo( "1982-08-31 10:20:56.0" );
-    }
-
 
     private JAXBElement<String> createJaxb(String test) {
         return new JAXBElement<String>( new QName( "www.mapstruct.org", "test" ), String.class, test );
