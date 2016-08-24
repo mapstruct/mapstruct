@@ -20,7 +20,10 @@ package org.mapstruct.ap.test.conversion.date;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -160,5 +163,47 @@ public class DateConversionTest {
             new GregorianCalendar( 2013, 1, 14 ).getTime(),
             new GregorianCalendar( 2013, 3, 11 ).getTime()
         } );
+    }
+
+    @IssueKey("858")
+    @Test
+    public void shouldApplyDateToSqlConversion() throws Exception {
+        GregorianCalendar time = new GregorianCalendar( 2016, Calendar.AUGUST, 24, 20, 30, 30 );
+        GregorianCalendar sqlDate = new GregorianCalendar( 2016, Calendar.AUGUST, 23, 21, 35, 35 );
+        GregorianCalendar timestamp = new GregorianCalendar( 2016, Calendar.AUGUST, 22, 21, 35, 35 );
+        Source source = new Source();
+        source.setTime( time.getTime() );
+        source.setSqlDate( sqlDate.getTime() );
+        source.setTimestamp( timestamp.getTime() );
+
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+        Time expectedTime = new Time( time.getTime().getTime() );
+        java.sql.Date expectedSqlDate = new java.sql.Date( sqlDate.getTime().getTime() );
+        Timestamp expectedTimestamp = new Timestamp( timestamp.getTime().getTime() );
+
+        assertThat( target.getTime() ).isEqualTo( expectedTime );
+        assertThat( target.getSqlDate() ).isEqualTo( expectedSqlDate );
+        assertThat( target.getTimestamp() ).isEqualTo( expectedTimestamp );
+    }
+
+    @IssueKey("858")
+    @Test
+    public void shouldApplySqlToDateConversion() throws Exception {
+        Target target = new Target();
+        GregorianCalendar time = new GregorianCalendar( 2016, Calendar.AUGUST, 24, 20, 30, 30 );
+        GregorianCalendar sqlDate = new GregorianCalendar( 2016, Calendar.AUGUST, 23, 21, 35, 35 );
+        GregorianCalendar timestamp = new GregorianCalendar( 2016, Calendar.AUGUST, 22, 21, 35, 35 );
+        target.setTime( new Time( time.getTime().getTime() ) );
+        target.setSqlDate( new java.sql.Date( sqlDate.getTime().getTime() ) );
+        target.setTimestamp( new Timestamp( timestamp.getTime().getTime() ) );
+
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getTime() ).isEqualTo( target.getTime() );
+        assertThat( source.getSqlDate() ).isEqualTo( target.getSqlDate() );
+        assertThat( source.getTimestamp() ).isEqualTo( target.getTimestamp() );
     }
 }

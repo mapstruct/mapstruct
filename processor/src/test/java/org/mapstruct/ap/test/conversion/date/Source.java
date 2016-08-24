@@ -24,6 +24,9 @@ public class Source {
 
     private Date date;
     private Date anotherDate;
+    private Date time;
+    private Date sqlDate;
+    private Date timestamp;
 
     public Date getDate() {
         return date;
@@ -40,4 +43,29 @@ public class Source {
     public void setAnotherDate(Date anotherDate) {
         this.anotherDate = anotherDate;
     }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public Date getSqlDate() {
+        return sqlDate;
+    }
+
+    public void setSqlDate(Date sqlDate) {
+        this.sqlDate = sqlDate;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
 }

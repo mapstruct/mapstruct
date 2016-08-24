@@ -41,11 +41,7 @@ public class BuiltInMappingMethods {
             new StringToXmlGregorianCalendar( typeFactory ),
             new XmlGregorianCalendarToString( typeFactory ),
             new CalendarToXmlGregorianCalendar( typeFactory ),
-            new XmlGregorianCalendarToCalendar( typeFactory ),
-            new DateToSqlDate( typeFactory ),
-            new DateToSqlTime( typeFactory ),
-            new DateToSqlTimestamp( typeFactory )
-
+            new XmlGregorianCalendarToCalendar( typeFactory )
         );
 
         if ( isJaxbAvailable( typeFactory ) ) {

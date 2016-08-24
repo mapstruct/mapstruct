@@ -22,6 +22,8 @@ import static org.mapstruct.ap.internal.conversion.ReverseConversion.reverse;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -189,6 +191,9 @@ public class Conversions {
         register( Enum.class, String.class, new EnumStringConversion() );
         register( Date.class, String.class, new DateToStringConversion() );
         register( BigDecimal.class, BigInteger.class, new BigDecimalToBigIntegerConversion() );
+        register( Date.class, Time.class, new DateToSqlTimeConversion() );
+        register( Date.class, java.sql.Date.class, new DateToSqlDateConversion() );
+        register( Date.class, Timestamp.class, new DateToSqlTimestampConversion() );
     }
 
     private void registerJodaConversions() {
