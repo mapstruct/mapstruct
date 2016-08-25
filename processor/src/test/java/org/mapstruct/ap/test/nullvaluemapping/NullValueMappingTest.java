@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.nullvaluemapping;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.HashMap;

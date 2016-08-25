@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.bugs._634;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +50,6 @@ public class GenericContainerTest {
 
         Target<Bar> target = SourceTargetMapper.INSTANCE.mapSourceToTarget( source );
 
-        assertThat( target.getContent() ).onProperty( "value" ).containsExactly( 42L, 84L );
+        assertThat( target.getContent() ).extracting( "value" ).containsExactly( 42L, 84L );
     }
 }

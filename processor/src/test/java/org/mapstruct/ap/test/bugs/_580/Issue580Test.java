@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.bugs._580;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 

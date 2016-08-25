@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.array;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -68,7 +68,7 @@ public class ArrayMappingTest {
             .scientistsToDtos( new Scientist[]{ new Scientist( "Bob" ), new Scientist( "Larry" ) } );
 
         assertThat( dtos ).isNotNull();
-        assertThat( dtos ).onProperty( "name" ).containsOnly( "Bob", "Larry" );
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
     }
 
     @Test
@@ -77,7 +77,7 @@ public class ArrayMappingTest {
             .scientistsToDtos( Arrays.asList( new Scientist( "Bob" ), new Scientist( "Larry" ) ) );
 
         assertThat( dtos ).isNotNull();
-        assertThat( dtos ).onProperty( "name" ).containsOnly( "Bob", "Larry" );
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
     }
 
     @Test
@@ -86,7 +86,7 @@ public class ArrayMappingTest {
             .scientistsToDtosAsList( new Scientist[]{ new Scientist( "Bob" ), new Scientist( "Larry" ) } );
 
         assertThat( dtos ).isNotNull();
-        assertThat( dtos ).onProperty( "name" ).containsOnly( "Bob", "Larry" );
+        assertThat( dtos ).extracting( "name" ).containsOnly( "Bob", "Larry" );
     }
 
     @Test
@@ -99,7 +99,7 @@ public class ArrayMappingTest {
 
         assertThat( target ).isNotNull();
         assertThat( target ).isEqualTo( existingTarget );
-        assertThat( target ).onProperty( "name" ).containsOnly( "Bob" );
+        assertThat( target ).extracting( "name" ).containsOnly( "Bob" );
     }
 
     @Test
@@ -112,7 +112,7 @@ public class ArrayMappingTest {
 
         assertThat( target ).isNotNull();
         assertThat( target ).isEqualTo( existingTarget );
-        assertThat( target ).onProperty( "name" ).containsOnly( "Bob", "Larry"  );
+        assertThat( target ).extracting( "name" ).containsOnly( "Bob", "Larry"  );
     }
 
     @Test
@@ -126,7 +126,7 @@ public class ArrayMappingTest {
 
         assertThat( target ).isNotNull();
         assertThat( target ).isEqualTo( existingTarget );
-        assertThat( target ).onProperty( "name" ).containsOnly( "Bob", "Larry", "John"  );
+        assertThat( target ).extracting( "name" ).containsOnly( "Bob", "Larry", "John"  );
     }
 
     @Test
@@ -139,7 +139,7 @@ public class ArrayMappingTest {
         ScientistDto[] target = ScienceMapper.INSTANCE.scientistsToDtos( null, existingTarget );
 
         assertThat( target ).isNull();
-        assertThat( existingTarget ).onProperty( "name" ).containsOnly( "Jim" );
+        assertThat( existingTarget ).extracting( "name" ).containsOnly( "Jim" );
     }
 
     @IssueKey("534")

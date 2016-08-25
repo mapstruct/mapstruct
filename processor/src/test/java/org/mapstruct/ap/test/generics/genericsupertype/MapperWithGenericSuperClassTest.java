@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.generics.genericsupertype;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 
@@ -51,7 +51,7 @@ public class MapperWithGenericSuperClassTest {
 
         SearchResult<VesselDto> dtos = VesselSearchResultMapper.INSTANCE.vesselSearchResultToDto( vessels );
 
-        assertThat( dtos.getValues() ).onProperty( "name" ).containsExactly( "Pacific Queen" );
+        assertThat( dtos.getValues() ).extracting( "name" ).containsExactly( "Pacific Queen" );
         assertThat( dtos.getSize() ).isEqualTo( 1L );
     }
 }

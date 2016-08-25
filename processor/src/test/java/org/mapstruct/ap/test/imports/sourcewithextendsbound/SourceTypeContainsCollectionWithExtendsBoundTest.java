@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.imports.sourcewithextendsbound;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 
@@ -66,7 +66,7 @@ public class SourceTypeContainsCollectionWithExtendsBoundTest {
         SpaceshipDto spaceshipDto = SpaceshipMapper.INSTANCE.spaceshipToDto( spaceship );
 
         assertThat( spaceshipDto ).isNotNull();
-        assertThat( spaceshipDto.getAstronauts() ).onProperty( "name" ).containsOnly( "Bob" );
+        assertThat( spaceshipDto.getAstronauts() ).extracting( "name" ).containsOnly( "Bob" );
 
         generatedSource.forMapper( SpaceshipMapper.class ).containsImportFor( Astronaut.class );
         generatedSource.forMapper( SpaceshipMapper.class ).containsImportFor( Spaceship.class );

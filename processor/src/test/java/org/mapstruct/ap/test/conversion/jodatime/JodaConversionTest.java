@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.conversion.jodatime;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Calendar;
 import java.util.Locale;

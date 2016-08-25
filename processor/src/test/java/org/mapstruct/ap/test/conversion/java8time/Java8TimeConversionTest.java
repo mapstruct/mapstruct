@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.conversion.java8time;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

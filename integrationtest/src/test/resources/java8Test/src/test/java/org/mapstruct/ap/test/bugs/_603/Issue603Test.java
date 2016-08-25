@@ -21,7 +21,7 @@ package org.mapstruct.ap.test.bugs._603;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class Issue603Test {
 

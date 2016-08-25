@@ -18,7 +18,7 @@
  */
 package org.mapstruct.itest.jaxb;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
