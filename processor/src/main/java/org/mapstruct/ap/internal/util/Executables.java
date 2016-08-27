@@ -34,6 +34,8 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleElementVisitor6;
+import javax.lang.model.util.SimpleTypeVisitor6;
 
 import org.mapstruct.ap.internal.prism.AfterMappingPrism;
 import org.mapstruct.ap.internal.prism.BeforeMappingPrism;
@@ -75,9 +77,11 @@ public class Executables {
     }
 
     public static boolean isPresenceCheckMethod(ExecutableElement method) {
-        return isPublic( method ) &&
-            method.getParameters().isEmpty() &&
-            ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.PRESENCE_CHECKER;
+        return isPublic( method )
+            && method.getParameters().isEmpty()
+            && ( method.getReturnType().getKind() == TypeKind.BOOLEAN ||
+                    "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) ) )
+            && ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.PRESENCE_CHECKER;
     }
 
     public static boolean isSetterMethod(ExecutableElement method) {
@@ -284,4 +288,33 @@ public class Executables {
     public static boolean isBeforeMappingMethod(ExecutableElement executableElement) {
         return BeforeMappingPrism.getInstanceOn( executableElement ) != null;
     }
+
+    private static String getQualifiedName(TypeMirror type) {
+        DeclaredType declaredType = type.accept(
+            new SimpleTypeVisitor6<DeclaredType, Void>() {
+                @Override
+                public DeclaredType visitDeclared(DeclaredType t, Void p) {
+                    return t;
+                }
+            },
+            null
+        );
+
+        if ( declaredType == null ) {
+            return null;
+        }
+
+        TypeElement typeElement = declaredType.asElement().accept(
+            new SimpleElementVisitor6<TypeElement, Void>() {
+                @Override
+                public TypeElement visitType(TypeElement e, Void p) {
+                    return e;
+                }
+            },
+            null
+        );
+
+        return typeElement != null ? typeElement.getQualifiedName().toString() : null;
+    }
+
 }

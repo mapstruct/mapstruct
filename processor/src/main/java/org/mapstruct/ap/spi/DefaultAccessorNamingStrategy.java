@@ -32,7 +32,7 @@ import javax.lang.model.util.SimpleTypeVisitor6;
 /**
  * The default JavaBeans-compliant implementation of the {@link AccessorNamingStrategy} service provider interface.
  *
- * @author Christian Schuster
+ * @author Christian Schuster, Sjaak Derken
  */
 public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
 
@@ -55,7 +55,19 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         }
     }
 
-    private boolean isGetterMethod(ExecutableElement method) {
+    /**
+     * Returns {@code true} when the {@link ExecutableElement} is a getter method. A method is a getter when it starts
+     * with 'get' and the return type is any type other than {@code void}, OR the getter starts with 'is' and the type
+     * returned is a primitive or the wrapper for {@code boolean}. NOTE: the latter does strictly not comply to the bean
+     * convention. The remainder of the name is supposed to reflect the property name.
+     * <p>
+     * The calling MapStruct code guarantees that the given method has no arguments.
+     *
+     * @param method to be analyzed
+     *
+     * @return {@code true} when the method is a getter.
+     */
+    public boolean isGetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
         boolean isNonBooleanGetterName = methodName.startsWith( "get" ) && methodName.length() > 3 &&
@@ -68,36 +80,109 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         return isNonBooleanGetterName || ( isBooleanGetterName && returnTypeIsBoolean );
     }
 
+
+    /**
+     * Returns {@code true} when the {@link ExecutableElement} is a setter method. A setter starts with 'set'. The
+     * remainder of the name is supposed to reflect the property name.
+     * <p>
+     * The calling MapStruct code guarantees that there's only one argument.
+     *
+     * @param method to be analyzed
+     * @return {@code true} when the method is a setter.
+     */
     public boolean isSetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
         return methodName.startsWith( "set" ) && methodName.length() > 3;
     }
 
+    /**
+     * Returns {@code true} when the {@link ExecutableElement} is an adder method. An adder method starts with 'add'.
+     * The remainder of the name is supposed to reflect the <em>singular</em> property name (as opposed to plural) of
+     * its corresponding property. For example: property "children", but "addChild". See also
+     * {@link #getElementName(ExecutableElement) }.
+     * <p>
+     * The calling MapStruct code guarantees there's only one argument.
+     * <p>
+     *
+     * @param method to be analyzed
+     *
+     * @return {@code true} when the method is an adder method.
+     */
     public boolean isAdderMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
         return methodName.startsWith( "add" ) && methodName.length() > 3;
     }
 
+    /**
+     * Returns {@code true} when the {@link ExecutableElement} is a <em>presence check</em> method that checks if the
+     * corresponding property is present (e.g. not null, not nil, ..). A presence check method  method starts with
+     * 'has'. The remainder of the name is supposed to reflect the property name.
+     * <p>
+     * The calling MapStruct code guarantees there's no argument and that the return type is boolean or a
+     * {@link Boolean}
+     *
+     * @param method to be analyzed
+     * @return {@code true} when the method is a presence check method.
+     */
+    public boolean isPresenceCheckMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+        return methodName.startsWith( "has" ) && methodName.length() > 3;
+    }
 
+    /**
+     * Analyzes the method (getter or setter) and derives the property name.
+     * See {@link #isGetterMethod(ExecutableElement)} {@link #isSetterMethod(ExecutableElement)}. The first three
+     * ('get' / 'set' scenario) characters are removed from the simple name, or the first 2 characters ('is' scenario).
+     * From the remainder the first character is made into small case (to counter camel casing) and the result forms
+     * the property name.
+     *
+     * @param getterOrSetterMethod getter or setter method.
+     *
+     * @return the property name.
+     */
     @Override
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         String methodName = getterOrSetterMethod.getSimpleName().toString();
         return Introspector.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
     }
 
+    /**
+     * Adder methods are used to add elements to collections on a target bean. A typical use case is JPA. The
+     * convention is that the element name will be equal to the remainder of the add method. Example: 'addElement'
+     * element name will be 'element'.
+     *
+     * @param adderMethod getter or setter method.
+     *
+     * @return the property name.
+     */
     @Override
     public String getElementName(ExecutableElement adderMethod) {
         String methodName = adderMethod.getSimpleName().toString();
         return Introspector.decapitalize( methodName.substring( 3 ) );
     }
 
+   /**
+     * Returns the getter name of a collection given the property name. This will start with 'get' and the
+     * first character of the remainder will be placed in upper case.
+     *
+     * @param property the property
+     *
+     * @return getter name for collections.
+     */
     @Override
     public String getCollectionGetterName(String property) {
         return "get" + property.substring( 0, 1 ).toUpperCase() + property.substring( 1 );
     }
 
+   /**
+     * Helper method, to obtain the fully qualified name of a type.
+     *
+     * @param type input type
+     *
+     * @return fully qualified name of type when the type is a {@link DeclaredType}, null when otherwise.
+     */
     protected static String getQualifiedName(TypeMirror type) {
         DeclaredType declaredType = type.accept(
             new SimpleTypeVisitor6<DeclaredType, Void>() {
@@ -124,14 +209,6 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         );
 
         return typeElement != null ? typeElement.getQualifiedName().toString() : null;
-    }
-
-    private boolean isPresenceCheckMethod(ExecutableElement method) {
-        String methodName = method.getSimpleName().toString();
-
-        return methodName.startsWith( "has" ) && methodName.length() > 3 &&
-            ( method.getReturnType().getKind() == TypeKind.BOOLEAN ||
-                    "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) ) );
     }
 
 }
