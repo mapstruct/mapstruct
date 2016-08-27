@@ -75,6 +75,7 @@ public class GetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
         Set<Type> imported = new HashSet<Type>();
         imported.addAll( super.getImportTypes() );
         imported.add( localVarType ); /* is a local var */
+        imported.addAll( localVarType.getTypeParameters() );
         return imported;
     }
 
