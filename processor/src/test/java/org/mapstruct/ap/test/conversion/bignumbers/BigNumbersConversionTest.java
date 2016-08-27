@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.conversion.bignumbers;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

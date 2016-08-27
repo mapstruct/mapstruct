@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.selection.jaxb;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.xml.bind.annotation.XmlElementDecl;
 

@@ -18,8 +18,8 @@
  */
 package org.mapstruct.ap.test.references;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -73,7 +73,7 @@ public class ReferencedMapperTest {
     public void shouldUseGenericFactoryForIterable() {
         List<SomeType> result = SourceTargetMapper.INSTANCE.fromStringList( Arrays.asList( "foo1", "foo2" ) );
 
-        assertThat( result ).onProperty( "value" ).containsExactly( "foo1", "foo2" );
+        assertThat( result ).extracting( "value" ).containsExactly( "foo1", "foo2" );
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ReferencedMapperTest {
         Map<SomeType, SomeOtherType> result = SourceTargetMapper.INSTANCE.fromStringMap( source );
 
         assertThat( result ).hasSize( 2 );
-        assertThat( result ).includes(
+        assertThat( result ).contains(
             entry( new SomeType( "foo1" ), new SomeOtherType( "bar1" ) ),
             entry( new SomeType( "foo2" ), new SomeOtherType( "bar2" ) ) );
     }

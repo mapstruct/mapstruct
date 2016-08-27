@@ -20,7 +20,7 @@ package org.mapstruct.ap.test.bugs._636;
 
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class Issue636Test {
 

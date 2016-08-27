@@ -18,8 +18,8 @@
  */
 package org.mapstruct.ap.test.selection.qualifier;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -97,7 +97,7 @@ public class QualifierTest {
 
         assertThat( germanMovies.getFacts() ).isNotNull();
         assertThat( germanMovies.getFacts() ).hasSize( 3 );
-        assertThat( germanMovies.getFacts() ).includes(
+        assertThat( germanMovies.getFacts() ).contains(
                 entry( "Regisseur", Arrays.asList( "M. Night Shyamalan" ) ),
                 entry( "Besetzung", Arrays.asList( "Bruce Willis", "Haley Joel Osment", "Toni Collette" ) ),
             entry( "Handlungstichwörter", Arrays.asList( "Jungen", "Kinderpsychologe", "Ich sehe tote Menschen" ) )
@@ -171,7 +171,7 @@ public class QualifierTest {
 
         assertThat( abstractEntry.getFacts() ).isNotNull();
         assertThat( abstractEntry.getFacts() ).hasSize( 3 );
-        assertThat( abstractEntry.getFacts() ).includes(
+        assertThat( abstractEntry.getFacts() ).contains(
                 entry( "director", Arrays.asList( "M. Night Shyamalan" ) ),
                 entry( "cast", Arrays.asList( "Bruce Willis", "Haley Joel Osment", "Toni Collette" ) ),
                 entry( "plot keywords", Arrays.asList( "boy", "child psychologist", "I see dead people" ) )

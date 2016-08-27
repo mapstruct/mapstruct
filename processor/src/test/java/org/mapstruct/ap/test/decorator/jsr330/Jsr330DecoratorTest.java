@@ -19,7 +19,7 @@
 package org.mapstruct.ap.test.decorator.jsr330;
 
 import static java.lang.System.lineSeparator;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Calendar;
 

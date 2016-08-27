@@ -18,8 +18,8 @@
  */
 package org.mapstruct.ap.test.collection.map;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -53,7 +53,7 @@ public class MapMappingTest {
 
         assertThat( target ).isNotNull();
         assertThat( target ).hasSize( 2 );
-        assertThat( target ).includes(
+        assertThat( target ).contains(
             entry( "42", "01.01.1980" ),
             entry( "121", "20.07.2013" )
         );
@@ -100,7 +100,7 @@ public class MapMappingTest {
     private void assertResult(Map<Long, Date> target) {
         assertThat( target ).isNotNull();
         assertThat( target ).hasSize( 2 );
-        assertThat( target ).includes(
+        assertThat( target ).contains(
             entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
             entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
         );
@@ -127,7 +127,7 @@ public class MapMappingTest {
         assertThat( target ).isNotNull();
         assertThat( target.getValues() ).isNotNull();
         assertThat( target.getValues() ).hasSize( 2 );
-        assertThat( target.getValues() ).includes(
+        assertThat( target.getValues() ).contains(
             entry( "42", "01.01.1980" ),
             entry( "121", "20.07.2013" )
         );
@@ -145,7 +145,7 @@ public class MapMappingTest {
         assertThat( source ).isNotNull();
         assertThat( source.getValues() ).isNotNull();
         assertThat( source.getValues() ).hasSize( 2 );
-        assertThat( source.getValues() ).includes(
+        assertThat( source.getValues() ).contains(
             entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
             entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
         );

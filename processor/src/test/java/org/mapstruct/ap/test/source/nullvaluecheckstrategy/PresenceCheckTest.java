@@ -19,7 +19,7 @@
 package org.mapstruct.ap.test.source.nullvaluecheckstrategy;
 
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;

@@ -21,9 +21,9 @@ package org.mapstruct.ap.testutil.assertions;
 import java.io.File;
 import java.io.IOException;
 
-import org.fest.assertions.Assertions;
-import org.fest.assertions.FileAssert;
-import org.fest.assertions.StringAssert;
+import org.assertj.core.api.AbstractCharSequenceAssert;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.FileAssert;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -44,7 +44,7 @@ public class JavaFileAssert extends FileAssert {
     /**
      * @return assertion on the file content
      */
-    public StringAssert content() {
+    public AbstractCharSequenceAssert<?, String> content() {
         exists();
         isFile();
 
@@ -52,7 +52,7 @@ public class JavaFileAssert extends FileAssert {
             return Assertions.assertThat( Files.toString( actual, Charsets.UTF_8 ) );
         }
         catch ( IOException e ) {
-            failIfCustomMessageIsSet( e );
+            failWithMessage( "Unable to read" + actual.toString() + ". Exception: " + e.getMessage() );
         }
         return null;
     }

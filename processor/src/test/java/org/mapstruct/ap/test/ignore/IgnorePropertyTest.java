@@ -19,7 +19,7 @@
 package org.mapstruct.ap.test.ignore;
 
 import javax.tools.Diagnostic.Kind;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

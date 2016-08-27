@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 @WithClasses({
         Source.class,
@@ -151,11 +151,11 @@ public class NumberFormatConversionTest {
 
         Map<String, String> target = SourceTargetMapper.INSTANCE.sourceToTarget( source1 );
         assertThat( target  ).hasSize( 1 );
-        assertThat( target ).includes( entry( "1.00", "2" ) );
+        assertThat( target ).contains( entry( "1.00", "2" ) );
 
         Map<Float, Float> source2 = SourceTargetMapper.INSTANCE.targetToSource( target );
         assertThat( source2  ).hasSize( 1 );
-        assertThat( source2 ).includes( entry( 1.00f, 2f ) );
+        assertThat( source2 ).contains( entry( 1.00f, 2f ) );
 
     }
 }

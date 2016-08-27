@@ -18,8 +18,8 @@
  */
 package org.mapstruct.ap.test.naming;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -62,7 +62,7 @@ public class VariableNamingTest {
         assertThat( target.getValues() ).containsOnly( "42", "121" );
         assertThat( target.getSomeNumber() ).isEqualTo( "42" );
         assertThat( target.getMap() ).hasSize( 2 );
-        assertThat( target.getMap() ).includes(
+        assertThat( target.getMap() ).contains(
             entry( "42", "01.01.1980" ),
             entry( "121", "20.07.2013" )
         );

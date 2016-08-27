@@ -31,7 +31,7 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.mapstruct.ap.test.nestedsourceproperties._target.BaseChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntryComposed;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntryLabel;

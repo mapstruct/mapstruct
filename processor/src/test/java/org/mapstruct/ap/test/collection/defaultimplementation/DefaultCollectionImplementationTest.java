@@ -18,8 +18,8 @@
  */
 package org.mapstruct.ap.test.collection.defaultimplementation;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.MapAssert.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -192,7 +192,7 @@ public class DefaultCollectionImplementationTest {
     private void assertResultMap(Map<String, TargetFoo> result) {
         assertThat( result ).isNotNull();
         assertThat( result ).hasSize( 2 );
-        assertThat( result ).includes( entry( "1", new TargetFoo( "Bob" ) ), entry( "2", new TargetFoo( "Alice" ) ) );
+        assertThat( result ).contains( entry( "1", new TargetFoo( "Bob" ) ), entry( "2", new TargetFoo( "Alice" ) ) );
     }
 
     private Map<Long, SourceFoo> createSourceFooMap() {

@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.builtin;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

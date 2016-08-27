@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.bugs._394;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;
