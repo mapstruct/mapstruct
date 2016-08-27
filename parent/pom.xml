@@ -50,6 +50,7 @@
         <com.puppycrawl.tools.checkstyle.version>6.14.1</com.puppycrawl.tools.checkstyle.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
+        <assertj.version>3.5.2</assertj.version>
     </properties>
 
     <licenses>
@@ -107,7 +108,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.5.2</version>
+                <version>${assertj.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
