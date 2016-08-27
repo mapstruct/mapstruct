@@ -348,6 +348,12 @@ public class PropertyMapping extends ModelElement {
                 return result;
             }
 
+            // a nested source reference will take the bean mapping parameter itself, no null check is required
+            // since this is handled by the BeanMapping
+            if ( sourceReference.getPropertyEntries().size() > 1 ) {
+                return result;
+            }
+
             // add a null / presence checked when required
             if ( sourceType.isPrimitive() ) {
                 if ( getSourcePresenceCheckerRef() != null ) {
