@@ -1974,3 +1974,132 @@ The order in which the selected methods are applied is roughly determined by the
 ====
 `@BeforeMapping` and `@AfterMapping` are considered experimental as of the 1.0.0.CR1 release. Details in the selection of before/after mapping methods that are applicable for a mapping method or the order in which they are called might still be changed.
 ====
+[[using-spi]]
+== Using the MapStruct SPI
+=== Custom Accessor Naming Strategy
+
+MapStruct offers the possibility to override the `AccessorNamingStrategy` via the Service Provide Interface (SPI). A nice example is the use of the fluent API on the source object `GolfPlayer` and `GolfPlayerDto` below.
+
+.Source object GolfPlayer with fluent API.
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class GolfPlayer {
+
+    private double handicap;
+    private String name;
+
+    public double handicap() {
+        return handicap;
+    }
+
+    public GolfPlayer withHandicap(double handicap) {
+        this.handicap = handicap;
+        return this;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public GolfPlayer withName(String name) {
+        this.name = name;
+        return this;
+    }
+}
+----
+====
+
+.Source object GolfPlayerDto with fluent API.
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class GolfPlayerDto {
+
+    private double handicap;
+    private String name;
+
+    public double handicap() {
+        return handicap;
+    }
+
+    public GolfPlayerDto withHandicap(double handicap) {
+        this.handicap = handicap;
+        return this;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public GolfPlayerDto withName(String name) {
+        this.name = name;
+        return this
+    }
+}
+----
+====
+
+We want `GolfPlayer` to be mapped to a target object `GolfPlayerDto` similar like we 'always' do this:
+
+.Source object with fluent API.
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface GolfPlayerMapper {
+
+    GolfPlayerMapper INSTANCE = Mappers.getMapper( GolfPlayerMapper.class );
+
+    GolfPlayerDto toDto(GolfPlayer player);
+
+    GolfPlayer toPlayer(GolfPlayerDto player);
+
+}
+----
+====
+
+This can be achieved with implementing the SPI `org.mapstruct.ap.spi.AccessorNamingStrategy` as in the following example. Here's an implemented `org.mapstruct.ap.spi.AccessorNamingStrategy`:
+
+.CustomAccessorNamingStrategy
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+/**
+ * A custom {@link AccessorNamingStrategy} recognizing getters in the form of {@code property()} and setters in the
+ * form of {@code withProperty(value)}.
+ */
+public class CustomAccessorNamingStrategy extends DefaultAccessorNamingStrategy {
+
+    @Override
+    public boolean isGetterMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+        return !methodName.startsWith( "with" ) && method.getReturnType().getKind() != TypeKind.VOID;
+    }
+
+    @Override
+    public boolean isSetterMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+        return methodName.startsWith( "with" ) && methodName.length() > 4;
+    }
+
+    @Override
+    public String getPropertyName(ExecutableElement getterOrSetterMethod) {
+        String methodName = getterOrSetterMethod.getSimpleName().toString();
+        return Introspector.decapitalize( methodName.startsWith( "with" ) ? methodName.substring(  4 ) : methodName );
+    }
+}
+----
+====
+The `CustomAccessorNamingStrategy` makes use of the `DefaultAccessorNamingStrategy` (also available in mapstruct-processor) and relies on that class to leave most of the default behaviour unchanged.
+
+To use a custom SPI implementation, it must be located in a seperate .jar file together with the file `META-INF/services/org.mapstruct.ap.spi.AccessorNamingStrategy` with the fully qualified name of your custom implementation as content (e.g. `org.mapstruct.example.CustomAccessorNamingStrategy`). This .jar file needs to be added to the annotation processor classpath (i.e. add it next to the place where you added the mapstruct-processor jar).
+
+[TIP]
+Fore more details: There's the above example is present in our our examples repository (https://github.com/mapstruct/mapstruct-examples).
+
+
