@@ -867,6 +867,11 @@ public class Titles {
 
 [WARNING]
 ====
+Please make sure the used retention policy equals retention policy `CLASS` (`@Retention(RetentionPolicy.CLASS)`).
+====
+
+[WARNING]
+====
 A class / method annotated with a qualifier will not qualify anymore for mappings that do not have the `qualifiedBy` element.
 ====
 
