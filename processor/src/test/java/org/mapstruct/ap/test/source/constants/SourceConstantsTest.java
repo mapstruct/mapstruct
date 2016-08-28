@@ -49,6 +49,7 @@ public class SourceConstantsTest {
         Source.class,
         Source2.class,
         Target.class,
+        CountryEnum.class,
         SourceTargetMapper.class,
         StringListMapper.class
     })
@@ -66,6 +67,7 @@ public class SourceConstantsTest {
         assertThat( target.getLongWrapperConstant() ).isEqualTo( new Long( 3001L ) );
         assertThat( target.getDateConstant() ).isEqualTo( getDate( "dd-MM-yyyy", "09-01-2014" ) );
         assertThat( target.getNameConstants() ).isEqualTo( Arrays.asList( "jack", "jill", "tom" ) );
+        assertThat( target.getCountry() ).isEqualTo( CountryEnum.THE_NETHERLANDS );
     }
 
     @Test
@@ -73,6 +75,7 @@ public class SourceConstantsTest {
     @WithClasses({
         Source.class,
         Target.class,
+        CountryEnum.class,
         SourceTargetMapper.class,
         StringListMapper.class
     })
@@ -91,6 +94,7 @@ public class SourceConstantsTest {
     @WithClasses({
         Source.class,
         Target.class,
+        CountryEnum.class,
         ErroneousMapper1.class,
         StringListMapper.class
     })
@@ -99,12 +103,12 @@ public class SourceConstantsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 43,
                 messageRegExp = "Source and constant are both defined in @Mapping, either define a source or a "
                     + "constant"),
             @Diagnostic(type = ErroneousMapper1.class,
                 kind = Kind.WARNING,
-                line = 42,
+                line = 43,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
         }
     )
@@ -116,6 +120,7 @@ public class SourceConstantsTest {
     @WithClasses({
         Source.class,
         Target.class,
+        CountryEnum.class,
         ErroneousMapper3.class,
         StringListMapper.class
     })
@@ -124,13 +129,13 @@ public class SourceConstantsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 43,
                 messageRegExp =
                     "Expression and constant are both defined in @Mapping, either define an expression or a "
                         + "constant"),
             @Diagnostic(type = ErroneousMapper3.class,
                 kind = Kind.WARNING,
-                line = 42,
+                line = 43,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
         }
     )
@@ -142,6 +147,7 @@ public class SourceConstantsTest {
     @WithClasses({
         Source.class,
         Target.class,
+        CountryEnum.class,
         ErroneousMapper4.class,
         StringListMapper.class
     })
@@ -150,12 +156,12 @@ public class SourceConstantsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 43,
                 messageRegExp = "Source and expression are both defined in @Mapping, either define a source or an "
                     + "expression"),
             @Diagnostic(type = ErroneousMapper4.class,
                 kind = Kind.WARNING,
-                line = 42,
+                line = 43,
                 messageRegExp = "Unmapped target property: \"integerConstant\"")
         }
     )
@@ -182,6 +188,33 @@ public class SourceConstantsTest {
         assertThat( target.getSomeProp() ).isEqualTo( "someProp" );
         assertThat( target.getAnotherProp() ).isEqualTo( "anotherProp" );
         assertThat( target.getSomeConstant() ).isEqualTo( "stringConstant" );
+    }
+
+    @Test
+    @IssueKey("700")
+    @WithClasses({
+        Source.class,
+        Target.class,
+        CountryEnum.class,
+        ErroneousMapper5.class,
+        StringListMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapper5.class,
+                kind = Kind.ERROR,
+                line = 43,
+                messageRegExp = "^Constant \"DENMARK\" doesn't exist in enum type org.mapstruct.ap.test.source."
+                    + "constants.CountryEnum for property \"country\".$"),
+            @Diagnostic(type = ErroneousMapper5.class,
+                kind = Kind.ERROR,
+                line = 43,
+                messageRegExp = "^Can't map \"java.lang.String \"DENMARK\"\" to \"org.mapstruct.ap.test.source."
+                    + "constants.CountryEnum country\".$")
+        }
+    )
+    public void errorOnNonExistingEnumConstant() throws ParseException {
     }
 
     private Date getDate(String format, String date) throws ParseException {

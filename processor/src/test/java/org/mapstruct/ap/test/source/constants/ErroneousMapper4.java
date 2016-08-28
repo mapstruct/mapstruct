@@ -37,7 +37,8 @@ public interface ErroneousMapper4 {
         @Mapping(source = "test", target = "integerConstant", expression = "java('test')"),
         @Mapping(target = "longWrapperConstant", constant = "3001"),
         @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
-        @Mapping(target = "nameConstants", constant = "jack-jill-tom")
+        @Mapping(target = "nameConstants", constant = "jack-jill-tom"),
+        @Mapping(target = "country", constant = "THE_NETHERLANDS")
     })
     Target sourceToTarget(Source s);
 }

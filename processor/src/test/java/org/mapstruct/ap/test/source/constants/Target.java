@@ -34,6 +34,7 @@ public class Target {
     private Long longWrapperConstant;
     private Date dateConstant;
     private List<String> nameConstants = new ArrayList<String>();
+    private CountryEnum country;
 
     public String getPropertyThatShouldBeMapped() {
         return propertyThatShouldBeMapped;
@@ -85,6 +86,14 @@ public class Target {
 
     public void setEmptyStringConstant(String emptyStringConstant) {
         this.emptyStringConstant = emptyStringConstant;
+    }
+
+    public CountryEnum getCountry() {
+        return country;
+    }
+
+    public void setCountry(CountryEnum country) {
+        this.country = country;
     }
 
 }

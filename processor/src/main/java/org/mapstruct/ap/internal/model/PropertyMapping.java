@@ -35,6 +35,7 @@ import javax.lang.model.type.DeclaredType;
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
 import org.mapstruct.ap.internal.model.assignment.EnumSetCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
@@ -686,17 +687,23 @@ public class PropertyMapping extends ModelElement {
             String mappedElement = "constant '" + constantExpression + "'";
             Type sourceType = ctx.getTypeFactory().getType( String.class );
 
-            Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
-                method,
-                mappedElement,
-                sourceType,
-                targetType,
-                targetPropertyName,
-                formattingParameters,
-                selectionParameters,
-                constantExpression,
-                method.getMappingTargetParameter() != null
-            );
+            Assignment assignment = null;
+            if ( !targetType.isEnumType() ) {
+                assignment = ctx.getMappingResolver().getTargetAssignment(
+                    method,
+                    mappedElement,
+                    sourceType,
+                    targetType,
+                    targetPropertyName,
+                    formattingParameters,
+                    selectionParameters,
+                    constantExpression,
+                    method.getMappingTargetParameter() != null
+                );
+            }
+            else {
+                assignment = getEnumAssignment();
+            }
 
             if ( assignment != null ) {
 
@@ -751,6 +758,26 @@ public class PropertyMapping extends ModelElement {
                 null
             );
         }
+
+        private Assignment getEnumAssignment() {
+            Assignment assignment = null;
+            // String String quotation marks.
+            String enumExpression = constantExpression.substring( 1, constantExpression.length() - 1 );
+            if ( targetType.getEnumConstants().contains( enumExpression ) ) {
+                assignment = AssignmentFactory.createDirect( enumExpression );
+                assignment = new EnumConstantWrapper( assignment, targetType );
+            }
+            else {
+                ctx.getMessager().printMessage( method.getExecutable(),
+                    Message.CONSTANTMAPPING_NON_EXISTING_CONSTANT,
+                    constantExpression,
+                    targetType,
+                    targetPropertyName
+                );
+            }
+            return assignment;
+        }
+
     }
 
     public static class JavaExpressionMappingBuilder extends MappingBuilderBase<JavaExpressionMappingBuilder> {

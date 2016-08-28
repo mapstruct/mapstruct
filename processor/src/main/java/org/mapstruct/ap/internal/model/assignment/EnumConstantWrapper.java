@@ -16,28 +16,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.source.constants;
+package org.mapstruct.ap.internal.model.assignment;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.factory.Mappers;
+import java.util.HashSet;
+import java.util.Set;
+import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ *
  * @author Sjaak Derksen
  */
-@Mapper(uses = StringListMapper.class)
-public interface ErroneousMapper2 {
+public class EnumConstantWrapper extends AssignmentWrapper {
 
-    ErroneousMapper2 INSTANCE = Mappers.getMapper( ErroneousMapper2.class );
+    private final Type enumType;
 
-    @Mappings({
-        @Mapping(target = "stringConstant", constant = "stringConstant"),
-        @Mapping(target = "integerConstant"),
-        @Mapping(target = "longWrapperConstant", constant = "3001"),
-        @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
-        @Mapping(target = "nameConstants", constant = "jack-jill-tom"),
-        @Mapping(target = "country", constant = "THE_NETHERLANDS")
-    })
-    Target sourceToTarget(Source s);
+    public EnumConstantWrapper(Assignment decoratedAssignment, Type enumType ) {
+        super( decoratedAssignment );
+        this.enumType = enumType;
+    }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> imported = new HashSet<Type>( getAssignment().getImportTypes() );
+        imported.add( enumType );
+        return imported;
+    }
+
+    @Override
+    public String toString() {
+        return enumType.getName() + "." + getAssignment();
+    }
+
 }

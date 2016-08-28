@@ -27,17 +27,20 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper(uses = StringListMapper.class)
-public interface ErroneousMapper2 {
+public interface ErroneousMapper5 {
 
-    ErroneousMapper2 INSTANCE = Mappers.getMapper( ErroneousMapper2.class );
+    ErroneousMapper5 INSTANCE = Mappers.getMapper( ErroneousMapper5.class );
 
     @Mappings({
         @Mapping(target = "stringConstant", constant = "stringConstant"),
-        @Mapping(target = "integerConstant"),
+        @Mapping(target = "emptyStringConstant", constant = ""),
+        @Mapping(target = "integerConstant", constant = "14"),
         @Mapping(target = "longWrapperConstant", constant = "3001"),
         @Mapping(target = "dateConstant", dateFormat = "dd-MM-yyyy", constant = "09-01-2014"),
         @Mapping(target = "nameConstants", constant = "jack-jill-tom"),
-        @Mapping(target = "country", constant = "THE_NETHERLANDS")
+        @Mapping(target = "country", constant = "DENMARK")
     })
     Target sourceToTarget(Source s);
+
+    Source targetToSource(Target t);
 }
