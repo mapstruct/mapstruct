@@ -1,6 +1,7 @@
 # MapStruct - Java bean mappings, the easy way!
 
-_Version: 1.0.0.Final, November 25th 2015_
+[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.0.0.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
+[![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=2592000&label=Latest%20Release)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct)
 
 ## What is MapStruct?
 
@@ -35,7 +36,6 @@ MapStruct is a Java annotation processor based on [JSR 269](jcp.org/en/jsr/detai
 For Maven based projects add the following to your POM file in order to use MapStruct (the dependencies can be obtained from Maven Central):
 
 ```xml
-
 ...
 <properties>
     <org.mapstruct.version>1.0.0.Final</org.mapstruct.version>
@@ -44,13 +44,7 @@ For Maven based projects add the following to your POM file in order to use MapS
 <dependencies>
     <dependency>
         <groupId>org.mapstruct</groupId>
-        <artifactId>mapstruct</artifactId>
-        <version>${org.mapstruct.version}</version>
-    </dependency>
-    <!-- Use this with Java 8 and beyond -->
-    <dependency>
-        <groupId>org.mapstruct</groupId>
-        <artifactId>mapstruct-jdk8</artifactId>
+        <artifactId>mapstruct</artifactId> <!-- OR use this with Java 8 and beyond: <artifactId>mapstruct-jdk8</artifactId> -->
         <version>${org.mapstruct.version}</version>
     </dependency>
 </dependencies>
@@ -58,33 +52,20 @@ For Maven based projects add the following to your POM file in order to use MapS
 <build>
     <plugins>
         <plugin>
-            <groupId>org.bsc.maven</groupId>
-            <artifactId>maven-processor-plugin</artifactId>
-            <version>2.2.4</version>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.5.1</version>
             <configuration>
-                <defaultOutputDirectory>
-                    ${project.build.directory}/generated-sources
-                </defaultOutputDirectory>
-                <processors>
-                    <processor>org.mapstruct.ap.MappingProcessor</processor>
-                </processors>
+                <source>1.6</source> <!-- or 1.7 or 1.8, .. -->
+                <target>1.6</target>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct-processor</artifactId>
+                        <version>${org.mapstruct.version}</version>
+                    </path>
+                </annotationProcessorPaths>
             </configuration>
-            <executions>
-                <execution>
-                    <id>process</id>
-                    <phase>generate-sources</phase>
-                    <goals>
-                        <goal>process</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <dependencies>
-                <dependency>
-                    <groupId>org.mapstruct</groupId>
-                    <artifactId>mapstruct-processor</artifactId>
-                    <version>${org.mapstruct.version}</version>
-                </dependency>
-            </dependencies>
         </plugin>
     </plugins>
 </build>
