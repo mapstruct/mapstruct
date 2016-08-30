@@ -44,6 +44,8 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  *
+ * <b>NOTE: </b>Qualifiers should have {@link RetentionPolicy#CLASS}.
+ *
  * @author Sjaak Derksen
  */
 @Target(ElementType.ANNOTATION_TYPE)
