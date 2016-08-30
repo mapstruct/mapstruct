@@ -30,6 +30,10 @@ public interface AccessorNamingStrategy {
 
     /**
      * Returns the type of the given method.
+     *
+     * @param method to be analyzed.
+     *
+     * @return the method type.
      */
     MethodType getMethodType(ExecutableElement method);
 
@@ -38,6 +42,10 @@ public interface AccessorNamingStrategy {
      * <p>
      * The default implementation will e.g. return "name" for {@code public String getName()} or {@code public void
      * setName(String name)}.
+     *
+     * @param getterOrSetterMethod to be analyzed.
+     *
+     * @return property name derived from the getterOrSetterMethod
      */
     String getPropertyName(ExecutableElement getterOrSetterMethod);
 
@@ -45,6 +53,10 @@ public interface AccessorNamingStrategy {
      * Returns the element name of the given adder method.
      * <p>
      * The default implementation will e.g. return "item" for {@code public void addItem(String item)}.
+     *
+     * @param adderMethod to be getterOrSetterMethod.
+     *
+     * @return getter name for collections
      */
     String getElementName(ExecutableElement adderMethod);
 
@@ -52,6 +64,10 @@ public interface AccessorNamingStrategy {
      * Returns the getter name of the given collection property.
      * <p>
      * The default implementation will e.g. return "getItems" for "items".
+     *
+     * @param property to be getterOrSetterMethod.
+     *
+     * @return getter name for collection properties
      */
     String getCollectionGetterName(String property);
 }

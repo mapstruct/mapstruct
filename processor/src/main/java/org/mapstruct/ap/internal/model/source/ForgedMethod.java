@@ -52,6 +52,7 @@ public class ForgedMethod implements Method {
      * @param name the (unique name) for this method
      * @param sourceType the source type
      * @param targetType the target type.
+     * @param mapperConfiguration the mapper configuration
      * @param positionHintElement element used to for reference to the position in the source file.
      */
     public ForgedMethod(String name, Type sourceType, Type targetType, MapperConfiguration mapperConfiguration,

@@ -109,6 +109,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
 
     /**
      * @param originalReference the reference to be replaced
+     * @param annotations the list of annotations
      *
      * @return the mapper reference replacing the original one
      */
@@ -127,6 +128,8 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     protected abstract String getComponentModelIdentifier();
 
     /**
+     * @param mapper the mapper
+     *
      * @return the annotation(s) to be added at the mapper type implementation
      */
     protected abstract List<Annotation> getTypeAnnotations(Mapper mapper);
