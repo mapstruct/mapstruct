@@ -128,7 +128,7 @@ public class IterableMappingMethod extends MappingMethod {
             }
             // target accessor is setter, so decorate assignment as setter
             if ( resultType.isArrayType() ) {
-                assignment = new LocalVarWrapper( assignment, method.getThrownTypes() );
+                assignment = new LocalVarWrapper( assignment, method.getThrownTypes(), resultType );
             }
             else {
                 assignment = new SetterWrapper( assignment, method.getThrownTypes() );

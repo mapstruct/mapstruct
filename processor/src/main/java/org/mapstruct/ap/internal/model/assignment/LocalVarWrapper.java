@@ -19,7 +19,9 @@
 package org.mapstruct.ap.internal.model.assignment;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -31,10 +33,12 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class LocalVarWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
+    private final Type targetType;
 
-    public LocalVarWrapper( Assignment decoratedAssignment, List<Type> thrownTypesToExclude ) {
+    public LocalVarWrapper( Assignment decoratedAssignment, List<Type> thrownTypesToExclude, Type targetType ) {
         super( decoratedAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
+        this.targetType = targetType;
     }
 
     @Override
@@ -50,4 +54,13 @@ public class LocalVarWrapper extends AssignmentWrapper {
         }
         return result;
     }
+
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> imported = new HashSet<Type>( getAssignment().getImportTypes() );
+        imported.add( targetType );
+        imported.addAll( targetType.getTypeParameters() );
+        return imported;
+    }
+
 }

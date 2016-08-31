@@ -38,6 +38,7 @@ import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
 import org.mapstruct.ap.internal.model.assignment.EnumSetCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
+import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
@@ -447,14 +448,24 @@ public class PropertyMapping extends ModelElement {
                         targetType );
                 }
                 else {
-                    // wrap the assignment in the setter method
-                    result = new SetterWrapper( result, method.getThrownTypes() );
+
+                    if ( method.isUpdateMethod() ) {
+                        // if the calling method is an update method and accesses a getter, make a local variable to
+                        // test NPE first.
+                        result = new LocalVarWrapper( result, method.getThrownTypes(), targetType );
+                    }
+                    else {
+                        // if not, asssign as new collecitin or direct
+                        result = new SetterWrapper( result, method.getThrownTypes() );
+                    }
 
                     // target accessor is setter, so wrap the setter in setter map/ collection handling
                     result = new SetterWrapperForCollectionsAndMaps(
                         result,
-                        targetWriteAccessor,
-                        newCollectionOrMap
+                        Executables.getCollectionGetterName( targetWriteAccessor ),
+                        newCollectionOrMap,
+                        targetType,
+                        existingVariableNames
                     );
                 }
 

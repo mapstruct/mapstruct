@@ -18,13 +18,12 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.lang.model.element.ExecutableElement;
-
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.util.Executables;
+import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * This wrapper handles the situation were an assignment is done via the setter.
@@ -42,14 +41,21 @@ public class SetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
 
     private final String targetGetterName;
     private final Assignment newCollectionOrMapAssignment;
+    private final Type targetType;
+    private final String localVarName;
 
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
-                                              ExecutableElement targetSetter,
-                                              Assignment newCollectionOrMapAssignment) {
+                                              String targetGetterName,
+                                              Assignment newCollectionOrMapAssignment,
+                                              Type targetType,
+                                              Collection<String> existingVariableNames) {
         super( decoratedAssignment );
 
-        this.targetGetterName = Executables.getCollectionGetterName( targetSetter );
+        this.targetGetterName = targetGetterName;
         this.newCollectionOrMapAssignment = newCollectionOrMapAssignment;
+        this.targetType = targetType;
+        this.localVarName = Strings.getSaveVariableName( targetType.getName(), existingVariableNames );
+        existingVariableNames.add( localVarName );
     }
 
     public String getTargetGetterName() {
@@ -69,4 +75,9 @@ public class SetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
         }
         return imported;
     }
+
+    public String getLocalVarName() {
+        return localVarName;
+    }
+
 }

@@ -19,44 +19,33 @@
 
 -->
 <#if ( ext.existingInstanceMapping ) >
+    <@_assignment targetWriteAccessorName = localVarName/>
     if ( ${ext.targetBeanName}.${targetGetterName}() != null ) {
         ${ext.targetBeanName}.${targetGetterName}().clear();
-        <#if ext.targetType.collectionType>
-            <@includeModel object=assignment
-                   targetBeanName=ext.targetBeanName
-                   existingInstanceMapping=ext.existingInstanceMapping
-                   targetReadAccessorName=ext.targetReadAccessorName
-                   targetWriteAccessorName="${targetGetterName}().addAll"
-                   targetType=ext.targetType/>
-        <#else>
-            <@includeModel object=assignment
-                   targetBeanName=ext.targetBeanName
-                   existingInstanceMapping=ext.existingInstanceMapping
-                   targetReadAccessorName=ext.targetReadAccessorName
-                   targetWriteAccessorName="${targetGetterName}().putAll"
-                   targetType=ext.targetType/>
-        </#if>
+        if ( ${localVarName} != null ) {
+            ${ext.targetBeanName}.${ext.targetReadAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
+        }
     }
     else {
         <#if newCollectionOrMapAssignment??>
             <@_newCollectionOrMapAssignment/>
         <#else>
-            <@_assignment/>
+            ${ext.targetBeanName}.${ext.targetWriteAccessorName}( ${localVarName} );
         </#if>
     }
 <#else>
     <#if newCollectionOrMapAssignment??>
         <@_newCollectionOrMapAssignment/>
     <#else>
-        <@_assignment/>
+        <@_assignment targetWriteAccessorName = ext.targetWriteAccessorName/>
     </#if>
 </#if>
-<#macro _assignment>
+<#macro _assignment targetWriteAccessorName>
     <@includeModel object=assignment
             targetBeanName=ext.targetBeanName
             existingInstanceMapping=ext.existingInstanceMapping
             targetReadAccessorName=ext.targetReadAccessorName
-            targetWriteAccessorName=ext.targetWriteAccessorName
+            targetWriteAccessorName=targetWriteAccessorName
             targetType=ext.targetType/>
 </#macro>
 <#macro _newCollectionOrMapAssignment>
