@@ -462,7 +462,7 @@ public class PropertyMapping extends ModelElement {
                     // target accessor is setter, so wrap the setter in setter map/ collection handling
                     result = new SetterWrapperForCollectionsAndMaps(
                         result,
-                        Executables.getCollectionGetterName( targetWriteAccessor ),
+                        targetReadAccessor.getSimpleName().toString(),
                         newCollectionOrMap,
                         targetType,
                         existingVariableNames

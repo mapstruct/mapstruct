@@ -125,11 +125,6 @@ public class Executables {
         return ACCESSOR_NAMING_STRATEGY.getElementName( adderMethod );
     }
 
-    public static String getCollectionGetterName(ExecutableElement targetSetter) {
-        String propertyName = ACCESSOR_NAMING_STRATEGY.getPropertyName( targetSetter );
-        return ACCESSOR_NAMING_STRATEGY.getCollectionGetterName( propertyName );
-    }
-
     /**
      * @param mirror the type mirror
      *

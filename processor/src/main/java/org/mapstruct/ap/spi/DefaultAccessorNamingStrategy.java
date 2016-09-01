@@ -164,19 +164,6 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     }
 
    /**
-     * Returns the getter name of a collection given the property name. This will start with 'get' and the
-     * first character of the remainder will be placed in upper case.
-     *
-     * @param property the property
-     *
-     * @return getter name for collections.
-     */
-    @Override
-    public String getCollectionGetterName(String property) {
-        return "get" + property.substring( 0, 1 ).toUpperCase() + property.substring( 1 );
-    }
-
-   /**
      * Helper method, to obtain the fully qualified name of a type.
      *
      * @param type input type
@@ -209,6 +196,12 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         );
 
         return typeElement != null ? typeElement.getQualifiedName().toString() : null;
+    }
+
+    @Override
+    public String getCollectionGetterName(String property) {
+        throw new IllegalStateException( "This method is not intended to be called anymore and will be removed in "
+            + "future versions." );
     }
 
 }

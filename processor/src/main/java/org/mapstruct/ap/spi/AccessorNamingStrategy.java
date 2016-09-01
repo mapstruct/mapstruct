@@ -60,6 +60,7 @@ public interface AccessorNamingStrategy {
      */
     String getElementName(ExecutableElement adderMethod);
 
+
     /**
      * Returns the getter name of the given collection property.
      * <p>
@@ -68,6 +69,11 @@ public interface AccessorNamingStrategy {
      * @param property to be getterOrSetterMethod.
      *
      * @return getter name for collection properties
+     *
+     * @deprecated MapStuct will not call this method anymore. Use {@link #getMethodType(ExecutableElement)} to
+     * determine the {@link MethodType}. When collections somehow need to be treated special, it should be done in
+     * {@link #getMethodType(ExecutableElement) } as well. In the future, this method will be removed.
      */
+    @Deprecated
     String getCollectionGetterName(String property);
 }

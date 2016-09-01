@@ -24,7 +24,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
-import org.mapstruct.ap.spi.MethodType;
+import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 
 /**
  * A custom {@link AccessorNamingStrategy} recognizing getters in the form of {@code property()} and setters in the
@@ -32,34 +32,21 @@ import org.mapstruct.ap.spi.MethodType;
  *
  * @author Gunnar Morling
  */
-public class CustomAccessorNamingStrategy implements AccessorNamingStrategy {
+public class CustomAccessorNamingStrategy extends DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
 
     @Override
-    public MethodType getMethodType(ExecutableElement method) {
-        if ( isGetterMethod( method ) ) {
-            return MethodType.GETTER;
-        }
-        else if ( isSetterMethod( method ) ) {
-            return MethodType.SETTER;
-        }
-        else if ( isAdderMethod( method ) ) {
-            return MethodType.ADDER;
-        }
-        else {
-            return MethodType.OTHER;
-        }
-    }
-
-    private boolean isGetterMethod(ExecutableElement method) {
+    public boolean isGetterMethod(ExecutableElement method) {
         return method.getReturnType().getKind() != TypeKind.VOID;
     }
 
+    @Override
     public boolean isSetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
         return methodName.startsWith( "with" ) && methodName.length() > 4;
     }
 
+    @Override
     public boolean isAdderMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
         return methodName.startsWith( "add" ) && methodName.length() > 3;
@@ -77,8 +64,4 @@ public class CustomAccessorNamingStrategy implements AccessorNamingStrategy {
         return Introspector.decapitalize( methodName.substring( 3 ) );
     }
 
-    @Override
-    public String getCollectionGetterName(String property) {
-        return property.substring( 0, 1 ).toUpperCase() + property.substring( 1 );
-    }
 }
