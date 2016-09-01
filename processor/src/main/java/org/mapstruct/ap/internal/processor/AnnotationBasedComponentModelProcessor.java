@@ -32,7 +32,6 @@ import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.option.OptionsHelper;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 
 /**
@@ -51,13 +50,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
         this.typeFactory = context.getTypeFactory();
 
-        String componentModel = MapperConfiguration.getInstanceOn( mapperTypeElement ).componentModel();
-        String effectiveComponentModel = OptionsHelper.getEffectiveComponentModel(
-            context.getOptions(),
-            componentModel
-        );
+        String componentModel = MapperConfiguration.getInstanceOn( mapperTypeElement )
+                                                   .componentModel( context.getOptions() );
 
-        if ( !getComponentModelIdentifier().equalsIgnoreCase( effectiveComponentModel ) ) {
+        if ( !getComponentModelIdentifier().equalsIgnoreCase( componentModel ) ) {
             return mapper;
         }
 

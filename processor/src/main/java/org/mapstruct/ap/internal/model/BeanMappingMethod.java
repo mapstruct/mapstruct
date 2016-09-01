@@ -508,32 +508,16 @@ public class BeanMappingMethod extends MappingMethod {
             return method.getResultType().getPropertyReadAccessors().get( propertyName );
         }
 
-        /**
-         * Returns the effective policy for reporting unmapped getReturnType properties. If explicitly set via
-         * {@code Mapper}, this value will be returned. Otherwise the value from the corresponding processor option will
-         * be returned. If that is not set either, the default value from {@code Mapper#unmappedTargetPolicy()} will be
-         * returned.
-         *
-         * @return The effective policy for reporting unmapped target properties.
-         */
-        private ReportingPolicy getEffectiveUnmappedTargetPolicy() {
+        private ReportingPolicy getUnmappedTargetPolicy() {
             MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
-            boolean setViaAnnotation = mapperSettings.isSetUnmappedTargetPolicy();
-            ReportingPolicy annotationValue = ReportingPolicy.valueOf( mapperSettings.unmappedTargetPolicy() );
 
-            if ( setViaAnnotation
-                || ctx.getOptions().getUnmappedTargetPolicy() == null ) {
-                return annotationValue;
-            }
-            else {
-                return ctx.getOptions().getUnmappedTargetPolicy();
-            }
+            return mapperSettings.unmappedTargetPolicy( ctx.getOptions() );
         }
 
         private void reportErrorForUnmappedTargetPropertiesIfRequired() {
 
             // fetch settings from element to implement
-            ReportingPolicy unmappedTargetPolicy = getEffectiveUnmappedTargetPolicy();
+            ReportingPolicy unmappedTargetPolicy = getUnmappedTargetPolicy();
 
             if ( !unprocessedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
 

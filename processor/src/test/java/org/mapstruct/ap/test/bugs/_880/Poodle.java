@@ -16,30 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.option;
-
+package org.mapstruct.ap.test.bugs._880;
 
 /**
- * Helper class for dealing with {@link Options}.
- *
  * @author Andreas Gudian
+ *
  */
-public class OptionsHelper {
+public class Poodle {
+    private String core;
 
-    private OptionsHelper() {
+    public String getCore() {
+        return core;
     }
 
-    /**
-     * @param options the options
-     * @param locallyDeclaredComponentModel the locally declared component model
-     *
-     * @return the effective component model to be used
-     */
-    public static String getEffectiveComponentModel(Options options, String locallyDeclaredComponentModel) {
-        if ( "default".equals( locallyDeclaredComponentModel ) ) {
-            return options.getDefaultComponentModel();
-        }
-
-        return locallyDeclaredComponentModel;
+    public void setCore(String core) {
+        this.core = core;
     }
 }

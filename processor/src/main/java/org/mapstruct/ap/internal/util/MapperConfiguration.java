@@ -27,12 +27,14 @@ import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
+import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperConfigPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 
 /**
  * Provides an aggregated view to the settings given via {@link org.mapstruct.Mapper} and
@@ -109,13 +111,21 @@ public class MapperConfiguration {
         return mapperPrism.imports();
     }
 
-    public String unmappedTargetPolicy() {
-        if ( mapperConfigPrism != null && mapperPrism.values.unmappedTargetPolicy() == null ) {
-            return mapperConfigPrism.unmappedTargetPolicy();
+    public ReportingPolicy unmappedTargetPolicy(Options options) {
+        if ( mapperPrism.values.unmappedTargetPolicy() != null ) {
+            return ReportingPolicy.valueOf( mapperPrism.unmappedTargetPolicy() );
         }
-        else {
-            return mapperPrism.unmappedTargetPolicy();
+
+        if ( mapperConfigPrism != null && mapperConfigPrism.values.unmappedTargetPolicy() != null ) {
+            return ReportingPolicy.valueOf( mapperConfigPrism.unmappedTargetPolicy() );
         }
+
+        if ( options.getUnmappedTargetPolicy() != null ) {
+            return options.getUnmappedTargetPolicy();
+        }
+
+        // fall back to default defined in the annotation
+        return ReportingPolicy.valueOf( mapperPrism.unmappedTargetPolicy() );
     }
 
     public CollectionMappingStrategyPrism getCollectionMappingStrategy() {
@@ -169,13 +179,20 @@ public class MapperConfiguration {
     }
 
 
-    public String componentModel() {
-        if ( mapperConfigPrism != null && mapperPrism.values.componentModel() == null ) {
-            return mapperConfigPrism.componentModel();
-        }
-        else {
+    public String componentModel(Options options) {
+        if ( mapperPrism.values.componentModel() != null ) {
             return mapperPrism.componentModel();
         }
+
+        if ( mapperConfigPrism != null && mapperConfigPrism.values.componentModel() != null ) {
+            return mapperConfigPrism.componentModel();
+        }
+
+        if ( options.getDefaultComponentModel() != null ) {
+            return options.getDefaultComponentModel();
+        }
+
+        return mapperPrism.componentModel(); // fall back to default defined in the annotation
     }
 
     public DeclaredType config() {
@@ -186,12 +203,7 @@ public class MapperConfiguration {
         return mapperPrism.isValid;
     }
 
-    public boolean isSetUnmappedTargetPolicy() {
-        return mapperPrism.values.unmappedTargetPolicy() != null;
-    }
-
     public AnnotationMirror getAnnotationMirror() {
         return mapperPrism.mirror;
     }
-
 }
