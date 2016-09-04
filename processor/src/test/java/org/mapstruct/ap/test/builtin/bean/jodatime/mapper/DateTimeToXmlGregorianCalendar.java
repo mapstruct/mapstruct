@@ -16,29 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.test.builtin.bean.jodatime.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ap.test.builtin.bean.jodatime.bean.DateTimeBean;
+import org.mapstruct.ap.test.builtin.bean.jodatime.bean.XmlGregorianCalendarBean;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Helper holding constants for working with Joda-Time.
  *
- * @author Timo Eckhardt
+ * @author Sjaak Derksen
  */
-public final class JodaTimeConstants {
+@Mapper
+public interface DateTimeToXmlGregorianCalendar {
 
-    private JodaTimeConstants() {
-    }
+    DateTimeToXmlGregorianCalendar INSTANCE = Mappers.getMapper( DateTimeToXmlGregorianCalendar.class );
 
-    public static final String DATE_TIME_FQN = "org.joda.time.DateTime";
-
-    public static final String LOCAL_DATE_TIME_FQN = "org.joda.time.LocalDateTime";
-
-    public static final String LOCAL_DATE_FQN = "org.joda.time.LocalDate";
-
-    public static final String LOCAL_TIME_FQN = "org.joda.time.LocalTime";
-
-    public static final String DATE_TIME_FORMAT_FQN = "org.joda.time.format.DateTimeFormat";
-
-    public static final String DATE_TIME_ZONE_FQN = "org.joda.time.DateTimeZone";
-
-    public static final String DATE_TIME_FORMAT = "LL";
+    @Mapping( target = "xMLGregorianCalendar", source = "dateTime")
+    XmlGregorianCalendarBean toXmlGregorianCalendarBean( DateTimeBean in );
 }

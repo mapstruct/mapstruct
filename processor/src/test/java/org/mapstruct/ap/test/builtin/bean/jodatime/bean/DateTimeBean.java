@@ -16,29 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.test.builtin.bean.jodatime.bean;
+
+import org.joda.time.DateTime;
 
 /**
- * Helper holding constants for working with Joda-Time.
  *
- * @author Timo Eckhardt
+ * @author Sjaak Derksen
  */
-public final class JodaTimeConstants {
+public class DateTimeBean {
 
-    private JodaTimeConstants() {
+    private DateTime dateTime;
+
+    public DateTime getDateTime() {
+        return dateTime;
     }
 
-    public static final String DATE_TIME_FQN = "org.joda.time.DateTime";
-
-    public static final String LOCAL_DATE_TIME_FQN = "org.joda.time.LocalDateTime";
-
-    public static final String LOCAL_DATE_FQN = "org.joda.time.LocalDate";
-
-    public static final String LOCAL_TIME_FQN = "org.joda.time.LocalTime";
-
-    public static final String DATE_TIME_FORMAT_FQN = "org.joda.time.format.DateTimeFormat";
-
-    public static final String DATE_TIME_ZONE_FQN = "org.joda.time.DateTimeZone";
-
-    public static final String DATE_TIME_FORMAT = "LL";
+    public void setDateTime(DateTime dateTime) {
+        this.dateTime = dateTime;
+    }
 }

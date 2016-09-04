@@ -24,6 +24,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.JaxbConstants;
+import org.mapstruct.ap.internal.util.JodaTimeConstants;
 
 /**
  * Registry for all built-in methods.
@@ -54,6 +55,11 @@ public class BuiltInMappingMethods {
             builtInMethods.add( new XmlGregorianCalendarToLocalDate( typeFactory ) );
             builtInMethods.add( new LocalDateToXmlGregorianCalendar( typeFactory ) );
         }
+
+        if ( isJodaTimeAvailable( typeFactory ) ) {
+            builtInMethods.add( new JodaDateTimeToXmlGregorianCalendar( typeFactory ) );
+            builtInMethods.add( new XmlGregorianCalendarToJodaDateTime( typeFactory ) );
+        }
     }
 
     private static boolean isJaxbAvailable(TypeFactory typeFactory) {
@@ -62,6 +68,10 @@ public class BuiltInMappingMethods {
 
     private static boolean isJava8TimeAvailable(TypeFactory typeFactory) {
         return typeFactory.isTypeAvailable( JavaTimeConstants.ZONED_DATE_TIME_FQN );
+    }
+
+    private static boolean isJodaTimeAvailable(TypeFactory typeFactory) {
+        return typeFactory.isTypeAvailable( JodaTimeConstants.DATE_TIME_FQN  );
     }
 
     public List<BuiltInMethod> getBuiltInMethods() {
