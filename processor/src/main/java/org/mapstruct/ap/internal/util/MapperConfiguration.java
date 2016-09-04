@@ -28,13 +28,13 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperConfigPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 
 /**
  * Provides an aggregated view to the settings given via {@link org.mapstruct.Mapper} and
@@ -111,13 +111,13 @@ public class MapperConfiguration {
         return mapperPrism.imports();
     }
 
-    public ReportingPolicy unmappedTargetPolicy(Options options) {
+    public ReportingPolicyPrism unmappedTargetPolicy(Options options) {
         if ( mapperPrism.values.unmappedTargetPolicy() != null ) {
-            return ReportingPolicy.valueOf( mapperPrism.unmappedTargetPolicy() );
+            return ReportingPolicyPrism.valueOf( mapperPrism.unmappedTargetPolicy() );
         }
 
         if ( mapperConfigPrism != null && mapperConfigPrism.values.unmappedTargetPolicy() != null ) {
-            return ReportingPolicy.valueOf( mapperConfigPrism.unmappedTargetPolicy() );
+            return ReportingPolicyPrism.valueOf( mapperConfigPrism.unmappedTargetPolicy() );
         }
 
         if ( options.getUnmappedTargetPolicy() != null ) {
@@ -125,7 +125,7 @@ public class MapperConfiguration {
         }
 
         // fall back to default defined in the annotation
-        return ReportingPolicy.valueOf( mapperPrism.unmappedTargetPolicy() );
+        return ReportingPolicyPrism.valueOf( mapperPrism.unmappedTargetPolicy() );
     }
 
     public CollectionMappingStrategyPrism getCollectionMappingStrategy() {

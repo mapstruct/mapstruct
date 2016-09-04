@@ -26,10 +26,14 @@ import java.util.List;
 import org.junit.Test;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.MappingInheritanceStrategy;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValueMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 
 /**
  * Test for manually created prisms on enumeration types
@@ -44,15 +48,27 @@ public class EnumPrismsTest {
     }
 
     @Test
-    public void mapNullToDefaultStrategyPrismIsCorrect() {
+    public void mappingInheritanceStrategyPrismIsCorrect() {
+        assertThat( namesOf( MappingInheritanceStrategy.values() ) ).isEqualTo(
+            namesOf( MappingInheritanceStrategyPrism.values() ) );
+    }
+
+    @Test
+    public void nullValueCheckStrategyPrismIsCorrect() {
+        assertThat( namesOf( NullValueCheckStrategy.values() ) ).isEqualTo(
+            namesOf( NullValueCheckStrategyPrism.values() ) );
+    }
+
+    @Test
+    public void nullValueMappingStrategyPrismIsCorrect() {
         assertThat( namesOf( NullValueMappingStrategy.values() ) ).isEqualTo(
             namesOf( NullValueMappingStrategyPrism.values() ) );
     }
 
     @Test
-    public void mapMappingInheritanceStrategyPrismIsCorrect() {
-        assertThat( namesOf( MappingInheritanceStrategy.values() ) ).isEqualTo(
-            namesOf( MappingInheritanceStrategyPrism.values() ) );
+    public void reportingPolicyPrismIsCorrect() {
+        assertThat( namesOf( ReportingPolicy.values() ) ).isEqualTo(
+            namesOf( ReportingPolicyPrism.values() ) );
     }
 
     private static List<String> namesOf(Enum<?>[] values) {

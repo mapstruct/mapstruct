@@ -54,10 +54,10 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.model.source.TargetReference;
-import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -508,7 +508,7 @@ public class BeanMappingMethod extends MappingMethod {
             return method.getResultType().getPropertyReadAccessors().get( propertyName );
         }
 
-        private ReportingPolicy getUnmappedTargetPolicy() {
+        private ReportingPolicyPrism getUnmappedTargetPolicy() {
             MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
 
             return mapperSettings.unmappedTargetPolicy( ctx.getOptions() );
@@ -517,7 +517,7 @@ public class BeanMappingMethod extends MappingMethod {
         private void reportErrorForUnmappedTargetPropertiesIfRequired() {
 
             // fetch settings from element to implement
-            ReportingPolicy unmappedTargetPolicy = getUnmappedTargetPolicy();
+            ReportingPolicyPrism unmappedTargetPolicy = getUnmappedTargetPolicy();
 
             if ( !unprocessedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
 

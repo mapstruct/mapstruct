@@ -44,8 +44,8 @@ import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.option.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.MapperPrism;
+import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 import org.mapstruct.ap.internal.processor.DefaultModelElementProcessorContext;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
@@ -131,7 +131,7 @@ public class MappingProcessor extends AbstractProcessor {
         return new Options(
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
-            unmappedTargetPolicy != null ? ReportingPolicy.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
+            unmappedTargetPolicy != null ? ReportingPolicyPrism.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
             processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL ),
             Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) )
         );

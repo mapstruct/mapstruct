@@ -16,18 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.option;
+package org.mapstruct.ap.internal.prism;
 
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 
 /**
- * Possible issue reporting policies. Duplicates the enum of the same name from
- * the core module as this can't be referenced here.
+ * Prism for the enum {@link org.mapstruct.ReportingPolicy}.
  *
  * @author Gunnar Morling
  */
-public enum ReportingPolicy {
+public enum ReportingPolicyPrism {
 
     IGNORE( null, false, false ),
     WARN( Kind.WARNING, true, false ),
@@ -37,7 +36,7 @@ public enum ReportingPolicy {
     private final boolean requiresReport;
     private final boolean failsBuild;
 
-    ReportingPolicy(Diagnostic.Kind diagnosticKind, boolean requiresReport, boolean failsBuild) {
+    ReportingPolicyPrism(Diagnostic.Kind diagnosticKind, boolean requiresReport, boolean failsBuild) {
         this.requiresReport = requiresReport;
         this.diagnosticKind = diagnosticKind;
         this.failsBuild = failsBuild;
