@@ -25,15 +25,19 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.builtin.bean.jodatime.bean.DateTimeBean;
+import org.mapstruct.ap.test.builtin.bean.jodatime.bean.LocalDateBean;
 import org.mapstruct.ap.test.builtin.bean.jodatime.bean.LocalDateTimeBean;
 import org.mapstruct.ap.test.builtin.bean.jodatime.bean.XmlGregorianCalendarBean;
 import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.DateTimeToXmlGregorianCalendar;
 import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.LocalDateTimeToXmlGregorianCalendar;
+import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.LocalDateToXmlGregorianCalendar;
 import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.XmlGregorianCalendarToDateTime;
+import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.XmlGregorianCalendarToLocalDate;
 import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.XmlGregorianCalendarToLocalDateTime;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -45,6 +49,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @WithClasses({
     DateTimeBean.class,
+    LocalDateBean.class,
     LocalDateTimeBean.class,
     XmlGregorianCalendarBean.class
 })
@@ -385,6 +390,61 @@ public class JodaTimeTest {
 
         LocalDateTimeBean res = XmlGregorianCalendarToLocalDateTime.INSTANCE.toDateTimeBean( in );
         assertThat( res.getLocalDateTime() ).isNull();
+
     }
 
+    @Test
+    @WithClasses(LocalDateToXmlGregorianCalendar.class)
+    public void shouldMapLocalDateToXmlGregorianCalendar() {
+
+        LocalDateBean  in = new LocalDateBean();
+        LocalDate dt = new LocalDate(2010, 1, 15 );
+        in.setLocalDate( dt );
+        XmlGregorianCalendarBean res = LocalDateToXmlGregorianCalendar.INSTANCE.toXmlGregorianCalendarBean( in );
+
+        assertThat( res.getxMLGregorianCalendar().getYear() ).isEqualTo( 2010 );
+        assertThat( res.getxMLGregorianCalendar().getMonth() ).isEqualTo( 1 );
+        assertThat( res.getxMLGregorianCalendar().getDay() ).isEqualTo( 15 );
+        assertThat( res.getxMLGregorianCalendar().getHour() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getxMLGregorianCalendar().getMinute() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getxMLGregorianCalendar().getSecond() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getxMLGregorianCalendar().getMillisecond() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+        assertThat( res.getxMLGregorianCalendar().getTimezone() ).isEqualTo( DatatypeConstants.FIELD_UNDEFINED );
+    }
+
+    @Test
+    @WithClasses(XmlGregorianCalendarToLocalDate.class)
+    public void shouldMapXmlGregorianCalendarToLocalDate() throws Exception {
+
+        XmlGregorianCalendarBean in = new XmlGregorianCalendarBean();
+        XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendarDate(
+            1999,
+            5,
+            25,
+            DatatypeConstants.FIELD_UNDEFINED );
+        in.setxMLGregorianCalendar( xcal );
+
+        LocalDateBean res = XmlGregorianCalendarToLocalDate.INSTANCE.toLocalDateBean( in );
+        assertThat( res.getLocalDate().getYear() ).isEqualTo( 1999 );
+        assertThat( res.getLocalDate().getMonthOfYear() ).isEqualTo( 5 );
+        assertThat( res.getLocalDate().getDayOfMonth() ).isEqualTo( 25 );
+    }
+
+
+    @Test
+    @WithClasses(XmlGregorianCalendarToLocalDate.class)
+    public void shouldNotMapXmlGregorianCalendarWithoutDaysToLocalDate() throws Exception {
+
+        XmlGregorianCalendarBean in = new XmlGregorianCalendarBean();
+        XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendarDate(
+            1999,
+            5,
+            DatatypeConstants.FIELD_UNDEFINED,
+            DatatypeConstants.FIELD_UNDEFINED );
+        in.setxMLGregorianCalendar( xcal );
+
+        LocalDateBean res = XmlGregorianCalendarToLocalDate.INSTANCE.toLocalDateBean( in );
+        assertThat( res.getLocalDate() ).isNull();
+
+    }
 }

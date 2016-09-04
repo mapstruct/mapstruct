@@ -61,6 +61,8 @@ public class BuiltInMappingMethods {
             builtInMethods.add( new XmlGregorianCalendarToJodaDateTime( typeFactory ) );
             builtInMethods.add( new JodaLocalDateTimeToXmlGregorianCalendar( typeFactory ) );
             builtInMethods.add( new XmlGregorianCalendarToJodaLocalDateTime( typeFactory ) );
+            builtInMethods.add( new JodaLocalDateToXmlGregorianCalendar( typeFactory ) );
+            builtInMethods.add( new XmlGregorianCalendarToJodaLocalDate( typeFactory ) );
         }
     }
 
