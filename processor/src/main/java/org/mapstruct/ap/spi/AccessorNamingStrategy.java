@@ -68,6 +68,11 @@ public interface AccessorNamingStrategy {
      * @param property to be getterOrSetterMethod.
      *
      * @return getter name for collection properties
+     *
+     * @deprecated use {@link #getMethodType(ExecutableElement)} to determine the {@link MethodType}. When collections
+     * somehow need to be treated special, it should be done in {@link #getMethodType(ExecutableElement) } as well.
+     * In the future, this method will be removed.
      */
+    @Deprecated
     String getCollectionGetterName(String property);
 }
