@@ -16,23 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin.bean.jodatime.bean;
+package org.mapstruct.ap.test.builtin.jodatime.mapper;
 
-import org.joda.time.DateTime;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ap.test.builtin.jodatime.bean.LocalDateBean;
+import org.mapstruct.ap.test.builtin.jodatime.bean.XmlGregorianCalendarBean;
+import org.mapstruct.factory.Mappers;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class DateTimeBean {
+@Mapper
+public interface LocalDateToXmlGregorianCalendar {
 
-    private DateTime dateTime;
+    LocalDateToXmlGregorianCalendar INSTANCE = Mappers.getMapper( LocalDateToXmlGregorianCalendar.class );
 
-    public DateTime getDateTime() {
-        return dateTime;
-    }
+    @Mapping( target = "xMLGregorianCalendar", source = "localDate")
+    XmlGregorianCalendarBean toXmlGregorianCalendarBean( LocalDateBean in );
 
-    public void setDateTime(DateTime dateTime) {
-        this.dateTime = dateTime;
-    }
 }

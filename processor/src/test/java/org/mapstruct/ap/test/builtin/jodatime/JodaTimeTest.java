@@ -16,9 +16,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin.bean.jodatime;
+package org.mapstruct.ap.test.builtin.jodatime;
 
-import java.util.TimeZone;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -30,19 +29,19 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.builtin.bean.jodatime.bean.DateTimeBean;
-import org.mapstruct.ap.test.builtin.bean.jodatime.bean.LocalDateBean;
-import org.mapstruct.ap.test.builtin.bean.jodatime.bean.LocalDateTimeBean;
-import org.mapstruct.ap.test.builtin.bean.jodatime.bean.LocalTimeBean;
-import org.mapstruct.ap.test.builtin.bean.jodatime.bean.XmlGregorianCalendarBean;
-import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.DateTimeToXmlGregorianCalendar;
-import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.LocalDateTimeToXmlGregorianCalendar;
-import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.LocalDateToXmlGregorianCalendar;
-import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.LocalTimeToXmlGregorianCalendar;
-import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.XmlGregorianCalendarToDateTime;
-import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.XmlGregorianCalendarToLocalDate;
-import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.XmlGregorianCalendarToLocalDateTime;
-import org.mapstruct.ap.test.builtin.bean.jodatime.mapper.XmlGregorianCalendarToLocalTime;
+import org.mapstruct.ap.test.builtin.jodatime.bean.DateTimeBean;
+import org.mapstruct.ap.test.builtin.jodatime.bean.LocalDateBean;
+import org.mapstruct.ap.test.builtin.jodatime.bean.LocalDateTimeBean;
+import org.mapstruct.ap.test.builtin.jodatime.bean.LocalTimeBean;
+import org.mapstruct.ap.test.builtin.jodatime.bean.XmlGregorianCalendarBean;
+import org.mapstruct.ap.test.builtin.jodatime.mapper.DateTimeToXmlGregorianCalendar;
+import org.mapstruct.ap.test.builtin.jodatime.mapper.LocalDateTimeToXmlGregorianCalendar;
+import org.mapstruct.ap.test.builtin.jodatime.mapper.LocalDateToXmlGregorianCalendar;
+import org.mapstruct.ap.test.builtin.jodatime.mapper.LocalTimeToXmlGregorianCalendar;
+import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToDateTime;
+import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToLocalDate;
+import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToLocalDateTime;
+import org.mapstruct.ap.test.builtin.jodatime.mapper.XmlGregorianCalendarToLocalTime;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -140,7 +139,7 @@ public class JodaTimeTest {
         assertThat( res.getDateTime().getMinuteOfHour() ).isEqualTo( 34 );
         assertThat( res.getDateTime().getSecondOfMinute() ).isEqualTo( 45 );
         assertThat( res.getDateTime().getMillisOfSecond() ).isEqualTo( 500 );
-        assertThat( res.getDateTime().getZone().getID() ).isEqualTo( TimeZone.getDefault().getID() );
+        assertThat( res.getDateTime().getZone().getOffset( 0 ) ).isEqualTo( DateTimeZone.getDefault().getOffset( 0 ) );
     }
 
     @Test
@@ -191,7 +190,7 @@ public class JodaTimeTest {
         assertThat( res.getDateTime().getMinuteOfHour() ).isEqualTo( 34 );
         assertThat( res.getDateTime().getSecondOfMinute() ).isEqualTo( 45 );
         assertThat( res.getDateTime().getMillisOfSecond() ).isEqualTo( 0 );
-        assertThat( res.getDateTime().getZone().getID() ).isEqualTo( TimeZone.getDefault().getID() );
+        assertThat( res.getDateTime().getZone().getOffset( 0 ) ).isEqualTo( DateTimeZone.getDefault().getOffset( 0 ) );
     }
 
     @Test
@@ -240,7 +239,7 @@ public class JodaTimeTest {
         assertThat( res.getDateTime().getMinuteOfHour() ).isEqualTo( 34 );
         assertThat( res.getDateTime().getSecondOfMinute() ).isEqualTo( 0 );
         assertThat( res.getDateTime().getMillisOfSecond() ).isEqualTo( 0 );
-        assertThat( res.getDateTime().getZone().getID() ).isEqualTo( TimeZone.getDefault().getID() );
+        assertThat( res.getDateTime().getZone().getOffset( 0 ) ).isEqualTo( DateTimeZone.getDefault().getOffset( 0 ) );
     }
 
     @Test
