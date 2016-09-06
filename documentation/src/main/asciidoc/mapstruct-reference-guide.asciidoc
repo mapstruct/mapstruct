@@ -102,6 +102,26 @@ Also make sure that your project is using Java 1.6 or later (project properties 
 It will not work with older versions.
 ====
 
+.Gradle configuration
+====
+[source, groovy, linenums]
+[subs="verbatim,attributes"]
+----
+...
+plugins {
+    ...
+    id 'net.ltgt.apt' version '0.8'
+}
+dependencies {
+    ...
+    compile 'org.mapstruct:mapstruct-jdk8:{mapstructVersion}'
+
+    apt 'org.mapstruct:mapstruct-processor:{mapstructVersion}'
+}
+...
+----
+====
+
 [[configuration-options]]
 === Configuration options
 
@@ -139,6 +159,22 @@ When invoking javac directly, these options are passed to the compiler in the fo
         </compilerArgs>
     </configuration>
 </plugin>
+...
+----
+====
+
+.Gradle configuration
+====
+[source, groovy, linenums]
+[subs="verbatim,attributes"]
+----
+...
+compileJava {
+    options.compilerArgs = [
+        '-Amapstruct.suppressGeneratorTimestamp=true',
+        '-Amapstruct.suppressGeneratorVersionInfoComment=true'
+    ]
+}
 ...
 ----
 ====
