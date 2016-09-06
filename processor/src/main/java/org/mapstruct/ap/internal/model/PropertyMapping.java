@@ -250,7 +250,12 @@ public class PropertyMapping extends ModelElement {
 
             // No mapping found. Try to forge a mapping
             if ( assignment == null ) {
-                assignment = forgeMapOrIterableMapping( sourceType, targetType, sourceRefStr, method.getExecutable() );
+                if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
+                    assignment = forgeIterableMapping( sourceType, targetType, sourceRefStr, method.getExecutable() );
+                }
+                else if ( sourceType.isMapType() && targetType.isMapType() ) {
+                    assignment = forgeMapMapping( sourceType, targetType, sourceRefStr, method.getExecutable() );
+                }
             }
 
             if ( assignment != null ) {
@@ -601,64 +606,71 @@ public class PropertyMapping extends ModelElement {
             return sourcePresenceChecker;
         }
 
-        private Assignment forgeMapOrIterableMapping(Type sourceType, Type targetType, String sourceReference,
-                                                     ExecutableElement element) {
+        private Assignment forgeIterableMapping(Type sourceType, Type targetType, String sourceReference,
+            ExecutableElement element) {
 
             Assignment assignment = null;
 
             String name = getName( sourceType, targetType );
             name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
-            if ( ( sourceType.isCollectionType() || sourceType.isArrayType() )
-                && ( targetType.isIterableType() ) ) {
+            // copy mapper configuration from the source method, its the same mapper
+            MapperConfiguration config = method.getMapperConfiguration();
+            ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element );
+            IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
 
-                // copy mapper configuration from the source method, its the same mapper
-                MapperConfiguration config = method.getMapperConfiguration();
-                ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element );
-                IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
+            IterableMappingMethod iterableMappingMethod = builder
+                .mappingContext( ctx )
+                .method( methodRef )
+                .selectionParameters( selectionParameters )
+                .build();
 
-                IterableMappingMethod iterableMappingMethod = builder
-                    .mappingContext( ctx )
-                    .method( methodRef )
-                    .build();
-
-                if ( iterableMappingMethod != null ) {
-                    if ( !ctx.getMappingsToGenerate().contains( iterableMappingMethod ) ) {
-                        ctx.getMappingsToGenerate().add( iterableMappingMethod );
-                    }
-                    else {
-                        String existingName = ctx.getExistingMappingMethod( iterableMappingMethod ).getName();
-                        methodRef = new ForgedMethod( existingName, methodRef );
-                    }
-
-                    assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
-                    assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+            if ( iterableMappingMethod != null ) {
+                if ( !ctx.getMappingsToGenerate().contains( iterableMappingMethod ) ) {
+                    ctx.getMappingsToGenerate().add( iterableMappingMethod );
                 }
-            }
-            else if ( sourceType.isMapType() && targetType.isMapType() ) {
-
-                // copy mapper configuration from the source method, its the same mapper
-                MapperConfiguration config = method.getMapperConfiguration();
-                ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element );
-
-                MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
-                MapMappingMethod mapMappingMethod = builder
-                    .mappingContext( ctx )
-                    .method( methodRef )
-                    .build();
-
-                if ( mapMappingMethod != null ) {
-                    if ( !ctx.getMappingsToGenerate().contains( mapMappingMethod ) ) {
-                        ctx.getMappingsToGenerate().add( mapMappingMethod );
-                    }
-                    else {
-                        String existingName = ctx.getExistingMappingMethod( mapMappingMethod ).getName();
-                        methodRef = new ForgedMethod( existingName, methodRef );
-                    }
-                    assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
-                    assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                else {
+                    String existingName = ctx.getExistingMappingMethod( iterableMappingMethod ).getName();
+                    methodRef = new ForgedMethod( existingName, methodRef );
                 }
+
+                assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
+                assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
             }
+
+            return assignment;
+        }
+
+        private Assignment forgeMapMapping(Type sourceType, Type targetType, String sourceReference,
+            ExecutableElement element) {
+
+            Assignment assignment = null;
+
+            String name = getName( sourceType, targetType );
+            name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
+
+            // copy mapper configuration from the source method, its the same mapper
+            MapperConfiguration config = method.getMapperConfiguration();
+            ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element );
+
+            MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
+            MapMappingMethod mapMappingMethod = builder
+                .mappingContext( ctx )
+                .method( methodRef )
+                .build();
+
+            if ( mapMappingMethod != null ) {
+                if ( !ctx.getMappingsToGenerate().contains( mapMappingMethod ) ) {
+                    ctx.getMappingsToGenerate().add( mapMappingMethod );
+                }
+                else {
+                    String existingName = ctx.getExistingMappingMethod( mapMappingMethod ).getName();
+                    methodRef = new ForgedMethod( existingName, methodRef );
+                }
+                assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
+                assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+            }
+
             return assignment;
         }
 
