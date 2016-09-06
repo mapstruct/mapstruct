@@ -64,5 +64,45 @@ public class SelectionParameters {
         return resultType;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + (this.qualifiers != null ? this.qualifiers.hashCode() : 0);
+        hash = 97 * hash + (this.qualifyingNames != null ? this.qualifyingNames.hashCode() : 0);
+        hash = 97 * hash + (this.resultType != null ? this.resultType.hashCode() : 0);
+        return hash;
+    }
 
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
+        if ( obj == null ) {
+            return false;
+        }
+        if ( getClass() != obj.getClass() ) {
+            return false;
+        }
+        final SelectionParameters other = (SelectionParameters) obj;
+
+        if ( !equals( this.qualifiers, other.qualifiers ) ) {
+            return false;
+        }
+
+        if ( !equals( this.qualifyingNames, other.qualifyingNames ) ) {
+            return false;
+        }
+
+        return equals( this.resultType, other.resultType );
+    }
+
+    private boolean equals(Object object1, Object object2) {
+        if ( object1 == null ) {
+            return (object2 == null);
+        }
+        else {
+            return object1.equals( object2 );
+        }
+    }
 }

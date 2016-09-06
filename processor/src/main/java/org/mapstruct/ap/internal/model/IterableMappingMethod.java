@@ -51,6 +51,7 @@ public class IterableMappingMethod extends MappingMethod {
     private final boolean overridden;
     private final boolean mapNullToDefault;
     private final String loopVariableName;
+    private final SelectionParameters selectionParameters;
 
     public static class Builder {
 
@@ -124,6 +125,7 @@ public class IterableMappingMethod extends MappingMethod {
                 if ( method instanceof ForgedMethod ) {
                     ForgedMethod forgedMethod = (ForgedMethod) method;
                     forgedMethod.addThrownTypes( assignment.getThrownTypes() );
+
                 }
             }
             // target accessor is setter, so decorate assignment as setter
@@ -157,7 +159,8 @@ public class IterableMappingMethod extends MappingMethod {
                     mapNullToDefault,
                     loopVariableName,
                     beforeMappingMethods,
-                    afterMappingMethods );
+                    afterMappingMethods,
+                    selectionParameters );
         }
     }
 
@@ -165,13 +168,15 @@ public class IterableMappingMethod extends MappingMethod {
     private IterableMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
                                   boolean mapNullToDefault, String loopVariableName,
                                  List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                                 List<LifecycleCallbackMethodReference> afterMappingReferences) {
+                                 List<LifecycleCallbackMethodReference> afterMappingReferences,
+                                 SelectionParameters selectionParameters ) {
         super( method, beforeMappingReferences, afterMappingReferences );
         this.elementAssignment = parameterAssignment;
         this.factoryMethod = factoryMethod;
         this.overridden = method.overridesMethod();
         this.mapNullToDefault = mapNullToDefault;
         this.loopVariableName = loopVariableName;
+        this.selectionParameters = selectionParameters;
     }
 
     public Parameter getSourceParameter() {
@@ -303,6 +308,15 @@ public class IterableMappingMethod extends MappingMethod {
             if ( !thisTypeParameters.equals( otherTypeParameters ) ) {
                 return false;
             }
+        }
+
+        if ( this.selectionParameters != null ) {
+            if ( !this.selectionParameters.equals( other.selectionParameters ) ) {
+                return false;
+            }
+        }
+        else if ( other.selectionParameters != null ) {
+            return false;
         }
 
         return true;
