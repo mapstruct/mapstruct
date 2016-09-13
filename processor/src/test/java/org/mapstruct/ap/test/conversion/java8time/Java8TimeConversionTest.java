@@ -267,4 +267,28 @@ public class Java8TimeConversionTest {
 
         assertThat( source.getForDateConversionWithLocalDateTime() ).isEqualTo( dateTime );
     }
+
+    @Test
+    public void testLocalDateToDateMapping() {
+        TimeZone.setDefault( TimeZone.getTimeZone( "Australia/Melbourne" ) );
+
+        Source source = new Source();
+        LocalDate localDate = LocalDate.of( 2016, 3, 1 );
+        source.setForDateConversionWithLocalDate( localDate );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTargetDefaultMapping( source );
+
+        assertThat( target.getForDateConversionWithLocalDate() ).isNotNull();
+
+        Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
+        instance.setTimeInMillis( target.getForDateConversionWithLocalDate().getTime() );
+
+        assertThat( instance.get( Calendar.YEAR ) ).isEqualTo( localDate.getYear() );
+        assertThat( instance.get( Calendar.MONTH ) ).isEqualTo( localDate.getMonthValue() - 1 );
+        assertThat( instance.get( Calendar.DATE ) ).isEqualTo( localDate.getDayOfMonth() );
+
+        source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source.getForDateConversionWithLocalDate() ).isEqualTo( localDate );
+    }
 }

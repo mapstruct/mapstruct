@@ -39,6 +39,8 @@ public class Target {
 
     private Date forDateConversionWithLocalDateTime;
 
+    private Date forDateConversionWithLocalDate;
+
     public String getZonedDateTime() {
         return zonedDateTime;
     }
@@ -95,4 +97,11 @@ public class Target {
         this.forDateConversionWithLocalDateTime = forDateConversionWithLocalDateTime;
     }
 
+    public Date getForDateConversionWithLocalDate() {
+        return forDateConversionWithLocalDate;
+    }
+
+    public void setForDateConversionWithLocalDate(Date forDateConversionWithLocalDate) {
+        this.forDateConversionWithLocalDate = forDateConversionWithLocalDate;
+    }
 }

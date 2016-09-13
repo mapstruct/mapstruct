@@ -42,6 +42,8 @@ public class Source {
 
     private LocalDateTime forDateConversionWithLocalDateTime;
 
+    private LocalDate forDateConversionWithLocalDate;
+
     public ZonedDateTime getZonedDateTime() {
         return zonedDateTime;
     }
@@ -96,5 +98,13 @@ public class Source {
 
     public void setForDateConversionWithLocalDateTime(LocalDateTime forDateConversionWithLocalDateTime) {
         this.forDateConversionWithLocalDateTime = forDateConversionWithLocalDateTime;
+    }
+
+    public LocalDate getForDateConversionWithLocalDate() {
+        return forDateConversionWithLocalDate;
+    }
+
+    public void setForDateConversionWithLocalDate(LocalDate forDateConversionWithLocalDate) {
+        this.forDateConversionWithLocalDate = forDateConversionWithLocalDate;
     }
 }
