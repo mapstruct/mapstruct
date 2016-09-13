@@ -94,7 +94,7 @@ To double check that everything is working as expected, go to your project's pro
 The MapStruct processor JAR should be listed and enabled there.
 Any processor options configured via the compiler plug-in (see below) should be listed under "Java Compiler" -> "Annotation Processing".
 
-If the processor is not kicking in, check that the configuration of annotion processors through M2E is enabled.
+If the processor is not kicking in, check that the configuration of annotation processors through M2E is enabled.
 To do so, go to "Preferences" -> "Maven" -> "Annotation Processing" and select "Automatically configure JDT APT".
 Alternatively, specify the following in the `properties` section of your POM file: `<m2e.apt.activation>jdt_apt</m2e.apt.activation>`.
 
@@ -254,7 +254,7 @@ public interface CarMapper {
 
 The `@Mapper` annotation causes the MapStruct code generator to create an implementation of the `CarMapper` interface during build-time.
 
-In the generated method implementations all readable properties from the source type (e.g. `Car`) will be copied ino the corresponding property in the target type (e.g. `CarDto`). If a property has a different name in the target entity, its name can be specified via the `@Mapping` annotation.
+In the generated method implementations all readable properties from the source type (e.g. `Car`) will be copied into the corresponding property in the target type (e.g. `CarDto`). If a property has a different name in the target entity, its name can be specified via the `@Mapping` annotation.
 
 [TIP]
 ====
@@ -428,7 +428,7 @@ public interface CarMapper {
 ----
 ====
 
-The generated code of the `updateCarFromDto()` method will upate the passed `Car` instance with the properties from the given `CarDto` object. There may be only one parameter marked as mapping target. Instead of `void` you may also set the method's return type to the type of the target parameter, which will cause the generated implementation to update the passed mapping target and return it as well. This allows for fluent invocations of mapping methods.
+The generated code of the `updateCarFromDto()` method will update the passed `Car` instance with the properties from the given `CarDto` object. There may be only one parameter marked as mapping target. Instead of `void` you may also set the method's return type to the type of the target parameter, which will cause the generated implementation to update the passed mapping target and return it as well. This allows for fluent invocations of mapping methods.
 
 Collection- or map-typed properties of the target bean to be updated will be cleared and then populated with the values from the corresponding source collection or map.
 
@@ -611,7 +611,7 @@ public interface CarMapper {
 
 * Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Date` where, when mapping a `ZonedDateTime` from a given `Date`, systems default timezone is used.
 
-* Between `java.time.LocalDateTime` from Java 8 Date-Time package and `java.util.Date` where. When converting a `LocalDateTime` from a given `Date`, systems default timezone is used. When mapping a `Date` to a `LocalDateTime` UTC is used as the timzone.
+* Between `java.time.LocalDateTime` from Java 8 Date-Time package and `java.util.Date` where. When converting a `LocalDateTime` from a given `Date`, systems default timezone is used. When mapping a `Date` to a `LocalDateTime` UTC is used as the timezone.
 
 * Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Calendar`.
 
