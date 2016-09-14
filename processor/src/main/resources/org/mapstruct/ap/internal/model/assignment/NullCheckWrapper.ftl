@@ -18,22 +18,27 @@
      limitations under the License.
 
 -->
-if ( <#if sourcePresenceChecker?? >${sourcePresenceChecker}<#else>${sourceReference} != null</#if> ) {
-    <@includeModel object=assignment
-                targetBeanName=ext.targetBeanName
-                existingInstanceMapping=ext.existingInstanceMapping
-                targetReadAccessorName=ext.targetReadAccessorName
-                targetWriteAccessorName=ext.targetWriteAccessorName
-                targetType=ext.targetType
-                defaultValue=ext.defaultValueAssignment/>
+<#if sourceLocalVarName??>
+<@includeModel object=sourceType/> ${sourceLocalVarName} = ${sourceReference};
+if ( ${sourceLocalVarName} != null ) {
+    <@_assignment object=assignment defaultValue=ext.defaultValueAssignment/>
 }
-<#if ext.defaultValueAssignment?? >
-else {
-    <@includeModel object=ext.defaultValueAssignment
-                targetBeanName=ext.targetBeanName
-                existingInstanceMapping=ext.existingInstanceMapping
-                targetReadAccessorName=ext.targetReadAccessorName
-                targetWriteAccessorName=ext.targetWriteAccessorName
-                targetType=ext.targetType/>
+<#else>
+if ( <#if sourcePresenceChecker?? >${sourcePresenceChecker}<#else>${sourceReference} != null</#if> ) {
+    <@_assignment object=assignment defaultValue=ext.defaultValueAssignment/>
 }
 </#if>
+<#if ext.defaultValueAssignment?? >
+else {
+    <@_assignment object=ext.defaultValueAssignment/>
+}
+</#if>
+<#macro _assignment object defaultValue="">
+    <@includeModel object=object
+               targetBeanName=ext.targetBeanName
+               existingInstanceMapping=ext.existingInstanceMapping
+               targetReadAccessorName=ext.targetReadAccessorName
+               targetWriteAccessorName=ext.targetWriteAccessorName
+               targetType=ext.targetType
+               defaultValue=defaultValue/>
+</#macro>

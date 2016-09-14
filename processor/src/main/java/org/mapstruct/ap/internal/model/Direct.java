@@ -34,14 +34,32 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class Direct extends ModelElement implements Assignment {
 
     private final String sourceReference;
+    private final Type sourceType;
+    private String sourceLocalVarName;
 
-    public Direct( String sourceReference ) {
+    public Direct(String sourceReference, Type sourceType ) {
         this.sourceReference = sourceReference;
+        this.sourceType = sourceType;
     }
 
     @Override
     public String getSourceReference() {
         return sourceReference;
+    }
+
+    @Override
+    public Type getSourceType() {
+        return sourceType;
+    }
+
+    @Override
+    public String getSourceLocalVarName() {
+        return sourceLocalVarName;
+    }
+
+    @Override
+    public void setSourceLocalVarName(String sourceLocalVarName) {
+        this.sourceLocalVarName = sourceLocalVarName;
     }
 
     @Override

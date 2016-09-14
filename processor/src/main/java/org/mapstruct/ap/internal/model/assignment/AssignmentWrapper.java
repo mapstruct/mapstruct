@@ -62,6 +62,21 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     }
 
     @Override
+    public Type getSourceType() {
+        return decoratedAssignment.getSourceType();
+    }
+
+    @Override
+    public String getSourceLocalVarName() {
+        return decoratedAssignment.getSourceLocalVarName();
+    }
+
+    @Override
+    public void setSourceLocalVarName(String sourceLocalVarName) {
+        decoratedAssignment.setSourceLocalVarName( sourceLocalVarName );
+    }
+
+    @Override
     public AssignmentType getType() {
         return decoratedAssignment.getType();
     }

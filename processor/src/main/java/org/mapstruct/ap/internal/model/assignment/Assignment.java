@@ -71,11 +71,31 @@ public interface Assignment {
     void setAssignment(Assignment assignment);
 
     /**
-     * the source reference being a source-getter, a constant, etc.
+     * the source reference being a source-getter, a constant, nested method call, etc.
      *
      * @return source reference
      */
     String getSourceReference();
+
+    /**
+     * the source type.
+     *
+     * @return source type (can be null)
+     */
+    Type getSourceType();
+
+    /**
+     * a local variable name for supporting a null check and avoiding executing a nested method forged method twice
+     *
+     * @return local variable name (can be null)
+     */
+    String getSourceLocalVarName();
+
+    /**
+     * Use sourceLocalVarName iso sourceReference
+     * @param sourceLocalVarName source local variable name
+     */
+    void setSourceLocalVarName(String sourceLocalVarName);
 
     /**
      * Returns whether the type of assignment

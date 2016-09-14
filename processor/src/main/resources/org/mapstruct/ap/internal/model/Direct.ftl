@@ -18,4 +18,4 @@
      limitations under the License.
 
 -->
-${sourceReference}
+<#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if>

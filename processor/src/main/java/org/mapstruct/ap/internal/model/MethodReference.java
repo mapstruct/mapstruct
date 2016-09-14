@@ -128,6 +128,21 @@ public class MethodReference extends MappingMethod implements Assignment {
         return assignment.getSourceReference();
     }
 
+    @Override
+    public Type getSourceType() {
+        return assignment.getSourceType();
+    }
+
+    @Override
+    public String getSourceLocalVarName() {
+        return assignment.getSourceLocalVarName();
+    }
+
+    @Override
+    public void setSourceLocalVarName(String sourceLocalVarName) {
+        assignment.setSourceLocalVarName( sourceLocalVarName );
+    }
+
     /**
      * @return the type of the single source parameter that is not the {@code @TargetType} parameter
      */

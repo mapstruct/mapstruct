@@ -81,7 +81,7 @@ public class MappingBuilderContext {
          * @param targetPropertyName name of the target property
          * @param formattingParameters used for formatting dates and numbers
          * @param selectionParameters parameters used in the selection process
-         * @param sourceReference call to source type as string
+         * @param sourceReference source information
          * @param preferUpdateMethods selection should prefer update methods when present.
          *
          * @return an assignment to a method parameter, which can either be:
@@ -95,7 +95,7 @@ public class MappingBuilderContext {
         @SuppressWarnings("checkstyle:parameternumber")
         Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
                                        String targetPropertyName, FormattingParameters formattingParameters,
-                                       SelectionParameters selectionParameters, String sourceReference,
+                                       SelectionParameters selectionParameters, Direct sourceReference,
                                        boolean preferUpdateMethods);
 
         /**

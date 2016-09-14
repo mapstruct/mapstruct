@@ -87,6 +87,21 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
+    public Type getSourceType() {
+        return assignment.getSourceType();
+    }
+
+    @Override
+    public String getSourceLocalVarName() {
+        return assignment.getSourceLocalVarName();
+    }
+
+    @Override
+    public void setSourceLocalVarName(String sourceLocalVarName) {
+        assignment.setSourceLocalVarName( sourceLocalVarName );
+    }
+
+    @Override
     public void setAssignment( Assignment assignment ) {
         this.assignment = assignment;
     }

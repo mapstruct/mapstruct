@@ -36,6 +36,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
 import org.mapstruct.ap.internal.model.AssignmentFactory;
+import org.mapstruct.ap.internal.model.Direct;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
@@ -108,7 +109,7 @@ public class MappingResolverImpl implements MappingResolver {
     @SuppressWarnings("checkstyle:parameternumber")
     public Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType,
         Type targetType, String targetPropertyName, FormattingParameters formattingParameters,
-        SelectionParameters selectionParameters, String sourceReference, boolean preferUpdateMapping) {
+        SelectionParameters selectionParameters, Direct sourceReference, boolean preferUpdateMapping) {
 
         SelectionCriteria criteria =
             new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping );
@@ -171,7 +172,7 @@ public class MappingResolverImpl implements MappingResolver {
         private final String dateFormat;
         private final String numberFormat;
         private final SelectionCriteria selectionCriteria;
-        private final String sourceReference;
+        private final Direct sourceReference;
         private final boolean savedPreferUpdateMapping;
 
         // resolving via 2 steps creates the possibillity of wrong matches, first builtin method matches,
@@ -180,7 +181,7 @@ public class MappingResolverImpl implements MappingResolver {
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
         private ResolvingAttempt(List<SourceMethod> sourceModel, Method mappingMethod, String mappedElement,
-            String dateFormat, String numberFormat, String sourceReference, SelectionCriteria criteria) {
+            String dateFormat, String numberFormat, Direct sourceReference, SelectionCriteria criteria) {
 
             this.mappingMethod = mappingMethod;
             this.mappedElement = mappedElement;
@@ -209,28 +210,28 @@ public class MappingResolverImpl implements MappingResolver {
             // first simple mapping method
             Assignment referencedMethod = resolveViaMethod( sourceType, targetType, false );
             if ( referencedMethod != null ) {
-                referencedMethod.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                referencedMethod.setAssignment( sourceReference );
                 return referencedMethod;
             }
 
             // then direct assignable
             if ( sourceType.isAssignableTo( targetType ) ||
                     isAssignableThroughCollectionCopyConstructor( sourceType, targetType ) ) {
-                Assignment simpleAssignment = AssignmentFactory.createDirect( sourceReference );
+                Assignment simpleAssignment = sourceReference;
                 return simpleAssignment;
             }
 
             // then type conversion
             Assignment conversion = resolveViaConversion( sourceType, targetType );
             if ( conversion != null ) {
-                conversion.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                conversion.setAssignment( sourceReference );
                 return conversion;
             }
 
             // check for a built-in method
             Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
             if ( builtInMethod != null ) {
-                builtInMethod.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                builtInMethod.setAssignment( sourceReference );
                 usedVirtualMappings.addAll( virtualMethodCandidates );
                 return builtInMethod;
             }
@@ -309,7 +310,7 @@ public class MappingResolverImpl implements MappingResolver {
                                                                       sourceType,
                                                                       targetType, dateFormat, numberFormat);
                 Assignment methodReference = AssignmentFactory.createMethodReference( matchingBuiltInMethod, ctx );
-                methodReference.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                methodReference.setAssignment( sourceReference );
                 return methodReference;
             }
 
@@ -350,7 +351,7 @@ public class MappingResolverImpl implements MappingResolver {
                     selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
                     if ( methodRefX != null ) {
                         methodRefY.setAssignment( methodRefX );
-                        methodRefX.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                        methodRefX.setAssignment( sourceReference );
                         break;
                     }
                     else {
@@ -387,7 +388,7 @@ public class MappingResolverImpl implements MappingResolver {
                         resolveViaConversion( sourceType, methodYCandidate.getSourceParameters().get( 0 ).getType() );
                     if ( conversionXRef != null ) {
                         methodRefY.setAssignment( conversionXRef );
-                        conversionXRef.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                        conversionXRef.setAssignment( sourceReference );
                         break;
                     }
                     else {
@@ -430,7 +431,7 @@ public class MappingResolverImpl implements MappingResolver {
                     conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
                     if ( conversionYRef != null ) {
                         conversionYRef.setAssignment( methodRefX );
-                        methodRefX.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                        methodRefX.setAssignment( sourceReference );
                         break;
                     }
                     else {

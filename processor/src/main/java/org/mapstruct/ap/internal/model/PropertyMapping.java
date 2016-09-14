@@ -216,15 +216,15 @@ public class PropertyMapping extends ModelElement {
             // handle source
             String sourceElement = getSourceElement();
             Type sourceType = getSourceType();
-            String sourceRefStr;
+            Direct source;
             if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER && sourceType.isCollectionType() ) {
                 // handle adder, if source is collection then use iterator element type as source type.
                 // sourceRef becomes a local variable in the itereation.
                 sourceType = sourceType.getTypeParameters().get( 0 );
-                sourceRefStr = Executables.getElementNameForAdder( targetWriteAccessor );
+                source = new Direct( Executables.getElementNameForAdder( targetWriteAccessor ), sourceType );
             }
             else {
-                sourceRefStr = getSourceRef();
+                source = getSource();
             }
 
             // all the tricky cases will be excluded for the time being.
@@ -244,17 +244,17 @@ public class PropertyMapping extends ModelElement {
                 targetPropertyName,
                 formattingParameters,
                 selectionParameters,
-                sourceRefStr,
+                source,
                 preferUpdateMethods
             );
 
             // No mapping found. Try to forge a mapping
             if ( assignment == null ) {
                 if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
-                    assignment = forgeIterableMapping( sourceType, targetType, sourceRefStr, method.getExecutable() );
+                    assignment = forgeIterableMapping( sourceType, targetType, source, method.getExecutable() );
                 }
                 else if ( sourceType.isMapType() && targetType.isMapType() ) {
-                    assignment = forgeMapMapping( sourceType, targetType, sourceRefStr, method.getExecutable() );
+                    assignment = forgeMapMapping( sourceType, targetType, source, method.getExecutable() );
                 }
             }
 
@@ -354,12 +354,6 @@ public class PropertyMapping extends ModelElement {
                 return result;
             }
 
-            // a nested source reference will take the bean mapping parameter itself, no null check is required
-            // since this is handled by the BeanMapping
-            if ( sourceReference.getPropertyEntries().size() > 1 ) {
-                return result;
-            }
-
             // add a null / presence checked when required
             if ( sourceType.isPrimitive() ) {
                 if ( getSourcePresenceCheckerRef() != null ) {
@@ -376,6 +370,7 @@ public class PropertyMapping extends ModelElement {
                 }
                 else if ( ALWAYS.equals( method.getMapperConfiguration().getNullValueCheckStrategy() ) ) {
                     result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                    useLocalVarWhenNested( result );
                 }
                 else if ( result.getType() == TYPE_CONVERTED
                     || result.getType() == TYPE_CONVERTED_MAPPED
@@ -384,12 +379,20 @@ public class PropertyMapping extends ModelElement {
                     // for primitive types null check is not possible at all, but a conversion needs
                     // a null check.
                     result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                    useLocalVarWhenNested( result );
                 }
             }
 
             return result;
         }
 
+        private void useLocalVarWhenNested(Assignment rightHandSide) {
+            if ( sourceReference.getPropertyEntries().size() > 1 ) {
+                String sourceTypeName = rightHandSide.getSourceType().getName();
+                String safeName = Strings.getSaveVariableName( sourceTypeName, existingVariableNames );
+                rightHandSide.setSourceLocalVarName( safeName );
+            }
+        }
 
         private Assignment assignToPlainViaAdder(Type sourceType, Assignment rightHandSide) {
 
@@ -399,7 +402,7 @@ public class PropertyMapping extends ModelElement {
                 result = new AdderWrapper(
                     result,
                     method.getThrownTypes(),
-                    getSourceRef(),
+                    getSource().getSourceReference(),
                     sourceType
                 );
                 result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
@@ -524,18 +527,19 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private String getSourceRef() {
+        private Direct getSource() {
             Parameter sourceParam = sourceReference.getParameter();
             List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
 
             // parameter reference
             if ( propertyEntries.isEmpty() ) {
-                return sourceParam.getName();
+                return new Direct( sourceParam.getName(), getSourceType() );
             }
             // simple property
             else if ( propertyEntries.size() == 1 ) {
                 PropertyEntry propertyEntry = propertyEntries.get( 0 );
-                return sourceParam.getName() + "." + propertyEntry.getReadAccessor().getSimpleName() + "()";
+                return new Direct( sourceParam.getName()
+                    + "." + propertyEntry.getReadAccessor().getSimpleName() + "()", propertyEntry.getType() );
             }
             // nested property given as dot path
             else {
@@ -567,8 +571,8 @@ public class PropertyMapping extends ModelElement {
                 else {
                     forgedName = ctx.getExistingMappingMethod( nestedPropertyMapping ).getName();
                 }
+                return new Direct( forgedName + "( " + sourceParam.getName() + " )", getSourceType() );
 
-                return forgedName + "( " + sourceParam.getName() + " )";
             }
         }
 
@@ -606,7 +610,7 @@ public class PropertyMapping extends ModelElement {
             return sourcePresenceChecker;
         }
 
-        private Assignment forgeIterableMapping(Type sourceType, Type targetType, String sourceReference,
+        private Assignment forgeIterableMapping(Type sourceType, Type targetType, Direct source,
             ExecutableElement element) {
 
             Assignment assignment = null;
@@ -635,13 +639,13 @@ public class PropertyMapping extends ModelElement {
                 }
 
                 assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
-                assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                assignment.setAssignment( source );
             }
 
             return assignment;
         }
 
-        private Assignment forgeMapMapping(Type sourceType, Type targetType, String sourceReference,
+        private Assignment forgeMapMapping(Type sourceType, Type targetType, Direct source,
             ExecutableElement element) {
 
             Assignment assignment = null;
@@ -668,7 +672,7 @@ public class PropertyMapping extends ModelElement {
                     methodRef = new ForgedMethod( existingName, methodRef );
                 }
                 assignment = AssignmentFactory.createMethodReference( methodRef, null, targetType );
-                assignment.setAssignment( AssignmentFactory.createDirect( sourceReference ) );
+                assignment.setAssignment( source );
             }
 
             return assignment;
@@ -726,7 +730,7 @@ public class PropertyMapping extends ModelElement {
                     targetPropertyName,
                     formattingParameters,
                     selectionParameters,
-                    constantExpression,
+                    new Direct( constantExpression, sourceType ),
                     method.getMappingTargetParameter() != null
                 );
             }
@@ -793,7 +797,7 @@ public class PropertyMapping extends ModelElement {
             // String String quotation marks.
             String enumExpression = constantExpression.substring( 1, constantExpression.length() - 1 );
             if ( targetType.getEnumConstants().contains( enumExpression ) ) {
-                assignment = AssignmentFactory.createDirect( enumExpression );
+                assignment = new Direct( enumExpression, targetType );
                 assignment = new EnumConstantWrapper( assignment, targetType );
             }
             else {
@@ -819,7 +823,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         public PropertyMapping build() {
-            Assignment assignment = AssignmentFactory.createDirect( javaExpression );
+            Assignment assignment = new Direct( javaExpression, null );
 
             if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
                 // setter, so wrap in setter
