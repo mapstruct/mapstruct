@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.AssignmentFactory;
 import org.mapstruct.ap.internal.model.TypeConversion;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
@@ -39,8 +38,7 @@ public abstract class SimpleConversion implements ConversionProvider {
     @Override
     public Assignment to(ConversionContext conversionContext) {
         String toExpression = getToExpression( conversionContext );
-        return AssignmentFactory.createTypeConversion(
-            getToConversionImportTypes( conversionContext ),
+        return new TypeConversion( getToConversionImportTypes( conversionContext ),
             getToConversionExceptionTypes( conversionContext ),
             toExpression
         );
@@ -49,8 +47,7 @@ public abstract class SimpleConversion implements ConversionProvider {
     @Override
     public Assignment from(ConversionContext conversionContext) {
         String fromExpression = getFromExpression( conversionContext );
-        return AssignmentFactory.createTypeConversion(
-            getFromConversionImportTypes( conversionContext ),
+        return new TypeConversion( getFromConversionImportTypes( conversionContext ),
             getFromConversionExceptionTypes( conversionContext ),
             fromExpression
         );

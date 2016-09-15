@@ -47,7 +47,7 @@ public class TypeConversion extends ModelElement implements Assignment {
      */
     private Assignment assignment;
 
-    TypeConversion( Set<Type> importTypes,
+    public TypeConversion( Set<Type> importTypes,
             List<Type> exceptionTypes,
             String expression ) {
         this.importTypes = new HashSet<Type>( importTypes );

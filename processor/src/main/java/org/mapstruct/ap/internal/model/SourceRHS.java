@@ -27,17 +27,17 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
- * Direct Assignment. Just a source reference
+ * SourceRHS Assignment. Right Hand Side (RHS), source part of the assignment.
  *
  * @author Sjaak Derksen
  */
-public class Direct extends ModelElement implements Assignment {
+public class SourceRHS extends ModelElement implements Assignment {
 
     private final String sourceReference;
     private final Type sourceType;
     private String sourceLocalVarName;
 
-    public Direct(String sourceReference, Type sourceType ) {
+    public SourceRHS(String sourceReference, Type sourceType ) {
         this.sourceReference = sourceReference;
         this.sourceType = sourceType;
     }

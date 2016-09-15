@@ -108,7 +108,7 @@ public class IterableMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 formattingParameters,
                 selectionParameters,
-                new Direct( loopVariableName, sourceElementType ),
+                new SourceRHS( loopVariableName, sourceElementType ),
                 false
             );
 

@@ -35,8 +35,7 @@ import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
-import org.mapstruct.ap.internal.model.AssignmentFactory;
-import org.mapstruct.ap.internal.model.Direct;
+import org.mapstruct.ap.internal.model.SourceRHS;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
@@ -109,7 +108,7 @@ public class MappingResolverImpl implements MappingResolver {
     @SuppressWarnings("checkstyle:parameternumber")
     public Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType,
         Type targetType, String targetPropertyName, FormattingParameters formattingParameters,
-        SelectionParameters selectionParameters, Direct sourceReference, boolean preferUpdateMapping) {
+        SelectionParameters selectionParameters, SourceRHS sourceRHS, boolean preferUpdateMapping) {
 
         SelectionCriteria criteria =
             new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping );
@@ -127,7 +126,7 @@ public class MappingResolverImpl implements MappingResolver {
             mappedElement,
             dateFormat,
             numberFormat,
-            sourceReference,
+            sourceRHS,
             criteria
         );
 
@@ -172,7 +171,7 @@ public class MappingResolverImpl implements MappingResolver {
         private final String dateFormat;
         private final String numberFormat;
         private final SelectionCriteria selectionCriteria;
-        private final Direct sourceReference;
+        private final SourceRHS sourceRHS;
         private final boolean savedPreferUpdateMapping;
 
         // resolving via 2 steps creates the possibillity of wrong matches, first builtin method matches,
@@ -181,14 +180,14 @@ public class MappingResolverImpl implements MappingResolver {
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
         private ResolvingAttempt(List<SourceMethod> sourceModel, Method mappingMethod, String mappedElement,
-            String dateFormat, String numberFormat, Direct sourceReference, SelectionCriteria criteria) {
+            String dateFormat, String numberFormat, SourceRHS sourceRHS, SelectionCriteria criteria) {
 
             this.mappingMethod = mappingMethod;
             this.mappedElement = mappedElement;
             this.methods = filterPossibleCandidateMethods( sourceModel );
             this.dateFormat = dateFormat;
             this.numberFormat = numberFormat;
-            this.sourceReference = sourceReference;
+            this.sourceRHS = sourceRHS;
             this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
             this.selectionCriteria = criteria;
             this.savedPreferUpdateMapping = criteria.isPreferUpdateMapping();
@@ -210,28 +209,28 @@ public class MappingResolverImpl implements MappingResolver {
             // first simple mapping method
             Assignment referencedMethod = resolveViaMethod( sourceType, targetType, false );
             if ( referencedMethod != null ) {
-                referencedMethod.setAssignment( sourceReference );
+                referencedMethod.setAssignment( sourceRHS );
                 return referencedMethod;
             }
 
             // then direct assignable
             if ( sourceType.isAssignableTo( targetType ) ||
                     isAssignableThroughCollectionCopyConstructor( sourceType, targetType ) ) {
-                Assignment simpleAssignment = sourceReference;
+                Assignment simpleAssignment = sourceRHS;
                 return simpleAssignment;
             }
 
             // then type conversion
             Assignment conversion = resolveViaConversion( sourceType, targetType );
             if ( conversion != null ) {
-                conversion.setAssignment( sourceReference );
+                conversion.setAssignment( sourceRHS );
                 return conversion;
             }
 
             // check for a built-in method
             Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
             if ( builtInMethod != null ) {
-                builtInMethod.setAssignment( sourceReference );
+                builtInMethod.setAssignment( sourceRHS );
                 usedVirtualMappings.addAll( virtualMethodCandidates );
                 return builtInMethod;
             }
@@ -309,8 +308,8 @@ public class MappingResolverImpl implements MappingResolver {
                 ConversionContext ctx = new DefaultConversionContext( typeFactory, messager,
                                                                       sourceType,
                                                                       targetType, dateFormat, numberFormat);
-                Assignment methodReference = AssignmentFactory.createMethodReference( matchingBuiltInMethod, ctx );
-                methodReference.setAssignment( sourceReference );
+                Assignment methodReference = new MethodReference( matchingBuiltInMethod, ctx );
+                methodReference.setAssignment( sourceRHS );
                 return methodReference;
             }
 
@@ -351,7 +350,7 @@ public class MappingResolverImpl implements MappingResolver {
                     selectionCriteria.setPreferUpdateMapping( savedPreferUpdateMapping );
                     if ( methodRefX != null ) {
                         methodRefY.setAssignment( methodRefX );
-                        methodRefX.setAssignment( sourceReference );
+                        methodRefX.setAssignment( sourceRHS );
                         break;
                     }
                     else {
@@ -388,7 +387,7 @@ public class MappingResolverImpl implements MappingResolver {
                         resolveViaConversion( sourceType, methodYCandidate.getSourceParameters().get( 0 ).getType() );
                     if ( conversionXRef != null ) {
                         methodRefY.setAssignment( conversionXRef );
-                        conversionXRef.setAssignment( sourceReference );
+                        conversionXRef.setAssignment( sourceRHS );
                         break;
                     }
                     else {
@@ -431,7 +430,7 @@ public class MappingResolverImpl implements MappingResolver {
                     conversionYRef = resolveViaConversion( methodXCandidate.getReturnType(), targetType );
                     if ( conversionYRef != null ) {
                         conversionYRef.setAssignment( methodRefX );
-                        methodRefX.setAssignment( sourceReference );
+                        methodRefX.setAssignment( sourceRHS );
                         break;
                     }
                     else {
@@ -505,8 +504,7 @@ public class MappingResolverImpl implements MappingResolver {
                                                      Type targetType) {
             MapperReference mapperReference = findMapperReference( method );
 
-            return AssignmentFactory.createMethodReference(
-                method,
+            return new MethodReference( method,
                 mapperReference,
                 SourceMethod.containsTargetTypeParameter( method.getParameters() ) ? targetType : null
             );

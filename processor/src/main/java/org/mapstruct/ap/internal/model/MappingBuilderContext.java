@@ -81,21 +81,21 @@ public class MappingBuilderContext {
          * @param targetPropertyName name of the target property
          * @param formattingParameters used for formatting dates and numbers
          * @param selectionParameters parameters used in the selection process
-         * @param sourceReference source information
+         * @param sourceRHS source information
          * @param preferUpdateMethods selection should prefer update methods when present.
          *
          * @return an assignment to a method parameter, which can either be:
          * <ol>
          * <li>MethodReference</li>
          * <li>TypeConversion</li>
-         * <li>Direct Assignment (empty TargetAssignment)</li>
+         * <li>SourceRHS Assignment (empty TargetAssignment)</li>
          * <li>null, no assignment found</li>
          * </ol>
          */
         @SuppressWarnings("checkstyle:parameternumber")
         Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
                                        String targetPropertyName, FormattingParameters formattingParameters,
-                                       SelectionParameters selectionParameters, Direct sourceReference,
+                                       SelectionParameters selectionParameters, SourceRHS sourceRHS,
                                        boolean preferUpdateMethods);
 
         /**

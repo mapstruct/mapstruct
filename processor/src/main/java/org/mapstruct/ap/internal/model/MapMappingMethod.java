@@ -111,7 +111,7 @@ public class MapMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 keyFormattingParameters,
                 keySelectionParameters,
-                new Direct( "entry.getKey()", keySourceType ),
+                new SourceRHS( "entry.getKey()", keySourceType ),
                 false
             );
 
@@ -138,7 +138,7 @@ public class MapMappingMethod extends MappingMethod {
                 null, // there is no targetPropertyName
                 valueFormattingParameters,
                 valueSelectionParameters,
-                new Direct( "entry.getValue()", valueSourceType ),
+                new SourceRHS( "entry.getValue()", valueSourceType ),
                 false
             );
 
