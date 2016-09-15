@@ -41,7 +41,6 @@ public class SetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
 
     private final String targetGetterName;
     private final Assignment newCollectionOrMapAssignment;
-    private final Type targetType;
     private final String localVarName;
 
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
@@ -53,7 +52,6 @@ public class SetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
 
         this.targetGetterName = targetGetterName;
         this.newCollectionOrMapAssignment = newCollectionOrMapAssignment;
-        this.targetType = targetType;
         this.localVarName = Strings.getSaveVariableName( targetType.getName(), existingVariableNames );
         existingVariableNames.add( localVarName );
     }

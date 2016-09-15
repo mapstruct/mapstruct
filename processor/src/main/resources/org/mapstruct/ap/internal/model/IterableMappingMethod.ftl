@@ -54,7 +54,8 @@
 
     <#if resultType.arrayType>
         <#if !existingInstanceMapping>
-            <@includeModel object=resultElementType/>[] ${resultName} = new <@includeModel object=resultElementType/>[<@iterableSize/>];
+            <#assign elementTypeString><@includeModel object=resultElementType/></#assign>
+            ${elementTypeString}[] ${resultName} = new ${elementTypeString?keep_before('[]')}[<@iterableSize/>]${elementTypeString?replace('[^\\[\\]]+', '', 'r')};
         </#if>
     <#else>
         <#if existingInstanceMapping>

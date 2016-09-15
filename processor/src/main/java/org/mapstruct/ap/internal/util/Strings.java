@@ -150,7 +150,7 @@ public class Strings {
      * any Java keyword; starting with a lower-case letter
      */
     public static String getSaveVariableName(String name, Collection<String> existingVariableNames) {
-        name = decapitalize( name );
+        name = decapitalize( sanitizeIdentifierName( name ) );
 
         Set<String> conflictingNames = new HashSet<String>( KEYWORDS );
         conflictingNames.addAll( existingVariableNames );
@@ -162,4 +162,11 @@ public class Strings {
         return name;
     }
 
+    /**
+     * @param identifier identifier to sanitize
+     * @return the identifier without any characters that are not allowed as part of a Java identifier.
+     */
+    public static String sanitizeIdentifierName(String identifier) {
+        return identifier.replace( "[]", "Array" );
+    }
 }

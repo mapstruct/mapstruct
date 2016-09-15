@@ -57,12 +57,12 @@ public class ForgedMethod implements Method {
      */
     public ForgedMethod(String name, Type sourceType, Type targetType, MapperConfiguration mapperConfiguration,
         ExecutableElement positionHintElement) {
-        String sourceParamName = Strings.decapitalize( sourceType.getName().replace( "[]", "" ) );
+        String sourceParamName = Strings.decapitalize( sourceType.getName() );
         String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
         this.parameters = Arrays.asList( new Parameter( sourceParamSafeName, sourceType ) );
         this.returnType = targetType;
         this.thrownTypes = new ArrayList<Type>();
-        this.name = name;
+        this.name = Strings.sanitizeIdentifierName( name );
         this.mapperConfiguration = mapperConfiguration;
         this.positionHintElement = positionHintElement;
     }
