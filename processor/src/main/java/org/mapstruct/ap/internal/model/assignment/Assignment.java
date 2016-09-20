@@ -82,7 +82,7 @@ public interface Assignment {
      *
      * @return source type (can be null)
      */
-    Type getSourceType();
+    Type getMatchingSourceType();
 
     /**
      * a local variable name for supporting a null check and avoiding executing a nested method forged method twice

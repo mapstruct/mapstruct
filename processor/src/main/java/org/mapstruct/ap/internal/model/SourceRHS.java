@@ -48,7 +48,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     }
 
     @Override
-    public Type getSourceType() {
+    public Type getMatchingSourceType() {
         return sourceType;
     }
 

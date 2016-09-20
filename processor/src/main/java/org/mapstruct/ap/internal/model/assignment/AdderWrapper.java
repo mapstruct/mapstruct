@@ -61,7 +61,7 @@ public class AdderWrapper extends AssignmentWrapper {
         return result;
     }
 
-    public Type getSourceType() {
+    public Type getMatchingSourceType() {
         return sourceType;
     }
 

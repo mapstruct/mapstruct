@@ -19,7 +19,7 @@
 
 -->
 <#if sourceLocalVarName??>
-<@includeModel object=sourceType/> ${sourceLocalVarName} = ${sourceReference};
+<@includeModel object=matchingSourceType/> ${sourceLocalVarName} = ${sourceReference};
 if ( ${sourceLocalVarName} != null ) {
     <@_assignment object=assignment defaultValue=ext.defaultValueAssignment/>
 }
