@@ -85,4 +85,15 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     public boolean isUpdateMethod() {
         return decoratedAssignment.isUpdateMethod();
     }
+
+    @Override
+    public String getSourceIteratorName() {
+        return decoratedAssignment.getSourceIteratorName();
+    }
+
+    @Override
+    public Type getCollectionSourceType() {
+        return decoratedAssignment.getCollectionSourceType();
+    }
+
 }

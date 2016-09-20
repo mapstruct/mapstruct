@@ -134,6 +134,16 @@ public class MethodReference extends MappingMethod implements Assignment {
     }
 
     @Override
+    public String getSourceIteratorName() {
+        return assignment.getSourceIteratorName();
+    }
+
+    @Override
+    public Type getCollectionSourceType() {
+        return assignment.getCollectionSourceType();
+    }
+
+    @Override
     public String getSourceLocalVarName() {
         return assignment.getSourceLocalVarName();
     }
