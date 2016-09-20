@@ -76,7 +76,6 @@ public class MappingBuilderContext {
          *
          * @param mappingMethod target mapping method
          * @param mappedElement used for error messages
-         * @param sourceType parameter to match
          * @param targetType return type to match
          * @param targetPropertyName name of the target property
          * @param formattingParameters used for formatting dates and numbers
@@ -93,7 +92,7 @@ public class MappingBuilderContext {
          * </ol>
          */
         @SuppressWarnings("checkstyle:parameternumber")
-        Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType, Type targetType,
+        Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type targetType,
                                        String targetPropertyName, FormattingParameters formattingParameters,
                                        SelectionParameters selectionParameters, SourceRHS sourceRHS,
                                        boolean preferUpdateMethods);

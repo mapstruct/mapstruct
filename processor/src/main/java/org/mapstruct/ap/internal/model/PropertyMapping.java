@@ -212,15 +212,11 @@ public class PropertyMapping extends ModelElement {
             // handle source
             String sourceElement = getSourceElement();
             Type sourceType = getSourceType();
-            SourceRHS sourceRHS;
+            SourceRHS sourceRHS = getSourceRHS();
             if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER && sourceType.isCollectionType() ) {
                 // handle adder, if source is collection then use iterator element type as source type.
-                // sourceRef becomes a local variable in the itereation.
                 sourceType = sourceType.getTypeParameters().get( 0 );
-                sourceRHS = new SourceRHS( Executables.getElementNameForAdder( targetWriteAccessor ), sourceType );
-            }
-            else {
-                sourceRHS = getSourceRHS();
+                sourceRHS = new SourceRHS( sourceRHS.getSourceReference(), sourceType, existingVariableNames );
             }
 
             // all the tricky cases will be excluded for the time being.
@@ -235,7 +231,6 @@ public class PropertyMapping extends ModelElement {
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 sourceElement,
-                sourceType,
                 targetType,
                 targetPropertyName,
                 formattingParameters,
@@ -320,7 +315,7 @@ public class PropertyMapping extends ModelElement {
                 result = assignToPlainViaSetter( sourceType, targetType, rightHandSide );
             }
             else {
-                result = assignToPlainViaAdder( sourceType, rightHandSide );
+                result = assignToPlainViaAdder( rightHandSide );
             }
             return result;
 
@@ -391,18 +386,12 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private Assignment assignToPlainViaAdder(Type sourceType, Assignment rightHandSide) {
+        private Assignment assignToPlainViaAdder( Assignment rightHandSide) {
 
             Assignment result = rightHandSide;
 
             if ( getSourceType().isCollectionType() ) {
-                result = new AdderWrapper(
-                    result,
-                    method.getThrownTypes(),
-                    getSourceRHS().getSourceReference(),
-                    sourceType
-                );
-                result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                result = new AdderWrapper( result, method.getThrownTypes() );
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
@@ -495,13 +484,13 @@ public class PropertyMapping extends ModelElement {
 
             // parameter reference
             if ( propertyEntries.isEmpty() ) {
-                return new SourceRHS( sourceParam.getName(), getSourceType() );
+                return new SourceRHS( sourceParam.getName(), getSourceType(), existingVariableNames );
             }
             // simple property
             else if ( propertyEntries.size() == 1 ) {
                 PropertyEntry propertyEntry = propertyEntries.get( 0 );
-                return new SourceRHS( sourceParam.getName()
-                    + "." + propertyEntry.getReadAccessor().getSimpleName() + "()", propertyEntry.getType() );
+                String sourceRef = sourceParam.getName() + "." + propertyEntry.getReadAccessor().getSimpleName() + "()";
+                return new SourceRHS( sourceRef, propertyEntry.getType(), existingVariableNames );
             }
             // nested property given as dot path
             else {
@@ -532,7 +521,8 @@ public class PropertyMapping extends ModelElement {
                 else {
                     forgedName = ctx.getExistingMappingMethod( nestedPropertyMapping ).getName();
                 }
-                return new SourceRHS( forgedName + "( " + sourceParam.getName() + " )", getSourceType() );
+                String sourceRef = forgedName + "( " + sourceParam.getName() + " )";
+                return new SourceRHS( sourceRef, getSourceType(), existingVariableNames );
 
             }
         }
@@ -686,12 +676,11 @@ public class PropertyMapping extends ModelElement {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
                     mappedElement,
-                    sourceType,
                     targetType,
                     targetPropertyName,
                     formattingParameters,
                     selectionParameters,
-                    new SourceRHS( constantExpression, sourceType ),
+                    new SourceRHS( constantExpression, sourceType, existingVariableNames ),
                     method.getMappingTargetParameter() != null
                 );
             }
@@ -756,7 +745,7 @@ public class PropertyMapping extends ModelElement {
             // String String quotation marks.
             String enumExpression = constantExpression.substring( 1, constantExpression.length() - 1 );
             if ( targetType.getEnumConstants().contains( enumExpression ) ) {
-                assignment = new SourceRHS( enumExpression, targetType );
+                assignment = new SourceRHS( enumExpression, targetType, existingVariableNames );
                 assignment = new EnumConstantWrapper( assignment, targetType );
             }
             else {
@@ -782,7 +771,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         public PropertyMapping build() {
-            Assignment assignment = new SourceRHS( javaExpression, null );
+            Assignment assignment = new SourceRHS( javaExpression, null, existingVariableNames );
 
             if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
                 // setter, so wrap in setter

@@ -18,29 +18,11 @@
      limitations under the License.
 
 -->
-<#if (thrownTypes?size == 0) >
-    for ( <@includeModel object=sourceType/> ${iteratorReference} : ${sourceReference} ) {
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@includeModel object=assignment
-                targetBeanName=ext.targetBeanName
-                existingInstanceMapping=ext.existingInstanceMapping
-                targetReadAccessorName=ext.targetReadAccessorName
-                targetWriteAccessorName=ext.targetWriteAccessorName
-                targetType=ext.targetType/> );
-    }
-<#else>
-    try {
-        for ( <@includeModel object=sourceType/> ${iteratorReference} : ${sourceReference} ) {
-            ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@includeModel object=assignment
-                    targetBeanName=ext.targetBeanName
-                    existingInstanceMapping=ext.existingInstanceMapping
-                    targetReadAccessorName=ext.targetReadAccessorName
-                    targetWriteAccessorName=ext.targetWriteAccessorName
-                    targetType=ext.targetType/> );
-        }
-    }
-    <#list thrownTypes as exceptionType>
-    catch ( <@includeModel object=exceptionType/> e ) {
-        throw new RuntimeException( e );
-    }
-    </#list>
-</#if>
+<#import "../macro/CommonMacros.ftl" as lib>
+<@lib.handleExceptions>
+  if ( ${sourceReference} != null ) {
+      for ( <@includeModel object=sourceType/> ${sourceIteratorName} : ${sourceReference} ) {
+          ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@lib.handleAssignment/> );
+      }
+  }
+</@lib.handleExceptions>

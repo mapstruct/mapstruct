@@ -134,6 +134,11 @@ public class MethodReference extends MappingMethod implements Assignment {
     }
 
     @Override
+    public String createLocalVarName( String desiredName ) {
+        return assignment.createLocalVarName( desiredName );
+    }
+
+    @Override
     public String getSourceLocalVarName() {
         return assignment.getSourceLocalVarName();
     }

@@ -78,11 +78,19 @@ public interface Assignment {
     String getSourceReference();
 
     /**
-     * the source type.
+     * the source type used in the matching process
      *
      * @return source type (can be null)
      */
     Type getSourceType();
+
+    /**
+     * safe (local) element variable name when dealing with collections.
+     *
+     * @param desiredName the desired name
+     * @return the desired name, made unique
+     */
+    String createLocalVarName( String desiredName );
 
     /**
      * a local variable name for supporting a null check and avoiding executing a nested method forged method twice

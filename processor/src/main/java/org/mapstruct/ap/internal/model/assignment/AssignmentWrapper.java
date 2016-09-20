@@ -86,4 +86,9 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
         return decoratedAssignment.isUpdateMethod();
     }
 
+    @Override
+    public String createLocalVarName( String desiredName ) {
+        return decoratedAssignment.createLocalVarName( desiredName );
+    }
+
 }

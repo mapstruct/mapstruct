@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.HashSet;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.List;
@@ -105,12 +106,11 @@ public class IterableMappingMethod extends MappingMethod {
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 "collection element",
-                sourceElementType,
                 targetElementType,
                 null, // there is no targetPropertyName
                 formattingParameters,
                 selectionParameters,
-                new SourceRHS( loopVariableName, sourceElementType ),
+                new SourceRHS( loopVariableName, sourceElementType, new HashSet<String>() ),
                 false
             );
 

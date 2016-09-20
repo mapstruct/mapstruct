@@ -106,7 +106,7 @@ public class MappingResolverImpl implements MappingResolver {
 
     @Override
     @SuppressWarnings("checkstyle:parameternumber")
-    public Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type sourceType,
+    public Assignment getTargetAssignment(Method mappingMethod, String mappedElement,
         Type targetType, String targetPropertyName, FormattingParameters formattingParameters,
         SelectionParameters selectionParameters, SourceRHS sourceRHS, boolean preferUpdateMapping) {
 
@@ -130,7 +130,7 @@ public class MappingResolverImpl implements MappingResolver {
             criteria
         );
 
-        return attempt.getTargetAssignment( sourceType, targetType );
+        return attempt.getTargetAssignment( sourceRHS.getSourceType(), targetType );
     }
 
     @Override

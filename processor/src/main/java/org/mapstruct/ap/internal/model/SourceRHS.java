@@ -25,6 +25,7 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * SourceRHS Assignment. Right Hand Side (RHS), source part of the assignment.
@@ -36,10 +37,12 @@ public class SourceRHS extends ModelElement implements Assignment {
     private final String sourceReference;
     private final Type sourceType;
     private String sourceLocalVarName;
+    private final Set<String> existingVariableNames;
 
-    public SourceRHS(String sourceReference, Type sourceType ) {
+    public SourceRHS(String sourceReference, Type sourceType, Set<String> existingVariableNames ) {
         this.sourceReference = sourceReference;
         this.sourceType = sourceType;
+        this.existingVariableNames = existingVariableNames;
     }
 
     @Override
@@ -50,6 +53,11 @@ public class SourceRHS extends ModelElement implements Assignment {
     @Override
     public Type getSourceType() {
         return sourceType;
+    }
+
+    @Override
+    public String createLocalVarName(String desiredName) {
+        return Strings.getSaveVariableName( desiredName, existingVariableNames );
     }
 
     @Override

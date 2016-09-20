@@ -92,6 +92,11 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
+    public String createLocalVarName( String desiredName ) {
+        return assignment.createLocalVarName( desiredName );
+    }
+
+    @Override
     public String getSourceLocalVarName() {
         return assignment.getSourceLocalVarName();
     }

@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.HashSet;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.List;
@@ -108,12 +109,11 @@ public class MapMappingMethod extends MappingMethod {
             Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 "map key",
-                keySourceType,
                 keyTargetType,
                 null, // there is no targetPropertyName
                 keyFormattingParameters,
                 keySelectionParameters,
-                new SourceRHS( "entry.getKey()", keySourceType ),
+                new SourceRHS( "entry.getKey()", keySourceType, new HashSet<String>() ),
                 false
             );
 
@@ -135,12 +135,11 @@ public class MapMappingMethod extends MappingMethod {
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 "map value",
-                valueSourceType,
                 valueTargetType,
                 null, // there is no targetPropertyName
                 valueFormattingParameters,
                 valueSelectionParameters,
-                new SourceRHS( "entry.getValue()", valueSourceType ),
+                new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<String>() ),
                 false
             );
 
