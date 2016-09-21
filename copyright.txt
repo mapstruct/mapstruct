@@ -19,8 +19,9 @@ Pavel Makhov
 Remko Plantenga
 Samuel Wright
 Sebastian Hasait
-Sjaak Derksen
 Sean Huang
+Sjaak Derksen
+Stefan May
 Timo Eckhardt
 Tomek Gubala
 Vincent Alexander Beelte
