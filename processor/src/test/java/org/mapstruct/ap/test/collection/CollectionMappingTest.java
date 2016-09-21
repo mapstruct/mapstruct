@@ -29,13 +29,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.fest.assertions.MapAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-@WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class, TestList.class, TestMap.class })
+@WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class, TestList.class, TestMap.class,
+    TestNonGenericList.class, StringToLongMap.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class CollectionMappingTest {
 
@@ -388,5 +390,57 @@ public class CollectionMappingTest {
 
         assertThat( source.getEnumSet() ).containsOnly( Colour.BLUE, Colour.GREEN, Colour.RED );
         assertThat( target.getEnumSet() ).containsOnly( Colour.BLUE, Colour.GREEN );
+    }
+
+    @Test
+    @IssueKey("TODO")
+    public void shouldMapNonGenericList() {
+        Source source = new Source();
+        source.setStringList3( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getNonGenericStringList() ).containsExactly( "Bob", "Alice" );
+
+        // Inverse direction
+        Target newTarget = new Target();
+        TestNonGenericList nonGenericStringList = new TestNonGenericList();
+        nonGenericStringList.addAll( Arrays.asList( "Bill", "Bob" ) );
+        newTarget.setNonGenericStringList( nonGenericStringList );
+
+        Source mappedSource = SourceTargetMapper.INSTANCE.targetToSource( newTarget );
+
+        assertThat( mappedSource ).isNotNull();
+        assertThat( mappedSource.getStringList3() ).containsExactly( "Bill", "Bob" );
+    }
+
+    @Test
+    @IssueKey("TODO")
+    public void shouldMapNonGenericMap() {
+        Source source = new Source();
+        Map<String, Long> map = new HashMap<String, Long>();
+        map.put( "Bob", 123L );
+        map.put( "Alice", 456L );
+        source.setStringLongMapForNonGeneric( map );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getNonGenericMapStringtoLong() ).includes( MapAssert.entry( "Bob", 123L ),
+            MapAssert.entry( "Alice", 456L ) );
+
+        // Inverse direction
+        Target newTarget = new Target();
+        StringToLongMap stringToLongMap = new StringToLongMap();
+        stringToLongMap.put( "Blue", 321L );
+        stringToLongMap.put( "Green", 654L );
+        newTarget.setNonGenericMapStringtoLong( stringToLongMap );
+
+        Source mappedSource = SourceTargetMapper.INSTANCE.targetToSource( newTarget );
+
+        assertThat( mappedSource ).isNotNull();
+        assertThat( mappedSource.getStringLongMapForNonGeneric() ).includes( MapAssert.entry( "Blue", 321L ),
+            MapAssert.entry( "Green", 654L ) );
     }
 }

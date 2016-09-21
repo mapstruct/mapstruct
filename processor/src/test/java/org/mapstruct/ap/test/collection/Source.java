@@ -49,11 +49,15 @@ public class Source {
 
     private Map<String, Long> otherStringLongMap;
 
+    private Map<String, Long> stringLongMapForNonGeneric;
+
     private List<String> stringList2;
 
     private Set<String> stringSet2;
 
     private EnumSet<Colour> enumSet;
+
+    private List<String> stringList3;
 
     public List<String> getStringList() {
         return stringList;
@@ -173,5 +177,21 @@ public class Source {
 
     public void setEnumSet(EnumSet<Colour> enumSet) {
         this.enumSet = enumSet;
+    }
+
+    public List<String> getStringList3() {
+        return stringList3;
+    }
+
+    public void setStringList3(List<String> stringList3) {
+        this.stringList3 = stringList3;
+    }
+
+    public Map<String, Long> getStringLongMapForNonGeneric() {
+        return stringLongMapForNonGeneric;
+    }
+
+    public void setStringLongMapForNonGeneric(Map<String, Long> stringLongMapForNonGeneric) {
+        this.stringLongMapForNonGeneric = stringLongMapForNonGeneric;
     }
 }

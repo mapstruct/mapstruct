@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
@@ -96,8 +97,9 @@ public class MapMappingMethod extends MappingMethod {
 
         public MapMappingMethod build() {
 
-            List<Type> sourceTypeParams = first( method.getSourceParameters() ).getType().getTypeParameters();
-            List<Type> resultTypeParams = method.getResultType().getTypeParameters();
+            List<Type> sourceTypeParams =
+                first( method.getSourceParameters() ).getType().determineTypeArguments( Map.class );
+            List<Type> resultTypeParams = method.getResultType().determineTypeArguments( Map.class );
 
             // find mapping method or conversion for key
             Type keySourceType = sourceTypeParams.get( 0 ).getTypeBound();
@@ -215,6 +217,15 @@ public class MapMappingMethod extends MappingMethod {
         }
 
         throw new IllegalStateException( "Method " + this + " has no source parameter." );
+    }
+
+    public List<Type> getSourceElementTypes() {
+        Type sourceParameterType = getSourceParameter().getType();
+        return sourceParameterType.determineTypeArguments( Map.class );
+    }
+
+    public List<Type> getResultElementTypes() {
+        return getResultType().determineTypeArguments( Map.class );
     }
 
     public Assignment getKeyAssignment() {

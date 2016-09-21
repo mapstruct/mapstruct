@@ -38,7 +38,9 @@ public interface SourceTargetMapper {
         @Mapping(source = "integerSet", target = "set"),
         @Mapping(source = "anotherIntegerSet", target = "anotherStringSet"),
         @Mapping(source = "stringList2", target = "stringListNoSetter"),
-        @Mapping(source = "stringSet2", target = "stringListNoSetter2")
+        @Mapping(source = "stringSet2", target = "stringListNoSetter2"),
+        @Mapping(source = "stringList3", target = "nonGenericStringList"),
+        @Mapping(source = "stringLongMapForNonGeneric", target = "nonGenericMapStringtoLong")
     })
     Target sourceToTarget(Source source);
 
