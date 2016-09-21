@@ -88,6 +88,24 @@ public class DecoratorTest {
 
     @Test
     @WithClasses({
+        PersonMapper.class,
+        PersonMapperDecorator.class
+    })
+    @IssueKey("765")
+    public void shouldDelegateNonDecoratedVoidMethodsToDefaultImplementation() {
+        //given
+        AddressDto addressDto = new AddressDto( "42 Ocean View Drive" );
+
+        //when
+        Address address = new Address( "Main Street" );
+        PersonMapper.INSTANCE.updateAddressFromDto( addressDto, address );
+
+        //then
+        assertThat( address.getAddressLine() ).isEqualTo( "42 Ocean View Drive" );
+    }
+
+    @Test
+    @WithClasses({
         AnotherPersonMapper.class,
         AnotherPersonMapperDecorator.class
     })

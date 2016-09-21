@@ -22,6 +22,13 @@ public class AddressDto {
 
     private String addressLine;
 
+    public AddressDto() {
+    }
+
+    public AddressDto(String addressLine) {
+        this.addressLine = addressLine;
+    }
+
     public String getAddressLine() {
         return addressLine;
     }

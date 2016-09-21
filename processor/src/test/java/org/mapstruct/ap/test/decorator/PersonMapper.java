@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.decorator;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -33,4 +34,6 @@ public interface PersonMapper {
     PersonDto personToPersonDto(Person person);
 
     AddressDto addressToAddressDto(Address address);
+
+    void updateAddressFromDto(AddressDto dto, @MappingTarget Address address);
 }
