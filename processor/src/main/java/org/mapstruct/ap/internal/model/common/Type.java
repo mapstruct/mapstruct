@@ -798,10 +798,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return a list of type arguments or null, if superclass was not found
      */
     public List<Type> determineTypeArguments(Class<?> superclass) {
-        TypeMirror superclassMirror =
-            typeUtils.erasure( elementUtils.getTypeElement( superclass.getCanonicalName() ).asType() );
-        if ( typeUtils.isAssignable( superclassMirror, typeMirror )
-            && typeUtils.isAssignable( typeMirror, superclassMirror ) ) {
+        if ( qualifiedName.equals( superclass.getName() ) ) {
             return getTypeParameters();
         }
 

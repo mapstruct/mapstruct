@@ -253,7 +253,7 @@ public class IterableMappingMethod extends MappingMethod {
             return sourceParameterType.getComponentType();
         }
         else {
-            return sourceParameterType.determineTypeArguments( Iterable.class ).get( 0 ).getTypeBound();
+            return first( sourceParameterType.determineTypeArguments( Iterable.class ) ).getTypeBound();
         }
     }
 
@@ -262,7 +262,7 @@ public class IterableMappingMethod extends MappingMethod {
             return getResultType().getComponentType();
         }
         else {
-            return getResultType().determineTypeArguments( Iterable.class ).get( 0 );
+            return first( getResultType().determineTypeArguments( Iterable.class ) );
         }
     }
 

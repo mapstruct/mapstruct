@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.fest.assertions.MapAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -37,7 +37,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class, TestList.class, TestMap.class,
-    TestNonGenericList.class, StringToLongMap.class })
+    StringArrayList.class, StringToLongMap.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class CollectionMappingTest {
 
@@ -393,7 +393,7 @@ public class CollectionMappingTest {
     }
 
     @Test
-    @IssueKey("TODO")
+    @IssueKey("853")
     public void shouldMapNonGenericList() {
         Source source = new Source();
         source.setStringList3( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ) );
@@ -405,7 +405,7 @@ public class CollectionMappingTest {
 
         // Inverse direction
         Target newTarget = new Target();
-        TestNonGenericList nonGenericStringList = new TestNonGenericList();
+        StringArrayList nonGenericStringList = new StringArrayList();
         nonGenericStringList.addAll( Arrays.asList( "Bill", "Bob" ) );
         newTarget.setNonGenericStringList( nonGenericStringList );
 
@@ -416,7 +416,7 @@ public class CollectionMappingTest {
     }
 
     @Test
-    @IssueKey("TODO")
+    @IssueKey("853")
     public void shouldMapNonGenericMap() {
         Source source = new Source();
         Map<String, Long> map = new HashMap<String, Long>();
@@ -427,8 +427,7 @@ public class CollectionMappingTest {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getNonGenericMapStringtoLong() ).includes( MapAssert.entry( "Bob", 123L ),
-            MapAssert.entry( "Alice", 456L ) );
+        assertThat( target.getNonGenericMapStringtoLong() ).contains( entry( "Bob", 123L ), entry( "Alice", 456L ) );
 
         // Inverse direction
         Target newTarget = new Target();
@@ -440,7 +439,8 @@ public class CollectionMappingTest {
         Source mappedSource = SourceTargetMapper.INSTANCE.targetToSource( newTarget );
 
         assertThat( mappedSource ).isNotNull();
-        assertThat( mappedSource.getStringLongMapForNonGeneric() ).includes( MapAssert.entry( "Blue", 321L ),
-            MapAssert.entry( "Green", 654L ) );
+        assertThat( mappedSource.getStringLongMapForNonGeneric() ).contains(
+            entry( "Blue", 321L ),
+            entry( "Green", 654L ) );
     }
 }

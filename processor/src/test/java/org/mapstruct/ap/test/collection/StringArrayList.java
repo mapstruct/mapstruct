@@ -23,7 +23,7 @@ import java.util.ArrayList;
 /**
  * @author Stefan May
  */
-public class TestNonGenericList extends ArrayList<String> {
+public class StringArrayList extends ArrayList<String> {
 
     private static final long serialVersionUID = 1L;
 }
