@@ -615,6 +615,12 @@ public interface CarMapper {
 
 * Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Calendar`.
 
+* Between `java.sql.Date` and `java.util.Date`
+
+* Between `java.sql.Time` and `java.util.Date`
+
+* Between `java.sql.Timestamp` and `java.util.Date`
+
 * When converting from a `String`, omitting `Mapping#dateFormat` results in using the default pattern and date format symbols for the default locale. An exception to this rule is `XmlGregorianCalendar` which results in parsing the `String` according to http://www.w3.org/TR/xmlschema-2/#dateTime[XML Schema 1.0 Part 2, Section 3.2.7-14.1, Lexical Representation].
 
 [[mapping-object-references]]
