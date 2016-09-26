@@ -30,12 +30,14 @@ import org.mapstruct.ap.internal.util.Collections;
 public class Parameter extends ModelElement {
 
     private final String name;
+    private final String originalName;
     private final Type type;
     private final boolean mappingTarget;
     private final boolean targetType;
 
     public Parameter(String name, Type type, boolean mappingTarget, boolean targetType) {
-        this.name = name;
+        this.name = "values".equals( name ) ? "values_" : name;
+        this.originalName = name;
         this.type = type;
         this.mappingTarget = mappingTarget;
         this.targetType = targetType;
@@ -47,6 +49,10 @@ public class Parameter extends ModelElement {
 
     public String getName() {
         return name;
+    }
+
+    public String getOriginalName() {
+        return originalName;
     }
 
     public Type getType() {
