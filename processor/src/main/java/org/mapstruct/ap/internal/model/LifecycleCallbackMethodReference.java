@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.Strings;
@@ -37,11 +38,38 @@ public class LifecycleCallbackMethodReference extends MappingMethod {
 
     private final Type declaringType;
     private final List<Parameter> parameterAssignments;
+    private final Type methodReturnType;
+    private final Type methodResultType;
+    private final String instanceVariableName;
+    private final String targetVariableName;
 
-    public LifecycleCallbackMethodReference(SourceMethod method, List<Parameter> parameterAssignments) {
+    public LifecycleCallbackMethodReference(SourceMethod method, List<Parameter> parameterAssignments,
+                                            Type methodReturnType, Type methodResultType,
+                                            Set<String> existingVariableNames) {
         super( method );
         this.declaringType = method.getDeclaringMapper();
         this.parameterAssignments = parameterAssignments;
+        this.methodReturnType = methodReturnType;
+        this.methodResultType = methodResultType;
+
+        if ( isStatic() ) {
+            this.instanceVariableName = declaringType.getName();
+        }
+        else if ( declaringType != null ) {
+            this.instanceVariableName =
+                Strings.getSaveVariableName( Introspector.decapitalize( declaringType.getName() ) );
+        }
+        else {
+            this.instanceVariableName = null;
+        }
+
+        if ( hasReturnType() ) {
+            this.targetVariableName = Strings.getSaveVariableName( "target", existingVariableNames );
+            existingVariableNames.add( this.targetVariableName );
+        }
+        else {
+            this.targetVariableName = null;
+        }
     }
 
     public Type getDeclaringType() {
@@ -49,7 +77,31 @@ public class LifecycleCallbackMethodReference extends MappingMethod {
     }
 
     public String getInstanceVariableName() {
-        return Strings.getSaveVariableName( Introspector.decapitalize( declaringType.getName() ) );
+        return instanceVariableName;
+    }
+
+    /**
+     * Returns the return type of the mapping method in which this callback method is called
+     *
+     * @return return type
+     * @see Method#getReturnType()
+     */
+    public Type getMethodReturnType() {
+        return methodReturnType;
+    }
+
+    /**
+     * Returns the result type of the mapping method in which this callback method is called
+     *
+     * @return result type
+     * @see Method#getResultType()
+     */
+    public Type getMethodResultType() {
+        return methodResultType;
+    }
+
+    public String getTargetVariableName() {
+        return targetVariableName;
     }
 
     @Override
@@ -69,5 +121,12 @@ public class LifecycleCallbackMethodReference extends MappingMethod {
         }
 
         return false;
+    }
+
+    /**
+     * @return true if this callback method has a return type that is not void
+     */
+    public boolean hasReturnType() {
+        return !getReturnType().isVoid();
     }
 }

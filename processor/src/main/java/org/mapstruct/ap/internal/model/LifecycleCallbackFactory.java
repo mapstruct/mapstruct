@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -45,35 +46,43 @@ public final class LifecycleCallbackFactory {
      * @param method the method to obtain the beforeMapping methods for
      * @param selectionParameters method selectionParameters
      * @param ctx the builder context
+     * @param existingVariableNames the existing variable names in the mapping method
      * @return all applicable {@code @BeforeMapping} methods for the given method
      */
-    public static List<LifecycleCallbackMethodReference> beforeMappingMethods(
-            Method method, SelectionParameters selectionParameters, MappingBuilderContext ctx) {
+    public static List<LifecycleCallbackMethodReference> beforeMappingMethods(Method method,
+                                                                              SelectionParameters selectionParameters,
+                                                                              MappingBuilderContext ctx,
+                                                                              Set<String> existingVariableNames) {
         return collectLifecycleCallbackMethods(
             method,
             selectionParameters,
             filterBeforeMappingMethods( ctx.getSourceModel() ),
-            ctx );
+            ctx,
+            existingVariableNames );
     }
 
     /**
      * @param method the method to obtain the afterMapping methods for
      * @param selectionParameters method selectionParameters
      * @param ctx the builder context
+     * @param existingVariableNames list of already used variable names
      * @return all applicable {@code @AfterMapping} methods for the given method
      */
-    public static List<LifecycleCallbackMethodReference> afterMappingMethods(
-            Method method, SelectionParameters selectionParameters, MappingBuilderContext ctx) {
+    public static List<LifecycleCallbackMethodReference> afterMappingMethods(Method method,
+                                                                             SelectionParameters selectionParameters,
+                                                                             MappingBuilderContext ctx,
+                                                                             Set<String> existingVariableNames) {
         return collectLifecycleCallbackMethods(
             method,
             selectionParameters,
             filterAfterMappingMethods( ctx.getSourceModel() ),
-            ctx );
+            ctx,
+            existingVariableNames );
     }
 
     private static List<LifecycleCallbackMethodReference> collectLifecycleCallbackMethods(
-        Method method, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
-        MappingBuilderContext ctx) {
+            Method method, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
+            MappingBuilderContext ctx, Set<String> existingVariableNames) {
 
         Map<SourceMethod, List<Parameter>> parameterAssignmentsForSourceMethod
             = new HashMap<SourceMethod, List<Parameter>>();
@@ -83,7 +92,12 @@ public final class LifecycleCallbackFactory {
 
         candidates = filterCandidatesByQualifiers( method, selectionParameters, candidates, ctx );
 
-        return toLifecycleCallbackMethodRefs( candidates, parameterAssignmentsForSourceMethod, ctx );
+        return toLifecycleCallbackMethodRefs(
+            method,
+            candidates,
+            parameterAssignmentsForSourceMethod,
+            ctx,
+            existingVariableNames );
     }
 
     private static List<SourceMethod> filterCandidatesByQualifiers(Method method,
@@ -99,16 +113,19 @@ public final class LifecycleCallbackFactory {
             false) );
     }
 
-    private static List<LifecycleCallbackMethodReference> toLifecycleCallbackMethodRefs(
+    private static List<LifecycleCallbackMethodReference> toLifecycleCallbackMethodRefs(Method method,
             List<SourceMethod> candidates, Map<SourceMethod, List<Parameter>> parameterAssignmentsForSourceMethod,
-            MappingBuilderContext ctx) {
-
+            MappingBuilderContext ctx, Set<String> existingVariableNames) {
         List<LifecycleCallbackMethodReference> result = new ArrayList<LifecycleCallbackMethodReference>();
         for ( SourceMethod candidate : candidates ) {
             markMapperReferenceAsUsed( ctx.getMapperReferences(), candidate );
-            result.add( new LifecycleCallbackMethodReference(
-                candidate,
-                parameterAssignmentsForSourceMethod.get( candidate ) ) );
+            result.add(
+                new LifecycleCallbackMethodReference(
+                    candidate,
+                    parameterAssignmentsForSourceMethod.get( candidate ),
+                    method.getReturnType(),
+                    method.getResultType(),
+                    existingVariableNames ) );
         }
         return result;
     }
@@ -124,14 +141,24 @@ public final class LifecycleCallbackFactory {
             List<Parameter> parameterAssignments =
                 ParameterAssignmentUtil.getParameterAssignments( availableParams, callback.getParameters() );
 
-            if ( parameterAssignments != null
-                && callback.matches( extractSourceTypes( parameterAssignments ), method.getResultType() ) ) {
-
+            if ( isValidCandidate( callback, method, parameterAssignments ) ) {
                 parameterAssignmentsForSourceMethod.put( callback, parameterAssignments );
                 candidates.add( callback );
             }
         }
         return candidates;
+    }
+
+    private static boolean isValidCandidate(SourceMethod candidate, Method method,
+                                            List<Parameter> parameterAssignments) {
+        if ( parameterAssignments == null ) {
+            return false;
+        }
+        if ( !candidate.matches( extractSourceTypes( parameterAssignments ), method.getResultType() ) ) {
+            return false;
+        }
+        return ( candidate.getReturnType().isVoid() || candidate.getReturnType().isTypeVar()
+            || candidate.getReturnType().isAssignableTo( method.getResultType() ) );
     }
 
     private static List<Parameter> getAvailableParameters(Method method, MappingBuilderContext ctx) {
@@ -154,7 +181,9 @@ public final class LifecycleCallbackFactory {
     private static void markMapperReferenceAsUsed(List<MapperReference> references, Method method) {
         for ( MapperReference ref : references ) {
             if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
-                ref.setUsed( !method.isStatic() );
+                if ( !ref.isUsed() && !method.isStatic() ) {
+                    ref.setUsed( true );
+                }
                 ref.setTypeRequiresImport( true );
 
                 return;

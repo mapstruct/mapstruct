@@ -21,7 +21,9 @@ package org.mapstruct.ap.internal.model;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.lang.model.type.TypeMirror;
 
@@ -113,13 +115,13 @@ public class ValueMappingMethod extends MappingMethod {
 
             // do before / after lifecycle mappings
             SelectionParameters selectionParameters = getSelectionParameters( method );
-            List<LifecycleCallbackMethodReference> beforeMappingMethods
-                = LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx );
-            List<LifecycleCallbackMethodReference> afterMappingMethods
-                = LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx );
+            Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
+            List<LifecycleCallbackMethodReference> beforeMappingMethods =
+                LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
+            List<LifecycleCallbackMethodReference> afterMappingMethods =
+                LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
 
-
-            // finallyn return a mapping
+            // finally return a mapping
             return new ValueMappingMethod( method, mappingEntries, nullTarget, defaultTarget,
                 throwIllegalArgumentException, beforeMappingMethods, afterMappingMethods );
         }

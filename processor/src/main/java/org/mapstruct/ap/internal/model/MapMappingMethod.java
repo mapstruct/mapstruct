@@ -178,10 +178,11 @@ public class MapMappingMethod extends MappingMethod {
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes(), valueTargetType );
 
+            Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
-                LifecycleCallbackFactory.beforeMappingMethods( method, null, ctx );
+                LifecycleCallbackFactory.beforeMappingMethods( method, null, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, null, ctx );
+                LifecycleCallbackFactory.afterMappingMethods( method, null, ctx, existingVariables );
 
             return new MapMappingMethod(
                 method,
