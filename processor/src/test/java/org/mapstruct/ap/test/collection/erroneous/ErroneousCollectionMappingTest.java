@@ -115,8 +115,8 @@ public class ErroneousCollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 37,
-                messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
-                    + "conversion for mapping source element type into target element type.")
+                messageRegExp = "Can't map .*AttributedString to .*String. " +
+                    "Consider to implement a mapping method: \".*String map(.*AttributedString value)")
         }
     )
     public void shouldFailOnNoElementMappingFound() {
@@ -131,8 +131,8 @@ public class ErroneousCollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNoKeyMappingFound.class,
                 kind = Kind.ERROR,
                 line = 37,
-                messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
-                    + "conversion for mapping source key type to target key type.")
+                messageRegExp = "Can't map .*AttributedString to .*String. " +
+                    "Consider to implement a mapping method: \".*String map(.*AttributedString value)")
         }
     )
     public void shouldFailOnNoKeyMappingFound() {
@@ -147,8 +147,8 @@ public class ErroneousCollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNoValueMappingFound.class,
                 kind = Kind.ERROR,
                 line = 37,
-                messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
-                    + "conversion for mapping source value type to target value type.")
+                messageRegExp = "Can't map .*AttributedString to .*String. " +
+                    "Consider to implement a mapping method: \".*String map(.*AttributedString value)")
         }
     )
     public void shouldFailOnNoValueMappingFound() {

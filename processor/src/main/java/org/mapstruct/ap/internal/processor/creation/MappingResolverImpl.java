@@ -75,7 +75,7 @@ public class MappingResolverImpl implements MappingResolver {
     private final Types typeUtils;
     private final TypeFactory typeFactory;
 
-    private final List<SourceMethod> sourceModel;
+    private final List<Method> sourceModel;
     private final List<MapperReference> mapperReferences;
 
     private final Conversions conversions;
@@ -89,7 +89,7 @@ public class MappingResolverImpl implements MappingResolver {
     private final Set<VirtualMappingMethod> usedVirtualMappings = new HashSet<VirtualMappingMethod>();
 
     public MappingResolverImpl(FormattingMessager messager, Elements elementUtils, Types typeUtils,
-                               TypeFactory typeFactory, List<SourceMethod> sourceModel,
+                               TypeFactory typeFactory, List<Method> sourceModel,
                                List<MapperReference> mapperReferences) {
         this.messager = messager;
         this.typeUtils = typeUtils;
@@ -143,12 +143,12 @@ public class MappingResolverImpl implements MappingResolver {
 
         ResolvingAttempt attempt = new ResolvingAttempt( sourceModel, mappingMethod, null, null, null, criteria );
 
-        List<SourceMethod> matchingSourceMethods = attempt.getMatches( sourceModel, null, targetType );
+        List<Method> matchingSourceMethods = attempt.getMatches( sourceModel, null, targetType );
 
         List<MethodReference> factoryRefsWithAssigments = new ArrayList<MethodReference>();
-        List<SourceMethod> factoryRefSources = new ArrayList<SourceMethod>();
+        List<Method> factoryRefSources = new ArrayList<Method>();
 
-        for ( SourceMethod matchingSourceMethod : matchingSourceMethods ) {
+        for ( Method matchingSourceMethod : matchingSourceMethods ) {
 
             if ( matchingSourceMethod != null ) {
                 MapperReference ref = attempt.findMapperReference( matchingSourceMethod );
@@ -197,7 +197,7 @@ public class MappingResolverImpl implements MappingResolver {
     private class ResolvingAttempt {
 
         private final Method mappingMethod;
-        private final List<SourceMethod> methods;
+        private final List<Method> methods;
         private final String dateFormat;
         private final String numberFormat;
         private final SelectionCriteria selectionCriteria;
@@ -209,7 +209,7 @@ public class MappingResolverImpl implements MappingResolver {
         // so this set must be cleared.
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
-        private ResolvingAttempt(List<SourceMethod> sourceModel, Method mappingMethod, String dateFormat,
+        private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod, String dateFormat,
                                  String numberFormat, SourceRHS sourceRHS, SelectionCriteria criteria) {
 
             this.mappingMethod = mappingMethod;
@@ -315,7 +315,7 @@ public class MappingResolverImpl implements MappingResolver {
         private Assignment resolveViaMethod(Type sourceType, Type targetType, boolean considerBuiltInMethods) {
 
             // first try to find a matching source method
-            SourceMethod matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
+            Method matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
 
             if ( matchingSourceMethod != null ) {
                 return getMappingMethodReference( matchingSourceMethod, targetType );
@@ -539,7 +539,7 @@ public class MappingResolverImpl implements MappingResolver {
             return null;
         }
 
-        private Assignment getMappingMethodReference(SourceMethod method,
+        private Assignment getMappingMethodReference(Method method,
                                                      Type targetType) {
             MapperReference mapperReference = findMapperReference( method );
 
@@ -549,7 +549,7 @@ public class MappingResolverImpl implements MappingResolver {
             );
         }
 
-        private MapperReference findMapperReference(SourceMethod method) {
+        private MapperReference findMapperReference(Method method) {
             for ( MapperReference ref : mapperReferences ) {
                 if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
                     ref.setUsed( !method.isStatic() );
