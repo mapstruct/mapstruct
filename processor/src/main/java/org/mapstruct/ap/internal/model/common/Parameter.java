@@ -36,6 +36,7 @@ public class Parameter extends ModelElement {
     private final boolean targetType;
 
     public Parameter(String name, Type type, boolean mappingTarget, boolean targetType) {
+        // issue #909: FreeMarker doesn't like "values" as a parameter name
         this.name = "values".equals( name ) ? "values_" : name;
         this.originalName = name;
         this.type = type;
