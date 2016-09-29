@@ -16,17 +16,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.accessibility.referenced;
+package org.mapstruct.ap.test.nestedbeans;
 
-/**
- * @author Sjaak Derksen
- */
-public class SourceTargetmapperPrivateBase {
 
-    @SuppressWarnings("unused")
-    private ReferencedTarget sourceToTarget(ReferencedSource source) {
-        ReferencedTarget target = new ReferencedTarget();
-        target.setBar( source.getFoo() );
-        return target;
+import java.util.Arrays;
+
+public class TestData {
+
+    private TestData() {
+
     }
+
+    public static User createUser() {
+        return new User( "John", new Car( "Chrysler", 1955, Arrays.asList(
+            new Wheel().front().left(),
+            new Wheel().front().right(),
+            new Wheel().rear().left(),
+            new Wheel().rear().right()
+        ) ),
+            new House( "Black", 1834, new Roof( 1 ) )
+        );
+    }
+
 }

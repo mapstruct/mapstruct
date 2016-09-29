@@ -16,17 +16,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.accessibility.referenced;
+package org.mapstruct.ap.test.updatemethods;
 
 /**
- * @author Sjaak Derksen
+ *
+ * @author Dmytro Polovinkin
  */
-public class SourceTargetmapperPrivateBase {
+public class UnmappableCompanyDto {
 
-    @SuppressWarnings("unused")
-    private ReferencedTarget sourceToTarget(ReferencedSource source) {
-        ReferencedTarget target = new ReferencedTarget();
-        target.setBar( source.getFoo() );
-        return target;
+    private String name;
+    private UnmappableDepartmentDto department;
+
+    public String getName() {
+        return name;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public UnmappableDepartmentDto getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(UnmappableDepartmentDto department) {
+        this.department = department;
+    }
+
 }

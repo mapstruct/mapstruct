@@ -26,6 +26,7 @@ import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -48,10 +49,11 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
+import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
@@ -59,6 +61,8 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -78,6 +82,11 @@ public class PropertyMapping extends ModelElement {
     private final Assignment assignment;
     private final List<String> dependsOn;
     private final Assignment defaultValueAssignment;
+    private List<ForgedMethod> forgedMethods = new ArrayList<ForgedMethod>();
+
+    public List<ForgedMethod> getForgedMethods() {
+        return forgedMethods;
+    }
 
     private enum TargetWriteAccessorType {
         FIELD,
@@ -105,7 +114,7 @@ public class PropertyMapping extends ModelElement {
     private static class MappingBuilderBase<T extends MappingBuilderBase<T>> {
 
         protected MappingBuilderContext ctx;
-        protected SourceMethod method;
+        protected Method method;
 
         protected Accessor targetWriteAccessor;
         protected TargetWriteAccessorType targetWriteAccessorType;
@@ -123,12 +132,12 @@ public class PropertyMapping extends ModelElement {
             return (T) this;
         }
 
-        public T sourceMethod(SourceMethod sourceMethod) {
+        public T sourceMethod(Method sourceMethod) {
             this.method = sourceMethod;
             return (T) this;
         }
 
-        public T targetProperty( PropertyEntry targetProp ) {
+        public T targetProperty(PropertyEntry targetProp) {
             this.targetReadAccessor = targetProp.getReadAccessor();
             this.targetWriteAccessor = targetProp.getWriteAccessor();
             this.targetType = targetProp.getType();
@@ -155,7 +164,7 @@ public class PropertyMapping extends ModelElement {
             return (T) this;
         }
 
-        public T localTargetVarName( String localTargetVarName ) {
+        public T localTargetVarName(String localTargetVarName) {
             this.localTargetVarName = localTargetVarName;
             return (T) this;
         }
@@ -206,6 +215,7 @@ public class PropertyMapping extends ModelElement {
         private SourceRHS rightHandSide;
         private FormattingParameters formattingParameters;
         private SelectionParameters selectionParameters;
+        private List<ForgedMethod> forgedMethods = new ArrayList<ForgedMethod>();
 
         public PropertyMappingBuilder sourceReference(SourceReference sourceReference) {
             this.sourceReference = sourceReference;
@@ -261,6 +271,9 @@ public class PropertyMapping extends ModelElement {
                 else if ( sourceType.isMapType() && targetType.isMapType() ) {
                     assignment = forgeMapMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
                 }
+                else {
+                    assignment = forgeMapping( rightHandSide );
+                }
             }
 
             if ( assignment != null ) {
@@ -295,7 +308,8 @@ public class PropertyMapping extends ModelElement {
                 localTargetVarName,
                 assignment,
                 dependsOn,
-                getDefaultValueAssignment( assignment )
+                getDefaultValueAssignment( assignment ),
+                forgedMethods
             );
         }
 
@@ -304,24 +318,24 @@ public class PropertyMapping extends ModelElement {
                 &&  ( !rhs.getSourceType().isPrimitive() || rhs.getSourcePresenceCheckerReference() != null) ) {
                 // cannot check on null source if source is primitive unless it has a presenche checker
                 PropertyMapping build = new ConstantMappingBuilder()
-                        .constantExpression( '"' + defaultValue + '"' )
-                        .formattingParameters( formattingParameters )
-                        .selectionParameters( selectionParameters )
-                        .dependsOn( dependsOn )
-                        .existingVariableNames( existingVariableNames )
-                        .mappingContext( ctx )
-                        .sourceMethod( method )
-                        .targetPropertyName( targetPropertyName )
-                        .targetReadAccessor( targetReadAccessor )
-                        .targetWriteAccessor( targetWriteAccessor )
-                        .build();
+                    .constantExpression( '"' + defaultValue + '"' )
+                    .formattingParameters( formattingParameters )
+                    .selectionParameters( selectionParameters )
+                    .dependsOn( dependsOn )
+                    .existingVariableNames( existingVariableNames )
+                    .mappingContext( ctx )
+                    .sourceMethod( method )
+                    .targetPropertyName( targetPropertyName )
+                    .targetReadAccessor( targetReadAccessor )
+                    .targetWriteAccessor( targetWriteAccessor )
+                    .build();
                 return build.getAssignment();
             }
             return null;
         }
 
         private Assignment assignToPlain(Type sourceType, Type targetType, TargetWriteAccessorType targetAccessorType,
-                                        Assignment rightHandSide) {
+                                         Assignment rightHandSide) {
 
             Assignment result;
 
@@ -342,9 +356,11 @@ public class PropertyMapping extends ModelElement {
 
             if ( rhs.isUpdateMethod() ) {
                 if ( targetReadAccessor == null ) {
-                    ctx.getMessager().printMessage( method.getExecutable(),
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
                         Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
-                        targetPropertyName );
+                        targetPropertyName
+                    );
                 }
                 Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                 result = new UpdateWrapper( rhs, method.getThrownTypes(), factoryMethod,
@@ -428,9 +444,11 @@ public class PropertyMapping extends ModelElement {
                 if ( result.isUpdateMethod() ) {
                     // call to an update method
                     if ( targetReadAccessor == null ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
+                        ctx.getMessager().printMessage(
+                            method.getExecutable(),
                             Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
-                            targetPropertyName );
+                            targetPropertyName
+                        );
                     }
                     Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                     result = new UpdateWrapper(
@@ -569,7 +587,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment forgeIterableMapping(Type sourceType, Type targetType, SourceRHS source,
-            ExecutableElement element) {
+                                                ExecutableElement element) {
 
             Assignment assignment = null;
             String name = getName( sourceType, targetType );
@@ -577,7 +595,12 @@ public class PropertyMapping extends ModelElement {
 
             // copy mapper configuration from the source method, its the same mapper
             MapperConfiguration config = method.getMapperConfiguration();
-            ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element );
+            ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element,
+                new ForgedMethodHistory( getForgedMethodHistory(), getSourceElement(), targetPropertyName,
+                    getSourceType(),
+                    targetType
+                )
+            );
             IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
 
             IterableMappingMethod iterableMappingMethod = builder
@@ -597,13 +620,15 @@ public class PropertyMapping extends ModelElement {
 
                 assignment = new MethodReference( methodRef, null, targetType );
                 assignment.setAssignment( source );
+
+                forgedMethods.addAll( iterableMappingMethod.getForgedMethods() );
             }
 
             return assignment;
         }
 
         private Assignment forgeMapMapping(Type sourceType, Type targetType, SourceRHS source,
-            ExecutableElement element) {
+                                           ExecutableElement element) {
 
             Assignment assignment = null;
 
@@ -612,7 +637,12 @@ public class PropertyMapping extends ModelElement {
 
             // copy mapper configuration from the source method, its the same mapper
             MapperConfiguration config = method.getMapperConfiguration();
-            ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element );
+            ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element,
+                new ForgedMethodHistory( getForgedMethodHistory(), getSourceElement(), targetPropertyName,
+                    getSourceType(),
+                    targetType
+                )
+            );
 
             MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
             MapMappingMethod mapMappingMethod = builder
@@ -630,12 +660,51 @@ public class PropertyMapping extends ModelElement {
                 }
                 assignment = new MethodReference( methodRef, null, targetType );
                 assignment.setAssignment( source );
+
+                forgedMethods.addAll( mapMappingMethod.getForgedMethods() );
             }
 
             return assignment;
         }
 
-        private String getName(Type sourceType, Type targetType ) {
+        private Assignment forgeMapping(SourceRHS sourceRHS) {
+
+            Type sourceType = getSourceType();
+
+            //Fail fast. If we could not find the method by now, no need to try
+            if ( sourceType.isPrimitive() || targetType.isPrimitive() ) {
+                return null;
+            }
+            String name = getName( sourceType, targetType );
+            ForgedMethod forgedMethod = new ForgedMethod(
+                name,
+                sourceType,
+                targetType,
+                method.getMapperConfiguration(),
+                method.getExecutable(),
+                getForgedMethodHistory()
+            );
+
+            Assignment assignment = new MethodReference( forgedMethod, null, targetType );
+            assignment.setAssignment( sourceRHS );
+
+            this.forgedMethods.add( forgedMethod );
+
+            return assignment;
+        }
+
+        private ForgedMethodHistory getForgedMethodHistory() {
+            ForgedMethodHistory history = null;
+            if ( method instanceof ForgedMethod ) {
+                ForgedMethod method = (ForgedMethod) this.method;
+                history = method.getHistory();
+            }
+            return new ForgedMethodHistory( history, getSourceElement(),
+                targetPropertyName, getSourceType(), targetType
+            );
+        }
+
+        private String getName(Type sourceType, Type targetType) {
             String fromName = getName( sourceType );
             String toName = getName( targetType );
             return Strings.decapitalize( fromName + "To" + toName );
@@ -648,6 +717,50 @@ public class PropertyMapping extends ModelElement {
             }
             builder.append( type.getIdentification() );
             return builder.toString();
+        }
+
+        //The next two methods were deleted, but I readded them. Is there a better way to fetch SourceType and SourceElement?
+        private Type getSourceType() {
+
+            Parameter sourceParam = sourceReference.getParameter();
+            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+            if ( propertyEntries.isEmpty() ) {
+                return sourceParam.getType();
+            }
+            else if ( propertyEntries.size() == 1 ) {
+                return last( propertyEntries ).getType();
+            }
+            else {
+                Type sourceType = last( propertyEntries ).getType();
+                if ( sourceType.isPrimitive() && !targetType.isPrimitive() ) {
+                    // Handle null's. If the forged method needs to be mapped to an object, the forged method must be
+                    // able to return null. So in that case primitive types are mapped to their corresponding wrapped
+                    // type. The source type becomes the wrapped type in that case.
+                    sourceType = ctx.getTypeFactory().getWrappedType( sourceType );
+                }
+                return sourceType;
+            }
+        }
+
+        private String getSourceElement() {
+
+            Parameter sourceParam = sourceReference.getParameter();
+            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+            if ( propertyEntries.isEmpty() ) {
+                return String.format( "parameter \"%s %s\"", sourceParam.getType(), sourceParam.getName() );
+            }
+            else if ( propertyEntries.size() == 1 ) {
+                PropertyEntry propertyEntry = propertyEntries.get( 0 );
+                return String.format( "property \"%s %s\"", propertyEntry.getType(), propertyEntry.getName() );
+            }
+            else {
+                PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
+                return String.format(
+                    "property \"%s %s\"",
+                    lastPropertyEntry.getType(),
+                    Strings.join( sourceReference.getElementNames(), "." )
+                );
+            }
         }
 
     }
@@ -702,9 +815,11 @@ public class PropertyMapping extends ModelElement {
                     // target accessor is setter, so decorate assignment as setter
                     if ( assignment.isUpdateMethod() ) {
                         if ( targetReadAccessor == null ) {
-                            ctx.getMessager().printMessage( method.getExecutable(),
+                            ctx.getMessager().printMessage(
+                                method.getExecutable(),
                                 Message.CONSTANTMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
-                                targetPropertyName );
+                                targetPropertyName
+                            );
                         }
                         Assignment factoryMethod =
                             ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
@@ -760,7 +875,8 @@ public class PropertyMapping extends ModelElement {
                 assignment = new EnumConstantWrapper( assignment, targetType );
             }
             else {
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
                     Message.CONSTANTMAPPING_NON_EXISTING_CONSTANT,
                     constantExpression,
                     targetType,
@@ -819,13 +935,15 @@ public class PropertyMapping extends ModelElement {
                             Type targetType, String localTargetVarName, Assignment propertyAssignment,
                             List<String> dependsOn, Assignment defaultValueAssignment ) {
         this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
-                        targetType, localTargetVarName, propertyAssignment, dependsOn, defaultValueAssignment );
+                        targetType, localTargetVarName, propertyAssignment, dependsOn, defaultValueAssignment,
+            Collections.<ForgedMethod>emptyList() );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             ValueProvider targetReadAccessorProvider, Type targetType, String localTargetVarName,
                             Assignment assignment,
-                            List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            List<String> dependsOn, Assignment defaultValueAssignment,
+                            List<ForgedMethod> forgedMethods) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -836,6 +954,7 @@ public class PropertyMapping extends ModelElement {
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
         this.defaultValueAssignment = defaultValueAssignment;
+        this.forgedMethods = forgedMethods;
     }
 
     /**
@@ -882,7 +1001,8 @@ public class PropertyMapping extends ModelElement {
 
         return org.mapstruct.ap.internal.util.Collections.asSet(
             assignment.getImportTypes(),
-            defaultValueAssignment.getImportTypes() );
+            defaultValueAssignment.getImportTypes()
+        );
     }
 
     public List<String> getDependsOn() {

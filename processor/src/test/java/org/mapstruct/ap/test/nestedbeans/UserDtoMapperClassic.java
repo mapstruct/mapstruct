@@ -16,17 +16,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.accessibility.referenced;
+package org.mapstruct.ap.test.nestedbeans;
 
-/**
- * @author Sjaak Derksen
- */
-public class SourceTargetmapperPrivateBase {
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-    @SuppressWarnings("unused")
-    private ReferencedTarget sourceToTarget(ReferencedSource source) {
-        ReferencedTarget target = new ReferencedTarget();
-        target.setBar( source.getFoo() );
-        return target;
-    }
+import java.util.List;
+
+@Mapper
+public interface UserDtoMapperClassic {
+
+    UserDtoMapperClassic INSTANCE = Mappers.getMapper( UserDtoMapperClassic.class );
+
+    UserDto userToUserDto(User user);
+
+    CarDto carToCarDto(Car car);
+
+    HouseDto houseToHouseDto(House house);
+
+    RoofDto roofToRoofDto(Roof roof);
+
+    List<WheelDto> mapWheels(List<Wheel> wheels);
+
+    WheelDto mapWheel(Wheel wheels);
+
 }

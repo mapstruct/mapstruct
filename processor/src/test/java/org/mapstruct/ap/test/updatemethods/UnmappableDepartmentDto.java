@@ -18,28 +18,41 @@
  */
 package org.mapstruct.ap.test.updatemethods;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
-import org.mapstruct.factory.Mappers;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
- * @author Sjaak Derksen
+ * @author Dmytro Polovinkin
  */
-@Mapper( uses = DepartmentEntityFactory.class )
-public interface ErroneousCompanyMapper1 {
+public class UnmappableDepartmentDto {
 
-    ErroneousCompanyMapper1 INSTANCE = Mappers.getMapper( ErroneousCompanyMapper1.class );
+    private String name;
+    private List<EmployeeDto> workers;
+    private Map<SecretaryDto, EmployeeDto> secretaryToEmployee;
 
-    void toCompanyEntity(UnmappableCompanyDto dto, @MappingTarget CompanyEntity entity);
+    public String getName() {
+        return name;
+    }
 
-    void  toInBetween(UnmappableDepartmentDto dto, @MappingTarget DepartmentInBetween entity);
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    @Mappings({
-        @Mapping( target = "employees", ignore = true ),
-        @Mapping( target = "secretaryToEmployee", ignore = true )
-    })
-    void toDepartmentEntity(DepartmentInBetween dto, @MappingTarget DepartmentEntity entity);
+    public List<EmployeeDto> getWorkers() {
+        return workers;
+    }
+
+    public void setWorkers(List<EmployeeDto> employees) {
+        this.workers = employees;
+    }
+
+    public Map<SecretaryDto, EmployeeDto> getSecretaryToEmployee() {
+        return secretaryToEmployee;
+    }
+
+    public void setSecretaryToEmployee(Map<SecretaryDto, EmployeeDto> secretaryToEmployee) {
+        this.secretaryToEmployee = secretaryToEmployee;
+    }
+
 }

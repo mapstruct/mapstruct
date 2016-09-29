@@ -170,7 +170,8 @@ public class ConversionTest {
                 line = 29,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.selection.generics.WildCardSuperWrapper"
                     + "<java.lang.String> foo\" to"
-                    + " \"org.mapstruct.ap.test.selection.generics.WildCardSuperWrapper<java.lang.Integer> foo\"")
+                    + " \"org.mapstruct.ap.test.selection.generics.WildCardSuperWrapper" +
+                    "<org.mapstruct.ap.test.selection.generics.TypeA> foo\"")
         })
     public void shouldFailOnNonMatchingWildCards() {
     }

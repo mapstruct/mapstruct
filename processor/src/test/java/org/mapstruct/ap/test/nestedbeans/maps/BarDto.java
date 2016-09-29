@@ -16,17 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.accessibility.referenced;
+package org.mapstruct.ap.test.nestedbeans.maps;
 
-/**
- * @author Sjaak Derksen
- */
-public class SourceTargetmapperPrivateBase {
+public class BarDto {
+    private String name;
 
-    @SuppressWarnings("unused")
-    private ReferencedTarget sourceToTarget(ReferencedSource source) {
-        ReferencedTarget target = new ReferencedTarget();
-        target.setBar( source.getFoo() );
-        return target;
+    public String getName() {
+        return name;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 }
