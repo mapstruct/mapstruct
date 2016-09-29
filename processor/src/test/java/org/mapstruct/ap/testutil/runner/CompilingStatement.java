@@ -399,6 +399,9 @@ abstract class CompilingStatement extends Statement {
             result.add( asOptionString( option ) );
         }
 
+        // Add all debugging info to class files
+        result.add( "-g:source,lines,vars" );
+
         return result;
     }
 
