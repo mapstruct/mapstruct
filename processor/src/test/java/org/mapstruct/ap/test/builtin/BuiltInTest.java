@@ -51,7 +51,6 @@ import org.mapstruct.ap.test.builtin.bean.CalendarProperty;
 import org.mapstruct.ap.test.builtin.bean.DateProperty;
 import org.mapstruct.ap.test.builtin.bean.JaxbElementListProperty;
 import org.mapstruct.ap.test.builtin.bean.JaxbElementProperty;
-import org.mapstruct.ap.test.builtin.bean.SqlDateProperty;
 import org.mapstruct.ap.test.builtin.bean.StringListProperty;
 import org.mapstruct.ap.test.builtin.bean.StringProperty;
 import org.mapstruct.ap.test.builtin.bean.XmlGregorianCalendarProperty;
@@ -86,7 +85,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @WithClasses({
     IterableTarget.class,
     MapTarget.class,
-    SqlDateProperty.class,
     CalendarProperty.class,
     DateProperty.class,
     JaxbElementListProperty.class,
