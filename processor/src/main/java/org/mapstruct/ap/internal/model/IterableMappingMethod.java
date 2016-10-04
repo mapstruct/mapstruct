@@ -321,7 +321,7 @@ public class IterableMappingMethod extends MappingMethod {
             return false;
         }
 
-        return true;
+        return isMapNullToDefault() == other.isMapNullToDefault();
     }
 
 }

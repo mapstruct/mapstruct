@@ -19,7 +19,6 @@
 package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
@@ -38,7 +37,6 @@ import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
 import org.mapstruct.ap.internal.model.assignment.EnumSetCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
-import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
@@ -416,8 +414,7 @@ public class PropertyMapping extends ModelElement {
             return result;
         }
 
-        private Assignment assignToCollection(Type targetType,
-                                            TargetWriteAccessorType targetAccessorType,
+        private Assignment assignToCollection(Type targetType, TargetWriteAccessorType targetAccessorType,
                                             Assignment rhs) {
 
             Assignment result = rhs;
@@ -457,46 +454,25 @@ public class PropertyMapping extends ModelElement {
                         targetType );
                 }
                 else {
-
-                    if ( method.isUpdateMethod() ) {
-                        // if the calling method is an update method and accesses a getter, make a local variable to
-                        // test NPE first.
-                        result = new LocalVarWrapper( result, method.getThrownTypes(), targetType );
-                    }
-                    else {
-                        // if not, asssign as new collecitin or direct
-                        result = new SetterWrapper( result, method.getThrownTypes() );
-                    }
-
                     // target accessor is setter, so wrap the setter in setter map/ collection handling
                     result = new SetterWrapperForCollectionsAndMaps(
                         result,
-                        targetReadAccessor.getSimpleName().toString(),
                         newCollectionOrMap,
-                        targetType,
-                        existingVariableNames
+                        method.getThrownTypes(),
+                        getSourcePresenceCheckerRef(),
+                        existingVariableNames,
+                        targetType
                     );
                 }
 
             }
             else {
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
-                result = new GetterWrapperForCollectionsAndMaps(
-                    result,
-                    method.getThrownTypes(),
-                    ctx.getTypeFactory().asCollectionOrMap( targetType ),
-                    existingVariableNames
-                );
-            }
-
-            // For collections and maps include a null check, when the assignment type is DIRECT.
-            // for mapping methods (builtin / custom), the mapping method is responsible for the
-            // null check. Typeconversions do not apply to collections and maps.
-            if ( result.getType() == DIRECT ) {
-                result = new NullCheckWrapper( result,  getSourcePresenceCheckerRef() );
-            }
-            else if ( result.getType() == MAPPED && result.isUpdateMethod() ) {
-                result = new UpdateNullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                result = new GetterWrapperForCollectionsAndMaps( result,
+                                                                 method.getThrownTypes(),
+                                                                 getSourcePresenceCheckerRef(),
+                                                                 existingVariableNames,
+                                                                 targetType);
             }
 
             return result;
@@ -623,7 +599,6 @@ public class PropertyMapping extends ModelElement {
             ExecutableElement element) {
 
             Assignment assignment = null;
-
             String name = getName( sourceType, targetType );
             name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
@@ -687,7 +662,7 @@ public class PropertyMapping extends ModelElement {
             return assignment;
         }
 
-        private String getName(Type sourceType, Type targetType) {
+        private String getName(Type sourceType, Type targetType ) {
             String fromName = getName( sourceType );
             String toName = getName( targetType );
             return Strings.decapitalize( fromName + "To" + toName );
@@ -701,6 +676,7 @@ public class PropertyMapping extends ModelElement {
             builder.append( type.getIdentification() );
             return builder.toString();
         }
+
     }
 
     public static class ConstantMappingBuilder extends MappingBuilderBase<ConstantMappingBuilder> {
@@ -770,12 +746,10 @@ public class PropertyMapping extends ModelElement {
                 else {
 
                     // target accessor is getter, so getter map/ collection handling
-                    assignment = new GetterWrapperForCollectionsAndMaps(
-                        assignment,
-                        method.getThrownTypes(),
-                        ctx.getTypeFactory().asCollectionOrMap( targetType ),
-                        existingVariableNames
-                    );
+                    assignment = new GetterWrapperForCollectionsAndMaps( assignment,
+                                                                         method.getThrownTypes(),
+                                                                         existingVariableNames,
+                                                                         targetType);
                 }
             }
             else {
@@ -840,12 +814,10 @@ public class PropertyMapping extends ModelElement {
             }
             else {
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
-                assignment = new GetterWrapperForCollectionsAndMaps(
-                    assignment,
-                    method.getThrownTypes(),
-                    ctx.getTypeFactory().asCollectionOrMap( targetType ),
-                    existingVariableNames
-                );
+                assignment = new GetterWrapperForCollectionsAndMaps( assignment,
+                                                                     method.getThrownTypes(),
+                                                                     existingVariableNames,
+                                                                     targetType);
             }
 
             return new PropertyMapping(
@@ -859,6 +831,7 @@ public class PropertyMapping extends ModelElement {
                 null
             );
         }
+
     }
 
     // Constructor for creating mappings of constant expressions.

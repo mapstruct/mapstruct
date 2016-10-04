@@ -123,5 +123,4 @@ public class TypeConversion extends ModelElement implements Assignment {
     public boolean isUpdateMethod() {
        return false;
     }
-
 }

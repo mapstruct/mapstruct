@@ -106,4 +106,5 @@ public interface Assignment {
 
 
     boolean isUpdateMethod();
+
 }

@@ -18,12 +18,10 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * This wrapper handles the situation were an assignment is done via the setter.
@@ -37,45 +35,33 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Sjaak Derksen
  */
-public class SetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
+public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAndMaps {
 
-    private final String targetGetterName;
     private final Assignment newCollectionOrMapAssignment;
-    private final String localVarName;
 
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
-                                              String targetGetterName,
                                               Assignment newCollectionOrMapAssignment,
-                                              Type targetType,
-                                              Collection<String> existingVariableNames) {
-        super( decoratedAssignment );
+                                              List<Type> thrownTypesToExclude,
+                                              String sourcePresenceChecker,
+                                              Set<String> existingVariableNames,
+                                              Type targetType ) {
 
-        this.targetGetterName = targetGetterName;
+        super( decoratedAssignment, thrownTypesToExclude, sourcePresenceChecker, existingVariableNames, targetType );
         this.newCollectionOrMapAssignment = newCollectionOrMapAssignment;
-        this.localVarName = Strings.getSaveVariableName( targetType.getName(), existingVariableNames );
-        existingVariableNames.add( localVarName );
-    }
-
-    public String getTargetGetterName() {
-        return targetGetterName;
-    }
-
-    public Assignment getNewCollectionOrMapAssignment() {
-        return newCollectionOrMapAssignment;
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>();
-        imported.addAll( getAssignment().getImportTypes() );
+        Set<Type> imported = super.getImportTypes();
         if ( newCollectionOrMapAssignment != null ) {
             imported.addAll( newCollectionOrMapAssignment.getImportTypes() );
         }
         return imported;
     }
 
-    public String getLocalVarName() {
-        return localVarName;
+    public Assignment getNewCollectionOrMapAssignment() {
+        return newCollectionOrMapAssignment;
     }
+
 
 }

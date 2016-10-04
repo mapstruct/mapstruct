@@ -18,34 +18,14 @@
      limitations under the License.
 
 -->
+<#import "../macro/CommonMacros.ftl" as lib>
 if ( ${ext.targetBeanName}.${ext.targetWriteAccessorName}() != null ) {
-    <#if ext.existingInstanceMapping>
+    <@lib.handleExceptions>
+      <#if ext.existingInstanceMapping>
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}().clear();
-    </#if>
-    <#if (thrownTypes?size == 0) >
-        <@_assignmentLine/>
-        <#else>
-        try {
-            <@_assignmentLine/>
-        }
-        <#list thrownTypes as exceptionType>
-        catch ( <@includeModel object=exceptionType/> e ) {
-            throw new RuntimeException( e );
-        }
-        </#list>
-    </#if>
-}
-<#macro _assignmentLine>
-     <@includeModel object=localVarType/> ${localVarName} = <@_assignment/>;
-    if ( ${localVarName} != null ) {
+      </#if>
+      <@lib.handleNullCheck>
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
-    }
-</#macro>
-<#macro _assignment>
-    <@includeModel object=assignment
-               targetBeanName=ext.targetBeanName
-               existingInstanceMapping=ext.existingInstanceMapping
-               targetReadAccessorName=ext.targetReadAccessorName
-               targetWriteAccessorName=ext.targetWriteAccessorName
-               targetType=ext.targetType/>
-</#macro>
+      </@lib.handleNullCheck>
+    </@lib.handleExceptions>
+}

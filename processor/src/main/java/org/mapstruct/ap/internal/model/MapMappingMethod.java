@@ -325,7 +325,7 @@ public class MapMappingMethod extends MappingMethod {
             }
         }
 
-        return true;
+        return isMapNullToDefault() == other.isMapNullToDefault();
     }
 
 }

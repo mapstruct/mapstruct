@@ -85,4 +85,5 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     public boolean isUpdateMethod() {
         return decoratedAssignment.isUpdateMethod();
     }
+
 }

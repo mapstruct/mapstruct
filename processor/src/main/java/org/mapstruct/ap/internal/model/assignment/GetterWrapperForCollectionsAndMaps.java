@@ -18,14 +18,10 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * This wrapper handles the situation were an assignment must be done via a target getter method because there
@@ -40,54 +36,39 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Sjaak Derksen
  */
-public class GetterWrapperForCollectionsAndMaps extends AssignmentWrapper {
+public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAndMaps {
 
-    private final List<Type> thrownTypesToExclude;
-    private final Type localVarType;
-    private final String localVarName;
+    /**
+     * constructor for property mapping
+     *
+     * @param decoratedAssignment
+     * @param thrownTypesToExclude
+     * @param sourcePresenceChecker
+     * @param existingVariableNames
+     * @param targetType
+     */
+    public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
+                                              List<Type> thrownTypesToExclude,
+                                              String sourcePresenceChecker,
+                                              Set<String> existingVariableNames,
+                                              Type targetType ) {
 
-
-    public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment, List<Type> thrownTypesToExclude,
-                                              Type localVarType, Collection<String> existingVariableNames) {
-        super( decoratedAssignment );
-        this.thrownTypesToExclude = thrownTypesToExclude;
-        this.localVarType = localVarType;
-        this.localVarName = Strings.getSaveVariableName( "target" + localVarType.getName(), existingVariableNames );
-        existingVariableNames.add( localVarName );
-   }
-
-    @Override
-    public List<Type> getThrownTypes() {
-        List<Type> parentThrownTypes = super.getThrownTypes();
-        List<Type> result = new ArrayList<Type>( parentThrownTypes );
-        for ( Type thrownTypeToExclude : thrownTypesToExclude ) {
-            for ( Type parentThrownType : parentThrownTypes ) {
-                if ( parentThrownType.isAssignableTo( thrownTypeToExclude ) ) {
-                    result.remove( parentThrownType );
-                }
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>();
-        imported.addAll( super.getImportTypes() );
-        imported.add( localVarType ); /* is a local var */
-        imported.addAll( localVarType.getTypeParameters() );
-        return imported;
+        super( decoratedAssignment, thrownTypesToExclude, sourcePresenceChecker, existingVariableNames, targetType );
     }
 
     /**
-     * @return the targetType
+     * constructor for e.g. constants and expressions
+     *
+     * @param decoratedAssignment
+     * @param thrownTypesToExclude
+     * @param existingVariableNames
+     * @param targetType
      */
-    public Type getLocalVarType() {
-        return localVarType;
-    }
+    public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
+                                              List<Type> thrownTypesToExclude,
+                                              Set<String> existingVariableNames,
+                                              Type targetType ) {
 
-    public String getLocalVarName() {
-        return localVarName;
+        super( decoratedAssignment, thrownTypesToExclude, null, existingVariableNames, targetType );
     }
-
 }

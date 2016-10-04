@@ -16,23 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._289;
+package org.mapstruct.ap.test.bugs._913;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+import java.util.Arrays;
+import java.util.List;
 
-@Mapper
-public interface Issue289Mapper {
+/**
+ *
+ * @author Sjaak Derksen
+ */
+public class Helper {
 
-    Issue289Mapper INSTANCE = Mappers.getMapper( Issue289Mapper.class );
-
-    TargetWithoutSetter sourceToTargetWithoutSetter(Source source);
-
-    void sourceToTargetWithoutSetter(Source source, @MappingTarget TargetWithoutSetter target);
-
-    TargetWithSetter sourceToTargetWithSetter(Source source);
-
-    TargetElement sourceElementToTargetElement(SourceElement source);
-
+    public List<String> toList(String in) {
+        return Arrays.asList( in.split( "," ) );
+    }
 }

@@ -18,36 +18,40 @@
      limitations under the License.
 
 -->
+<#import "../macro/CommonMacros.ftl" as lib>
+<@lib.handleExceptions>
 <#if ( ext.existingInstanceMapping ) >
-    <@_assignment targetWriteAccessorName = localVarName/>
-    if ( ${ext.targetBeanName}.${targetGetterName}() != null ) {
-        ${ext.targetBeanName}.${targetGetterName}().clear();
-        if ( ${localVarName} != null ) {
+    if ( ${ext.targetBeanName}.${ext.targetReadAccessorName}() != null ) {
+        <@lib.handleNullCheck>
+            ${ext.targetBeanName}.${ext.targetReadAccessorName}().clear();
             ${ext.targetBeanName}.${ext.targetReadAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
+        </@lib.handleNullCheck>
+        <#if !ext.defaultValueAssignment??> <#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleNullCheck -->
+        else {
+          ${ext.targetBeanName}.${ext.targetWriteAccessorName}( null );
         }
-    }
-    else {
-        <#if newCollectionOrMapAssignment??>
-            <@_newCollectionOrMapAssignment/>
-        <#else>
-            ${ext.targetBeanName}.${ext.targetWriteAccessorName}( ${localVarName} );
         </#if>
+        }
+    else {
+        <@lib.handleNullCheck>
+          <#if newCollectionOrMapAssignment??>
+             <@_newCollectionOrMapAssignment/>
+          <#else>
+             ${ext.targetBeanName}.${ext.targetWriteAccessorName}( ${localVarName} );
+          </#if>
+        </@lib.handleNullCheck>
     }
 <#else>
-    <#if newCollectionOrMapAssignment??>
-        <@_newCollectionOrMapAssignment/>
-    <#else>
-        <@_assignment targetWriteAccessorName = ext.targetWriteAccessorName/>
-    </#if>
+      <@lib.handleNullCheck>
+        <#if newCollectionOrMapAssignment??>
+          <@_newCollectionOrMapAssignment/>
+        <#else>
+          ${ext.targetBeanName}.${ext.targetWriteAccessorName}( ${localVarName} );
+        </#if>
+      </@lib.handleNullCheck>
 </#if>
-<#macro _assignment targetWriteAccessorName>
-    <@includeModel object=assignment
-            targetBeanName=ext.targetBeanName
-            existingInstanceMapping=ext.existingInstanceMapping
-            targetReadAccessorName=ext.targetReadAccessorName
-            targetWriteAccessorName=targetWriteAccessorName
-            targetType=ext.targetType/>
-</#macro>
+</@lib.handleExceptions>
+
 <#macro _newCollectionOrMapAssignment>
     <@includeModel object=newCollectionOrMapAssignment
             targetBeanName=ext.targetBeanName

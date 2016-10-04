@@ -68,7 +68,6 @@ public class Issue289Test {
         assertThat( target.getCollection() ).isEmpty();
     }
 
-
     @Test
     public void shouldLeaveNullTargetSetWhenSourceIsNullForCreateMethod() {
 
