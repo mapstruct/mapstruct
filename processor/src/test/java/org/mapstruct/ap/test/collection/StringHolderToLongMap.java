@@ -18,12 +18,13 @@
  */
 package org.mapstruct.ap.test.collection;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Stefan May
  */
-public class StringArrayList extends ArrayList<String> {
+public class StringHolderToLongMap extends HashMap<StringHolder, Long> {
 
     private static final long serialVersionUID = 1L;
+
 }

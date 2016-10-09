@@ -58,9 +58,9 @@ public class Target {
 
     private EnumSet<Colour> enumSet;
 
-    private StringArrayList nonGenericStringList;
+    private StringHolderArrayList nonGenericStringList;
 
-    private StringToLongMap nonGenericMapStringtoLong;
+    private StringHolderToLongMap nonGenericMapStringtoLong;
 
     public Target() {
         otherStringLongMap = Maps.newHashMap();
@@ -189,19 +189,19 @@ public class Target {
         this.enumSet = enumSet;
     }
 
-    public StringArrayList getNonGenericStringList() {
+    public StringHolderArrayList getNonGenericStringList() {
         return nonGenericStringList;
     }
 
-    public void setNonGenericStringList(StringArrayList nonGenericStringList) {
+    public void setNonGenericStringList(StringHolderArrayList nonGenericStringList) {
         this.nonGenericStringList = nonGenericStringList;
     }
 
-    public StringToLongMap getNonGenericMapStringtoLong() {
+    public StringHolderToLongMap getNonGenericMapStringtoLong() {
         return nonGenericMapStringtoLong;
     }
 
-    public void setNonGenericMapStringtoLong(StringToLongMap nonGenericMapStringtoLong) {
+    public void setNonGenericMapStringtoLong(StringHolderToLongMap nonGenericMapStringtoLong) {
         this.nonGenericMapStringtoLong = nonGenericMapStringtoLong;
     }
 }

@@ -29,9 +29,9 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface SourceTargetMapper {
+public abstract class SourceTargetMapper {
 
-    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+    static final SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
         @Mapping(source = "integerList", target = "integerCollection"),
@@ -42,23 +42,31 @@ public interface SourceTargetMapper {
         @Mapping(source = "stringList3", target = "nonGenericStringList"),
         @Mapping(source = "stringLongMapForNonGeneric", target = "nonGenericMapStringtoLong")
     })
-    Target sourceToTarget(Source source);
+    public abstract Target sourceToTarget(Source source);
 
     @InheritInverseConfiguration( name = "sourceToTarget" )
-    Source targetToSource(Target target);
+    public abstract Source targetToSource(Target target);
 
     @InheritConfiguration
-    Target sourceToTargetTwoArg(Source source, @MappingTarget Target target);
+    public abstract Target sourceToTargetTwoArg(Source source, @MappingTarget Target target);
 
-    Set<String> integerSetToStringSet(Set<Integer> integers);
-
-    @InheritInverseConfiguration
-    Set<Integer> stringSetToIntegerSet(Set<String> strings);
-
-    Set<String> colourSetToStringSet(Set<Colour> colours);
+    public abstract Set<String> integerSetToStringSet(Set<Integer> integers);
 
     @InheritInverseConfiguration
-    Set<Colour> stringSetToColourSet(Set<String> colours);
+    public abstract Set<Integer> stringSetToIntegerSet(Set<String> strings);
 
-    Set<Number> integerSetToNumberSet(Set<Integer> integers);
+    public abstract Set<String> colourSetToStringSet(Set<Colour> colours);
+
+    @InheritInverseConfiguration
+    public abstract Set<Colour> stringSetToColourSet(Set<String> colours);
+
+    public abstract Set<Number> integerSetToNumberSet(Set<Integer> integers);
+
+    protected StringHolder toStringHolder(String string) {
+        return new StringHolder( string );
+    }
+
+    protected String toString(StringHolder string) {
+        return string.getString();
+    }
 }

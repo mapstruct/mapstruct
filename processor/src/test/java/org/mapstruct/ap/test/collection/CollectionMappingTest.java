@@ -37,7 +37,9 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses({ Source.class, Target.class, Colour.class, SourceTargetMapper.class, TestList.class, TestMap.class,
-    StringArrayList.class, StringToLongMap.class })
+    StringHolderArrayList.class,
+    StringHolderToLongMap.class,
+    StringHolder.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class CollectionMappingTest {
 
@@ -401,12 +403,14 @@ public class CollectionMappingTest {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getNonGenericStringList() ).containsExactly( "Bob", "Alice" );
+        assertThat( target.getNonGenericStringList() ).containsExactly(
+            new StringHolder( "Bob" ),
+            new StringHolder( "Alice" ) );
 
         // Inverse direction
         Target newTarget = new Target();
-        StringArrayList nonGenericStringList = new StringArrayList();
-        nonGenericStringList.addAll( Arrays.asList( "Bill", "Bob" ) );
+        StringHolderArrayList nonGenericStringList = new StringHolderArrayList();
+        nonGenericStringList.addAll( Arrays.asList( new StringHolder( "Bill" ), new StringHolder( "Bob" ) ) );
         newTarget.setNonGenericStringList( nonGenericStringList );
 
         Source mappedSource = SourceTargetMapper.INSTANCE.targetToSource( newTarget );
@@ -415,6 +419,7 @@ public class CollectionMappingTest {
         assertThat( mappedSource.getStringList3() ).containsExactly( "Bill", "Bob" );
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @IssueKey("853")
     public void shouldMapNonGenericMap() {
@@ -427,13 +432,15 @@ public class CollectionMappingTest {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getNonGenericMapStringtoLong() ).contains( entry( "Bob", 123L ), entry( "Alice", 456L ) );
+        assertThat( target.getNonGenericMapStringtoLong() ).contains(
+            entry( new StringHolder( "Bob" ), 123L ),
+            entry( new StringHolder( "Alice" ), 456L ) );
 
         // Inverse direction
         Target newTarget = new Target();
-        StringToLongMap stringToLongMap = new StringToLongMap();
-        stringToLongMap.put( "Blue", 321L );
-        stringToLongMap.put( "Green", 654L );
+        StringHolderToLongMap stringToLongMap = new StringHolderToLongMap();
+        stringToLongMap.put( new StringHolder( "Blue" ), 321L );
+        stringToLongMap.put( new StringHolder( "Green" ), 654L );
         newTarget.setNonGenericMapStringtoLong( stringToLongMap );
 
         Source mappedSource = SourceTargetMapper.INSTANCE.targetToSource( newTarget );
