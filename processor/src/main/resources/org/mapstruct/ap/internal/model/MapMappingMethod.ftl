@@ -52,7 +52,7 @@
         </#if>
     </#list>
     <#-- Once #148 has been addressed, the simple name of Map.Entry can be used -->
-    for ( java.util.Map.Entry<<#list sourceParameter.type.typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
+    for ( java.util.Map.Entry<<#list sourceElementTypes as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
     <#-- key -->
         <@includeModel object=keyAssignment
                    targetWriteAccessorName=keyVariableName
