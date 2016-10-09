@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.Generated;
 import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
@@ -64,6 +63,7 @@ public abstract class GeneratedType extends ModelElement {
      * Type representing the {@code @Generated} annotation
      */
     private final Type generatedType;
+    private final boolean generatedTypeAvailable;
 
     // CHECKSTYLE:OFF
     protected GeneratedType(TypeFactory typeFactory, String packageName, String name, String superClassName,
@@ -91,7 +91,14 @@ public abstract class GeneratedType extends ModelElement {
         this.versionInformation = versionInformation;
         this.accessibility = accessibility;
 
-        this.generatedType = typeFactory.getType( Generated.class );
+        this.generatedTypeAvailable = typeFactory.isTypeAvailable( "javax.annotation.Generated" );
+        if ( generatedTypeAvailable ) {
+            this.generatedType = typeFactory.getType( "javax.annotation.Generated" );
+        }
+        else {
+            this.generatedType = null;
+        }
+
         this.constructor = constructor;
     }
 
@@ -145,6 +152,10 @@ public abstract class GeneratedType extends ModelElement {
         return suppressGeneratorVersionComment;
     }
 
+    public boolean isGeneratedTypeAvailable() {
+        return generatedTypeAvailable;
+    }
+
     public VersionInformation getVersionInformation() {
         return versionInformation;
     }
@@ -156,7 +167,7 @@ public abstract class GeneratedType extends ModelElement {
     @Override
     public SortedSet<Type> getImportTypes() {
         SortedSet<Type> importedTypes = new TreeSet<Type>();
-        importedTypes.add( generatedType );
+        addIfImportRequired( importedTypes, generatedType );
 
         for ( MappingMethod mappingMethod : methods ) {
             for ( Type type : mappingMethod.getImportTypes() ) {

@@ -24,11 +24,13 @@ package ${packageName};
 import ${importedType.importName};
 </#list>
 
+<#if !generatedTypeAvailable>/*</#if>
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor"<#if suppressGeneratorTimestamp == false>,
     date = "${.now?string("yyyy-MM-dd'T'HH:mm:ssZ")}"</#if><#if suppressGeneratorVersionComment == false>,
     comments = "version: ${versionInformation.mapStructVersion}, compiler: ${versionInformation.compiler}, environment: Java ${versionInformation.runtimeVersion} (${versionInformation.runtimeVendor})"</#if>
-)
+)<#if !generatedTypeAvailable>
+*/</#if>
 <#list annotations as annotation>
 <#nt><@includeModel object=annotation/>
 </#list>
