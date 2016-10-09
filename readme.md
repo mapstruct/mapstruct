@@ -31,7 +31,7 @@ MapStruct requires Java 1.6 or later.
 
 ## Using MapStruct
 
-MapStruct is a Java annotation processor based on [JSR 269](jcp.org/en/jsr/detail?id=269) and as such can be used within command line builds (javac, Ant, Maven etc.) as well as from within your IDE.
+MapStruct is a Java annotation processor based on [JSR 269](https://jcp.org/en/jsr/detail?id=269) and as such can be used within command line builds (javac, Ant, Maven etc.) as well as from within your IDE.
 
 For Maven based projects add the following to your POM file in order to use MapStruct (the dependencies can be obtained from Maven Central):
 
