@@ -22,6 +22,10 @@ package org.mapstruct.ap.test.abstractclass;
  * @author Andreas Gudian
  */
 public class AbstractDto implements Identifiable {
+
+    //CHECKSTYLE:OFF
+    public Long publicId;
+    //CHECKSTYLE:ON
     private Long id = 1L;
 
     @Override

@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.assignment.NullCheckWrapper" -->
 <#--
 
      Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)

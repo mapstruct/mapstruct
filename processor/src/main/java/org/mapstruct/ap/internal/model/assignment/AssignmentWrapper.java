@@ -32,9 +32,11 @@ import org.mapstruct.ap.internal.model.common.Type;
 public abstract class AssignmentWrapper extends ModelElement implements Assignment {
 
     private final Assignment decoratedAssignment;
+    protected final boolean fieldAssignment;
 
-    public AssignmentWrapper( Assignment decoratedAssignment ) {
+    public AssignmentWrapper( Assignment decoratedAssignment, boolean fieldAssignment ) {
         this.decoratedAssignment = decoratedAssignment;
+        this.fieldAssignment = fieldAssignment;
     }
 
     @Override
@@ -91,4 +93,11 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
         return decoratedAssignment.createLocalVarName( desiredName );
     }
 
+    /**
+     *
+     * @return {@code true} if the wrapper is for field assignment
+     */
+    public boolean isFieldAssignment() {
+        return fieldAssignment;
+    }
 }

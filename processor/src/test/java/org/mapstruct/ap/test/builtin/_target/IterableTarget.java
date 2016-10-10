@@ -26,6 +26,10 @@ import java.util.List;
  */
 public class IterableTarget {
 
+    // CHECKSTYLE:OFF
+    public List<String> publicDates;
+    // CHECKSTYLE:ON
+
     private List<String> dates;
 
     public List<String> getDates() {

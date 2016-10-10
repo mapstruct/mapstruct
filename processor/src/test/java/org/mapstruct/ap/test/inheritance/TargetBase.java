@@ -20,6 +20,9 @@ package org.mapstruct.ap.test.inheritance;
 
 public class TargetBase {
 
+    //CHECKSTYLE:OFF
+    public Long publicFoo;
+    //CHECKSTYLE:ON
     private Long foo;
 
     public Long getFoo() {

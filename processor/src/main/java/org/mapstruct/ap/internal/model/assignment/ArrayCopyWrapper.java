@@ -41,8 +41,8 @@ public class ArrayCopyWrapper extends AssignmentWrapper {
     private final Type targetType;
 
     public ArrayCopyWrapper(Assignment decoratedAssignment, String targetPropertyName, Type arraysType,
-            Type targetType, Collection<String> existingVariableNames ) {
-        super( decoratedAssignment );
+                            Type targetType, Collection<String> existingVariableNames, boolean fieldAssignment) {
+        super( decoratedAssignment, fieldAssignment );
         this.targetPropertyName = Strings.getSaveVariableName( targetPropertyName, existingVariableNames );
         this.arraysType = arraysType;
         this.targetType = targetType;

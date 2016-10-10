@@ -51,9 +51,17 @@ public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
                                               List<Type> thrownTypesToExclude,
                                               String sourcePresenceChecker,
                                               Set<String> existingVariableNames,
-                                              Type targetType ) {
+                                              Type targetType,
+                                              boolean fieldAssignment) {
 
-        super( decoratedAssignment, thrownTypesToExclude, sourcePresenceChecker, existingVariableNames, targetType );
+        super(
+            decoratedAssignment,
+            thrownTypesToExclude,
+            sourcePresenceChecker,
+            existingVariableNames,
+            targetType,
+            fieldAssignment
+        );
     }
 
     /**
@@ -67,8 +75,10 @@ public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
     public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
                                               List<Type> thrownTypesToExclude,
                                               Set<String> existingVariableNames,
-                                              Type targetType ) {
+                                              Type targetType,
+                                              boolean fieldAssignment) {
 
-        super( decoratedAssignment, thrownTypesToExclude, null, existingVariableNames, targetType );
+        super( decoratedAssignment, thrownTypesToExclude, null, existingVariableNames, targetType, fieldAssignment );
     }
+
 }

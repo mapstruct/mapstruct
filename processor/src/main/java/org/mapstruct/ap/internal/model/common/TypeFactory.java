@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -56,6 +57,7 @@ import org.mapstruct.ap.internal.prism.MappingTargetPrism;
 import org.mapstruct.ap.internal.prism.TargetTypePrism;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
  * Factory creating {@link Type} instances.
@@ -263,13 +265,31 @@ public class TypeFactory {
      * @param method the method
      * @return the ExecutableType representing the method as part of usedMapper
      */
+    @Deprecated
     public ExecutableType getMethodType(DeclaredType includingType, ExecutableElement method) {
         TypeMirror asMemberOf = typeUtils.asMemberOf( includingType, method );
         return (ExecutableType) asMemberOf;
     }
 
-    public Parameter getSingleParameter(DeclaredType includingType, ExecutableElement method) {
-        List<? extends VariableElement> parameters = method.getParameters();
+    /**
+     * Get the Type for given method as part of usedMapper. Possibly parameterized types in method declaration
+     * will be evaluated to concrete types then.
+     *
+     * @param includingType the type on which's scope the method type shall be evaluated
+     * @param method the method
+     *
+     * @return the ExecutableType representing the method as part of usedMapper
+     */
+    public TypeMirror getMethodType(DeclaredType includingType, Element method) {
+        return typeUtils.asMemberOf( includingType, method );
+    }
+
+    public Parameter getSingleParameter(DeclaredType includingType, Accessor method) {
+        ExecutableElement executable = method.getExecutable();
+        if ( executable == null ) {
+            return null;
+        }
+        List<? extends VariableElement> parameters = executable.getParameters();
 
         if ( parameters.size() != 1 ) {
             //TODO: Log error
@@ -279,7 +299,11 @@ public class TypeFactory {
         return Collections.first( getParameters( includingType, method ) );
     }
 
-    public List<Parameter> getParameters(DeclaredType includingType, ExecutableElement method) {
+    public List<Parameter> getParameters(DeclaredType includingType, Accessor accessor) {
+        ExecutableElement method = accessor.getExecutable();
+        if ( method == null ) {
+            return new ArrayList<Parameter>();
+        }
         return getParameters( getMethodType( includingType, method ), method );
     }
 
@@ -306,8 +330,26 @@ public class TypeFactory {
         return result;
     }
 
+    @Deprecated
     public Type getReturnType(DeclaredType includingType, ExecutableElement method) {
         return getReturnType( getMethodType( includingType, method ) );
+    }
+
+    public Type getReturnType(DeclaredType includingType, Accessor accessor) {
+        Type type;
+        TypeMirror accessorType = getMethodType( includingType, accessor.getElement() );
+        if ( isExecutableType( accessorType ) ) {
+            type = getType( ( (ExecutableType) accessorType ).getReturnType() );
+        }
+        else {
+            type = getType( accessorType );
+        }
+
+        return type;
+    }
+
+    private boolean isExecutableType(TypeMirror accessorType) {
+        return accessorType.getKind() == TypeKind.EXECUTABLE && accessorType instanceof ExecutableType;
     }
 
     public Type getReturnType(ExecutableType method) {

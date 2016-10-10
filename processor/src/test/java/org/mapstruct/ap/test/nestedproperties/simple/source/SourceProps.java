@@ -20,6 +20,10 @@ package org.mapstruct.ap.test.nestedproperties.simple.source;
 
 public class SourceProps {
 
+    //CHECKSTYLE:OFF
+    public long publicLongValue;
+    //CHECKSTYLE:ON
+
     private long longValue;
     private int intValue;
     private double doubleValue;

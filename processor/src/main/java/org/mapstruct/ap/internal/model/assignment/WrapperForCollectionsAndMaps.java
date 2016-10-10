@@ -43,9 +43,10 @@ public class WrapperForCollectionsAndMaps extends AssignmentWrapper {
                                         List<Type> thrownTypesToExclude,
                                         String sourcePresenceChecker,
                                         Set<String> existingVariableNames,
-                                        Type targetType ) {
+                                        Type targetType,
+                                        boolean fieldAssignment) {
 
-        super( decoratedAssignment );
+        super( decoratedAssignment, fieldAssignment );
 
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.sourcePresenceChecker = sourcePresenceChecker;

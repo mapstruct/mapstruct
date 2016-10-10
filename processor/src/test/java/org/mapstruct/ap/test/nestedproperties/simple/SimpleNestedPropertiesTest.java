@@ -36,13 +36,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 /**
  * @author Sebastian Hasait
  */
-@WithClasses( { SourceRoot.class, SourceProps.class, TargetObject.class } )
-@IssueKey( "407" )
-@RunWith( AnnotationProcessorTestRunner.class )
+@WithClasses({ SourceRoot.class, SourceProps.class, TargetObject.class })
+@IssueKey("407")
+@RunWith(AnnotationProcessorTestRunner.class)
 public class SimpleNestedPropertiesTest {
 
     @Test
-    @WithClasses( { SimpleMapper.class } )
+    @WithClasses({ SimpleMapper.class })
     public void testNull() {
         TargetObject targetObject = SimpleMapper.MAPPER.toTargetObject( null );
 
@@ -50,13 +50,14 @@ public class SimpleNestedPropertiesTest {
     }
 
     @Test
-    @WithClasses( { SimpleMapper.class } )
+    @WithClasses({ SimpleMapper.class })
     public void testViaNull() {
         SourceRoot sourceRoot = new SourceRoot();
         // sourceRoot.getProps() is null
 
         TargetObject targetObject = SimpleMapper.MAPPER.toTargetObject( sourceRoot );
 
+        assertEquals( 0L, targetObject.getPublicLongValue() );
         assertEquals( 0L, targetObject.getLongValue() );
         assertEquals( 0, targetObject.getIntValue() );
         assertEquals( 0.0, targetObject.getDoubleValue(), 0.01 );
@@ -70,11 +71,12 @@ public class SimpleNestedPropertiesTest {
     }
 
     @Test
-    @WithClasses( { SimpleMapper.class } )
+    @WithClasses({ SimpleMapper.class })
     public void testFilled() {
         SourceRoot sourceRoot = new SourceRoot();
         SourceProps sourceProps = new SourceProps();
         sourceRoot.setProps( sourceProps );
+        sourceProps.publicLongValue = Long.MAX_VALUE;
         sourceProps.setLongValue( Long.MAX_VALUE );
         sourceProps.setIntValue( Integer.MAX_VALUE );
         sourceProps.setDoubleValue( Double.MAX_VALUE );
@@ -89,6 +91,7 @@ public class SimpleNestedPropertiesTest {
 
         TargetObject targetObject = SimpleMapper.MAPPER.toTargetObject( sourceRoot );
 
+        assertEquals( Long.MAX_VALUE, targetObject.getPublicLongValue() );
         assertEquals( Long.MAX_VALUE, targetObject.getLongValue() );
         assertEquals( Integer.MAX_VALUE, targetObject.getIntValue() );
         assertEquals( Double.MAX_VALUE, targetObject.getDoubleValue(), 0.01 );

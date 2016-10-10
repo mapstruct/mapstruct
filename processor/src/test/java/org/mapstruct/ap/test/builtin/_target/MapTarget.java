@@ -26,6 +26,10 @@ import java.util.Map;
  */
 public class MapTarget {
 
+    // CHECKSTYLE:OFF
+    public Map<String, String> publicExample;
+    // CHECKSTYLE:ON
+
     private Map<String, String> example;
 
     public Map<String, String> getExample() {

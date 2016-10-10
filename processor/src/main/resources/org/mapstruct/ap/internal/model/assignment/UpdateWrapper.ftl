@@ -18,6 +18,7 @@
      limitations under the License.
 
 -->
+<#import '../macro/CommonMacros.ftl' as lib >
 <#if (thrownTypes?size == 0) >
     <@_assignment/>;
 <#else>
@@ -31,8 +32,8 @@
     </#list>
 </#if>
 <#macro _assignment>
-    if ( ${ext.targetBeanName}.${ext.targetReadAccessorName}() == null ) {
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <#if factoryMethod??><@includeModel object=factoryMethod targetType=ext.targetType/><#else><@_newObject/></#if> );
+    if ( ${ext.targetBeanName}.${ext.targetReadAccessorName} == null ) {
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if factoryMethod??><@includeModel object=factoryMethod targetType=ext.targetType/><#else><@_newObject/></#if></@lib.handleWrite>;
     }
     <@includeModel object=assignment
                targetBeanName=ext.targetBeanName

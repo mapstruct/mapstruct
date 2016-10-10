@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.nestedproperties.simple._target;
 
 public class TargetObject {
 
+    private long publicLongValue;
     private long longValue;
     private int intValue;
     private double doubleValue;
@@ -32,6 +33,14 @@ public class TargetObject {
     private byte[] byteArray;
 
     private String stringValue;
+
+    public long getPublicLongValue() {
+        return publicLongValue;
+    }
+
+    public void setPublicLongValue(long publicLongValue) {
+        this.publicLongValue = publicLongValue;
+    }
 
     public long getLongValue() {
         return longValue;

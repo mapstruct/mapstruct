@@ -20,6 +20,10 @@ package org.mapstruct.ap.test.builtin.bean;
 
 public class StringProperty {
 
+    // CHECKSTYLE:OFF
+    public String publicProp;
+    // CHECKSTYLE:ON
+
     private String prop;
 
     public String getProp() {

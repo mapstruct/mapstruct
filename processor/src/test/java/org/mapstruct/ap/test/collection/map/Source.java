@@ -26,6 +26,8 @@ import org.mapstruct.ap.test.collection.map.other.ImportedType;
 
 public class Source {
 
+    private Map<Long, Date> publicValues;
+
     private Map<Long, Date> values;
     private LinkedHashMap<String, ImportedType> stringEnumMap;
 
@@ -43,5 +45,13 @@ public class Source {
 
     public void setStringEnumMap(LinkedHashMap<String, ImportedType> stringEnumMap) {
         this.stringEnumMap = stringEnumMap;
+    }
+
+    public Map<Long, Date> getPublicValues() {
+        return publicValues;
+    }
+
+    public void setPublicValues(Map<Long, Date> publicValues) {
+        this.publicValues = publicValues;
     }
 }

@@ -24,17 +24,22 @@ import javax.xml.ws.Holder;
 
 public class Source extends AbstractDto implements HasId, AlsoHasId {
 
+    //CHECKSTYLE:OFF
+    public final int publicSize;
+    //CHECKSTYLE:ON
     private final int size;
     private final Calendar birthday;
     private final String notAttractingEqualsMethod = "no way";
     private final Holder<String> manuallyConverted = new Holder<String>( "What is the answer?" );
 
     public Source() {
+        publicSize = 191;
         size = 181;
         birthday = Calendar.getInstance();
         birthday.set( 1948, 3, 26 );
 
         super.setId( 42L );
+        this.publicId = 52L;
     }
 
     public int getSize() {

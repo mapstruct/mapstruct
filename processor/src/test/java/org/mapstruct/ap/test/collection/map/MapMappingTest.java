@@ -121,6 +121,7 @@ public class MapMappingTest {
 
         Source source = new Source();
         source.setValues( values );
+        source.setPublicValues( new HashMap<Long, Date>( values ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -131,6 +132,14 @@ public class MapMappingTest {
             entry( "42", "01.01.1980" ),
             entry( "121", "20.07.2013" )
         );
+
+        assertThat( target.publicValues )
+            .isNotNull()
+            .hasSize( 2 )
+            .contains(
+                entry( "42", "01.01.1980" ),
+                entry( "121", "20.07.2013" )
+            );
     }
 
     @Test
@@ -139,6 +148,7 @@ public class MapMappingTest {
 
         Target target = new Target();
         target.setValues( values );
+        target.publicValues = new HashMap<String, String>( values );
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
@@ -149,6 +159,14 @@ public class MapMappingTest {
             entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
             entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
         );
+
+        assertThat( source.getPublicValues() )
+            .isNotNull()
+            .hasSize( 2 )
+            .contains(
+                entry( 42L, new GregorianCalendar( 1980, 0, 1 ).getTime() ),
+                entry( 121L, new GregorianCalendar( 2013, 6, 20 ).getTime() )
+            );
     }
 
     private Map<Integer, Integer> createIntIntMap() {

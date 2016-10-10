@@ -20,6 +20,10 @@ package org.mapstruct.ap.test.abstractclass;
 
 public class Target extends AbstractDto {
 
+    //CHECKSTYLE:OFF
+    public Long publicSize;
+    //CHECKSTYLE:OFF
+
     private Long size;
     private String birthday;
     private boolean notAttractingEqualsMethod;

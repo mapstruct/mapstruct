@@ -32,8 +32,8 @@ public class SetterWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
 
-    public SetterWrapper( Assignment decoratedAssignment, List<Type> thrownTypesToExclude ) {
-        super( decoratedAssignment );
+    public SetterWrapper(Assignment decoratedAssignment, List<Type> thrownTypesToExclude, boolean fieldAssignment) {
+        super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
     }
 

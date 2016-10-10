@@ -22,6 +22,10 @@ import javax.xml.bind.JAXBElement;
 
 public class JaxbElementProperty {
 
+    // CHECKSTYLE:OFF
+    public JAXBElement<String> publicProp;
+    // CHECKSTYLE:ON
+
     private JAXBElement<String> prop;
 
     public JAXBElement<String> getProp() {

@@ -37,10 +37,12 @@ public class IterableToNonIterableMappingTest {
     public void shouldMapStringListToStringUsingCustomMapper() {
         Source source = new Source();
         source.setNames( Arrays.asList( "Alice", "Bob", "Jim" ) );
+        source.publicNames = Arrays.asList( "Alice", "Bob", "Jim" );
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
         assertThat( target.getNames() ).isEqualTo( "Alice-Bob-Jim" );
+        assertThat( target.publicNames ).isEqualTo( "Alice-Bob-Jim" );
     }
 
     @Test
@@ -48,10 +50,12 @@ public class IterableToNonIterableMappingTest {
     public void shouldReverseMapStringListToStringUsingCustomMapper() {
         Target target = new Target();
         target.setNames( "Alice-Bob-Jim" );
+        target.publicNames = "Alice-Bob-Jim";
 
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
         assertThat( source.getNames() ).isEqualTo( Arrays.asList( "Alice", "Bob", "Jim" ) );
+        assertThat( source.publicNames ).isEqualTo( Arrays.asList( "Alice", "Bob", "Jim" ) );
     }
 }

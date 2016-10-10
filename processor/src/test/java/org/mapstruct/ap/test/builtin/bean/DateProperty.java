@@ -22,6 +22,10 @@ import java.util.Date;
 
 public class DateProperty {
 
+    // CHECKSTYLE:OFF
+    public Date publicProp;
+    // CHECKSTYLE:ON
+
     private Date prop;
 
     public Date getProp() {

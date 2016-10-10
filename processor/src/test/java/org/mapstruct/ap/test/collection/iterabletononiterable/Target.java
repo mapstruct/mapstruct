@@ -20,6 +20,10 @@ package org.mapstruct.ap.test.collection.iterabletononiterable;
 
 public class Target {
 
+    //CHECKSTYLE:OFF
+    public String publicNames;
+    //CHECKSTYLE:ON
+
     private String names;
 
     public String getNames() {

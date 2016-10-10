@@ -21,13 +21,13 @@
 <#import "../macro/CommonMacros.ftl" as lib>
 <@lib.handleExceptions>
   <#if ext.existingInstanceMapping>
-    if ( ${ext.targetBeanName}.${ext.targetReadAccessorName}() != null ) {
+    if ( ${ext.targetBeanName}.${ext.targetReadAccessorName} != null ) {
         <@lib.handleNullCheck>
-            ${ext.targetBeanName}.${ext.targetReadAccessorName}().clear();
-            ${ext.targetBeanName}.${ext.targetReadAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
+            ${ext.targetBeanName}.${ext.targetReadAccessorName}.clear();
+            ${ext.targetBeanName}.${ext.targetReadAccessorName}.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
         </@lib.handleNullCheck>
         <#if !ext.defaultValueAssignment?? && !sourcePresenceChecker?? && !allwaysIncludeNullCheck>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleNullCheck -->
-          ${ext.targetBeanName}.${ext.targetWriteAccessorName}( null );
+          ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>null</@lib.handleWrite>;
         }
         </#if>
         }
@@ -43,7 +43,7 @@
 -->
 <#macro callTargetWriteAccessor>
     <@lib.handleNullCheck>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <#if directAssignment><@wrapLocalVarInCollectionInitializer/><#else>${localVarName}</#if> );
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if directAssignment><@wrapLocalVarInCollectionInitializer/><#else>${localVarName}</#if></@lib.handleWrite>;
   </@lib.handleNullCheck>
 </#macro>
 <#--

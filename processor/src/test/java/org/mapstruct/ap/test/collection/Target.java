@@ -31,6 +31,10 @@ import com.google.common.collect.Maps;
 
 public class Target {
 
+    //CHECKSTYLE:OFF
+    public List<String> publicStringList;
+    //CHECKSTYLE:On
+
     private List<String> stringList;
     private List<String> otherStringList;
     private ArrayList<String> stringArrayList;

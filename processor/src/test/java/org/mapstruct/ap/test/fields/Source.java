@@ -16,30 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin.source;
+package org.mapstruct.ap.test.fields;
 
-import java.util.Map;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-public class MapSource {
+public class Source {
 
     // CHECKSTYLE:OFF
-    public Map<JAXBElement<String>, XMLGregorianCalendar> publicExample;
+    public final int finalInt = 10;
+    public int normalInt;
+    public final List<Integer> finalList = Arrays.asList( 1, 2, 3 );
+    public List<Integer> normalList;
     // CHECKSTYLE:ON
 
-    private Map<JAXBElement<String>, XMLGregorianCalendar> example;
+    private final List<Integer> privateFinalList = new ArrayList<Integer>( Arrays.asList( 3, 4, 5 ) );
 
-    public Map<JAXBElement<String>, XMLGregorianCalendar> getExample() {
-        return example;
-    }
-
-    public void setExample( Map<JAXBElement<String>, XMLGregorianCalendar> example ) {
-        this.example = example;
+    public List<Integer> getPrivateFinalList() {
+        return privateFinalList;
     }
 }

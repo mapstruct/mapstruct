@@ -175,8 +175,8 @@ public class MapMappingMethod extends MappingMethod {
                 factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null );
             }
 
-            keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType );
-            valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes(), valueTargetType );
+            keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );
+            valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes(), valueTargetType, false );
 
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
                 LifecycleCallbackFactory.beforeMappingMethods( method, null, ctx );

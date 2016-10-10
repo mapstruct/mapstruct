@@ -28,6 +28,8 @@ import java.util.Set;
 
 public class Source {
 
+    private List<String> publicStringList;
+
     private List<String> stringList;
     private List<String> otherStringList;
     private ArrayList<String> stringArrayList;
@@ -58,6 +60,14 @@ public class Source {
     private EnumSet<Colour> enumSet;
 
     private List<String> stringList3;
+
+    public List<String> getPublicStringList() {
+        return publicStringList;
+    }
+
+    public void setPublicStringList(List<String> publicStringList) {
+        this.publicStringList = publicStringList;
+    }
 
     public List<String> getStringList() {
         return stringList;

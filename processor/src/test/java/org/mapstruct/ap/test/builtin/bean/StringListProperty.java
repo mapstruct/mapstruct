@@ -22,6 +22,10 @@ import java.util.List;
 
 public class StringListProperty {
 
+    // CHECKSTYLE:OFF
+    public List<String> publicProp;
+    // CHECKSTYLE:ON
+
     private List<String> prop;
 
     public List<String> getProp() {

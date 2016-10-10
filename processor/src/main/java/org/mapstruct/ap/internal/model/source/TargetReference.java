@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -32,6 +31,8 @@ import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+
+import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
  * This class describes the target side of a property mapping.
@@ -139,8 +140,8 @@ public class TargetReference {
             // last entry
             for ( int i = 0; i < entryNames.length; i++ ) {
 
-                ExecutableElement targetReadAccessor = nextType.getPropertyReadAccessors().get( entryNames[i] );
-                ExecutableElement targetWriteAccessor = nextType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
+                Accessor targetReadAccessor = nextType.getPropertyReadAccessors().get( entryNames[i] );
+                Accessor targetWriteAccessor = nextType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
                 if ( targetWriteAccessor == null || ( i < entryNames.length - 1 && targetReadAccessor == null) ) {
                     // there should always be a write accessor and there should be read accessor mandatory for all
                     // but the last
@@ -152,7 +153,8 @@ public class TargetReference {
                     // only intermediate nested properties when they are a true setter
                     // the last may be other readAccessor (setter / getter / adder).
 
-                    if ( Executables.isGetterMethod( targetWriteAccessor ) ) {
+                    if ( Executables.isGetterMethod( targetWriteAccessor ) ||
+                        Executables.isFieldAccessor( targetWriteAccessor ) ) {
                         nextType = typeFactory.getReturnType(
                             (DeclaredType) nextType.getTypeMirror(),
                             targetWriteAccessor );

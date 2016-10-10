@@ -20,6 +20,9 @@ package org.mapstruct.ap.test.inheritance;
 
 public class SourceBase {
 
+    //CHECKSTYLE:OFF
+    public int publicFoo;
+    //CHECKSTYLE:ON
     private int foo;
 
     public int getFoo() {

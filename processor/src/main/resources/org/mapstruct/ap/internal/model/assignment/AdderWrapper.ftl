@@ -22,7 +22,7 @@
 <@lib.handleExceptions>
   if ( ${sourceReference} != null ) {
       for ( <@includeModel object=sourceType/> ${sourceIteratorName} : ${sourceReference} ) {
-          ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@lib.handleAssignment/> );
+          ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
       }
   }
 </@lib.handleExceptions>

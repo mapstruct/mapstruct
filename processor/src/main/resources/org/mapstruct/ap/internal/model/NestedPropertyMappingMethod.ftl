@@ -29,7 +29,7 @@
         return ${returnType.null};
     }
     </#if>
-    <@includeModel object=entry.type/> ${entry.name} = <@localVarName index=entry_index/>.${entry.accessorName}();
+    <@includeModel object=entry.type/> ${entry.name} = <@localVarName index=entry_index/>.${entry.accessorName};
     <#if !entry.presenceCheckerName?? >
     <#if !entry.type.primitive>
     if ( ${entry.name} == null ) {

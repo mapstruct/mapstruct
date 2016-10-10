@@ -51,7 +51,9 @@ public class IgnorePropertyTest {
         assertThat( animalDto.getName() ).isEqualTo( "Bruno" );
         assertThat( animalDto.getSize() ).isEqualTo( 100 );
         assertThat( animalDto.getAge() ).isNull();
+        assertThat( animalDto.publicAge ).isNull();
         assertThat( animalDto.getColor() ).isNull();
+        assertThat( animalDto.publicColor ).isNull();
     }
 
     @Test
@@ -65,6 +67,7 @@ public class IgnorePropertyTest {
         assertThat( animalDto.getName() ).isEqualTo( "Bruno" );
         assertThat( animalDto.getSize() ).isEqualTo( 100 );
         assertThat( animal.getAge() ).isNull();
+        assertThat( animal.publicAge ).isNull();
     }
 
     @Test
@@ -78,6 +81,7 @@ public class IgnorePropertyTest {
         assertThat( animalDto.getName() ).isEqualTo( "Bruno" );
         assertThat( animalDto.getSize() ).isEqualTo( 100 );
         assertThat( animal.getColour() ).isNull();
+        assertThat( animal.publicColour ).isNull();
     }
 
     @Test

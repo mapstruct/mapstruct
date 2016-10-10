@@ -22,6 +22,10 @@ import java.util.List;
 
 public class Source {
 
+    //CHECKSTYLE:OFF
+    public List<String> publicNames;
+    //CHECKSTYLE:ON
+
     private List<String> names;
 
     public List<String> getNames() {

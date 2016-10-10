@@ -28,6 +28,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 public class IterableSource {
 
+    // CHECKSTYLE:OFF
+    public List<XMLGregorianCalendar> publicDates;
+    // CHECKSTYLE:ON
+
     private List<XMLGregorianCalendar> dates;
 
     public List<XMLGregorianCalendar> getDates() {

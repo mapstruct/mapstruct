@@ -19,7 +19,9 @@
 package org.mapstruct.ap.internal.model;
 
 import static java.util.Collections.emptySet;
+
 import java.util.Set;
+
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -47,11 +49,14 @@ public class NestedLocalVariableAssignment extends ModelElement {
     private String targetBean;
     private final String setterName;
     private final String sourceRef;
+    private final boolean fieldAssignment;
 
-    public NestedLocalVariableAssignment(String targetBean, String setterName, String sourceRef) {
+    public NestedLocalVariableAssignment(String targetBean, String setterName, String sourceRef,
+                                         boolean fieldAssignment) {
         this.targetBean = targetBean;
         this.setterName = setterName;
         this.sourceRef = sourceRef;
+        this.fieldAssignment = fieldAssignment;
     }
 
     /**
@@ -66,7 +71,7 @@ public class NestedLocalVariableAssignment extends ModelElement {
      *
      * @param targetBean the targetBean on which the property setter with {@link setterName} is called
      */
-    public void setTargetBean( String targetBean ) {
+    public void setTargetBean(String targetBean) {
         this.targetBean = targetBean;
     }
 
@@ -91,11 +96,37 @@ public class NestedLocalVariableAssignment extends ModelElement {
         return emptySet();
     }
 
+    /**
+     * @return {@code true}if field assignment should be used, {@code false} otherwise
+     */
+    public boolean isFieldAssignment() {
+        return fieldAssignment;
+    }
+
+    public String getAfterWriteVariable() {
+        if ( fieldAssignment ) {
+            return " = ";
+        }
+        else {
+            return "( ";
+        }
+    }
+
+    public String getFinishWriteStatement() {
+        if ( fieldAssignment ) {
+            return "";
+        }
+        else {
+            return " )";
+        }
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + (this.targetBean != null ? this.targetBean.hashCode() : 0);
-        hash = 97 * hash + (this.sourceRef != null ? this.sourceRef.hashCode() : 0);
+        hash = 97 * hash + ( this.targetBean != null ? this.targetBean.hashCode() : 0 );
+        hash = 97 * hash + ( this.sourceRef != null ? this.sourceRef.hashCode() : 0 );
+        hash = 97 * hash + ( this.fieldAssignment ? 1 : 0 );
         return hash;
     }
 
@@ -111,13 +142,14 @@ public class NestedLocalVariableAssignment extends ModelElement {
             return false;
         }
         final NestedLocalVariableAssignment other = (NestedLocalVariableAssignment) obj;
-        if ( (this.targetBean == null) ? (other.targetBean != null) : !this.targetBean.equals( other.targetBean ) ) {
+        if ( ( this.targetBean == null ) ? ( other.targetBean != null ) :
+            !this.targetBean.equals( other.targetBean ) ) {
             return false;
         }
-        if ( (this.sourceRef == null) ? (other.sourceRef != null) : !this.sourceRef.equals( other.sourceRef ) ) {
+        if ( ( this.sourceRef == null ) ? ( other.sourceRef != null ) : !this.sourceRef.equals( other.sourceRef ) ) {
             return false;
         }
-        return true;
+        return this.fieldAssignment == other.fieldAssignment;
     }
 
 }

@@ -35,8 +35,9 @@ public class LocalVarWrapper extends AssignmentWrapper {
     private final List<Type> thrownTypesToExclude;
     private final Type targetType;
 
-    public LocalVarWrapper( Assignment decoratedAssignment, List<Type> thrownTypesToExclude, Type targetType ) {
-        super( decoratedAssignment );
+    public LocalVarWrapper(Assignment decoratedAssignment, List<Type> thrownTypesToExclude, Type targetType,
+                           boolean fieldAssignment) {
+        super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.targetType = targetType;
     }
