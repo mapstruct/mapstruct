@@ -19,7 +19,7 @@
 
 -->
 <#if (thrownTypes?size == 0) >
-    for ( <@includeModel object=sourceType/> ${iteratorReference} : ${sourceReference} ) {
+    for ( <@includeModel object=matchingSourceType/> ${sourceIteratorName} : ${sourceReference} ) {
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@includeModel object=assignment
                 targetBeanName=ext.targetBeanName
                 existingInstanceMapping=ext.existingInstanceMapping
@@ -29,7 +29,7 @@
     }
 <#else>
     try {
-        for ( <@includeModel object=sourceType/> ${iteratorReference} : ${sourceReference} ) {
+        for ( <@includeModel object=matchingSourceType/> ${sourceIteratorName} : ${sourceReference} ) {
             ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@includeModel object=assignment
                     targetBeanName=ext.targetBeanName
                     existingInstanceMapping=ext.existingInstanceMapping

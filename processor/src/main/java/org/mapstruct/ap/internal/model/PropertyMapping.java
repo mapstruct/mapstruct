@@ -216,15 +216,13 @@ public class PropertyMapping extends ModelElement {
             // handle source
             String sourceElement = getSourceElement();
             Type sourceType = getSourceType();
-            SourceRHS sourceRHS;
+            SourceRHS sourceRHS = getSourceRHS();
             if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER && sourceType.isCollectionType() ) {
                 // handle adder, if source is collection then use iterator element type as source type.
-                // sourceRef becomes a local variable in the itereation.
                 sourceType = sourceType.getTypeParameters().get( 0 );
-                sourceRHS = new SourceRHS( Executables.getElementNameForAdder( targetWriteAccessor ), sourceType );
-            }
-            else {
-                sourceRHS = getSourceRHS();
+                String elementName = Executables.getElementNameForAdder( targetWriteAccessor );
+                String safeElementName = Strings.getSaveVariableName( elementName, existingVariableNames );
+                sourceRHS = new SourceRHS( sourceRHS, safeElementName, sourceType );
             }
 
             // all the tricky cases will be excluded for the time being.
@@ -388,7 +386,7 @@ public class PropertyMapping extends ModelElement {
 
         private void useLocalVarWhenNested(Assignment rightHandSide) {
             if ( sourceReference.getPropertyEntries().size() > 1 ) {
-                String sourceTypeName = rightHandSide.getSourceType().getName();
+                String sourceTypeName = rightHandSide.getMatchingSourceType().getName();
                 String safeName = Strings.getSaveVariableName( sourceTypeName, existingVariableNames );
                 rightHandSide.setSourceLocalVarName( safeName );
             }
@@ -399,12 +397,7 @@ public class PropertyMapping extends ModelElement {
             Assignment result = rightHandSide;
 
             if ( getSourceType().isCollectionType() ) {
-                result = new AdderWrapper(
-                    result,
-                    method.getThrownTypes(),
-                    getSourceRHS().getSourceReference(),
-                    sourceType
-                );
+                result = new AdderWrapper( result, method.getThrownTypes() );
                 result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
             }
             else {

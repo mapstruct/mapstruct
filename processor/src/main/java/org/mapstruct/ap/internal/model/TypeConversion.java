@@ -87,8 +87,18 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
-    public Type getSourceType() {
-        return assignment.getSourceType();
+    public Type getMatchingSourceType() {
+        return assignment.getMatchingSourceType();
+    }
+
+    @Override
+    public String getSourceIteratorName() {
+        return assignment.getSourceIteratorName();
+    }
+
+    @Override
+    public Type getCollectionSourceType() {
+        return assignment.getCollectionSourceType();
     }
 
     @Override

@@ -34,12 +34,23 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class SourceRHS extends ModelElement implements Assignment {
 
     private final String sourceReference;
-    private final Type sourceType;
+    private final Type matchingSourceType;
     private String sourceLocalVarName;
+    private final String sourceIteratorName;
+    private final Type collectionSourceType;
 
-    public SourceRHS(String sourceReference, Type sourceType ) {
+    public SourceRHS(String sourceReference, Type matchingSourceType ) {
         this.sourceReference = sourceReference;
-        this.sourceType = sourceType;
+        this.matchingSourceType = matchingSourceType;
+        this.sourceIteratorName = null;
+        this.collectionSourceType = null;
+    }
+
+    public SourceRHS(SourceRHS sourceRHS, String sourceIteratorName, Type matchingSourceType  ) {
+        this.sourceReference = sourceRHS.sourceReference;
+        this.collectionSourceType = sourceRHS.matchingSourceType;
+        this.sourceIteratorName = sourceIteratorName;
+        this.matchingSourceType = matchingSourceType;
     }
 
     @Override
@@ -48,8 +59,18 @@ public class SourceRHS extends ModelElement implements Assignment {
     }
 
     @Override
-    public Type getSourceType() {
-        return sourceType;
+    public Type getMatchingSourceType() {
+        return matchingSourceType;
+    }
+
+    @Override
+    public String getSourceIteratorName() {
+        return sourceIteratorName;
+    }
+
+    @Override
+    public Type getCollectionSourceType() {
+        return collectionSourceType;
     }
 
     @Override

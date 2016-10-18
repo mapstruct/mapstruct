@@ -33,18 +33,11 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class AdderWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
-    private final String sourceReference;
-    private final Type sourceType;
 
-    public AdderWrapper(
-        Assignment decoratedAssignment,
-        List<Type> thrownTypesToExclude,
-        String sourceReference,
-        Type sourceType) {
+
+    public AdderWrapper( Assignment decoratedAssignment, List<Type> thrownTypesToExclude ) {
         super( decoratedAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
-        this.sourceReference = sourceReference;
-        this.sourceType = sourceType;
     }
 
     @Override
@@ -61,25 +54,11 @@ public class AdderWrapper extends AssignmentWrapper {
         return result;
     }
 
-    public Type getSourceType() {
-        return sourceType;
-    }
-
-    @Override
-    public String getSourceReference() {
-        return sourceReference;
-    }
-
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>();
         imported.addAll( super.getImportTypes() );
-        imported.add( sourceType );
+        imported.add( getMatchingSourceType() );
         return imported;
     }
-
-    public String getIteratorReference() {
-        return getAssignment().getSourceReference();
-    }
-
 }
