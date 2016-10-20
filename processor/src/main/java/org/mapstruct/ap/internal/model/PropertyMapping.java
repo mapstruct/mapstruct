@@ -388,8 +388,9 @@ public class PropertyMapping extends ModelElement {
 
         private void useLocalVarWhenNested(Assignment rightHandSide) {
             if ( sourceReference.getPropertyEntries().size() > 1 ) {
-                String sourceTypeName = rightHandSide.getSourceType().getName();
-                String safeName = Strings.getSaveVariableName( sourceTypeName, existingVariableNames );
+                String name = first( sourceReference.getPropertyEntries() ).getName();
+                String safeName = Strings.getSaveVariableName( name, existingVariableNames );
+                existingVariableNames.add( safeName );
                 rightHandSide.setSourceLocalVarName( safeName );
             }
         }
