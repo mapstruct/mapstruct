@@ -375,7 +375,7 @@ public class PropertyMapping extends ModelElement {
                 else if ( result.getType() == TYPE_CONVERTED
                     || result.getType() == TYPE_CONVERTED_MAPPED
                     || result.getType() == MAPPED_TYPE_CONVERTED
-                    || (result.getType() == DIRECT && targetType.isPrimitive()) ) {
+                    || (result.getType() == DIRECT && targetType.isPrimitive() ) ) {
                     // for primitive types null check is not possible at all, but a conversion needs
                     // a null check.
                     result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
@@ -521,9 +521,18 @@ public class PropertyMapping extends ModelElement {
             if ( propertyEntries.isEmpty() ) {
                 return sourceParam.getType();
             }
+            else if ( propertyEntries.size() == 1 ) {
+                return last( propertyEntries ).getType();
+            }
             else {
-                PropertyEntry lastPropertyEntry = last( propertyEntries );
-                return lastPropertyEntry.getType();
+                Type sourceType = last( propertyEntries ).getType();
+                if ( sourceType.isPrimitive() && !targetType.isPrimitive() ) {
+                    // Handle null's. If the forged method needs to be mapped to an object, the forged method must be
+                    // able to return null. So in that case primitive types are mapped to their corresponding wrapped
+                    // type. The source type becomes the wrapped type in that case.
+                    sourceType = ctx.getTypeFactory().getWrappedType( sourceType );
+                }
+                return sourceType;
             }
         }
 
@@ -543,10 +552,9 @@ public class PropertyMapping extends ModelElement {
             }
             // nested property given as dot path
             else {
-                PropertyEntry lastPropertyEntry = last( propertyEntries );
-
                 // copy mapper configuration from the source method, its the same mapper
                 MapperConfiguration config = method.getMapperConfiguration();
+
 
                 // forge a method from the parameter type to the last entry type.
                 String forgedName = Strings.joinAndCamelize( sourceReference.getElementNames() );
@@ -554,7 +562,7 @@ public class PropertyMapping extends ModelElement {
                 ForgedMethod methodRef = new ForgedMethod(
                     forgedName,
                     sourceReference.getParameter().getType(),
-                    lastPropertyEntry.getType(),
+                    getSourceType(),
                     config,
                     method.getExecutable()
                 );

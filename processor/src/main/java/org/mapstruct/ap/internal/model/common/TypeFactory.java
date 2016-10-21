@@ -124,6 +124,15 @@ public class TypeFactory {
         return null != elementUtils.getTypeElement( canonicalName );
     }
 
+    public Type getWrappedType(Type type ) {
+        Type result = type;
+        if ( type.isPrimitive() ) {
+            PrimitiveType typeMirror = (PrimitiveType) type.getTypeMirror();
+            result = getType( typeUtils.boxedClass( typeMirror ) );
+        }
+        return result;
+    }
+
     public Type getType(TypeElement typeElement) {
         return getType( typeElement.asType() );
     }
