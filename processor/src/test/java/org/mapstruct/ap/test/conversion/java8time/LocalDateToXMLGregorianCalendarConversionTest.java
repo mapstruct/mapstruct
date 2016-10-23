@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._580;
+package org.mapstruct.ap.test.conversion.java8time;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,9 +28,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.bugs._580.java8.Source;
-import org.mapstruct.ap.test.bugs._580.java8.SourceTargetMapper;
-import org.mapstruct.ap.test.bugs._580.java8.Target;
+import org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalendarconversion.Source;
+import org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalendarconversion.SourceTargetMapper;
+import org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalendarconversion.Target;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -41,7 +41,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @IssueKey("580")
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 @RunWith(AnnotationProcessorTestRunner.class)
-public class Issue580Test {
+public class LocalDateToXMLGregorianCalendarConversionTest {
 
     @Test
     public void shouldNullCheckOnBuiltinAndConversion() {

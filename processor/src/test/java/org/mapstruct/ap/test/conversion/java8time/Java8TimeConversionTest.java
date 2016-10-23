@@ -35,7 +35,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
- *
+ * Tests for conversions to/from Java 8 date and time types.
  */
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })

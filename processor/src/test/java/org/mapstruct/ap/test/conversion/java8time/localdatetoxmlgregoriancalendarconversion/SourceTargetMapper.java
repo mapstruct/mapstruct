@@ -16,23 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._580.java8;
+package org.mapstruct.ap.test.conversion.java8time.localdatetoxmlgregoriancalendarconversion;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
  */
-public class Source {
-    private XMLGregorianCalendar date;
+@Mapper
+public interface SourceTargetMapper {
 
-    public XMLGregorianCalendar getDate() {
-        return date;
-    }
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    public void setDate(XMLGregorianCalendar date) {
-        this.date = date;
-    }
+    Target toTarget(Source source);
 
+    Source toSource(Target target);
 }
