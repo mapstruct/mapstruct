@@ -609,9 +609,11 @@ public interface CarMapper {
 
 * Between `java.time.ZonedDateTime`, `java.time.LocalDateTime`, `java.time.LocalDate`, `java.time.LocalTime` from Java 8 Date-Time package and `String`. A format string as understood by `java.text.SimpleDateFormat` can be specified via the `dateFormat` option (see above).
 
-* Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Date` where, when mapping a `ZonedDateTime` from a given `Date`, systems default timezone is used.
+* Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Date` where, when mapping a `ZonedDateTime` from a given `Date`, the system default timezone is used.
 
-* Between `java.time.LocalDateTime` from Java 8 Date-Time package and `java.util.Date` where. When converting a `LocalDateTime` from a given `Date`, systems default timezone is used. When mapping a `Date` to a `LocalDateTime` UTC is used as the timezone.
+* Between `java.time.LocalDateTime` from Java 8 Date-Time package and `java.util.Date` where timezone UTC is used as the timezone.
+
+* Between `java.time.LocalDate` from Java 8 Date-Time package and `java.util.Date` where timezone UTC is used as the timezone.
 
 * Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Calendar`.
 
