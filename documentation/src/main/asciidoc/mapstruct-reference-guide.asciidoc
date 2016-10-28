@@ -40,6 +40,8 @@ It comprises the following artifacts:
 * _org.mapstruct:mapstruct_: contains the required annotations such as `@Mapping`; On Java 8 or later, use _org.mapstruct:mapstruct-jdk8_ instead which takes advantage of language improvements introduced in Java 8
 * _org.mapstruct:mapstruct-processor_: contains the annotation processor which generates mapper implementations
 
+=== Using MapStruct with Maven
+
 For Maven based projects add the following to your POM file in order to use MapStruct:
 
 .Maven configuration
@@ -101,6 +103,10 @@ Alternatively, specify the following in the `properties` section of your POM fil
 Also make sure that your project is using Java 1.6 or later (project properties -> "Java Compiler" -> "Compile Compliance Level").
 It will not work with older versions.
 ====
+
+=== Using MapStruct with Gradle
+
+Add the following to your Gradle build file in order to enable MapStruct:
 
 .Gradle configuration
 ====
@@ -221,6 +227,18 @@ Supported values are:
 If a policy is given for a specific mapper via `@Mapper#unmappedTargetPolicy()`, the value from the annotation takes precedence.
 |`WARN`
 |===
+
+=== Using MapStruct on Java 9
+
+MapStruct can be used with Java 9, but as that Java version has not been finalized yet, support for it is experimental.
+
+A core theme of Java 9 is the modularization of the JDK. One effect of this that a specific module need to be enabled for a project in order to use the `javax.annotation.Generated` annotation. `@Generated` is added by MapStruct to generated mapper classes to tag them as generated code, stating the date of generation, the generator version etc.
+
+To allow usage of the `@Generated` annotation the module _java.annotations.common_ must be enabled. When using Maven, this can be done like this:
+
+    export MAVEN_OPTS="--add-modules java.annotations.common"
+
+If the `@Generated` annotation is not available, MapStruct will detect this situation and not add it to generated mappers.
 
 [[defining-mapper]]
 == Defining a mapper
