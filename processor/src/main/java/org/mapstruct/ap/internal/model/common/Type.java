@@ -414,10 +414,8 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable map of all write accessors indexed by property name
      */
     public Map<String, ExecutableElement> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
-
         // collect all candidate target accessors
-        List<ExecutableElement> candidates = new ArrayList<ExecutableElement>();
-        candidates.addAll( getSetters() );
+        List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
 
         Map<String, ExecutableElement> result = new LinkedHashMap<String, ExecutableElement>();
@@ -425,27 +423,27 @@ public class Type extends ModelElement implements Comparable<Type> {
         for ( ExecutableElement candidate : candidates ) {
             String targetPropertyName = Executables.getPropertyName( candidate );
 
+            ExecutableElement readAccessor = getPropertyReadAccessors().get( targetPropertyName );
+
+            Type preferredType = determinePreferredType( readAccessor );
+            Type targetType = determineTargetType( candidate );
+
             // A target access is in general a setter method on the target object. However, in case of collections,
             // the current target accessor can also be a getter method.
             // The following if block, checks if the target accessor should be overruled by an add method.
             if ( cmStrategy == CollectionMappingStrategyPrism.SETTER_PREFERRED
-                    || cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
+                || cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
 
                 // first check if there's a setter method.
                 ExecutableElement adderMethod = null;
-                if ( Executables.isSetterMethod( candidate ) ) {
-                    Type targetType = typeFactory.getSingleParameter( (DeclaredType) typeMirror, candidate ).getType();
+                if ( Executables.isSetterMethod( candidate )
                     // ok, the current accessor is a setter. So now the strategy determines what to use
-                    if ( cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
-                        adderMethod = getAdderForType( targetType, targetPropertyName );
-                    }
+                    && cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
+                    adderMethod = getAdderForType( targetType, targetPropertyName );
                 }
                 else if ( Executables.isGetterMethod( candidate ) ) {
-                        // the current accessor is a getter (no setter available). But still, an add method is according
+                    // the current accessor is a getter (no setter available). But still, an add method is according
                     // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
-                    Type targetType = typeFactory.getReturnType(
-                            typeFactory.getMethodType( (DeclaredType) typeMirror, candidate )
-                    );
                     adderMethod = getAdderForType( targetType, targetPropertyName );
                 }
                 if ( adderMethod != null ) {
@@ -454,9 +452,34 @@ public class Type extends ModelElement implements Comparable<Type> {
                 }
             }
 
-            result.put( targetPropertyName, candidate );
+            ExecutableElement previousCandidate = result.get( targetPropertyName );
+            if ( previousCandidate == null || preferredType == null || ( targetType != null
+                && typeUtils.isAssignable( preferredType.getTypeMirror(), targetType.getTypeMirror() ) ) ) {
+                result.put( targetPropertyName, candidate );
+            }
         }
+
         return result;
+    }
+
+    private Type determinePreferredType(ExecutableElement readAccessor) {
+        if ( readAccessor != null ) {
+            return typeFactory.getReturnType(
+                typeFactory.getMethodType( (DeclaredType) typeMirror, readAccessor ) );
+        }
+        return null;
+    }
+
+    private Type determineTargetType(ExecutableElement candidate) {
+        Parameter parameter = typeFactory.getSingleParameter( (DeclaredType) typeMirror, candidate );
+        if ( parameter != null ) {
+            return parameter.getType();
+        }
+        else if ( Executables.isGetterMethod( candidate ) ) {
+            return typeFactory.getReturnType(
+                typeFactory.getMethodType( (DeclaredType) typeMirror, candidate ) );
+        }
+        return null;
     }
 
     private List<ExecutableElement> getAllExecutables() {
