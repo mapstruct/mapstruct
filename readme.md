@@ -39,7 +39,9 @@ Compared to mapping frameworks working at runtime MapStruct offers the following
 * Fast execution by using plain method invocations instead of reflection
 * Compile-time type safety: Only objects and attributes mapping to each other can be mapped, no accidental mapping of an order entity into a customer DTO etc.
 * Self-contained code, no runtime dependencies
-* Clear error-reports at build time if mappings are incorrect and incomplete
+* Clear error-reports at build time if
+ * mappings are incomplete (not all target properties are mapped)
+ * mappings are incorrect (cannot find a proper mapping method or type conversion)
 * Mapping code is easy to debug (or edited by hand e.g. in case of a bug in the generator)
 
 ## Requirements
