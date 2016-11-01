@@ -604,6 +604,7 @@ public interface CarMapper {
 * Between `enum` types and `String`.
 
 * Between big number types (`java.math.BigInteger`, `java.math.BigDecimal`) and Java primitive types (including their wrappers) as well as String. A format string as understood by `java.text.DecimalFormat` can be specified.
+
 .Conversion from BigDecimal to String
 ====
 [source, java, linenums]
