@@ -1036,7 +1036,7 @@ public interface CarMapper {
 
 The generated implementation of the `integerSetToStringSet` performs the conversion from `Integer` to `String` for each element, while the generated `carsToCarDtos()` method invokes the `carToCarDto()` method for each contained element as shown in the following:
 
-. Generated collection mapping methods
+.Generated collection mapping methods
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
