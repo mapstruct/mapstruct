@@ -40,7 +40,7 @@ It comprises the following artifacts:
 * _org.mapstruct:mapstruct_: contains the required annotations such as `@Mapping`; On Java 8 or later, use _org.mapstruct:mapstruct-jdk8_ instead which takes advantage of language improvements introduced in Java 8
 * _org.mapstruct:mapstruct-processor_: contains the annotation processor which generates mapper implementations
 
-=== Using MapStruct with Maven
+=== Apache Maven
 
 For Maven based projects add the following to your POM file in order to use MapStruct:
 
@@ -104,7 +104,7 @@ Also make sure that your project is using Java 1.6 or later (project properties 
 It will not work with older versions.
 ====
 
-=== Using MapStruct with Gradle
+=== Gradle
 
 Add the following to your Gradle build file in order to enable MapStruct:
 
@@ -127,6 +127,32 @@ dependencies {
 ...
 ----
 ====
+
+You can find a complete example in the https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-on-gradle[mapstruct-examples] project on GitHub.
+
+
+=== Apache Ant
+
+Add the `javac` task configured as follows to your _build.xml_ file in order to enable MapStruct in your Ant-based project. Adjust the paths as required for your project layout.
+
+.Ant configuration
+====
+[source, xml, linenums]
+[subs="verbatim,attributes"]
+----
+...
+<javac
+    srcdir="src/main/java"
+    destdir="target/classes"
+    classpath="path/to/mapstruct-jdk8-{mapstructVersion}.jar">
+    <compilerarg line="-processorpath path/to/mapstruct-processor-{mapstructVersion}.jar"/>
+    <compilerarg line="-s target/generated-sources"/>
+</javac>
+...
+----
+====
+
+You can find a complete example in the https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-on-ant[mapstruct-examples] project on GitHub.
 
 [[configuration-options]]
 === Configuration options
