@@ -20,35 +20,34 @@ package org.mapstruct.ap.test.nestedbeans;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.nestedbeans.maps.AutoMapMapper;
+import org.mapstruct.ap.test.nestedbeans.maps.Bar;
+import org.mapstruct.ap.test.nestedbeans.maps.BarDto;
+import org.mapstruct.ap.test.nestedbeans.maps.Dto;
+import org.mapstruct.ap.test.nestedbeans.maps.Entity;
+import org.mapstruct.ap.test.nestedbeans.multiplecollections.Garage;
+import org.mapstruct.ap.test.nestedbeans.multiplecollections.GarageDto;
+import org.mapstruct.ap.test.nestedbeans.multiplecollections.MultipleListMapper;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-@WithClasses({
-    User.class, UserDto.class, Car.class, CarDto.class, House.class, HouseDto.class,
-    Wheel.class, WheelDto.class,
-    Roof.class, RoofDto.class,
-    UserDtoMapperClassic.class,
-    UserDtoMapperSmart.class
-})
 @RunWith(AnnotationProcessorTestRunner.class)
-public class NestedSimpleBeansMapping {
+public class TestMultipleForgedMethodsTest {
 
+    @WithClasses({
+        Bar.class, BarDto.class, Dto.class, Entity.class, AutoMapMapper.class
+    })
     @Test
-    public void shouldMapNestedBeans() {
-
-        User user = TestData.createUser();
-
-        UserDto classicMapping = UserDtoMapperClassic.INSTANCE.userToUserDto( user );
-        UserDto smartMapping = UserDtoMapperSmart.INSTANCE.userToUserDto( user );
-
-        System.out.println( smartMapping );
-        System.out.println( classicMapping );
-
-
-        assertThat( smartMapping ).isNotNull();
-        assertThat( smartMapping ).isEqualTo( classicMapping );
+    public void testNestedMapsAutoMap() {
+        AutoMapMapper.INSTANCE.entityToDto( new Dto() );
     }
+
+    @WithClasses( {MultipleListMapper.class, Garage.class, GarageDto.class, Car.class, CarDto.class,
+    Wheel.class, WheelDto.class})
+    @Test
+    public void testMultipleCollections() {
+        MultipleListMapper.INSTANCE.convert( new Garage() );
+    }
+
 
 }
