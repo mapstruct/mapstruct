@@ -64,11 +64,23 @@ For Maven-based projects add the following to your POM file in order to use MapS
     <org.mapstruct.version>1.0.0.Final</org.mapstruct.version>
 </properties>
 ...
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-bom</artifactId> <!-- BOM >= 1.1.0.CR1 -->
+            <version>${org.mapstruct.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+...
 <dependencies>
     <dependency>
         <groupId>org.mapstruct</groupId>
         <artifactId>mapstruct</artifactId> <!-- OR use this with Java 8 and beyond: <artifactId>mapstruct-jdk8</artifactId> -->
-        <version>${org.mapstruct.version}</version>
+        <version>${org.mapstruct.version}</version> <!-- Version tag not required if using BOM -->
     </dependency>
 </dependencies>
 ...
