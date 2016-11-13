@@ -78,6 +78,7 @@ public class UpdateWrapper extends AssignmentWrapper {
         imported.addAll( super.getImportTypes() );
         if ( targetImplementationType != null ) {
             imported.add( targetImplementationType );
+            imported.addAll( targetImplementationType.getTypeParameters() );
         }
         return imported;
     }
