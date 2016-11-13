@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.bugs._913;
 
+import java.util.HashSet;
+import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,6 +72,8 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain = new Domain();
+        domain.setLongs( new HashSet<Long>() );
+        domain.setStrings( new HashSet<String>() );
         DomainDtoWithNvmsNullMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
@@ -77,6 +81,7 @@ public class Issue913SetterMapperForCollectionsTest {
         assertThat( domain.getLongs() ).isNull();
 
     }
+
 
     /**
      * The null value mapping strategy on type level (Mapper) should generate forged methods for the
@@ -92,6 +97,8 @@ public class Issue913SetterMapperForCollectionsTest {
         Dto dto = new Dto();
         dto.setStringsInitialized( null );
         Domain domain = new Domain();
+        domain.setLongs( new HashSet<Long>() );
+        domain.setStrings( new HashSet<String>() );
         DomainDtoWithNvmsNullMapper.INSTANCE.update( dto, domain );
 
         assertThat( domain.getStringsInitialized() ).isNull();
@@ -112,6 +119,8 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain1 = new Domain();
+        domain1.setLongs( new HashSet<Long>() );
+        domain1.setStrings( new HashSet<String>() );
         Domain domain2 = DomainDtoWithNvmsNullMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
         doControlAsserts( domain1, domain2 );
@@ -151,11 +160,15 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain = new Domain();
+        Set<Long> longIn = new HashSet<Long>();
+        domain.setLongs( longIn );
+        domain.setStrings( new HashSet<String>() );
         DomainDtoWithNvmsDefaultMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
         assertThat( domain.getStrings() ).isNull();
         assertThat( domain.getLongs() ).isEmpty();
+        assertThat( domain.getLongs() ).isSameAs( longIn ); // make sure add all is used.
     }
 
     /**
@@ -172,6 +185,9 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain1 = new Domain();
+        Set<Long> longIn = new HashSet<Long>();
+        domain1.setLongs( longIn );
+        domain1.setStrings( new HashSet<String>() );
         Domain domain2 = DomainDtoWithNvmsDefaultMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
         doControlAsserts( domain1, domain2 );
@@ -180,6 +196,8 @@ public class Issue913SetterMapperForCollectionsTest {
         assertThat( domain1.getLongs() ).isEmpty();
         assertThat( domain2.getStrings() ).isNull();
         assertThat( domain2.getLongs() ).isEmpty();
+        assertThat( domain1.getLongs() ).isSameAs( longIn ); // make sure that add all is used
+        assertThat( domain2.getLongs() ).isSameAs( longIn ); // make sure that add all is used
     }
 
     /**
@@ -206,6 +224,8 @@ public class Issue913SetterMapperForCollectionsTest {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain = new Domain();
+        domain.setLongs( new HashSet<Long>() );
+        domain.setStrings( new HashSet<String>() );
         DomainDtoWithPresenceCheckMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
@@ -222,6 +242,8 @@ public class Issue913SetterMapperForCollectionsTest {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain1 = new Domain();
+        domain1.setLongs( new HashSet<Long>() );
+        domain1.setStrings( new HashSet<String>() );
         Domain domain2 = DomainDtoWithPresenceCheckMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
         doControlAsserts( domain1, domain2 );
