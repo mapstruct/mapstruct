@@ -47,7 +47,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @IssueKey( "913" )
 public class Issue913SetterMapperForCollectionsTest {
 
-     /**
+    /**
      * The null value mapping strategy on type level (Mapper) should generate forged methods for the
      * conversion from string to long that return null in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
@@ -82,7 +82,6 @@ public class Issue913SetterMapperForCollectionsTest {
         assertThat( domain.getLongs() ).isNull();
 
     }
-
 
     /**
      * The null value mapping strategy on type level (Mapper) should generate forged methods for the
@@ -131,7 +130,7 @@ public class Issue913SetterMapperForCollectionsTest {
         assertThat( domain2.getLongs() ).isNull();
     }
 
-   /**
+    /**
      * The null value mapping strategy on type level (Mapper) should generate forged methods for the
      * conversion from string to long that return default in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
@@ -321,9 +320,6 @@ public class Issue913SetterMapperForCollectionsTest {
         assertThat( domain2.getStrings() ).isEmpty();
         assertThat( domain2.getLongs() ).isEmpty();
     }
-
-
-
 
     /**
      * These assert check if non-null and default mapping is working as expected.

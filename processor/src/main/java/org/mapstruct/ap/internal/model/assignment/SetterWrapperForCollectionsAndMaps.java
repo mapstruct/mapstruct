@@ -18,10 +18,13 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
 
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
 
 /**
  * This wrapper handles the situation were an assignment is done via the setter.
@@ -37,38 +40,52 @@ import org.mapstruct.ap.internal.model.common.Type;
  */
 public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAndMaps {
 
-    private final Assignment newCollectionOrMapAssignment;
     private final boolean allwaysIncludeNullCheck;
+    private final Type targetType;
+    private final TypeFactory typeFactory;
 
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
-                                              Assignment newCollectionOrMapAssignment,
                                               List<Type> thrownTypesToExclude,
                                               String sourcePresenceChecker,
                                               Set<String> existingVariableNames,
                                               Type targetType,
-                                              boolean allwaysIncludeNullCheck ) {
+                                              boolean allwaysIncludeNullCheck,
+                                              TypeFactory typeFactory ) {
 
         super( decoratedAssignment, thrownTypesToExclude, sourcePresenceChecker, existingVariableNames, targetType );
-        this.newCollectionOrMapAssignment = newCollectionOrMapAssignment;
         this.allwaysIncludeNullCheck = allwaysIncludeNullCheck;
+        this.targetType = targetType;
+        this.typeFactory = typeFactory;
     }
 
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = super.getImportTypes();
-        if ( newCollectionOrMapAssignment != null ) {
-            imported.addAll( newCollectionOrMapAssignment.getImportTypes() );
+        if ( isDirectAssignment() ) {
+            if ( targetType.getImplementationType() != null ) {
+                imported.addAll( targetType.getImplementationType().getImportTypes() );
+            }
+            else {
+                imported.addAll( targetType.getImportTypes() );
+            }
+
+            if ( isEnumSet() ) {
+                imported.add( typeFactory.getType( EnumSet.class ) );
+            }
         }
         return imported;
-    }
-
-    public Assignment getNewCollectionOrMapAssignment() {
-        return newCollectionOrMapAssignment;
     }
 
     public boolean isAllwaysIncludeNullCheck() {
         return allwaysIncludeNullCheck;
     }
 
+    public boolean isDirectAssignment() {
+        return getType() == DIRECT;
+    }
+
+    public boolean isEnumSet() {
+        return "java.util.EnumSet".equals( targetType.getFullyQualifiedName() );
+    }
 
 }
