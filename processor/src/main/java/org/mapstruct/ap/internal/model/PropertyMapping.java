@@ -461,7 +461,8 @@ public class PropertyMapping extends ModelElement {
                         method.getThrownTypes(),
                         getSourcePresenceCheckerRef(),
                         existingVariableNames,
-                        targetType
+                        targetType,
+                        ALWAYS.equals( method.getMapperConfiguration().getNullValueCheckStrategy() )
                     );
                 }
 
