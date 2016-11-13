@@ -26,8 +26,7 @@
             ${ext.targetBeanName}.${ext.targetReadAccessorName}().clear();
             ${ext.targetBeanName}.${ext.targetReadAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
         </@lib.handleNullCheck>
-        <#if !ext.defaultValueAssignment??> <#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleNullCheck -->
-        else {
+        <#if !ext.defaultValueAssignment?? && !sourcePresenceChecker?? && !allwaysIncludeNullCheck>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleNullCheck -->
           ${ext.targetBeanName}.${ext.targetWriteAccessorName}( null );
         }
         </#if>

@@ -42,6 +42,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     DomainDtoWithNvmsNullMapper.class,
     DomainDtoWithNvmsDefaultMapper.class,
     DomainDtoWithPresenceCheckMapper.class,
+    DomainDtoWithNcvsAlwaysMapper.class,
     Helper.class})
 @IssueKey( "913" )
 public class Issue913SetterMapperForCollectionsTest {
@@ -201,7 +202,7 @@ public class Issue913SetterMapperForCollectionsTest {
     }
 
     /**
-     * Test create method ICW presence checker
+     * Test create method ICW presence checker. The presence checker is responsible for the null check.
      *
      */
     @Test
@@ -218,7 +219,10 @@ public class Issue913SetterMapperForCollectionsTest {
     /**
      * Test update method ICW presence checker
      *
+     * Similar as in regular mappings, the target property should be left as-is.
+     *
      */
+    @IssueKey( "#954")
     @Test
     public void shouldReturnNullForUpdateWithPresenceChecker() {
 
@@ -229,14 +233,17 @@ public class Issue913SetterMapperForCollectionsTest {
         DomainDtoWithPresenceCheckMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
-        assertThat( domain.getStrings() ).isNull();
-        assertThat( domain.getLongs() ).isNull();
+        assertThat( domain.getStrings() ).isEmpty();
+        assertThat( domain.getLongs() ).isEmpty();
     }
 
     /**
      * Test update with return method ICW presence checker
      *
+     * Similar as in regular mappings, the target property should be left as-is.
+     *
      */
+    @IssueKey( "#954")
     @Test
     public void shouldReturnNullForUpdateWithReturnWithPresenceChecker() {
 
@@ -248,11 +255,73 @@ public class Issue913SetterMapperForCollectionsTest {
 
         doControlAsserts( domain1, domain2 );
         assertThat( domain1.getLongs() ).isEqualTo( domain2.getLongs() );
-        assertThat( domain1.getStrings() ).isNull();
-        assertThat( domain1.getLongs() ).isNull();
-        assertThat( domain2.getStrings() ).isNull();
-        assertThat( domain2.getLongs() ).isNull();
+        assertThat( domain1.getStrings() ).isEmpty();
+        assertThat( domain1.getLongs() ).isEmpty();
+        assertThat( domain2.getStrings() ).isEmpty();
+        assertThat( domain2.getLongs() ).isEmpty();
     }
+
+    /**
+     * Test create method ICW NullValueCheckStrategy.ALWAYS.
+     *
+     */
+    @IssueKey( "#954")
+    @Test
+    public void shouldReturnNullForCreateWithNcvsAlways() {
+
+        DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
+        Domain domain = DomainDtoWithNcvsAlwaysMapper.INSTANCE.create( dto );
+
+        doControlAsserts( domain );
+        assertThat( domain.getStrings() ).isNull();
+        assertThat( domain.getLongs() ).isNull();
+    }
+
+    /**
+     * Test update method ICW presence checker
+     *
+     * Similar as in regular mappings, the target property should be left as-is.
+     *
+     */
+    @IssueKey( "#954")
+    @Test
+    public void shouldReturnNullForUpdateWithNcvsAlways() {
+
+        DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
+        Domain domain = new Domain();
+        domain.setLongs( new HashSet<Long>() );
+        domain.setStrings( new HashSet<String>() );
+        DomainDtoWithNcvsAlwaysMapper.INSTANCE.update( dto, domain );
+
+        doControlAsserts( domain );
+        assertThat( domain.getStrings() ).isEmpty();
+        assertThat( domain.getLongs() ).isEmpty();
+    }
+
+    /**
+     * Test update with return method ICW presence checker
+     *
+     * Similar as in regular mappings, the target property should be left as-is.
+     *
+     */
+    @IssueKey( "#954")
+    @Test
+    public void shouldReturnNullForUpdateWithReturnWithNcvsAlways() {
+
+        DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
+        Domain domain1 = new Domain();
+        domain1.setLongs( new HashSet<Long>() );
+        domain1.setStrings( new HashSet<String>() );
+        Domain domain2 = DomainDtoWithNcvsAlwaysMapper.INSTANCE.updateWithReturn( dto, domain1 );
+
+        doControlAsserts( domain1, domain2 );
+        assertThat( domain1.getLongs() ).isEqualTo( domain2.getLongs() );
+        assertThat( domain1.getStrings() ).isEmpty();
+        assertThat( domain1.getLongs() ).isEmpty();
+        assertThat( domain2.getStrings() ).isEmpty();
+        assertThat( domain2.getLongs() ).isEmpty();
+    }
+
 
 
 

@@ -38,16 +38,19 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAndMaps {
 
     private final Assignment newCollectionOrMapAssignment;
+    private final boolean allwaysIncludeNullCheck;
 
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
                                               Assignment newCollectionOrMapAssignment,
                                               List<Type> thrownTypesToExclude,
                                               String sourcePresenceChecker,
                                               Set<String> existingVariableNames,
-                                              Type targetType ) {
+                                              Type targetType,
+                                              boolean allwaysIncludeNullCheck ) {
 
         super( decoratedAssignment, thrownTypesToExclude, sourcePresenceChecker, existingVariableNames, targetType );
         this.newCollectionOrMapAssignment = newCollectionOrMapAssignment;
+        this.allwaysIncludeNullCheck = allwaysIncludeNullCheck;
     }
 
     @Override
@@ -61,6 +64,10 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
 
     public Assignment getNewCollectionOrMapAssignment() {
         return newCollectionOrMapAssignment;
+    }
+
+    public boolean isAllwaysIncludeNullCheck() {
+        return allwaysIncludeNullCheck;
     }
 
 
