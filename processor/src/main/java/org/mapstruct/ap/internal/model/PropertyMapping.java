@@ -35,9 +35,7 @@ import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
-import org.mapstruct.ap.internal.model.assignment.EnumSetCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
-import org.mapstruct.ap.internal.model.assignment.NewCollectionOrMapWrapper;
 import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
@@ -419,52 +417,30 @@ public class PropertyMapping extends ModelElement {
 
             Assignment result = rhs;
 
-            // wrap the setter in the collection / map initializers
             if ( targetAccessorType == TargetWriteAccessorType.SETTER ) {
 
-                // wrap the assignment in a new Map or Collection implementation if this is not done in a
-                // mapping method. Note, typeconversons do not apply to collections or maps
-                Assignment newCollectionOrMap = null;
-                if ( result.getType() == DIRECT ) {
-                    Set<Type> implementationTypes;
-                    if ( targetType.getImplementationType() != null ) {
-                        implementationTypes = targetType.getImplementationType().getImportTypes();
-                    }
-                    else {
-                        implementationTypes = targetType.getImportTypes();
-                    }
-
-                    if ( "java.util.EnumSet".equals( targetType.getFullyQualifiedName() ) ) {
-                        newCollectionOrMap = new EnumSetCopyWrapper( ctx.getTypeFactory(), result );
-                    }
-                    else {
-                        newCollectionOrMap = new NewCollectionOrMapWrapper( result, implementationTypes );
-                    }
-
-                    newCollectionOrMap = new SetterWrapper( newCollectionOrMap, method.getThrownTypes() );
-                }
                 if ( result.isUpdateMethod() ) {
+                    // call to an update method
                     if ( targetReadAccessor == null ) {
                         ctx.getMessager().printMessage( method.getExecutable(),
                             Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                             targetPropertyName );
                     }
                     Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
-                    result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod,
-                        targetType );
+                    result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod, targetType );
                 }
                 else {
                     // target accessor is setter, so wrap the setter in setter map/ collection handling
                     result = new SetterWrapperForCollectionsAndMaps(
                         result,
-                        newCollectionOrMap,
                         method.getThrownTypes(),
                         getSourcePresenceCheckerRef(),
                         existingVariableNames,
-                        targetType
+                        targetType,
+                        ALWAYS == method.getMapperConfiguration().getNullValueCheckStrategy(),
+                        ctx.getTypeFactory()
                     );
                 }
-
             }
             else {
                 // target accessor is getter, so wrap the setter in getter map/ collection handling

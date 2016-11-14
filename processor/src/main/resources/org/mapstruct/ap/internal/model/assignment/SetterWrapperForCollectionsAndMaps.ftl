@@ -20,43 +20,43 @@
 -->
 <#import "../macro/CommonMacros.ftl" as lib>
 <@lib.handleExceptions>
-<#if ( ext.existingInstanceMapping ) >
+  <#if ext.existingInstanceMapping>
     if ( ${ext.targetBeanName}.${ext.targetReadAccessorName}() != null ) {
         <@lib.handleNullCheck>
             ${ext.targetBeanName}.${ext.targetReadAccessorName}().clear();
             ${ext.targetBeanName}.${ext.targetReadAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
         </@lib.handleNullCheck>
-        <#if !ext.defaultValueAssignment??> <#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleNullCheck -->
-        else {
+        <#if !ext.defaultValueAssignment?? && !sourcePresenceChecker?? && !allwaysIncludeNullCheck>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleNullCheck -->
           ${ext.targetBeanName}.${ext.targetWriteAccessorName}( null );
         }
         </#if>
         }
     else {
-        <@lib.handleNullCheck>
-          <#if newCollectionOrMapAssignment??>
-             <@_newCollectionOrMapAssignment/>
-          <#else>
-             ${ext.targetBeanName}.${ext.targetWriteAccessorName}( ${localVarName} );
-          </#if>
-        </@lib.handleNullCheck>
+      <@callTargetWriteAccessor/>
     }
-<#else>
-      <@lib.handleNullCheck>
-        <#if newCollectionOrMapAssignment??>
-          <@_newCollectionOrMapAssignment/>
-        <#else>
-          ${ext.targetBeanName}.${ext.targetWriteAccessorName}( ${localVarName} );
-        </#if>
-      </@lib.handleNullCheck>
-</#if>
+  <#else>
+    <@callTargetWriteAccessor/>
+  </#if>
 </@lib.handleExceptions>
-
-<#macro _newCollectionOrMapAssignment>
-    <@includeModel object=newCollectionOrMapAssignment
-            targetBeanName=ext.targetBeanName
-            existingInstanceMapping=ext.existingInstanceMapping
-            targetReadAccessorName=ext.targetReadAccessorName
-            targetWriteAccessorName=ext.targetWriteAccessorName
-            targetType=ext.targetType/>
+<#--
+  assigns the target via the regular target write accessor (usually the setter)
+-->
+<#macro callTargetWriteAccessor>
+    <@lib.handleNullCheck>
+      <#if directAssignment>
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@wrapLocalVarInCollectionInitializer/> );
+    <#else>
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( ${localVarName} );
+    </#if>
+  </@lib.handleNullCheck>
+</#macro>
+<#--
+  wraps the local variable in a collection initializer (new collection, or EnumSet.copyOf)
+-->
+<#macro wrapLocalVarInCollectionInitializer>
+    <#if enumSet>
+      EnumSet.copyOf( ${localVarName} )
+    <#else>
+      new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>( ${localVarName} )
+    </#if>
 </#macro>

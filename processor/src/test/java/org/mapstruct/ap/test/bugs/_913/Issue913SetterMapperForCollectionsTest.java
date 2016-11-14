@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.bugs._913;
 
+import java.util.HashSet;
+import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,11 +42,12 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     DomainDtoWithNvmsNullMapper.class,
     DomainDtoWithNvmsDefaultMapper.class,
     DomainDtoWithPresenceCheckMapper.class,
+    DomainDtoWithNcvsAlwaysMapper.class,
     Helper.class})
 @IssueKey( "913" )
 public class Issue913SetterMapperForCollectionsTest {
 
-     /**
+    /**
      * The null value mapping strategy on type level (Mapper) should generate forged methods for the
      * conversion from string to long that return null in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
@@ -70,6 +73,8 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain = new Domain();
+        domain.setLongs( new HashSet<Long>() );
+        domain.setStrings( new HashSet<String>() );
         DomainDtoWithNvmsNullMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
@@ -92,6 +97,8 @@ public class Issue913SetterMapperForCollectionsTest {
         Dto dto = new Dto();
         dto.setStringsInitialized( null );
         Domain domain = new Domain();
+        domain.setLongs( new HashSet<Long>() );
+        domain.setStrings( new HashSet<String>() );
         DomainDtoWithNvmsNullMapper.INSTANCE.update( dto, domain );
 
         assertThat( domain.getStringsInitialized() ).isNull();
@@ -112,6 +119,8 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain1 = new Domain();
+        domain1.setLongs( new HashSet<Long>() );
+        domain1.setStrings( new HashSet<String>() );
         Domain domain2 = DomainDtoWithNvmsNullMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
         doControlAsserts( domain1, domain2 );
@@ -121,7 +130,7 @@ public class Issue913SetterMapperForCollectionsTest {
         assertThat( domain2.getLongs() ).isNull();
     }
 
-   /**
+    /**
      * The null value mapping strategy on type level (Mapper) should generate forged methods for the
      * conversion from string to long that return default in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
@@ -151,11 +160,15 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain = new Domain();
+        Set<Long> longIn = new HashSet<Long>();
+        domain.setLongs( longIn );
+        domain.setStrings( new HashSet<String>() );
         DomainDtoWithNvmsDefaultMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
         assertThat( domain.getStrings() ).isNull();
         assertThat( domain.getLongs() ).isEmpty();
+        assertThat( domain.getLongs() ).isSameAs( longIn ); // make sure add all is used.
     }
 
     /**
@@ -172,6 +185,9 @@ public class Issue913SetterMapperForCollectionsTest {
 
         Dto dto = new Dto();
         Domain domain1 = new Domain();
+        Set<Long> longIn = new HashSet<Long>();
+        domain1.setLongs( longIn );
+        domain1.setStrings( new HashSet<String>() );
         Domain domain2 = DomainDtoWithNvmsDefaultMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
         doControlAsserts( domain1, domain2 );
@@ -180,10 +196,12 @@ public class Issue913SetterMapperForCollectionsTest {
         assertThat( domain1.getLongs() ).isEmpty();
         assertThat( domain2.getStrings() ).isNull();
         assertThat( domain2.getLongs() ).isEmpty();
+        assertThat( domain1.getLongs() ).isSameAs( longIn ); // make sure that add all is used
+        assertThat( domain2.getLongs() ).isSameAs( longIn ); // make sure that add all is used
     }
 
     /**
-     * Test create method ICW presence checker
+     * Test create method ICW presence checker. The presence checker is responsible for the null check.
      *
      */
     @Test
@@ -200,13 +218,58 @@ public class Issue913SetterMapperForCollectionsTest {
     /**
      * Test update method ICW presence checker
      *
+     * Similar as in regular mappings, the target property should be left as-is.
+     *
      */
+    @IssueKey( "#954")
     @Test
     public void shouldReturnNullForUpdateWithPresenceChecker() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain = new Domain();
+        domain.setLongs( new HashSet<Long>() );
+        domain.setStrings( new HashSet<String>() );
         DomainDtoWithPresenceCheckMapper.INSTANCE.update( dto, domain );
+
+        doControlAsserts( domain );
+        assertThat( domain.getStrings() ).isEmpty();
+        assertThat( domain.getLongs() ).isEmpty();
+    }
+
+    /**
+     * Test update with return method ICW presence checker
+     *
+     * Similar as in regular mappings, the target property should be left as-is.
+     *
+     */
+    @IssueKey( "#954")
+    @Test
+    public void shouldReturnNullForUpdateWithReturnWithPresenceChecker() {
+
+        DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
+        Domain domain1 = new Domain();
+        domain1.setLongs( new HashSet<Long>() );
+        domain1.setStrings( new HashSet<String>() );
+        Domain domain2 = DomainDtoWithPresenceCheckMapper.INSTANCE.updateWithReturn( dto, domain1 );
+
+        doControlAsserts( domain1, domain2 );
+        assertThat( domain1.getLongs() ).isEqualTo( domain2.getLongs() );
+        assertThat( domain1.getStrings() ).isEmpty();
+        assertThat( domain1.getLongs() ).isEmpty();
+        assertThat( domain2.getStrings() ).isEmpty();
+        assertThat( domain2.getLongs() ).isEmpty();
+    }
+
+    /**
+     * Test create method ICW NullValueCheckStrategy.ALWAYS.
+     *
+     */
+    @IssueKey( "#954")
+    @Test
+    public void shouldReturnNullForCreateWithNcvsAlways() {
+
+        DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
+        Domain domain = DomainDtoWithNcvsAlwaysMapper.INSTANCE.create( dto );
 
         doControlAsserts( domain );
         assertThat( domain.getStrings() ).isNull();
@@ -214,25 +277,49 @@ public class Issue913SetterMapperForCollectionsTest {
     }
 
     /**
-     * Test update with return method ICW presence checker
+     * Test update method ICW presence checker
+     *
+     * Similar as in regular mappings, the target property should be left as-is.
      *
      */
+    @IssueKey( "#954")
     @Test
-    public void shouldReturnNullForUpdateWithReturnWithPresenceChecker() {
+    public void shouldReturnNullForUpdateWithNcvsAlways() {
+
+        DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
+        Domain domain = new Domain();
+        domain.setLongs( new HashSet<Long>() );
+        domain.setStrings( new HashSet<String>() );
+        DomainDtoWithNcvsAlwaysMapper.INSTANCE.update( dto, domain );
+
+        doControlAsserts( domain );
+        assertThat( domain.getStrings() ).isEmpty();
+        assertThat( domain.getLongs() ).isEmpty();
+    }
+
+    /**
+     * Test update with return method ICW presence checker
+     *
+     * Similar as in regular mappings, the target property should be left as-is.
+     *
+     */
+    @IssueKey( "#954")
+    @Test
+    public void shouldReturnNullForUpdateWithReturnWithNcvsAlways() {
 
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain1 = new Domain();
-        Domain domain2 = DomainDtoWithPresenceCheckMapper.INSTANCE.updateWithReturn( dto, domain1 );
+        domain1.setLongs( new HashSet<Long>() );
+        domain1.setStrings( new HashSet<String>() );
+        Domain domain2 = DomainDtoWithNcvsAlwaysMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
         doControlAsserts( domain1, domain2 );
         assertThat( domain1.getLongs() ).isEqualTo( domain2.getLongs() );
-        assertThat( domain1.getStrings() ).isNull();
-        assertThat( domain1.getLongs() ).isNull();
-        assertThat( domain2.getStrings() ).isNull();
-        assertThat( domain2.getLongs() ).isNull();
+        assertThat( domain1.getStrings() ).isEmpty();
+        assertThat( domain1.getLongs() ).isEmpty();
+        assertThat( domain2.getStrings() ).isEmpty();
+        assertThat( domain2.getLongs() ).isEmpty();
     }
-
-
 
     /**
      * These assert check if non-null and default mapping is working as expected.
