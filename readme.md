@@ -1,6 +1,6 @@
 # MapStruct - Java bean mappings, the easy way!
 
-[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.0.0.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
+[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.1.0.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
 [![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=2592000&label=Latest%20Release)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct)
 
 * [What is MapStruct?](#what-is-mapstruct)
@@ -61,7 +61,7 @@ For Maven-based projects add the following to your POM file in order to use MapS
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>1.0.0.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.1.0.Final</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
@@ -106,9 +106,9 @@ plugins {
 }
 dependencies {
     ...
-    compile 'org.mapstruct:mapstruct:1.0.0.Final' // OR use this with Java 8 and beyond: org.mapstruct:mapstruct-jdk8:...
+    compile 'org.mapstruct:mapstruct:1.1.0.Final' // OR use this with Java 8 and beyond: org.mapstruct:mapstruct-jdk8:...
 
-    apt 'org.mapstruct:mapstruct-processor:1.0.0.Final'
+    apt 'org.mapstruct:mapstruct-processor:1.1.0.Final'
 }
 ...
 ```
