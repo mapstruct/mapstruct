@@ -1,7 +1,7 @@
 # MapStruct - Java bean mappings, the easy way!
 
 [![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.1.0.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
-[![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=2592000&label=Latest%20Release)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct)
+[![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct)
 
 * [What is MapStruct?](#what-is-mapstruct)
 * [Requirements](#requirements)
