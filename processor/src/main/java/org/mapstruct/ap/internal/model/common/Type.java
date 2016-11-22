@@ -84,6 +84,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isMapType;
     private final boolean isImported;
     private final boolean isVoid;
+    private final boolean isStream;
 
     private final List<String> enumConstants;
 
@@ -105,7 +106,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 List<Type> typeParameters, Type implementationType, Type componentType,
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
-                boolean isCollectionType, boolean isMapType, boolean isImported) {
+                boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
@@ -126,6 +127,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isIterableType = isIterableType;
         this.isCollectionType = isCollectionType;
         this.isMapType = isMapType;
+        this.isStream = isStreamType;
         this.isImported = isImported;
         this.isVoid = typeMirror.getKind() == TypeKind.VOID;
 
@@ -215,6 +217,15 @@ public class Type extends ModelElement implements Comparable<Type> {
         return isIterableType || isArrayType();
     }
 
+    /**
+     * Whether this type is a sub-type of{@link Iterable}, {@link java.util.stream.Stream} or an array type
+     *
+     * @return {@code true} if this type is a sub-type of{@link Iterable}, {@link java.util.stream.Stream} or
+     * an array type, {@code false} otherwise
+     */
+    public boolean isIterableOrStreamType() {
+        return isIterableType() || isStreamType();
+    }
     public boolean isCollectionType() {
         return isCollectionType;
     }
@@ -233,6 +244,15 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isTypeVar() {
         return (typeMirror.getKind() == TypeKind.TYPEVAR);
+    }
+
+    /**
+     * Whether this type is a sub-type of {@link java.util.stream.Stream}.
+     *
+     * @return {@code true} it this type is a sub-type of {@link java.util.stream.Stream}, {@code false otherwise}
+     */
+    public boolean isStreamType() {
+        return isStream;
     }
 
     public boolean isWildCardSuperBound() {
@@ -334,6 +354,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             isIterableType,
             isCollectionType,
             isMapType,
+            isStream,
             isImported
         );
     }
@@ -840,14 +861,27 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return a list of type arguments or null, if superclass was not found
      */
     public List<Type> determineTypeArguments(Class<?> superclass) {
-        if ( qualifiedName.equals( superclass.getName() ) ) {
+        return determineTypeArguments( superclass.getName() );
+    }
+
+    /**
+     * Searches for the given superclass and collects all type arguments for the given className.
+     * This is used for support with Java 8 streams, as must use the FQN in order to be able to compile
+     * with Java 6.
+     *
+     * @param superClassName the superclass or interface the generic type arguments are searched for
+     * @return a list of type arguments or null, if superclass was not found
+     */
+
+    public List<Type> determineTypeArguments(String superClassName) {
+        if ( qualifiedName.equals( superClassName ) ) {
             return getTypeParameters();
         }
 
         List<? extends TypeMirror> directSupertypes = typeUtils.directSupertypes( typeMirror );
         for ( TypeMirror supertypemirror : directSupertypes ) {
             Type supertype = typeFactory.getType( supertypemirror );
-            List<Type> supertypeTypeArguments = supertype.determineTypeArguments( superclass );
+            List<Type> supertypeTypeArguments = supertype.determineTypeArguments( superClassName );
             if ( supertypeTypeArguments != null ) {
                 return supertypeTypeArguments;
             }

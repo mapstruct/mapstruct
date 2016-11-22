@@ -81,6 +81,7 @@ public class SourceMethod implements Method {
     private Boolean isValueMapping;
     private Boolean isIterableMapping;
     private Boolean isMapMapping;
+    private Boolean isStreamMapping;
 
     public static class Builder {
 
@@ -376,6 +377,16 @@ public class SourceMethod implements Method {
         return isIterableMapping;
     }
 
+    public boolean isStreamMapping() {
+        if ( isStreamMapping == null ) {
+            isStreamMapping = getSourceParameters().size() == 1
+                && ( first( getSourceParameters() ).getType().isIterableType() && getResultType().isStreamType()
+                    || first( getSourceParameters() ).getType().isStreamType() && getResultType().isIterableType()
+                    || first( getSourceParameters() ).getType().isStreamType() && getResultType().isStreamType() );
+        }
+        return isStreamMapping;
+    }
+
     public boolean isMapMapping() {
         if ( isMapMapping == null ) {
             isMapMapping = getSourceParameters().size() == 1
@@ -399,7 +410,8 @@ public class SourceMethod implements Method {
             isBeanMapping = !isIterableMapping()
                 && !isMapMapping()
                 && !isEnumMapping()
-                && !isValueMapping();
+                && !isValueMapping()
+                && !isStreamMapping();
         }
         return isBeanMapping;
     }
