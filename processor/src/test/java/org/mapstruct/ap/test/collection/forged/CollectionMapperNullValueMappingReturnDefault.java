@@ -29,5 +29,6 @@ public interface CollectionMapperNullValueMappingReturnDefault {
         Mappers.getMapper( CollectionMapperNullValueMappingReturnDefault.class );
 
     Target sourceToTarget( Source source );
+
     Source targetToSource( Target target );
 }

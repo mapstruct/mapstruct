@@ -29,7 +29,6 @@ public class MapSource {
     private Map<Integer, String> integersSortedMap;
     private Map<Integer, String> integersBaseMap;
 
-
     public Map<Integer, String> getIntegersSortedMap() {
         return integersSortedMap;
     }

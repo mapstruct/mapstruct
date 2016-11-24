@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.conversion.java8time;
 
 import java.util.Calendar;
 import java.util.Date;
+
 /**
  *
  */

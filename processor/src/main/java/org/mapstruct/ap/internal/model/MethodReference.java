@@ -61,7 +61,6 @@ public class MethodReference extends MappingMethod implements Assignment {
      */
     private Assignment assignment;
 
-
     private final Type definingType;
 
     /**

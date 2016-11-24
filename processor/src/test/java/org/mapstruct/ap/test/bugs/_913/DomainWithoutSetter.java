@@ -54,6 +54,4 @@ public class DomainWithoutSetter {
     public List<String> getStringsWithDefault() {
         return stringsWithDefault;
     }
-
-
 }

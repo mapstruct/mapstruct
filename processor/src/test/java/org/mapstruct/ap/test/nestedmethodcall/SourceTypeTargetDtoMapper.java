@@ -32,6 +32,6 @@ public interface SourceTypeTargetDtoMapper {
 
     @Mapping(source = "date", target = "date", dateFormat = "dd.MM.yyyy")
     TargetDto sourceToTarget(SourceType source);
-    SourceType targetToSource( TargetDto source );
 
+    SourceType targetToSource( TargetDto source );
 }

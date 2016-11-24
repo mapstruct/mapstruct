@@ -24,7 +24,6 @@ public class Scientist {
     private String[] publications;
     private String[] publicationYears;
 
-
     public Scientist(String name) {
         this.name = name;
     }

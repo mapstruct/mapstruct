@@ -50,7 +50,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class InheritanceSelectionTest {
 
-
     @Test
     @WithClasses( { ConflictingFruitFactory.class, ErroneousFruitMapper.class, Banana.class } )
     @ExpectedCompilationOutcome(

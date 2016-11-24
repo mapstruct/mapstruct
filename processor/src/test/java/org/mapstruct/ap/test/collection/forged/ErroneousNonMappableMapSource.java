@@ -31,6 +31,4 @@ public class ErroneousNonMappableMapSource {
     public void setNonMappableMap(Map<Foo, Foo> nonMappableMap) {
         this.nonMappableMap = nonMappableMap;
     }
-
-
 }

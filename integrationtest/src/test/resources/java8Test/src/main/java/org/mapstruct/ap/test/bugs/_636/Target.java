@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.bugs._636;
 
-
 public class Target {
     private Foo foo;
     private Bar bar;

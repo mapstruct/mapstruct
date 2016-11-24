@@ -122,7 +122,6 @@ public class QualifierTest {
     public void shouldNotProduceMatchingMethod() {
     }
 
-
     @Test
     @WithClasses( {
         MapperWithoutQualifiedBy.class,

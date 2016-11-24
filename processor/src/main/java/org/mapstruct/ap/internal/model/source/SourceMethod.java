@@ -210,7 +210,6 @@ public class SourceMethod implements Method {
             }
             return sourceMethod;
         }
-
     }
 
     @SuppressWarnings( "checkstyle:parameternumber" )

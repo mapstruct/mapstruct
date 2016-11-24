@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.prism;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 import org.junit.Test;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ap.internal.prism.MappingConstantsPrism;
@@ -38,5 +37,4 @@ public class ConstantTest {
         assertThat( MappingConstants.ANY_UNMAPPED ).isEqualTo( MappingConstantsPrism.ANY_UNMAPPED );
         assertThat( MappingConstants.NULL ).isEqualTo( MappingConstantsPrism.NULL );
     }
-
 }

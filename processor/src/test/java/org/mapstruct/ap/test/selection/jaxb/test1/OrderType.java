@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.mapstruct.ap.test.selection.jaxb.test2.OrderShippingDetailsType;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "OrderType", propOrder = {
     "orderNumber1",

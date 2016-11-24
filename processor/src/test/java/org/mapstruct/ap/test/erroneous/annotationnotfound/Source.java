@@ -33,7 +33,4 @@ public class Source {
     public void setFoo( Integer foo ) {
         this.foo = foo;
     }
-
-
-
 }

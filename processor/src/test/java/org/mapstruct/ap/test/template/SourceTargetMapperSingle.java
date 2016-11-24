@@ -42,8 +42,6 @@ public interface SourceTargetMapperSingle {
     })
     Target forwardCreate(Source s1);
 
-
     @InheritConfiguration
     void forwardUpdate(Source source, @MappingTarget Target target);
-
 }

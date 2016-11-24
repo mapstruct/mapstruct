@@ -42,6 +42,4 @@ public interface Issue374VoidMapper {
     void mapIterable(List<String> source, @MappingTarget List<String> target);
 
     void mapMap(Map<Integer, String> source, @MappingTarget Map<Integer, String> target);
-
-
 }

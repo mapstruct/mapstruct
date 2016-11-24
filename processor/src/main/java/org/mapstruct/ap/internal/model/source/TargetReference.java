@@ -29,10 +29,9 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-
-import org.mapstruct.ap.internal.util.Executables;
 
 /**
  * This class describes the target side of a property mapping.
@@ -181,7 +180,6 @@ public class TargetReference {
                 msg, objects );
         }
     }
-
 
     private TargetReference(Parameter sourceParameter, List<PropertyEntry> sourcePropertyEntries, boolean isValid) {
         this.parameter = sourceParameter;

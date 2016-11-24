@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.inheritance.complex;
 
-
 public class AdditionalMappingHelper {
 
     public Reference asReference(SourceBase source) {

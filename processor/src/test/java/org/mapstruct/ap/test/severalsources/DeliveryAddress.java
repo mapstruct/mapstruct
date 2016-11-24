@@ -90,7 +90,6 @@ public class DeliveryAddress {
         this.houseNumber = houseNumber;
     }
 
-
     public String getDescription() {
         return description;
     }

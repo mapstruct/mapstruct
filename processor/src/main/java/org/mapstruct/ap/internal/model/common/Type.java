@@ -93,7 +93,6 @@ public class Type extends ModelElement implements Comparable<Type> {
     private List<ExecutableElement> adders = null;
     private List<ExecutableElement> alternativeTargetAccessors = null;
 
-
     private Type boundingBase = null;
 
     private Boolean hasEmptyAccessibleContructor;
@@ -251,7 +250,6 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         return result;
     }
-
 
     public String getFullyQualifiedName() {
         return qualifiedName;
@@ -795,7 +793,6 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         return boundingBase;
     }
-
 
     public boolean hasEmptyAccessibleContructor() {
 

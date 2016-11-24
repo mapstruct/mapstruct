@@ -28,6 +28,4 @@ public class Car {
     public void setHorsepower(int horsepower) {
         this.horsepower = horsepower;
     }
-
-
 }

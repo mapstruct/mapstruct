@@ -636,11 +636,9 @@ public class BeanMappingMethod extends MappingMethod {
         return sourceParameters;
     }
 
-
     public MethodReference getFactoryMethod() {
         return this.factoryMethod;
     }
-
 
     private static class NestedTargetObjects  {
 
@@ -648,7 +646,6 @@ public class BeanMappingMethod extends MappingMethod {
         private final Set<NestedLocalVariableAssignment> nestedAssignments;
         // local variable names indexed by fullname
         private final Map<String, String> localVariableNames;
-
 
         private Set<Type> getImportTypes() {
             Set<Type> importedTypes = new HashSet<Type>();
@@ -684,8 +681,8 @@ public class BeanMappingMethod extends MappingMethod {
                 this.method = method;
                 return this;
             }
-            private NestedTargetObjects build() {
 
+            private NestedTargetObjects build() {
 
                 Map<String, PropertyEntry> uniquePropertyEntries = new HashMap<String, PropertyEntry>();
                 Map<String, String> localVariableNames = new HashMap<String, String>();

@@ -37,7 +37,6 @@ public class ObjectFactory {
     public static final QName ORDER_TYPE_SHIPPING_DETAILS_QNAME =
         new QName( "http://www.mapstruct.org/ap/test/jaxb/selection/test1", "shippingDetails" );
 
-
     public ObjectFactory() {
     }
 

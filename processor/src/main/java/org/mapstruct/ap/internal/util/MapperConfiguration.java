@@ -178,7 +178,6 @@ public class MapperConfiguration {
         return NullValueMappingStrategyPrism.RETURN_DEFAULT == strategy;
     }
 
-
     public String componentModel(Options options) {
         if ( mapperPrism.values.componentModel() != null ) {
             return mapperPrism.componentModel();

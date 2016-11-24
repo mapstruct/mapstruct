@@ -188,7 +188,6 @@ public class EnumToEnumMappingTest {
 
     }
 
-
     @Test
     @WithClasses(ErroneousOrderMapperMappingSameConstantTwice.class)
     @ExpectedCompilationOutcome(
@@ -250,7 +249,4 @@ public class EnumToEnumMappingTest {
     )
     public void shouldRaiseErrorIfMappingsContainDuplicateANY() {
     }
-
-
-
 }

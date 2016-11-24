@@ -18,9 +18,11 @@
  */
 package org.mapstruct.ap.test.bugs._913;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.HashSet;
 import java.util.Set;
-import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;

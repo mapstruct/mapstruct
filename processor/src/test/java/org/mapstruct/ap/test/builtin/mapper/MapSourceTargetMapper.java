@@ -34,6 +34,6 @@ public interface MapSourceTargetMapper {
     MapSourceTargetMapper INSTANCE = Mappers.getMapper( MapSourceTargetMapper.class );
 
     MapTarget sourceToTarget(MapSource source);
-    Map<String, String> longDateMapToStringStringMap(Map<JAXBElement<String>, XMLGregorianCalendar> source);
 
+    Map<String, String> longDateMapToStringStringMap(Map<JAXBElement<String>, XMLGregorianCalendar> source);
 }

@@ -137,7 +137,6 @@ public class WildCardTest {
     public void shouldFailOnTypeVarTarget() {
     }
 
-
     @Test
     @WithClasses( { BeanMapper.class, GoodIdea.class, CunningPlan.class } )
     public void shouldMapBean() {

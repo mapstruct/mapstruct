@@ -30,7 +30,6 @@ public class MapTarget {
     private SortedMap<String, Integer> integersSortedMap;
     private Map<String, Integer> integersBaseMap;
 
-
     public SortedMap<String, Integer> getIntegersSortedMap() {
         return integersSortedMap;
     }

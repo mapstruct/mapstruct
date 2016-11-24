@@ -120,7 +120,6 @@ public class CollectionMappingTest {
     public void shouldGenerateNonMappleMethodForMapMapping() {
     }
 
-
     @Test
     @IssueKey( "640" )
     @WithClasses({ CollectionMapper.class, Source.class, Target.class })

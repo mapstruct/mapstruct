@@ -18,8 +18,9 @@
  */
 package org.mapstruct.ap.test.source.presencecheck.spi;
 
-import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

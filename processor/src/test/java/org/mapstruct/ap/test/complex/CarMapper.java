@@ -41,18 +41,22 @@ public interface CarMapper {
         @Mapping(source = "manufacturingDate", target = "manufacturingYear")
     })
     CarDto carToCarDto(Car car);
+
     @InheritInverseConfiguration
     Car carDtoToCar(CarDto carDto);
 
     List<CarDto> carsToCarDtos(List<Car> cars);
+
     @InheritInverseConfiguration
     List<Car> carDtosToCars(List<CarDto> carDtos);
 
     PersonDto personToPersonDto(Person person);
+
     @InheritInverseConfiguration
     Person personDtoToPerson(PersonDto personDto);
 
     List<PersonDto> personsToPersonDtos(List<Person> persons);
+
     @InheritInverseConfiguration
     List<Person> personDtosToPersons(List<PersonDto> personDtos);
 }

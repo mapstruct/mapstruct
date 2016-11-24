@@ -29,7 +29,4 @@ public class ErroneousSource6 {
     public void setFoo(WildCardSuperWrapper<String> foo) {
         this.foo = foo;
     }
-
-
-
 }

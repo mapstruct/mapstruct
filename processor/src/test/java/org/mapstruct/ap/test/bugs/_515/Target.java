@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.bugs._515;
 
-
 public class Target {
 
     private String id;
@@ -30,5 +29,4 @@ public class Target {
     public void setId(String id) {
         this.id = id;
     }
-
 }

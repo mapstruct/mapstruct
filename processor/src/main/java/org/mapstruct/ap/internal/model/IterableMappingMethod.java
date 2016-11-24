@@ -18,9 +18,9 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.HashSet;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -165,7 +165,6 @@ public class IterableMappingMethod extends MappingMethod {
                     selectionParameters );
         }
     }
-
 
     private IterableMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
                                   boolean mapNullToDefault, String loopVariableName,

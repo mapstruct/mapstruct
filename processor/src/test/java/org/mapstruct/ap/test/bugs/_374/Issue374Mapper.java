@@ -47,6 +47,4 @@ public interface Issue374Mapper {
     List<String> mapIterable(List<String> source, @MappingTarget List<String> target);
 
     Map<Integer, String> mapMap(Map<Integer, String> source, @MappingTarget Map<Integer, String> target);
-
-
 }

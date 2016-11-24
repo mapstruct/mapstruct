@@ -30,7 +30,6 @@ public class OrderDto {
     private OrderDetailsDto orderDetails;
     private ShippingAddressDto shippingAddress;
 
-
     public Long getOrderNumber() {
         return orderNumber;
     }

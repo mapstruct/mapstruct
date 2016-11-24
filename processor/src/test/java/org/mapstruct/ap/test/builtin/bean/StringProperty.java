@@ -22,7 +22,6 @@ public class StringProperty {
 
     private String prop;
 
-
     public String getProp() {
         return prop;
     }
@@ -30,5 +29,4 @@ public class StringProperty {
     public void setProp( String prop ) {
         this.prop = prop;
     }
-
 }

@@ -24,7 +24,6 @@ package org.mapstruct.ap.test.selection.resulttype;
  */
 public class Apple extends Fruit {
 
-
     public Apple() {
         super( "constructed-by-constructor" );
     }
@@ -32,5 +31,4 @@ public class Apple extends Fruit {
     public Apple(String type) {
         super( type );
     }
-
 }

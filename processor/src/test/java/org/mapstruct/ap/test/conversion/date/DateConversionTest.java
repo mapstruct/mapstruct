@@ -137,7 +137,6 @@ public class DateConversionTest {
         );
     }
 
-
     @Test
     public void shouldApplyStringConversionForReverseArrayArrayMethod() {
          Date[] dates = new Date[]{

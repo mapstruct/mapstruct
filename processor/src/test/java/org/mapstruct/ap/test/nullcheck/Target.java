@@ -70,6 +70,4 @@ public class Target {
     public void setSomeLong(MyLongWrapper someLong) {
         this.someLong = someLong;
     }
-
-
 }

@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.source.presencecheck.spi;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -47,7 +48,6 @@ public abstract class SourceTargetMapper {
         @Mapping(target = "someArray", defaultValue = "u,v")
     } )
     abstract Target sourceToTargetWitDefaults(Source source);
-
 
     protected List<String> toList( String in ) {
         return Arrays.asList( in.split( "," ) );

@@ -61,7 +61,6 @@ public class ArrayMappingTest {
         assertThat( dto.getPublicationYears() ).containsOnly( 1993, 1997 );
     }
 
-
     @Test
     public void shouldMapArrayToArray() {
         ScientistDto[] dtos = ScienceMapper.INSTANCE

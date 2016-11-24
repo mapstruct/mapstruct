@@ -18,10 +18,11 @@
  */
 package org.mapstruct.ap.test.source.nullvaluecheckstrategy;
 
+import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 
 /**
  *
@@ -39,6 +40,4 @@ public abstract class RockFestivalMapperOveridingConfig {
     public Stage artistToStage( String name ) {
         return Stage.forArtist( name );
     }
-
-
 }

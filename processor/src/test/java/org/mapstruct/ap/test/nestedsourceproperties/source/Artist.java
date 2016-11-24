@@ -26,7 +26,6 @@ public class Artist {
     private String name;
     private Label label;
 
-
     public String getName() {
         return name;
     }
@@ -42,5 +41,4 @@ public class Artist {
     public void setLabel(Label label) {
         this.label = label;
     }
-
 }

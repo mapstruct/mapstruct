@@ -24,7 +24,6 @@ package org.mapstruct.ap.test.bugs._513;
  */
 public class MappingException extends Exception {
 
-
     public MappingException() {
     }
 

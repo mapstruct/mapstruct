@@ -24,9 +24,7 @@ package org.mapstruct.ap.test.updatemethods;
  */
 public class DepartmentEntityFactory {
 
-
     public DepartmentEntity createDepartmentEntity() {
         return new DepartmentEntity(5);
     }
-
 }

@@ -33,5 +33,6 @@ public interface BooleanWorkAroundMapper {
 
     @Mapping( expression = "java(source.isVal())", target = "val" )
     TargetBooleanWorkAround mapST( SourceBooleanWorkAround source );
+
     SourceBooleanWorkAround mapTS( TargetBooleanWorkAround target );
 }

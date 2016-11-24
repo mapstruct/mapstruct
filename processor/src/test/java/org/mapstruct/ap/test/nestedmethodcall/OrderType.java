@@ -32,7 +32,6 @@ public class OrderType {
     private JAXBElement<OrderDetailsType> orderDetails;
     private List<JAXBElement<XMLGregorianCalendar>> dates;
 
-
     public JAXBElement<Long> getOrderNumber() {
         return orderNumber;
     }

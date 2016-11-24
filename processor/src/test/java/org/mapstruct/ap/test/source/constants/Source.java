@@ -32,6 +32,4 @@ public class Source {
     public void setPropertyThatShouldBeMapped(String propertyThatShouldBeMapped) {
         this.propertyThatShouldBeMapped = propertyThatShouldBeMapped;
     }
-
-
 }

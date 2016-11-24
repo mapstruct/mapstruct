@@ -25,7 +25,6 @@ public class CarDto {
     private String model;
     private String catalogId;
 
-
     public CarDto() {
     }
 

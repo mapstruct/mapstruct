@@ -44,7 +44,6 @@ public class StringToXmlGregorianCalendar extends BuiltInMethod {
     private final Type returnType;
     private final Set<Type> importTypes;
 
-
     public StringToXmlGregorianCalendar(TypeFactory typeFactory) {
         this.parameter = new Parameter( "date", typeFactory.getType( String.class ) );
         this.returnType = typeFactory.getType( XMLGregorianCalendar.class );

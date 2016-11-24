@@ -43,7 +43,6 @@ public class Break {
         this.someNumber = someNumber;
     }
 
-
     public Map<String, String> getMap() {
         return map;
     }

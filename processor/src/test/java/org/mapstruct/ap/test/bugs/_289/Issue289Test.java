@@ -43,7 +43,6 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class Issue289Test {
 
-
     @Test
     public void shouldLeaveEmptyTargetSetWhenSourceIsNullAndGetterOnlyForCreateMethod() {
 

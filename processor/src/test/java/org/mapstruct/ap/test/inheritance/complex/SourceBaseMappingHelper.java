@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-
 public class SourceBaseMappingHelper {
     public Reference asReference(SourceBase source) {
         if ( null == source ) {

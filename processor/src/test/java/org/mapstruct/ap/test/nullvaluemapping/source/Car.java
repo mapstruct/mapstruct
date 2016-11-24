@@ -18,12 +18,10 @@
  */
 package org.mapstruct.ap.test.nullvaluemapping.source;
 
-
 public class Car {
 
     private String make;
     private int numberOfSeats;
-
 
     public Car() {
     }

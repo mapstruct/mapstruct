@@ -69,6 +69,4 @@ public class LetterEntity {
     public void setLetterSignature(String letterSignature) {
         this.letterSignature = letterSignature;
     }
-
-
 }

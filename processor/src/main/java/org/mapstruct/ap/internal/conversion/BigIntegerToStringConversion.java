@@ -18,16 +18,16 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import org.mapstruct.ap.internal.model.HelperMethod;
 
+import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link BigInteger} and {@link String}.

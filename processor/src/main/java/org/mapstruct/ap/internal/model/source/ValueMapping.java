@@ -19,9 +19,11 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.List;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
+
 import org.mapstruct.ap.internal.prism.MappingConstantsPrism;
 import org.mapstruct.ap.internal.prism.ValueMappingPrism;
 import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
@@ -84,7 +86,6 @@ public class ValueMapping {
         return new ValueMapping( mappingPrism.source(), mappingPrism.target(), mappingPrism.mirror,
             mappingPrism.values.source(), mappingPrism.values.target() );
     }
-
 
     private ValueMapping(String source, String target, AnnotationMirror mirror, AnnotationValue sourceAnnotationValue,
         AnnotationValue targetAnnotationValue ) {
@@ -159,6 +160,4 @@ public class ValueMapping {
         }
         return true;
     }
-
-
 }

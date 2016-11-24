@@ -62,6 +62,4 @@ public class Source {
     public void setPropertyToIgnoreDownstream(String propertyToIgnoreDownstream) {
         this.propertyToIgnoreDownstream = propertyToIgnoreDownstream;
     }
-
-
 }

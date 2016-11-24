@@ -52,6 +52,4 @@ public class Target {
     public void setPropertyNotToIgnoreUpstream(String propertyNotToIgnoreUpstream) {
         this.propertyNotToIgnoreUpstream = propertyNotToIgnoreUpstream;
     }
-
-
 }

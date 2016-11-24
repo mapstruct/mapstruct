@@ -33,7 +33,4 @@ public class Source {
     public void setTest(String test) {
         this.test = test;
     }
-
-
-
 }

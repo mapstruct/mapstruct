@@ -37,6 +37,4 @@ public class FruitDto {
     public void setType(String type) {
         this.type = type;
     }
-
-
 }

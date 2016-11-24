@@ -31,8 +31,6 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface EmptyItererableMappingMapper {
 
-
     @IterableMapping
     List<String> stringListToDateList(List<Date> dates);
-
 }

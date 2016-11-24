@@ -18,13 +18,14 @@
  */
 package org.mapstruct;
 
+import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.mapstruct.factory.Mappers;
-import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 
 /**
  * Marks a class or interface as configuration source for generated mappers. This allows to share common configurations

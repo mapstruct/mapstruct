@@ -45,6 +45,4 @@ public class SuperBoundTarget {
     public void setEntries(Map<? super Plan, ? super Plan> entries) {
         this.entries = entries;
     }
-
-
 }

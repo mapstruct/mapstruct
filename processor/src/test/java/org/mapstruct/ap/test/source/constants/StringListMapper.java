@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.source.constants;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class StringListMapper {
 
     public List<String> stringToStringList(String string) {

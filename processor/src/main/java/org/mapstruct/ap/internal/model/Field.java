@@ -42,6 +42,7 @@ public class Field extends ModelElement {
         this.used = used;
         this.typeRequiresImport = used;
     }
+
     public Field(Type type, String variableName) {
         this.type = type;
         this.variableName = variableName;

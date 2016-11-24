@@ -19,25 +19,25 @@
 package org.mapstruct.ap.test.nestedsourceproperties;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Artist;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Label;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
-import org.mapstruct.ap.testutil.IssueKey;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import org.mapstruct.ap.test.nestedsourceproperties._target.BaseChartEntry;
+import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntryComposed;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntryLabel;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntryWithBase;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntryWithMapping;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Artist;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Label;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
 import org.mapstruct.ap.test.nestedsourceproperties.source.SourceDtoFactory;
+import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
+import org.mapstruct.ap.testutil.IssueKey;
+import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
  * @author Sjaak Derksen
@@ -129,7 +129,6 @@ public class ReversingNestedSourcePropertiesTest {
         assertThat( song2.getArtist().getLabel().getStudio().getName() ).isEqualTo( "Abbey Road" );
     }
 
-
     @Test
     @WithClasses( { ArtistToChartEntryWithFactoryReverse.class, SourceDtoFactory.class } )
     public void shouldGenerateNestedReverseWithFactory() {
@@ -164,7 +163,6 @@ public class ReversingNestedSourcePropertiesTest {
         assertThat( SourceDtoFactory.isCreateArtistCalled() ).isTrue();
 
     }
-
 
     @Test
     @WithClasses({ ArtistToChartEntryComposedReverse.class, ChartEntryComposed.class, ChartEntryLabel.class })

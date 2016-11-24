@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,6 @@ import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.ValueMapping;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.MappingConstantsPrism;
-import static org.mapstruct.ap.internal.util.Collections.first;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -55,7 +56,6 @@ public class ValueMappingMethod extends MappingMethod {
         private ValueMapping defaultTargetValue = null;
         private ValueMapping nullTargetValue = null;
         private boolean applyNamebasedMappings = true;
-
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;

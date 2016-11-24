@@ -27,5 +27,6 @@ public interface CollectionMapper {
     CollectionMapper INSTANCE = Mappers.getMapper( CollectionMapper.class );
 
     Target sourceToTarget(Source source);
+
     Source targetToSource(Target target);
 }

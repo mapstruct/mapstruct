@@ -38,6 +38,4 @@ public abstract class RockFestivalMapper {
     public Stage artistToStage( String name ) {
         return Stage.forArtist( name );
     }
-
-
 }

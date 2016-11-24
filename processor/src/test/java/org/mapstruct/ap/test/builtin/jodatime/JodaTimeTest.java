@@ -18,10 +18,12 @@
  */
 package org.mapstruct.ap.test.builtin.jodatime;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import static org.assertj.core.api.Assertions.assertThat;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -258,7 +260,6 @@ public class JodaTimeTest {
         assertThat( res.getDateTime() ).isNull();
     }
 
-
     @Test
     @WithClasses({DateTimeToXmlGregorianCalendar.class, XmlGregorianCalendarToDateTime.class})
     public void shouldMapRoundTrip() {
@@ -434,7 +435,6 @@ public class JodaTimeTest {
         assertThat( res.getLocalDate().getDayOfMonth() ).isEqualTo( 25 );
     }
 
-
     @Test
     @WithClasses(XmlGregorianCalendarToLocalDate.class)
     public void shouldNotMapXmlGregorianCalendarWithoutDaysToLocalDate() throws Exception {
@@ -451,12 +451,6 @@ public class JodaTimeTest {
         assertThat( res.getLocalDate() ).isNull();
 
     }
-
-
-
-
-
-
 
     @Test
     @WithClasses(LocalTimeToXmlGregorianCalendar.class)

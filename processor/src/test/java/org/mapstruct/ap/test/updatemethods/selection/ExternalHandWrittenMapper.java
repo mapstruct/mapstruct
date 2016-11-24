@@ -35,7 +35,6 @@ import org.mapstruct.ap.test.updatemethods.SecretaryEntity;
  */
 public class ExternalHandWrittenMapper {
 
-
     public void toDepartmentEntity(DepartmentDto dto, @MappingTarget DepartmentEntity entity) {
         if ( entity != null && dto != null ) {
             entity.setName( dto.getName() );

@@ -25,9 +25,14 @@ package org.mapstruct.ap.internal.version;
  */
 public interface VersionInformation {
     String getRuntimeVersion();
+
     String getRuntimeVendor();
+
     String getMapStructVersion();
+
     String getCompiler();
+
     boolean isEclipseJDTCompiler();
+
     boolean isJavacCompiler();
 }

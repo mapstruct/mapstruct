@@ -18,10 +18,11 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
+
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;

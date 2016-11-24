@@ -29,7 +29,6 @@ public class SoccerTeamTarget {
     private List<String> players;
     private String goalKeeperName;
 
-
     public List<String> getPlayers() {
         return players;
     }

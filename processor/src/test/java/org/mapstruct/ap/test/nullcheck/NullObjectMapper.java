@@ -23,7 +23,6 @@ package org.mapstruct.ap.test.nullcheck;
  */
 public class NullObjectMapper {
 
-
     public String toNullString(NullObject in) {
         return in.toString();
     }

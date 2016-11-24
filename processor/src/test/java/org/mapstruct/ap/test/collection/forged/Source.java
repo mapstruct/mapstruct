@@ -60,8 +60,4 @@ public class Source {
     public void setBarMap2( Map<String, Long> barMap2 ) {
         this.barMap2 = barMap2;
     }
-
-
-
-
 }

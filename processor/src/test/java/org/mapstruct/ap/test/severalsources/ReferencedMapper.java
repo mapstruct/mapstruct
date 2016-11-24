@@ -38,5 +38,5 @@ public class ReferencedMapper {
 
     public static void setBeforeMappingCalled(boolean beforeMappingCalled) {
         ReferencedMapper.beforeMappingCalled = beforeMappingCalled;
-    };
+    }
 }

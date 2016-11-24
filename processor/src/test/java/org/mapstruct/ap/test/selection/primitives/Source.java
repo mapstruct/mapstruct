@@ -42,6 +42,4 @@ public class Source {
     public void setWrappedInt( Integer wrappedInt ) {
         this.wrappedInt = wrappedInt;
     }
-
-
 }

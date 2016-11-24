@@ -87,7 +87,6 @@ public class IterableMapping {
         this.nullValueMappingStrategy = nvms;
     }
 
-
     public SelectionParameters getSelectionParameters() {
         return selectionParameters;
     }
@@ -103,5 +102,4 @@ public class IterableMapping {
     public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
         return nullValueMappingStrategy;
     }
-
 }

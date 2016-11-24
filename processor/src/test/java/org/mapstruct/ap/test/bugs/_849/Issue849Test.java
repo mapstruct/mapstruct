@@ -18,9 +18,10 @@
  */
 package org.mapstruct.ap.test.bugs._849;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.Serializable;
 import java.util.Arrays;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

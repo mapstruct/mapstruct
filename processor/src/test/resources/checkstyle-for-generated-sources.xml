@@ -99,6 +99,12 @@
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
 
+        <module name="EmptyLineSeparator">
+            <property name="tokens" value="IMPORT, CLASS_DEF, INTERFACE_DEF, STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+            <property name="allowMultipleEmptyLines" value="false"/>
+        </module>
+
         <!-- Modifier Checks                                    -->
         <!-- See http://checkstyle.sf.net/config_modifiers.html -->
         <module name="ModifierOrder"/>

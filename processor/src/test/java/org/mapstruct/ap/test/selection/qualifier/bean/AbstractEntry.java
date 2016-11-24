@@ -56,6 +56,4 @@ public abstract class AbstractEntry {
     public void setFacts( Map<String, List<String> > facts ) {
         this.facts = facts;
     }
-
-
 }

@@ -30,7 +30,6 @@ public class Source {
     private Collection<SourceElement> collection;
     private Map<SourceKey, SourceValue> map;
 
-
     public Collection<SourceElement> getCollection() {
         return collection;
     }
@@ -46,5 +45,4 @@ public class Source {
     public void setMap(Map<SourceKey, SourceValue> map) {
         this.map = map;
     }
-
 }

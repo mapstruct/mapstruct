@@ -102,7 +102,6 @@ public class ExternalSelectionTest {
         OrganizationMapper2.INSTANCE.toCompanyEntity( dto, entity );
     }
 
-
     @Test
     @IssueKey( "487" )
     public void shouldSelectGeneratedExternalMapperForIterablesAndMaps() {

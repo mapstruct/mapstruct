@@ -27,8 +27,6 @@ import javax.xml.bind.JAXBElement;
  * @author Sjaak Derksen
  */
 public class CunningPlan {
-
-
     private BigDecimal content;
     private JAXBElement<? super BigDecimal> description;
 
@@ -47,5 +45,4 @@ public class CunningPlan {
     public void setDescription(JAXBElement<? super BigDecimal> description) {
         this.description = description;
     }
-
 }

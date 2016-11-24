@@ -21,6 +21,7 @@ package org.mapstruct.ap.test.nestedtargetproperties;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -48,7 +49,6 @@ public abstract class ChartEntryToArtist {
     })
     public abstract Chart map(ChartEntry chartEntry);
 
-
     @Mappings({
         @Mapping(target = "type", ignore = true),
         @Mapping(target = "name", source = "chartEntry2.chartName"),
@@ -71,6 +71,7 @@ public abstract class ChartEntryToArtist {
             return Collections.<Integer>emptyList();
         }
     }
+
     protected Integer mapPosition(List<Integer> in) {
         if ( in != null && !in.isEmpty() ) {
             return in.get( 0 );
@@ -79,5 +80,4 @@ public abstract class ChartEntryToArtist {
             return null;
         }
     }
-
 }

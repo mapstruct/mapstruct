@@ -18,13 +18,15 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 import java.text.DecimalFormat;
 import java.util.Set;
+
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * HelperMethod that creates a {@link java.text.DecimalFormat}
@@ -35,7 +37,6 @@ import static org.mapstruct.ap.internal.util.Collections.asSet;
  * @author Sjaak Derksen
  */
 public class CreateDecimalFormat extends HelperMethod {
-
 
     private final Parameter parameter;
     private final Type returnType;

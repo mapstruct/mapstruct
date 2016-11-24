@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 
 /**

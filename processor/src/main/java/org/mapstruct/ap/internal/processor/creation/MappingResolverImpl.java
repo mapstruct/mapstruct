@@ -476,6 +476,7 @@ public class MappingResolverImpl implements MappingResolver {
             }
             return conversionYRef;
         }
+
         private boolean isCandidateForMapping(Method methodCandidate) {
             return isCreateMethodForMapping( methodCandidate ) || isUpdateMethodForMapping( methodCandidate );
         }

@@ -30,7 +30,6 @@ public class Source {
 
     private NestedSource nestedSourceProp;
 
-
     public String getStringPropX() {
         return stringPropX;
     }

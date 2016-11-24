@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.bugs._405;
 
-
 import java.util.List;
 
 public class Person {

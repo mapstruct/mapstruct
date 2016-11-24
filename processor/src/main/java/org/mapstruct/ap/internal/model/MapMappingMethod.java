@@ -18,9 +18,9 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.HashSet;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

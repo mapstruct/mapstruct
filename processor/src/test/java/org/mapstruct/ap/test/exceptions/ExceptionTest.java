@@ -129,7 +129,6 @@ public class ExceptionTest {
         sourceTargetMapper.integerValueMapToLongValueMap( source );
     }
 
-
     @Test( expected = RuntimeException.class )
     @IssueKey( "198" )
     public void shouldThrowRuntimeInBeanMappingViaBaseException() throws TestExceptionBase {

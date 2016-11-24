@@ -112,7 +112,5 @@ public interface Assignment {
      */
     AssignmentType getType();
 
-
     boolean isUpdateMethod();
-
 }

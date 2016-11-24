@@ -29,7 +29,6 @@ public class CollectionSource {
     private List<Integer> integers;
     private List<Integer> integersCollection;
 
-
     public List<Integer> getIntegers() {
         return integers;
     }

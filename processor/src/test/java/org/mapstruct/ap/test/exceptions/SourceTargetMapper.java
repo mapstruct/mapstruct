@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.exceptions;
 
-
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper( uses = ExceptionTestMapper.class )
 @DecoratedWith( ExceptionTestDecorator.class )
-public  interface SourceTargetMapper {
+public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 

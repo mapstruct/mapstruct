@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.bugs._375;
 
-
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

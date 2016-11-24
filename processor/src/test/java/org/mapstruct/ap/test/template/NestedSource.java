@@ -30,7 +30,6 @@ public class NestedSource {
         this.nested = nested;
     }
 
-
     public String getNested() {
         return nested;
     }

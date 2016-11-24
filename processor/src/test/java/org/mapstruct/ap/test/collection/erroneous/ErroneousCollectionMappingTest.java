@@ -81,7 +81,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = EmptyItererableMappingMapper.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 35,
                 messageRegExp = "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are "
                     + "undefined in @IterableMapping, define at least one of them.")
         }

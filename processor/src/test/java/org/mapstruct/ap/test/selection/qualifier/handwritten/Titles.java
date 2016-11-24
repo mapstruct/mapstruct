@@ -20,11 +20,11 @@ package org.mapstruct.ap.test.selection.qualifier.handwritten;
 
 import java.util.Map;
 
+import org.mapstruct.Named;
 import org.mapstruct.ap.test.selection.qualifier.annotation.EnglishToGerman;
 import org.mapstruct.ap.test.selection.qualifier.annotation.TitleTranslator;
 
 import com.google.common.collect.ImmutableMap;
-import org.mapstruct.Named;
 
 /**
  *
@@ -48,9 +48,7 @@ public class Titles {
         return EN_GER.get( title );
     }
 
-
     public String methodNotToSelect( String title ) {
         throw new AssertionError( "method should not be called" );
     }
-
 }

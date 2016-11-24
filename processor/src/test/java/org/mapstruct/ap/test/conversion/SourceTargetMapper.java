@@ -34,6 +34,7 @@ public interface SourceTargetMapper {
         @Mapping(source = "baz", target = "qax")
     })
     Target sourceToTarget(Source source);
+
     @InheritInverseConfiguration
     Source targetToSource(Target target);
 }

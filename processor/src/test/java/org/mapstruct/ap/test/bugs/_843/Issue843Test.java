@@ -18,8 +18,10 @@
  */
 package org.mapstruct.ap.test.bugs._843;
 
-import java.util.Date;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Date;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;

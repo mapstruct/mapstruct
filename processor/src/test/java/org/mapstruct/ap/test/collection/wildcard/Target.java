@@ -45,6 +45,4 @@ public class Target {
     public void setEntries(Map<Plan, Plan> entries) {
         this.entries = entries;
     }
-
-
 }

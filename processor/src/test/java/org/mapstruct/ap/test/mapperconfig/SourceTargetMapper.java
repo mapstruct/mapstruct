@@ -31,5 +31,6 @@ public interface SourceTargetMapper {
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     Target toTarget( Source source );
+
     Source toSource( Target target );
 }

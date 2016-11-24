@@ -40,7 +40,6 @@ public class ObjectFactory {
         return new OrderShippingDetailsType();
     }
 
-
     @XmlElementDecl(namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test2", name = "OrderShippingDetails")
     public JAXBElement<OrderShippingDetailsType> createOrderShippingDetails(OrderShippingDetailsType value) {
         return new JAXBElement<OrderShippingDetailsType>(

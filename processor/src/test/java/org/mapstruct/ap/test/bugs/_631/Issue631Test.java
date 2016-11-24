@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.bugs._631;
 
-
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;

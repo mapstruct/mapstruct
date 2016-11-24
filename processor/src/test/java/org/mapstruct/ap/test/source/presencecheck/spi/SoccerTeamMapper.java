@@ -36,7 +36,6 @@ public interface SoccerTeamMapper {
     @Mapping( target = "goalKeeperName", ignore = true )
     SoccerTeamTarget mapAdder( SoccerTeamSource in );
 
-
     @Mappings({
         @Mapping(target = "players", ignore = true),
         @Mapping(target = "goalKeeperName", source = "goalKeeper.name")

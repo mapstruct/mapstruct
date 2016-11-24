@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import static org.mapstruct.ap.internal.model.source.PropertyEntry.forSourceReference;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.ArrayList;
@@ -31,7 +32,6 @@ import javax.lang.model.type.DeclaredType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import static org.mapstruct.ap.internal.model.source.PropertyEntry.forSourceReference;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;

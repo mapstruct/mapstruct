@@ -44,10 +44,8 @@ public interface CarMapperSettingOnConfig {
     })
     CarDto carToCarDto(Car car);
 
-
     @IterableMapping(dateFormat = "dummy")
     List<CarDto> carsToCarDtos(List<Car> cars);
-
 
     @MapMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL)
     Map<Integer, CarDto> carsToCarDtoMap(Map<Integer, Car> cars);

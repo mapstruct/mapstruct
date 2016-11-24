@@ -59,6 +59,4 @@ public class Target {
     public void setBarMap2( Map<String, String> barMap2 ) {
         this.barMap2 = barMap2;
     }
-
-
 }

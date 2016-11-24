@@ -26,7 +26,6 @@ public interface Issue513Mapper {
 
     Issue513Mapper INSTANCE = Mappers.getMapper( Issue513Mapper.class );
 
-
     Target map(Source source) throws MappingException, MappingValueException, MappingKeyException;
 
     TargetElement mapElement(SourceElement source) throws MappingException;
@@ -34,5 +33,4 @@ public interface Issue513Mapper {
     TargetKey mapKey(SourceKey source) throws MappingException, MappingKeyException;
 
     TargetValue mapValue(SourceValue source) throws MappingException, MappingValueException;
-
 }

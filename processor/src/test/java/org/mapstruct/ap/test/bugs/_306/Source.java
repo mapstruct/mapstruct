@@ -20,7 +20,6 @@ package org.mapstruct.ap.test.bugs._306;
 
 import java.util.Set;
 
-
 public class Source {
 
     private Set<String> fooSet;
@@ -32,5 +31,4 @@ public class Source {
     public void setFooSet(Set<String> fooSet) {
         this.fooSet = fooSet;
     }
-
 }

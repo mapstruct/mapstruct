@@ -34,6 +34,7 @@ public interface SourceTargetMapper {
 
     @MapMapping(valueDateFormat = "dd.MM.yyyy")
     Map<String, String> longDateMapToStringStringMap(Map<Long, Date> source);
+
     @InheritInverseConfiguration
     Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source);
 
@@ -46,6 +47,7 @@ public interface SourceTargetMapper {
                                                                               @MappingTarget Map<Long, Date> target);
 
     Target sourceToTarget(Source source);
+
     @InheritInverseConfiguration
     Source targetToSource(Target target);
 

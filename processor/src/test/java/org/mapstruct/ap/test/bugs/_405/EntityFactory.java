@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.bugs._405;
 
-
 import org.mapstruct.TargetType;
 
 public class EntityFactory {

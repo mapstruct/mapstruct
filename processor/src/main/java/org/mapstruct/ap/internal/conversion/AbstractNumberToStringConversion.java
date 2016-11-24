@@ -18,13 +18,14 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import org.mapstruct.ap.internal.model.common.ConversionContext;
-import org.mapstruct.ap.internal.model.common.Type;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
 
 /**
  * Abstract base class for {@link PrimitiveToStringConversion}, {@link WrapperToStringConversion},
@@ -42,7 +43,6 @@ public abstract class AbstractNumberToStringConversion extends SimpleConversion 
 
         this.sourceTypeNumberSubclass = sourceTypeNumberSubclass;
     }
-
 
     @Override
     public Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {

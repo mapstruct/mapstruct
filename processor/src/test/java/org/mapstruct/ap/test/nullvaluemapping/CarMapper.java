@@ -57,7 +57,6 @@ public interface CarMapper {
     })
     CarDto carToCarDto(Car car, String model);
 
-
     @IterableMapping(nullValueMappingStrategy = RETURN_DEFAULT)
     List<CarDto> carsToCarDtos(List<Car> cars);
 

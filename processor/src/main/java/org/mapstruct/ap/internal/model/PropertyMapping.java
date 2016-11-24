@@ -22,6 +22,9 @@ import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentTy
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.MAPPED_TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED;
 import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,17 +49,14 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
+import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SourceReference;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.last;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to

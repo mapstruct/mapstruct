@@ -24,7 +24,6 @@ public class JaxbElementProperty {
 
     private JAXBElement<String> prop;
 
-
     public JAXBElement<String> getProp() {
         return prop;
     }

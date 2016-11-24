@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import static org.mapstruct.ap.internal.util.Collections.first;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 
 /**

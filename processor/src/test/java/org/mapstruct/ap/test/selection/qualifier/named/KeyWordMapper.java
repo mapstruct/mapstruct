@@ -43,7 +43,6 @@ public abstract class KeyWordMapper {
             .put( "box office flop", "Kasse Flop" )
             .build();
 
-
     public static final KeyWordMapper INSTANCE = Mappers.getMapper( KeyWordMapper.class );
 
     @IterableMapping( dateFormat = "", qualifiedByName = "EnglishToGerman" )

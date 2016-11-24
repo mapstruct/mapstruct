@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.complex.source;
 import java.util.Date;
 import java.util.List;
 
-
 public class Car {
 
     private String make;

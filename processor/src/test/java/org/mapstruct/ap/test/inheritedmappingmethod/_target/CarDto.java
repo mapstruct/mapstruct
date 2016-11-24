@@ -28,6 +28,4 @@ public class CarDto {
     public void setHorsepower(int horsepower) {
         this.horsepower = horsepower;
     }
-
-
 }

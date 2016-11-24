@@ -18,7 +18,7 @@
  */
 package org.mapstruct.itest.jaxb;
 
-public class SubTypeDto extends SuperTypeDto{
+public class SubTypeDto extends SuperTypeDto {
     private String declaredCamelCase;
     private String declaredUnderscore;
 

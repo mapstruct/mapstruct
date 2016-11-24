@@ -27,7 +27,6 @@ public class NullCheckWrapper extends AssignmentWrapper {
 
     private final String sourcePresenceChecker;
 
-
     public NullCheckWrapper( Assignment decoratedAssignment, String sourcePresenceChecker ) {
         super( decoratedAssignment );
         this.sourcePresenceChecker = sourcePresenceChecker;

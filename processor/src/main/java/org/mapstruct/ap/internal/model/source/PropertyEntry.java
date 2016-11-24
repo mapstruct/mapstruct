@@ -18,9 +18,10 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-
 import java.util.Arrays;
+
 import javax.lang.model.element.ExecutableElement;
+
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
 
