@@ -43,20 +43,16 @@
 -->
 <#macro callTargetWriteAccessor>
     <@lib.handleNullCheck>
-      <#if directAssignment>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@wrapLocalVarInCollectionInitializer/> );
-    <#else>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( ${localVarName} );
-    </#if>
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <#if directAssignment><@wrapLocalVarInCollectionInitializer/><#else>${localVarName}</#if> );
   </@lib.handleNullCheck>
 </#macro>
 <#--
   wraps the local variable in a collection initializer (new collection, or EnumSet.copyOf)
 -->
-<#macro wrapLocalVarInCollectionInitializer>
+<#macro wrapLocalVarInCollectionInitializer><@compress single_line=true>
     <#if enumSet>
       EnumSet.copyOf( ${localVarName} )
     <#else>
       new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>( ${localVarName} )
     </#if>
-</#macro>
+</@compress></#macro>
