@@ -304,6 +304,9 @@ public class IterableMappingMethod extends MappingMethod {
         }
 
         for ( int i = 0; i < getSourceParameters().size(); i++ ) {
+            if ( !getSourceParameters().get( i ).getType().equals( other.getSourceParameters().get( i ).getType() ) ) {
+                return false;
+            }
             List<Type> thisTypeParameters = getSourceParameters().get( i ).getType().getTypeParameters();
             List<Type> otherTypeParameters = other.getSourceParameters().get( i ).getType().getTypeParameters();
 

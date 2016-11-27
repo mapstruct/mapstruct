@@ -319,8 +319,14 @@ public class MapMappingMethod extends MappingMethod {
         }
 
         for ( int i = 0; i < getSourceParameters().size(); i++ ) {
-            if ( !getSourceParameters().get( i ).getType().getTypeParameters().get( 0 )
-                .equals( other.getSourceParameters().get( i ).getType().getTypeParameters().get( 0 ) ) ) {
+            if ( !getSourceParameters().get( i ).getType().equals( other.getSourceParameters().get( i ).getType() ) ) {
+                return false;
+            }
+
+            List<Type> thisTypeParameters = getSourceParameters().get( i ).getType().getTypeParameters();
+            List<Type> otherTypeParameters = other.getSourceParameters().get( i ).getType().getTypeParameters();
+
+            if ( !thisTypeParameters.equals( otherTypeParameters ) ) {
                 return false;
             }
         }
