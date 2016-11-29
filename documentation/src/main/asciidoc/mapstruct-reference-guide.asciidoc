@@ -1755,7 +1755,7 @@ public interface CarMapper {
 ----
 ====
 
-The example above declares a mapping method `carToDto()` with a configuration to define how the property `numberOfSeats` in the type `Car` shall be mapped. The update method that performs the mapping on an existing instance of `Car` needs the same configuration to successfully map all properties. Declaring `@InheritConfiguration` on the method lets MapStruct search for inheritance candidates to apply the annotations of the method that is inherited from.
+The example above declares a mapping method `carDtoToCar()` with a configuration to define how the property `numberOfSeats` in the type `Car` shall be mapped. The update method that performs the mapping on an existing instance of `Car` needs the same configuration to successfully map all properties. Declaring `@InheritConfiguration` on the method lets MapStruct search for inheritance candidates to apply the annotations of the method that is inherited from.
 
 One method *A* can inherit the configuration from another method *B* if all types of *A* (source types and result type) are assignable to the corresponding types of *B*.
 
@@ -1797,7 +1797,7 @@ A method *A* is considered a *reverse* method of a method *B*, if the result typ
 
 Methods that are considered for inverse inheritance need to be defined in the current mapper, a super class/interface.
 
-If multiple methods qualify, the method from which to inherit the configuration from needs to be specified using the `name` property like this: `@InheritInverseConfiguration(name = "carToDto")`.
+If multiple methods qualify, the method from which to inherit the configuration needs to be specified using the `name` property like this: `@InheritInverseConfiguration(name = "carToDto")`.
 
 Expressions and constants are excluded (silently ignored). Reverse mapping of nested source properties is experimental as of the 1.1.0.Beta2. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
 
