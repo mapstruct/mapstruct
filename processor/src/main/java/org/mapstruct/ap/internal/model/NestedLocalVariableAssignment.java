@@ -103,24 +103,6 @@ public class NestedLocalVariableAssignment extends ModelElement {
         return fieldAssignment;
     }
 
-    public String getAfterWriteVariable() {
-        if ( fieldAssignment ) {
-            return " = ";
-        }
-        else {
-            return "( ";
-        }
-    }
-
-    public String getFinishWriteStatement() {
-        if ( fieldAssignment ) {
-            return "";
-        }
-        else {
-            return " )";
-        }
-    }
-
     @Override
     public int hashCode() {
         int hash = 7;
