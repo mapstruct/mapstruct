@@ -29,6 +29,7 @@ public class Source {
     private Foo1 prop1;
     private Foo2 prop2;
     private Foo3 prop3;
+    private Foo4 prop4;
     private List<String> propList;
     private Map<String, String> propMap;
 
@@ -54,6 +55,14 @@ public class Source {
 
     public void setProp3(Foo3 prop3) {
         this.prop3 = prop3;
+    }
+
+    public Foo4 getProp4() {
+        return prop4;
+    }
+
+    public void setProp4(Foo4 prop4) {
+        this.prop4 = prop4;
     }
 
     public List<String> getPropList() {

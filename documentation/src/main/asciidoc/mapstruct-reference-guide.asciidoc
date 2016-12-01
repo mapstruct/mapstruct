@@ -1410,7 +1410,8 @@ By default, the generated code for mapping one bean type into another will call 
 
 Alternatively you can plug in custom object factories which will be invoked to obtain instances of the target type. One use case for this is JAXB which creates `ObjectFactory` classes for obtaining new instances of schema types.
 
-To make use of custom factories register them via `@Mapper#uses()` as described in <<invoking-other-mappers>>. When creating the target object of a bean mapping, MapStruct will look for a parameterless method, or a method with only one `@TargetType` parameter that returns the required target type and invoke this method instead of calling the default constructor:
+To make use of custom factories register them via `@Mapper#uses()` as described in <<invoking-other-mappers>>. When creating the target object of a bean mapping, MapStruct will look for a parameterless method, 
+a method annotated with `@ObjectFactory`, or a method with only one `@TargetType` parameter that returns the required target type and invoke this method instead of calling the default constructor:
 
 .Custom object factories
 ====
@@ -1485,6 +1486,27 @@ public class CarMapperImpl implements CarMapper {
 }
 ----
 ====
+
+In addition, annotating a factory with `@ObjectFactory` lets you gain access to the mapping sources. 
+Source objects can be added as parameters in the same way as for mapping method. The `@ObjectFactory`
+annotation is necessary to let MapStruct know that the given method is only a factory method. 
+
+.Custom object factories with `@ObjectFactory`
+
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class DtoFactory {
+
+     @ObjectFactory
+     public CarDto createCarDto(Car car) {
+         return // ... custom factory logic 
+     }
+}
+----
+====
+
 
 == Advanced mapping options
 This chapter describes several advanced options which allow to fine-tune the behavior of the generated mapping code as needed.

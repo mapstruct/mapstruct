@@ -41,7 +41,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 public abstract class MappingMethod extends ModelElement {
 
     private final String name;
-    private final List<Parameter> parameters;
+    private List<Parameter> parameters;
     private final Type returnType;
     private final Parameter targetParameter;
     private final Accessibility accessibility;
@@ -64,8 +64,14 @@ public abstract class MappingMethod extends ModelElement {
     protected MappingMethod(Method method, Collection<String> existingVariableNames,
                             List<LifecycleCallbackMethodReference> beforeMappingReferences,
                             List<LifecycleCallbackMethodReference> afterMappingReferences) {
+        this( method, method.getParameters(), existingVariableNames, beforeMappingReferences, afterMappingReferences );
+    }
+
+    protected MappingMethod(Method method, List<Parameter> parameters, Collection<String> existingVariableNames,
+                            List<LifecycleCallbackMethodReference> beforeMappingReferences,
+                            List<LifecycleCallbackMethodReference> afterMappingReferences) {
         this.name = method.getName();
-        this.parameters = method.getParameters();
+        this.parameters = parameters;
         this.returnType = method.getReturnType();
         this.targetParameter = method.getMappingTargetParameter();
         this.accessibility = method.getAccessibility();
@@ -75,6 +81,10 @@ public abstract class MappingMethod extends ModelElement {
         this.beforeMappingReferencesWithMappingTarget = filterMappingTarget( beforeMappingReferences, true );
         this.beforeMappingReferencesWithoutMappingTarget = filterMappingTarget( beforeMappingReferences, false );
         this.afterMappingReferences = afterMappingReferences;
+    }
+
+    protected MappingMethod(Method method, List<Parameter> parameters) {
+        this( method, parameters, method.getParameterNames(), null, null );
     }
 
     protected MappingMethod(Method method) {
@@ -183,7 +193,7 @@ public abstract class MappingMethod extends ModelElement {
     }
 
     private List<LifecycleCallbackMethodReference> filterMappingTarget(List<LifecycleCallbackMethodReference> methods,
-                                                                         boolean mustHaveMappingTargetParameter) {
+                                                                       boolean mustHaveMappingTargetParameter) {
         if ( methods == null ) {
             return null;
         }

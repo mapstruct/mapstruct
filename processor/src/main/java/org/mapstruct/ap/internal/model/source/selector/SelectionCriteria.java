@@ -36,9 +36,10 @@ public class SelectionCriteria {
     private final String targetPropertyName;
     private final TypeMirror qualifyingResultType;
     private boolean preferUpdateMapping;
+    private final boolean objectFactoryRequired;
 
-    public SelectionCriteria( SelectionParameters selectionParameters,  String targetPropertyName,
-        boolean preferUpdateMapping ) {
+    public SelectionCriteria(SelectionParameters selectionParameters, String targetPropertyName,
+                             boolean preferUpdateMapping, boolean objectFactoryRequired) {
         if ( selectionParameters != null ) {
             qualifiers.addAll( selectionParameters.getQualifiers() );
             qualifiedByNames.addAll( selectionParameters.getQualifyingNames() );
@@ -49,6 +50,14 @@ public class SelectionCriteria {
         }
         this.targetPropertyName = targetPropertyName;
         this.preferUpdateMapping = preferUpdateMapping;
+        this.objectFactoryRequired = objectFactoryRequired;
+    }
+
+    /**
+     * @return true if factory methods should be selected, false otherwise.
+     */
+    public boolean isObjectFactoryRequired() {
+        return objectFactoryRequired;
     }
 
     public List<TypeMirror> getQualifiers() {

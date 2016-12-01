@@ -107,8 +107,8 @@ public class MethodMatcher {
             }
         }
         else {
-            // if the sourceTypes empty/contains only nulls then only methods with zero source parameters qualify
-            if ( !candidateMethod.getSourceParameters().isEmpty() ) {
+            // if the sourceTypes empty/contains only nulls then only factory and lifecycle methods qualify
+            if ( !candidateMethod.isObjectFactory() && !candidateMethod.isLifecycleCallbackMethod() ) {
                 return false;
             }
         }

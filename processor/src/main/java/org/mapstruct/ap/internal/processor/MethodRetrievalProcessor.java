@@ -49,6 +49,7 @@ import org.mapstruct.ap.internal.prism.IterableMappingPrism;
 import org.mapstruct.ap.internal.prism.MapMappingPrism;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
+import org.mapstruct.ap.internal.prism.ObjectFactoryPrism;
 import org.mapstruct.ap.internal.prism.ValueMappingPrism;
 import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
@@ -197,8 +198,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 mapperConfig,
                 prototypeMethods );
         }
-        //otherwise add reference to existing mapper method
-        else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( parameters, returnType )
+        // otherwise add reference to existing mapper method
+        else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( method, parameters, returnType )
             || isValidLifecycleCallbackMethod( method, returnType ) ) {
             return getReferencedMethod( usedMapper, methodType, method, mapperToImplement, parameters );
         }
@@ -292,8 +293,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return isValidReferencedOrFactoryMethod( 1, 1, parameters );
     }
 
-    private boolean isValidFactoryMethod(List<Parameter> parameters, Type returnType) {
-        return !isVoid( returnType ) && isValidReferencedOrFactoryMethod( 0, 0, parameters );
+    private boolean isValidFactoryMethod(ExecutableElement method, List<Parameter> parameters, Type returnType) {
+        return !isVoid( returnType )
+            && ( isValidReferencedOrFactoryMethod( 0, 0, parameters ) || hasFactoryAnnotation( method ) );
+    }
+
+    private boolean hasFactoryAnnotation(ExecutableElement method) {
+        return ObjectFactoryPrism.getInstanceOn( method ) != null;
     }
 
     private boolean isVoid(Type returnType) {

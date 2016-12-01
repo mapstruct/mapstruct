@@ -28,7 +28,8 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Sjaak Derksen
  */
-@Mapper(uses = { BarFactory.class, org.mapstruct.ap.test.factories.b.BarFactory.class })
+@Mapper( uses = { BarFactory.class, org.mapstruct.ap.test.factories.b.BarFactory.class,
+    org.mapstruct.ap.test.factories.c.BarFactory.class } )
 public abstract class SourceTargetMapperAndBar2Factory {
     public static final SourceTargetMapperAndBar2Factory INSTANCE =
         Mappers.getMapper( SourceTargetMapperAndBar2Factory.class );
@@ -40,6 +41,8 @@ public abstract class SourceTargetMapperAndBar2Factory {
     public abstract Bar2 foo2ToBar2(Foo2 foo2);
 
     public abstract Bar3 foo3ToBar3(Foo3 foo3);
+
+    public abstract Bar4 foo4ToBar4(Foo4 foo4);
 
     public abstract CustomList<String> customListToList(List<String> list);
 

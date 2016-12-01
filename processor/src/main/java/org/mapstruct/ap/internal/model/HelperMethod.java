@@ -123,6 +123,16 @@ public abstract class HelperMethod implements Method {
     }
 
     /**
+     * object factory mechanism not supported for built-in methods
+     *
+     * @return false
+     */
+    @Override
+    public boolean isObjectFactory() {
+        return false;
+    }
+
+    /**
      * the conversion context is used to format an auxiliary parameter in the method call with context specific
      * information such as a date format.
      *

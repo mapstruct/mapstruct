@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.lang.model.type.TypeKind;
-
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -97,7 +95,8 @@ public final class LifecycleCallbackFactory {
         return selector.getMatchingMethods( method, candidates, null, null, new SelectionCriteria(
             selectionParameters,
             null,
-            false ) );
+            false,
+            false) );
     }
 
     private static List<LifecycleCallbackMethodReference> toLifecycleCallbackMethodRefs(
@@ -122,7 +121,8 @@ public final class LifecycleCallbackFactory {
 
         List<Parameter> availableParams = getAvailableParameters( method, ctx );
         for ( SourceMethod callback : callbackMethods ) {
-            List<Parameter> parameterAssignments = getParameterAssignments( availableParams, callback.getParameters() );
+            List<Parameter> parameterAssignments =
+                ParameterAssignmentUtil.getParameterAssignments( availableParams, callback.getParameters() );
 
             if ( parameterAssignments != null
                 && callback.matches( extractSourceTypes( parameterAssignments ), method.getResultType() ) ) {
@@ -137,14 +137,15 @@ public final class LifecycleCallbackFactory {
     private static List<Parameter> getAvailableParameters(Method method, MappingBuilderContext ctx) {
         List<Parameter> availableParams = new ArrayList<Parameter>( method.getParameters() );
         if ( method.getMappingTargetParameter() == null ) {
-            availableParams.add( new Parameter( null, method.getResultType(), true, false ) );
+            availableParams.add( new Parameter( null, method.getResultType(), true, false, false) );
         }
 
         Parameter targetTypeParameter = new Parameter(
             null,
             ctx.getTypeFactory().classTypeOf( method.getResultType() ),
             false,
-            true );
+            true,
+            false );
 
         availableParams.add( targetTypeParameter );
         return availableParams;
@@ -171,67 +172,6 @@ public final class LifecycleCallbackFactory {
         }
 
         return result;
-    }
-
-    private static List<Parameter> getParameterAssignments(
-            List<Parameter> availableParams, List<Parameter> methodParameters) {
-        List<Parameter> result = new ArrayList<Parameter>( methodParameters.size() );
-
-        for ( Parameter methodParam : methodParameters ) {
-            List<Parameter> assignableParams = findCandidateParameters( availableParams, methodParam );
-
-            if ( assignableParams.isEmpty() ) {
-                return null;
-            }
-
-            if ( assignableParams.size() == 1 ) {
-                result.add( assignableParams.get( 0 ) );
-            }
-            else if ( assignableParams.size() > 1 ) {
-                Parameter paramWithMatchingName = findParameterWithName( assignableParams, methodParam.getName() );
-
-                if ( paramWithMatchingName != null ) {
-                    result.add( paramWithMatchingName );
-                }
-                else {
-                    return null;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private static Parameter findParameterWithName(List<Parameter> parameters, String name) {
-        for ( Parameter param : parameters ) {
-            if ( name.equals( param.getName() ) ) {
-                return param;
-            }
-        }
-
-        return null;
-    }
-
-    private static List<Parameter> findCandidateParameters(List<Parameter> candiateParameters, Parameter parameter) {
-        List<Parameter> result = new ArrayList<Parameter>( candiateParameters.size() );
-
-        for ( Parameter candidate : candiateParameters ) {
-            if ( ( isTypeVarOrWildcard( parameter ) || candidate.getType().isAssignableTo( parameter.getType() ) )
-                && parameter.isMappingTarget() == candidate.isMappingTarget()
-                && !parameter.isTargetType() && !candidate.isTargetType() ) {
-                result.add( candidate );
-            }
-            else if ( parameter.isTargetType() && candidate.isTargetType() ) {
-                result.add( candidate );
-            }
-        }
-
-        return result;
-    }
-
-    private static boolean isTypeVarOrWildcard(Parameter parameter) {
-        TypeKind kind = parameter.getType().getTypeMirror().getKind();
-        return kind == TypeKind.TYPEVAR || kind == TypeKind.WILDCARD;
     }
 
     private static List<SourceMethod> filterBeforeMappingMethods(List<SourceMethod> methods) {

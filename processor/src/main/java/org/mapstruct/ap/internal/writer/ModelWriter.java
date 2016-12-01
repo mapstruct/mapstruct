@@ -103,7 +103,9 @@ public class ModelWriter {
         @Override
         public Reader getReader(Object name, String encoding) throws IOException {
             URL url = getClass().getClassLoader().getResource( String.valueOf( name ) );
-
+            if ( url == null ) {
+                throw new IllegalStateException( name + " not found on classpath" );
+            }
             URLConnection connection = url.openConnection();
 
             // don't use jar-file caching, as it caused occasionally closed input streams [at least under JDK 1.8.0_25]

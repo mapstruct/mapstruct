@@ -35,6 +35,7 @@ import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.ObjectFactoryPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
@@ -59,6 +60,7 @@ public class SourceMethod implements Method {
     private final List<Parameter> parameters;
     private final Parameter mappingTargetParameter;
     private final Parameter targetTypeParameter;
+    private final boolean isObjectFactory;
     private final Type returnType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
@@ -183,9 +185,8 @@ public class SourceMethod implements Method {
 
         public SourceMethod build() {
 
-            MappingOptions mappingOptions
-                = new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
-
+            MappingOptions mappingOptions =
+                new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
 
             SourceMethod sourceMethod = new SourceMethod(
                 declaringMapper,
@@ -198,8 +199,7 @@ public class SourceMethod implements Method {
                 typeFactory,
                 mapperConfig,
                 prototypeMethods,
-                definingType
-            );
+                definingType );
 
             if ( mappings != null ) {
                 for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
@@ -211,10 +211,9 @@ public class SourceMethod implements Method {
             return sourceMethod;
         }
 
-
     }
 
-    @SuppressWarnings("checkstyle:parameternumber")
+    @SuppressWarnings( "checkstyle:parameternumber" )
     private SourceMethod(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
                          Type returnType, List<Type> exceptionTypes, MappingOptions mappingOptions, Types typeUtils,
                          TypeFactory typeFactory, MapperConfiguration config, List<SourceMethod> prototypeMethods,
@@ -230,12 +229,20 @@ public class SourceMethod implements Method {
 
         this.mappingTargetParameter = determineMappingTargetParameter( parameters );
         this.targetTypeParameter = determineTargetTypeParameter( parameters );
+        this.isObjectFactory = determineIfIsObjectFactory( executable );
 
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
         this.config = config;
         this.prototypeMethods = prototypeMethods;
         this.mapperToImplement = mapperToImplement;
+    }
+
+    private boolean determineIfIsObjectFactory(ExecutableElement executable) {
+        boolean hasFactoryAnnotation = ObjectFactoryPrism.getInstanceOn( executable ) != null;
+        boolean isFactoryWithTargeTypeAnnotation = getTargetTypeParameter() != null && getSourceParameters().isEmpty();
+        return !returnType.isVoid()
+            && ( hasFactoryAnnotation || isFactoryWithTargeTypeAnnotation || parameters.isEmpty() );
     }
 
     private Parameter determineMappingTargetParameter(Iterable<Parameter> parameters) {
@@ -349,8 +356,7 @@ public class SourceMethod implements Method {
 
     public boolean isSame(SourceMethod method) {
         return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
-            && equals( first( getSourceParameters() ).getType(),
-                first( method.getSourceParameters() ).getType() )
+            && equals( first( getSourceParameters() ).getType(), first( method.getSourceParameters() ).getType() )
             && equals( getResultType(), method.getResultType() );
     }
 
@@ -365,6 +371,11 @@ public class SourceMethod implements Method {
     @Override
     public Parameter getMappingTargetParameter() {
         return mappingTargetParameter;
+    }
+
+    @Override
+    public boolean isObjectFactory() {
+        return isObjectFactory;
     }
 
     @Override
@@ -445,7 +456,6 @@ public class SourceMethod implements Method {
      * Returns the {@link Mapping}s for the given source property.
      *
      * @param sourcePropertyName the source property name
-     *
      * @return list of mappings
      */
     public List<Mapping> getMappingBySourcePropertyName(String sourcePropertyName) {

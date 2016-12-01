@@ -35,15 +35,18 @@ import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
-import org.mapstruct.ap.internal.model.SourceRHS;
+import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
+import org.mapstruct.ap.internal.model.ObjectFactoryMethodReference;
+import org.mapstruct.ap.internal.model.ParameterAssignmentUtil;
+import org.mapstruct.ap.internal.model.SourceRHS;
 import org.mapstruct.ap.internal.model.VirtualMappingMethod;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
-import org.mapstruct.ap.internal.model.HelperMethod;
+import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
@@ -97,11 +100,7 @@ public class MappingResolverImpl implements MappingResolver {
 
         this.conversions = new Conversions( elementUtils, typeFactory );
         this.builtInMethods = new BuiltInMappingMethods( typeFactory );
-        this.methodSelectors = new MethodSelectors(
-            typeUtils,
-            elementUtils,
-            typeFactory
-        );
+        this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, typeFactory );
     }
 
     @Override
@@ -111,7 +110,7 @@ public class MappingResolverImpl implements MappingResolver {
         SelectionParameters selectionParameters, SourceRHS sourceRHS, boolean preferUpdateMapping) {
 
         SelectionCriteria criteria =
-            new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping );
+            new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping, false );
 
         String dateFormat = null;
         String numberFormat = null;
@@ -139,28 +138,62 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    public MethodReference getFactoryMethod( Method mappingMethod, Type targetType,
-        SelectionParameters selectionParameters ) {
+    public MethodReference getFactoryMethod(final Method mappingMethod, Type targetType,
+                                            SelectionParameters selectionParameters) {
 
-        SelectionCriteria criteria = new SelectionCriteria( selectionParameters, null, false );
+        SelectionCriteria criteria = new SelectionCriteria( selectionParameters, null, false, true );
 
-        ResolvingAttempt attempt = new ResolvingAttempt(
-            sourceModel,
-            mappingMethod,
-            null,
-            null,
-            null,
-            null,
-            criteria
-        );
+        ResolvingAttempt attempt = new ResolvingAttempt( sourceModel, mappingMethod, null, null, null, null, criteria );
 
-        SourceMethod matchingSourceMethod = attempt.getBestMatch( sourceModel, null, targetType );
-        if ( matchingSourceMethod != null ) {
-            MapperReference ref = attempt.findMapperReference( matchingSourceMethod );
-            return new MethodReference( matchingSourceMethod, ref, null );
+        List<SourceMethod> matchingSourceMethods = attempt.getMatches( sourceModel, null, targetType );
+
+        List<MethodReference> factoryRefsWithAssigments = new ArrayList<MethodReference>();
+        List<SourceMethod> factoryRefSources = new ArrayList<SourceMethod>();
+
+        for ( SourceMethod matchingSourceMethod : matchingSourceMethods ) {
+
+            if ( matchingSourceMethod != null ) {
+                MapperReference ref = attempt.findMapperReference( matchingSourceMethod );
+
+                if ( matchingSourceMethod.getSourceParameters().isEmpty() ) {
+                    // factory taking no argument
+                    factoryRefsWithAssigments.add( new MethodReference( matchingSourceMethod, ref, null ) );
+                    factoryRefSources.add( matchingSourceMethod );
+                }
+                else {
+                    // check whether factory have has a valid assignment, if so, choose as candidate
+                    List<Parameter> availableParameters = new ArrayList<Parameter>();
+                    availableParameters.addAll( mappingMethod.getSourceParameters() );
+                    availableParameters.add(
+                        new Parameter( null,
+                                       typeFactory.classTypeOf( targetType ),
+                                       false, true, false ) );
+                    List<Parameter> factoryParamAssinment =
+                        ParameterAssignmentUtil.getParameterAssignments( availableParameters,
+                                                                         matchingSourceMethod.getParameters() );
+                    if ( factoryParamAssinment != null ) {
+                        factoryRefSources.add( matchingSourceMethod );
+                        factoryRefsWithAssigments.add(
+                            new ObjectFactoryMethodReference( matchingSourceMethod, ref, factoryParamAssinment ) );
+                    }
+                }
+            }
         }
-        return null;
 
+        if ( factoryRefsWithAssigments.size() > 1 ) {
+            messager.printMessage(
+                mappingMethod.getExecutable(),
+                Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
+                targetType,
+                Strings.join( factoryRefSources, ", " ) );
+        }
+        else if ( factoryRefsWithAssigments.size() == 1 ) {
+            // factory methods with assignment are favored over the ones without any
+            return factoryRefsWithAssigments.get( 0 );
+        }
+
+        // no factory found
+        return null;
     }
 
     private class ResolvingAttempt {
@@ -180,7 +213,8 @@ public class MappingResolverImpl implements MappingResolver {
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
         private ResolvingAttempt(List<SourceMethod> sourceModel, Method mappingMethod, String mappedElement,
-            String dateFormat, String numberFormat, SourceRHS sourceRHS, SelectionCriteria criteria) {
+                String dateFormat, String numberFormat, SourceRHS sourceRHS, SelectionCriteria criteria) {
+
 
             this.mappingMethod = mappingMethod;
             this.mappedElement = mappedElement;
@@ -270,7 +304,7 @@ public class MappingResolverImpl implements MappingResolver {
                 return null;
             }
             ConversionContext ctx = new DefaultConversionContext( typeFactory, messager, sourceType, targetType,
-                dateFormat, numberFormat );
+                    dateFormat, numberFormat );
 
             // add helper methods required in conversion
             for ( HelperMethod helperMethod : conversionProvider.getRequiredHelperMethods( ctx ) ) {
@@ -336,7 +370,7 @@ public class MappingResolverImpl implements MappingResolver {
             // Iterate over all source methods. Check if the return type matches with the parameter that we need.
             // so assume we need a method from A to C we look for a methodX from A to B (all methods in the
             // list form such a candidate).
-            // For each of the candidates, we need to look if there's  a methodY, either
+            // For each of the candidates, we need to look if there's a methodY, either
             // sourceMethod or builtIn that fits the signature B to C. Only then there is a match. If we have a match
             // a nested method call can be called. so C = methodY( methodX (A) )
             for ( Method methodYCandidate : methodYCandidates ) {
@@ -442,7 +476,6 @@ public class MappingResolverImpl implements MappingResolver {
             }
             return conversionYRef;
         }
-
         private boolean isCandidateForMapping(Method methodCandidate) {
             return isCreateMethodForMapping( methodCandidate ) || isUpdateMethodForMapping( methodCandidate );
         }
@@ -460,6 +493,16 @@ public class MappingResolverImpl implements MappingResolver {
             return methodCandidate.getSourceParameters().size() == 1
                 && methodCandidate.getMappingTargetParameter() != null
                 && !methodCandidate.isLifecycleCallbackMethod();
+        }
+
+        private <T extends Method> List<T> getMatches(List<T> methods, Type sourceType, Type returnType) {
+            return methodSelectors.getMatchingMethods(
+                mappingMethod,
+                methods,
+                sourceType,
+                returnType,
+                selectionCriteria
+            );
         }
 
         private <T extends Method> T getBestMatch(List<T> methods, Type sourceType, Type returnType) {

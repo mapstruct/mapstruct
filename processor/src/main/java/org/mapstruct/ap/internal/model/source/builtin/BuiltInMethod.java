@@ -142,6 +142,16 @@ public abstract class BuiltInMethod implements Method {
     }
 
     /**
+     * object factory mechanism not supported for built-in methods
+     *
+     * @return false
+     */
+    @Override
+    public boolean isObjectFactory() {
+        return false;
+    }
+
+    /**
      * the conversion context is used to format an auxiliary parameter in the method call with context specific
      * information such as a date format.
      *
@@ -190,8 +200,6 @@ public abstract class BuiltInMethod implements Method {
         return true;
     }
 
-
-
     /**
      * There's currently only one parameter foreseen instead of a list of parameter
      *
@@ -226,7 +234,7 @@ public abstract class BuiltInMethod implements Method {
 
     @Override
     public boolean overridesMethod() {
-        return  false;
+        return false;
     }
 
     @Override

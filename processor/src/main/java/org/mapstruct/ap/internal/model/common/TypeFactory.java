@@ -299,7 +299,8 @@ public class TypeFactory {
                 parameter.getSimpleName().toString(),
                 getType( parameterType ),
                 MappingTargetPrism.getInstanceOn( parameter ) != null,
-                TargetTypePrism.getInstanceOn( parameter ) != null ) );
+                TargetTypePrism.getInstanceOn( parameter ) != null,
+                false) );
         }
 
         return result;

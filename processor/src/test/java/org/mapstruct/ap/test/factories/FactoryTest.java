@@ -28,6 +28,11 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.factories.a.BarFactory;
+import org.mapstruct.ap.test.factories.targettype.Bar9Base;
+import org.mapstruct.ap.test.factories.targettype.Bar9Child;
+import org.mapstruct.ap.test.factories.targettype.Bar9Factory;
+import org.mapstruct.ap.test.factories.targettype.Foo9Base;
+import org.mapstruct.ap.test.factories.targettype.Foo9Child;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -35,16 +40,16 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 /**
  * @author Sjaak Derksen
  */
-@IssueKey("81")
-@WithClasses({
-    Bar1.class, Foo1.class, Bar2.class, Foo2.class, Bar3.class, Foo3.class, BarFactory.class,
-    org.mapstruct.ap.test.factories.b.BarFactory.class, Source.class, SourceTargetMapperAndBar2Factory.class,
-    Target.class, CustomList.class, CustomListImpl.class, CustomMap.class, CustomMapImpl.class, FactoryCreatable.class
-})
-@RunWith(AnnotationProcessorTestRunner.class)
+@IssueKey( "81" )
+@WithClasses( { Bar1.class, Foo1.class, Bar2.class, Foo2.class, Bar3.class, Foo3.class, Bar4.class, Foo4.class,
+    Foo9Base.class, Foo9Child.class, Bar9Base.class, Bar9Child.class, BarFactory.class,
+    org.mapstruct.ap.test.factories.b.BarFactory.class, org.mapstruct.ap.test.factories.c.BarFactory.class,
+    Bar9Factory.class, Source.class, SourceTargetMapperAndBar2Factory.class, Target.class, CustomList.class,
+    CustomListImpl.class, CustomMap.class, CustomMapImpl.class, FactoryCreatable.class } )
+@RunWith( AnnotationProcessorTestRunner.class )
 public class FactoryTest {
     @Test
-    public void shouldUseTwoFactoryMethods() {
+    public void shouldUseThreeFactoryMethods() {
         Target target = SourceTargetMapperAndBar2Factory.INSTANCE.sourceToTarget( createSource() );
 
         assertThat( target ).isNotNull();
@@ -57,6 +62,14 @@ public class FactoryTest {
         assertThat( target.getProp3() ).isNotNull();
         assertThat( target.getProp3().getProp() ).isEqualTo( "foo3" );
         assertThat( target.getProp3().getSomeTypeProp() ).isEqualTo( "BAR3" );
+        assertThat( target.getProp4() ).isNotNull();
+        assertThat( target.getProp4().getProp() ).isEqualTo( "foo4" );
+
+        // notice that bar4 factory gets someTypeProp from the source!
+        assertThat( target.getProp4() ).isNotNull();
+        assertThat( target.getProp4().getProp() ).isEqualTo( "foo4" );
+        assertThat( target.getProp4().getSomeTypeProp() ).isEqualTo( "FOO4" );
+
         assertThat( target.getPropList() ).isNotNull();
         assertThat( target.getPropList().get( 0 ) ).isEqualTo( "fooListEntry" );
         assertThat( target.getPropList().getTypeProp() ).isEqualTo( "CUSTOMLIST" );
@@ -79,6 +92,10 @@ public class FactoryTest {
         Foo3 foo3 = new Foo3();
         foo3.setProp( "foo3" );
         source.setProp3( foo3 );
+
+        Foo4 foo4 = new Foo4();
+        foo4.setProp( "foo4" );
+        source.setProp4( foo4 );
 
         List<String> fooList = new ArrayList<String>();
         fooList.add( "fooListEntry" );

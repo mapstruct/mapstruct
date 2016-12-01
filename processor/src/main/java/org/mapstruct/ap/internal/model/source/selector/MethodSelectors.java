@@ -41,6 +41,7 @@ public class MethodSelectors implements MethodSelector {
     public MethodSelectors(Types typeUtils, Elements elementUtils, TypeFactory typeFactory) {
         selectors =
             Arrays.<MethodSelector>asList(
+                new ObjectFactorySelector(),
                 new TypeSelector(),
                 new QualifierSelector( typeUtils, elementUtils ),
                 new TargetTypeSelector( typeUtils, elementUtils ),

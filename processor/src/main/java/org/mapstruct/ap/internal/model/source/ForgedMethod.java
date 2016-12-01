@@ -216,4 +216,14 @@ public class ForgedMethod implements Method {
     public boolean isUpdateMethod() {
         return getMappingTargetParameter() != null;
     }
+
+    /**
+     * object factory mechanism not supported for forged methods
+     *
+     * @return false
+     */
+    @Override
+    public boolean isObjectFactory() {
+        return false;
+    }
 }

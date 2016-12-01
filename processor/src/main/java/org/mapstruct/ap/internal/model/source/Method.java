@@ -85,6 +85,14 @@ public interface Method {
     Parameter getMappingTargetParameter();
 
     /**
+     * Returns whether the meethod is designated as bean factory for
+     * mapping target {@link  org.mapstruct.ObjectFactory }
+     *
+     * @return true if it is a target bean factory.
+     */
+    boolean isObjectFactory();
+
+    /**
      * Returns the parameter designated as target type (if present) {@link org.mapstruct.TargetType }
      *
      * @return target type parameter (when present) null otherwise.

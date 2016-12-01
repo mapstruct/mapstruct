@@ -26,6 +26,7 @@ public class Target {
     private Bar1 prop1;
     private Bar2 prop2;
     private Bar3 prop3;
+    private Bar4 prop4;
     private CustomList<String> propList;
     private CustomMap<String, String> propMap;
 
@@ -51,6 +52,14 @@ public class Target {
 
     public void setProp3(Bar3 prop3) {
         this.prop3 = prop3;
+    }
+
+    public Bar4 getProp4() {
+        return prop4;
+    }
+
+    public void setProp4(Bar4 prop4) {
+        this.prop4 = prop4;
     }
 
     public CustomList<String> getPropList() {
