@@ -151,6 +151,7 @@ public class Strings {
      */
     public static String getSaveVariableName(String name, Collection<String> existingVariableNames) {
         name = decapitalize( sanitizeIdentifierName( name ) );
+        name = joinAndCamelize( extractParts( name ) );
 
         Set<String> conflictingNames = new HashSet<String>( KEYWORDS );
         conflictingNames.addAll( existingVariableNames );
@@ -168,5 +169,17 @@ public class Strings {
      */
     public static String sanitizeIdentifierName(String identifier) {
         return identifier.replace( "[]", "Array" );
+    }
+
+    /**
+     * It removes the dots from the name and creates an {@link Iterable} from them.
+     *
+     * E.q. for the name {@code props.font} it will return an {@link Iterable} containing the {@code props} and
+     * {@code font}
+     * @param name the name that needs to be parsed into parts
+     * @return an {@link Iterable} containing all the parts of the name.
+     */
+    static Iterable<String> extractParts(String name) {
+        return Arrays.asList( name.split( "\\." ) );
     }
 }
