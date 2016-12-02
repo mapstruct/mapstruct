@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.nestedproperties.simple;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -41,5 +42,8 @@ public interface SimpleMapper {
         @Mapping( target = "byteArray", source = "props.byteArray" ),
         @Mapping( target = "stringValue", source = "props.stringValue" ) } )
     TargetObject toTargetObject(SourceRoot sourceRoot);
+
+    @InheritInverseConfiguration
+    SourceRoot toSourceRoot(TargetObject targetObject);
 
 }
