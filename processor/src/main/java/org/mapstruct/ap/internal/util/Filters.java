@@ -65,7 +65,6 @@ public class Filters {
 
         for ( Accessor method : elements ) {
             if ( Executables.isPresenceCheckMethod( method ) ) {
-                //TODO maybe we need to do the instance of check here
                 presenceCheckMethods.add( (ExecutableElementAccessor) method );
             }
         }

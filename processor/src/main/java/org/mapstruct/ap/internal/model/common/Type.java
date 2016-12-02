@@ -379,7 +379,6 @@ public class Type extends ModelElement implements Comparable<Type> {
                 }
             }
 
-            //TODO decide if we want to have a mechanism for turning on/off direct field mapping
             List<Accessor> fieldsList = Filters.fieldsIn( getAllAccessors() );
             for ( Accessor field : fieldsList ) {
                 String propertyName = Executables.getPropertyName( field );
@@ -466,7 +465,6 @@ public class Type extends ModelElement implements Comparable<Type> {
             else if ( Executables.isFieldAccessor( candidate ) && ( Executables.isFinal( candidate ) ||
                 result.containsKey( targetPropertyName ) ) ) {
                 // if the candidate is a field and a mapping already exists, then use that one, skip it.
-                //TODO maybe we need on/off switch whether to use field mapping or not
                 continue;
             }
 

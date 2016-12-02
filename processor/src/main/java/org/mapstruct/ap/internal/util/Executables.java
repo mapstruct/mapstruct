@@ -267,7 +267,6 @@ public class Executables {
     private static void addFields(List<Accessor> alreadyCollected, List<VariableElement> variablesToAdd) {
         List<Accessor> safeToAdd = new ArrayList<Accessor>( variablesToAdd.size() );
         for ( VariableElement toAdd : variablesToAdd ) {
-            //TODO should we do some check?
             safeToAdd.add( new VariableElementAccessor( toAdd ) );
         }
 
