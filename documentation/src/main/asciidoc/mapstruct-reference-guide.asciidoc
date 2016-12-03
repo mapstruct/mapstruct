@@ -20,13 +20,13 @@ This work is licensed under the http://creativecommons.org/licenses/by-sa/4.0/[C
 
 MapStruct is a Java http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html[annotation processor] for the generation of type-safe bean mapping classes.
 
-All you have to do is to define a mapper interface which declares any required mapping methods. During compilation, MapStruct will generate an implementation of this interface. This implementation uses plain Java method/field invocations for mapping between source and target objects, i.e. no reflection or similar.
+All you have to do is to define a mapper interface which declares any required mapping methods. During compilation, MapStruct will generate an implementation of this interface. This implementation uses plain Java method invocations for mapping between source and target objects, i.e. no reflection or similar.
 
 Compared to writing mapping code from hand, MapStruct saves time by generating code which is tedious and error-prone to write. Following a convention over configuration approach, MapStruct uses sensible defaults but steps out of your way when it comes to configuring or implementing special behavior.
 
 Compared to dynamic mapping frameworks, MapStruct offers the following advantages:
 
-* Fast execution by using plain method/field invocations instead of reflection
+* Fast execution by using plain method invocations instead of reflection
 * Compile-time type safety: Only objects and attributes mapping to each other can be mapped, no accidental mapping of an order entity into a customer DTO etc.
 * Clear error-reports at build time, if entities or attributes can't be mapped
 
@@ -307,13 +307,6 @@ The property name as defined in the http://www.oracle.com/technetwork/java/javas
 
 [TIP]
 ====
-Since version 1.2.x a property name is also any `public` field with the given name. e.q. _seatCount_ for a `public`
-property with the same name. In this case no accessor methods `getSeatCount()` and `setSeatCount()` are needed to
-read/write from/to property
-====
-
-[TIP]
-====
 When using Java 8 or later, you can omit the `@Mappings` wrapper annotation and directly specify several `@Mapping` annotations on one method.
 ====
 
@@ -357,29 +350,13 @@ public class CarMapperImpl implements CarMapper {
 ----
 ====
 
-The general philosophy of MapStruct is to generate code which looks as much as possible as if you had written it yourself from hand. In particular this means that the values are copied from source to target by plain getter/setter/field invocations instead of reflection or similar.
+The general philosophy of MapStruct is to generate code which looks as much as possible as if you had written it yourself from hand. In particular this means that the values are copied from source to target by plain getter/setter invocations instead of reflection or similar.
 
 As the example shows the generated code takes into account any name mappings specified via `@Mapping`. If the type of a mapped attribute is different in source and target entity, MapStruct will either apply an automatic conversion (as e.g. for the _price_ property, see also <<implicit-type-conversions>>) or optionally invoke another mapping method (as e.g. for the _driver_ property, see also <<mapping-object-references>>).
 
 Collection-typed attributes with the same element type will be copied by creating a new instance of the target collection type containing the elements from the source property. For collection-typed attributes with different element types each element will be mapped individually and added to the target collection (see <<mapping-collections>>).
 
 MapStruct takes all public properties of the source and target types into account. This includes properties declared on super-types.
-
-[[field-mappings]]
-=== Mappings via field
-
-Since version 1.2.x MapStruct also supports mappings of `public` fields that have no getters/setters. MapStruct will
-use the fields as read/write accessor if it cannot find suitable getter/setter methods for the property.
-
-A field is considered as a read accessor if it is `public` or `public final`. If a field is `static` it is not
-considered as a read accessors.
-
-A field is considered as a write accessor only if it is `public`. If a field is `final` and/or `static` it is not
-considered as a write accessor.
-
-You can find a complete example in the
-https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-field-mapping[mapstruct-examples-field-mapping]
-project on GitHub.
 
 
 [[adding-custom-methods]]
@@ -523,6 +500,164 @@ public interface CarMapper {
 The generated code of the `updateCarFromDto()` method will update the passed `Car` instance with the properties from the given `CarDto` object. There may be only one parameter marked as mapping target. Instead of `void` you may also set the method's return type to the type of the target parameter, which will cause the generated implementation to update the passed mapping target and return it as well. This allows for fluent invocations of mapping methods.
 
 Collection- or map-typed properties of the target bean to be updated will be cleared and then populated with the values from the corresponding source collection or map.
+
+[[direct-field-mappings]]
+=== Mappings with direct field access
+
+MapStruct also supports mappings of `public` fields that have no getters/setters. MapStruct will
+use the fields as read/write accessor if it cannot find suitable getter/setter methods for the property.
+
+A field is considered as a read accessor if it is `public` or `public final`. If a field is `static` it is not
+considered as a read accessors.
+
+A field is considered as a write accessor only if it is `public`. If a field is `final` and/or `static` it is not
+considered as a write accessor.
+
+Small example:
+
+.Mappings with direct field access
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Customer {
+
+    private Long id;
+    private String name;
+    private Collection<OrderItem> orderItems;
+
+    //getters and setter omitted for brevity
+}
+
+public class OrderItem {
+
+    private String name;
+    private Long quantity;
+
+    //getters and setter omitted for brevity
+}
+
+public class CustomerDto {
+
+    public Long id;
+    public String name;
+    public List<OrderItemDto> orders;
+}
+
+public class OrderItemDto {
+
+    public String name;
+    public Long quantity;
+}
+
+@Mapper
+public interface CustomerMapper {
+
+    CustomerMapper MAPPER = Mappers.getMapper( CustomerMapper.class );
+
+    @Mapping(source = "orders", target = "orderItems")
+    Customer toCustomer(CustomerDto customerDto);
+
+    @InheritInverseConfiguration
+    CustomerDto fromCustomer(Customer customer);
+
+    OrderItem toOrder(OrderItemDto orderItemDto);
+
+    @InheritInverseConfiguration
+    OrderItemDto fromOrder(OrderItem orderItem);
+}
+----
+====
+
+For the configuration from above, the generated mapper looks like:
+
+.Generated mapper for mappings with direct field access
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CustomerMapperImpl implements CustomerMapper {
+
+    @Override
+    public Customer toCustomer(CustomerDto customerDto) {
+        if ( customerDto == null ) {
+            return null;
+        }
+
+        Customer customer = new Customer();
+
+        Collection<OrderItem> collection = orderItemDtoListToOrderItemCollection( customerDto.orders );
+        if ( collection != null ) {
+            customer.setOrderItems( collection );
+        }
+        customer.setId( customerDto.id );
+        customer.setName( customerDto.name );
+
+        return customer;
+    }
+
+    @Override
+    public CustomerDto fromCustomer(Customer customer) {
+        if ( customer == null ) {
+            return null;
+        }
+
+        CustomerDto customerDto = new CustomerDto();
+
+        List<OrderItemDto> list = orderItemCollectionToOrderItemDtoList( customer.getOrderItems() );
+        if ( list != null ) {
+            customerDto.orders = list;
+        }
+        customerDto.id = customer.getId();
+        customerDto.name = customer.getName();
+
+        return customerDto;
+    }
+
+    @Override
+    public OrderItem toOrder(OrderItemDto orderItemDto) {
+        if ( orderItemDto == null ) {
+            return null;
+        }
+
+        OrderItem orderItem = new OrderItem();
+
+        orderItem.setName( orderItemDto.name );
+        orderItem.setQuantity( orderItemDto.quantity );
+
+        return orderItem;
+    }
+
+    @Override
+    public OrderItemDto fromOrder(OrderItem orderItem) {
+        if ( orderItem == null ) {
+            return null;
+        }
+
+        OrderItemDto orderItemDto = new OrderItemDto();
+
+        orderItemDto.name = orderItem.getName();
+        orderItemDto.quantity = orderItem.getQuantity();
+
+        return orderItemDto;
+    }
+
+    protected Collection<OrderItem> orderItemDtoListToOrderItemCollection(List<OrderItemDto> list) {
+        //MapStruct default implementation
+    }
+
+    protected List<OrderItemDto> orderItemCollectionToOrderItemDtoList(Collection<OrderItem> collection) {
+        //MapStruct default implementation
+    }
+}
+----
+====
+
+
+You can find the complete example in the
+https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-field-mapping[mapstruct-examples-field-mapping]
+project on GitHub.
 
 [[retrieving-mapper]]
 == Retrieving a mapper
