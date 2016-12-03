@@ -358,7 +358,6 @@ Collection-typed attributes with the same element type will be copied by creatin
 
 MapStruct takes all public properties of the source and target types into account. This includes properties declared on super-types.
 
-
 [[adding-custom-methods]]
 === Adding custom methods to mappers
 
@@ -515,7 +514,7 @@ considered as a write accessor.
 
 Small example:
 
-.Mappings with direct field access
+.Examples classes for mapping
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
@@ -571,7 +570,7 @@ public interface CustomerMapper {
 
 For the configuration from above, the generated mapper looks like:
 
-.Generated mapper for mappings with direct field access
+.Generated mapper for example classes
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
@@ -653,7 +652,6 @@ public class CustomerMapperImpl implements CustomerMapper {
 }
 ----
 ====
-
 
 You can find the complete example in the
 https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-field-mapping[mapstruct-examples-field-mapping]
