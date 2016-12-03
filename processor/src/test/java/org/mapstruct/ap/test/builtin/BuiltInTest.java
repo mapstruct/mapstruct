@@ -134,10 +134,12 @@ public class BuiltInTest {
 
         JaxbElementProperty source = new JaxbElementProperty();
         source.setProp( createJaxb( "TEST" ) );
+        source.publicProp = createJaxb( "PUBLIC TEST" );
 
         StringProperty target = JaxbMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( "TEST" );
+        assertThat( target.publicProp ).isEqualTo( "PUBLIC TEST" );
     }
 
     @Test
@@ -146,10 +148,12 @@ public class BuiltInTest {
 
         JaxbElementListProperty source = new JaxbElementListProperty();
         source.setProp( createJaxbList( "TEST2" ) );
+        source.publicProp = createJaxbList( "PUBLIC TEST2" );
 
         StringListProperty target = JaxbListMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp().get( 0 ) ).isEqualTo( "TEST2" );
+        assertThat( target.publicProp.get( 0 ) ).isEqualTo( "PUBLIC TEST2" );
     }
 
     @Test
@@ -157,11 +161,14 @@ public class BuiltInTest {
 
         DateProperty source = new DateProperty();
         source.setProp( createDate( "31-08-1982 10:20:56" ) );
+        source.publicProp = createDate( "31-08-2016 10:20:56" );
 
         XmlGregorianCalendarProperty target = DateToXmlGregCalMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp().toString() ).isEqualTo( "1982-08-31T10:20:56.000+02:00" );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp.toString() ).isEqualTo( "2016-08-31T10:20:56.000+02:00" );
     }
 
     @Test
@@ -169,11 +176,14 @@ public class BuiltInTest {
 
         XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
         source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
+        source.publicProp = createXmlCal( 2016, 3, 2, 60 );
 
         DateProperty target = XmlGregCalToDateMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp().toString() ).isEqualTo( "Tue Mar 02 00:00:00 CET 1999" );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp.toString() ).isEqualTo( "Wed Mar 02 00:00:00 CET 2016" );
 
     }
 
@@ -182,24 +192,32 @@ public class BuiltInTest {
 
         StringProperty source = new StringProperty();
         source.setProp( "05.07.1999" );
+        source.publicProp = "05.07.2016";
 
         XmlGregorianCalendarProperty target = StringToXmlGregCalMapper.INSTANCE.mapAndFormat( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp().toString() ).isEqualTo( "1999-07-05T00:00:00.000+02:00" );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp.toString() ).isEqualTo( "2016-07-05T00:00:00.000+02:00" );
 
         // direct,via lexical representation
         source.setProp( "2000-03-04T23:00:00+03:00" );
+        source.publicProp = "2016-03-04T23:00:00+03:00";
         target = StringToXmlGregCalMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp().toString() ).isEqualTo( "2000-03-04T23:00:00+03:00" );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp.toString() ).isEqualTo( "2016-03-04T23:00:00+03:00" );
 
         // null string
         source.setProp( null );
+        source.publicProp = null;
         target = StringToXmlGregCalMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNull();
+        assertThat( target.publicProp ).isNull();
 
     }
 
@@ -208,18 +226,24 @@ public class BuiltInTest {
 
         XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
         source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
+        source.publicProp = createXmlCal( 2016, 3, 2, 60 );
 
         StringProperty target = XmlGregCalToStringMapper.INSTANCE.mapAndFormat( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( "02.03.1999" );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp ).isEqualTo( "02.03.2016" );
 
         source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
+        source.publicProp = createXmlCal( 2016, 3, 2, 60 );
 
         target = XmlGregCalToStringMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( "1999-03-02+01:00" );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp ).isEqualTo( "2016-03-02+01:00" );
 
     }
 
@@ -228,11 +252,14 @@ public class BuiltInTest {
 
         CalendarProperty source = new CalendarProperty();
         source.setProp( createCalendar( "02.03.1999" ) );
+        source.publicProp = createCalendar( "02.03.2016" );
 
         XmlGregorianCalendarProperty target = CalendarToXmlGregCalMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp().toString() ).isEqualTo( "1999-03-02T00:00:00.000+01:00" );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp.toString() ).isEqualTo( "2016-03-02T00:00:00.000+01:00" );
     }
 
     @Test
@@ -240,11 +267,15 @@ public class BuiltInTest {
 
         XmlGregorianCalendarProperty source = new XmlGregorianCalendarProperty();
         source.setProp( createXmlCal( 1999, 3, 2, 60 ) );
+        source.publicProp = createXmlCal( 2016, 3, 2, 60 );
 
         CalendarProperty target = XmlGregCalToCalendarMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp().getTimeInMillis() ).isEqualTo( 920329200000L );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp.getTimeInMillis() ).isEqualTo( 1456873200000L );
+        assertThat( target.publicProp.getTimeInMillis() ).isEqualTo( 1456873200000L );
 
     }
 
@@ -253,11 +284,14 @@ public class BuiltInTest {
 
         CalendarProperty source = new CalendarProperty();
         source.setProp( createCalendar( "02.03.1999" ) );
+        source.publicProp = createCalendar( "02.03.2016" );
 
         DateProperty target = CalendarToDateMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( createCalendar( "02.03.1999" ).getTime() );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp ).isEqualTo( createCalendar( "02.03.2016" ).getTime() );
     }
 
     @Test
@@ -265,11 +299,14 @@ public class BuiltInTest {
 
         DateProperty source = new DateProperty();
         source.setProp( new SimpleDateFormat( "dd.MM.yyyy" ).parse( "02.03.1999" ) );
+        source.publicProp = new SimpleDateFormat( "dd.MM.yyyy" ).parse( "02.03.2016" );
 
         CalendarProperty target = DateToCalendarMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( createCalendar( "02.03.1999" ) );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp ).isEqualTo( createCalendar( "02.03.2016" ) );
 
     }
 
@@ -278,11 +315,14 @@ public class BuiltInTest {
 
         CalendarProperty source = new CalendarProperty();
         source.setProp( createCalendar( "02.03.1999" ) );
+        source.publicProp = createCalendar( "02.03.2016" );
 
         StringProperty target = CalendarToStringMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( "02.03.1999" );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp ).isEqualTo( "02.03.2016" );
     }
 
     @Test
@@ -290,11 +330,14 @@ public class BuiltInTest {
 
         StringProperty source = new StringProperty();
         source.setProp( "02.03.1999" );
+        source.publicProp = "02.03.2016";
 
         CalendarProperty target = StringToCalendarMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( createCalendar( "02.03.1999" ) );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp ).isEqualTo( createCalendar( "02.03.2016" ) );
 
     }
 
@@ -303,10 +346,12 @@ public class BuiltInTest {
 
         IterableSource source = new IterableSource();
         source.setDates( Arrays.asList( new XMLGregorianCalendar[] { createXmlCal( 1999, 3, 2, 60 ) } ) );
+        source.publicDates = Arrays.asList( new XMLGregorianCalendar[] { createXmlCal( 2016, 3, 2, 60 ) } );
 
         IterableTarget target = IterableSourceTargetMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
         assertThat( target.getDates() ).containsExactly( "02.03.1999" );
+        assertThat( target.publicDates ).containsExactly( "02.03.2016" );
     }
 
     @Test
@@ -315,10 +360,13 @@ public class BuiltInTest {
         MapSource source = new MapSource();
         source.setExample( new HashMap<JAXBElement<String>, XMLGregorianCalendar>() );
         source.getExample().put( createJaxb( "TEST" ), createXmlCal( 1999, 3, 2, 60 ) );
+        source.publicExample = new HashMap<JAXBElement<String>, XMLGregorianCalendar>();
+        source.publicExample.put( createJaxb( "TEST" ), createXmlCal( 2016, 3, 2, 60 ) );
 
         MapTarget target = MapSourceTargetMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
         assertThat( target.getExample().get( "TEST" ) ).isEqualTo( "1999-03-02+01:00" );
+        assertThat( target.publicExample.get( "TEST" ) ).isEqualTo( "2016-03-02+01:00" );
     }
 
     @Test
@@ -327,11 +375,14 @@ public class BuiltInTest {
 
         CalendarProperty source = new CalendarProperty();
         source.setProp( createCalendar( "02.03.1999" ) );
+        source.publicProp = createCalendar( "02.03.2016" );
 
         ZonedDateTimeProperty target = CalendarToZonedDateTimeMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( ZonedDateTime.of( 1999, 3, 2, 0, 0, 0, 0, ZoneId.systemDefault() ) );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp ).isEqualTo( ZonedDateTime.of( 2016, 3, 2, 0, 0, 0, 0, ZoneId.systemDefault() ) );
     }
 
     @Test
@@ -340,11 +391,14 @@ public class BuiltInTest {
 
         ZonedDateTimeProperty source = new ZonedDateTimeProperty();
         source.setProp( ZonedDateTime.of( 1999, 3, 2, 0, 0, 0, 0, ZoneId.systemDefault() ) );
+        source.publicProp = ZonedDateTime.of( 2016, 3, 2, 0, 0, 0, 0, ZoneId.systemDefault() );
 
         CalendarProperty target = ZonedDateTimeToCalendarMapper.INSTANCE.map( source );
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( createCalendar( "02.03.1999" ) );
+        assertThat( target.publicProp ).isNotNull();
+        assertThat( target.publicProp ).isEqualTo( createCalendar( "02.03.2016" ) );
     }
 
     private JAXBElement<String> createJaxb(String test) {

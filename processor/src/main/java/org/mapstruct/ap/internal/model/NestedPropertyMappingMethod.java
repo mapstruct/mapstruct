@@ -27,6 +27,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.ValueProvider;
 
 /**
  * This method is used to convert the nested properties as listed in propertyEntries into a method
@@ -149,7 +150,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
         public SafePropertyEntry(PropertyEntry entry, String safeName) {
             this.safeName = safeName;
-            this.readAccessorName = entry.getReadAccessor().getSimpleName().toString();
+            this.readAccessorName = ValueProvider.of( entry.getReadAccessor() ).getValue();
             if ( entry.getPresenceChecker() != null ) {
                 this.presenceCheckerName = entry.getPresenceChecker().getSimpleName().toString();
             }

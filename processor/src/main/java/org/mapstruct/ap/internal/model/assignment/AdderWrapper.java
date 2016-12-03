@@ -35,8 +35,8 @@ public class AdderWrapper extends AssignmentWrapper {
     private final List<Type> thrownTypesToExclude;
     private final String sourceIteratorName;
 
-    public AdderWrapper( Assignment decoratedAssignment, List<Type> thrownTypesToExclude ) {
-        super( decoratedAssignment );
+    public AdderWrapper( Assignment decoratedAssignment, List<Type> thrownTypesToExclude, boolean fieldAssignment ) {
+        super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.sourceIteratorName =
             decoratedAssignment.createLocalVarName( decoratedAssignment.getSourceType().getName() );

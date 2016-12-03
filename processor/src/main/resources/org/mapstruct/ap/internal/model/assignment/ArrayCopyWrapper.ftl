@@ -18,13 +18,14 @@
      limitations under the License.
 
 -->
+<#import "../macro/CommonMacros.ftl" as lib>
 <#if (thrownTypes?size == 0) >
     <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
-    ${ext.targetBeanName}.${ext.targetWriteAccessorName}( Arrays.copyOf( ${localVarName}, ${localVarName}.length ) );
+    ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>Arrays.copyOf( ${localVarName}, ${localVarName}.length )</@lib.handleWrite>;
 <#else>
     try {
         <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( Arrays.copyOf( ${localVarName}, ${localVarName}.length ) );
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>Arrays.copyOf(>Arrays.copyOf( ${localVarName}, ${localVarName}.length )</@lib.handleWrite>;
     }
     <#list thrownTypes as exceptionType>
     catch ( <@includeModel object=exceptionType/> e ) {

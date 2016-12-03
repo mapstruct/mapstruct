@@ -16,30 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin.source;
+package org.mapstruct.ap.test.fields;
 
-import java.util.Map;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
+import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
 /**
- *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-public class MapSource {
+@Mapper
+public interface SourceTargetMapper {
 
-    // CHECKSTYLE:OFF
-    public Map<JAXBElement<String>, XMLGregorianCalendar> publicExample;
-    // CHECKSTYLE:ON
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    private Map<JAXBElement<String>, XMLGregorianCalendar> example;
+    @Mapping(source = "fieldOnlyWithGetter", target = "fieldWithMethods")
+    Target toSource(Source source);
 
-    public Map<JAXBElement<String>, XMLGregorianCalendar> getExample() {
-        return example;
-    }
-
-    public void setExample( Map<JAXBElement<String>, XMLGregorianCalendar> example ) {
-        this.example = example;
-    }
+    @InheritInverseConfiguration
+    Source toSource(Target target);
 }

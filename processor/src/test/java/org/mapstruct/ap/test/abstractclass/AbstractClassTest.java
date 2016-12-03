@@ -73,9 +73,11 @@ public class AbstractClassTest {
     private void assertResult(Target target) {
         assertThat( target ).isNotNull();
         assertThat( target.getSize() ).isEqualTo( Long.valueOf( 181 ) );
+        assertThat( target.publicSize ).isEqualTo( 191 );
         assertThat( target.getBirthday() ).isEqualTo( "Birthday: 26.04.1948" );
         assertThat( target.getManuallyConverted() ).isEqualTo( 42 );
         assertThat( target.isNotAttractingEqualsMethod() ).isTrue();
         assertThat( target.getId() ).isEqualTo( 42L );
+        assertThat( target.publicId ).isEqualTo( 52L );
     }
 }

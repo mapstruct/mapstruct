@@ -32,6 +32,7 @@ public interface SimpleMapper {
     SimpleMapper MAPPER = Mappers.getMapper( SimpleMapper.class );
 
     @Mappings( { @Mapping( target = "longValue", source = "props.longValue" ),
+        @Mapping( target = "publicLongValue", source = "props.publicLongValue" ),
         @Mapping( target = "intValue", source = "props.intValue" ),
         @Mapping( target = "doubleValue", source = "props.doubleValue" ),
         @Mapping( target = "floatValue", source = "props.floatValue" ),

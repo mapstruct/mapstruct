@@ -18,6 +18,7 @@
      limitations under the License.
 
 -->
+<#import "../macro/CommonMacros.ftl" as lib>
 <#if (thrownTypes?size == 0) >
     <@assignment_w_defaultValue/>
 <#else>
@@ -50,12 +51,12 @@
     <#if ext.defaultValueAssignment?? >
         <#-- if the assignee property is a primitive, defaulValueAssignment will not be set -->
         if ( ${sourceReference} != null ) {
-            ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_assignment/> );
+            ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@_assignment/></@lib.handleWrite>;
         }
         else {
-            ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_defaultValueAssignment/> );
+            ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@_defaultValueAssignment/></@lib.handleWrite>;
         }
     <#else>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}( <@_assignment/> );
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@_assignment/></@lib.handleWrite>;
     </#if>
 </#macro>

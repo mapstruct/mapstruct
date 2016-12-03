@@ -18,6 +18,7 @@
      limitations under the License.
 
 -->
+<#import '../macro/CommonMacros.ftl' as lib>
 if ( <#if sourcePresenceChecker?? >${sourcePresenceChecker}<#else>${sourceReference} != null</#if> ) {
     <@includeModel object=assignment
                 targetBeanName=ext.targetBeanName
@@ -27,5 +28,5 @@ if ( <#if sourcePresenceChecker?? >${sourcePresenceChecker}<#else>${sourceRefere
                 targetType=ext.targetType/>
 }
 else {
-    ${ext.targetBeanName}.${ext.targetWriteAccessorName}( null );
+    ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>null</@lib.handleWrite>;
 }

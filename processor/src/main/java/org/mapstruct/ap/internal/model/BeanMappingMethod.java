@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.tools.Diagnostic;
 
@@ -61,6 +60,8 @@ import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -82,7 +83,7 @@ public class BeanMappingMethod extends MappingMethod {
 
         private MappingBuilderContext ctx;
         private SourceMethod method;
-        private Map<String, ExecutableElement> unprocessedTargetProperties;
+        private Map<String, Accessor> unprocessedTargetProperties;
         private Set<String> targetProperties;
         private final List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<Parameter>();
@@ -99,7 +100,7 @@ public class BeanMappingMethod extends MappingMethod {
         public Builder souceMethod(SourceMethod sourceMethod) {
             this.method = sourceMethod;
             CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
-            Map<String, ExecutableElement> accessors = method.getResultType().getPropertyWriteAccessors( cms );
+            Map<String, Accessor> accessors = method.getResultType().getPropertyWriteAccessors( cms );
             this.targetProperties = accessors.keySet();
 
             this.nestedTargetObjects = new NestedTargetObjects.Builder()
@@ -109,7 +110,7 @@ public class BeanMappingMethod extends MappingMethod {
                 .sourceMethod( method )
                 .build();
 
-            this.unprocessedTargetProperties = new LinkedHashMap<String, ExecutableElement>( accessors );
+            this.unprocessedTargetProperties = new LinkedHashMap<String, Accessor>( accessors );
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
             }
@@ -382,12 +383,12 @@ public class BeanMappingMethod extends MappingMethod {
          */
         private void applyPropertyNameBasedMapping() {
 
-            Iterator<Entry<String, ExecutableElement>> targetPropertyEntriesIterator =
+            Iterator<Entry<String, Accessor>> targetPropertyEntriesIterator =
                 unprocessedTargetProperties.entrySet().iterator();
 
             while ( targetPropertyEntriesIterator.hasNext() ) {
 
-                Entry<String, ExecutableElement> targetProperty = targetPropertyEntriesIterator.next();
+                Entry<String, Accessor> targetProperty = targetPropertyEntriesIterator.next();
                 String targetPropertyName = targetProperty.getKey();
 
                 PropertyMapping propertyMapping = null;
@@ -404,10 +405,10 @@ public class BeanMappingMethod extends MappingMethod {
 
                         PropertyMapping newPropertyMapping = null;
 
-                        ExecutableElement sourceReadAccessor =
+                        Accessor sourceReadAccessor =
                             sourceParameter.getType().getPropertyReadAccessors().get( targetPropertyName );
 
-                        ExecutableElement sourcePresenceChecker =
+                        ExecutableElementAccessor sourcePresenceChecker =
                             sourceParameter.getType().getPropertyPresenceCheckers().get( targetPropertyName );
 
                         if ( sourceReadAccessor != null ) {
@@ -463,12 +464,12 @@ public class BeanMappingMethod extends MappingMethod {
 
         private void applyParameterNameBasedMapping() {
 
-            Iterator<Entry<String, ExecutableElement>> targetPropertyEntriesIterator =
+            Iterator<Entry<String, Accessor>> targetPropertyEntriesIterator =
                 unprocessedTargetProperties.entrySet().iterator();
 
             while ( targetPropertyEntriesIterator.hasNext() ) {
 
-                Entry<String, ExecutableElement> targetProperty = targetPropertyEntriesIterator.next();
+                Entry<String, Accessor> targetProperty = targetPropertyEntriesIterator.next();
 
                 Iterator<Parameter> sourceParameters = unprocessedSourceParameters.iterator();
 
@@ -504,7 +505,7 @@ public class BeanMappingMethod extends MappingMethod {
             }
         }
 
-        private ExecutableElement getTargetPropertyReadAccessor( String propertyName ) {
+        private Accessor getTargetPropertyReadAccessor(String propertyName) {
             return method.getResultType().getPropertyReadAccessors().get( propertyName );
         }
 
@@ -730,7 +731,12 @@ public class BeanMappingMethod extends MappingMethod {
                         PropertyEntry sourcePropertyEntry = propertyEntries.get( i );
                         String targetAccessor = sourcePropertyEntry.getWriteAccessor().getSimpleName().toString();
                         String sourceRef = localVariableNames.get( sourcePropertyEntry.getFullName() );
-                        relations.add( new NestedLocalVariableAssignment( targetBean, targetAccessor, sourceRef ) );
+                        relations.add( new NestedLocalVariableAssignment(
+                            targetBean,
+                            targetAccessor,
+                            sourceRef,
+                            sourcePropertyEntry.getWriteAccessor().getExecutable() == null
+                        ) );
                     }
                 }
 

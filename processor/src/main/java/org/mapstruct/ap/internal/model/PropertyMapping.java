@@ -57,6 +57,8 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.ValueProvider;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -70,7 +72,7 @@ public class PropertyMapping extends ModelElement {
     private final String name;
     private final String sourceBeanName;
     private final String targetWriteAccessorName;
-    private final String targetReadAccessorName;
+    private final ValueProvider targetReadAccessorProvider;
     private final String localTargetVarName;
     private final Type targetType;
     private final Assignment assignment;
@@ -78,19 +80,23 @@ public class PropertyMapping extends ModelElement {
     private final Assignment defaultValueAssignment;
 
     private enum TargetWriteAccessorType {
+        FIELD,
         GETTER,
         SETTER,
         ADDER;
 
-        public static TargetWriteAccessorType of(ExecutableElement accessor) {
+        public static TargetWriteAccessorType of(Accessor accessor) {
             if ( Executables.isSetterMethod( accessor ) ) {
                 return TargetWriteAccessorType.SETTER;
             }
             else if ( Executables.isAdderMethod( accessor ) ) {
                 return TargetWriteAccessorType.ADDER;
             }
-            else {
+            else if ( Executables.isGetterMethod( accessor ) ) {
                 return TargetWriteAccessorType.GETTER;
+            }
+            else {
+                return TargetWriteAccessorType.FIELD;
             }
         }
     }
@@ -101,10 +107,11 @@ public class PropertyMapping extends ModelElement {
         protected MappingBuilderContext ctx;
         protected SourceMethod method;
 
-        protected ExecutableElement targetWriteAccessor;
+        protected Accessor targetWriteAccessor;
         protected TargetWriteAccessorType targetWriteAccessorType;
         protected Type targetType;
-        protected ExecutableElement targetReadAccessor;
+        protected Accessor targetReadAccessor;
+        protected TargetWriteAccessorType targetReadAccessorType;
         protected String targetPropertyName;
         protected String localTargetVarName;
 
@@ -126,15 +133,21 @@ public class PropertyMapping extends ModelElement {
             this.targetWriteAccessor = targetProp.getWriteAccessor();
             this.targetType = targetProp.getType();
             this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
+            if ( targetReadAccessor != null ) {
+                this.targetReadAccessorType = TargetWriteAccessorType.of( targetReadAccessor );
+            }
             return (T) this;
         }
 
-        public T targetReadAccessor(ExecutableElement targetReadAccessor) {
+        public T targetReadAccessor(Accessor targetReadAccessor) {
             this.targetReadAccessor = targetReadAccessor;
+            if ( targetReadAccessor != null ) {
+                this.targetReadAccessorType = TargetWriteAccessorType.of( targetReadAccessor );
+            }
             return (T) this;
         }
 
-        public T targetWriteAccessor(ExecutableElement targetWriteAccessor) {
+        public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
             this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
             this.targetType = determineTargetType();
@@ -158,6 +171,7 @@ public class PropertyMapping extends ModelElement {
                         .getSingleParameter( resultType, targetWriteAccessor )
                         .getType();
                 case GETTER:
+                case FIELD:
                 default:
                     return ctx.getTypeFactory()
                         .getReturnType( resultType, targetWriteAccessor );
@@ -177,6 +191,10 @@ public class PropertyMapping extends ModelElement {
         public T existingVariableNames(Set<String> existingVariableNames) {
             this.existingVariableNames = existingVariableNames;
             return (T) this;
+        }
+
+        protected boolean isFieldAssignment() {
+            return targetWriteAccessorType == TargetWriteAccessorType.FIELD;
         }
     }
 
@@ -276,7 +294,7 @@ public class PropertyMapping extends ModelElement {
                 targetPropertyName,
                 sourceReference.getParameter().getName(),
                 targetWriteAccessor.getSimpleName().toString(),
-                targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
+                ValueProvider.of( targetReadAccessor ),
                 targetType,
                 localTargetVarName,
                 assignment,
@@ -311,7 +329,8 @@ public class PropertyMapping extends ModelElement {
 
             Assignment result;
 
-            if ( targetAccessorType == TargetWriteAccessorType.SETTER ) {
+            if ( targetAccessorType == TargetWriteAccessorType.SETTER ||
+                targetAccessorType == TargetWriteAccessorType.FIELD ) {
                 result = assignToPlainViaSetter( sourceType, targetType, rightHandSide );
             }
             else {
@@ -333,10 +352,11 @@ public class PropertyMapping extends ModelElement {
                 }
                 Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                 result = new UpdateWrapper( rightHandSide, method.getThrownTypes(), factoryMethod,
-                    targetType );
+                    targetType, isFieldAssignment()
+                );
             }
             else {
-                result = new SetterWrapper( rightHandSide, method.getThrownTypes() );
+                result = new SetterWrapper( rightHandSide, method.getThrownTypes(), isFieldAssignment() );
             }
 
             // if the sourceReference is the bean mapping method parameter itself, no null check is required
@@ -354,7 +374,7 @@ public class PropertyMapping extends ModelElement {
             else {
 
                 if ( result.isUpdateMethod() ) {
-                    result = new UpdateNullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                    result = new UpdateNullCheckWrapper( result, getSourcePresenceCheckerRef(), isFieldAssignment() );
                 }
                 else if ( getSourcePresenceCheckerRef() != null ) {
                     result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
@@ -391,11 +411,11 @@ public class PropertyMapping extends ModelElement {
             Assignment result = rightHandSide;
 
             if ( getSourceType().isCollectionType() ) {
-                result = new AdderWrapper( result, method.getThrownTypes() );
+                result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment() );
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
-                result = new SetterWrapper( result, method.getThrownTypes() );
+                result = new SetterWrapper( result, method.getThrownTypes(), isFieldAssignment() );
                 result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
             }
             return result;
@@ -406,7 +426,8 @@ public class PropertyMapping extends ModelElement {
 
             Assignment result = rhs;
 
-            if ( targetAccessorType == TargetWriteAccessorType.SETTER ) {
+            if ( targetAccessorType == TargetWriteAccessorType.SETTER ||
+                targetAccessorType == TargetWriteAccessorType.FIELD ) {
 
                 if ( result.isUpdateMethod() ) {
                     // call to an update method
@@ -416,7 +437,13 @@ public class PropertyMapping extends ModelElement {
                             targetPropertyName );
                     }
                     Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
-                    result = new UpdateWrapper( result, method.getThrownTypes(), factoryMethod, targetType );
+                    result = new UpdateWrapper(
+                        result,
+                        method.getThrownTypes(),
+                        factoryMethod,
+                        targetType,
+                        isFieldAssignment()
+                    );
                 }
                 else {
                     // target accessor is setter, so wrap the setter in setter map/ collection handling
@@ -427,7 +454,8 @@ public class PropertyMapping extends ModelElement {
                         existingVariableNames,
                         targetType,
                         ALWAYS == method.getMapperConfiguration().getNullValueCheckStrategy(),
-                        ctx.getTypeFactory()
+                        ctx.getTypeFactory(),
+                        targetWriteAccessorType == TargetWriteAccessorType.FIELD
                     );
                 }
             }
@@ -437,7 +465,9 @@ public class PropertyMapping extends ModelElement {
                                                                  method.getThrownTypes(),
                                                                  getSourcePresenceCheckerRef(),
                                                                  existingVariableNames,
-                                                                 targetType);
+                                                                 targetType,
+                                                                 isFieldAssignment()
+                                                               );
             }
 
             return result;
@@ -451,7 +481,8 @@ public class PropertyMapping extends ModelElement {
                 targetPropertyName,
                 arrayType,
                 targetType,
-                existingVariableNames
+                existingVariableNames,
+                isFieldAssignment()
             );
             return new NullCheckWrapper( assignment, getSourcePresenceCheckerRef() );
         }
@@ -489,7 +520,7 @@ public class PropertyMapping extends ModelElement {
             // simple property
             else if ( propertyEntries.size() == 1 ) {
                 PropertyEntry propertyEntry = propertyEntries.get( 0 );
-                String sourceRef = sourceParam.getName() + "." + propertyEntry.getReadAccessor().getSimpleName() + "()";
+                String sourceRef = sourceParam.getName() + "." + ValueProvider.of( propertyEntry.getReadAccessor() );
                 return new SourceRHS( sourceRef, propertyEntry.getType(), existingVariableNames );
             }
             // nested property given as dot path
@@ -690,7 +721,8 @@ public class PropertyMapping extends ModelElement {
 
             if ( assignment != null ) {
 
-                if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
+                if ( Executables.isSetterMethod( targetWriteAccessor ) ||
+                    Executables.isFieldAccessor( targetWriteAccessor ) ) {
 
                     // target accessor is setter, so decorate assignment as setter
                     if ( assignment.isUpdateMethod() ) {
@@ -702,10 +734,11 @@ public class PropertyMapping extends ModelElement {
                         Assignment factoryMethod =
                             ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                         assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod,
-                            targetType );
+                            targetType, isFieldAssignment()
+                        );
                     }
                     else {
-                        assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+                        assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );
                     }
                 }
                 else {
@@ -714,7 +747,9 @@ public class PropertyMapping extends ModelElement {
                     assignment = new GetterWrapperForCollectionsAndMaps( assignment,
                                                                          method.getThrownTypes(),
                                                                          existingVariableNames,
-                                                                         targetType);
+                                                                         targetType,
+                                                                         isFieldAssignment()
+                                                                       );
                 }
             }
             else {
@@ -731,7 +766,7 @@ public class PropertyMapping extends ModelElement {
             return new PropertyMapping(
                 targetPropertyName,
                 targetWriteAccessor.getSimpleName().toString(),
-                targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
+                ValueProvider.of( targetReadAccessor ),
                 targetType,
                 localTargetVarName,
                 assignment,
@@ -773,22 +808,25 @@ public class PropertyMapping extends ModelElement {
         public PropertyMapping build() {
             Assignment assignment = new SourceRHS( javaExpression, null, existingVariableNames );
 
-            if ( Executables.isSetterMethod( targetWriteAccessor ) ) {
+            if ( Executables.isSetterMethod( targetWriteAccessor ) ||
+                Executables.isFieldAccessor( targetWriteAccessor ) ) {
                 // setter, so wrap in setter
-                assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+                assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );
             }
             else {
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
                 assignment = new GetterWrapperForCollectionsAndMaps( assignment,
                                                                      method.getThrownTypes(),
                                                                      existingVariableNames,
-                                                                     targetType);
+                                                                     targetType,
+                                                                     isFieldAssignment()
+                                                                   );
             }
 
             return new PropertyMapping(
                 targetPropertyName,
                 targetWriteAccessor.getSimpleName().toString(),
-                targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
+                ValueProvider.of( targetReadAccessor ),
                 targetType,
                 localTargetVarName,
                 assignment,
@@ -800,21 +838,22 @@ public class PropertyMapping extends ModelElement {
     }
 
     // Constructor for creating mappings of constant expressions.
-    private PropertyMapping(String name,  String targetWriteAccessorName, String targetReadAccessorName,
+    private PropertyMapping(String name, String targetWriteAccessorName,
+                            ValueProvider targetReadAccessorProvider,
                             Type targetType, String localTargetVarName, Assignment propertyAssignment,
                             List<String> dependsOn, Assignment defaultValueAssignment ) {
-        this( name, null, targetWriteAccessorName, targetReadAccessorName,
+        this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
                         targetType, localTargetVarName, propertyAssignment, dependsOn, defaultValueAssignment );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
-                            String targetReadAccessorName, Type targetType, String localTargetVarName,
+                            ValueProvider targetReadAccessorProvider, Type targetType, String localTargetVarName,
                             Assignment assignment,
                             List<String> dependsOn, Assignment defaultValueAssignment ) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
-        this.targetReadAccessorName = targetReadAccessorName;
+        this.targetReadAccessorProvider = targetReadAccessorProvider;
         this.targetType = targetType;
         this.localTargetVarName = localTargetVarName;
 
@@ -839,7 +878,7 @@ public class PropertyMapping extends ModelElement {
     }
 
     public String getTargetReadAccessorName() {
-        return targetReadAccessorName;
+        return targetReadAccessorProvider == null ? null : targetReadAccessorProvider.getValue();
     }
 
     public Type getTargetType() {
@@ -879,7 +918,7 @@ public class PropertyMapping extends ModelElement {
         return "PropertyMapping {"
             + "\n    name='" + name + "\',"
             + "\n    targetWriteAccessorName='" + targetWriteAccessorName + "\',"
-            + "\n    targetReadAccessorName='" + targetReadAccessorName + "\',"
+            + "\n    targetReadAccessorName='" + getTargetReadAccessorName() + "\',"
             + "\n    targetType=" + targetType + ","
             + "\n    propertyAssignment=" + assignment + ","
             + "\n    defaultValueAssignment=" + defaultValueAssignment + ","

@@ -22,6 +22,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 public class XmlGregorianCalendarProperty {
 
+    // CHECKSTYLE:OFF
+    public XMLGregorianCalendar publicProp;
+    // CHECKSTYLE:ON
+
     private XMLGregorianCalendar prop;
 
     public XMLGregorianCalendar getProp() {

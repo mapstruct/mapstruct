@@ -28,6 +28,9 @@ public class Target {
     private Map<String, String> barMap;
     private Map<String, String> barMap2;
 
+    private Set<Long> publicFooSet;
+    private Map<String, String> publicBarMap;
+
     public Set<Long> getFooSet() {
         return fooSet;
     }
@@ -58,5 +61,21 @@ public class Target {
 
     public void setBarMap2( Map<String, String> barMap2 ) {
         this.barMap2 = barMap2;
+    }
+
+    public Set<Long> getPublicFooSet() {
+        return publicFooSet;
+    }
+
+    public void setPublicFooSet(Set<Long> publicFooSet) {
+        this.publicFooSet = publicFooSet;
+    }
+
+    public Map<String, String> getPublicBarMap() {
+        return publicBarMap;
+    }
+
+    public void setPublicBarMap(Map<String, String> publicBarMap) {
+        this.publicBarMap = publicBarMap;
     }
 }

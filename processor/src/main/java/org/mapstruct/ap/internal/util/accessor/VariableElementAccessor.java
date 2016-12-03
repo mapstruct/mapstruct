@@ -16,30 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin.source;
+package org.mapstruct.ap.internal.util.accessor;
 
-import java.util.Map;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 
 /**
+ * An {@link Accessor} that wraps a {@link VariableElement}.
  *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-public class MapSource {
+public class VariableElementAccessor extends AbstractAccessor<VariableElement> {
 
-    // CHECKSTYLE:OFF
-    public Map<JAXBElement<String>, XMLGregorianCalendar> publicExample;
-    // CHECKSTYLE:ON
-
-    private Map<JAXBElement<String>, XMLGregorianCalendar> example;
-
-    public Map<JAXBElement<String>, XMLGregorianCalendar> getExample() {
-        return example;
+    public VariableElementAccessor(VariableElement element) {
+        super( element );
     }
 
-    public void setExample( Map<JAXBElement<String>, XMLGregorianCalendar> example ) {
-        this.example = example;
+    @Override
+    public TypeMirror getAccessedType() {
+        return element.asType();
+    }
+
+    @Override
+    public ExecutableElement getExecutable() {
+        return null;
     }
 }

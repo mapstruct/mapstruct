@@ -88,3 +88,20 @@ Performs a default assignment with a default value.
                targetType=ext.targetType
                defaultValue=ext.defaultValue/>
 </#macro>
+<#--
+  macro: handleWrite
+
+  purpose: To handle the writing to a field or using a method. The line is not closed with ';'
+-->
+<#macro handleWrite>
+    <#t><#if fieldAssignment> = <#nested><#else>( <#nested> )</#if>
+</#macro>
+
+<#--
+  macro: handleWriteAccesing
+
+  purpose: To handle accesing the write target type
+-->
+<#macro handleWriteAccesing>
+    <#t><#if fieldAssignment><#else>()</#if>
+</#macro>

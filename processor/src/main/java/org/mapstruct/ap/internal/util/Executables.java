@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.util;
 
+import static javax.lang.model.util.ElementFilter.fieldsIn;
 import static javax.lang.model.util.ElementFilter.methodsIn;
 import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
@@ -30,6 +31,7 @@ import java.util.ListIterator;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -39,6 +41,9 @@ import javax.lang.model.util.SimpleTypeVisitor6;
 
 import org.mapstruct.ap.internal.prism.AfterMappingPrism;
 import org.mapstruct.ap.internal.prism.BeforeMappingPrism;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.VariableElementAccessor;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.MethodType;
@@ -70,38 +75,71 @@ public class Executables {
     private Executables() {
     }
 
-    public static boolean isGetterMethod(ExecutableElement method) {
-        return isPublic( method ) &&
-            method.getParameters().isEmpty() &&
-            ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.GETTER;
+    public static boolean isGetterMethod(Accessor method) {
+        ExecutableElement executable = method.getExecutable();
+        return executable != null && isPublic( method ) &&
+            executable.getParameters().isEmpty() &&
+            ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.GETTER;
     }
 
-    public static boolean isPresenceCheckMethod(ExecutableElement method) {
-        return isPublic( method )
-            && method.getParameters().isEmpty()
-            && ( method.getReturnType().getKind() == TypeKind.BOOLEAN ||
-                    "java.lang.Boolean".equals( getQualifiedName( method.getReturnType() ) ) )
-            && ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.PRESENCE_CHECKER;
+    /**
+     * An {@link Accessor} is a field accessor, if it doesn't have an executable element, is public and it is not
+     * static.
+     *
+     * @param accessor the accessor to ber checked
+     *
+     * @return {@code true} if the {@code accessor} is for a {@code public} non {@code static} field.
+     */
+    public static boolean isFieldAccessor(Accessor accessor) {
+        ExecutableElement executable = accessor.getExecutable();
+        return executable == null && isPublic( accessor ) && isNotStatic( accessor );
     }
 
-    public static boolean isSetterMethod(ExecutableElement method) {
-        return isPublic( method )
-            && method.getParameters().size() == 1
-            && ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.SETTER;
+    public static boolean isPresenceCheckMethod(Accessor method) {
+        if ( !( method instanceof ExecutableElementAccessor ) ) {
+            return false;
+        }
+        ExecutableElement executable = method.getExecutable();
+        return executable != null
+            && isPublic( method )
+            && executable.getParameters().isEmpty()
+            && ( executable.getReturnType().getKind() == TypeKind.BOOLEAN ||
+            "java.lang.Boolean".equals( getQualifiedName( executable.getReturnType() ) ) )
+            && ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.PRESENCE_CHECKER;
     }
 
-    public static boolean isAdderMethod(ExecutableElement method) {
-        return isPublic( method )
-            && method.getParameters().size() == 1
-            && ACCESSOR_NAMING_STRATEGY.getMethodType( method ) == MethodType.ADDER;
+    public static boolean isSetterMethod(Accessor method) {
+        ExecutableElement executable = method.getExecutable();
+        return executable != null
+            && isPublic( method )
+            && executable.getParameters().size() == 1
+            && ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.SETTER;
     }
 
-    private static boolean isPublic(ExecutableElement method) {
+    public static boolean isAdderMethod(Accessor method) {
+        ExecutableElement executable = method.getExecutable();
+        return executable != null
+            && isPublic( method )
+            && executable.getParameters().size() == 1
+            && ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.ADDER;
+    }
+
+    private static boolean isPublic(Accessor method) {
         return method.getModifiers().contains( Modifier.PUBLIC );
     }
 
-    public static String getPropertyName(ExecutableElement getterOrPresenceCheckerOrSetterMethod) {
-        return ACCESSOR_NAMING_STRATEGY.getPropertyName( getterOrPresenceCheckerOrSetterMethod );
+    private static boolean isNotStatic(Accessor accessor) {
+        return !accessor.getModifiers().contains( Modifier.STATIC );
+    }
+
+    public static boolean isFinal(Accessor accessor) {
+        return accessor != null && accessor.getModifiers().contains( Modifier.FINAL );
+    }
+
+    public static String getPropertyName(Accessor accessor) {
+        ExecutableElement executable = accessor.getExecutable();
+        return executable != null ? ACCESSOR_NAMING_STRATEGY.getPropertyName( executable ) :
+            accessor.getSimpleName().toString();
     }
 
     public static boolean isDefaultMethod(ExecutableElement method) {
@@ -121,8 +159,9 @@ public class Executables {
      * @return the 'element name' to which an adder method applies. If. e.g. an adder method is named
      *         {@code addChild(Child v)}, the element name would be 'Child'.
      */
-    public static String getElementNameForAdder(ExecutableElement adderMethod) {
-        return ACCESSOR_NAMING_STRATEGY.getElementName( adderMethod );
+    public static String getElementNameForAdder(Accessor adderMethod) {
+        ExecutableElement executable = adderMethod.getExecutable();
+        return executable != null ? ACCESSOR_NAMING_STRATEGY.getElementName( executable ) : null;
     }
 
     /**
@@ -145,14 +184,34 @@ public class Executables {
      * @return the executable elements usable in the type
      */
     public static List<ExecutableElement> getAllEnclosedExecutableElements(Elements elementUtils, TypeElement element) {
-        List<ExecutableElement> enclosedElements = new ArrayList<ExecutableElement>();
+        List<ExecutableElement> executables = new ArrayList<ExecutableElement>();
+        for ( Accessor accessor : getAllEnclosedAccessors( elementUtils, element ) ) {
+            if ( accessor.getExecutable() != null ) {
+                executables.add( accessor.getExecutable() );
+            }
+        }
+        return executables;
+    }
+
+    /**
+     * Finds all executable elements/variable elements within the given type element, including executable/variable
+     * elements defined in super classes and implemented interfaces and including the fields in the . Methods defined
+     * in {@link java.lang.Object} are ignored, as well as implementations of {@link java.lang.Object#equals(Object)}.
+     *
+     * @param elementUtils element helper
+     * @param element the element to inspect
+     *
+     * @return the executable elements usable in the type
+     */
+    public static List<Accessor> getAllEnclosedAccessors(Elements elementUtils, TypeElement element) {
+        List<Accessor> enclosedElements = new ArrayList<Accessor>();
         element = replaceTypeElementIfNecessary( elementUtils, element );
         addEnclosedElementsInHierarchy( elementUtils, enclosedElements, element, element );
 
         return enclosedElements;
     }
 
-    private static void addEnclosedElementsInHierarchy(Elements elementUtils, List<ExecutableElement> alreadyAdded,
+    private static void addEnclosedElementsInHierarchy(Elements elementUtils, List<Accessor> alreadyAdded,
                                                        TypeElement element, TypeElement parentType) {
         if ( element != parentType ) { // otherwise the element was already checked for replacement
             element = replaceTypeElementIfNecessary( elementUtils, element );
@@ -163,6 +222,7 @@ public class Executables {
         }
 
         addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ), parentType );
+        addFields( alreadyAdded, fieldsIn( element.getEnclosedElements() ) );
 
         if ( hasNonObjectSuperclass( element ) ) {
             addEnclosedElementsInHierarchy(
@@ -190,14 +250,23 @@ public class Executables {
      * @param methodsToAdd methods to add to alreadyAdded, if they are not yet overridden by an element in the list
      * @param parentType the type for with elements are collected
      */
-    private static void addNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyCollected,
+    private static void addNotYetOverridden(Elements elementUtils, List<Accessor> alreadyCollected,
                                             List<ExecutableElement> methodsToAdd, TypeElement parentType) {
-        List<ExecutableElement> safeToAdd = new ArrayList<ExecutableElement>( methodsToAdd.size() );
+        List<Accessor> safeToAdd = new ArrayList<Accessor>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
             if ( isNotObjectEquals( toAdd )
                 && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd, parentType ) ) {
-                safeToAdd.add( toAdd );
+                safeToAdd.add( new ExecutableElementAccessor( toAdd ) );
             }
+        }
+
+        alreadyCollected.addAll( 0, safeToAdd );
+    }
+
+    private static void addFields(List<Accessor> alreadyCollected, List<VariableElement> variablesToAdd) {
+        List<Accessor> safeToAdd = new ArrayList<Accessor>( variablesToAdd.size() );
+        for ( VariableElement toAdd : variablesToAdd ) {
+            safeToAdd.add( new VariableElementAccessor( toAdd ) );
         }
 
         alreadyCollected.addAll( 0, safeToAdd );
@@ -228,10 +297,13 @@ public class Executables {
      * @param parentType the type for which elements are collected
      * @return {@code true}, iff the given executable was not yet overridden by a method in the given list.
      */
-    private static boolean wasNotYetOverridden(Elements elementUtils, List<ExecutableElement> alreadyCollected,
+    private static boolean wasNotYetOverridden(Elements elementUtils, List<Accessor> alreadyCollected,
                                                ExecutableElement executable, TypeElement parentType) {
-        for ( ListIterator<ExecutableElement> it = alreadyCollected.listIterator(); it.hasNext(); ) {
-            ExecutableElement executableInSubtype = it.next();
+        for ( ListIterator<Accessor> it = alreadyCollected.listIterator(); it.hasNext(); ) {
+            ExecutableElement executableInSubtype = it.next().getExecutable();
+            if ( executableInSubtype == null ) {
+                continue;
+            }
             if ( elementUtils.overrides( executableInSubtype, executable, parentType ) ) {
                 return false;
             }

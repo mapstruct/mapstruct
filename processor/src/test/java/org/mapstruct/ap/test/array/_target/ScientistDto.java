@@ -20,6 +20,11 @@ package org.mapstruct.ap.test.array._target;
 
 public class ScientistDto {
 
+    //CHECKSTYLE:OFF
+    public String[] publicPublications;
+    public int[] publicPublicationYears;
+    //CHECKSTYLE:ON
+
     private String name;
     private String[] publications;
     private int[] publicationYears;

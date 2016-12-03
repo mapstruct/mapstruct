@@ -24,6 +24,11 @@ import java.time.ZonedDateTime;
  * @author Andreas Gudian
  */
 public class ZonedDateTimeProperty {
+
+    // CHECKSTYLE:OFF
+    public ZonedDateTime publicProp;
+    // CHECKSTYLE:ON
+
     private ZonedDateTime prop;
 
     public ZonedDateTime getProp() {

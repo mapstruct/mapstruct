@@ -41,12 +41,14 @@ public class ArrayMappingTest {
 
         Scientist source = new Scientist("Bob");
         source.setPublications( new String[]{ "the Lancet", "Nature" } );
+        source.publicPublications = new String[] { "public the Lancet", "public Nature" };
 
         ScientistDto dto = ScienceMapper.INSTANCE.scientistToDto( source );
 
         assertThat( dto ).isNotNull();
         assertThat( dto ).isNotEqualTo( source );
         assertThat( dto.getPublications() ).containsOnly( "the Lancet", "Nature" );
+        assertThat( dto.publicPublications ).containsOnly( "public the Lancet", "public Nature" );
     }
 
     @Test
@@ -54,11 +56,13 @@ public class ArrayMappingTest {
 
         Scientist source = new Scientist("Bob");
         source.setPublicationYears( new String[]{"1993", "1997"} );
+        source.publicPublicationYears = new String[]{"1994", "1998"};
 
         ScientistDto dto = ScienceMapper.INSTANCE.scientistToDto( source );
 
         assertThat( dto ).isNotNull();
         assertThat( dto.getPublicationYears() ).containsOnly( 1993, 1997 );
+        assertThat( dto.publicPublicationYears ).containsOnly( 1994, 1998 );
     }
 
     @Test

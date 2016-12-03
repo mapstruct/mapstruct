@@ -16,30 +16,39 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin.source;
+package org.mapstruct.ap.internal.util.accessor;
 
-import java.util.Map;
+import java.util.Set;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.Name;
 
 /**
+ * This is an abstract implementation of an {@link Accessor} that provides the common implementation.
  *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-public class MapSource {
+abstract class AbstractAccessor<T extends Element> implements Accessor {
 
-    // CHECKSTYLE:OFF
-    public Map<JAXBElement<String>, XMLGregorianCalendar> publicExample;
-    // CHECKSTYLE:ON
+    protected final T element;
 
-    private Map<JAXBElement<String>, XMLGregorianCalendar> example;
-
-    public Map<JAXBElement<String>, XMLGregorianCalendar> getExample() {
-        return example;
+    AbstractAccessor(T element) {
+        this.element = element;
     }
 
-    public void setExample( Map<JAXBElement<String>, XMLGregorianCalendar> example ) {
-        this.example = example;
+    @Override
+    public Name getSimpleName() {
+        return element.getSimpleName();
+    }
+
+    @Override
+    public Set<Modifier> getModifiers() {
+        return element.getModifiers();
+    }
+
+    @Override
+    public T getElement() {
+        return element;
     }
 }

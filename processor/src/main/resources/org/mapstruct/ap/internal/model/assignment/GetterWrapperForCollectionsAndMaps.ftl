@@ -19,13 +19,13 @@
 
 -->
 <#import "../macro/CommonMacros.ftl" as lib>
-if ( ${ext.targetBeanName}.${ext.targetWriteAccessorName}() != null ) {
+if ( ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing /> != null ) {
     <@lib.handleExceptions>
       <#if ext.existingInstanceMapping>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}().clear();
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing />.clear();
       </#if>
       <@lib.handleNullCheck>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}().<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing />.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
       </@lib.handleNullCheck>
     </@lib.handleExceptions>
 }

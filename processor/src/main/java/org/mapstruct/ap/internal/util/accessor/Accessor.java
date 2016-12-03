@@ -16,30 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builtin.source;
+package org.mapstruct.ap.internal.util.accessor;
 
-import java.util.Map;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Set;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.Name;
+import javax.lang.model.type.TypeMirror;
 
 /**
- *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-public class MapSource {
+public interface Accessor {
 
-    // CHECKSTYLE:OFF
-    public Map<JAXBElement<String>, XMLGregorianCalendar> publicExample;
-    // CHECKSTYLE:ON
+    TypeMirror getAccessedType();
 
-    private Map<JAXBElement<String>, XMLGregorianCalendar> example;
+    Name getSimpleName();
 
-    public Map<JAXBElement<String>, XMLGregorianCalendar> getExample() {
-        return example;
-    }
+    Set<Modifier> getModifiers();
 
-    public void setExample( Map<JAXBElement<String>, XMLGregorianCalendar> example ) {
-        this.example = example;
-    }
+    ExecutableElement getExecutable();
+
+    Element getElement();
 }

@@ -20,13 +20,13 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.Arrays;
 
-import javax.lang.model.element.ExecutableElement;
-
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 
- /**
+/**
  * A PropertyEntry contains information on the name, readAccessor (for source), readAccessor and writeAccessor
  * (for targets) and return type of a property.
  *
@@ -41,9 +41,9 @@ import org.mapstruct.ap.internal.util.Strings;
 public class PropertyEntry {
 
     private final String[] fullName;
-    private final ExecutableElement readAccessor;
-    private final ExecutableElement writeAccessor;
-    private final ExecutableElement presenceChecker;
+    private final Accessor readAccessor;
+    private final Accessor writeAccessor;
+    private final ExecutableElementAccessor presenceChecker;
     private final Type type;
 
     /**
@@ -54,8 +54,8 @@ public class PropertyEntry {
      * @param writeAccessor
      * @param type
      */
-    private PropertyEntry(String[] fullName, ExecutableElement readAccessor, ExecutableElement writeAccessor,
-        ExecutableElement presenceChecker, Type type) {
+    private PropertyEntry(String[] fullName, Accessor readAccessor, Accessor writeAccessor,
+                          ExecutableElementAccessor presenceChecker, Type type) {
         this.fullName = fullName;
         this.readAccessor = readAccessor;
         this.writeAccessor = writeAccessor;
@@ -72,8 +72,8 @@ public class PropertyEntry {
      * @param type type of the property
      * @return the property entry for given parameters.
      */
-    public static PropertyEntry forTargetReference( String[] fullName, ExecutableElement readAccessor,
-        ExecutableElement writeAccessor, Type type) {
+    public static PropertyEntry forTargetReference(String[] fullName, Accessor readAccessor,
+                                                   Accessor writeAccessor, Type type) {
         return new PropertyEntry( fullName, readAccessor, writeAccessor, null, type );
     }
 
@@ -86,8 +86,8 @@ public class PropertyEntry {
      * @param type type of the property
      * @return the property entry for given parameters.
      */
-    public static PropertyEntry forSourceReference(String name, ExecutableElement readAccessor,
-        ExecutableElement presenceChecker, Type type) {
+    public static PropertyEntry forSourceReference(String name, Accessor readAccessor,
+                                                   ExecutableElementAccessor presenceChecker, Type type) {
         return new PropertyEntry( new String[]{name}, readAccessor, null, presenceChecker, type );
     }
 
@@ -95,15 +95,15 @@ public class PropertyEntry {
         return fullName[fullName.length - 1];
     }
 
-    public ExecutableElement getReadAccessor() {
+    public Accessor getReadAccessor() {
         return readAccessor;
     }
 
-    public ExecutableElement getWriteAccessor() {
+    public Accessor getWriteAccessor() {
         return writeAccessor;
     }
 
-    public ExecutableElement getPresenceChecker() {
+    public ExecutableElementAccessor getPresenceChecker() {
         return presenceChecker;
     }
 

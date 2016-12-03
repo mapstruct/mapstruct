@@ -20,6 +20,10 @@ package org.mapstruct.ap.test.ignore;
 
 public class AnimalDto {
 
+    //CHECKSTYLE:OFF
+    public Integer publicAge;
+    public String publicColor;
+    //CHECKSTYLE:ON
     private String name;
     private Integer size;
     private Integer age;
@@ -32,7 +36,9 @@ public class AnimalDto {
     public AnimalDto(String name, Integer size, Integer age, String color) {
         this.name = name;
         this.size = size;
+        this.publicAge = age;
         this.age = age;
+        this.publicColor = color;
         this.color = color;
     }
 
@@ -64,8 +70,7 @@ public class AnimalDto {
         return color;
     }
 
-    public void setColor( String color ) {
+    public void setColor(String color) {
         this.color = color;
     }
-
 }

@@ -20,6 +20,10 @@ package org.mapstruct.ap.test.array.source;
 
 public class Scientist {
 
+    //CHECKSTYLE:OFF
+    public String[] publicPublications;
+    public String[] publicPublicationYears;
+    //CHECKSTYLE:ON
     private String name;
     private String[] publications;
     private String[] publicationYears;

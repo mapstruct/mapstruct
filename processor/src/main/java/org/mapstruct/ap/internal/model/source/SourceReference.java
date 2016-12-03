@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -35,6 +34,8 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 /**
  * This class describes the source side of a property mapping.
@@ -176,10 +177,10 @@ public class SourceReference {
             Type newType = type;
             for ( String entryName : entryNames ) {
                 boolean matchFound = false;
-                Map<String, ExecutableElement> sourceReadAccessors = newType.getPropertyReadAccessors();
-                Map<String, ExecutableElement> sourcePresenceCheckers = newType.getPropertyPresenceCheckers();
+                Map<String, Accessor> sourceReadAccessors = newType.getPropertyReadAccessors();
+                Map<String, ExecutableElementAccessor> sourcePresenceCheckers = newType.getPropertyPresenceCheckers();
 
-                for (  Map.Entry<String, ExecutableElement> getter : sourceReadAccessors.entrySet() ) {
+                for (  Map.Entry<String, Accessor> getter : sourceReadAccessors.entrySet() ) {
                     if ( getter.getKey().equals( entryName ) ) {
                         newType = typeFactory.getReturnType( (DeclaredType) newType.getTypeMirror(),
                               getter.getValue() );
@@ -208,8 +209,8 @@ public class SourceReference {
     public static class BuilderFromProperty {
 
         private String name;
-        private ExecutableElement readAccessor;
-        private ExecutableElement presenceChecker;
+        private Accessor readAccessor;
+        private ExecutableElementAccessor presenceChecker;
         private Type type;
         private Parameter sourceParameter;
 
@@ -218,12 +219,12 @@ public class SourceReference {
             return this;
         }
 
-        public BuilderFromProperty readAccessor(ExecutableElement readAccessor) {
+        public BuilderFromProperty readAccessor(Accessor readAccessor) {
             this.readAccessor = readAccessor;
             return this;
         }
 
-        public BuilderFromProperty presenceChecker(ExecutableElement presenceChecker) {
+        public BuilderFromProperty presenceChecker(ExecutableElementAccessor presenceChecker) {
             this.presenceChecker = presenceChecker;
             return this;
         }

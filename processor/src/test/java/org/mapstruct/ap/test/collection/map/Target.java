@@ -24,6 +24,9 @@ import java.util.Map;
 import org.mapstruct.ap.test.collection.map.other.ImportedType;
 
 public class Target {
+    //CHECKSTYLE:OFF
+    public Map<String, String> publicValues;
+    //CHECKSTYLE:ON
 
     private Map<String, String> values;
     private LinkedHashMap<String, ImportedType> stringEnumMap;

@@ -47,6 +47,8 @@ import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.Nouns;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -85,13 +87,13 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private final List<String> enumConstants;
 
-    private Map<String, ExecutableElement> getters = null;
-    private Map<String, ExecutableElement> presenceCheckers = null;
+    private Map<String, Accessor> readAccessors = null;
+    private Map<String, ExecutableElementAccessor> presenceCheckers = null;
 
-    private List<ExecutableElement> allExecutables = null;
-    private List<ExecutableElement> setters = null;
-    private List<ExecutableElement> adders = null;
-    private List<ExecutableElement> alternativeTargetAccessors = null;
+    private List<Accessor> allAccessors = null;
+    private List<Accessor> setters = null;
+    private List<Accessor> adders = null;
+    private List<Accessor> alternativeTargetAccessors = null;
 
     private Type boundingBase = null;
 
@@ -358,11 +360,11 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable map of all read accessors (including 'is' for booleans), indexed by property name
      */
-    public Map<String, ExecutableElement> getPropertyReadAccessors() {
-        if ( getters == null ) {
-            List<ExecutableElement> getterList = Filters.getterMethodsIn( getAllExecutables() );
-            Map<String, ExecutableElement> modifiableGetters = new LinkedHashMap<String, ExecutableElement>();
-            for ( ExecutableElement getter : getterList ) {
+    public Map<String, Accessor> getPropertyReadAccessors() {
+        if ( readAccessors == null ) {
+            List<Accessor> getterList = Filters.getterMethodsIn( getAllAccessors() );
+            Map<String, Accessor> modifiableGetters = new LinkedHashMap<String, Accessor>();
+            for ( Accessor getter : getterList ) {
                 String propertyName = Executables.getPropertyName( getter );
                 if ( modifiableGetters.containsKey( propertyName ) ) {
                     // In the DefaultAccessorNamingStrategy, this can only be the case for Booleans: isFoo() and
@@ -376,9 +378,19 @@ public class Type extends ModelElement implements Comparable<Type> {
                     modifiableGetters.put( Executables.getPropertyName( getter ), getter );
                 }
             }
-            getters = Collections.unmodifiableMap( modifiableGetters );
+
+            List<Accessor> fieldsList = Filters.fieldsIn( getAllAccessors() );
+            for ( Accessor field : fieldsList ) {
+                String propertyName = Executables.getPropertyName( field );
+                if ( !modifiableGetters.containsKey( propertyName ) ) {
+                    // If there was no getter or is method for booleans, then resort to the field.
+                    // If a field was already added do not add it again.
+                    modifiableGetters.put( propertyName, field );
+                }
+            }
+            readAccessors = Collections.unmodifiableMap( modifiableGetters );
         }
-        return getters;
+        return readAccessors;
     }
 
     /**
@@ -386,11 +398,12 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable map of all presence checkers, indexed by property name
      */
-    public Map<String, ExecutableElement> getPropertyPresenceCheckers() {
+    public Map<String, ExecutableElementAccessor> getPropertyPresenceCheckers() {
         if ( presenceCheckers == null ) {
-            List<ExecutableElement> checkerList = Filters.presenceCheckMethodsIn( getAllExecutables() );
-            Map<String, ExecutableElement> modifiableCheckers = new LinkedHashMap<String, ExecutableElement>();
-            for (ExecutableElement checker : checkerList) {
+            List<ExecutableElementAccessor> checkerList = Filters.presenceCheckMethodsIn( getAllAccessors() );
+            Map<String, ExecutableElementAccessor> modifiableCheckers = new LinkedHashMap<String,
+                ExecutableElementAccessor>();
+            for ( ExecutableElementAccessor checker : checkerList ) {
                 modifiableCheckers.put( Executables.getPropertyName( checker ), checker );
             }
             presenceCheckers = Collections.unmodifiableMap( modifiableCheckers );
@@ -403,7 +416,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * accessors include:
      * <ul>
      * <li>setters, the obvious candidate :-), {@link #getSetters() }</li>
-     * <li>getters, for collections that do not have a setter, e.g. for JAXB generated collection attributes
+     * <li>readAccessors, for collections that do not have a setter, e.g. for JAXB generated collection attributes
      * {@link #getPropertyReadAccessors() }</li>
      * <li>adders, typically for from table generated entities, {@link #getAdders() }</li>
      * </ul>
@@ -411,17 +424,17 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @param cmStrategy collection mapping strategy
      * @return an unmodifiable map of all write accessors indexed by property name
      */
-    public Map<String, ExecutableElement> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
+    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
         // collect all candidate target accessors
-        List<ExecutableElement> candidates = new ArrayList<ExecutableElement>( getSetters() );
+        List<Accessor> candidates = new ArrayList<Accessor>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
 
-        Map<String, ExecutableElement> result = new LinkedHashMap<String, ExecutableElement>();
+        Map<String, Accessor> result = new LinkedHashMap<String, Accessor>();
 
-        for ( ExecutableElement candidate : candidates ) {
+        for ( Accessor candidate : candidates ) {
             String targetPropertyName = Executables.getPropertyName( candidate );
 
-            ExecutableElement readAccessor = getPropertyReadAccessors().get( targetPropertyName );
+            Accessor readAccessor = getPropertyReadAccessors().get( targetPropertyName );
 
             Type preferredType = determinePreferredType( readAccessor );
             Type targetType = determineTargetType( candidate );
@@ -433,7 +446,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 || cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
 
                 // first check if there's a setter method.
-                ExecutableElement adderMethod = null;
+                Accessor adderMethod = null;
                 if ( Executables.isSetterMethod( candidate )
                     // ok, the current accessor is a setter. So now the strategy determines what to use
                     && cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
@@ -449,8 +462,13 @@ public class Type extends ModelElement implements Comparable<Type> {
                     candidate = adderMethod;
                 }
             }
+            else if ( Executables.isFieldAccessor( candidate ) && ( Executables.isFinal( candidate ) ||
+                result.containsKey( targetPropertyName ) ) ) {
+                // if the candidate is a field and a mapping already exists, then use that one, skip it.
+                continue;
+            }
 
-            ExecutableElement previousCandidate = result.get( targetPropertyName );
+            Accessor previousCandidate = result.get( targetPropertyName );
             if ( previousCandidate == null || preferredType == null || ( targetType != null
                 && typeUtils.isAssignable( preferredType.getTypeMirror(), targetType.getTypeMirror() ) ) ) {
                 result.put( targetPropertyName, candidate );
@@ -460,32 +478,30 @@ public class Type extends ModelElement implements Comparable<Type> {
         return result;
     }
 
-    private Type determinePreferredType(ExecutableElement readAccessor) {
+    private Type determinePreferredType(Accessor readAccessor) {
         if ( readAccessor != null ) {
-            return typeFactory.getReturnType(
-                typeFactory.getMethodType( (DeclaredType) typeMirror, readAccessor ) );
+            return typeFactory.getReturnType( (DeclaredType) typeMirror, readAccessor );
         }
         return null;
     }
 
-    private Type determineTargetType(ExecutableElement candidate) {
+    private Type determineTargetType(Accessor candidate) {
         Parameter parameter = typeFactory.getSingleParameter( (DeclaredType) typeMirror, candidate );
         if ( parameter != null ) {
             return parameter.getType();
         }
-        else if ( Executables.isGetterMethod( candidate ) ) {
-            return typeFactory.getReturnType(
-                typeFactory.getMethodType( (DeclaredType) typeMirror, candidate ) );
+        else if ( Executables.isGetterMethod( candidate ) || Executables.isFieldAccessor( candidate ) ) {
+            return typeFactory.getReturnType( (DeclaredType) typeMirror, candidate );
         }
         return null;
     }
 
-    private List<ExecutableElement> getAllExecutables() {
-        if ( allExecutables == null ) {
-            allExecutables = Executables.getAllEnclosedExecutableElements( elementUtils, typeElement );
+    private List<Accessor> getAllAccessors() {
+        if ( allAccessors == null ) {
+            allAccessors = Executables.getAllEnclosedAccessors( elementUtils, typeElement );
         }
 
-        return allExecutables;
+        return allAccessors;
     }
 
     /**
@@ -505,9 +521,9 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return corresponding adder method for getter when present
      */
-    private ExecutableElement getAdderForType(Type collectionProperty, String pluralPropertyName) {
+    private Accessor getAdderForType(Type collectionProperty, String pluralPropertyName) {
 
-        List<ExecutableElement> candidates = new ArrayList<ExecutableElement>();
+        List<Accessor> candidates = new ArrayList<Accessor>();
         if ( collectionProperty.isCollectionType ) {
 
             // this is a collection, so this can be done always
@@ -517,9 +533,14 @@ public class Type extends ModelElement implements Comparable<Type> {
                 // now, look for a method that
                 // 1) starts with add,
                 // 2) and has typeArg as one and only arg
-                List<ExecutableElement> adderList = getAdders();
-                for ( ExecutableElement adder : adderList ) {
-                    VariableElement arg = adder.getParameters().get( 0 );
+                List<Accessor> adderList = getAdders();
+                for ( Accessor adder : adderList ) {
+                    ExecutableElement executable = adder.getExecutable();
+                    if ( executable == null ) {
+                        // it should not be null, but to be safe
+                        continue;
+                    }
+                    VariableElement arg = executable.getParameters().get( 0 );
                     if ( arg.asType().equals( typeArg ) ) {
                         candidates.add( adder );
                     }
@@ -533,9 +554,9 @@ public class Type extends ModelElement implements Comparable<Type> {
             return candidates.get( 0 );
         }
         else {
-            for ( ExecutableElement candidate : candidates ) {
+            for ( Accessor candidate : candidates ) {
                 String elementName = Executables.getElementNameForAdder( candidate );
-                if ( elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
+                if ( elementName != null && elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
                     return candidate;
                 }
             }
@@ -549,9 +570,9 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable list of all setters
      */
-    private List<ExecutableElement> getSetters() {
+    private List<Accessor> getSetters() {
         if ( setters == null ) {
-            setters = Collections.unmodifiableList( Filters.setterMethodsIn( getAllExecutables() ) );
+            setters = Collections.unmodifiableList( Filters.setterMethodsIn( getAllAccessors() ) );
         }
         return setters;
     }
@@ -564,9 +585,9 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable list of all adders
      */
-    private List<ExecutableElement> getAdders() {
+    private List<Accessor> getAdders() {
         if ( adders == null ) {
-            adders = Collections.unmodifiableList( Filters.adderMethodsIn( getAllExecutables() ) );
+            adders = Collections.unmodifiableList( Filters.adderMethodsIn( getAllAccessors() ) );
         }
         return adders;
     }
@@ -580,22 +601,28 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable list of alternative target accessors.
      */
-    private List<ExecutableElement> getAlternativeTargetAccessors() {
+    private List<Accessor> getAlternativeTargetAccessors() {
 
         if ( alternativeTargetAccessors == null ) {
 
-            List<ExecutableElement> result = new ArrayList<ExecutableElement>();
-            List<ExecutableElement> setterMethods = getSetters();
-            List<ExecutableElement> getterMethods =
-                new ArrayList<ExecutableElement>( getPropertyReadAccessors().values() );
+            List<Accessor> result = new ArrayList<Accessor>();
+            List<Accessor> setterMethods = getSetters();
+            List<Accessor> readAccessors =
+                new ArrayList<Accessor>( getPropertyReadAccessors().values() );
+            // All the fields are also alternative accessors
+            readAccessors.addAll( Filters.fieldsIn( getAllAccessors() ) );
 
-            // there could be a getter method for a list/map that is not present as setter.
-            // a getter could substitute the setter in that case and act as setter.
+            // there could be a read accessor (field or  method) for a list/map that is not present as setter.
+            // an accessor could substitute the setter in that case and act as setter.
             // (assuming it is initialized)
-            for ( ExecutableElement getterMethod : getterMethods ) {
-                if ( isCollectionOrMap( getterMethod ) &&
-                    !correspondingSetterMethodExists( getterMethod, setterMethods ) ) {
-                    result.add( getterMethod );
+            for ( Accessor readAccessor : readAccessors ) {
+                if ( isCollectionOrMap( readAccessor ) &&
+                    !correspondingSetterMethodExists( readAccessor, setterMethods ) ) {
+                    result.add( readAccessor );
+                }
+                else if ( Executables.isFieldAccessor( readAccessor ) &&
+                    !correspondingSetterMethodExists( readAccessor, setterMethods ) ) {
+                    result.add( readAccessor );
                 }
             }
 
@@ -604,11 +631,11 @@ public class Type extends ModelElement implements Comparable<Type> {
         return alternativeTargetAccessors;
     }
 
-    private boolean correspondingSetterMethodExists(ExecutableElement getterMethod,
-                                                    List<ExecutableElement> setterMethods) {
+    private boolean correspondingSetterMethodExists(Accessor getterMethod,
+                                                    List<Accessor> setterMethods) {
         String getterPropertyName = Executables.getPropertyName( getterMethod );
 
-        for ( ExecutableElement setterMethod : setterMethods ) {
+        for ( Accessor setterMethod : setterMethods ) {
             String setterPropertyName = Executables.getPropertyName( setterMethod );
             if ( getterPropertyName.equals( setterPropertyName ) ) {
                 return true;
@@ -618,8 +645,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         return false;
     }
 
-    private boolean isCollectionOrMap(ExecutableElement getterMethod) {
-        return isCollection( getterMethod.getReturnType() ) || isMap( getterMethod.getReturnType() );
+    private boolean isCollectionOrMap(Accessor getterMethod) {
+        return isCollection( getterMethod.getAccessedType() ) || isMap( getterMethod.getAccessedType() );
     }
 
     private boolean isCollection(TypeMirror candidate) {

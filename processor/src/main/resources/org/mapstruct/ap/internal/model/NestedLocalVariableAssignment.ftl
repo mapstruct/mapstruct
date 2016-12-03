@@ -18,4 +18,5 @@
      limitations under the License.
 
 -->
-${targetBean}.${setterName}( ${sourceRef} );
+<#import "macro/CommonMacros.ftl" as lib>
+${targetBean}.${setterName}<@lib.handleWrite>${sourceRef}</@lib.handleWrite>;

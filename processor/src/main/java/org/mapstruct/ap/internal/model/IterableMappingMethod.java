@@ -132,10 +132,10 @@ public class IterableMappingMethod extends MappingMethod {
             }
             // target accessor is setter, so decorate assignment as setter
             if ( resultType.isArrayType() ) {
-                assignment = new LocalVarWrapper( assignment, method.getThrownTypes(), resultType );
+                assignment = new LocalVarWrapper( assignment, method.getThrownTypes(), resultType, false );
             }
             else {
-                assignment = new SetterWrapper( assignment, method.getThrownTypes() );
+                assignment = new SetterWrapper( assignment, method.getThrownTypes(), false );
             }
 
             // mapNullToDefault

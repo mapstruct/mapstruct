@@ -52,14 +52,17 @@ public class CollectionMappingTest {
 
         Source source = new Source();
         source.setFooSet( Collections.asSet( "1", "2" ) );
+        source.publicFooSet = Collections.asSet( "3", "4" );
 
         Target target = CollectionMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
         assertThat( target.getFooSet() ).isEqualTo( Collections.asSet( 1L, 2L ) );
+        assertThat( target.getPublicFooSet() ).isEqualTo( Collections.asSet( 3L, 4L ) );
 
         Source source2 = CollectionMapper.INSTANCE.targetToSource( target );
         assertThat( source2 ).isNotNull();
         assertThat( source2.getFooSet() ).isEqualTo( Collections.asSet( "1", "2" ) );
+        assertThat( source2.publicFooSet ).isEqualTo( Collections.asSet( "3", "4" ) );
     }
 
     @Test
@@ -69,15 +72,19 @@ public class CollectionMappingTest {
         Map<String, Long> sourceMap = ImmutableMap.<String, Long>builder().put( "rabbit", 1L ).build();
         Source source = new Source();
         source.setBarMap( sourceMap );
+        source.publicBarMap = ImmutableMap.<String, Long>builder().put( "fox", 2L ).build();
 
         Target target = CollectionMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
         Map<String, String> targetMap = ImmutableMap.<String, String>builder().put( "rabbit", "1" ).build();
+        Map<String, String> targetMap2 = ImmutableMap.<String, String>builder().put( "fox", "2" ).build();
         assertThat( target.getBarMap() ).isEqualTo( targetMap );
+        assertThat( target.getPublicBarMap() ).isEqualTo( targetMap2 );
 
         Source source2 = CollectionMapper.INSTANCE.targetToSource( target );
         assertThat( source2 ).isNotNull();
         assertThat( source2.getBarMap() ).isEqualTo( sourceMap );
+        assertThat( source2.publicBarMap ).isEqualTo( source.publicBarMap );
     }
 
     @Test
@@ -127,14 +134,17 @@ public class CollectionMappingTest {
 
         Source source = new Source();
         source.setFooSet( null );
+        source.publicFooSet = null;
 
         Target target = CollectionMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
         assertThat( target.getFooSet() ).isNull();
+        assertThat( target.getPublicFooSet() ).isNull();
 
         Source source2 = CollectionMapper.INSTANCE.targetToSource( target );
         assertThat( source2 ).isNotNull();
         assertThat( source2.getFooSet() ).isNull();
+        assertThat( source2.publicFooSet ).isNull();
     }
 
     @Test
@@ -144,14 +154,17 @@ public class CollectionMappingTest {
 
         Source source = new Source();
         source.setBarMap( null );
+        source.publicBarMap = null;
 
         Target target = CollectionMapper.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
         assertThat( target.getBarMap() ).isNull();
+        assertThat( target.getPublicBarMap() ).isNull();
 
         Source source2 = CollectionMapper.INSTANCE.targetToSource( target );
         assertThat( source2 ).isNotNull();
         assertThat( source2.getBarMap() ).isNull();
+        assertThat( source2.publicBarMap ).isNull();
     }
 
     @Test
@@ -161,14 +174,19 @@ public class CollectionMappingTest {
 
         Source source = new Source();
         source.setFooSet( null );
+        source.publicFooSet = null;
 
         Target target = CollectionMapperNullValueMappingReturnDefault.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
         assertThat( target.getFooSet() ).isEmpty();
+        assertThat( target.getPublicFooSet() ).isEmpty();
+
+        target.setPublicBarMap( null );
 
         Source source2 = CollectionMapperNullValueMappingReturnDefault.INSTANCE.targetToSource( target );
         assertThat( source2 ).isNotNull();
         assertThat( source2.getFooSet() ).isEmpty();
+        assertThat( source2.publicBarMap ).isEmpty();
     }
 
     @Test
@@ -178,14 +196,19 @@ public class CollectionMappingTest {
 
         Source source = new Source();
         source.setBarMap( null );
+        source.publicBarMap = null;
 
         Target target = CollectionMapperNullValueMappingReturnDefault.INSTANCE.sourceToTarget( source );
         assertThat( target ).isNotNull();
         assertThat( target.getBarMap() ).isEmpty();
+        assertThat( target.getPublicBarMap() ).isEmpty();
+
+        target.setPublicBarMap( null );
 
         Source source2 = CollectionMapperNullValueMappingReturnDefault.INSTANCE.targetToSource( target );
         assertThat( source2 ).isNotNull();
         assertThat( source2.getBarMap() ).isEmpty();
+        assertThat( source2.publicBarMap ).isEmpty();
     }
 
 }

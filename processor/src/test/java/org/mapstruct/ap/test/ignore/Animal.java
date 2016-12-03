@@ -20,18 +20,25 @@ package org.mapstruct.ap.test.ignore;
 
 public class Animal {
 
+    //CHECKSTYLE:OFF
+    public Integer publicAge;
+    public String publicColour;
+    //CHECKSTYLE:OFN
+    private String colour;
     private String name;
     private int size;
     private Integer age;
-    private String colour;
 
+    // private String colour;
     public Animal() {
     }
 
     public Animal(String name, int size, Integer age, String colour) {
         this.name = name;
         this.size = size;
+        this.publicAge = age;
         this.age = age;
+        this.publicColour = colour;
         this.colour = colour;
     }
 

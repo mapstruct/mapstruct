@@ -23,9 +23,15 @@ import java.util.Set;
 
 public class Source {
 
+    //CHECKSTYLE:OFF
+    public Set<String> publicFooSet;
+    //CHECKSTYLE:ON
     private Set<String> fooSet;
     private Set<String> fooSet2;
 
+    //CHECKSTYLE:OFF
+    public Map<String, Long> publicBarMap;
+    //CHECKSTYLE:ON
     private Map<String, Long> barMap;
     private Map<String, Long> barMap2;
 

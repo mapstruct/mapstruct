@@ -37,8 +37,8 @@ public class UpdateWrapper extends AssignmentWrapper {
     private final Type targetImplementationType;
 
     public UpdateWrapper(Assignment decoratedAssignment, List<Type> thrownTypesToExclude, Assignment factoryMethod,
-        Type targetImplementationType ) {
-        super( decoratedAssignment );
+        Type targetImplementationType, boolean fieldAssignment ) {
+        super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.factoryMethod = factoryMethod;
         this.targetImplementationType = determineImplType( factoryMethod, targetImplementationType );

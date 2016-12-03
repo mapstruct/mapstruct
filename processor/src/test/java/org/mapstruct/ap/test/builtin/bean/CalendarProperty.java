@@ -22,6 +22,10 @@ import java.util.Calendar;
 
 public class CalendarProperty {
 
+    // CHECKSTYLE:OFF
+    public Calendar publicProp;
+    // CHECKSTYLE:ON
+
     private Calendar prop;
 
     public Calendar getProp() {

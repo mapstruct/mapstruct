@@ -51,9 +51,17 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
                                               Set<String> existingVariableNames,
                                               Type targetType,
                                               boolean allwaysIncludeNullCheck,
-                                              TypeFactory typeFactory ) {
+                                              TypeFactory typeFactory,
+                                              boolean fieldAssignment) {
 
-        super( decoratedAssignment, thrownTypesToExclude, sourcePresenceChecker, existingVariableNames, targetType );
+        super(
+            decoratedAssignment,
+            thrownTypesToExclude,
+            sourcePresenceChecker,
+            existingVariableNames,
+            targetType,
+            fieldAssignment
+        );
         this.allwaysIncludeNullCheck = allwaysIncludeNullCheck;
         this.targetType = targetType;
         this.typeFactory = typeFactory;
@@ -87,6 +95,10 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
 
     public boolean isEnumSet() {
         return "java.util.EnumSet".equals( targetType.getFullyQualifiedName() );
+    }
+
+    public boolean isFieldAssignment() {
+        return fieldAssignment;
     }
 
 }

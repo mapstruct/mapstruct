@@ -72,12 +72,14 @@ public class InheritanceTest {
     private void assertResult(TargetExt target) {
         assertThat( target ).isNotNull();
         assertThat( target.getFoo() ).isEqualTo( Long.valueOf( 42 ) );
+        assertThat( target.publicFoo ).isEqualTo( Long.valueOf( 52 ) );
         assertThat( target.getBar() ).isEqualTo( 23 );
     }
 
     private SourceExt createSource() {
         SourceExt source = new SourceExt();
         source.setFoo( 42 );
+        source.publicFoo = 52;
         source.setBar( 23L );
         return source;
     }
@@ -87,12 +89,14 @@ public class InheritanceTest {
     public void shouldReverseMapAttributeFromSuperType() {
         TargetExt target = new TargetExt();
         target.setFoo( 42L );
+        target.publicFoo = 52L;
         target.setBar( 23 );
 
         SourceExt source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
         assertThat( source.getFoo() ).isEqualTo( 42 );
+        assertThat( source.publicFoo ).isEqualTo( 52 );
         assertThat( source.getBar() ).isEqualTo( Long.valueOf( 23 ) );
     }
 }

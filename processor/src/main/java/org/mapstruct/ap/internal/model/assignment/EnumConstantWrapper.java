@@ -31,7 +31,7 @@ public class EnumConstantWrapper extends AssignmentWrapper {
     private final Type enumType;
 
     public EnumConstantWrapper(Assignment decoratedAssignment, Type enumType ) {
-        super( decoratedAssignment );
+        super( decoratedAssignment, false );
         this.enumType = enumType;
     }
 
