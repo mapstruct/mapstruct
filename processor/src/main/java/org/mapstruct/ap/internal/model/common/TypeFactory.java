@@ -349,7 +349,7 @@ public class TypeFactory {
     }
 
     private boolean isExecutableType(TypeMirror accessorType) {
-        return accessorType.getKind() == TypeKind.EXECUTABLE && accessorType instanceof ExecutableType;
+        return accessorType.getKind() == TypeKind.EXECUTABLE;
     }
 
     public Type getReturnType(ExecutableType method) {

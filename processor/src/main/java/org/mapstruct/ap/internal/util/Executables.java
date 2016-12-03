@@ -189,7 +189,6 @@ public class Executables {
             if ( accessor.getExecutable() != null ) {
                 executables.add( accessor.getExecutable() );
             }
-
         }
         return executables;
     }
