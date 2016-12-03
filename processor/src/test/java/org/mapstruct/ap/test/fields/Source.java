@@ -27,11 +27,6 @@ import java.util.List;
  */
 public class Source {
 
-    /**
-     * Only used for testing purposes
-     */
-    public static final List<Invocation> INVOCATIONS = new ArrayList<Invocation>();
-
     // CHECKSTYLE:OFF
     public final int finalInt = 10;
     public int normalInt;
@@ -47,7 +42,6 @@ public class Source {
     }
 
     public Integer getFieldOnlyWithGetter() {
-        INVOCATIONS.add( new Invocation( "getFieldOnlyWithGetter" ) );
-        return fieldOnlyWithGetter;
+        return fieldOnlyWithGetter + 21;
     }
 }

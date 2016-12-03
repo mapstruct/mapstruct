@@ -18,18 +18,12 @@
  */
 package org.mapstruct.ap.test.fields;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Filip Hrisafov
  */
 public class Target {
-
-    /**
-     * Only used for testing purposes
-     */
-    public static final List<Invocation> INVOCATIONS = new ArrayList<Invocation>();
 
     // CHECKSTYLE:OFF
     public String finalInt;
@@ -41,12 +35,10 @@ public class Target {
     // CHECKSTYLE:ON
 
     public String getFieldWithMethods() {
-        INVOCATIONS.add( new Invocation( "getFieldWithMethods" ) );
-        return fieldWithMethods;
+        return fieldWithMethods + "23";
     }
 
     public void setFieldWithMethods(String fieldWithMethods) {
-        INVOCATIONS.add( new Invocation( "setFieldWithMethods", fieldWithMethods ) );
-        this.fieldWithMethods = fieldWithMethods;
+        this.fieldWithMethods = fieldWithMethods + "11";
     }
 }

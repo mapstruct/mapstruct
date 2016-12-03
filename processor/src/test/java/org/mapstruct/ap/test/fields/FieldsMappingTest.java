@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.fields;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.assertj.core.util.Lists;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -33,14 +32,8 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey( "557" )
-@WithClasses({ Source.class, Target.class, SourceTargetMapper.class, Invocation.class })
+@WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 public class FieldsMappingTest {
-
-    @Before
-    public void setUp() throws Exception {
-        Source.INVOCATIONS.clear();
-        Target.INVOCATIONS.clear();
-    }
 
     @Test
     public void shouldMapSourceToTarget() throws Exception {
@@ -57,12 +50,8 @@ public class FieldsMappingTest {
         assertThat( target.finalList ).containsOnly( "1", "2", "3" );
         assertThat( target.normalList ).containsOnly( "10", "11", "12" );
         assertThat( target.privateFinalList ).containsOnly( 3, 4, 5 );
-        assertThat( target.fieldWithMethods ).isEqualTo( "20" );
-        // Once for the null check, and the second time for the variable set
-        assertThat( Source.INVOCATIONS ).containsExactly(
-            new Invocation( "getFieldOnlyWithGetter" ),
-            new Invocation( "getFieldOnlyWithGetter" ) );
-        assertThat( Target.INVOCATIONS ).containsExactly( new Invocation( "setFieldWithMethods", "20" ) );
+        // +21 from the source getter and append 11 on the setter from the target
+        assertThat( target.fieldWithMethods ).isEqualTo( "4111" );
     }
 
     @Test
@@ -83,12 +72,7 @@ public class FieldsMappingTest {
         assertThat( source.finalList ).containsOnly( 1, 2, 3 );
         assertThat( source.normalList ).containsOnly( 10, 11, 12 );
         assertThat( source.getPrivateFinalList() ).containsOnly( 3, 4, 5, 10, 11, 12 );
-        assertThat( source.fieldOnlyWithGetter ).isEqualTo( 20 );
-        assertThat( Source.INVOCATIONS ).isEmpty();
-        // Once for the null check, and the second time for the variable set
-        assertThat( Target.INVOCATIONS ).containsExactly(
-            new Invocation( "getFieldWithMethods" ),
-            new Invocation( "getFieldWithMethods" )
-        );
+        // 23 is appended on the target getter
+        assertThat( source.fieldOnlyWithGetter ).isEqualTo( 2023 );
     }
 }
