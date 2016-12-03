@@ -20,13 +20,13 @@ This work is licensed under the http://creativecommons.org/licenses/by-sa/4.0/[C
 
 MapStruct is a Java http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html[annotation processor] for the generation of type-safe bean mapping classes.
 
-All you have to do is to define a mapper interface which declares any required mapping methods. During compilation, MapStruct will generate an implementation of this interface. This implementation uses plain Java method invocations for mapping between source and target objects, i.e. no reflection or similar.
+All you have to do is to define a mapper interface which declares any required mapping methods. During compilation, MapStruct will generate an implementation of this interface. This implementation uses plain Java method/field invocations for mapping between source and target objects, i.e. no reflection or similar.
 
 Compared to writing mapping code from hand, MapStruct saves time by generating code which is tedious and error-prone to write. Following a convention over configuration approach, MapStruct uses sensible defaults but steps out of your way when it comes to configuring or implementing special behavior.
 
 Compared to dynamic mapping frameworks, MapStruct offers the following advantages:
 
-* Fast execution by using plain method invocations instead of reflection
+* Fast execution by using plain method/field invocations instead of reflection
 * Compile-time type safety: Only objects and attributes mapping to each other can be mapped, no accidental mapping of an order entity into a customer DTO etc.
 * Clear error-reports at build time, if entities or attributes can't be mapped
 
@@ -307,6 +307,13 @@ The property name as defined in the http://www.oracle.com/technetwork/java/javas
 
 [TIP]
 ====
+Since version 1.2.x a property name is also any `public` field with the given name. e.q. _seatCount_ for a `public`
+property with the same name. In this case no accessor methods `getSeatCount()` and `setSeatCount()` are needed to
+read/write from/to property
+====
+
+[TIP]
+====
 When using Java 8 or later, you can omit the `@Mappings` wrapper annotation and directly specify several `@Mapping` annotations on one method.
 ====
 
@@ -350,13 +357,30 @@ public class CarMapperImpl implements CarMapper {
 ----
 ====
 
-The general philosophy of MapStruct is to generate code which looks as much as possible as if you had written it yourself from hand. In particular this means that the values are copied from source to target by plain getter/setter invocations instead of reflection or similar.
+The general philosophy of MapStruct is to generate code which looks as much as possible as if you had written it yourself from hand. In particular this means that the values are copied from source to target by plain getter/setter/field invocations instead of reflection or similar.
 
 As the example shows the generated code takes into account any name mappings specified via `@Mapping`. If the type of a mapped attribute is different in source and target entity, MapStruct will either apply an automatic conversion (as e.g. for the _price_ property, see also <<implicit-type-conversions>>) or optionally invoke another mapping method (as e.g. for the _driver_ property, see also <<mapping-object-references>>).
 
 Collection-typed attributes with the same element type will be copied by creating a new instance of the target collection type containing the elements from the source property. For collection-typed attributes with different element types each element will be mapped individually and added to the target collection (see <<mapping-collections>>).
 
 MapStruct takes all public properties of the source and target types into account. This includes properties declared on super-types.
+
+[[field-mappings]]
+=== Mappings via field
+
+Since version 1.2.x MapStruct also supports mappings of `public` fields that have no getters/setters. MapStruct will
+use the fields as read/write accessor if it cannot find suitable getter/setter methods for the property.
+
+A field is considered as a read accessor if it is `public` or `public final`. If a field is `static` it is not
+considered as a read accessors.
+
+A field is considered as a write accessor only if it is `public`. If a field is `final` and/or `static` it is not
+considered as a write accessor.
+
+You can find a complete example in the
+https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-field-mapping[mapstruct-examples-field-mapping]
+project on GitHub.
+
 
 [[adding-custom-methods]]
 === Adding custom methods to mappers
