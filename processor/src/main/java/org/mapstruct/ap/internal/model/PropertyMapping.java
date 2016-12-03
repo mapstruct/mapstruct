@@ -203,6 +203,7 @@ public class PropertyMapping extends ModelElement {
         // initial properties
         private String defaultValue;
         private SourceReference sourceReference;
+        private SourceRHS rightHandSide;
         private FormattingParameters formattingParameters;
         private SelectionParameters selectionParameters;
 
@@ -228,14 +229,10 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMapping build() {
             // handle source
-            String sourceElement = getSourceElement();
-            Type sourceType = getSourceType();
-            SourceRHS sourceRHS = getSourceRHS();
-            if ( targetWriteAccessorType == TargetWriteAccessorType.ADDER && sourceType.isCollectionType() ) {
-                // handle adder, if source is collection then use iterator element type as source type.
-                sourceType = sourceType.getTypeParameters().get( 0 );
-                sourceRHS = new SourceRHS( sourceRHS.getSourceReference(), sourceType, existingVariableNames );
-            }
+            this.rightHandSide = getSourceRHS( sourceReference );
+            rightHandSide.setUseElementAsSourceTypeForMatching(
+                targetWriteAccessorType == TargetWriteAccessorType.ADDER );
+            Type sourceType = rightHandSide.getSourceType();
 
             // all the tricky cases will be excluded for the time being.
             boolean preferUpdateMethods;
@@ -248,22 +245,21 @@ public class PropertyMapping extends ModelElement {
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
-                sourceElement,
                 targetType,
                 targetPropertyName,
                 formattingParameters,
                 selectionParameters,
-                sourceRHS,
+                rightHandSide,
                 preferUpdateMethods
             );
 
             // No mapping found. Try to forge a mapping
             if ( assignment == null ) {
                 if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
-                    assignment = forgeIterableMapping( sourceType, targetType, sourceRHS, method.getExecutable() );
+                    assignment = forgeIterableMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
                 }
                 else if ( sourceType.isMapType() && targetType.isMapType() ) {
-                    assignment = forgeMapMapping( sourceType, targetType, sourceRHS, method.getExecutable() );
+                    assignment = forgeMapMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
                 }
             }
 
@@ -282,30 +278,30 @@ public class PropertyMapping extends ModelElement {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
-                    sourceElement,
+                    rightHandSide.getSourceErrorMessagePart(),
                     targetType,
                     targetPropertyName,
                     targetType,
-                    getSourceType() /* original source type */
+                    rightHandSide.getSourceType() /* original source type */
                 );
             }
 
             return new PropertyMapping(
                 targetPropertyName,
-                sourceReference.getParameter().getName(),
+                rightHandSide.getSourceParameterName(),
                 targetWriteAccessor.getSimpleName().toString(),
                 ValueProvider.of( targetReadAccessor ),
                 targetType,
                 localTargetVarName,
                 assignment,
                 dependsOn,
-                getDefaultValueAssignment()
+                getDefaultValueAssignment( assignment )
             );
         }
 
-        private Assignment getDefaultValueAssignment() {
+        private Assignment getDefaultValueAssignment( Assignment rhs ) {
             if ( defaultValue != null
-                &&  ( !getSourceType().isPrimitive()  || getSourcePresenceCheckerRef() != null) ) {
+                &&  ( !rhs.getSourceType().isPrimitive() || rhs.getSourcePresenceCheckerReference() != null) ) {
                 // cannot check on null source if source is primitive unless it has a presenche checker
                 PropertyMapping build = new ConstantMappingBuilder()
                         .constantExpression( '"' + defaultValue + '"' )
@@ -340,23 +336,23 @@ public class PropertyMapping extends ModelElement {
 
         }
 
-        private Assignment assignToPlainViaSetter(Type sourceType, Type targetType, Assignment rightHandSide) {
+        private Assignment assignToPlainViaSetter(Type sourceType, Type targetType, Assignment rhs) {
 
             Assignment result;
 
-            if ( rightHandSide.isUpdateMethod() ) {
+            if ( rhs.isUpdateMethod() ) {
                 if ( targetReadAccessor == null ) {
                     ctx.getMessager().printMessage( method.getExecutable(),
                         Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                         targetPropertyName );
                 }
                 Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
-                result = new UpdateWrapper( rightHandSide, method.getThrownTypes(), factoryMethod,
+                result = new UpdateWrapper( rhs, method.getThrownTypes(), factoryMethod,
                     targetType, isFieldAssignment()
                 );
             }
             else {
-                result = new SetterWrapper( rightHandSide, method.getThrownTypes(), isFieldAssignment() );
+                result = new SetterWrapper( rhs, method.getThrownTypes(), isFieldAssignment() );
             }
 
             // if the sourceReference is the bean mapping method parameter itself, no null check is required
@@ -367,20 +363,20 @@ public class PropertyMapping extends ModelElement {
 
             // add a null / presence checked when required
             if ( sourceType.isPrimitive() ) {
-                if ( getSourcePresenceCheckerRef() != null ) {
-                    result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                if ( rhs.getSourcePresenceCheckerReference() != null ) {
+                    result = new NullCheckWrapper( result );
                 }
             }
             else {
 
                 if ( result.isUpdateMethod() ) {
-                    result = new UpdateNullCheckWrapper( result, getSourcePresenceCheckerRef(), isFieldAssignment() );
+                    result = new UpdateNullCheckWrapper( result, isFieldAssignment() );
                 }
-                else if ( getSourcePresenceCheckerRef() != null ) {
-                    result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                else if ( rhs.getSourcePresenceCheckerReference() != null ) {
+                    result = new NullCheckWrapper( result );
                 }
                 else if ( ALWAYS.equals( method.getMapperConfiguration().getNullValueCheckStrategy() ) ) {
-                    result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                    result = new NullCheckWrapper( result );
                     useLocalVarWhenNested( result );
                 }
                 else if ( result.getType() == TYPE_CONVERTED
@@ -389,7 +385,7 @@ public class PropertyMapping extends ModelElement {
                     || (result.getType() == DIRECT && targetType.isPrimitive() ) ) {
                     // for primitive types null check is not possible at all, but a conversion needs
                     // a null check.
-                    result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                    result = new NullCheckWrapper( result );
                     useLocalVarWhenNested( result );
                 }
             }
@@ -410,13 +406,13 @@ public class PropertyMapping extends ModelElement {
 
             Assignment result = rightHandSide;
 
-            if ( getSourceType().isCollectionType() ) {
+            if ( result.getSourceType().isCollectionType() ) {
                 result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment() );
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
                 result = new SetterWrapper( result, method.getThrownTypes(), isFieldAssignment() );
-                result = new NullCheckWrapper( result, getSourcePresenceCheckerRef() );
+                result = new NullCheckWrapper( result );
             }
             return result;
         }
@@ -450,7 +446,6 @@ public class PropertyMapping extends ModelElement {
                     result = new SetterWrapperForCollectionsAndMaps(
                         result,
                         method.getThrownTypes(),
-                        getSourcePresenceCheckerRef(),
                         existingVariableNames,
                         targetType,
                         ALWAYS == method.getMapperConfiguration().getNullValueCheckStrategy(),
@@ -463,7 +458,6 @@ public class PropertyMapping extends ModelElement {
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
                 result = new GetterWrapperForCollectionsAndMaps( result,
                                                                  method.getThrownTypes(),
-                                                                 getSourcePresenceCheckerRef(),
                                                                  existingVariableNames,
                                                                  targetType,
                                                                  isFieldAssignment()
@@ -484,19 +478,34 @@ public class PropertyMapping extends ModelElement {
                 existingVariableNames,
                 isFieldAssignment()
             );
-            return new NullCheckWrapper( assignment, getSourcePresenceCheckerRef() );
+            return new NullCheckWrapper( assignment );
         }
 
-        private Type getSourceType() {
-
+        private SourceRHS getSourceRHS( SourceReference sourceReference ) {
             Parameter sourceParam = sourceReference.getParameter();
             List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+
+            // parameter reference
             if ( propertyEntries.isEmpty() ) {
-                return sourceParam.getType();
+                return new SourceRHS( sourceParam.getName(),
+                                      sourceParam.getType(),
+                                      existingVariableNames,
+                                      sourceReference.toString()
+                );
             }
+            // simple property
             else if ( propertyEntries.size() == 1 ) {
-                return last( propertyEntries ).getType();
+                PropertyEntry propertyEntry = propertyEntries.get( 0 );
+                String sourceRef = sourceParam.getName() + "." + ValueProvider.of( propertyEntry.getReadAccessor() );
+                return new SourceRHS( sourceParam.getName(),
+                                      sourceRef,
+                                      getSourcePresenceCheckerRef( sourceReference ),
+                                      propertyEntry.getType(),
+                                      existingVariableNames,
+                                      sourceReference.toString()
+                );
             }
+            // nested property given as dot path
             else {
                 Type sourceType = last( propertyEntries ).getType();
                 if ( sourceType.isPrimitive() && !targetType.isPrimitive() ) {
@@ -505,39 +514,18 @@ public class PropertyMapping extends ModelElement {
                     // type. The source type becomes the wrapped type in that case.
                     sourceType = ctx.getTypeFactory().getWrappedType( sourceType );
                 }
-                return sourceType;
-            }
-        }
 
-        private SourceRHS getSourceRHS() {
-            Parameter sourceParam = sourceReference.getParameter();
-            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
-
-            // parameter reference
-            if ( propertyEntries.isEmpty() ) {
-                return new SourceRHS( sourceParam.getName(), getSourceType(), existingVariableNames );
-            }
-            // simple property
-            else if ( propertyEntries.size() == 1 ) {
-                PropertyEntry propertyEntry = propertyEntries.get( 0 );
-                String sourceRef = sourceParam.getName() + "." + ValueProvider.of( propertyEntry.getReadAccessor() );
-                return new SourceRHS( sourceRef, propertyEntry.getType(), existingVariableNames );
-            }
-            // nested property given as dot path
-            else {
                 // copy mapper configuration from the source method, its the same mapper
                 MapperConfiguration config = method.getMapperConfiguration();
-
 
                 // forge a method from the parameter type to the last entry type.
                 String forgedName = Strings.joinAndCamelize( sourceReference.getElementNames() );
                 forgedName = Strings.getSaveVariableName( forgedName, ctx.getNamesOfMappingsToGenerate() );
-                ForgedMethod methodRef = new ForgedMethod(
-                    forgedName,
-                    sourceReference.getParameter().getType(),
-                    getSourceType(),
-                    config,
-                    method.getExecutable()
+                ForgedMethod methodRef = new ForgedMethod( forgedName,
+                                                           sourceReference.getParameter().getType(),
+                                                           sourceType,
+                                                           config,
+                                                           method.getExecutable()
                 );
                 NestedPropertyMappingMethod.Builder builder = new NestedPropertyMappingMethod.Builder();
                 NestedPropertyMappingMethod nestedPropertyMapping = builder
@@ -553,36 +541,24 @@ public class PropertyMapping extends ModelElement {
                     forgedName = ctx.getExistingMappingMethod( nestedPropertyMapping ).getName();
                 }
                 String sourceRef = forgedName + "( " + sourceParam.getName() + " )";
-                return new SourceRHS( sourceRef, getSourceType(), existingVariableNames );
-
-            }
-        }
-
-        private String getSourceElement() {
-
-            Parameter sourceParam = sourceReference.getParameter();
-            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
-            if ( propertyEntries.isEmpty() ) {
-                return String.format( "parameter \"%s %s\"", sourceParam.getType(), sourceParam.getName() );
-            }
-            else if ( propertyEntries.size() == 1 ) {
-                PropertyEntry propertyEntry = propertyEntries.get( 0 );
-                return String.format( "property \"%s %s\"", propertyEntry.getType(), propertyEntry.getName() );
-            }
-            else {
-                PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
-                return String.format(
-                    "property \"%s %s\"",
-                    lastPropertyEntry.getType(),
-                    Strings.join( sourceReference.getElementNames(), "." )
+                SourceRHS sourceRhs = new SourceRHS( sourceParam.getName(),
+                                                     sourceRef,
+                                                     getSourcePresenceCheckerRef( sourceReference ),
+                                                     sourceType,
+                                                     existingVariableNames,
+                                                     sourceReference.toString()
                 );
+                return sourceRhs;
+
             }
         }
 
-        private String getSourcePresenceCheckerRef() {
+        private String getSourcePresenceCheckerRef( SourceReference sourceReference ) {
             String sourcePresenceChecker = null;
             if ( !sourceReference.getPropertyEntries().isEmpty() ) {
                 Parameter sourceParam = sourceReference.getParameter();
+                // TODO is first correct here?? shouldn't it be last since the remainer is checked
+                // in the forged method?
                 PropertyEntry propertyEntry = first( sourceReference.getPropertyEntries() );
                 if ( propertyEntry.getPresenceChecker() != null ) {
                     sourcePresenceChecker = sourceParam.getName()
@@ -699,19 +675,18 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMapping build() {
             // source
-            String mappedElement = "constant '" + constantExpression + "'";
+            String sourceErrorMessagePart = "constant '" + constantExpression + "'";
             Type sourceType = ctx.getTypeFactory().getType( String.class );
 
             Assignment assignment = null;
             if ( !targetType.isEnumType() ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
                     method,
-                    mappedElement,
                     targetType,
                     targetPropertyName,
                     formattingParameters,
                     selectionParameters,
-                    new SourceRHS( constantExpression, sourceType, existingVariableNames ),
+                    new SourceRHS( constantExpression, sourceType, existingVariableNames, sourceErrorMessagePart ),
                     method.getMappingTargetParameter() != null
                 );
             }
@@ -780,7 +755,8 @@ public class PropertyMapping extends ModelElement {
             // String String quotation marks.
             String enumExpression = constantExpression.substring( 1, constantExpression.length() - 1 );
             if ( targetType.getEnumConstants().contains( enumExpression ) ) {
-                assignment = new SourceRHS( enumExpression, targetType, existingVariableNames );
+                String sourceErrorMessagePart = "constant '" + constantExpression + "'";
+                assignment = new SourceRHS( enumExpression, targetType, existingVariableNames, sourceErrorMessagePart );
                 assignment = new EnumConstantWrapper( assignment, targetType );
             }
             else {
@@ -806,7 +782,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         public PropertyMapping build() {
-            Assignment assignment = new SourceRHS( javaExpression, null, existingVariableNames );
+            Assignment assignment = new SourceRHS( javaExpression, null, existingVariableNames, "" );
 
             if ( Executables.isSetterMethod( targetWriteAccessor ) ||
                 Executables.isFieldAccessor( targetWriteAccessor ) ) {

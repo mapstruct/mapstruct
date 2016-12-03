@@ -104,10 +104,9 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    @SuppressWarnings("checkstyle:parameternumber")
-    public Assignment getTargetAssignment(Method mappingMethod, String mappedElement,
-        Type targetType, String targetPropertyName, FormattingParameters formattingParameters,
-        SelectionParameters selectionParameters, SourceRHS sourceRHS, boolean preferUpdateMapping) {
+    public Assignment getTargetAssignment(Method mappingMethod, Type targetType, String targetPropertyName,
+        FormattingParameters formattingParameters, SelectionParameters selectionParameters, SourceRHS sourceRHS,
+        boolean preferUpdateMapping) {
 
         SelectionCriteria criteria =
             new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping, false );
@@ -122,14 +121,13 @@ public class MappingResolverImpl implements MappingResolver {
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
             mappingMethod,
-            mappedElement,
             dateFormat,
             numberFormat,
             sourceRHS,
             criteria
         );
 
-        return attempt.getTargetAssignment( sourceRHS.getSourceType(), targetType );
+        return attempt.getTargetAssignment( sourceRHS.getSourceTypeForMatching(), targetType );
     }
 
     @Override
@@ -143,7 +141,7 @@ public class MappingResolverImpl implements MappingResolver {
 
         SelectionCriteria criteria = new SelectionCriteria( selectionParameters, null, false, true );
 
-        ResolvingAttempt attempt = new ResolvingAttempt( sourceModel, mappingMethod, null, null, null, null, criteria );
+        ResolvingAttempt attempt = new ResolvingAttempt( sourceModel, mappingMethod, null, null, null, criteria );
 
         List<SourceMethod> matchingSourceMethods = attempt.getMatches( sourceModel, null, targetType );
 
@@ -199,7 +197,6 @@ public class MappingResolverImpl implements MappingResolver {
     private class ResolvingAttempt {
 
         private final Method mappingMethod;
-        private final String mappedElement;
         private final List<SourceMethod> methods;
         private final String dateFormat;
         private final String numberFormat;
@@ -212,12 +209,10 @@ public class MappingResolverImpl implements MappingResolver {
         // so this set must be cleared.
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
-        private ResolvingAttempt(List<SourceMethod> sourceModel, Method mappingMethod, String mappedElement,
-                String dateFormat, String numberFormat, SourceRHS sourceRHS, SelectionCriteria criteria) {
-
+        private ResolvingAttempt(List<SourceMethod> sourceModel, Method mappingMethod, String dateFormat,
+                                 String numberFormat, SourceRHS sourceRHS, SelectionCriteria criteria) {
 
             this.mappingMethod = mappingMethod;
-            this.mappedElement = mappedElement;
             this.methods = filterPossibleCandidateMethods( sourceModel );
             this.dateFormat = dateFormat;
             this.numberFormat = numberFormat;
@@ -520,10 +515,10 @@ public class MappingResolverImpl implements MappingResolver {
             // into the target type
             if ( candidates.size() > 1 ) {
 
-                if ( mappedElement != null ) {
+                if ( sourceRHS.getSourceErrorMessagePart() != null ) {
                     messager.printMessage( mappingMethod.getExecutable(),
                         Message.GENERAL_AMBIGIOUS_MAPPING_METHOD,
-                        mappedElement,
+                        sourceRHS.getSourceErrorMessagePart(),
                         returnType,
                         Strings.join( candidates, ", " )
                     );

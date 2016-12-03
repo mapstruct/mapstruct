@@ -25,7 +25,7 @@ if ( ${sourceLocalVarName} != null ) {
     <@_assignment object=assignment defaultValue=ext.defaultValueAssignment/>
 }
 <#else>
-if ( <#if sourcePresenceChecker?? >${sourcePresenceChecker}<#else>${sourceReference} != null</#if> ) {
+if ( <#if sourcePresenceCheckerReference?? >${sourcePresenceCheckerReference}<#else>${sourceReference} != null</#if> ) {
     <@_assignment object=assignment defaultValue=ext.defaultValueAssignment/>
 }
 </#if>

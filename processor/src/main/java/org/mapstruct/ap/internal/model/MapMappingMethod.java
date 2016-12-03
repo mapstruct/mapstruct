@@ -108,12 +108,11 @@ public class MapMappingMethod extends MappingMethod {
 
             Assignment keyAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
-                "map key",
                 keyTargetType,
                 null, // there is no targetPropertyName
                 keyFormattingParameters,
                 keySelectionParameters,
-                new SourceRHS( "entry.getKey()", keySourceType, new HashSet<String>() ),
+                new SourceRHS( "entry.getKey()", keySourceType, new HashSet<String>(), "map key" ),
                 false
             );
 
@@ -134,12 +133,11 @@ public class MapMappingMethod extends MappingMethod {
 
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
-                "map value",
                 valueTargetType,
                 null, // there is no targetPropertyName
                 valueFormattingParameters,
                 valueSelectionParameters,
-                new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<String>() ),
+                new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<String>(), "map value" ),
                 false
             );
 

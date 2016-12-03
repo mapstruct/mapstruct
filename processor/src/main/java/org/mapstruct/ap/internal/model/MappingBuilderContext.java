@@ -75,7 +75,6 @@ public class MappingBuilderContext {
          * returns a parameter assignment
          *
          * @param mappingMethod target mapping method
-         * @param mappedElement used for error messages
          * @param targetType return type to match
          * @param targetPropertyName name of the target property
          * @param formattingParameters used for formatting dates and numbers
@@ -91,9 +90,8 @@ public class MappingBuilderContext {
          * <li>null, no assignment found</li>
          * </ol>
          */
-        @SuppressWarnings("checkstyle:parameternumber")
-        Assignment getTargetAssignment(Method mappingMethod, String mappedElement, Type targetType,
-                                       String targetPropertyName, FormattingParameters formattingParameters,
+        Assignment getTargetAssignment(Method mappingMethod, Type targetType, String targetPropertyName,
+                                       FormattingParameters formattingParameters,
                                        SelectionParameters selectionParameters, SourceRHS sourceRHS,
                                        boolean preferUpdateMethods);
 

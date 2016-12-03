@@ -30,6 +30,8 @@ import org.mapstruct.ap.internal.util.Strings;
 /**
  * SourceRHS Assignment. Right Hand Side (RHS), source part of the assignment.
  *
+ * This class contains all information on the source side of an assignment needed for common use in the mapping.
+ *
  * @author Sjaak Derksen
  */
 public class SourceRHS extends ModelElement implements Assignment {
@@ -38,16 +40,34 @@ public class SourceRHS extends ModelElement implements Assignment {
     private final Type sourceType;
     private String sourceLocalVarName;
     private final Set<String> existingVariableNames;
+    private final String sourceErrorMessagePart;
+    private final String sourcePresenceCheckerReference;
+    private boolean useElementAsSourceTypeForMatching = false;
+    private final String sourceParameterName;
 
-    public SourceRHS(String sourceReference, Type sourceType, Set<String> existingVariableNames ) {
+    public SourceRHS(String sourceReference, Type sourceType, Set<String> existingVariableNames,
+        String sourceErrorMessagePart ) {
+        this( null, sourceReference, null, sourceType, existingVariableNames, sourceErrorMessagePart );
+    }
+
+    public SourceRHS(String sourceParameterName, String sourceReference, String sourcePresenceCheckerReference,
+        Type sourceType, Set<String> existingVariableNames,  String sourceErrorMessagePart ) {
         this.sourceReference = sourceReference;
         this.sourceType = sourceType;
         this.existingVariableNames = existingVariableNames;
+        this.sourceErrorMessagePart = sourceErrorMessagePart;
+        this.sourcePresenceCheckerReference = sourcePresenceCheckerReference;
+        this.sourceParameterName = sourceParameterName;
     }
 
     @Override
     public String getSourceReference() {
         return sourceReference;
+    }
+
+    @Override
+    public String getSourcePresenceCheckerReference() {
+        return sourcePresenceCheckerReference;
     }
 
     @Override
@@ -99,4 +119,32 @@ public class SourceRHS extends ModelElement implements Assignment {
     public String toString() {
         return sourceReference;
     }
+
+    public String getSourceErrorMessagePart() {
+        return sourceErrorMessagePart;
+    }
+
+    /**
+     * The source type that is to be used when resolving the mapping from source to target.
+     *
+     * @return the source type to be used in the matching process.
+     */
+    public Type getSourceTypeForMatching() {
+        return useElementAsSourceTypeForMatching && sourceType.isCollectionType() ?
+            sourceType.getTypeParameters().get( 0 ) : sourceType;
+    }
+
+    /**
+     * For collection type, use element as source type to find a suitable mapping method.
+     *
+     * @param useElementAsSourceTypeForMatching
+     */
+    public void setUseElementAsSourceTypeForMatching(boolean useElementAsSourceTypeForMatching) {
+        this.useElementAsSourceTypeForMatching = useElementAsSourceTypeForMatching;
+    }
+
+    public String getSourceParameterName() {
+        return sourceParameterName;
+    }
+
 }

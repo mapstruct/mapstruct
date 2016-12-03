@@ -35,13 +35,11 @@ import org.mapstruct.ap.internal.util.Strings;
 public class WrapperForCollectionsAndMaps extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
-    private final String sourcePresenceChecker;
     private final String localVarName;
     private final Type localVarType;
 
     public WrapperForCollectionsAndMaps(Assignment decoratedAssignment,
                                         List<Type> thrownTypesToExclude,
-                                        String sourcePresenceChecker,
                                         Set<String> existingVariableNames,
                                         Type targetType,
                                         boolean fieldAssignment) {
@@ -49,7 +47,6 @@ public class WrapperForCollectionsAndMaps extends AssignmentWrapper {
         super( decoratedAssignment, fieldAssignment );
 
         this.thrownTypesToExclude = thrownTypesToExclude;
-        this.sourcePresenceChecker = sourcePresenceChecker;
         if ( getType() == AssignmentType.DIRECT && getSourceType() != null ) {
             this.localVarType = getSourceType();
         }
@@ -81,10 +78,6 @@ public class WrapperForCollectionsAndMaps extends AssignmentWrapper {
         imported.add( localVarType );
         imported.addAll( localVarType.getTypeParameters() );
         return imported;
-    }
-
-    public String getSourcePresenceChecker() {
-        return sourcePresenceChecker;
     }
 
     public String getLocalVarName() {

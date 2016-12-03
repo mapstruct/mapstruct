@@ -39,17 +39,14 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAndMaps {
 
     /**
-     * constructor for property mapping
-     *
      * @param decoratedAssignment
      * @param thrownTypesToExclude
-     * @param sourcePresenceChecker
      * @param existingVariableNames
      * @param targetType
+     * @param fieldAssignment
      */
     public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
                                               List<Type> thrownTypesToExclude,
-                                              String sourcePresenceChecker,
                                               Set<String> existingVariableNames,
                                               Type targetType,
                                               boolean fieldAssignment) {
@@ -57,28 +54,10 @@ public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
         super(
             decoratedAssignment,
             thrownTypesToExclude,
-            sourcePresenceChecker,
             existingVariableNames,
             targetType,
             fieldAssignment
         );
-    }
-
-    /**
-     * constructor for e.g. constants and expressions
-     *
-     * @param decoratedAssignment
-     * @param thrownTypesToExclude
-     * @param existingVariableNames
-     * @param targetType
-     */
-    public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
-                                              List<Type> thrownTypesToExclude,
-                                              Set<String> existingVariableNames,
-                                              Type targetType,
-                                              boolean fieldAssignment) {
-
-        super( decoratedAssignment, thrownTypesToExclude, null, existingVariableNames, targetType, fieldAssignment );
     }
 
 }
