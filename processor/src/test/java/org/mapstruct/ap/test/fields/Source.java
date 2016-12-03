@@ -27,16 +27,27 @@ import java.util.List;
  */
 public class Source {
 
+    /**
+     * Only used for testing purposes
+     */
+    public static final List<Invocation> INVOCATIONS = new ArrayList<Invocation>();
+
     // CHECKSTYLE:OFF
     public final int finalInt = 10;
     public int normalInt;
     public final List<Integer> finalList = Arrays.asList( 1, 2, 3 );
     public List<Integer> normalList;
+    public Integer fieldOnlyWithGetter;
     // CHECKSTYLE:ON
 
     private final List<Integer> privateFinalList = new ArrayList<Integer>( Arrays.asList( 3, 4, 5 ) );
 
     public List<Integer> getPrivateFinalList() {
         return privateFinalList;
+    }
+
+    public Integer getFieldOnlyWithGetter() {
+        INVOCATIONS.add( new Invocation( "getFieldOnlyWithGetter" ) );
+        return fieldOnlyWithGetter;
     }
 }

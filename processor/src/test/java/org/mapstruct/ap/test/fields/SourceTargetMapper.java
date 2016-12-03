@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.fields;
 
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -30,6 +31,7 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
+    @Mapping(source = "fieldOnlyWithGetter", target = "fieldWithMethods")
     Target toSource(Source source);
 
     @InheritInverseConfiguration

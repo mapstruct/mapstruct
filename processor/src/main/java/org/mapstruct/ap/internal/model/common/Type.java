@@ -609,6 +609,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             List<Accessor> setterMethods = getSetters();
             List<Accessor> readAccessors =
                 new ArrayList<Accessor>( getPropertyReadAccessors().values() );
+            // All the fields are also alternative accessors
+            readAccessors.addAll( Filters.fieldsIn( getAllAccessors() ) );
 
             // there could be a read accessor (field or  method) for a list/map that is not present as setter.
             // an accessor could substitute the setter in that case and act as setter.

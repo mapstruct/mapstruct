@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.fields;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,11 +26,27 @@ import java.util.List;
  */
 public class Target {
 
+    /**
+     * Only used for testing purposes
+     */
+    public static final List<Invocation> INVOCATIONS = new ArrayList<Invocation>();
+
     // CHECKSTYLE:OFF
     public String finalInt;
     public String normalInt;
     public List<String> finalList;
     public List<String> normalList;
     public List<Integer> privateFinalList;
+    public String fieldWithMethods;
     // CHECKSTYLE:ON
+
+    public String getFieldWithMethods() {
+        INVOCATIONS.add( new Invocation( "getFieldWithMethods" ) );
+        return fieldWithMethods;
+    }
+
+    public void setFieldWithMethods(String fieldWithMethods) {
+        INVOCATIONS.add( new Invocation( "setFieldWithMethods", fieldWithMethods ) );
+        this.fieldWithMethods = fieldWithMethods;
+    }
 }

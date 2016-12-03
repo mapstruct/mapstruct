@@ -18,28 +18,36 @@
  */
 package org.mapstruct.ap.test.fields;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.assertj.core.util.Lists;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * @author Filip Hrisafov
  */
 @RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey( "557" )
-@WithClasses( { Source.class, Target.class, SourceTargetMapper.class} )
+@WithClasses({ Source.class, Target.class, SourceTargetMapper.class, Invocation.class })
 public class FieldsMappingTest {
+
+    @Before
+    public void setUp() throws Exception {
+        Source.INVOCATIONS.clear();
+        Target.INVOCATIONS.clear();
+    }
 
     @Test
     public void shouldMapSourceToTarget() throws Exception {
         Source source = new Source();
         source.normalInt = 4;
         source.normalList = Lists.newArrayList( 10, 11, 12 );
+        source.fieldOnlyWithGetter = 20;
 
         Target target = SourceTargetMapper.INSTANCE.toSource( source );
 
@@ -49,6 +57,12 @@ public class FieldsMappingTest {
         assertThat( target.finalList ).containsOnly( "1", "2", "3" );
         assertThat( target.normalList ).containsOnly( "10", "11", "12" );
         assertThat( target.privateFinalList ).containsOnly( 3, 4, 5 );
+        assertThat( target.fieldWithMethods ).isEqualTo( "20" );
+        // Once for the null check, and the second time for the variable set
+        assertThat( Source.INVOCATIONS ).containsExactly(
+            new Invocation( "getFieldOnlyWithGetter" ),
+            new Invocation( "getFieldOnlyWithGetter" ) );
+        assertThat( Target.INVOCATIONS ).containsExactly( new Invocation( "setFieldWithMethods", "20" ) );
     }
 
     @Test
@@ -59,6 +73,7 @@ public class FieldsMappingTest {
         target.finalList = Lists.newArrayList( "2", "3" );
         target.normalList = Lists.newArrayList( "10", "11", "12" );
         target.privateFinalList = Lists.newArrayList( 10, 11, 12 );
+        target.fieldWithMethods = "20";
 
         Source source = SourceTargetMapper.INSTANCE.toSource( target );
 
@@ -68,5 +83,12 @@ public class FieldsMappingTest {
         assertThat( source.finalList ).containsOnly( 1, 2, 3 );
         assertThat( source.normalList ).containsOnly( 10, 11, 12 );
         assertThat( source.getPrivateFinalList() ).containsOnly( 3, 4, 5, 10, 11, 12 );
+        assertThat( source.fieldOnlyWithGetter ).isEqualTo( 20 );
+        assertThat( Source.INVOCATIONS ).isEmpty();
+        // Once for the null check, and the second time for the variable set
+        assertThat( Target.INVOCATIONS ).containsExactly(
+            new Invocation( "getFieldWithMethods" ),
+            new Invocation( "getFieldWithMethods" )
+        );
     }
 }
