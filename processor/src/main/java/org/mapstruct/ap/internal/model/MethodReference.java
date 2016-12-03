@@ -128,6 +128,11 @@ public class MethodReference extends MappingMethod implements Assignment {
     }
 
     @Override
+    public String getSourcePresenceCheckerReference() {
+        return assignment.getSourcePresenceCheckerReference();
+    }
+
+    @Override
     public Type getSourceType() {
         return assignment.getSourceType();
     }

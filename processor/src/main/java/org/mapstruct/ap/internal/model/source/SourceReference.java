@@ -296,4 +296,25 @@ public class SourceReference {
 
         return new SourceReference( replacement, propertyEntries, isValid );
     }
+
+    @Override
+    public String toString() {
+
+        if ( propertyEntries.isEmpty() ) {
+            return String.format( "parameter \"%s %s\"", getParameter().getType(), getParameter().getName() );
+        }
+        else if ( propertyEntries.size() == 1 ) {
+            PropertyEntry propertyEntry = propertyEntries.get( 0 );
+            return String.format( "property \"%s %s\"", propertyEntry.getType(), propertyEntry.getName() );
+        }
+        else {
+            PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
+            return String.format(
+                "property \"%s %s\"",
+                lastPropertyEntry.getType(),
+                Strings.join( getElementNames(), "." )
+            );
+        }
+    }
+
 }

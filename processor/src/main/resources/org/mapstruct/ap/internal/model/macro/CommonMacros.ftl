@@ -28,8 +28,8 @@
            present.
 -->
 <#macro handleNullCheck>
-  <#if sourcePresenceChecker??>
-    if ( ${sourcePresenceChecker} ) {
+  <#if sourcePresenceCheckerReference??>
+    if ( ${sourcePresenceCheckerReference} ) {
       <@includeModel object=localVarType/> ${localVarName} = <@lib.handleAssignment/>;
       <#nested>
     }

@@ -105,12 +105,11 @@ public class IterableMappingMethod extends MappingMethod {
 
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
-                "collection element",
                 targetElementType,
                 null, // there is no targetPropertyName
                 formattingParameters,
                 selectionParameters,
-                new SourceRHS( loopVariableName, sourceElementType, new HashSet<String>() ),
+                new SourceRHS( loopVariableName, sourceElementType, new HashSet<String>(), "collection element" ),
                 false
             );
 

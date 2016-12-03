@@ -78,6 +78,13 @@ public interface Assignment {
     String getSourceReference();
 
     /**
+     * the source presence checker reference
+     *
+     * @return source reference
+     */
+    String getSourcePresenceCheckerReference();
+
+    /**
      * the source type used in the matching process
      *
      * @return source type (can be null)

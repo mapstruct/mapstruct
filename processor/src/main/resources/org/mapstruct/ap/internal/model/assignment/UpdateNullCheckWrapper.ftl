@@ -19,7 +19,7 @@
 
 -->
 <#import '../macro/CommonMacros.ftl' as lib>
-if ( <#if sourcePresenceChecker?? >${sourcePresenceChecker}<#else>${sourceReference} != null</#if> ) {
+if ( <#if sourcePresenceCheckerReference?? >${sourcePresenceCheckerReference}<#else>${sourceReference} != null</#if> ) {
     <@includeModel object=assignment
                 targetBeanName=ext.targetBeanName
                 existingInstanceMapping=ext.existingInstanceMapping

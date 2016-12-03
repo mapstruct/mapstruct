@@ -47,7 +47,6 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
 
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
                                               List<Type> thrownTypesToExclude,
-                                              String sourcePresenceChecker,
                                               Set<String> existingVariableNames,
                                               Type targetType,
                                               boolean allwaysIncludeNullCheck,
@@ -57,7 +56,6 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
         super(
             decoratedAssignment,
             thrownTypesToExclude,
-            sourcePresenceChecker,
             existingVariableNames,
             targetType,
             fieldAssignment
@@ -95,10 +93,6 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
 
     public boolean isEnumSet() {
         return "java.util.EnumSet".equals( targetType.getFullyQualifiedName() );
-    }
-
-    public boolean isFieldAssignment() {
-        return fieldAssignment;
     }
 
 }

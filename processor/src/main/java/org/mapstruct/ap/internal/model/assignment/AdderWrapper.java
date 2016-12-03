@@ -38,8 +38,8 @@ public class AdderWrapper extends AssignmentWrapper {
     public AdderWrapper( Assignment decoratedAssignment, List<Type> thrownTypesToExclude, boolean fieldAssignment ) {
         super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
-        this.sourceIteratorName =
-            decoratedAssignment.createLocalVarName( decoratedAssignment.getSourceType().getName() );
+        String desiredName = decoratedAssignment.getSourceType().getTypeParameters().get( 0 ).getName();
+        this.sourceIteratorName = decoratedAssignment.createLocalVarName( desiredName );
         decoratedAssignment.setSourceLocalVarName( sourceIteratorName );
     }
 
@@ -61,7 +61,7 @@ public class AdderWrapper extends AssignmentWrapper {
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>();
         imported.addAll( super.getImportTypes() );
-        imported.add( getSourceType() );
+        imported.add( getSourceType().getTypeParameters().get( 0 ) );
         return imported;
     }
 
