@@ -580,6 +580,12 @@ You can find the complete example in the
 https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-field-mapping[mapstruct-examples-field-mapping]
 project on GitHub.
 
+[WARNING]
+====
+Using direct field mappings is considered experimental as of the 1.2.0.CR1 release. If you have any issues with the
+generated code please raise an issue in our https://github.com/mapstruct/mapstruct/issues[issue tracker].
+====
+
 [[retrieving-mapper]]
 == Retrieving a mapper
 
