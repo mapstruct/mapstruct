@@ -500,6 +500,86 @@ The generated code of the `updateCarFromDto()` method will update the passed `Ca
 
 Collection- or map-typed properties of the target bean to be updated will be cleared and then populated with the values from the corresponding source collection or map.
 
+[[direct-field-mappings]]
+=== Mappings with direct field access
+
+MapStruct also supports mappings of `public` fields that have no getters/setters. MapStruct will
+use the fields as read/write accessor if it cannot find suitable getter/setter methods for the property.
+
+A field is considered as a read accessor if it is `public` or `public final`. If a field is `static` it is not
+considered as a read accessors.
+
+A field is considered as a write accessor only if it is `public`. If a field is `final` and/or `static` it is not
+considered as a write accessor.
+
+Small example:
+
+.Examples classes for mapping
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Customer {
+
+    private Long id;
+    private String name;
+
+    //getters and setter omitted for brevity
+}
+
+public class CustomerDto {
+
+    public Long id;
+    public String customerName;
+}
+
+@Mapper
+public interface CustomerMapper {
+
+    CustomerMapper MAPPER = Mappers.getMapper( CustomerMapper.class );
+
+    @Mapping(source = "customerName", target = "name")
+    Customer toCustomer(CustomerDto customerDto);
+
+    @InheritInverseConfiguration
+    CustomerDto fromCustomer(Customer customer);
+}
+----
+====
+
+For the configuration from above, the generated mapper looks like:
+
+.Generated mapper for example classes
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CustomerMapperImpl implements CustomerMapper {
+
+    @Override
+    public Customer toCustomer(CustomerDto customerDto) {
+        // ...
+        customer.setId( customerDto.id );
+        customer.setName( customerDto.customerName );
+        // ...
+    }
+
+    @Override
+    public CustomerDto fromCustomer(Customer customer) {
+        // ...
+        customerDto.id = customer.getId();
+        customerDto.customerName = customer.getName();
+        // ...
+    }
+}
+----
+====
+
+You can find the complete example in the
+https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-field-mapping[mapstruct-examples-field-mapping]
+project on GitHub.
+
 [[retrieving-mapper]]
 == Retrieving a mapper
 
