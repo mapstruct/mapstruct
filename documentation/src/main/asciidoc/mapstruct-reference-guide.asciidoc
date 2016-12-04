@@ -523,15 +523,6 @@ public class Customer {
 
     private Long id;
     private String name;
-    private Collection<OrderItem> orderItems;
-
-    //getters and setter omitted for brevity
-}
-
-public class OrderItem {
-
-    private String name;
-    private Long quantity;
 
     //getters and setter omitted for brevity
 }
@@ -539,14 +530,7 @@ public class OrderItem {
 public class CustomerDto {
 
     public Long id;
-    public String name;
-    public List<OrderItemDto> orders;
-}
-
-public class OrderItemDto {
-
-    public String name;
-    public Long quantity;
+    public String customerName;
 }
 
 @Mapper
@@ -554,16 +538,11 @@ public interface CustomerMapper {
 
     CustomerMapper MAPPER = Mappers.getMapper( CustomerMapper.class );
 
-    @Mapping(source = "orders", target = "orderItems")
+    @Mapping(source = "customerName", target = "name")
     Customer toCustomer(CustomerDto customerDto);
 
     @InheritInverseConfiguration
     CustomerDto fromCustomer(Customer customer);
-
-    OrderItem toOrder(OrderItemDto orderItemDto);
-
-    @InheritInverseConfiguration
-    OrderItemDto fromOrder(OrderItem orderItem);
 }
 ----
 ====
@@ -580,74 +559,18 @@ public class CustomerMapperImpl implements CustomerMapper {
 
     @Override
     public Customer toCustomer(CustomerDto customerDto) {
-        if ( customerDto == null ) {
-            return null;
-        }
-
-        Customer customer = new Customer();
-
-        Collection<OrderItem> collection = orderItemDtoListToOrderItemCollection( customerDto.orders );
-        if ( collection != null ) {
-            customer.setOrderItems( collection );
-        }
+        // ...
         customer.setId( customerDto.id );
-        customer.setName( customerDto.name );
-
-        return customer;
+        customer.setName( customerDto.customerName );
+        // ...
     }
 
     @Override
     public CustomerDto fromCustomer(Customer customer) {
-        if ( customer == null ) {
-            return null;
-        }
-
-        CustomerDto customerDto = new CustomerDto();
-
-        List<OrderItemDto> list = orderItemCollectionToOrderItemDtoList( customer.getOrderItems() );
-        if ( list != null ) {
-            customerDto.orders = list;
-        }
+        // ...
         customerDto.id = customer.getId();
-        customerDto.name = customer.getName();
-
-        return customerDto;
-    }
-
-    @Override
-    public OrderItem toOrder(OrderItemDto orderItemDto) {
-        if ( orderItemDto == null ) {
-            return null;
-        }
-
-        OrderItem orderItem = new OrderItem();
-
-        orderItem.setName( orderItemDto.name );
-        orderItem.setQuantity( orderItemDto.quantity );
-
-        return orderItem;
-    }
-
-    @Override
-    public OrderItemDto fromOrder(OrderItem orderItem) {
-        if ( orderItem == null ) {
-            return null;
-        }
-
-        OrderItemDto orderItemDto = new OrderItemDto();
-
-        orderItemDto.name = orderItem.getName();
-        orderItemDto.quantity = orderItem.getQuantity();
-
-        return orderItemDto;
-    }
-
-    protected Collection<OrderItem> orderItemDtoListToOrderItemCollection(List<OrderItemDto> list) {
-        //MapStruct default implementation
-    }
-
-    protected List<OrderItemDto> orderItemCollectionToOrderItemDtoList(Collection<OrderItem> collection) {
-        //MapStruct default implementation
+        customerDto.customerName = customer.getName();
+        // ...
     }
 }
 ----
