@@ -286,7 +286,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private boolean isValidLifecycleCallbackMethod(ExecutableElement method, Type returnType) {
-        return isVoid( returnType ) && Executables.isLifecycleCallbackMethod( method );
+        return Executables.isLifecycleCallbackMethod( method );
     }
 
     private boolean isValidReferencedMethod(List<Parameter> parameters) {
@@ -386,7 +386,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-      for ( Parameter sourceParameter : sourceParameters ) {
+        for ( Parameter sourceParameter : sourceParameters ) {
             if ( sourceParameter.getType().isTypeVar() ) {
                 messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
                 return false;

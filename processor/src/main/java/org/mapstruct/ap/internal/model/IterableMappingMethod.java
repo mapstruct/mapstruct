@@ -149,10 +149,19 @@ public class IterableMappingMethod extends MappingMethod {
                 factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null );
             }
 
-            List<LifecycleCallbackMethodReference> beforeMappingMethods =
-                LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx );
-            List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx );
+            Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
+            existingVariables.add( loopVariableName );
+
+            List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleCallbackFactory.beforeMappingMethods(
+                method,
+                selectionParameters,
+                ctx,
+                existingVariables );
+            List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleCallbackFactory.afterMappingMethods(
+                method,
+                selectionParameters,
+                ctx,
+                existingVariables );
 
             return new IterableMappingMethod(
                     method,

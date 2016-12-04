@@ -2083,7 +2083,9 @@ public class VehicleMapperImpl extends VehicleMapper {
         if ( car == null ) {
             return null;
         }
-        // ...
+
+        CarDto carDto = new CarDto();
+        // attributes mapping ...
 
         fillTank( car, carDto );
 
@@ -2093,13 +2095,59 @@ public class VehicleMapperImpl extends VehicleMapper {
 ----
 ====
 
-Only methods with return type `void` may be annotated with `@BeforeMapping` or `@AfterMapping`. The methods may or may not have parameters.
-
 If the `@BeforeMapping` / `@AfterMapping` method has parameters, the method invocation is only generated if all parameters can be *assigned* by the source or target parameters of the mapping method:
 
 * A parameter annotated with `@MappingTarget` is populated with the target instance of the mapping.
 * A parameter annotated with `@TargetType` is populated with the target type of the mapping.
 * Any other parameter is populated with a source parameter of the mapping, whereas each source parameter is used once at most.
+
+If the before/after-mapping method has a return type other than `void`, it will be checked to match the target type of the mapping methods.
+Only the callback methods with a matching return type (or `void`) will be called in that mapping method. 
+
+If a callback method returns a non-null value, this value will be returned from the mapping method.
+
+As with mapping methods, it is possible to specify type parameters for before/after-mapping methods.
+
+.Mapper with @AfterMapping hook that returns a non-null value
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public abstract class VehicleMapper {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @AfterMapping
+    protected <T> T attachEntity(@MappingTarget T entity) {
+        return entityManager.merge(entity);
+    }
+
+    public abstract CarDto toCarDto(Car car);
+}
+
+// Generates something like this:
+public class VehicleMapperImpl extends VehicleMapper {
+
+    public CarDto toCarDto(Car car) {
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+        // attributes mapping ...
+
+        CarDto target = attachEntity( carDto );
+        if ( target != null ) {
+            return target;
+        }
+
+        return carDto;
+    }
+}
+----
+====
 
 All before/after-mapping methods that *can* be applied to a mapping method *will* be used. <<selection-based-on-qualifiers>> can be used to further control which methods may be chosen and which not. For that, the qualifier annotation needs to be applied to the before/after-method and referenced in `BeanMapping#qualifiedBy` or `IterableMapping#qualifiedBy`.
 

@@ -175,10 +175,13 @@ public class BeanMappingMethod extends MappingMethod {
 
             sortPropertyMappingsByDependencies();
 
-            List<LifecycleCallbackMethodReference> beforeMappingMethods =
-                LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx );
+            List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleCallbackFactory.beforeMappingMethods(
+                method,
+                selectionParameters,
+                ctx,
+                existingVariableNames );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx );
+                LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariableNames );
 
             return new BeanMappingMethod(
                 method,

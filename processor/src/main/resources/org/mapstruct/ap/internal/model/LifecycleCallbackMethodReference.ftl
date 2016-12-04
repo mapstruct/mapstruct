@@ -18,4 +18,16 @@
      limitations under the License.
 
 -->
-<#if declaringType??>${instanceVariableName}.</#if>${name}(<#list parameterAssignments as param> <#if param.targetType><@includeModel object=ext.targetType raw=true/>.class<#elseif param.mappingTarget>${ext.targetBeanName}<#else>${param.name}</#if><#if param_has_next>,<#else> </#if></#list>);
+<@compress single_line=true>
+    <#if hasReturnType()>
+        <@includeModel object=methodResultType /> ${targetVariableName} =
+    </#if>
+    <#if declaringType??>${instanceVariableName}.</#if>${name}(
+        <#list parameterAssignments as param>
+            <#if param.targetType><@includeModel object=ext.targetType raw=true/>.class<#elseif param.mappingTarget>${ext.targetBeanName}<#else>${param.name}</#if><#if param_has_next>,<#else> </#if>
+        </#list>);
+</@compress>
+<#if hasReturnType()><#nt>
+if ( ${targetVariableName} != null ) {
+    return<#if methodReturnType.name != "void"> ${targetVariableName}</#if>;
+}</#if>
