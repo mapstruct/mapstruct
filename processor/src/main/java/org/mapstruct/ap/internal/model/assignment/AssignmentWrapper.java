@@ -84,13 +84,18 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     }
 
     @Override
+    public String getSourceParameterName() {
+        return decoratedAssignment.getSourceParameterName();
+    }
+
+    @Override
     public AssignmentType getType() {
         return decoratedAssignment.getType();
     }
 
      @Override
-    public boolean isUpdateMethod() {
-        return decoratedAssignment.isUpdateMethod();
+    public boolean isCallingUpdateMethod() {
+        return decoratedAssignment.isCallingUpdateMethod();
     }
 
     @Override

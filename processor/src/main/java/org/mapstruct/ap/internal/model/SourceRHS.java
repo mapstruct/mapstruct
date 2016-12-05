@@ -47,7 +47,7 @@ public class SourceRHS extends ModelElement implements Assignment {
 
     public SourceRHS(String sourceReference, Type sourceType, Set<String> existingVariableNames,
         String sourceErrorMessagePart ) {
-        this( null, sourceReference, null, sourceType, existingVariableNames, sourceErrorMessagePart );
+        this( sourceReference, sourceReference, null, sourceType, existingVariableNames, sourceErrorMessagePart );
     }
 
     public SourceRHS(String sourceParameterName, String sourceReference, String sourcePresenceCheckerReference,
@@ -77,7 +77,9 @@ public class SourceRHS extends ModelElement implements Assignment {
 
     @Override
     public String createLocalVarName(String desiredName) {
-        return Strings.getSaveVariableName( desiredName, existingVariableNames );
+        String result = Strings.getSaveVariableName( desiredName, existingVariableNames );
+        existingVariableNames.add( result );
+        return result;
     }
 
     @Override
@@ -111,7 +113,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     }
 
     @Override
-    public boolean isUpdateMethod() {
+    public boolean isCallingUpdateMethod() {
         return false;
     }
 
@@ -137,12 +139,13 @@ public class SourceRHS extends ModelElement implements Assignment {
     /**
      * For collection type, use element as source type to find a suitable mapping method.
      *
-     * @param useElementAsSourceTypeForMatching
+     * @param useElementAsSourceTypeForMatching uses the element of a collection as source type for the matching process
      */
     public void setUseElementAsSourceTypeForMatching(boolean useElementAsSourceTypeForMatching) {
         this.useElementAsSourceTypeForMatching = useElementAsSourceTypeForMatching;
     }
 
+    @Override
     public String getSourceParameterName() {
         return sourceParameterName;
     }

@@ -112,6 +112,11 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
+    public String getSourceParameterName() {
+        return assignment.getSourceParameterName();
+    }
+
+    @Override
     public void setAssignment( Assignment assignment ) {
         this.assignment = assignment;
     }
@@ -130,7 +135,7 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
-    public boolean isUpdateMethod() {
+    public boolean isCallingUpdateMethod() {
        return false;
     }
 }

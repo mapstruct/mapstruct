@@ -26,6 +26,9 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
+
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
 
 /**
  * This wrapper handles the situation were an assignment is done via the setter.
@@ -41,26 +44,24 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
  */
 public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAndMaps {
 
-    private final boolean allwaysIncludeNullCheck;
+    private final boolean includeSourceNullCheck;
     private final Type targetType;
     private final TypeFactory typeFactory;
 
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
                                               List<Type> thrownTypesToExclude,
-                                              Set<String> existingVariableNames,
                                               Type targetType,
-                                              boolean allwaysIncludeNullCheck,
+                                              NullValueCheckStrategyPrism nvms,
                                               TypeFactory typeFactory,
                                               boolean fieldAssignment) {
 
         super(
             decoratedAssignment,
             thrownTypesToExclude,
-            existingVariableNames,
             targetType,
             fieldAssignment
         );
-        this.allwaysIncludeNullCheck = allwaysIncludeNullCheck;
+        this.includeSourceNullCheck = ALWAYS == nvms;
         this.targetType = targetType;
         this.typeFactory = typeFactory;
     }
@@ -83,8 +84,8 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
         return imported;
     }
 
-    public boolean isAllwaysIncludeNullCheck() {
-        return allwaysIncludeNullCheck;
+    public boolean isIncludeSourceNullCheck() {
+        return includeSourceNullCheck;
     }
 
     public boolean isDirectAssignment() {

@@ -30,18 +30,18 @@
 <#macro handleNullCheck>
   <#if sourcePresenceCheckerReference??>
     if ( ${sourcePresenceCheckerReference} ) {
-      <@includeModel object=localVarType/> ${localVarName} = <@lib.handleAssignment/>;
+      <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
       <#nested>
     }
   <#else>
-    <@includeModel object=localVarType/> ${localVarName} = <@lib.handleAssignment/>;
-    if ( ${localVarName} != null ) {
+    <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
+    if ( ${nullCheckLocalVarName} != null ) {
       <#nested>
     }
   </#if>
   <#if ext.defaultValueAssignment?? >
   else {
-    <@lib.handeDefaultAssigment/>
+    <@handeDefaultAssigment/>
   }
   </#if>
 </#macro>
@@ -104,4 +104,38 @@ Performs a default assignment with a default value.
 -->
 <#macro handleWriteAccesing>
     <#t><#if fieldAssignment><#else>()</#if>
+</#macro>
+<#--
+  macro: initTargetObject
+
+  purpose: To factorize or construct a new target object
+-->
+<#macro initTargetObject><@compress single_line=true>
+    <#if factoryMethod??>
+        <@includeModel object=factoryMethod targetType=ext.targetType/>
+    <#else>
+         new <@constructTargetObject/>()
+    </#if>
+</@compress></#macro>
+<#--
+  macro: constructTargetObject
+
+  purpose: Either call the constructor of the target object directly or of the implementing type.
+-->
+<#macro constructTargetObject><@compress single_line=true>
+    <#if ext.targetType.implementationType??>
+        <@includeModel object=ext.targetType.implementationType/>
+    <#else>
+        <@includeModel object=ext.targetType/>
+    </#if>
+</@compress></#macro>
+<#--
+  macro: sourceLocalVarAssignment
+
+  purpose: assigment for source local variables
+-->
+<#macro sourceLocalVarAssignment>
+    <#if sourceLocalVarName??>
+      <@includeModel object=sourceType/> ${sourceLocalVarName} = ${sourceReference};
+    </#if>
 </#macro>

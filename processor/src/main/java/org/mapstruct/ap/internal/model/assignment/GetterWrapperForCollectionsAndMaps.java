@@ -19,7 +19,6 @@
 package org.mapstruct.ap.internal.model.assignment;
 
 import java.util.List;
-import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -39,22 +38,19 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAndMaps {
 
     /**
-     * @param decoratedAssignment
-     * @param thrownTypesToExclude
-     * @param existingVariableNames
-     * @param targetType
-     * @param fieldAssignment
+     * @param decoratedAssignment source RHS
+     * @param thrownTypesToExclude set of types to exclude from re-throwing
+     * @param targetType the target type
+     * @param fieldAssignment true when this the assignment is to a field rather than via accessors
      */
     public GetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
                                               List<Type> thrownTypesToExclude,
-                                              Set<String> existingVariableNames,
                                               Type targetType,
                                               boolean fieldAssignment) {
 
         super(
             decoratedAssignment,
             thrownTypesToExclude,
-            existingVariableNames,
             targetType,
             fieldAssignment
         );

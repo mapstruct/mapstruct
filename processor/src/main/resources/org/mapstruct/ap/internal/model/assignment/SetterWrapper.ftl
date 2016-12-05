@@ -19,44 +19,33 @@
 
 -->
 <#import "../macro/CommonMacros.ftl" as lib>
-<#if (thrownTypes?size == 0) >
-    <@assignment_w_defaultValue/>
-<#else>
-    try {
-        <@assignment_w_defaultValue/>
-    }
-    <#list thrownTypes as exceptionType>
-    catch ( <@includeModel object=exceptionType/> e ) {
-        throw new RuntimeException( e );
-    }
-    </#list>
-</#if>
-<#macro _assignment>
-    <@includeModel object=assignment
-               targetBeanName=ext.targetBeanName
-               existingInstanceMapping=ext.existingInstanceMapping
-               targetReadAccessorName=ext.targetReadAccessorName
-               targetWriteAccessorName=ext.targetWriteAccessorName
-               targetType=ext.targetType
-               defaultValueAssignment=ext.defaultValueAssignment/>
-</#macro>
-<#macro _defaultValueAssignment>
-    <@includeModel object=ext.defaultValueAssignment.assignment
-               targetBeanName=ext.targetBeanName
-               existingInstanceMapping=ext.existingInstanceMapping
-               targetWriteAccessorName=ext.targetWriteAccessorName
-               targetType=ext.targetType/>
-</#macro>
-<#macro assignment_w_defaultValue>
-    <#if ext.defaultValueAssignment?? >
-        <#-- if the assignee property is a primitive, defaulValueAssignment will not be set -->
-        if ( ${sourceReference} != null ) {
-            ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@_assignment/></@lib.handleWrite>;
+<@lib.handleExceptions>
+    <@lib.sourceLocalVarAssignment/>
+    <#if sourcePresenceCheckerReference??>
+        if ( ${sourcePresenceCheckerReference} ) {
+            <@assignment/>;
         }
-        else {
-            ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@_defaultValueAssignment/></@lib.handleWrite>;
+        <@elseDefaultAssignment/>
+    <#elseif includeSourceNullCheck || ext.defaultValueAssignment??>
+        if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null ) {
+            <@assignment/>;
         }
+        <@elseDefaultAssignment/>
     <#else>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@_assignment/></@lib.handleWrite>;
+        <@assignment/>;
+    </#if>
+</@lib.handleExceptions>
+<#--
+    standard assignment
+-->
+<#macro assignment>${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite></#macro>
+<#--
+    add default assignment when required
+-->
+<#macro elseDefaultAssignment>
+    <#if ext.defaultValueAssignment?? >
+      else {
+        <@lib.handeDefaultAssigment/>
+      }
     </#if>
 </#macro>

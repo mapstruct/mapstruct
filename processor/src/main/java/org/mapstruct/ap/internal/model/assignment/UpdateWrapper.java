@@ -35,13 +35,19 @@ public class UpdateWrapper extends AssignmentWrapper {
     private final List<Type> thrownTypesToExclude;
     private final Assignment factoryMethod;
     private final Type targetImplementationType;
+    private final boolean includeSourceNullCheck;
 
-    public UpdateWrapper(Assignment decoratedAssignment, List<Type> thrownTypesToExclude, Assignment factoryMethod,
-        Type targetImplementationType, boolean fieldAssignment ) {
+    public UpdateWrapper( Assignment decoratedAssignment,
+                          List<Type> thrownTypesToExclude,
+                          Assignment factoryMethod,
+                          boolean fieldAssignment,
+                          Type targetType,
+                          boolean includeSourceNullCheck ) {
         super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.factoryMethod = factoryMethod;
-        this.targetImplementationType = determineImplType( factoryMethod, targetImplementationType );
+        this.targetImplementationType = determineImplType( factoryMethod, targetType );
+        this.includeSourceNullCheck = includeSourceNullCheck;
     }
 
     private static Type determineImplType(Assignment factoryMethod, Type targetType) {
@@ -87,4 +93,7 @@ public class UpdateWrapper extends AssignmentWrapper {
         return factoryMethod;
     }
 
+    public boolean isIncludeSourceNullCheck() {
+        return includeSourceNullCheck;
+    }
 }

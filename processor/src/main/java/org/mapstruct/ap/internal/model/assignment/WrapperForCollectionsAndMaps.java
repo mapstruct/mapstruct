@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * This is the base class for the {@link GetterWrapperForCollectionsAndMaps} and
@@ -35,26 +34,24 @@ import org.mapstruct.ap.internal.util.Strings;
 public class WrapperForCollectionsAndMaps extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
-    private final String localVarName;
-    private final Type localVarType;
+    private final String nullCheckLocalVarName;
+    private final Type nullCheckLocalVarType;
 
-    public WrapperForCollectionsAndMaps(Assignment decoratedAssignment,
+    public WrapperForCollectionsAndMaps(Assignment rhs,
                                         List<Type> thrownTypesToExclude,
-                                        Set<String> existingVariableNames,
                                         Type targetType,
                                         boolean fieldAssignment) {
 
-        super( decoratedAssignment, fieldAssignment );
+        super( rhs, fieldAssignment );
 
         this.thrownTypesToExclude = thrownTypesToExclude;
-        if ( getType() == AssignmentType.DIRECT && getSourceType() != null ) {
-            this.localVarType = getSourceType();
+        if ( rhs.getType() == AssignmentType.DIRECT && rhs.getSourceType() != null ) {
+            this.nullCheckLocalVarType = rhs.getSourceType();
         }
         else {
-            this.localVarType = targetType;
+            this.nullCheckLocalVarType = targetType;
         }
-        this.localVarName = Strings.getSaveVariableName( localVarType.getName(), existingVariableNames );
-        existingVariableNames.add( this.localVarName );
+        this.nullCheckLocalVarName =  rhs.createLocalVarName( nullCheckLocalVarType.getName() );
     }
 
     @Override
@@ -75,16 +72,16 @@ public class WrapperForCollectionsAndMaps extends AssignmentWrapper {
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>();
         imported.addAll( super.getImportTypes() );
-        imported.add( localVarType );
-        imported.addAll( localVarType.getTypeParameters() );
+        imported.add( nullCheckLocalVarType );
+        imported.addAll( nullCheckLocalVarType.getTypeParameters() );
         return imported;
     }
 
-    public String getLocalVarName() {
-        return localVarName;
+    public String getNullCheckLocalVarName() {
+        return nullCheckLocalVarName;
     }
 
-    public Type getLocalVarType() {
-        return localVarType;
+    public Type getNullCheckLocalVarType() {
+        return nullCheckLocalVarType;
     }
 }

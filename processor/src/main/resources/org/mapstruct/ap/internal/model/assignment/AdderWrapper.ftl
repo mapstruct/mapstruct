@@ -21,7 +21,7 @@
 <#import "../macro/CommonMacros.ftl" as lib>
 <@lib.handleExceptions>
   if ( ${sourceReference} != null ) {
-      for ( <@includeModel object=sourceType.typeParameters[0]/> ${sourceIteratorName} : ${sourceReference} ) {
+      for ( <@includeModel object=sourceType.typeParameters[0]/> ${sourceLocalVarName} : ${sourceReference} ) {
           ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
       }
   }

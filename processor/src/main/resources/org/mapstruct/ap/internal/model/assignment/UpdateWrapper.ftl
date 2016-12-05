@@ -19,28 +19,25 @@
 
 -->
 <#import '../macro/CommonMacros.ftl' as lib >
-<#if (thrownTypes?size == 0) >
-    <@_assignment/>;
-<#else>
-    try {
-        <@_assignment/>;
+<@lib.handleExceptions>
+  <#if includeSourceNullCheck>
+    if ( <#if sourcePresenceCheckerReference?? >${sourcePresenceCheckerReference}<#else>${sourceReference} != null</#if> ) {
+      <@assignToExistingTarget/>
+      <@lib.handleAssignment/>;
     }
-    <#list thrownTypes as exceptionType>
-    catch ( <@includeModel object=exceptionType/> e ) {
-        throw new RuntimeException( e );
+    else {
+      ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>null</@lib.handleWrite>;
     }
-    </#list>
-</#if>
-<#macro _assignment>
+  <#else>
+    <@assignToExistingTarget/>
+    <@lib.handleAssignment/>;
+  </#if>
+</@lib.handleExceptions>
+<#--
+    target innner check and assignment
+-->
+<#macro assignToExistingTarget>
     if ( ${ext.targetBeanName}.${ext.targetReadAccessorName} == null ) {
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if factoryMethod??><@includeModel object=factoryMethod targetType=ext.targetType/><#else><@_newObject/></#if></@lib.handleWrite>;
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.initTargetObject/></@lib.handleWrite>;
     }
-    <@includeModel object=assignment
-               targetBeanName=ext.targetBeanName
-               existingInstanceMapping=ext.existingInstanceMapping
-               targetReadAccessorName=ext.targetReadAccessorName
-               targetWriteAccessorName=ext.targetWriteAccessorName
-               targetType=ext.targetType/>
 </#macro>
-<#macro _newObject>new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>()</#macro>
-

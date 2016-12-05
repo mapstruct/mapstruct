@@ -152,6 +152,11 @@ public class MethodReference extends MappingMethod implements Assignment {
         assignment.setSourceLocalVarName( sourceLocalVarName );
     }
 
+    @Override
+    public String getSourceParameterName() {
+        return assignment.getSourceParameterName();
+    }
+
     /**
      * @return the type of the single source parameter that is not the {@code @TargetType} parameter
      */
@@ -206,7 +211,7 @@ public class MethodReference extends MappingMethod implements Assignment {
     }
 
     @Override
-    public boolean isUpdateMethod() {
+    public boolean isCallingUpdateMethod() {
         return isUpdateMethod;
     }
 }

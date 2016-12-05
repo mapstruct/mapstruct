@@ -33,14 +33,12 @@ import org.mapstruct.ap.internal.model.common.Type;
 public class AdderWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
-    private final String sourceIteratorName;
 
-    public AdderWrapper( Assignment decoratedAssignment, List<Type> thrownTypesToExclude, boolean fieldAssignment ) {
-        super( decoratedAssignment, fieldAssignment );
+    public AdderWrapper( Assignment rhs, List<Type> thrownTypesToExclude, boolean fieldAssignment ) {
+        super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
-        String desiredName = decoratedAssignment.getSourceType().getTypeParameters().get( 0 ).getName();
-        this.sourceIteratorName = decoratedAssignment.createLocalVarName( desiredName );
-        decoratedAssignment.setSourceLocalVarName( sourceIteratorName );
+        String desiredName = rhs.getSourceType().getTypeParameters().get( 0 ).getName();
+        rhs.setSourceLocalVarName( rhs.createLocalVarName( desiredName ) );
     }
 
     @Override
@@ -65,7 +63,4 @@ public class AdderWrapper extends AssignmentWrapper {
         return imported;
     }
 
-    public String getSourceIteratorName() {
-        return sourceIteratorName;
-    }
 }

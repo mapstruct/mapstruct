@@ -19,14 +19,15 @@
 
 -->
 <#import "../macro/CommonMacros.ftl" as lib>
+<@lib.sourceLocalVarAssignment/>
 <@lib.handleExceptions>
   <#if ext.existingInstanceMapping>
     if ( ${ext.targetBeanName}.${ext.targetReadAccessorName} != null ) {
         <@lib.handleNullCheck>
             ${ext.targetBeanName}.${ext.targetReadAccessorName}.clear();
-            ${ext.targetBeanName}.${ext.targetReadAccessorName}.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${localVarName} );
+            ${ext.targetBeanName}.${ext.targetReadAccessorName}.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${nullCheckLocalVarName} );
         </@lib.handleNullCheck>
-        <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference?? && !allwaysIncludeNullCheck>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleNullCheck -->
+        <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference?? && !includeSourceNullCheck>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleNullCheck -->
           ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>null</@lib.handleWrite>;
         }
         </#if>
@@ -43,7 +44,7 @@
 -->
 <#macro callTargetWriteAccessor>
     <@lib.handleNullCheck>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if directAssignment><@wrapLocalVarInCollectionInitializer/><#else>${localVarName}</#if></@lib.handleWrite>;
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if directAssignment><@wrapLocalVarInCollectionInitializer/><#else>${nullCheckLocalVarName}</#if></@lib.handleWrite>;
   </@lib.handleNullCheck>
 </#macro>
 <#--
@@ -51,8 +52,8 @@
 -->
 <#macro wrapLocalVarInCollectionInitializer><@compress single_line=true>
     <#if enumSet>
-      EnumSet.copyOf( ${localVarName} )
+      EnumSet.copyOf( ${nullCheckLocalVarName} )
     <#else>
-      new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>( ${localVarName} )
+      new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>( ${nullCheckLocalVarName} )
     </#if>
 </@compress></#macro>

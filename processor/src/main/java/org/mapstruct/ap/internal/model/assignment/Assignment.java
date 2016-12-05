@@ -32,17 +32,34 @@ public interface Assignment {
 
     enum AssignmentType {
         /** assignment is direct */
-        DIRECT,
+        DIRECT( true, false ),
         /** assignment is type converted */
-        TYPE_CONVERTED,
+        TYPE_CONVERTED( false, true ),
         /** assignment is mapped (builtin/custom) */
-        MAPPED,
+        MAPPED( false, false ),
         /** 2 mapping methods (builtin/custom) are applied to get the target */
-        MAPPED_TWICE,
+        MAPPED_TWICE( false, false ),
         /** assignment is first mapped (builtin/custom), then the result is type converted */
-        MAPPED_TYPE_CONVERTED,
+        MAPPED_TYPE_CONVERTED( false, true ),
         /** assignment is first type converted, and then mapped (builtin/custom) */
-        TYPE_CONVERTED_MAPPED
+        TYPE_CONVERTED_MAPPED( false, true );
+
+        private final boolean direct;
+        private final boolean converted;
+
+        AssignmentType( boolean isDirect, boolean isConverted ) {
+            this.direct = isDirect;
+            this.converted = isConverted;
+        }
+
+        public boolean isDirect() {
+            return direct;
+        }
+
+        public boolean isConverted() {
+            return converted;
+        }
+
     }
 
     /**
@@ -107,6 +124,14 @@ public interface Assignment {
     String getSourceLocalVarName();
 
     /**
+     * Returns the source parameter name, to which this assignment applies. Note: the source parameter itself might
+     * be mapped by this assignment, or one of its properties
+     *
+     * @return  the source parameter name
+     */
+    String getSourceParameterName();
+
+    /**
      * Use sourceLocalVarName iso sourceReference
      * @param sourceLocalVarName source local variable name
      */
@@ -119,5 +144,5 @@ public interface Assignment {
      */
     AssignmentType getType();
 
-    boolean isUpdateMethod();
+    boolean isCallingUpdateMethod();
 }
