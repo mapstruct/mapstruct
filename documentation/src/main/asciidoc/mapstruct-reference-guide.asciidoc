@@ -507,7 +507,7 @@ MapStruct also supports mappings of `public` fields that have no getters/setters
 use the fields as read/write accessor if it cannot find suitable getter/setter methods for the property.
 
 A field is considered as a read accessor if it is `public` or `public final`. If a field is `static` it is not
-considered as a read accessors.
+considered as a read accessor.
 
 A field is considered as a write accessor only if it is `public`. If a field is `final` and/or `static` it is not
 considered as a write accessor.
