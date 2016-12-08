@@ -26,6 +26,8 @@
            a local variable. Note that the local variable assignemnt is inside the IF statement for the
            source presence check. Note also, that the else clause contains the default variable assignment if
            present.
+
+  TODO: is only used by collection mapping currently.. should perhas be moved to there and not in common
 -->
 <#macro handleNullCheck>
   <#if sourcePresenceCheckerReference??>
@@ -93,18 +95,14 @@ Performs a default assignment with a default value.
 
   purpose: To handle the writing to a field or using a method. The line is not closed with ';'
 -->
-<#macro handleWrite>
-    <#t><#if fieldAssignment> = <#nested><#else>( <#nested> )</#if>
-</#macro>
+<#macro handleWrite><#if fieldAssignment> = <#nested><#else>( <#nested> )</#if></#macro>
 
 <#--
   macro: handleWriteAccesing
 
   purpose: To handle accesing the write target type
 -->
-<#macro handleWriteAccesing>
-    <#t><#if fieldAssignment><#else>()</#if>
-</#macro>
+<#macro handleWriteAccesing><#if fieldAssignment><#else>()</#if></#macro>
 <#--
   macro: initTargetObject
 
