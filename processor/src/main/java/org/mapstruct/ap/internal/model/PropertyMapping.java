@@ -62,8 +62,6 @@ import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
-
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
  * {@code int Target#bar}. Name and type of source and target property can differ. If they have different types, the
@@ -596,8 +594,8 @@ public class PropertyMapping extends ModelElement {
             // copy mapper configuration from the source method, its the same mapper
             MapperConfiguration config = method.getMapperConfiguration();
             ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element,
-                new ForgedMethodHistory( getForgedMethodHistory(), getSourceElement(), targetPropertyName,
-                    getSourceType(),
+                new ForgedMethodHistory( getForgedMethodHistory(source), source.getSourceErrorMessagePart(), targetPropertyName,
+                    source.getSourceType(),
                     targetType
                 )
             );
@@ -638,8 +636,8 @@ public class PropertyMapping extends ModelElement {
             // copy mapper configuration from the source method, its the same mapper
             MapperConfiguration config = method.getMapperConfiguration();
             ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element,
-                new ForgedMethodHistory( getForgedMethodHistory(), getSourceElement(), targetPropertyName,
-                    getSourceType(),
+                new ForgedMethodHistory( getForgedMethodHistory(source), source.getSourceErrorMessagePart(), targetPropertyName,
+                    source.getSourceType(),
                     targetType
                 )
             );
@@ -669,7 +667,7 @@ public class PropertyMapping extends ModelElement {
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {
 
-            Type sourceType = getSourceType();
+            Type sourceType = sourceRHS.getSourceType();
 
             //Fail fast. If we could not find the method by now, no need to try
             if ( sourceType.isPrimitive() || targetType.isPrimitive() ) {
@@ -682,7 +680,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 method.getMapperConfiguration(),
                 method.getExecutable(),
-                getForgedMethodHistory()
+                getForgedMethodHistory(sourceRHS)
             );
 
             Assignment assignment = new MethodReference( forgedMethod, null, targetType );
@@ -693,14 +691,14 @@ public class PropertyMapping extends ModelElement {
             return assignment;
         }
 
-        private ForgedMethodHistory getForgedMethodHistory() {
+        private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS) {
             ForgedMethodHistory history = null;
             if ( method instanceof ForgedMethod ) {
                 ForgedMethod method = (ForgedMethod) this.method;
                 history = method.getHistory();
             }
-            return new ForgedMethodHistory( history, getSourceElement(),
-                targetPropertyName, getSourceType(), targetType
+            return new ForgedMethodHistory( history, sourceRHS.getSourceErrorMessagePart(),
+                targetPropertyName, sourceRHS.getSourceType(), targetType
             );
         }
 
@@ -717,50 +715,6 @@ public class PropertyMapping extends ModelElement {
             }
             builder.append( type.getIdentification() );
             return builder.toString();
-        }
-
-        //The next two methods were deleted, but I readded them. Is there a better way to fetch SourceType and SourceElement?
-        private Type getSourceType() {
-
-            Parameter sourceParam = sourceReference.getParameter();
-            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
-            if ( propertyEntries.isEmpty() ) {
-                return sourceParam.getType();
-            }
-            else if ( propertyEntries.size() == 1 ) {
-                return last( propertyEntries ).getType();
-            }
-            else {
-                Type sourceType = last( propertyEntries ).getType();
-                if ( sourceType.isPrimitive() && !targetType.isPrimitive() ) {
-                    // Handle null's. If the forged method needs to be mapped to an object, the forged method must be
-                    // able to return null. So in that case primitive types are mapped to their corresponding wrapped
-                    // type. The source type becomes the wrapped type in that case.
-                    sourceType = ctx.getTypeFactory().getWrappedType( sourceType );
-                }
-                return sourceType;
-            }
-        }
-
-        private String getSourceElement() {
-
-            Parameter sourceParam = sourceReference.getParameter();
-            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
-            if ( propertyEntries.isEmpty() ) {
-                return String.format( "parameter \"%s %s\"", sourceParam.getType(), sourceParam.getName() );
-            }
-            else if ( propertyEntries.size() == 1 ) {
-                PropertyEntry propertyEntry = propertyEntries.get( 0 );
-                return String.format( "property \"%s %s\"", propertyEntry.getType(), propertyEntry.getName() );
-            }
-            else {
-                PropertyEntry lastPropertyEntry = propertyEntries.get( propertyEntries.size() - 1 );
-                return String.format(
-                    "property \"%s %s\"",
-                    lastPropertyEntry.getType(),
-                    Strings.join( sourceReference.getElementNames(), "." )
-                );
-            }
         }
 
     }
