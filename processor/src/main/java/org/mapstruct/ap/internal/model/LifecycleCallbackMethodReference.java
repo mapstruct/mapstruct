@@ -18,11 +18,10 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.beans.Introspector;
 import java.util.List;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
@@ -34,34 +33,21 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Andreas Gudian
  */
-public class LifecycleCallbackMethodReference extends MappingMethod {
+public class LifecycleCallbackMethodReference extends MethodReference {
 
     private final Type declaringType;
-    private final List<Parameter> parameterAssignments;
     private final Type methodReturnType;
     private final Type methodResultType;
-    private final String instanceVariableName;
     private final String targetVariableName;
 
-    public LifecycleCallbackMethodReference(SourceMethod method, List<Parameter> parameterAssignments,
+    public LifecycleCallbackMethodReference(SourceMethod method, MapperReference mapperReference,
+                                            List<ParameterBinding> parameterBindings,
                                             Type methodReturnType, Type methodResultType,
                                             Set<String> existingVariableNames) {
-        super( method );
+        super( method, mapperReference, parameterBindings );
         this.declaringType = method.getDeclaringMapper();
-        this.parameterAssignments = parameterAssignments;
         this.methodReturnType = methodReturnType;
         this.methodResultType = methodResultType;
-
-        if ( isStatic() ) {
-            this.instanceVariableName = declaringType.getName();
-        }
-        else if ( declaringType != null ) {
-            this.instanceVariableName =
-                Strings.getSaveVariableName( Introspector.decapitalize( declaringType.getName() ) );
-        }
-        else {
-            this.instanceVariableName = null;
-        }
 
         if ( hasReturnType() ) {
             this.targetVariableName = Strings.getSaveVariableName( "target", existingVariableNames );
@@ -74,10 +60,6 @@ public class LifecycleCallbackMethodReference extends MappingMethod {
 
     public Type getDeclaringType() {
         return declaringType;
-    }
-
-    public String getInstanceVariableName() {
-        return instanceVariableName;
     }
 
     /**
@@ -109,12 +91,8 @@ public class LifecycleCallbackMethodReference extends MappingMethod {
         return declaringType != null ? Collections.asSet( declaringType ) : java.util.Collections.<Type> emptySet();
     }
 
-    public List<Parameter> getParameterAssignments() {
-        return parameterAssignments;
-    }
-
     public boolean hasMappingTargetParameter() {
-        for ( Parameter param : parameterAssignments ) {
+        for ( ParameterBinding param : getParameterBindings() ) {
             if ( param.isMappingTarget() ) {
                 return true;
             }

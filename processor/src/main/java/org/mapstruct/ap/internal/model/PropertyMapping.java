@@ -43,13 +43,14 @@ import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAnd
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
+import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
@@ -566,7 +567,11 @@ public class PropertyMapping extends ModelElement {
                     methodRef = new ForgedMethod( existingName, methodRef );
                 }
 
-                assignment = new MethodReference( methodRef, null, targetType );
+                assignment = new MethodReference(
+                    methodRef,
+                    null,
+                    ParameterBinding.fromParameters( methodRef.getParameters() ) );
+
                 assignment.setAssignment( source );
 
                 forgedMethods.addAll( iterableMappingMethod.getForgedMethods() );
@@ -608,7 +613,10 @@ public class PropertyMapping extends ModelElement {
                     String existingName = ctx.getExistingMappingMethod( mapMappingMethod ).getName();
                     methodRef = new ForgedMethod( existingName, methodRef );
                 }
-                assignment = new MethodReference( methodRef, null, targetType );
+                assignment = new MethodReference(
+                    methodRef,
+                    null,
+                    ParameterBinding.fromParameters( methodRef.getParameters() ) );
                 assignment.setAssignment( source );
 
                 forgedMethods.addAll( mapMappingMethod.getForgedMethods() );
@@ -635,7 +643,11 @@ public class PropertyMapping extends ModelElement {
                 getForgedMethodHistory( sourceRHS )
             );
 
-            Assignment assignment = new MethodReference( forgedMethod, null, targetType );
+            Assignment assignment = new MethodReference(
+                forgedMethod,
+                null,
+                ParameterBinding.fromParameters( forgedMethod.getParameters() ) );
+
             assignment.setAssignment( sourceRHS );
 
             this.forgedMethods.add( forgedMethod );

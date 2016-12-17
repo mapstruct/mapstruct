@@ -34,38 +34,48 @@ import org.mapstruct.ap.internal.model.source.Method;
  *
  * @author Sjaak Derksen
  */
-public class MethodSelectors implements MethodSelector {
+public class MethodSelectors {
 
     private final List<MethodSelector> selectors;
 
     public MethodSelectors(Types typeUtils, Elements elementUtils, TypeFactory typeFactory) {
-        selectors =
-            Arrays.<MethodSelector>asList(
-                new ObjectFactorySelector(),
-                new TypeSelector(),
-                new QualifierSelector( typeUtils, elementUtils ),
-                new TargetTypeSelector( typeUtils, elementUtils ),
-                new XmlElementDeclSelector( typeUtils, elementUtils ),
-                new InheritanceSelector(),
-                new CreateOrUpdateSelector()
-            );
+        selectors = Arrays.asList(
+            new MethodFamilySelector(),
+            new TypeSelector( typeFactory ),
+            new QualifierSelector( typeUtils, elementUtils ),
+            new TargetTypeSelector( typeUtils, elementUtils ),
+            new XmlElementDeclSelector( typeUtils, elementUtils ),
+            new InheritanceSelector(),
+            new CreateOrUpdateSelector() );
     }
 
-    @Override
-    public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
-                                                         Type sourceType, Type targetType,
-                                                         SelectionCriteria criteria) {
+    /**
+     * Selects those methods which match the given types and other criteria
+     *
+     * @param <T> either SourceMethod or BuiltInMethod
+     * @param mappingMethod mapping method, defined in Mapper for which this selection is carried out
+     * @param methods list of available methods
+     * @param sourceTypes parameter type(s) that should be matched
+     * @param targetType return type that should be matched
+     * @param criteria criteria used in the selection process
+     * @return list of methods that passes the matching process
+     */
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod, List<T> methods,
+                                                                          List<Type> sourceTypes, Type targetType,
+                                                                          SelectionCriteria criteria) {
 
-        List<T> candidates = new ArrayList<T>( methods );
+        List<SelectedMethod<T>> candidates = new ArrayList<SelectedMethod<T>>( methods.size() );
+        for ( T method : methods ) {
+            candidates.add( new SelectedMethod<T>( method ) );
+        }
 
         for ( MethodSelector selector : selectors ) {
             candidates = selector.getMatchingMethods(
                 mappingMethod,
                 candidates,
-                sourceType,
+                sourceTypes,
                 targetType,
-                criteria
-            );
+                criteria );
         }
         return candidates;
     }

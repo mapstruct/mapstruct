@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.lang.model.type.TypeMirror;
+
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
 /**
@@ -37,9 +38,11 @@ public class SelectionCriteria {
     private final TypeMirror qualifyingResultType;
     private boolean preferUpdateMapping;
     private final boolean objectFactoryRequired;
+    private final boolean lifecycleCallbackRequired;
 
     public SelectionCriteria(SelectionParameters selectionParameters, String targetPropertyName,
-                             boolean preferUpdateMapping, boolean objectFactoryRequired) {
+                             boolean preferUpdateMapping, boolean objectFactoryRequired,
+                             boolean lifecycleCallbackRequired) {
         if ( selectionParameters != null ) {
             qualifiers.addAll( selectionParameters.getQualifiers() );
             qualifiedByNames.addAll( selectionParameters.getQualifyingNames() );
@@ -51,6 +54,7 @@ public class SelectionCriteria {
         this.targetPropertyName = targetPropertyName;
         this.preferUpdateMapping = preferUpdateMapping;
         this.objectFactoryRequired = objectFactoryRequired;
+        this.lifecycleCallbackRequired = lifecycleCallbackRequired;
     }
 
     /**
@@ -58,6 +62,13 @@ public class SelectionCriteria {
      */
     public boolean isObjectFactoryRequired() {
         return objectFactoryRequired;
+    }
+
+    /**
+     * @return true if lifecycle callback methods should be selected, false otherwise.
+     */
+    public boolean isLifecycleCallbackRequired() {
+        return lifecycleCallbackRequired;
     }
 
     public List<TypeMirror> getQualifiers() {
@@ -84,4 +95,17 @@ public class SelectionCriteria {
         this.preferUpdateMapping = preferUpdateMapping;
     }
 
+    public static SelectionCriteria forMappingMethods(SelectionParameters selectionParameters,
+                                                      String targetPropertyName, boolean preferUpdateMapping) {
+
+        return new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping, false, false );
+    }
+
+    public static SelectionCriteria forFactoryMethods(SelectionParameters selectionParameters) {
+        return new SelectionCriteria( selectionParameters, null, false, true, false );
+    }
+
+    public static SelectionCriteria forLifecycleMethods(SelectionParameters selectionParameters) {
+        return new SelectionCriteria( selectionParameters, null, false, false, true );
+    }
 }

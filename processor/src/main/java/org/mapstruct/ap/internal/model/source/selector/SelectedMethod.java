@@ -16,28 +16,40 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
+package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.List;
 
-import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
- * Represents a reference to a factory method.
+ * A selected method with additional metadata that might be required for further usage of the selected method.
  *
- * @author Remo Meier
+ * @author Andreas Gudian
  */
-public class ObjectFactoryMethodReference extends MethodReference {
+public class SelectedMethod<T extends Method> {
+    private T method;
+    private List<ParameterBinding> parameterBindings;
 
-    private final List<Parameter> parameterAssignments;
-
-    public ObjectFactoryMethodReference(Method method, MapperReference ref, List<Parameter> parameterAssignments) {
-        super( method, ref, null );
-        this.parameterAssignments = parameterAssignments;
+    public SelectedMethod(T method) {
+        this.method = method;
     }
 
-    public List<Parameter> getParameterAssignments() {
-        return parameterAssignments;
+    public T getMethod() {
+        return method;
+    }
+
+    public List<ParameterBinding> getParameterBindings() {
+        return parameterBindings;
+    }
+
+    public void setParameterBindings(List<ParameterBinding> parameterBindings) {
+        this.parameterBindings = parameterBindings;
+    }
+
+    @Override
+    public String toString() {
+        return method.toString();
     }
 }

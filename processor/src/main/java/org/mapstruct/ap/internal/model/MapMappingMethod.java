@@ -29,6 +29,7 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
@@ -211,7 +212,11 @@ public class MapMappingMethod extends MappingMethod {
                 history
             );
 
-            Assignment assignment = new MethodReference( forgedMethod, null, targetType );
+            Assignment assignment = new MethodReference(
+                forgedMethod,
+                null,
+                ParameterBinding.fromParameters( forgedMethod.getParameters() ) );
+
             assignment.setAssignment( sourceRHS );
 
             forgedMethods.add( forgedMethod );

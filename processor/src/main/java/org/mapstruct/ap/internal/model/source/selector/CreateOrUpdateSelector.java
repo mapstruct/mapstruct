@@ -42,14 +42,19 @@ import org.mapstruct.ap.internal.model.source.Method;
 public class CreateOrUpdateSelector implements MethodSelector {
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
-                                                         Type sourceType, Type targetType,
-                                                         SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
+                                                                          List<SelectedMethod<T>> methods,
+                                                                          List<Type> sourceTypes, Type targetType,
+                                                                          SelectionCriteria criteria) {
 
-        List<T> createCandidates = new ArrayList<T>();
-        List<T> updateCandidates = new ArrayList<T>();
-        for ( T method : methods ) {
-            boolean isCreateCandidate = method.getMappingTargetParameter() == null;
+        if ( criteria.isLifecycleCallbackRequired() || criteria.isObjectFactoryRequired() ) {
+            return methods;
+        }
+
+        List<SelectedMethod<T>> createCandidates = new ArrayList<SelectedMethod<T>>();
+        List<SelectedMethod<T>> updateCandidates = new ArrayList<SelectedMethod<T>>();
+        for ( SelectedMethod<T> method : methods ) {
+            boolean isCreateCandidate = method.getMethod().getMappingTargetParameter() == null;
             if ( isCreateCandidate ) {
                 createCandidates.add( method );
             }

@@ -19,17 +19,16 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.model.source.selector.QualifierSelector;
+import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
+import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 
 /**
@@ -84,45 +83,36 @@ public final class LifecycleCallbackFactory {
             Method method, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
             MappingBuilderContext ctx, Set<String> existingVariableNames) {
 
-        Map<SourceMethod, List<Parameter>> parameterAssignmentsForSourceMethod
-            = new HashMap<SourceMethod, List<Parameter>>();
+        MethodSelectors selectors =
+            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory() );
 
-        List<SourceMethod> candidates =
-            filterCandidatesByType( method, callbackMethods, parameterAssignmentsForSourceMethod, ctx );
-
-        candidates = filterCandidatesByQualifiers( method, selectionParameters, candidates, ctx );
+        List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
+            method,
+            callbackMethods,
+            Collections.<Type> emptyList(),
+            method.getResultType(),
+            SelectionCriteria.forLifecycleMethods( selectionParameters ) );
 
         return toLifecycleCallbackMethodRefs(
             method,
-            candidates,
-            parameterAssignmentsForSourceMethod,
+            matchingMethods,
             ctx,
             existingVariableNames );
     }
 
-    private static List<SourceMethod> filterCandidatesByQualifiers(Method method,
-                                                                   SelectionParameters selectionParameters,
-                                                                   List<SourceMethod> candidates,
-                                                                   MappingBuilderContext ctx) {
-        QualifierSelector selector = new QualifierSelector( ctx.getTypeUtils(), ctx.getElementUtils() );
-
-        return selector.getMatchingMethods( method, candidates, null, null, new SelectionCriteria(
-            selectionParameters,
-            null,
-            false,
-            false) );
-    }
-
     private static List<LifecycleCallbackMethodReference> toLifecycleCallbackMethodRefs(Method method,
-            List<SourceMethod> candidates, Map<SourceMethod, List<Parameter>> parameterAssignmentsForSourceMethod,
-            MappingBuilderContext ctx, Set<String> existingVariableNames) {
+            List<SelectedMethod<SourceMethod>> candidates,
+            MappingBuilderContext ctx,
+            Set<String> existingVariableNames) {
+
         List<LifecycleCallbackMethodReference> result = new ArrayList<LifecycleCallbackMethodReference>();
-        for ( SourceMethod candidate : candidates ) {
-            markMapperReferenceAsUsed( ctx.getMapperReferences(), candidate );
+        for ( SelectedMethod<SourceMethod> candidate : candidates ) {
+            MapperReference mapperReference = findMapperReference( ctx.getMapperReferences(), candidate.getMethod() );
             result.add(
                 new LifecycleCallbackMethodReference(
-                    candidate,
-                    parameterAssignmentsForSourceMethod.get( candidate ),
+                    candidate.getMethod(),
+                    mapperReference,
+                    candidate.getParameterBindings(),
                     method.getReturnType(),
                     method.getResultType(),
                     existingVariableNames ) );
@@ -130,77 +120,15 @@ public final class LifecycleCallbackFactory {
         return result;
     }
 
-    private static List<SourceMethod> filterCandidatesByType(Method method,
-            List<SourceMethod> callbackMethods, Map<SourceMethod, List<Parameter>> parameterAssignmentsForSourceMethod,
-            MappingBuilderContext ctx) {
-
-        List<SourceMethod> candidates = new ArrayList<SourceMethod>();
-
-        List<Parameter> availableParams = getAvailableParameters( method, ctx );
-        for ( SourceMethod callback : callbackMethods ) {
-            List<Parameter> parameterAssignments =
-                ParameterAssignmentUtil.getParameterAssignments( availableParams, callback.getParameters() );
-
-            if ( isValidCandidate( callback, method, parameterAssignments ) ) {
-                parameterAssignmentsForSourceMethod.put( callback, parameterAssignments );
-                candidates.add( callback );
-            }
-        }
-        return candidates;
-    }
-
-    private static boolean isValidCandidate(SourceMethod candidate, Method method,
-                                            List<Parameter> parameterAssignments) {
-        if ( parameterAssignments == null ) {
-            return false;
-        }
-        if ( !candidate.matches( extractSourceTypes( parameterAssignments ), method.getResultType() ) ) {
-            return false;
-        }
-        return ( candidate.getReturnType().isVoid() || candidate.getReturnType().isTypeVar()
-            || candidate.getReturnType().isAssignableTo( method.getResultType() ) );
-    }
-
-    private static List<Parameter> getAvailableParameters(Method method, MappingBuilderContext ctx) {
-        List<Parameter> availableParams = new ArrayList<Parameter>( method.getParameters() );
-        if ( method.getMappingTargetParameter() == null ) {
-            availableParams.add( new Parameter( null, method.getResultType(), true, false, false) );
-        }
-
-        Parameter targetTypeParameter = new Parameter(
-            null,
-            ctx.getTypeFactory().classTypeOf( method.getResultType() ),
-            false,
-            true,
-            false );
-
-        availableParams.add( targetTypeParameter );
-        return availableParams;
-    }
-
-    private static void markMapperReferenceAsUsed(List<MapperReference> references, Method method) {
-        for ( MapperReference ref : references ) {
+    private static MapperReference findMapperReference(List<MapperReference> mapperReferences, SourceMethod method) {
+        for ( MapperReference ref : mapperReferences ) {
             if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
-                if ( !ref.isUsed() && !method.isStatic() ) {
-                    ref.setUsed( true );
-                }
+                ref.setUsed( ref.isUsed() || !method.isStatic() );
                 ref.setTypeRequiresImport( true );
-
-                return;
+                return ref;
             }
         }
-    }
-
-    private static List<Type> extractSourceTypes(List<Parameter> parameters) {
-        List<Type> result = new ArrayList<Type>( parameters.size() );
-
-        for ( Parameter param : parameters ) {
-            if ( !param.isMappingTarget() && !param.isTargetType() ) {
-                result.add( param.getType() );
-            }
-        }
-
-        return result;
+        return null;
     }
 
     private static List<SourceMethod> filterBeforeMappingMethods(List<SourceMethod> methods) {

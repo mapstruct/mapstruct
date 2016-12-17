@@ -45,16 +45,19 @@ public class TargetTypeSelector implements MethodSelector {
     }
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
-                                                         Type sourceType, Type targetType,
-                                                         SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
+                                                                          List<SelectedMethod<T>> methods,
+                                                                          List<Type> sourceTypes, Type targetType,
+                                                                          SelectionCriteria criteria) {
 
         TypeMirror qualifyingTypeMirror = criteria.getQualifyingResultType();
-        if ( qualifyingTypeMirror != null ) {
+        if ( qualifyingTypeMirror != null && !criteria.isLifecycleCallbackRequired() ) {
 
-            List<T> candidatesWithQualifyingTargetType = new ArrayList<T>();
-            for ( T method : methods ) {
-                TypeMirror resultTypeMirror = method.getResultType().getTypeElement().asType();
+            List<SelectedMethod<T>> candidatesWithQualifyingTargetType =
+                new ArrayList<SelectedMethod<T>>( methods.size() );
+
+            for ( SelectedMethod<T> method : methods ) {
+                TypeMirror resultTypeMirror = method.getMethod().getResultType().getTypeElement().asType();
                 if ( typeUtils.isSameType( qualifyingTypeMirror, resultTypeMirror ) ) {
                     candidatesWithQualifyingTargetType.add( method );
                 }

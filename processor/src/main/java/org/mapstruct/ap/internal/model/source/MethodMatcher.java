@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import static org.mapstruct.ap.internal.util.Collections.hasNonNullElements;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,27 +88,18 @@ public class MethodMatcher {
         // check & collect generic types.
         Map<TypeVariable, TypeMirror> genericTypesMap = new HashMap<TypeVariable, TypeMirror>();
 
-        if ( hasNonNullElements( sourceTypes ) ) {
-            // if sourceTypes contains non-null elements then only methods with all source parameters matching qualify
-            if ( candidateMethod.getSourceParameters().size() == sourceTypes.size() ) {
-                int i = 0;
-                for ( Parameter candidateSourceParam : candidateMethod.getSourceParameters() ) {
-                    Type sourceType = sourceTypes.get( i++ );
-                    if ( sourceType == null
-                        || !matchSourceType( sourceType, candidateSourceParam.getType(), genericTypesMap ) ) {
-                        return false;
-                    }
+        if ( candidateMethod.getParameters().size() == sourceTypes.size() ) {
+            int i = 0;
+            for ( Parameter candidateParam : candidateMethod.getParameters() ) {
+                Type sourceType = sourceTypes.get( i++ );
+                if ( sourceType == null
+                    || !matchSourceType( sourceType, candidateParam.getType(), genericTypesMap ) ) {
+                    return false;
                 }
-            }
-            else {
-                return false;
             }
         }
         else {
-            // if the sourceTypes empty/contains only nulls then only factory and lifecycle methods qualify
-            if ( !candidateMethod.isObjectFactory() && !candidateMethod.isLifecycleCallbackMethod() ) {
-                return false;
-            }
+            return false;
         }
 
         // check if the method matches the proper result type to construct

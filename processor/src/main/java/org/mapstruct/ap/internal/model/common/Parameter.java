@@ -34,20 +34,18 @@ public class Parameter extends ModelElement {
     private final Type type;
     private final boolean mappingTarget;
     private final boolean targetType;
-    private final boolean mappingSource;
 
-    public Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingSource) {
+    public Parameter(String name, Type type, boolean mappingTarget, boolean targetType) {
         // issue #909: FreeMarker doesn't like "values" as a parameter name
         this.name = "values".equals( name ) ? "values_" : name;
         this.originalName = name;
         this.type = type;
         this.mappingTarget = mappingTarget;
         this.targetType = targetType;
-        this.mappingSource = mappingSource;
     }
 
     public Parameter(String name, Type type) {
-        this( name, type, false, false, false );
+        this( name, type, false, false );
     }
 
     public String getName() {
@@ -60,10 +58,6 @@ public class Parameter extends ModelElement {
 
     public Type getType() {
         return type;
-    }
-
-    public boolean isMappingSource() {
-        return mappingSource;
     }
 
     public boolean isMappingTarget() {
@@ -106,5 +100,4 @@ public class Parameter extends ModelElement {
         }
         return true;
     }
-
 }

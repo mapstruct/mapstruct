@@ -27,6 +27,7 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
@@ -62,18 +63,19 @@ public class MethodReference extends MappingMethod implements Assignment {
     private Assignment assignment;
 
     private final Type definingType;
+    private final List<ParameterBinding> parameterBindings;
 
     /**
      * Creates a new reference to the given method.
      *
      * @param method the target method of the reference
      * @param declaringMapper the method declaring the mapper; {@code null} if the current mapper itself
-     * @param targetType in case the referenced method has a parameter for passing the target type, the given
-     * target type, otherwise {@code null}
+     * @param parameterBindings the parameter bindings of this method reference
      */
-    public MethodReference(Method method, MapperReference declaringMapper, Type targetType) {
+    public MethodReference(Method method, MapperReference declaringMapper, List<ParameterBinding> parameterBindings) {
         super( method );
         this.declaringMapper = declaringMapper;
+        this.parameterBindings = parameterBindings;
         this.contextParam = null;
         Set<Type> imported = new HashSet<Type>();
 
@@ -81,8 +83,8 @@ public class MethodReference extends MappingMethod implements Assignment {
             imported.addAll( type.getImportTypes() );
         }
 
-        if ( targetType != null ) {
-            imported.addAll( targetType.getImportTypes() );
+        for ( ParameterBinding binding : parameterBindings ) {
+            imported.addAll( binding.getImportTypes() );
         }
 
         this.importTypes = Collections.<Type>unmodifiableSet( imported );
@@ -99,6 +101,7 @@ public class MethodReference extends MappingMethod implements Assignment {
         this.thrownTypes = Collections.emptyList();
         this.definingType = null;
         this.isUpdateMethod = method.getMappingTargetParameter() != null;
+        this.parameterBindings = ParameterBinding.fromParameters( method.getParameters() );
     }
 
     public MapperReference getDeclaringMapper() {
@@ -213,5 +216,9 @@ public class MethodReference extends MappingMethod implements Assignment {
     @Override
     public boolean isCallingUpdateMethod() {
         return isUpdateMethod;
+    }
+
+    public List<ParameterBinding> getParameterBindings() {
+        return parameterBindings;
     }
 }

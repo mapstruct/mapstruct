@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.internal.processor.creation;
 
+import static java.util.Collections.singletonList;
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,23 +42,20 @@ import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
-import org.mapstruct.ap.internal.model.ObjectFactoryMethodReference;
-import org.mapstruct.ap.internal.model.ParameterAssignmentUtil;
 import org.mapstruct.ap.internal.model.SourceRHS;
 import org.mapstruct.ap.internal.model.VirtualMappingMethod;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
-import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
+import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -109,7 +109,7 @@ public class MappingResolverImpl implements MappingResolver {
         boolean preferUpdateMapping) {
 
         SelectionCriteria criteria =
-            new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping, false );
+            SelectionCriteria.forMappingMethods( selectionParameters, targetPropertyName, preferUpdateMapping );
 
         String dateFormat = null;
         String numberFormat = null;
@@ -139,58 +139,46 @@ public class MappingResolverImpl implements MappingResolver {
     public MethodReference getFactoryMethod(final Method mappingMethod, Type targetType,
                                             SelectionParameters selectionParameters) {
 
-        SelectionCriteria criteria = new SelectionCriteria( selectionParameters, null, false, true );
+        List<SelectedMethod<Method>> matchingFactoryMethods =
+            methodSelectors.getMatchingMethods(
+                mappingMethod,
+                sourceModel,
+                java.util.Collections.<Type> emptyList(),
+                targetType,
+                SelectionCriteria.forFactoryMethods( selectionParameters ) );
 
-        ResolvingAttempt attempt = new ResolvingAttempt( sourceModel, mappingMethod, null, null, null, criteria );
-
-        List<Method> matchingSourceMethods = attempt.getMatches( sourceModel, null, targetType );
-
-        List<MethodReference> factoryRefsWithAssigments = new ArrayList<MethodReference>();
-        List<Method> factoryRefSources = new ArrayList<Method>();
-
-        for ( Method matchingSourceMethod : matchingSourceMethods ) {
-
-            if ( matchingSourceMethod != null ) {
-                MapperReference ref = attempt.findMapperReference( matchingSourceMethod );
-
-                if ( matchingSourceMethod.getSourceParameters().isEmpty() ) {
-                    // factory taking no argument
-                    factoryRefsWithAssigments.add( new MethodReference( matchingSourceMethod, ref, null ) );
-                    factoryRefSources.add( matchingSourceMethod );
-                }
-                else {
-                    // check whether factory have has a valid assignment, if so, choose as candidate
-                    List<Parameter> availableParameters = new ArrayList<Parameter>();
-                    availableParameters.addAll( mappingMethod.getSourceParameters() );
-                    availableParameters.add(
-                        new Parameter( null,
-                                       typeFactory.classTypeOf( targetType ),
-                                       false, true, false ) );
-                    List<Parameter> factoryParamAssinment =
-                        ParameterAssignmentUtil.getParameterAssignments( availableParameters,
-                                                                         matchingSourceMethod.getParameters() );
-                    if ( factoryParamAssinment != null ) {
-                        factoryRefSources.add( matchingSourceMethod );
-                        factoryRefsWithAssigments.add(
-                            new ObjectFactoryMethodReference( matchingSourceMethod, ref, factoryParamAssinment ) );
-                    }
-                }
-            }
+        if (matchingFactoryMethods.isEmpty()) {
+            return null;
         }
 
-        if ( factoryRefsWithAssigments.size() > 1 ) {
+        if ( matchingFactoryMethods.size() > 1 ) {
             messager.printMessage(
                 mappingMethod.getExecutable(),
                 Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
                 targetType,
-                Strings.join( factoryRefSources, ", " ) );
-        }
-        else if ( factoryRefsWithAssigments.size() == 1 ) {
-            // factory methods with assignment are favored over the ones without any
-            return factoryRefsWithAssigments.get( 0 );
+                Strings.join( matchingFactoryMethods, ", " ) );
+
+            return null;
         }
 
-        // no factory found
+        SelectedMethod<Method> matchingFactoryMethod = first( matchingFactoryMethods );
+
+        MapperReference ref = findMapperReference( matchingFactoryMethod.getMethod() );
+
+        return new MethodReference(
+            matchingFactoryMethod.getMethod(),
+            ref,
+            matchingFactoryMethod.getParameterBindings() );
+    }
+
+    private MapperReference findMapperReference(Method method) {
+        for ( MapperReference ref : mapperReferences ) {
+            if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
+                ref.setUsed( ref.isUsed() || !method.isStatic() );
+                ref.setTypeRequiresImport( true );
+                return ref;
+            }
+        }
         return null;
     }
 
@@ -315,7 +303,7 @@ public class MappingResolverImpl implements MappingResolver {
         private Assignment resolveViaMethod(Type sourceType, Type targetType, boolean considerBuiltInMethods) {
 
             // first try to find a matching source method
-            Method matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
+            SelectedMethod<Method> matchingSourceMethod = getBestMatch( methods, sourceType, targetType );
 
             if ( matchingSourceMethod != null ) {
                 return getMappingMethodReference( matchingSourceMethod, targetType );
@@ -329,15 +317,15 @@ public class MappingResolverImpl implements MappingResolver {
         }
 
         private Assignment resolveViaBuiltInMethod(Type sourceType, Type targetType) {
-            BuiltInMethod matchingBuiltInMethod =
+            SelectedMethod<BuiltInMethod> matchingBuiltInMethod =
                 getBestMatch( builtInMethods.getBuiltInMethods(), sourceType, targetType );
 
             if ( matchingBuiltInMethod != null ) {
-                virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod ) );
+                virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod.getMethod() ) );
                 ConversionContext ctx = new DefaultConversionContext( typeFactory, messager,
                                                                       sourceType,
                                                                       targetType, dateFormat, numberFormat);
-                Assignment methodReference = new MethodReference( matchingBuiltInMethod, ctx );
+                Assignment methodReference = new MethodReference( matchingBuiltInMethod.getMethod(), ctx );
                 methodReference.setAssignment( sourceRHS );
                 return methodReference;
             }
@@ -491,22 +479,12 @@ public class MappingResolverImpl implements MappingResolver {
                 && !methodCandidate.isLifecycleCallbackMethod();
         }
 
-        private <T extends Method> List<T> getMatches(List<T> methods, Type sourceType, Type returnType) {
-            return methodSelectors.getMatchingMethods(
+        private <T extends Method> SelectedMethod<T> getBestMatch(List<T> methods, Type sourceType, Type returnType) {
+
+            List<SelectedMethod<T>> candidates = methodSelectors.getMatchingMethods(
                 mappingMethod,
                 methods,
-                sourceType,
-                returnType,
-                selectionCriteria
-            );
-        }
-
-        private <T extends Method> T getBestMatch(List<T> methods, Type sourceType, Type returnType) {
-
-            List<T> candidates = methodSelectors.getMatchingMethods(
-                mappingMethod,
-                methods,
-                sourceType,
+                singletonList( sourceType ),
                 returnType,
                 selectionCriteria
             );
@@ -533,31 +511,21 @@ public class MappingResolverImpl implements MappingResolver {
             }
 
             if ( !candidates.isEmpty() ) {
-                return candidates.get( 0 );
+                return first( candidates );
             }
 
             return null;
         }
 
-        private Assignment getMappingMethodReference(Method method,
+        private Assignment getMappingMethodReference(SelectedMethod<Method> method,
                                                      Type targetType) {
-            MapperReference mapperReference = findMapperReference( method );
+            MapperReference mapperReference = findMapperReference( method.getMethod() );
 
-            return new MethodReference( method,
+            return new MethodReference(
+                method.getMethod(),
                 mapperReference,
-                SourceMethod.containsTargetTypeParameter( method.getParameters() ) ? targetType : null
+                method.getParameterBindings()
             );
-        }
-
-        private MapperReference findMapperReference(Method method) {
-            for ( MapperReference ref : mapperReferences ) {
-                if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
-                    ref.setUsed( !method.isStatic() );
-                    ref.setTypeRequiresImport( true );
-                    return ref;
-                }
-            }
-            return null;
         }
 
         /**

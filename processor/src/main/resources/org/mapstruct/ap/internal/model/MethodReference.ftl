@@ -28,18 +28,20 @@
     </#if>
     <#macro params>
         <@compress>
-            ${name}<#if (parameters?size > 0)>( <@arguments/> )<#else>()</#if>
+            ${name}<#if (parameterBindings?size > 0)>( <@arguments/> )<#else>()</#if>
         </@compress>
     </#macro>
     <#macro arguments>
-        <#list parameters as param>
+        <#list parameterBindings as param>
             <#if param.targetType>
                 <#-- a class is passed on for casting, see @TargetType -->
                 <@includeModel object=ext.targetType raw=true/>.class<#t>
             <#elseif param.mappingTarget>
-                 ${ext.targetBeanName}.${ext.targetReadAccessorName}
+                 ${ext.targetBeanName}<#if ext.targetReadAccessorName??>.${ext.targetReadAccessorName}</#if><#t>
+            <#elseif assignment??>
+                <@_assignment/><#t>
             <#else>
-                <@_assignment/>
+            	${param.variableName}<#t>
             </#if>
             <#if param_has_next>, </#if><#t>
         </#list>

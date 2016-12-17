@@ -63,9 +63,10 @@ public class QualifierSelector implements MethodSelector {
     }
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
-                                                         Type sourceType, Type targetType,
-                                                         SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
+                                                                          List<SelectedMethod<T>> methods,
+                                                                          List<Type> sourceTypes, Type targetType,
+                                                                          SelectionCriteria criteria) {
 
         int numberOfQualifiersToMatch = 0;
 
@@ -89,11 +90,11 @@ public class QualifierSelector implements MethodSelector {
         // Check there are qualfiers for this mapping: Mapping#qualifier or Mapping#qualfiedByName
         if ( qualifierTypes.isEmpty() ) {
             // When no qualifiers, disqualify all methods marked with a qualifier by removing them from the candidates
-            List<T> nonQualiferAnnotatedMethods = new ArrayList<T>();
-            for ( T candidate : methods ) {
+            List<SelectedMethod<T>> nonQualiferAnnotatedMethods = new ArrayList<SelectedMethod<T>>( methods.size() );
+            for ( SelectedMethod<T> candidate : methods ) {
 
-                if ( candidate instanceof SourceMethod ) {
-                    Set<AnnotationMirror> qualifierAnnotations = getQualifierAnnotationMirrors( candidate );
+                if ( candidate.getMethod() instanceof SourceMethod ) {
+                    Set<AnnotationMirror> qualifierAnnotations = getQualifierAnnotationMirrors( candidate.getMethod() );
                     if ( qualifierAnnotations.isEmpty() ) {
                         nonQualiferAnnotatedMethods.add( candidate );
                     }
@@ -107,15 +108,16 @@ public class QualifierSelector implements MethodSelector {
         }
         else {
             // Check all methods marked with qualfier (or methods in Mappers marked wiht a qualfier) for matches.
-            List<T> matches = new ArrayList<T>();
-            for ( T candidate : methods ) {
+            List<SelectedMethod<T>> matches = new ArrayList<SelectedMethod<T>>( methods.size() );
+            for ( SelectedMethod<T> candidate : methods ) {
 
-                if ( !( candidate instanceof SourceMethod ) ) {
+                if ( !( candidate.getMethod() instanceof SourceMethod ) ) {
                     continue;
                 }
 
                 // retrieve annotations
-                Set<AnnotationMirror> qualifierAnnotationMirrors = getQualifierAnnotationMirrors( candidate );
+                Set<AnnotationMirror> qualifierAnnotationMirrors =
+                    getQualifierAnnotationMirrors( candidate.getMethod() );
 
                 // now count if all qualifiers are matched
                 int matchingQualifierCounter = 0;

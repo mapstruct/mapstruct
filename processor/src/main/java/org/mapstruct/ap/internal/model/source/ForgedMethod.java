@@ -116,7 +116,7 @@ public class ForgedMethod implements Method {
             return false;
         }
 
-        if ( !first( sourceTypes ).equals( parameters.get( 0 ).getType() ) ) {
+        if ( !first( sourceTypes ).equals( first( parameters ).getType() ) ) {
             return false;
         }
 

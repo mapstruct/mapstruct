@@ -35,26 +35,26 @@ import org.mapstruct.ap.internal.model.source.Method;
 public class InheritanceSelector implements MethodSelector {
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(
-        Method mappingMethod,
-        List<T> methods,
-        Type sourceType,
-        Type targetType,
-        SelectionCriteria criteria
-    ) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
+                                                                          List<SelectedMethod<T>> methods,
+                                                                          List<Type> sourceTypes,
+                                                                          Type targetType,
+                                                                          SelectionCriteria criteria) {
 
-        if ( sourceType == null ) {
+        if ( sourceTypes.size() != 1 ) {
             return methods;
         }
 
-        List<T> candidatesWithBestMatchingSourceType = new ArrayList<T>();
+        Type singleSourceType = first( sourceTypes );
+
+        List<SelectedMethod<T>> candidatesWithBestMatchingSourceType = new ArrayList<SelectedMethod<T>>();
         int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;
 
         // find the methods with the minimum distance regarding getParameter getParameter type
-        for ( T method : methods ) {
-            Parameter singleSourceParam = first( method.getSourceParameters() );
+        for ( SelectedMethod<T> method : methods ) {
+            Parameter singleSourceParam = first( method.getMethod().getSourceParameters() );
 
-            int sourceTypeDistance = sourceType.distanceTo( singleSourceParam.getType() );
+            int sourceTypeDistance = singleSourceType.distanceTo( singleSourceParam.getType() );
             bestMatchingSourceTypeDistance =
                 addToCandidateListIfMinimal(
                     candidatesWithBestMatchingSourceType,
@@ -66,8 +66,8 @@ public class InheritanceSelector implements MethodSelector {
         return candidatesWithBestMatchingSourceType;
     }
 
-    private <T extends Method> int addToCandidateListIfMinimal(List<T> candidatesWithBestMathingType,
-                                                               int bestMatchingTypeDistance, T method,
+    private <T extends Method> int addToCandidateListIfMinimal(List<SelectedMethod<T>> candidatesWithBestMathingType,
+                                                               int bestMatchingTypeDistance, SelectedMethod<T> method,
                                                                int currentTypeDistance) {
         if ( currentTypeDistance == bestMatchingTypeDistance ) {
             candidatesWithBestMathingType.add( method );

@@ -61,9 +61,10 @@ public class XmlElementDeclSelector implements MethodSelector {
     }
 
     @Override
-    public <T extends Method> List<T> getMatchingMethods(Method mappingMethod, List<T> methods,
-                                                         Type sourceType, Type targetType,
-                                                         SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
+                                                                          List<SelectedMethod<T>> methods,
+                                                                          List<Type> sourceTypes, Type targetType,
+                                                                          SelectionCriteria criteria) {
 
         // only true source methods are qualifying
         if ( !(mappingMethod instanceof SourceMethod) ) {
@@ -72,18 +73,18 @@ public class XmlElementDeclSelector implements MethodSelector {
 
         SourceMethod sourceMappingMethod = (SourceMethod) mappingMethod;
 
-        List<T> nameMatches = new ArrayList<T>();
-        List<T> scopeMatches = new ArrayList<T>();
-        List<T> nameAndScopeMatches = new ArrayList<T>();
+        List<SelectedMethod<T>> nameMatches = new ArrayList<SelectedMethod<T>>();
+        List<SelectedMethod<T>> scopeMatches = new ArrayList<SelectedMethod<T>>();
+        List<SelectedMethod<T>> nameAndScopeMatches = new ArrayList<SelectedMethod<T>>();
         XmlElementRefInfo xmlElementRefInfo =
             findXmlElementRef( sourceMappingMethod.getResultType(), criteria.getTargetPropertyName() );
 
-        for ( T candidate : methods ) {
-            if ( !( candidate instanceof SourceMethod ) ) {
+        for ( SelectedMethod<T> candidate : methods ) {
+            if ( !( candidate.getMethod() instanceof SourceMethod ) ) {
                 continue;
             }
 
-            SourceMethod candidateMethod = (SourceMethod) candidate;
+            SourceMethod candidateMethod = (SourceMethod) candidate.getMethod();
             XmlElementDeclPrism xmlElememtDecl = XmlElementDeclPrism.getInstanceOn( candidateMethod.getExecutable() );
 
             if ( xmlElememtDecl == null ) {
