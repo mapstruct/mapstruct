@@ -20,15 +20,11 @@ package org.mapstruct.ap.test.selection.resulttype;
 
 /**
  *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-public class Apple extends Fruit implements IsFruit {
+public interface IsFruit {
 
-    public Apple() {
-        super( "constructed-by-constructor" );
-    }
+    String getType();
 
-    public Apple(String type) {
-        super( type );
-    }
+    void setType(String type);
 }

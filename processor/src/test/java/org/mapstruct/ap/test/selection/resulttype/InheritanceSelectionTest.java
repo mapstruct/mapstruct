@@ -42,6 +42,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @IssueKey("385")
 @WithClasses({
+    IsFruit.class,
     Fruit.class,
     FruitDto.class,
     Apple.class,
@@ -86,6 +87,33 @@ public class InheritanceSelectionTest {
         Fruit fruit = ResultTypeConstructingFruitMapper.INSTANCE.map( fruitDto );
         assertThat( fruit ).isNotNull();
         assertThat( fruit.getType() ).isEqualTo( "constructed-by-constructor" );
+    }
+
+    @Test
+    @IssueKey("657")
+    @WithClasses( { ResultTypeConstructingFruitInterfaceMapper.class } )
+    public void testResultTypeBasedConstructionOfResultForInterface() {
+
+        FruitDto fruitDto = new FruitDto( null );
+        IsFruit fruit = ResultTypeConstructingFruitInterfaceMapper.INSTANCE.map( fruitDto );
+        assertThat( fruit ).isNotNull();
+        assertThat( fruit.getType() ).isEqualTo( "constructed-by-constructor" );
+    }
+
+    @Test
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ResultTypeConstructingFruitInterfaceErroneousMapper.class,
+                kind = Kind.ERROR,
+                line = 36,
+                messageRegExp = "No implementation type is registered for return type .*\\.IsFruit."
+            )
+        }
+    )
+    @IssueKey("657")
+    @WithClasses({ ResultTypeConstructingFruitInterfaceErroneousMapper.class })
+    public void testResultTypeBasedConstructionOfResultForInterfaceErroneous() {
     }
 
     @Test
