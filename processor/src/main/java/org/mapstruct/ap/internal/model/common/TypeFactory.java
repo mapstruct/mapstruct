@@ -261,7 +261,7 @@ public class TypeFactory {
      * Get the ExecutableType for given method as part of usedMapper. Possibly parameterized types in method declaration
      * will be evaluated to concrete types then.
      *
-     * <b>IMPORTANT:</b> This should only be used from the Processors. as they are operating over executable elements.
+     * <b>IMPORTANT:</b> This should only be used from the Processors, as they are operating over executable elements.
      * The internals should not be using this function and should not be using the {@link ExecutableElement} directly.
      *
      * @param includingType the type on which's scope the method type shall be evaluated
