@@ -261,11 +261,13 @@ public class TypeFactory {
      * Get the ExecutableType for given method as part of usedMapper. Possibly parameterized types in method declaration
      * will be evaluated to concrete types then.
      *
+     * <b>IMPORTANT:</b> This should only be used from the Processors. as they are operating over executable elements.
+     * The internals should not be using this function and should not be using the {@link ExecutableElement} directly.
+     *
      * @param includingType the type on which's scope the method type shall be evaluated
      * @param method the method
      * @return the ExecutableType representing the method as part of usedMapper
      */
-    @Deprecated
     public ExecutableType getMethodType(DeclaredType includingType, ExecutableElement method) {
         TypeMirror asMemberOf = typeUtils.asMemberOf( includingType, method );
         return (ExecutableType) asMemberOf;
@@ -301,10 +303,11 @@ public class TypeFactory {
 
     public List<Parameter> getParameters(DeclaredType includingType, Accessor accessor) {
         ExecutableElement method = accessor.getExecutable();
-        if ( method == null ) {
+        TypeMirror methodType = getMethodType( includingType, accessor.getElement() );
+        if ( method == null || methodType.getKind() != TypeKind.EXECUTABLE ) {
             return new ArrayList<Parameter>();
         }
-        return getParameters( getMethodType( includingType, method ), method );
+        return getParameters( (ExecutableType) methodType, method );
     }
 
     public List<Parameter> getParameters(ExecutableType methodType, ExecutableElement method) {
@@ -330,11 +333,6 @@ public class TypeFactory {
         return result;
     }
 
-    @Deprecated
-    public Type getReturnType(DeclaredType includingType, ExecutableElement method) {
-        return getReturnType( getMethodType( includingType, method ) );
-    }
-
     public Type getReturnType(DeclaredType includingType, Accessor accessor) {
         Type type;
         TypeMirror accessorType = getMethodType( includingType, accessor.getElement() );
@@ -354,10 +352,6 @@ public class TypeFactory {
 
     public Type getReturnType(ExecutableType method) {
         return getType( method.getReturnType() );
-    }
-
-    public List<Type> getThrownTypes(DeclaredType includingType, ExecutableElement method) {
-        return getThrownTypes( getMethodType( includingType, method ) );
     }
 
     public List<Type> getThrownTypes(ExecutableType method) {
