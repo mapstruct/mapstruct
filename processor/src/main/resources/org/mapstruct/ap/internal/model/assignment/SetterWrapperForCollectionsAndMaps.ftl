@@ -23,11 +23,11 @@
 <@lib.handleExceptions>
   <#if ext.existingInstanceMapping>
     if ( ${ext.targetBeanName}.${ext.targetReadAccessorName} != null ) {
-        <@lib.handleNullCheck>
+        <@lib.handleLocalVarNullCheck>
             ${ext.targetBeanName}.${ext.targetReadAccessorName}.clear();
             ${ext.targetBeanName}.${ext.targetReadAccessorName}.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${nullCheckLocalVarName} );
-        </@lib.handleNullCheck>
-        <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference?? && !includeSourceNullCheck>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleNullCheck -->
+        </@lib.handleLocalVarNullCheck>
+        <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference?? && !includeSourceNullCheck>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleLocalVarNullCheck -->
           ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>null</@lib.handleWrite>;
         }
         </#if>
@@ -43,9 +43,9 @@
   assigns the target via the regular target write accessor (usually the setter)
 -->
 <#macro callTargetWriteAccessor>
-    <@lib.handleNullCheck>
+    <@lib.handleLocalVarNullCheck>
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if directAssignment><@wrapLocalVarInCollectionInitializer/><#else>${nullCheckLocalVarName}</#if></@lib.handleWrite>;
-  </@lib.handleNullCheck>
+  </@lib.handleLocalVarNullCheck>
 </#macro>
 <#--
   wraps the local variable in a collection initializer (new collection, or EnumSet.copyOf)

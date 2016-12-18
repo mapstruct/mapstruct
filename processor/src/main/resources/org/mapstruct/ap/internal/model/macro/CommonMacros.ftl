@@ -18,18 +18,51 @@
      limitations under the License.
 
 -->
-
 <#--
-  macro: handleNullCheck
+  macro: handleSourceReferenceNullCheck
+
+  purpose: macro surrounds nested with either a source presence checker or a null check. It acts directly on the
+           source reference. It adds an else clause with the default assigment when applicable.
+
+           requires: caller to implement boolean:getIncludeSourceNullCheck()
+-->
+<#macro handleSourceReferenceNullCheck>
+    <#if sourcePresenceCheckerReference??>
+        if ( ${sourcePresenceCheckerReference} ) {
+            <#nested>
+        }
+        <@elseDefaultAssignment/>
+    <#elseif includeSourceNullCheck || ext.defaultValueAssignment??>
+        if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null ) {
+            <#nested>
+        }
+        <@elseDefaultAssignment/>
+    <#else>
+        <#nested>
+    </#if>
+</#macro>
+<#--
+    local macro related to handleSourceReferenceNullCheck
+-->
+<#macro elseDefaultAssignment>
+    <#if ext.defaultValueAssignment?? >
+      else {
+        <@handeDefaultAssigment/>
+      }
+    </#if>
+</#macro>
+<#--
+  macro: handleLocalVarNullCheck
 
   purpose: macro surrounds nested with either a source presence checker or a null check. It always uses
            a local variable. Note that the local variable assignemnt is inside the IF statement for the
            source presence check. Note also, that the else clause contains the default variable assignment if
            present.
 
-  TODO: is only used by collection mapping currently.. should perhas be moved to there and not in common
+           requires: caller to implement String:getNullCheckLocalVarName()
+                     caller to implement Type:getNullCheckLocalVarType()
 -->
-<#macro handleNullCheck>
+<#macro handleLocalVarNullCheck>
   <#if sourcePresenceCheckerReference??>
     if ( ${sourcePresenceCheckerReference} ) {
       <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
@@ -47,7 +80,6 @@
   }
   </#if>
 </#macro>
-
 <#--
   macro: handleExceptions
 
@@ -130,7 +162,8 @@ Performs a default assignment with a default value.
 <#--
   macro: sourceLocalVarAssignment
 
-  purpose: assigment for source local variables
+  purpose: assignment for source local variables. The sourceLocalVarName replaces the sourceReference in the
+           assignmentcall.
 -->
 <#macro sourceLocalVarAssignment>
     <#if sourceLocalVarName??>
