@@ -150,17 +150,7 @@ public class MapMappingMethod extends MappingMethod {
             }
 
             if ( valueAssignment == null ) {
-
                 valueAssignment = forgeMapping( valueSourceRHS, valueSourceType, valueTargetType );
-
-//                if ( method instanceof ForgedMethod ) {
-//                    // leave messaging to calling property mapping
-//                    return null;
-//                }
-//                else {
-//                    ctx.getMessager().printMessage( method.getExecutable(),
-//                        Message.MAPMAPPING_VALUE_MAPPING_NOT_FOUND );
-//                }
             }
 
             // mapNullToDefault

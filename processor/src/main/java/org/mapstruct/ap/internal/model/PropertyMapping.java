@@ -37,7 +37,6 @@ import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
-import org.mapstruct.ap.internal.model.assignment.NullCheckWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
@@ -434,10 +433,9 @@ public class PropertyMapping extends ModelElement {
                 targetPropertyName,
                 arrayType,
                 targetType,
-                existingVariableNames,
                 isFieldAssignment()
             );
-            return new NullCheckWrapper( assignment );
+            return assignment;
         }
 
         private SourceRHS getSourceRHS( SourceReference sourceReference ) {

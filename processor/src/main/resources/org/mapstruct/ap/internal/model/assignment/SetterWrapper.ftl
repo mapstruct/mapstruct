@@ -21,31 +21,7 @@
 <#import "../macro/CommonMacros.ftl" as lib>
 <@lib.handleExceptions>
     <@lib.sourceLocalVarAssignment/>
-    <#if sourcePresenceCheckerReference??>
-        if ( ${sourcePresenceCheckerReference} ) {
-            <@assignment/>;
-        }
-        <@elseDefaultAssignment/>
-    <#elseif includeSourceNullCheck || ext.defaultValueAssignment??>
-        if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null ) {
-            <@assignment/>;
-        }
-        <@elseDefaultAssignment/>
-    <#else>
-        <@assignment/>;
-    </#if>
+    <@lib.handleSourceReferenceNullCheck>
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
+    </@lib.handleSourceReferenceNullCheck>
 </@lib.handleExceptions>
-<#--
-    standard assignment
--->
-<#macro assignment>${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite></#macro>
-<#--
-    add default assignment when required
--->
-<#macro elseDefaultAssignment>
-    <#if ext.defaultValueAssignment?? >
-      else {
-        <@lib.handeDefaultAssigment/>
-      }
-    </#if>
-</#macro>

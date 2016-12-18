@@ -19,25 +19,9 @@
 
 -->
 <#import "../macro/CommonMacros.ftl" as lib>
-<#if (thrownTypes?size == 0) >
-    <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
-    ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>Arrays.copyOf( ${localVarName}, ${localVarName}.length )</@lib.handleWrite>;
-<#else>
-    try {
-        <@includeModel object=ext.targetType/> ${localVarName} = <@_assignment/>;
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>Arrays.copyOf(>Arrays.copyOf( ${localVarName}, ${localVarName}.length )</@lib.handleWrite>;
-    }
-    <#list thrownTypes as exceptionType>
-    catch ( <@includeModel object=exceptionType/> e ) {
-        throw new RuntimeException( e );
-    }
-    </#list>
-</#if>
-<#macro _assignment>
-    <@includeModel object=assignment
-               targetBeanName=ext.targetBeanName
-               existingInstanceMapping=ext.existingInstanceMapping
-               targetReadAccessorName=ext.targetReadAccessorName
-               targetWriteAccessorName=ext.targetWriteAccessorName
-               targetType=ext.targetType/>
-</#macro>
+<@lib.handleExceptions>
+    <@lib.sourceLocalVarAssignment/>
+    <@lib.handleSourceReferenceNullCheck>
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>Arrays.copyOf( ${sourceLocalVarName}, ${sourceLocalVarName}.length )</@lib.handleWrite>;
+    </@lib.handleSourceReferenceNullCheck>
+</@lib.handleExceptions>

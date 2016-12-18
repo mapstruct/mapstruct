@@ -109,17 +109,18 @@ public interface Assignment {
     Type getSourceType();
 
     /**
-     * safe (local) element variable name when dealing with collections.
+     * Creates an unique safe (local) variable name.
      *
      * @param desiredName the desired name
-     * @return the desired name, made unique
+     *
+     * @return the desired name, made unique in the scope of the bean mapping.
      */
     String createLocalVarName( String desiredName );
 
     /**
-     * a local variable name for supporting a null check and avoiding executing a nested method forged method twice
+     * See {@link #setSourceLocalVarName(java.lang.String) }
      *
-     * @return local variable name (can be null)
+     * @return local variable name (can be null if not set)
      */
     String getSourceLocalVarName();
 
@@ -132,7 +133,9 @@ public interface Assignment {
     String getSourceParameterName();
 
     /**
-     * Use sourceLocalVarName iso sourceReference
+     * Replaces the sourceReference at the call site in the assignment in the template with this sourceLocalVarName.
+     * The sourceLocalVarName can subsequently be used for e.g. null checking.
+     *
      * @param sourceLocalVarName source local variable name
      */
     void setSourceLocalVarName(String sourceLocalVarName);

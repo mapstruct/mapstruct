@@ -18,16 +18,10 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
-import static org.mapstruct.ap.internal.util.Strings.decapitalize;
-import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
-
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * Decorates the assignment as a Map or Collection constructor
@@ -36,16 +30,18 @@ import org.mapstruct.ap.internal.util.Strings;
  */
 public class ArrayCopyWrapper extends AssignmentWrapper {
 
-    private final String targetPropertyName;
     private final Type arraysType;
     private final Type targetType;
 
-    public ArrayCopyWrapper(Assignment decoratedAssignment, String targetPropertyName, Type arraysType,
-                            Type targetType, Collection<String> existingVariableNames, boolean fieldAssignment) {
-        super( decoratedAssignment, fieldAssignment );
-        this.targetPropertyName = Strings.getSaveVariableName( targetPropertyName, existingVariableNames );
+    public ArrayCopyWrapper(Assignment rhs,
+                            String targetPropertyName,
+                            Type arraysType,
+                            Type targetType,
+                            boolean fieldAssignment) {
+        super( rhs, fieldAssignment );
         this.arraysType = arraysType;
         this.targetType = targetType;
+        rhs.setSourceLocalVarName( rhs.createLocalVarName( targetPropertyName ) );
     }
 
     @Override
@@ -57,7 +53,7 @@ public class ArrayCopyWrapper extends AssignmentWrapper {
         return imported;
     }
 
-    public String getLocalVarName() {
-        return getSaveVariableName( decapitalize( targetPropertyName ), Collections.<String>emptyList() );
+    public boolean isIncludeSourceNullCheck() {
+        return true;
     }
 }
