@@ -26,7 +26,7 @@ public class SourceTargetmapperProtectedBase {
 
     protected ReferencedTarget sourceToTarget( ReferencedSource source ) {
         ReferencedTarget target = new ReferencedTarget();
-        target.setFoo( source.getFoo() );
+        target.setBar( source.getFoo() );
         return target;
     }
 }

@@ -16,17 +16,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.accessibility.referenced;
+package org.mapstruct.ap.test.nestedbeans;
 
-/**
- * @author Sjaak Derksen
- */
-public class SourceTargetmapperPrivateBase {
+public class Roof {
+    private int color;
 
-    @SuppressWarnings("unused")
-    private ReferencedTarget sourceToTarget(ReferencedSource source) {
-        ReferencedTarget target = new ReferencedTarget();
-        target.setBar( source.getFoo() );
-        return target;
+    public Roof() {
     }
+
+    public Roof(int color) {
+        this.color = color;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    @Override
+    public String toString() {
+        return "Roof{" +
+            "color='" + color + '\'' +
+            '}';
+    }
+
 }

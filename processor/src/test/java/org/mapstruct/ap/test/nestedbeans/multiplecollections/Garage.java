@@ -16,17 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.accessibility.referenced;
+package org.mapstruct.ap.test.nestedbeans.multiplecollections;
 
-/**
- * @author Sjaak Derksen
- */
-public class SourceTargetmapperPrivateBase {
+import java.util.List;
 
-    @SuppressWarnings("unused")
-    private ReferencedTarget sourceToTarget(ReferencedSource source) {
-        ReferencedTarget target = new ReferencedTarget();
-        target.setBar( source.getFoo() );
-        return target;
+import org.mapstruct.ap.test.nestedbeans.Car;
+
+public class Garage {
+    private List<Car> cars;
+    private List<Car> usedCars;
+
+    public List<Car> getCars() {
+        return cars;
     }
+
+    public void setCars(List<Car> cars) {
+        this.cars = cars;
+    }
+
+    public List<Car> getUsedCars() {
+        return usedCars;
+    }
+
+    public void setUsedCars(List<Car> usedCars) {
+        this.usedCars = usedCars;
+    }
+
 }

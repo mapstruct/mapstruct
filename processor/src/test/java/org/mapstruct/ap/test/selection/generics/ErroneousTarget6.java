@@ -20,13 +20,13 @@ package org.mapstruct.ap.test.selection.generics;
 
 public class ErroneousTarget6 {
 
-    private WildCardSuperWrapper<Integer> foo;
+    private WildCardSuperWrapper<TypeA> foo;
 
-    public WildCardSuperWrapper<Integer> getFoo() {
+    public WildCardSuperWrapper<TypeA> getFoo() {
         return foo;
     }
 
-    public void setFoo(WildCardSuperWrapper<Integer> foo) {
+    public void setFoo(WildCardSuperWrapper<TypeA> foo) {
         this.foo = foo;
     }
 }

@@ -22,13 +22,13 @@ package org.mapstruct.ap.test.accessibility.referenced;
  * @author Sjaak Derksen
  */
 public class ReferencedTarget {
-    private String foo;
+    private String bar;
 
-    public String getFoo() {
-        return foo;
+    public String getBar() {
+        return bar;
     }
 
-    public void setFoo(String foo) {
-        this.foo = foo;
+    public void setBar(String bar) {
+        this.bar = bar;
     }
 }
