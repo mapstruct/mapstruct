@@ -36,7 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -444,16 +443,17 @@ public class TypeFactory {
 
     private boolean isImported(String name, String qualifiedName) {
         String trimmedName = TypeFactory.trimSimpleClassName( name );
+        String trimmedQualifiedName = TypeFactory.trimSimpleClassName( qualifiedName );
         String importedType = importedQualifiedTypesBySimpleName.get( trimmedName );
 
         boolean imported = false;
         if ( importedType != null ) {
-            if ( importedType.equals( qualifiedName ) ) {
+            if ( importedType.equals( trimmedQualifiedName ) ) {
                 imported = true;
             }
         }
         else {
-            importedQualifiedTypesBySimpleName.put( trimmedName, qualifiedName );
+            importedQualifiedTypesBySimpleName.put( trimmedName, trimmedQualifiedName );
             imported = true;
         }
         return imported;
@@ -530,6 +530,19 @@ public class TypeFactory {
         return typeMirror;
     }
 
+    /**
+     * It strips the all the {@code []} from the {@code className}.
+     *
+     * E.g.
+     * <pre>
+     *     trimSimpleClassName("String[][][]") -> "String"
+     *     trimSimpleClassName("String[]") -> "String"
+     * </pre>
+     *
+     * @param className that needs to be trimmed
+     *
+     * @return the trimmed {@code className}, or {@code null} if the {@code className} was {@code null}
+     */
     static String trimSimpleClassName(String className) {
         if ( className == null ) {
             return null;
