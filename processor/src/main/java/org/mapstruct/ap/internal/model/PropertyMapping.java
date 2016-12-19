@@ -82,10 +82,6 @@ public class PropertyMapping extends ModelElement {
     private final Assignment defaultValueAssignment;
     private List<ForgedMethod> forgedMethods = new ArrayList<ForgedMethod>();
 
-    public List<ForgedMethod> getForgedMethods() {
-        return forgedMethods;
-    }
-
     private enum TargetWriteAccessorType {
         FIELD,
         GETTER,
@@ -965,6 +961,10 @@ public class PropertyMapping extends ModelElement {
 
     public List<String> getDependsOn() {
         return dependsOn;
+    }
+
+    public List<ForgedMethod> getForgedMethods() {
+        return forgedMethods;
     }
 
     @Override

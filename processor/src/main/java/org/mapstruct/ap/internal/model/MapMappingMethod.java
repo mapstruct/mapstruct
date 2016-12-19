@@ -120,16 +120,7 @@ public class MapMappingMethod extends MappingMethod {
             );
 
             if ( keyAssignment == null ) {
-
                 keyAssignment = forgeMapping( keySourceRHS, keySourceType, keyTargetType );
-//                if ( method instanceof ForgedMethod ) {
-//                    // leave messaging to calling property mapping
-//                    return null;
-//                }
-//                else {
-//                    ctx.getMessager().printMessage( method.getExecutable(),
-//                        Message.MAPMAPPING_KEY_MAPPING_NOT_FOUND );
-//                }
             }
 
             // find mapping method or conversion for value
