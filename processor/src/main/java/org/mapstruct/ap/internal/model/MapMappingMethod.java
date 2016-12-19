@@ -136,7 +136,8 @@ public class MapMappingMethod extends MappingMethod {
             Type valueSourceType = sourceTypeParams.get( 1 ).getTypeBound();
             Type valueTargetType = resultTypeParams.get( 1 ).getTypeBound();
 
-            SourceRHS valueSourceRHS = new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<String>(), "map value" );
+            SourceRHS valueSourceRHS = new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<String>(),
+                    "map value" );
             Assignment valueAssignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 valueTargetType,

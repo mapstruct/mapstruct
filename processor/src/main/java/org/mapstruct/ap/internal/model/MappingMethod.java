@@ -67,7 +67,8 @@ public abstract class MappingMethod extends ModelElement {
     protected MappingMethod(Method method, Collection<String> existingVariableNames,
                             List<LifecycleCallbackMethodReference> beforeMappingReferences,
                             List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        this( method, method.getParameters(), existingVariableNames, beforeMappingReferences, afterMappingReferences, Collections.<ForgedMethod>emptyList() );
+        this( method, method.getParameters(), existingVariableNames, beforeMappingReferences, afterMappingReferences,
+                Collections.<ForgedMethod>emptyList() );
     }
 
     protected MappingMethod(Method method, List<Parameter> parameters, Collection<String> existingVariableNames,
@@ -104,14 +105,16 @@ public abstract class MappingMethod extends ModelElement {
     protected MappingMethod(Method method, List<LifecycleCallbackMethodReference> beforeMappingReferences,
                             List<LifecycleCallbackMethodReference> afterMappingReferences,
                             List<ForgedMethod> forgedMethods) {
-        this( method, method.getParameters(), method.getParameterNames(), beforeMappingReferences, afterMappingReferences, forgedMethods );
+        this( method, method.getParameters(), method.getParameterNames(), beforeMappingReferences,
+                afterMappingReferences, forgedMethods );
     }
 
     public MappingMethod(Method method, Collection<String> existingVariableNames,
                          List<LifecycleCallbackMethodReference> beforeMappingReferences,
                          List<LifecycleCallbackMethodReference> afterMappingReferences,
                          List<ForgedMethod> allForgedMethods) {
-        this(method, method.getParameters(), existingVariableNames, beforeMappingReferences, afterMappingReferences, allForgedMethods);
+        this( method, method.getParameters(), existingVariableNames, beforeMappingReferences, afterMappingReferences,
+                allForgedMethods );
     }
 
     private String initResultName(Collection<String> existingVarNames) {

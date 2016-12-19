@@ -875,6 +875,5 @@ public class BeanMappingMethod extends MappingMethod {
         }
     }
 
-
 }
 
