@@ -236,6 +236,7 @@ public class ArrayMappingTest {
     }
 
     @Test
+    @IssueKey( "999" )
     public void shouldNotContainFQNForStringArray() {
         getGeneratedSource().forMapper( ScienceMapper.class ).content().doesNotContain( "java.lang.String[]" );
     }
