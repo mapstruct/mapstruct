@@ -1,10 +1,10 @@
 /**
- *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  Copyright 2012-2016 Dmytro Polovinkin
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  Licensed under the Apache License, Version q2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *

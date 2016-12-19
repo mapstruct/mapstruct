@@ -594,7 +594,9 @@ public class PropertyMapping extends ModelElement {
             // copy mapper configuration from the source method, its the same mapper
             MapperConfiguration config = method.getMapperConfiguration();
             ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element,
-                new ForgedMethodHistory( getForgedMethodHistory(source), source.getSourceErrorMessagePart(), targetPropertyName,
+                new ForgedMethodHistory( getForgedMethodHistory( source ),
+                    source.getSourceErrorMessagePart(),
+                    targetPropertyName,
                     source.getSourceType(),
                     targetType
                 )
@@ -636,7 +638,9 @@ public class PropertyMapping extends ModelElement {
             // copy mapper configuration from the source method, its the same mapper
             MapperConfiguration config = method.getMapperConfiguration();
             ForgedMethod methodRef = new ForgedMethod( name, sourceType, targetType, config, element,
-                new ForgedMethodHistory( getForgedMethodHistory(source), source.getSourceErrorMessagePart(), targetPropertyName,
+                new ForgedMethodHistory( getForgedMethodHistory( source ),
+                    source.getSourceErrorMessagePart(),
+                    targetPropertyName,
                     source.getSourceType(),
                     targetType
                 )
@@ -680,7 +684,7 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 method.getMapperConfiguration(),
                 method.getExecutable(),
-                getForgedMethodHistory(sourceRHS)
+                getForgedMethodHistory( sourceRHS )
             );
 
             Assignment assignment = new MethodReference( forgedMethod, null, targetType );

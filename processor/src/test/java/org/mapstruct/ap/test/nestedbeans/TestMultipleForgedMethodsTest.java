@@ -49,5 +49,4 @@ public class TestMultipleForgedMethodsTest {
         MultipleListMapper.INSTANCE.convert( new Garage() );
     }
 
-
 }

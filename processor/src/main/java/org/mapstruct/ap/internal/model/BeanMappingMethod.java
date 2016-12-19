@@ -712,7 +712,6 @@ public class BeanMappingMethod extends MappingMethod {
         return this.factoryMethod;
     }
 
-
     private static class NestedTargetObjects {
 
         private final Set<LocalVariable> localVariables;

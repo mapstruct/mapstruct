@@ -203,7 +203,6 @@ public class MapMappingMethod extends MappingMethod {
             );
         }
 
-
         private Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, Type targetType) {
 
             String name = getName( sourceType, targetType );

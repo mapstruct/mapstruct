@@ -105,7 +105,8 @@ public class IterableMappingMethod extends MappingMethod {
             String loopVariableName =
                 Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
 
-            SourceRHS sourceRHS = new SourceRHS( loopVariableName, sourceElementType, new HashSet<String>(), "collection element" );
+            SourceRHS sourceRHS = new SourceRHS( loopVariableName, sourceElementType, new HashSet<String>(),
+                "collection element" );
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 targetElementType,
