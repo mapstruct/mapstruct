@@ -1,5 +1,5 @@
 /**
- *  Copyright 2012-2016 Dmytro Polovinkin (http://github.com/navpil)
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
  *  contributors.
@@ -20,6 +20,11 @@ package org.mapstruct.ap.internal.model.source;
 
 import org.mapstruct.ap.internal.model.common.Type;
 
+/**
+ * Keeps the context where the ForgedMethod is generated, especially handy with nested forged methods
+ *
+ * @author Dmytro Polovinkin
+ */
 public class ForgedMethodHistory {
 
     private final ForgedMethodHistory prevHistory;
