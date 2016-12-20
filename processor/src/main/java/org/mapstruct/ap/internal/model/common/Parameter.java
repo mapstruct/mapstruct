@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.util.Collections;
@@ -34,18 +36,20 @@ public class Parameter extends ModelElement {
     private final Type type;
     private final boolean mappingTarget;
     private final boolean targetType;
+    private final boolean mappingContext;
 
-    public Parameter(String name, Type type, boolean mappingTarget, boolean targetType) {
+    public Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext) {
         // issue #909: FreeMarker doesn't like "values" as a parameter name
         this.name = "values".equals( name ) ? "values_" : name;
         this.originalName = name;
         this.type = type;
         this.mappingTarget = mappingTarget;
         this.targetType = targetType;
+        this.mappingContext = mappingContext;
     }
 
     public Parameter(String name, Type type) {
-        this( name, type, false, false );
+        this( name, type, false, false, false );
     }
 
     public String getName() {
@@ -66,7 +70,9 @@ public class Parameter extends ModelElement {
 
     @Override
     public String toString() {
-        return ( mappingTarget ? "@MappingTarget " : "" ) + ( targetType ? "@TargetType " : "" )
+        return ( mappingTarget ? "@MappingTarget " : "" )
+            + ( targetType ? "@TargetType " : "" )
+            + ( mappingContext ? "@Context " : "" )
             + type.toString() + " " + name;
     }
 
@@ -77,6 +83,10 @@ public class Parameter extends ModelElement {
 
     public boolean isTargetType() {
         return targetType;
+    }
+
+    public boolean isMappingContext() {
+        return mappingContext;
     }
 
     @Override
@@ -99,5 +109,37 @@ public class Parameter extends ModelElement {
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param parameters the parameters to filter
+     * @return the parameters from the given list that are considered 'source parameters'
+     */
+    public static List<Parameter> getSourceParameters(List<Parameter> parameters) {
+        List<Parameter> sourceParameters = new ArrayList<Parameter>( parameters.size() );
+
+        for ( Parameter parameter : parameters ) {
+            if ( !parameter.isMappingTarget() && !parameter.isTargetType() && !parameter.isMappingContext() ) {
+                sourceParameters.add( parameter );
+            }
+        }
+
+        return sourceParameters;
+    }
+
+    /**
+     * @param parameters the parameters to filter
+     * @return the parameters from the given list that are marked as 'mapping context parameters'
+     */
+    public static List<Parameter> getContextParameters(List<Parameter> parameters) {
+        List<Parameter> contextParameters = new ArrayList<Parameter>( parameters.size() );
+
+        for ( Parameter parameter : parameters ) {
+            if ( parameter.isMappingContext() ) {
+                contextParameters.add( parameter );
+            }
+        }
+
+        return contextParameters;
     }
 }

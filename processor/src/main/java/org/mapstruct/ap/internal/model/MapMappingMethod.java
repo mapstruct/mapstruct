@@ -199,6 +199,7 @@ public class MapMappingMethod extends MappingMethod {
                 targetType,
                 method.getMapperConfiguration(),
                 method.getExecutable(),
+                method.getContextParameters(),
                 history
             );
 
@@ -247,7 +248,7 @@ public class MapMappingMethod extends MappingMethod {
 
     public Parameter getSourceParameter() {
         for ( Parameter parameter : getParameters() ) {
-            if ( !parameter.isMappingTarget() ) {
+            if ( !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
                 return parameter;
             }
         }

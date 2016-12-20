@@ -52,6 +52,7 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.internal.prism.ContextPrism;
 import org.mapstruct.ap.internal.prism.MappingTargetPrism;
 import org.mapstruct.ap.internal.prism.TargetTypePrism;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
@@ -325,7 +326,8 @@ public class TypeFactory {
                 parameter.getSimpleName().toString(),
                 getType( parameterType ),
                 MappingTargetPrism.getInstanceOn( parameter ) != null,
-                TargetTypePrism.getInstanceOn( parameter ) != null ) );
+                TargetTypePrism.getInstanceOn( parameter ) != null,
+                ContextPrism.getInstanceOn( parameter ) != null ) );
         }
 
         return result;
