@@ -90,23 +90,25 @@ public abstract class MappingMethod extends ModelElement {
     }
 
     protected MappingMethod(Method method, List<Parameter> parameters) {
-        this( method, parameters, method.getParameterNames(), null, null, Collections.<ForgedMethod>emptyList() );
+        this( method, parameters, new ArrayList<String>( method.getParameterNames() ), null, null,
+            Collections.<ForgedMethod>emptyList() );
     }
 
     protected MappingMethod(Method method) {
-        this( method, method.getParameterNames(), null, null );
+        this( method, new ArrayList<String>( method.getParameterNames() ), null, null );
     }
 
     protected MappingMethod(Method method, List<LifecycleCallbackMethodReference> beforeMappingReferences,
                             List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        this( method, method.getParameterNames(), beforeMappingReferences, afterMappingReferences );
+        this( method, new ArrayList<String>( method.getParameterNames() ), beforeMappingReferences,
+            afterMappingReferences );
     }
 
     protected MappingMethod(Method method, List<LifecycleCallbackMethodReference> beforeMappingReferences,
                             List<LifecycleCallbackMethodReference> afterMappingReferences,
                             List<ForgedMethod> forgedMethods) {
-        this( method, method.getParameters(), method.getParameterNames(), beforeMappingReferences,
-                afterMappingReferences, forgedMethods );
+        this( method, method.getParameters(), new ArrayList<String>( method.getParameterNames() ),
+            beforeMappingReferences, afterMappingReferences, forgedMethods );
     }
 
     public MappingMethod(Method method, Collection<String> existingVariableNames,

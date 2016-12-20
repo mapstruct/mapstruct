@@ -314,11 +314,13 @@ public class SourceMethod implements Method {
     @Override
     public List<String> getParameterNames() {
         if ( parameterNames == null ) {
-            parameterNames = new ArrayList<String>( parameters.size() );
+            List<String> names = new ArrayList<String>( parameters.size() );
 
             for ( Parameter parameter : parameters ) {
-                parameterNames.add( parameter.getName() );
+                names.add( parameter.getName() );
             }
+
+            parameterNames = Collections.unmodifiableList( names );
         }
 
         return parameterNames;
