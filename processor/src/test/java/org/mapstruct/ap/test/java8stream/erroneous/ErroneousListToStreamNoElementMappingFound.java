@@ -26,18 +26,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 /**
- *
  * @author Filip Hrisafov
  */
 @Mapper
-public interface ErroneousStreamNoElementMappingFound {
+public interface ErroneousListToStreamNoElementMappingFound {
 
-    ErroneousStreamNoElementMappingFound INSTANCE =
-        Mappers.getMapper( ErroneousStreamNoElementMappingFound.class );
-
-    List<String> mapStreamToCollection(Stream<AttributedString> source);
+    ErroneousListToStreamNoElementMappingFound INSTANCE =
+        Mappers.getMapper( ErroneousListToStreamNoElementMappingFound.class );
 
     Stream<String> mapCollectionToStream(List<AttributedString> source);
-
-    Stream<String> mapStreamToStream(Stream<AttributedString> source);
 }

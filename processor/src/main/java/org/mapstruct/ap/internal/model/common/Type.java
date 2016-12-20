@@ -226,6 +226,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     public boolean isIterableOrStreamType() {
         return isIterableType() || isStreamType();
     }
+
     public boolean isCollectionType() {
         return isCollectionType;
     }

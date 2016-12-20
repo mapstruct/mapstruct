@@ -16,21 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.test.java8stream.erroneous;
+
+import java.text.AttributedString;
+import java.util.List;
+import java.util.stream.Stream;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Helper holding Java Stream full qualified class names for conversion registration
- *
  * @author Filip Hrisafov
  */
-public final class JavaStreamConstants {
+@Mapper
+public interface ErroneousStreamToListNoElementMappingFound {
 
-    public static final String STREAM_FQN = "java.util.stream.Stream";
-    public static final String COLLECTORS_FQN = "java.util.stream.Collectors";
-    public static final String STREAM_SUPPORT_FQN = "java.util.stream.StreamSupport";
-    public static final String OPTIONAL_FQN = "java.util.Optional";
-    public static final String FUNCTION_FQN = "java.util.function.Function";
+    ErroneousStreamToListNoElementMappingFound INSTANCE =
+        Mappers.getMapper( ErroneousStreamToListNoElementMappingFound.class );
 
-    private JavaStreamConstants() {
-    }
+    List<String> mapStreamToCollection(Stream<AttributedString> source);
 }

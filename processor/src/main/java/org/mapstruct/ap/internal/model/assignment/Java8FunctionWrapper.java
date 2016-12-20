@@ -36,7 +36,7 @@ public class Java8FunctionWrapper extends AssignmentWrapper {
     private final Type functionType;
 
     public Java8FunctionWrapper(Assignment decoratedAssignment, List<Type> thrownTypesToExclude, Type functionType) {
-        super( decoratedAssignment );
+        super( decoratedAssignment, false );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.functionType = functionType;
     }

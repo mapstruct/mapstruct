@@ -26,7 +26,6 @@ import java.util.stream.Stream;
  */
 public class Source {
 
-
     private List<Integer> ints;
 
     private Stream<Integer> stream;
@@ -48,7 +47,6 @@ public class Source {
     private Stream<String> stringArrayStream;
 
     private Stream<SourceElement> sourceElements;
-
 
     public List<Integer> getInts() {
         return ints;

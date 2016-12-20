@@ -108,28 +108,47 @@ public class ErroneousStreamMappingTest {
     }
 
     @Test
-    @WithClasses({ ErroneousStreamNoElementMappingFound.class })
+    @WithClasses({ ErroneousStreamToStreamNoElementMappingFound.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = ErroneousStreamNoElementMappingFound.class,
+            @Diagnostic(type = ErroneousStreamToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 38,
-                messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
-                    + "conversion for mapping source element type into target element type."),
-            @Diagnostic(type = ErroneousStreamNoElementMappingFound.class,
-                kind = Kind.ERROR,
-                line = 40,
-                messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
-                    + "conversion for mapping source element type into target element type."),
-            @Diagnostic(type = ErroneousStreamNoElementMappingFound.class,
-                kind = Kind.ERROR,
-                line = 42,
-                messageRegExp = "No implementation can be generated for this method. Found no method nor implicit "
-                    + "conversion for mapping source element type into target element type.")
-
+                line = 36,
+                messageRegExp = "Can't map .*AttributedString to .*String. " +
+                    "Consider to implement a mapping method: \".*String map(.*AttributedString value)")
         }
     )
-    public void shouldFailOnNoElementMappingFound() {
+    public void shouldFailOnNoElementMappingFoundForStreamToStream() {
+    }
+
+    @Test
+    @WithClasses({ ErroneousListToStreamNoElementMappingFound.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousListToStreamNoElementMappingFound.class,
+                kind = Kind.ERROR,
+                line = 37,
+                messageRegExp = "Can't map .*AttributedString to .*String. " +
+                    "Consider to implement a mapping method: \".*String map(.*AttributedString value)")
+        }
+    )
+    public void shouldFailOnNoElementMappingFoundForListToStream() {
+    }
+
+    @Test
+    @WithClasses({ ErroneousStreamToListNoElementMappingFound.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousStreamToListNoElementMappingFound.class,
+                kind = Kind.ERROR,
+                line = 37,
+                messageRegExp = "Can't map .*AttributedString to .*String. " +
+                    "Consider to implement a mapping method: \".*String map(.*AttributedString value)")
+        }
+    )
+    public void shouldFailOnNoElementMappingFoundForStreamToList() {
     }
 }
