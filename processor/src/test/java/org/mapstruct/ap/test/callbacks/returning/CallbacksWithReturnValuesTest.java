@@ -36,7 +36,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * @author Pascal Grün
  */
 @IssueKey( "469" )
-@WithClasses( { Attribute.class, AttributeDTO.class, Node.class, NodeDTO.class, NodeMapperDefault.class,
+@WithClasses( { Attribute.class, AttributeDto.class, Node.class, NodeDto.class, NodeMapperDefault.class,
     NodeMapperWithContext.class, NodeMapperContext.class, Number.class, NumberMapperDefault.class,
     NumberMapperContext.class, NumberMapperWithContext.class } )
 @RunWith( AnnotationProcessorTestRunner.class )
@@ -44,13 +44,13 @@ public class CallbacksWithReturnValuesTest {
     @Test( expected = StackOverflowError.class )
     public void mappingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
-        NodeMapperDefault.INSTANCE.nodeToNodeDTO( root );
+        NodeMapperDefault.INSTANCE.nodeToNodeDto( root );
     }
 
     @Test( expected = StackOverflowError.class )
     public void updatingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
-        NodeMapperDefault.INSTANCE.nodeToNodeDTO( root, new NodeDTO() );
+        NodeMapperDefault.INSTANCE.nodeToNodeDto( root, new NodeDto() );
     }
 
     @Test
@@ -66,8 +66,8 @@ public class CallbacksWithReturnValuesTest {
         NodeMapperContext.addContextListener( contextListener );
         try {
             Node root = buildNodes();
-            NodeDTO rootDTO = NodeMapperWithContext.INSTANCE.nodeToNodeDTO( root );
-            assertThat( rootDTO ).isNotNull();
+            NodeDto rootDto = NodeMapperWithContext.INSTANCE.nodeToNodeDto( root );
+            assertThat( rootDto ).isNotNull();
             assertThat( contextLevel.get() ).isEqualTo( Integer.valueOf( 1 ) );
         }
         finally {

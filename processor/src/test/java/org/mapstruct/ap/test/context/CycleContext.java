@@ -16,24 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.callbacks.returning;
+package org.mapstruct.ap.test.context;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+import java.util.IdentityHashMap;
+import java.util.Map;
+
+import org.mapstruct.Context;
 
 /**
- * @author Pascal Grün
+ * A type to be used as {@link Context} parameter to track cycles in graphs
+ *
+ * @author Andreas Gudian
  */
-@Mapper(uses = NodeMapperContext.class )
-public abstract class NodeMapperWithContext {
-    public static final NodeMapperWithContext INSTANCE = Mappers.getMapper( NodeMapperWithContext.class );
+public class CycleContext {
+    private Map<Object, Object> knownInstances = new IdentityHashMap<Object, Object>();
 
-    public abstract NodeDto nodeToNodeDto(Node node);
+    @SuppressWarnings("unchecked")
+    public <T> T getMappedInstance(Object source, Class<T> targetType) {
+        return (T) knownInstances.get( source );
+    }
 
-    public abstract void nodeToNodeDto(Node node, @MappingTarget NodeDto nodeDto);
-
-    protected abstract AttributeDto attributeToAttributeDto(Attribute attribute);
-
-    protected abstract void attributeToAttributeDto(Attribute attribute, @MappingTarget AttributeDto nodeDto);
+    public void storeMappedInstance(Object source, Object target) {
+        knownInstances.put( source, target );
+    }
 }

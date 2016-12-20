@@ -18,22 +18,41 @@
  */
 package org.mapstruct.ap.test.callbacks.returning;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
-
 /**
  * @author Pascal Grün
  */
-@Mapper(uses = NodeMapperContext.class )
-public abstract class NodeMapperWithContext {
-    public static final NodeMapperWithContext INSTANCE = Mappers.getMapper( NodeMapperWithContext.class );
+public class AttributeDto {
 
-    public abstract NodeDto nodeToNodeDto(Node node);
+    private NodeDto node;
+    private String name;
+    private String value;
 
-    public abstract void nodeToNodeDto(Node node, @MappingTarget NodeDto nodeDto);
+    public NodeDto getNode() {
+        return node;
+    }
 
-    protected abstract AttributeDto attributeToAttributeDto(Attribute attribute);
+    public void setNode(NodeDto node) {
+        this.node = node;
+    }
 
-    protected abstract void attributeToAttributeDto(Attribute attribute, @MappingTarget AttributeDto nodeDto);
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "AttributeDto [name=" + name + ", value=" + value + "]";
+    }
 }

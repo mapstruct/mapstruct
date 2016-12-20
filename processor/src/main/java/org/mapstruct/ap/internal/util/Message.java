@@ -98,6 +98,7 @@ public enum Message {
     RETRIEVAL_TYPE_VAR_RESULT( "Can't generate mapping method for a generic type variable target." ),
     RETRIEVAL_WILDCARD_SUPER_BOUND_SOURCE( "Can't generate mapping method for a wildcard super bound source." ),
     RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT( "Can't generate mapping method for a wildcard extends bound result." ),
+    RETRIEVAL_CONTEXT_PARAMS_WITH_SAME_TYPE( "The types of @Context parameters must be unique." ),
 
     INHERITCONFIGURATION_BOTH( "Method cannot be annotated with both a @InheritConfiguration and @InheritInverseConfiguration." ),
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),

@@ -34,12 +34,15 @@ public class ParameterBinding {
     private final String variableName;
     private final boolean targetType;
     private final boolean mappingTarget;
+    private final boolean mappingContext;
 
-    private ParameterBinding(Type parameterType, String variableName, boolean mappingTarget, boolean targetType) {
+    private ParameterBinding(Type parameterType, String variableName, boolean mappingTarget, boolean targetType,
+                             boolean mappingContext) {
         this.type = parameterType;
         this.variableName = variableName;
         this.targetType = targetType;
         this.mappingTarget = mappingTarget;
+        this.mappingContext = mappingContext;
     }
 
     /**
@@ -61,6 +64,13 @@ public class ParameterBinding {
      */
     public boolean isMappingTarget() {
         return mappingTarget;
+    }
+
+    /**
+     * @return {@code true}, if the parameter being bound is a {@code @MappingContext} parameter.
+     */
+    public boolean isMappingContext() {
+        return mappingContext;
     }
 
     /**
@@ -87,7 +97,8 @@ public class ParameterBinding {
             parameter.getType(),
             parameter.getName(),
             parameter.isMappingTarget(),
-            parameter.isTargetType() );
+            parameter.isTargetType(),
+            parameter.isMappingContext() );
     }
 
     public static List<ParameterBinding> fromParameters(List<Parameter> parameters) {
@@ -103,7 +114,7 @@ public class ParameterBinding {
      * @return a parameter binding representing a target type parameter
      */
     public static ParameterBinding forTargetTypeBinding(Type classTypeOf) {
-        return new ParameterBinding( classTypeOf, null, false, true );
+        return new ParameterBinding( classTypeOf, null, false, true, false );
     }
 
     /**
@@ -111,7 +122,7 @@ public class ParameterBinding {
      * @return a parameter binding representing a mapping target parameter
      */
     public static ParameterBinding forMappingTargetBinding(Type resultType) {
-        return new ParameterBinding( resultType, null, true, false );
+        return new ParameterBinding( resultType, null, true, false, false );
     }
 
     /**
@@ -119,6 +130,6 @@ public class ParameterBinding {
      * @return a parameter binding representing a mapping source type
      */
     public static ParameterBinding forSourceTypeBinding(Type sourceType) {
-        return new ParameterBinding( sourceType, null, false, false );
+        return new ParameterBinding( sourceType, null, false, false, false );
     }
 }

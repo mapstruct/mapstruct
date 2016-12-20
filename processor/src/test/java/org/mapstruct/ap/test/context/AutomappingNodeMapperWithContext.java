@@ -16,43 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.callbacks.returning;
+package org.mapstruct.ap.test.context;
+
+import org.mapstruct.Context;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
 /**
- * @author Pascal Grün
+ * @author Andreas Gudian
  */
-public class AttributeDTO {
-    private NodeDTO node;
+@Mapper(uses = CycleContextLifecycleMethods.class)
+public interface AutomappingNodeMapperWithContext {
 
-    private String name;
-    private String value;
+    AutomappingNodeMapperWithContext INSTANCE =
+        Mappers.getMapper( AutomappingNodeMapperWithContext.class );
 
-    public NodeDTO getNode() {
-        return node;
-    }
+    NodeDto nodeToNodeDto(Node node, @Context CycleContext cycleContext, @Context FactoryContext factoryContext);
 
-    public void setNode(NodeDTO node) {
-        this.node = node;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "AttributeDTO [name=" + name + ", value=" + value + "]";
-    }
+    void nodeToNodeDto(Node node, @MappingTarget NodeDto nodeDto, @Context CycleContext cycleContext,
+            @Context FactoryContext factoryContext);
 }

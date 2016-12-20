@@ -16,24 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.callbacks.returning;
+package org.mapstruct.ap.test.context.erroneous;
 
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.ap.test.context.CycleContext;
+import org.mapstruct.ap.test.context.Node;
+import org.mapstruct.ap.test.context.NodeDto;
 
 /**
- * @author Pascal Grün
+ * @author Andreas Gudian
  */
-@Mapper(uses = NodeMapperContext.class )
-public abstract class NodeMapperWithContext {
-    public static final NodeMapperWithContext INSTANCE = Mappers.getMapper( NodeMapperWithContext.class );
+@Mapper
+public interface ErroneousNodeMapperWithNonUniqueContextTypes {
 
-    public abstract NodeDto nodeToNodeDto(Node node);
-
-    public abstract void nodeToNodeDto(Node node, @MappingTarget NodeDto nodeDto);
-
-    protected abstract AttributeDto attributeToAttributeDto(Attribute attribute);
-
-    protected abstract void attributeToAttributeDto(Attribute attribute, @MappingTarget AttributeDto nodeDto);
+    NodeDto nodeToNodeDto(Node node, @Context CycleContext cycleContext, @Context CycleContext otherCycleContext);
 }

@@ -29,11 +29,11 @@ import org.mapstruct.factory.Mappers;
 public abstract class NodeMapperDefault {
     public static final NodeMapperDefault INSTANCE = Mappers.getMapper( NodeMapperDefault.class );
 
-    public abstract NodeDTO nodeToNodeDTO(Node node);
+    public abstract NodeDto nodeToNodeDto(Node node);
 
-    public abstract void nodeToNodeDTO(Node node, @MappingTarget NodeDTO nodeDto);
+    public abstract void nodeToNodeDto(Node node, @MappingTarget NodeDto nodeDto);
 
-    protected abstract AttributeDTO attributeToAttributeDTO(Attribute attribute);
+    protected abstract AttributeDto attributeToAttributeDto(Attribute attribute);
 
-    protected abstract void attributeToAttributeDTO(Attribute attribute, @MappingTarget AttributeDTO nodeDto);
+    protected abstract void attributeToAttributeDto(Attribute attribute, @MappingTarget AttributeDto nodeDto);
 }

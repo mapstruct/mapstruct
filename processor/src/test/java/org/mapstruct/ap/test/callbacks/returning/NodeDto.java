@@ -23,19 +23,18 @@ import java.util.List;
 /**
  * @author Pascal Grün
  */
-public class NodeDTO {
-    private NodeDTO parent;
+public class NodeDto {
 
+    private NodeDto parent;
     private String name;
+    private List<NodeDto> children;
+    private List<AttributeDto> attributes;
 
-    private List<NodeDTO> children;
-    private List<AttributeDTO> attributes;
-
-    public NodeDTO getParent() {
+    public NodeDto getParent() {
         return parent;
     }
 
-    public void setParent(NodeDTO parent) {
+    public void setParent(NodeDto parent) {
         this.parent = parent;
     }
 
@@ -47,24 +46,24 @@ public class NodeDTO {
         this.name = name;
     }
 
-    public List<NodeDTO> getChildren() {
+    public List<NodeDto> getChildren() {
         return children;
     }
 
-    public void setChildren(List<NodeDTO> children) {
+    public void setChildren(List<NodeDto> children) {
         this.children = children;
     }
 
-    public List<AttributeDTO> getAttributes() {
+    public List<AttributeDto> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(List<AttributeDTO> attributes) {
+    public void setAttributes(List<AttributeDto> attributes) {
         this.attributes = attributes;
     }
 
     @Override
     public String toString() {
-        return "NodeDTO [name=" + name + "]";
+        return "NodeDto [name=" + name + "]";
     }
 }

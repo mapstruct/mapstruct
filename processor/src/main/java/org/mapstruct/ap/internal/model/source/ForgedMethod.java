@@ -18,10 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.lang.model.element.ExecutableElement;
@@ -45,7 +43,10 @@ public class ForgedMethod implements Method {
     private final ExecutableElement positionHintElement;
     private final List<Type> thrownTypes;
     private final MapperConfiguration mapperConfiguration;
-    private ForgedMethodHistory history;
+    private final ForgedMethodHistory history;
+
+    private final List<Parameter> sourceParameters;
+    private final List<Parameter> contextParameters;
 
     /**
      * Creates a new forged method with the given name.
@@ -55,17 +56,11 @@ public class ForgedMethod implements Method {
      * @param targetType the target type.
      * @param mapperConfiguration the mapper configuration
      * @param positionHintElement element used to for reference to the position in the source file.
+     * @param additionalParameters additional parameters to add to the forged method
      */
     public ForgedMethod(String name, Type sourceType, Type targetType, MapperConfiguration mapperConfiguration,
-        ExecutableElement positionHintElement) {
-        String sourceParamName = Strings.decapitalize( sourceType.getName() );
-        String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
-        this.parameters = Arrays.asList( new Parameter( sourceParamSafeName, sourceType ) );
-        this.returnType = targetType;
-        this.thrownTypes = new ArrayList<Type>();
-        this.name = Strings.sanitizeIdentifierName( name );
-        this.mapperConfiguration = mapperConfiguration;
-        this.positionHintElement = positionHintElement;
+                        ExecutableElement positionHintElement, List<Parameter> additionalParameters) {
+        this( name, sourceType, targetType, mapperConfiguration, positionHintElement, additionalParameters, null );
     }
 
      /**
@@ -76,13 +71,21 @@ public class ForgedMethod implements Method {
      * @param targetType the target type.
      * @param mapperConfiguration the mapper configuration
      * @param positionHintElement element used to for reference to the position in the source file.
+     * @param additionalParameters additional parameters to add to the forged method
      * @param history a parent forged method if this is a forged method within a forged method
      */
     public ForgedMethod(String name, Type sourceType, Type targetType, MapperConfiguration mapperConfiguration,
-        ExecutableElement positionHintElement, ForgedMethodHistory history) {
+                        ExecutableElement positionHintElement, List<Parameter> additionalParameters,
+                        ForgedMethodHistory history) {
         String sourceParamName = Strings.decapitalize( sourceType.getName() );
         String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
-        this.parameters = Arrays.asList( new Parameter( sourceParamSafeName, sourceType ) );
+
+        this.parameters = new ArrayList<Parameter>( 1 + additionalParameters.size() );
+        this.parameters.add( new Parameter( sourceParamSafeName, sourceType ) );
+        this.parameters.addAll( additionalParameters );
+        this.sourceParameters = Parameter.getSourceParameters( parameters );
+        this.contextParameters = Parameter.getContextParameters( parameters );
+
         this.returnType = targetType;
         this.thrownTypes = new ArrayList<Type>();
         this.name = Strings.sanitizeIdentifierName( name );
@@ -102,6 +105,11 @@ public class ForgedMethod implements Method {
         this.thrownTypes = new ArrayList<Type>();
         this.mapperConfiguration = forgedMethod.mapperConfiguration;
         this.positionHintElement = forgedMethod.positionHintElement;
+        this.history = forgedMethod.history;
+
+        this.sourceParameters = Parameter.getSourceParameters( parameters );
+        this.contextParameters = Parameter.getContextParameters( parameters );
+
         this.name = name;
     }
 
@@ -112,12 +120,19 @@ public class ForgedMethod implements Method {
             return false;
         }
 
-        if ( parameters.size() != 1 || sourceTypes.size() != 1 ) {
+        if ( parameters.size() != sourceTypes.size() ) {
             return false;
         }
 
-        if ( !first( sourceTypes ).equals( first( parameters ).getType() ) ) {
-            return false;
+        Iterator<Type> srcTypeIt = sourceTypes.iterator();
+        Iterator<Parameter> paramIt = parameters.iterator();
+
+        while ( srcTypeIt.hasNext() && paramIt.hasNext() ) {
+            Type sourceType = srcTypeIt.next();
+            Parameter param = paramIt.next();
+            if ( !sourceType.equals( param.getType() ) ) {
+                return false;
+            }
         }
 
         return true;
@@ -140,7 +155,12 @@ public class ForgedMethod implements Method {
 
     @Override
     public List<Parameter> getSourceParameters() {
-        return parameters;
+        return sourceParameters;
+    }
+
+    @Override
+    public List<Parameter> getContextParameters() {
+        return contextParameters;
     }
 
     @Override
