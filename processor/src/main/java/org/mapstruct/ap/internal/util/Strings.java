@@ -156,11 +156,17 @@ public class Strings {
         Set<String> conflictingNames = new HashSet<String>( KEYWORDS );
         conflictingNames.addAll( existingVariableNames );
 
-        while ( conflictingNames.contains( name ) ) {
-            name = name + "_";
+        if ( !conflictingNames.contains( name ) ) {
+            return name;
         }
 
-        return name;
+        int c = 1;
+        String seperator = Character.isDigit( name.charAt( name.length() - 1 ) ) ? "_" : "";
+        while ( conflictingNames.contains( name + seperator + c ) ) {
+            c++;
+        }
+
+        return name + seperator + c;
     }
 
     /**

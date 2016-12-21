@@ -73,21 +73,27 @@ public class StringsTest {
     @Test
     public void testGetSaveVariableNameWithArrayExistingVariables() throws Exception {
         assertThat( Strings.getSaveVariableName( "int[]" ) ).isEqualTo( "intArray" );
-        assertThat( Strings.getSaveVariableName( "Extends" ) ).isEqualTo( "extends_" );
-        assertThat( Strings.getSaveVariableName( "class" ) ).isEqualTo( "class_" );
-        assertThat( Strings.getSaveVariableName( "Class" ) ).isEqualTo( "class_" );
-        assertThat( Strings.getSaveVariableName( "Case" ) ).isEqualTo( "case_" );
-        assertThat( Strings.getSaveVariableName( "Synchronized" ) ).isEqualTo( "synchronized_" );
-        assertThat( Strings.getSaveVariableName( "prop", "prop", "prop_" ) ).isEqualTo( "prop__" );
+        assertThat( Strings.getSaveVariableName( "Extends" ) ).isEqualTo( "extends1" );
+        assertThat( Strings.getSaveVariableName( "class" ) ).isEqualTo( "class1" );
+        assertThat( Strings.getSaveVariableName( "Class" ) ).isEqualTo( "class1" );
+        assertThat( Strings.getSaveVariableName( "Case" ) ).isEqualTo( "case1" );
+        assertThat( Strings.getSaveVariableName( "Synchronized" ) ).isEqualTo( "synchronized1" );
+        assertThat( Strings.getSaveVariableName( "prop", "prop", "prop_" ) ).isEqualTo( "prop1" );
+    }
+
+    @Test
+    public void testGetSaveVariableNameVariablesEndingOnNumberVariables() throws Exception {
+        assertThat( Strings.getSaveVariableName( "prop1", "prop1" ) ).isEqualTo( "prop1_1" );
+        assertThat( Strings.getSaveVariableName( "prop1", "prop1", "prop1_1" ) ).isEqualTo( "prop1_2" );
     }
 
     @Test
     public void testGetSaveVariableNameWithCollection() throws Exception {
         assertThat( Strings.getSaveVariableName( "int[]", new ArrayList<String>() ) ).isEqualTo( "intArray" );
-        assertThat( Strings.getSaveVariableName( "Extends", new ArrayList<String>() ) ).isEqualTo( "extends_" );
-        assertThat( Strings.getSaveVariableName( "prop", Arrays.asList( "prop", "prop_" ) ) ).isEqualTo( "prop__" );
+        assertThat( Strings.getSaveVariableName( "Extends", new ArrayList<String>() ) ).isEqualTo( "extends1" );
+        assertThat( Strings.getSaveVariableName( "prop", Arrays.asList( "prop", "prop1" ) ) ).isEqualTo( "prop2" );
         assertThat( Strings.getSaveVariableName( "prop.font", Arrays.asList( "propFont", "propFont_" ) ) )
-            .isEqualTo( "propFont__" );
+            .isEqualTo( "propFont1" );
     }
 
     @Test
