@@ -320,20 +320,17 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             if ( param.isMappingTarget() ) {
                 targetParameters++;
             }
-
-            if ( param.isTargetType() ) {
+            else if ( param.isTargetType() ) {
                 targetTypeParameters++;
             }
-
-            if ( !param.isMappingTarget() && !param.isTargetType() ) {
+            else if ( !param.isMappingContext() ) {
                 validSourceParameters++;
             }
         }
 
         return validSourceParameters == sourceParamCount
             && targetParameters <= targetParamCount
-            && targetTypeParameters <= 1
-            && parameters.size() == validSourceParameters + targetParameters + targetTypeParameters;
+            && targetTypeParameters <= 1;
     }
 
     private Parameter extractTargetParameter(List<Parameter> parameters) {

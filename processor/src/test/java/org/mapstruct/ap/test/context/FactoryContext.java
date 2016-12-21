@@ -19,20 +19,28 @@
 package org.mapstruct.ap.test.context;
 
 import org.mapstruct.Context;
+import org.mapstruct.ap.test.context.Node.Attribute;
+import org.mapstruct.ap.test.context.NodeDTO.AttributeDTO;
 
 /**
- * A type to be used as {@link Context} parameter to create NodeDTO instances
+ * A type to be used as {@link Context} parameter to create NodeDTO and AttributeDTO instances
  *
  * @author Andreas Gudian
  */
 public class FactoryContext {
-    private int counter;
+    private int nodeCounter;
+    private int attributeMaticNumberOffset;
 
-    public FactoryContext(int initialCounter) {
-        this.counter = initialCounter;
+    public FactoryContext(int initialCounter, int attributeMaticNumberOffset) {
+        this.nodeCounter = initialCounter;
+        this.attributeMaticNumberOffset = attributeMaticNumberOffset;
     }
 
     public NodeDTO createNode() {
-        return new NodeDTO( counter++ );
+        return new NodeDTO( nodeCounter++ );
+    }
+
+    public AttributeDTO createAttributeDTO(Attribute source) {
+        return new AttributeDTO( source.getMagicNumber() + attributeMaticNumberOffset );
     }
 }

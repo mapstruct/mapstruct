@@ -26,6 +26,7 @@ import org.mapstruct.BeforeMapping;
 import org.mapstruct.Context;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.ap.test.context.Node.Attribute;
+import org.mapstruct.ap.test.context.NodeDTO.AttributeDTO;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -36,7 +37,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * <li>passing the parameter to property mapping methods
  * <li>passing the parameter to forged iterable methods
  * <li>passing the parameter to forged bean mapping methods
- * <li>passing the parameter to {@link ObjectFactory} methods
+ * <li>passing the parameter to factory methods (with and without {@link ObjectFactory})
  * <li>passing the parameter to lifecycle methods (in this case, {@link BeforeMapping}
  * <li>passing multiple parameters, with varied order of context params and mapping source params
  * </ul>
@@ -55,15 +56,17 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class ContextParameterTest {
 
+    private static final int MATIC_NUMBER_OFFSET = 10;
+
     @Test
     public void mappingWithContextCorrectlyResolvesCycles() {
         Node root = buildNodes();
         NodeDTO rootDTO =
-            NodeMapperWithContext.INSTANCE.nodeToNodeDTO( new FactoryContext( 0 ), root, new CycleContext() );
+            NodeMapperWithContext.INSTANCE.nodeToNodeDTO( new FactoryContext( 0, 10 ), root, new CycleContext() );
         assertResult( rootDTO );
 
         NodeDTO updated = new NodeDTO( 0 );
-        NodeMapperWithContext.INSTANCE.nodeToNodeDTO( new FactoryContext( 1 ), root, updated, new CycleContext() );
+        NodeMapperWithContext.INSTANCE.nodeToNodeDTO( new FactoryContext( 1, 10 ), root, updated, new CycleContext() );
         assertResult( updated );
     }
 
@@ -71,12 +74,12 @@ public class ContextParameterTest {
     public void automappingWithContextCorrectlyResolvesCycles() {
         Node root = buildNodes();
         NodeDTO rootDTO = AutomappingNodeMapperWithContext.INSTANCE
-            .nodeToNodeDTO( root, new CycleContext(), new FactoryContext( 0 ) );
+            .nodeToNodeDTO( root, new CycleContext(), new FactoryContext( 0, MATIC_NUMBER_OFFSET ) );
         assertResult( rootDTO );
 
         NodeDTO updated = new NodeDTO( 0 );
         AutomappingNodeMapperWithContext.INSTANCE
-            .nodeToNodeDTO( root, updated, new CycleContext(), new FactoryContext( 1 ) );
+            .nodeToNodeDTO( root, updated, new CycleContext(), new FactoryContext( 1, 10 ) );
         assertResult( updated );
     }
 
@@ -84,18 +87,28 @@ public class ContextParameterTest {
         assertThat( rootDTO ).isNotNull();
         assertThat( rootDTO.getId() ).isEqualTo( 0 );
 
+        AttributeDTO rootAttribute = rootDTO.getAttributes().get( 0 );
+        assertThat( rootAttribute.getNode() ).isSameAs( rootDTO );
+        assertThat( rootAttribute.getMagicNumber() ).isEqualTo( 1 + MATIC_NUMBER_OFFSET );
+
         assertThat( rootDTO.getChildren() ).hasSize( 1 );
-        assertThat( rootDTO.getChildren().get( 0 ).getParent() ).isSameAs( rootDTO );
-        assertThat( rootDTO.getChildren().get( 0 ).getId() ).isEqualTo( 1 );
-        assertThat( rootDTO.getAttributes().get( 0 ).getNode() ).isSameAs( rootDTO );
+
+        NodeDTO node1 = rootDTO.getChildren().get( 0 );
+        assertThat( node1.getParent() ).isSameAs( rootDTO );
+        assertThat( node1.getId() ).isEqualTo( 1 );
+
+        AttributeDTO node1Attribute = node1.getAttributes().get( 0 );
+        assertThat( node1Attribute.getNode() ).isSameAs( node1 );
+        assertThat( node1Attribute.getMagicNumber() ).isEqualTo( 2 + MATIC_NUMBER_OFFSET );
+
     }
 
     private static Node buildNodes() {
         Node root = new Node( "root" );
-        root.addAttribute( new Attribute( "name", "root" ) );
+        root.addAttribute( new Attribute( "name", "root", 1 ) );
 
         Node node1 = new Node( "node1" );
-        node1.addAttribute( new Attribute( "name", "node1" ) );
+        node1.addAttribute( new Attribute( "name", "node1", 2 ) );
 
         root.addChild( node1 );
 

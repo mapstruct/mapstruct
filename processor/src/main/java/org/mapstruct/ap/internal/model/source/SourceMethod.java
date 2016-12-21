@@ -240,9 +240,11 @@ public class SourceMethod implements Method {
 
     private boolean determineIfIsObjectFactory(ExecutableElement executable) {
         boolean hasFactoryAnnotation = ObjectFactoryPrism.getInstanceOn( executable ) != null;
-        boolean isFactoryWithTargeTypeAnnotation = getTargetTypeParameter() != null && getSourceParameters().isEmpty();
-        return !returnType.isVoid()
-            && ( hasFactoryAnnotation || isFactoryWithTargeTypeAnnotation || parameters.isEmpty() );
+        boolean hasNoSourceParameters = getSourceParameters().isEmpty();
+        boolean hasNoMappingTargetParam = getMappingTargetParameter() == null;
+        return !isLifecycleCallbackMethod() && !returnType.isVoid()
+            && hasNoMappingTargetParam
+            && ( hasFactoryAnnotation || hasNoSourceParameters );
     }
 
     private Parameter determineMappingTargetParameter(Iterable<Parameter> parameters) {

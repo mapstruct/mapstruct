@@ -64,20 +64,17 @@ public class Node {
         attribute.setNode( this );
     }
 
-    @Override
-    public String toString() {
-        return "Node [name=" + name + "]";
-    }
-
     public static class Attribute {
         private Node node;
 
         private String name;
         private String value;
+        private int magicNumber;
 
-        public Attribute(String name, String value) {
+        public Attribute(String name, String value, int magicNumber) {
             this.name = name;
             this.value = value;
+            this.magicNumber = magicNumber;
         }
 
         public Node getNode() {
@@ -96,9 +93,8 @@ public class Node {
             return value;
         }
 
-        @Override
-        public String toString() {
-            return "Attribute [name=" + name + ", value=" + value + "]";
+        public int getMagicNumber() {
+            return magicNumber;
         }
     }
 }

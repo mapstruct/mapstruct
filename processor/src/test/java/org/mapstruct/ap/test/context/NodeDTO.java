@@ -72,16 +72,16 @@ public class NodeDTO {
         this.attributes = attributes;
     }
 
-    @Override
-    public String toString() {
-        return "NodeDTO [name=" + name + "]";
-    }
-
     public static class AttributeDTO {
         private NodeDTO node;
 
         private String name;
         private String value;
+        private int magicNumber;
+
+        public AttributeDTO(int magicNumber) {
+            this.magicNumber = magicNumber;
+        }
 
         public NodeDTO getNode() {
             return node;
@@ -107,9 +107,8 @@ public class NodeDTO {
             this.value = value;
         }
 
-        @Override
-        public String toString() {
-            return "AttributeDTO [name=" + name + ", value=" + value + "]";
+        public int getMagicNumber() {
+            return magicNumber;
         }
     }
 }

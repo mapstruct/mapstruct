@@ -23,15 +23,21 @@ import org.mapstruct.Context;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.TargetType;
+import org.mapstruct.ap.test.context.Node.Attribute;
+import org.mapstruct.ap.test.context.NodeDTO.AttributeDTO;
 
 /**
  * @author Andreas Gudian
  */
 public class CycleContextLifecycleMethods {
 
-    @ObjectFactory
     public NodeDTO createNodeDTO(@Context FactoryContext context) {
         return context.createNode();
+    }
+
+    @ObjectFactory
+    public AttributeDTO createAttributeDTO(Attribute source, @Context FactoryContext context) {
+        return context.createAttributeDTO( source );
     }
 
     @BeforeMapping
