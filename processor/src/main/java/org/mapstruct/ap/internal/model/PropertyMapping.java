@@ -366,7 +366,7 @@ public class PropertyMapping extends ModelElement {
             Assignment result = rightHandSide;
 
             if ( result.getSourceType().isCollectionType() ) {
-                result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment() );
+                result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment(), targetPropertyName );
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.
@@ -508,7 +508,7 @@ public class PropertyMapping extends ModelElement {
                 );
 
                 // create a local variable to which forged method can be assigned.
-                String desiredName = first( sourceReference.getPropertyEntries() ).getName();
+                String desiredName = last( sourceReference.getPropertyEntries() ).getName();
                 sourceRhs.setSourceLocalVarName( sourceRhs.createLocalVarName( desiredName ) );
 
                 return sourceRhs;

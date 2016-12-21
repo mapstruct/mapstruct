@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.Nouns;
 
 /**
  * Wraps the assignment in a target setter.
@@ -34,10 +35,13 @@ public class AdderWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
 
-    public AdderWrapper( Assignment rhs, List<Type> thrownTypesToExclude, boolean fieldAssignment ) {
+    public AdderWrapper( Assignment rhs,
+                         List<Type> thrownTypesToExclude,
+                         boolean fieldAssignment,
+                         String targetPropertyName ) {
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
-        String desiredName = rhs.getSourceType().getTypeParameters().get( 0 ).getName();
+        String desiredName = Nouns.singularize( targetPropertyName );
         rhs.setSourceLocalVarName( rhs.createLocalVarName( desiredName ) );
     }
 
