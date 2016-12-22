@@ -115,8 +115,8 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 36,
-                messageRegExp = "Can't map .*AttributedString to .*String. " +
-                    "Consider to implement a mapping method: \".*String map(.*AttributedString value)")
+                messageRegExp = "Can't map Stream element .*AttributedString attributedString\" to .*String string\"." +
+                        " Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToStream() {
@@ -130,8 +130,8 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousListToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 37,
-                messageRegExp = "Can't map .*AttributedString to .*String. " +
-                    "Consider to implement a mapping method: \".*String map(.*AttributedString value)")
+                messageRegExp = "Can't map .*AttributedString attributedString\" to .*String string\". " +
+                    "Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
         }
     )
     public void shouldFailOnNoElementMappingFoundForListToStream() {
@@ -145,8 +145,8 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToListNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 37,
-                messageRegExp = "Can't map .*AttributedString to .*String. " +
-                    "Consider to implement a mapping method: \".*String map(.*AttributedString value)")
+                messageRegExp = "Can't map Stream element .*AttributedString attributedString\" to .*String string\"." +
+                        " Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToList() {

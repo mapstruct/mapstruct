@@ -168,10 +168,10 @@ public class ConversionTest {
             @Diagnostic(type = ErroneousSourceTargetMapper6.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
-                messageRegExp = "Can't map property \"org.mapstruct.ap.test.selection.generics.WildCardSuperWrapper"
-                    + "<java.lang.String> foo\" to"
-                    + " \"org.mapstruct.ap.test.selection.generics.WildCardSuperWrapper" +
-                    "<org.mapstruct.ap.test.selection.generics.TypeA> foo\"")
+                messageRegExp = "Can't map property \"java.lang.String "
+                    + "foo\\.wrapped\" to"
+                    + " \"org.mapstruct.ap.test.selection.generics.TypeA " +
+                    "foo\\.wrapped\"")
         })
     public void shouldFailOnNonMatchingWildCards() {
     }

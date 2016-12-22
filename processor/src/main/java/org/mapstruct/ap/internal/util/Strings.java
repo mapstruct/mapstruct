@@ -178,6 +178,17 @@ public class Strings {
     }
 
     /**
+     * Returns a stub property name from full class name by stripping away the package and decapitalizing the name
+     * For example will return {@code fooBar} for {@code com.foo.bar.baz.FooBar} class name
+     *
+     * @param fullyQualifiedName fully qualified class name, such as com.foo.bar.baz.FooBar
+     * @return stup property name, such as fooBar
+     */
+    public static String stubPropertyName(String fullyQualifiedName) {
+        return Strings.decapitalize( fullyQualifiedName.substring( fullyQualifiedName.lastIndexOf( '.' ) + 1 ) );
+    }
+
+    /**
      * It removes the dots from the name and creates an {@link Iterable} from them.
      *
      * E.q. for the name {@code props.font} it will return an {@link Iterable} containing the {@code props} and

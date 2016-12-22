@@ -100,7 +100,7 @@ public class CollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNonMappableSetMapper.class,
                 kind = Kind.ERROR,
                 line = 30,
-                messageRegExp = "Can't map property \".* nonMappableSet\" to \".* nonMappableSet\". "
+                messageRegExp = "Can't map Collection element \".* nonMappableSet\" to \".* nonMappableSet\". "
                     + "Consider to declare/implement a mapping method: .*."),
         }
     )
@@ -120,7 +120,7 @@ public class CollectionMappingTest {
             @Diagnostic(type = ErroneousCollectionNonMappableMapMapper.class,
                 kind = Kind.ERROR,
                 line = 30,
-                messageRegExp = "Can't map property \".* nonMappableMap\" to \".* nonMappableMap\". "
+                messageRegExp = "Can't map Map key \".* nonMappableMap\\{:key\\}\" to \".* nonMappableMap\\{:key\\}\". "
                     + "Consider to declare/implement a mapping method: .*."),
         }
     )

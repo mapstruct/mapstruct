@@ -185,7 +185,14 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             method.getMapperConfiguration(),
             method.getExecutable(),
             method.getContextParameters(),
-            forgedMethodHistory
+            new ForgedMethodHistory( forgedMethodHistory,
+                Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),
+                Strings.stubPropertyName( targetType.getName() ),
+                sourceRHS.getSourceType(),
+                targetType,
+                false,
+                sourceRHS.getSourceErrorMessagePart()
+            )
         );
 
         Assignment assignment = new MethodReference(

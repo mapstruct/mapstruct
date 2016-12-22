@@ -554,7 +554,7 @@ public class PropertyMapping extends ModelElement {
         private Assignment forgeWithElementMapping(Type sourceType, Type targetType, SourceRHS source,
             ExecutableElement element, ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder) {
 
-            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element );
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element, "[]" );
 
             ContainerMappingMethod iterableMappingMethod = builder
                 .mappingContext( ctx )
@@ -591,7 +591,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source,
-                                                 ExecutableElement element) {
+                                                 ExecutableElement element, String suffix) {
             String name = getName( sourceType, targetType );
             name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
@@ -604,19 +604,14 @@ public class PropertyMapping extends ModelElement {
                 config,
                 element,
                 method.getContextParameters(),
-                new ForgedMethodHistory( getForgedMethodHistory( source ),
-                    source.getSourceErrorMessagePart(),
-                    targetPropertyName,
-                    source.getSourceType(),
-                    targetType
-                )
+                getForgedMethodHistory( source, suffix )
             );
         }
 
         private Assignment forgeMapMapping(Type sourceType, Type targetType, SourceRHS source,
                                            ExecutableElement element) {
 
-            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element );
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element, "{}" );
 
             MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
             MapMappingMethod mapMappingMethod = builder
@@ -669,13 +664,17 @@ public class PropertyMapping extends ModelElement {
         }
 
         private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS) {
+            return getForgedMethodHistory( sourceRHS, "" );
+        }
+
+        private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS, String suffix) {
             ForgedMethodHistory history = null;
             if ( method instanceof ForgedMethod ) {
                 ForgedMethod method = (ForgedMethod) this.method;
                 history = method.getHistory();
             }
-            return new ForgedMethodHistory( history, sourceRHS.getSourceErrorMessagePart(),
-                targetPropertyName, sourceRHS.getSourceType(), targetType
+            return new ForgedMethodHistory( history, getSourceElementName() + suffix,
+                targetPropertyName + suffix, sourceRHS.getSourceType(), targetType, true, "property"
             );
         }
 
@@ -694,6 +693,20 @@ public class PropertyMapping extends ModelElement {
             return builder.toString();
         }
 
+        private String getSourceElementName() {
+            Parameter sourceParam = sourceReference.getParameter();
+            List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
+            if ( propertyEntries.isEmpty() ) {
+                return sourceParam.getName();
+            }
+            else if ( propertyEntries.size() == 1 ) {
+                PropertyEntry propertyEntry = propertyEntries.get( 0 );
+                return propertyEntry.getName();
+            }
+            else {
+                return Strings.join( sourceReference.getElementNames(), "." );
+            }
+        }
     }
 
     public static class ConstantMappingBuilder extends MappingBuilderBase<ConstantMappingBuilder> {
