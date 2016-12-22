@@ -62,7 +62,7 @@ public class TypeSelector implements MethodSelector {
             availableBindings = getAvailableParameterBindingsFromMethod( mappingMethod );
         }
         else {
-            availableBindings = getAvailableParameterBindingsFromSourceTypes( sourceTypes, targetType );
+            availableBindings = getAvailableParameterBindingsFromSourceTypes( sourceTypes, targetType, mappingMethod );
         }
 
         for ( SelectedMethod<T> method : methods ) {
@@ -91,7 +91,7 @@ public class TypeSelector implements MethodSelector {
     }
 
     private List<ParameterBinding> getAvailableParameterBindingsFromSourceTypes(List<Type> sourceTypes,
-            Type targetType) {
+            Type targetType, Method mappingMethod) {
 
         List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( sourceTypes.size() + 2 );
 
@@ -99,6 +99,12 @@ public class TypeSelector implements MethodSelector {
 
         for ( Type sourceType : sourceTypes ) {
             availableParams.add( ParameterBinding.forSourceTypeBinding( sourceType ) );
+        }
+
+        for ( Parameter param : mappingMethod.getParameters() ) {
+            if ( param.isMappingContext() ) {
+                availableParams.add( ParameterBinding.fromParameter( param ) );
+            }
         }
 
         return availableParams;
@@ -185,7 +191,8 @@ public class TypeSelector implements MethodSelector {
 
         for ( ParameterBinding candidate : candidateParameters ) {
             if ( parameter.isTargetType() == candidate.isTargetType()
-                && parameter.isMappingTarget() == candidate.isMappingTarget() ) {
+                && parameter.isMappingTarget() == candidate.isMappingTarget()
+                && parameter.isMappingContext() == candidate.isMappingContext() ) {
                 result.add( candidate );
             }
         }

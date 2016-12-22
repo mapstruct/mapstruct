@@ -70,15 +70,23 @@ public interface Method {
     List<Parameter> getParameters();
 
     /**
-     * returns the list of 'true' source parameters excluding the parameter(s) that is designated as
-     * target by means of the target annotation {@link  #getMappingTargetParameter() }.
+     * returns the list of 'true' source parameters excluding the parameter(s) that are designated as target, target
+     * type or context parameter.
      *
      * @return list of 'true' source parameters
      */
     List<Parameter> getSourceParameters();
 
     /**
-     * Returns the parameter designated as mapping target (if present) {@link  org.mapstruct.MappingTarget }
+     * returns the list of mapping context parameters, i.e. those parameters that are annotated with
+     * {@link org.mapstruct.Context}.
+     *
+     * @return list of context parameters
+     */
+    List<Parameter> getContextParameters();
+
+    /**
+     * Returns the parameter designated as mapping target (if present) {@link org.mapstruct.MappingTarget}
      *
      * @return mapping target parameter (when present) null otherwise.
      */

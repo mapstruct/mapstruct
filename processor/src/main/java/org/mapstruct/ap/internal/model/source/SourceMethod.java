@@ -69,7 +69,8 @@ public class SourceMethod implements Method {
     private final List<SourceMethod> prototypeMethods;
     private final Type mapperToImplement;
 
-    private List<Parameter> sourceParameters;
+    private final List<Parameter> sourceParameters;
+    private final List<Parameter> contextParameters;
 
     private List<String> parameterNames;
 
@@ -99,9 +100,6 @@ public class SourceMethod implements Method {
         private MapperConfiguration mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
         private List<ValueMapping> valueMappings;
-
-        public Builder() {
-        }
 
         public Builder setDeclaringMapper(Type declaringMapper) {
             this.declaringMapper = declaringMapper;
@@ -226,6 +224,9 @@ public class SourceMethod implements Method {
 
         this.mappingOptions = mappingOptions;
 
+        this.sourceParameters = Parameter.getSourceParameters( parameters );
+        this.contextParameters = Parameter.getContextParameters( parameters );
+
         this.mappingTargetParameter = determineMappingTargetParameter( parameters );
         this.targetTypeParameter = determineTargetTypeParameter( parameters );
         this.isObjectFactory = determineIfIsObjectFactory( executable );
@@ -239,9 +240,11 @@ public class SourceMethod implements Method {
 
     private boolean determineIfIsObjectFactory(ExecutableElement executable) {
         boolean hasFactoryAnnotation = ObjectFactoryPrism.getInstanceOn( executable ) != null;
-        boolean isFactoryWithTargeTypeAnnotation = getTargetTypeParameter() != null && getSourceParameters().isEmpty();
-        return !returnType.isVoid()
-            && ( hasFactoryAnnotation || isFactoryWithTargeTypeAnnotation || parameters.isEmpty() );
+        boolean hasNoSourceParameters = getSourceParameters().isEmpty();
+        boolean hasNoMappingTargetParam = getMappingTargetParameter() == null;
+        return !isLifecycleCallbackMethod() && !returnType.isVoid()
+            && hasNoMappingTargetParam
+            && ( hasFactoryAnnotation || hasNoSourceParameters );
     }
 
     private Parameter determineMappingTargetParameter(Iterable<Parameter> parameters) {
@@ -264,9 +267,6 @@ public class SourceMethod implements Method {
         return null;
     }
 
-    /**
-     * {@inheritDoc} {@link Method}
-     */
     @Override
     public Type getDeclaringMapper() {
         return declaringMapper;
@@ -277,38 +277,24 @@ public class SourceMethod implements Method {
         return executable;
     }
 
-    /**
-     * {@inheritDoc} {@link Method}
-     */
     @Override
     public String getName() {
         return executable.getSimpleName().toString();
     }
 
-    /**
-     * {@inheritDoc} {@link Method}
-     */
     @Override
     public List<Parameter> getParameters() {
         return parameters;
     }
 
-    /**
-     * {@inheritDoc} {@link Method}
-     */
     @Override
     public List<Parameter> getSourceParameters() {
-        if ( sourceParameters == null ) {
-            sourceParameters = new ArrayList<Parameter>();
-
-            for ( Parameter parameter : parameters ) {
-                if ( !parameter.isMappingTarget() && !parameter.isTargetType() ) {
-                    sourceParameters.add( parameter );
-                }
-            }
-        }
-
         return sourceParameters;
+    }
+
+    @Override
+    public List<Parameter> getContextParameters() {
+        return contextParameters;
     }
 
     @Override
@@ -331,9 +317,6 @@ public class SourceMethod implements Method {
         return mappingTargetParameter != null ? mappingTargetParameter.getType() : returnType;
     }
 
-    /**
-     * {@inheritDoc} {@link Method}
-     */
     @Override
     public Type getReturnType() {
         return returnType;
@@ -544,9 +527,6 @@ public class SourceMethod implements Method {
         return declaringMapper == null && executable.getModifiers().contains( Modifier.ABSTRACT );
     }
 
-    /**
-     * {@inheritDoc} {@link Method}
-     */
     @Override
     public boolean matches(List<Type> sourceTypes, Type targetType) {
         MethodMatcher matcher = new MethodMatcher( typeUtils, typeFactory, this );
@@ -614,5 +594,4 @@ public class SourceMethod implements Method {
     public boolean isUpdateMethod() {
         return getMappingTargetParameter() != null;
     }
-
 }

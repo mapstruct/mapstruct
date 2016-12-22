@@ -43,7 +43,8 @@ import org.mapstruct.ap.internal.model.source.Method;
 public abstract class MappingMethod extends ModelElement {
 
     private final String name;
-    private List<Parameter> parameters;
+    private final List<Parameter> parameters;
+    private final List<Parameter> sourceParameters;
     private final Type returnType;
     private final Parameter targetParameter;
     private final Accessibility accessibility;
@@ -77,6 +78,7 @@ public abstract class MappingMethod extends ModelElement {
                             List<ForgedMethod> forgedMethods) {
         this.name = method.getName();
         this.parameters = parameters;
+        this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.returnType = method.getReturnType();
         this.targetParameter = method.getMappingTargetParameter();
         this.accessibility = method.getAccessibility();
@@ -144,14 +146,6 @@ public abstract class MappingMethod extends ModelElement {
     }
 
     public List<Parameter> getSourceParameters() {
-        List<Parameter> sourceParameters = new ArrayList<Parameter>();
-
-        for ( Parameter parameter : parameters ) {
-            if ( !parameter.isMappingTarget() ) {
-                sourceParameters.add( parameter );
-            }
-        }
-
         return sourceParameters;
     }
 

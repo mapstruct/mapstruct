@@ -189,6 +189,7 @@ public class IterableMappingMethod extends MappingMethod {
                 targetType,
                 method.getMapperConfiguration(),
                 method.getExecutable(),
+                method.getContextParameters(),
                 forgedMethodHistory
             );
 
@@ -238,7 +239,7 @@ public class IterableMappingMethod extends MappingMethod {
 
     public Parameter getSourceParameter() {
         for ( Parameter parameter : getParameters() ) {
-            if ( !parameter.isMappingTarget() ) {
+            if ( !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
                 return parameter;
             }
         }

@@ -23,8 +23,10 @@ import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutabl
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -215,7 +217,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                           List<SourceMethod> prototypeMethods ) {
         Type returnType = typeFactory.getReturnType( methodType );
         List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
-        List<Parameter> sourceParameters = extractSourceParameters( parameters );
+        List<Parameter> sourceParameters = Parameter.getSourceParameters( parameters );
+        List<Parameter> contextParameters = Parameter.getContextParameters( parameters );
         Parameter targetParameter = extractTargetParameter( parameters );
         Type resultType = selectResultType( returnType, targetParameter );
 
@@ -223,6 +226,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             method,
             sourceParameters,
             targetParameter,
+            contextParameters,
             resultType,
             returnType,
             containsTargetTypeParameter
@@ -316,20 +320,17 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             if ( param.isMappingTarget() ) {
                 targetParameters++;
             }
-
-            if ( param.isTargetType() ) {
+            else if ( param.isTargetType() ) {
                 targetTypeParameters++;
             }
-
-            if ( !param.isMappingTarget() && !param.isTargetType() ) {
+            else if ( !param.isMappingContext() ) {
                 validSourceParameters++;
             }
         }
 
         return validSourceParameters == sourceParamCount
             && targetParameters <= targetParamCount
-            && targetTypeParameters <= 1
-            && parameters.size() == validSourceParameters + targetParameters + targetTypeParameters;
+            && targetTypeParameters <= 1;
     }
 
     private Parameter extractTargetParameter(List<Parameter> parameters) {
@@ -342,17 +343,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return null;
     }
 
-    private List<Parameter> extractSourceParameters(List<Parameter> parameters) {
-        List<Parameter> sourceParameters = new ArrayList<Parameter>( parameters.size() );
-        for ( Parameter param : parameters ) {
-            if ( !param.isMappingTarget() ) {
-                sourceParameters.add( param );
-            }
-        }
-
-        return sourceParameters;
-    }
-
     private Type selectResultType(Type returnType, Parameter targetParameter) {
         if ( null != targetParameter ) {
             return targetParameter.getType();
@@ -363,14 +353,16 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private boolean checkParameterAndReturnType(ExecutableElement method, List<Parameter> sourceParameters,
-                                                Parameter targetParameter, Type resultType, Type returnType,
+                                                Parameter targetParameter, List<Parameter> contextParameters,
+                                                Type resultType, Type returnType,
                                                 boolean containsTargetTypeParameter) {
         if ( sourceParameters.isEmpty() ) {
             messager.printMessage( method, Message.RETRIEVAL_NO_INPUT_ARGS );
             return false;
         }
 
-        if ( targetParameter != null && ( sourceParameters.size() + 1 != method.getParameters().size() ) ) {
+        if ( targetParameter != null
+            && ( sourceParameters.size() + contextParameters.size() + 1 != method.getParameters().size() ) ) {
             messager.printMessage( method, Message.RETRIEVAL_DUPLICATE_MAPPING_TARGETS );
             return false;
         }
@@ -389,6 +381,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         for ( Parameter sourceParameter : sourceParameters ) {
             if ( sourceParameter.getType().isTypeVar() ) {
                 messager.printMessage( method, Message.RETRIEVAL_TYPE_VAR_SOURCE );
+                return false;
+            }
+        }
+
+        Set<Type> contextParameterTypes = new HashSet<Type>();
+        for ( Parameter contextParameter : contextParameters ) {
+            if ( !contextParameterTypes.add( contextParameter.getType() ) ) {
+                messager.printMessage( method, Message.RETRIEVAL_CONTEXT_PARAMS_WITH_SAME_TYPE );
                 return false;
             }
         }

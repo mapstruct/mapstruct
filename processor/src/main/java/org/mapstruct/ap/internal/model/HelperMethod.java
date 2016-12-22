@@ -23,7 +23,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
+
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -44,8 +46,6 @@ import org.mapstruct.ap.internal.util.Strings;
  * @author Sjaak Derksen
  */
 public abstract class HelperMethod implements Method {
-
-
    /**
     * {@inheritDoc }
     *
@@ -82,6 +82,11 @@ public abstract class HelperMethod implements Method {
     @Override
     public List<Parameter> getSourceParameters() {
         return getParameters();
+    }
+
+    @Override
+    public List<Parameter> getContextParameters() {
+        return Collections.emptyList();
     }
 
     /**

@@ -37,7 +37,9 @@
                 <#-- a class is passed on for casting, see @TargetType -->
                 <@includeModel object=ext.targetType raw=true/>.class<#t>
             <#elseif param.mappingTarget>
-                 ${ext.targetBeanName}<#if ext.targetReadAccessorName??>.${ext.targetReadAccessorName}</#if><#t>
+                ${ext.targetBeanName}<#if ext.targetReadAccessorName??>.${ext.targetReadAccessorName}</#if><#t>
+            <#elseif param.mappingContext>
+                ${param.variableName}<#t>
             <#elseif assignment??>
                 <@_assignment/><#t>
             <#else>

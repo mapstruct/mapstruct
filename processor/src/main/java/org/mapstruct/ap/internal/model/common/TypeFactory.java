@@ -36,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -52,8 +53,6 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.prism.MappingTargetPrism;
-import org.mapstruct.ap.internal.prism.TargetTypePrism;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
@@ -321,11 +320,7 @@ public class TypeFactory {
             VariableElement parameter = varIt.next();
             TypeMirror parameterType = typesIt.next();
 
-            result.add( new Parameter(
-                parameter.getSimpleName().toString(),
-                getType( parameterType ),
-                MappingTargetPrism.getInstanceOn( parameter ) != null,
-                TargetTypePrism.getInstanceOn( parameter ) != null ) );
+            result.add( Parameter.forElementAndType( parameter, getType( parameterType ) ) );
         }
 
         return result;

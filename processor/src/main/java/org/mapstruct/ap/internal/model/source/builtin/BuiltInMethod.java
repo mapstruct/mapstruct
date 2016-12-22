@@ -103,6 +103,11 @@ public abstract class BuiltInMethod implements Method {
         return getParameters();
     }
 
+    @Override
+    public List<Parameter> getContextParameters() {
+        return Collections.emptyList();
+    }
+
     /**
      * {@inheritDoc}
      * <p>
