@@ -39,7 +39,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @IssueKey("962")
 @RunWith(AnnotationProcessorTestRunner.class)
-public class StreamMappingTest {
+public class ForgedStreamMappingTest {
 
     @Test
     @WithClasses({ StreamMapper.class, Source.class, Target.class })

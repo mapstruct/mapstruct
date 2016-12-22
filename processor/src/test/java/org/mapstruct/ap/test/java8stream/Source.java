@@ -22,59 +22,59 @@ import java.util.stream.Stream;
 
 public class Source {
 
-    private Stream<String> stringList;
-    private Stream<String> stringArrayList;
+    private Stream<String> stringStream;
+    private Stream<String> stringArrayStream;
 
-    private Stream<String> stringSet;
+    private Stream<String> stringStreamToSet;
 
-    private Stream<Integer> integerList;
+    private Stream<Integer> integerStream;
 
-    private Stream<Integer> anotherIntegerSet;
+    private Stream<Integer> anotherIntegerStream;
 
     private Stream<Colour> colours;
 
-    private Stream<String> stringList2;
+    private Stream<String> stringStream2;
 
-    private Stream<String> stringList3;
+    private Stream<String> stringStream3;
 
-    public Stream<String> getStringList() {
-        return stringList;
+    public Stream<String> getStringStream() {
+        return stringStream;
     }
 
-    public void setStringList(Stream<String> stringList) {
-        this.stringList = stringList;
+    public void setStringStream(Stream<String> stringStream) {
+        this.stringStream = stringStream;
     }
 
-    public Stream<String> getStringArrayList() {
-        return stringArrayList;
+    public Stream<String> getStringArrayStream() {
+        return stringArrayStream;
     }
 
-    public void setStringArrayList(Stream<String> stringArrayList) {
-        this.stringArrayList = stringArrayList;
+    public void setStringArrayStream(Stream<String> stringArrayStream) {
+        this.stringArrayStream = stringArrayStream;
     }
 
-    public Stream<String> getStringSet() {
-        return stringSet;
+    public Stream<String> getStringStreamToSet() {
+        return stringStreamToSet;
     }
 
-    public void setStringSet(Stream<String> stringSet) {
-        this.stringSet = stringSet;
+    public void setStringStreamToSet(Stream<String> stringStreamToSet) {
+        this.stringStreamToSet = stringStreamToSet;
     }
 
-    public Stream<Integer> getIntegerList() {
-        return integerList;
+    public Stream<Integer> getIntegerStream() {
+        return integerStream;
     }
 
-    public void setIntegerList(Stream<Integer> integerList) {
-        this.integerList = integerList;
+    public void setIntegerStream(Stream<Integer> integerStream) {
+        this.integerStream = integerStream;
     }
 
-    public Stream<Integer> getAnotherIntegerSet() {
-        return anotherIntegerSet;
+    public Stream<Integer> getAnotherIntegerStream() {
+        return anotherIntegerStream;
     }
 
-    public void setAnotherIntegerSet(Stream<Integer> anotherIntegerSet) {
-        this.anotherIntegerSet = anotherIntegerSet;
+    public void setAnotherIntegerStream(Stream<Integer> anotherIntegerStream) {
+        this.anotherIntegerStream = anotherIntegerStream;
     }
 
     public Stream<Colour> getColours() {
@@ -85,19 +85,19 @@ public class Source {
         this.colours = colours;
     }
 
-    public Stream<String> getStringList2() {
-        return stringList2;
+    public Stream<String> getStringStream2() {
+        return stringStream2;
     }
 
-    public void setStringList2(Stream<String> stringList2) {
-        this.stringList2 = stringList2;
+    public void setStringStream2(Stream<String> stringStream2) {
+        this.stringStream2 = stringStream2;
     }
 
-    public Stream<String> getStringList3() {
-        return stringList3;
+    public Stream<String> getStringStream3() {
+        return stringStream3;
     }
 
-    public void setStringList3(Stream<String> stringList3) {
-        this.stringList3 = stringList3;
+    public void setStringStream3(Stream<String> stringStream3) {
+        this.stringStream3 = stringStream3;
     }
 }

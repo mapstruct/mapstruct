@@ -62,13 +62,13 @@ public class StreamMappingTest {
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getStringList() ).isNull();
+        assertThat( source.getStringStream() ).isNull();
     }
 
     @Test
     public void shouldMapList() {
         Source source = new Source();
-        source.setStringList( Arrays.asList( "Bob", "Alice" ).stream() );
+        source.setStringStream( Arrays.asList( "Bob", "Alice" ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -79,7 +79,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapListWithoutSetter() {
         Source source = new Source();
-        source.setStringList2( Arrays.asList( "Bob", "Alice" ).stream() );
+        source.setStringStream2( Arrays.asList( "Bob", "Alice" ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -95,13 +95,13 @@ public class StreamMappingTest {
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getStringList() ).containsExactly( "Bob", "Alice" );
+        assertThat( source.getStringStream() ).containsExactly( "Bob", "Alice" );
     }
 
     @Test
     public void shouldMapArrayList() {
         Source source = new Source();
-        source.setStringArrayList( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ).stream() );
+        source.setStringArrayStream( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -117,13 +117,13 @@ public class StreamMappingTest {
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getStringArrayList() ).containsExactly( "Bob", "Alice" );
+        assertThat( source.getStringArrayStream() ).containsExactly( "Bob", "Alice" );
     }
 
     @Test
     public void shouldMapSet() {
         Source source = new Source();
-        source.setStringSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ).stream() );
+        source.setStringStreamToSet( new HashSet<String>( Arrays.asList( "Bob", "Alice" ) ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -139,13 +139,13 @@ public class StreamMappingTest {
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getStringSet() ).contains( "Bob", "Alice" );
+        assertThat( source.getStringStreamToSet() ).contains( "Bob", "Alice" );
     }
 
     @Test
     public void shouldMapListToCollection() {
         Source source = new Source();
-        source.setIntegerList( Arrays.asList( 1, 2 ).stream() );
+        source.setIntegerStream( Arrays.asList( 1, 2 ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -161,13 +161,13 @@ public class StreamMappingTest {
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getIntegerList() ).containsOnly( 1, 2 );
+        assertThat( source.getIntegerStream() ).containsOnly( 1, 2 );
     }
 
     @Test
     public void shouldMapIntegerSetToStringSet() {
         Source source = new Source();
-        source.setAnotherIntegerSet( new HashSet<Integer>( Arrays.asList( 1, 2 ) ).stream() );
+        source.setAnotherIntegerStream( new HashSet<Integer>( Arrays.asList( 1, 2 ) ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -183,7 +183,7 @@ public class StreamMappingTest {
         Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getAnotherIntegerSet() ).containsOnly( 1, 2 );
+        assertThat( source.getAnotherIntegerStream() ).containsOnly( 1, 2 );
     }
 
     @Test
@@ -220,7 +220,7 @@ public class StreamMappingTest {
     @Test
     public void shouldMapNonGenericList() {
         Source source = new Source();
-        source.setStringList3( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ).stream() );
+        source.setStringStream3( new ArrayList<String>( Arrays.asList( "Bob", "Alice" ) ).stream() );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
@@ -239,6 +239,6 @@ public class StreamMappingTest {
         Source mappedSource = SourceTargetMapper.INSTANCE.targetToSource( newTarget );
 
         assertThat( mappedSource ).isNotNull();
-        assertThat( mappedSource.getStringList3() ).containsExactly( "Bill", "Bob" );
+        assertThat( mappedSource.getStringStream3() ).containsExactly( "Bill", "Bob" );
     }
 }
