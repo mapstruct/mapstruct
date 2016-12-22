@@ -23,6 +23,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
@@ -36,7 +40,6 @@ import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -118,22 +121,19 @@ public class StreamMappingMethod extends MappingMethod {
             );
 
             if ( assignment == null ) {
-
                 assignment = forgeMapping( sourceRHS, sourceElementType, targetElementType );
-
             }
             else {
                 if ( method instanceof ForgedMethod ) {
                     ForgedMethod forgedMethod = (ForgedMethod) method;
                     forgedMethod.addThrownTypes( assignment.getThrownTypes() );
-
                 }
             }
 
             assignment = new Java8FunctionWrapper(
                 assignment,
                 new ArrayList<Type>(),
-                ctx.getTypeFactory().getType( JavaStreamConstants.FUNCTION_FQN )
+                ctx.getTypeFactory().getType( Function.class )
             );
 
             // mapNullToDefault
@@ -165,12 +165,12 @@ public class StreamMappingMethod extends MappingMethod {
 
             Set<Type> helperImports = new HashSet<Type>();
             if ( resultType.isIterableType() ) {
-                helperImports.add( ctx.getTypeFactory().getType( JavaStreamConstants.COLLECTORS_FQN ) );
+                helperImports.add( ctx.getTypeFactory().getType( Collectors.class ) );
             }
 
             if ( !sourceParameterType.isCollectionType() && !sourceParameterType.isArrayType() &&
                 sourceParameterType.isIterableType() ) {
-                helperImports.add( ctx.getTypeFactory().getType( JavaStreamConstants.STREAM_SUPPORT_FQN ) );
+                helperImports.add( ctx.getTypeFactory().getType( StreamSupport.class ) );
             }
 
             return new StreamMappingMethod(
@@ -188,7 +188,6 @@ public class StreamMappingMethod extends MappingMethod {
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, Type targetType) {
-
             ForgedMethodHistory forgedMethodHistory = null;
             if ( method instanceof ForgedMethod ) {
                 forgedMethodHistory = ( (ForgedMethod) method ).getHistory();
@@ -394,11 +393,9 @@ public class StreamMappingMethod extends MappingMethod {
             return first( parameterType.determineTypeArguments( Iterable.class ) ).getTypeBound();
         }
         else if ( parameterType.isStreamType() ) {
-            return first( parameterType.determineTypeArguments( JavaStreamConstants.STREAM_FQN ) ).getTypeBound();
+            return first( parameterType.determineTypeArguments( Stream.class ) ).getTypeBound();
         }
 
         throw new IllegalArgumentException( "Could not get the element type" );
-
     }
-
 }

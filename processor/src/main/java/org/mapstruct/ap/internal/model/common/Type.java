@@ -862,27 +862,14 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return a list of type arguments or null, if superclass was not found
      */
     public List<Type> determineTypeArguments(Class<?> superclass) {
-        return determineTypeArguments( superclass.getName() );
-    }
-
-    /**
-     * Searches for the given superclass and collects all type arguments for the given className.
-     * This is used for support with Java 8 streams, as must use the FQN in order to be able to compile
-     * with Java 6.
-     *
-     * @param superClassName the superclass or interface the generic type arguments are searched for
-     * @return a list of type arguments or null, if superclass was not found
-     */
-
-    public List<Type> determineTypeArguments(String superClassName) {
-        if ( qualifiedName.equals( superClassName ) ) {
+        if ( qualifiedName.equals( superclass.getName() ) ) {
             return getTypeParameters();
         }
 
         List<? extends TypeMirror> directSupertypes = typeUtils.directSupertypes( typeMirror );
         for ( TypeMirror supertypemirror : directSupertypes ) {
             Type supertype = typeFactory.getType( supertypemirror );
-            List<Type> supertypeTypeArguments = supertype.determineTypeArguments( superClassName );
+            List<Type> supertypeTypeArguments = supertype.determineTypeArguments( superclass );
             if ( supertypeTypeArguments != null ) {
                 return supertypeTypeArguments;
             }
