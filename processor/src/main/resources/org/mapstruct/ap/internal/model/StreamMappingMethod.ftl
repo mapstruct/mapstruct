@@ -90,18 +90,18 @@
     <#if resultType.arrayType>
         <#if existingInstanceMapping>
         int ${index1Name} = 0;
-        for ( <@includeModel object=resultElementType/> ${loopVariableName} : ${sourceParameter.name}.limit( ${resultName}.length ).map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> ).toArray( ${resultElementType}[]::new ) ) {
+        for ( <@includeModel object=resultElementType/> ${loopVariableName} : ${sourceParameter.name}.limit( ${resultName}.length )<@streamMapSupplier />.toArray( ${resultElementType}[]::new ) ) {
             if ( ( ${index1Name} >= ${resultName}.length ) ) {
                 break;
             }
             ${resultName}[${index1Name}++] = ${loopVariableName};
         }
         <#else>
-        ${resultName} = ${sourceParameter.name}.map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
+        ${resultName} = ${sourceParameter.name}<@streamMapSupplier />
                         .toArray( <@includeModel object=resultElementType/>[]::new );
         </#if>
     <#elseif resultType.iterableType>
-        ${resultName}.addAll( ${sourceParameter.name}.map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
+        ${resultName}.addAll( ${sourceParameter.name}<@streamMapSupplier />
                                 .collect( Collectors.toCollection( <@iterableCollectionSupplier /> ) )
                             );
     <#else>
@@ -110,16 +110,13 @@
             <#--TODO fhr: after the the result is no longer the same instance, how does it affect the
                 Before mapping methods. Does it even make sense to have before mapping on a stream? -->
             <#if sourceParameter.type.arrayType>
-                ${resultName} = Stream.of( ${sourceParameter.name} )
-                                    .map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> );
+                ${resultName} = Stream.of( ${sourceParameter.name} )<@streamMapSupplier />;
             <#elseif sourceParameter.type.collectionType>
-                ${resultName} = ${sourceParameter.name}.stream()
-                                    .map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> );
+                ${resultName} = ${sourceParameter.name}.stream()<@streamMapSupplier />;
             <#elseif sourceParameter.type.iterableType>
-                ${resultName} = StreamSupport.stream( ${sourceParameter.name}.spliterator(), false )
-                                    .map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> );
+                ${resultName} = StreamSupport.stream( ${sourceParameter.name}.spliterator(), false )<@streamMapSupplier />;
             <#else>
-                ${resultName} = ${sourceParameter.name}.map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> );
+                ${resultName} = ${sourceParameter.name}<@streamMapSupplier />;
             </#if>
         </#if>
 
@@ -182,5 +179,12 @@
             <@includeModel object=resultType.implementationType/>
         <#else>
             <@includeModel object=resultType/></#if>::new
+    </@compress>
+</#macro>
+<#macro streamMapSupplier>
+    <@compress>
+        <#if !elementAssignment.directAssignment?? || !elementAssignment.directAssignment>
+            .map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
+        </#if>
     </@compress>
 </#macro>

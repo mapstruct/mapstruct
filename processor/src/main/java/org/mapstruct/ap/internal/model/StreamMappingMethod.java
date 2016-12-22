@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -130,11 +129,7 @@ public class StreamMappingMethod extends MappingMethod {
                 }
             }
 
-            assignment = new Java8FunctionWrapper(
-                assignment,
-                new ArrayList<Type>(),
-                ctx.getTypeFactory().getType( Function.class )
-            );
+            assignment = new Java8FunctionWrapper( assignment );
 
             // mapNullToDefault
             boolean mapNullToDefault = false;

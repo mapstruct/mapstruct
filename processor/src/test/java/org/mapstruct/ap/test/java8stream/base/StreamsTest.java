@@ -18,19 +18,21 @@
  */
 package org.mapstruct.ap.test.java8stream.base;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Filip Hrisafov
@@ -46,6 +48,17 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     SourceElement.class
 })
 public class StreamsTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource();
+
+    @Test
+    public void shouldNotContainFunctionIdentity() throws Exception {
+        generatedSource.forMapper( StreamMapper.class )
+            .content()
+            .as( "The Mapper implementation should not use Function.identity()" )
+            .doesNotContain( "Function.identity()" );
+    }
 
     @Test
     public void shouldMapSourceStream() throws Exception {

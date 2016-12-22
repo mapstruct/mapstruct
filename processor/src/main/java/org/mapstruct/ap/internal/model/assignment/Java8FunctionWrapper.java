@@ -18,9 +18,7 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
@@ -32,33 +30,21 @@ import org.mapstruct.ap.internal.model.common.Type;
  */
 public class Java8FunctionWrapper extends AssignmentWrapper {
 
-    private final List<Type> thrownTypesToExclude;
     private final Type functionType;
 
-    public Java8FunctionWrapper(Assignment decoratedAssignment, List<Type> thrownTypesToExclude, Type functionType) {
-        super( decoratedAssignment, false );
-        this.thrownTypesToExclude = thrownTypesToExclude;
-        this.functionType = functionType;
+    public Java8FunctionWrapper(Assignment decoratedAssignment) {
+        this( decoratedAssignment, null );
     }
 
-    @Override
-    public List<Type> getThrownTypes() {
-        List<Type> parentThrownTypes = super.getThrownTypes();
-        List<Type> result = new ArrayList<Type>( parentThrownTypes );
-        for ( Type thrownTypeToExclude : thrownTypesToExclude ) {
-            for ( Type parentThrownType : parentThrownTypes ) {
-                if ( parentThrownType.isAssignableTo( thrownTypeToExclude ) ) {
-                    result.remove( parentThrownType );
-                }
-            }
-        }
-        return result;
+    public Java8FunctionWrapper(Assignment decoratedAssignment, Type functionType) {
+        super( decoratedAssignment, false );
+        this.functionType = functionType;
     }
 
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>( super.getImportTypes() );
-        if ( isDirectAssignment() ) {
+        if ( isDirectAssignment() && functionType != null ) {
             imported.add( functionType );
         }
         return imported;
