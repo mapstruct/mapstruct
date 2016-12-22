@@ -32,8 +32,8 @@ public interface AutomappingNodeMapperWithContext {
     AutomappingNodeMapperWithContext INSTANCE =
         Mappers.getMapper( AutomappingNodeMapperWithContext.class );
 
-    NodeDTO nodeToNodeDTO(Node node, @Context CycleContext cycleContext, @Context FactoryContext factoryContext);
+    NodeDto nodeToNodeDTO(Node node, @Context CycleContext cycleContext, @Context FactoryContext factoryContext);
 
-    void nodeToNodeDTO(Node node, @MappingTarget NodeDTO nodeDto, @Context CycleContext cycleContext,
+    void nodeToNodeDTO(Node node, @MappingTarget NodeDto nodeDto, @Context CycleContext cycleContext,
             @Context FactoryContext factoryContext);
 }

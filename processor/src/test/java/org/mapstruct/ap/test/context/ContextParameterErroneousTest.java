@@ -42,7 +42,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @IssueKey("975")
 @WithClasses({
     Node.class,
-    NodeDTO.class,
+    NodeDto.class,
     CycleContext.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class ContextParameterErroneousTest {

@@ -36,11 +36,16 @@ import java.lang.annotation.Target;
  *
  * <pre>
  * <code>
- * public abstract CarDto toCar(Car car, &#64;Context MyMappingContext context);
+ * // multiple &#64;Context parameters can be added
+ * public abstract CarDto toCar(Car car, &#64;Context VehicleRegistration context, &#64;Context Locale localeToUse);
+ *
+ * protected OwnerManualDto translateOwnerManual(OwnerManual ownerManual, &#64;Context Locale locale) {
+ *     // manually implemented logic to translate the OwnerManual with the given Locale
+ * }
  *
  * &#64;BeforeMapping
- * protected void registerVehicle(Vehicle mappedVehicle, &#64;Context MyMappingContext context) {
- *     context.doSomethingWithTheVehicle( mappedVehicle );
+ * protected void registerVehicle(Vehicle mappedVehicle, &#64;Context VehicleRegistration context) {
+ *     context.register( mappedVehicle );
  * }
  *
  * &#64;BeforeMapping
@@ -50,12 +55,13 @@ import java.lang.annotation.Target;
  *
  * &#64;BeforeMapping
  * protected void notCalled(Vehicle mappedVehicle, &#64;Context DifferentMappingContextType context) {
- *     // not called, because DifferentMappingContextType is not available within toCar(Car, MyMappingContext)
+ *     // not called, because DifferentMappingContextType is not available
+ *     // within toCar(Car, VehicleRegistration, Locale)
  * }
  *
  * // generates:
  *
- * public CarDto toCar(Car car, MyMappingContext context) {
+ * public CarDto toCar(Car car, VehicleRegistration context, Locale localeToUse) {
  *     registerVehicle( car, context );
  *     logMappedVehicle( car );
  *
@@ -65,7 +71,8 @@ import java.lang.annotation.Target;
  *
  *     CarDto carDto = new CarDto();
  *
- *     // actual mapping code
+ *     carDto.setOwnerManual( translateOwnerManual( car.getOwnerManual(), localeToUse );
+ *     // more generated mapping code
  *
  *     return carDto;
  * }
@@ -73,6 +80,7 @@ import java.lang.annotation.Target;
  * </pre>
  *
  * @author Andreas Gudian
+ * @since 1.2
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.CLASS)

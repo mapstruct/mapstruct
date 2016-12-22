@@ -24,19 +24,19 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.TargetType;
 import org.mapstruct.ap.test.context.Node.Attribute;
-import org.mapstruct.ap.test.context.NodeDTO.AttributeDTO;
+import org.mapstruct.ap.test.context.NodeDto.AttributeDto;
 
 /**
  * @author Andreas Gudian
  */
 public class CycleContextLifecycleMethods {
 
-    public NodeDTO createNodeDTO(@Context FactoryContext context) {
+    public NodeDto createNodeDTO(@Context FactoryContext context) {
         return context.createNode();
     }
 
     @ObjectFactory
-    public AttributeDTO createAttributeDTO(Attribute source, @Context FactoryContext context) {
+    public AttributeDto createAttributeDTO(Attribute source, @Context FactoryContext context) {
         return context.createAttributeDTO( source );
     }
 

@@ -23,24 +23,24 @@ import java.util.List;
 /**
  * @author Andreas Gudian
  */
-public class NodeDTO {
-    private NodeDTO parent;
+public class NodeDto {
+    private NodeDto parent;
 
     private int id;
     private String name;
 
-    private List<NodeDTO> children;
-    private List<AttributeDTO> attributes;
+    private List<NodeDto> children;
+    private List<AttributeDto> attributes;
 
-    public NodeDTO(int id) {
+    public NodeDto(int id) {
         this.id = id;
     }
 
-    public NodeDTO getParent() {
+    public NodeDto getParent() {
         return parent;
     }
 
-    public void setParent(NodeDTO parent) {
+    public void setParent(NodeDto parent) {
         this.parent = parent;
     }
 
@@ -56,38 +56,38 @@ public class NodeDTO {
         this.name = name;
     }
 
-    public List<NodeDTO> getChildren() {
+    public List<NodeDto> getChildren() {
         return children;
     }
 
-    public void setChildren(List<NodeDTO> children) {
+    public void setChildren(List<NodeDto> children) {
         this.children = children;
     }
 
-    public List<AttributeDTO> getAttributes() {
+    public List<AttributeDto> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(List<AttributeDTO> attributes) {
+    public void setAttributes(List<AttributeDto> attributes) {
         this.attributes = attributes;
     }
 
-    public static class AttributeDTO {
-        private NodeDTO node;
+    public static class AttributeDto {
+        private NodeDto node;
 
         private String name;
         private String value;
         private int magicNumber;
 
-        public AttributeDTO(int magicNumber) {
+        public AttributeDto(int magicNumber) {
             this.magicNumber = magicNumber;
         }
 
-        public NodeDTO getNode() {
+        public NodeDto getNode() {
             return node;
         }
 
-        public void setNode(NodeDTO node) {
+        public void setNode(NodeDto node) {
             this.node = node;
         }
 

@@ -22,6 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.lang.model.element.VariableElement;
+
+import org.mapstruct.ap.internal.prism.ContextPrism;
+import org.mapstruct.ap.internal.prism.MappingTargetPrism;
+import org.mapstruct.ap.internal.prism.TargetTypePrism;
 import org.mapstruct.ap.internal.util.Collections;
 
 /**
@@ -38,7 +43,7 @@ public class Parameter extends ModelElement {
     private final boolean targetType;
     private final boolean mappingContext;
 
-    public Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext) {
+    private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext) {
         // issue #909: FreeMarker doesn't like "values" as a parameter name
         this.name = "values".equals( name ) ? "values_" : name;
         this.originalName = name;
@@ -109,6 +114,15 @@ public class Parameter extends ModelElement {
             return false;
         }
         return true;
+    }
+
+    public static Parameter forElementAndType(VariableElement element, Type parameterType) {
+        return new Parameter(
+            element.getSimpleName().toString(),
+            parameterType,
+            MappingTargetPrism.getInstanceOn( element ) != null,
+            TargetTypePrism.getInstanceOn( element ) != null,
+            ContextPrism.getInstanceOn( element ) != null );
     }
 
     /**

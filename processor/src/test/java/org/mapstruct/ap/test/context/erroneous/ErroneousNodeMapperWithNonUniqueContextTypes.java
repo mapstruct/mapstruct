@@ -22,7 +22,7 @@ import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.context.CycleContext;
 import org.mapstruct.ap.test.context.Node;
-import org.mapstruct.ap.test.context.NodeDTO;
+import org.mapstruct.ap.test.context.NodeDto;
 
 /**
  * @author Andreas Gudian
@@ -30,5 +30,5 @@ import org.mapstruct.ap.test.context.NodeDTO;
 @Mapper
 public interface ErroneousNodeMapperWithNonUniqueContextTypes {
 
-    NodeDTO nodeToNodeDTO(Node node, @Context CycleContext cycleContext, @Context CycleContext otherCycleContext);
+    NodeDto nodeToNodeDTO(Node node, @Context CycleContext cycleContext, @Context CycleContext otherCycleContext);
 }

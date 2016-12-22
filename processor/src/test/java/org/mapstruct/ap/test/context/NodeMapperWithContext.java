@@ -22,7 +22,7 @@ import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ap.test.context.Node.Attribute;
-import org.mapstruct.ap.test.context.NodeDTO.AttributeDTO;
+import org.mapstruct.ap.test.context.NodeDto.AttributeDto;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -32,14 +32,14 @@ import org.mapstruct.factory.Mappers;
 public interface NodeMapperWithContext {
     NodeMapperWithContext INSTANCE = Mappers.getMapper( NodeMapperWithContext.class );
 
-    NodeDTO nodeToNodeDTO(@Context FactoryContext factoryContext, Node node, @Context CycleContext cycleContext);
+    NodeDto nodeToNodeDTO(@Context FactoryContext factoryContext, Node node, @Context CycleContext cycleContext);
 
-    void nodeToNodeDTO(@Context FactoryContext factoryContext, Node node, @MappingTarget NodeDTO nodeDto,
+    void nodeToNodeDTO(@Context FactoryContext factoryContext, Node node, @MappingTarget NodeDto nodeDto,
             @Context CycleContext cycleContext);
 
-    AttributeDTO attributeToAttributeDTO(Attribute attribute, @Context CycleContext cycleContext,
+    AttributeDto attributeToAttributeDTO(Attribute attribute, @Context CycleContext cycleContext,
             @Context FactoryContext factoryContext);
 
-    void attributeToAttributeDTO(Attribute attribute, @MappingTarget AttributeDTO nodeDto,
+    void attributeToAttributeDTO(Attribute attribute, @MappingTarget AttributeDto nodeDto,
             @Context CycleContext cycleContext, @Context FactoryContext factoryContext);
 }
