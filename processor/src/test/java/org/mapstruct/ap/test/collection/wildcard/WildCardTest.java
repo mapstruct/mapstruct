@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -33,6 +34,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * Reproducer for https://github.com/mapstruct/mapstruct/issues/527.
@@ -42,6 +44,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @IssueKey("527")
 @RunWith(AnnotationProcessorTestRunner.class)
 public class WildCardTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource();
 
     @Test
     @WithClasses({
@@ -59,7 +64,10 @@ public class WildCardTest {
 
         assertThat( target ).isNotNull();
         assertThat( target.getElements() ).isNull();
-
+        generatedSource.forMapper( ExtendsBoundSourceTargetMapper.class )
+            .content()
+            .as( "Should not contain FQN after extends" )
+            .doesNotContain( "? extends org.mapstruct.ap.test.collection.wildcard.Idea" );
     }
 
     @Test
@@ -78,7 +86,10 @@ public class WildCardTest {
 
         assertThat( target ).isNotNull();
         assertThat( target.getElements() ).isNull();
-
+        generatedSource.forMapper( SourceSuperBoundTargetMapper.class )
+            .content()
+            .as( "Should not contain FQN after super" )
+            .doesNotContain( "? super org.mapstruct.ap.test.collection.wildcard.Idea" );
     }
 
     @Test

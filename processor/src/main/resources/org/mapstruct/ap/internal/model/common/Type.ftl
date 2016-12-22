@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.common.Type" -->
 <#--
 
      Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
@@ -18,4 +19,19 @@
      limitations under the License.
 
 -->
-<#if imported>${name}<#else>${fullyQualifiedName}</#if><#if (!ext.raw?? && typeParameters?size > 0) ><<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>></#if>
+<@compress single_line=true>
+    <#if wildCardExtendsBound>
+        ? extends <@includeModel object=typeBound />
+    <#elseif wildCardSuperBound>
+        ? super <@includeModel object=typeBound />
+    <#else>
+        <#if imported>
+            ${name}
+        <#else>
+            ${fullyQualifiedName}
+        </#if>
+    </#if>
+    <#if (!ext.raw?? && typeParameters?size > 0) >
+        <<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>>
+    </#if>
+</@compress>
