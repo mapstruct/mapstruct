@@ -33,13 +33,14 @@ public interface StreamWithContextMapper {
     StreamWithContextMapper INSTANCE = Mappers.getMapper( StreamWithContextMapper.class );
 
     Collection<String> streamToCollection(Stream<Integer> integerStream);
+
     Stream<Long> collectionToStream(Collection<Integer> integerCollection);
 
     String[] streamToArray(Stream<Integer> integerStream);
+
     Stream<Integer> arrayToStream(Integer[] integers);
 
     Stream<Integer> streamToStream(Stream<String> stringStream);
+
     Stream<String> intStreamToStringStream(Stream<Integer> integerStream);
-
-
 }

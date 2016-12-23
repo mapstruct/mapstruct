@@ -59,6 +59,6 @@ public class StreamWithContextTest {
         Collection<String> stringsStream = StreamWithContextMapper.INSTANCE.streamToCollection(
             Arrays.asList( 10, 20, 40 ).stream() );
 
-        assertThat( stringsStream ).containsOnly( "23", "10", "20", "40", "230");
+        assertThat( stringsStream ).containsOnly( "23", "10", "20", "40", "230" );
     }
 }
