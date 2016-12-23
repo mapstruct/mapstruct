@@ -61,21 +61,27 @@
         </#if>
     }
 
+    <#-- A variable needs to be defined if there are before mappings and this is not exisitingInstanceMapping -->
+    <#assign needVarDefine = beforeMappingReferencesWithMappingTarget?has_content && !existingInstanceMapping />
+
     <#if resultType.arrayType>
-        <#if !existingInstanceMapping>
+        <#if !existingInstanceMapping && needVarDefine>
+            <#assign needVarDefine = false />
             <#-- We create a null array which later will be directly assigned from the stream-->
             ${resultElementType}[] ${resultName} = null;
         </#if>
     <#elseif resultType.iterableType>
         <#if existingInstanceMapping>
             ${resultName}.clear();
-        <#else>
+        <#elseif needVarDefine>
+            <#assign needVarDefine = false />
             <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
             <@iterableLocalVarDef/> ${resultName} = <@iterableCreation/>;
         </#if>
     <#else>
         <#-- Streams are immutable so we can't update them -->
-        <#if !existingInstanceMapping>
+        <#if !existingInstanceMapping && needVarDefine>
+            <#assign needVarDefine = false />
             <@iterableLocalVarDef/> ${resultName} = Stream.empty();
         </#if>
     </#if>
@@ -87,6 +93,10 @@
         </#if>
     </#list>
 
+    <#-- If there are no after mappings, no variable was created before i.e. no before mappings
+        and this is not an existingInstanceMapping then we can return immediatelly -->
+    <#assign canReturnImmediatelly = !afterMappingReferences?has_content && !needVarDefine && !existingInstanceMapping/>
+
     <#if resultType.arrayType>
         <#if existingInstanceMapping>
         int ${index1Name} = 0;
@@ -97,32 +107,39 @@
             ${resultName}[${index1Name}++] = ${loopVariableName};
         }
         <#else>
-        ${resultName} = ${sourceParameter.name}<@streamMapSupplier />
+            <#if canReturnImmediatelly><#if returnType.name != "void">return </#if><#else> <#if needVarDefine>${resultElementType}[] <#else>${resultName} = </#if></#if>${sourceParameter.name}<@streamMapSupplier />
                         .toArray( <@includeModel object=resultElementType/>[]::new );
         </#if>
     <#elseif resultType.iterableType>
-        ${resultName}.addAll( ${sourceParameter.name}<@streamMapSupplier />
-                                .collect( Collectors.toCollection( <@iterableCollectionSupplier /> ) )
-                            );
+        <#if existingInstanceMapping || !canReturnImmediatelly>
+            ${resultName}.addAll( ${sourceParameter.name}<@streamMapSupplier />
+                                    .collect( Collectors.toCollection( <@iterableCollectionSupplier /> ) )
+                                );
+        <#else>
+            <@returnLocalVerDefOrUpdate>
+                <#lt>${sourceParameter.name}<@streamMapSupplier />
+                    .collect( Collectors.toCollection( <@iterableCollectionSupplier /> ) );
+            </@returnLocalVerDefOrUpdate>
+
+        </#if>
     <#else>
         <#-- Streams are immutable so we can't update them -->
         <#if !existingInstanceMapping>
             <#--TODO fhr: after the the result is no longer the same instance, how does it affect the
                 Before mapping methods. Does it even make sense to have before mapping on a stream? -->
             <#if sourceParameter.type.arrayType>
-                ${resultName} = Stream.of( ${sourceParameter.name} )<@streamMapSupplier />;
+                <@returnLocalVerDefOrUpdate>Stream.of( ${sourceParameter.name} )<@streamMapSupplier />;</@returnLocalVerDefOrUpdate>
             <#elseif sourceParameter.type.collectionType>
-                ${resultName} = ${sourceParameter.name}.stream()<@streamMapSupplier />;
+                <@returnLocalVerDefOrUpdate>${sourceParameter.name}.stream()<@streamMapSupplier />;</@returnLocalVerDefOrUpdate>
             <#elseif sourceParameter.type.iterableType>
-                ${resultName} = StreamSupport.stream( ${sourceParameter.name}.spliterator(), false )<@streamMapSupplier />;
+                <@returnLocalVerDefOrUpdate>StreamSupport.stream( ${sourceParameter.name}.spliterator(), false )<@streamMapSupplier />;</@returnLocalVerDefOrUpdate>
             <#else>
-                ${resultName} = ${sourceParameter.name}<@streamMapSupplier />;
+                <@returnLocalVerDefOrUpdate>${sourceParameter.name}<@streamMapSupplier />;</@returnLocalVerDefOrUpdate>
             </#if>
         </#if>
 
     </#if>
 
-    <#--TODO does it even make sense to do a callback if the result is a Stream, as they are immutable-->
     <#list afterMappingReferences as callback>
     	<#if callback_index = 0>
 
@@ -130,7 +147,7 @@
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     </#list>
 
-    <#if returnType.name != "void">
+    <#if !canReturnImmediatelly && returnType.name != "void">
         return ${resultName};
     </#if>
 }
@@ -187,4 +204,7 @@
             .map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
         </#if>
     </@compress>
+</#macro>
+<#macro returnLocalVerDefOrUpdate>
+    <#if canReturnImmediatelly><#if returnType.name != "void">return </#if><#elseif !needVarDefine><@iterableLocalVarDef/> ${resultName} = <#else>${resultName} = </#if><#nested />
 </#macro>

@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.tools.Diagnostic.Kind;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.internal.util.Collections;
@@ -31,6 +32,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * Test for mappings between collection and stream types,
@@ -40,6 +42,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @IssueKey("962")
 @RunWith(AnnotationProcessorTestRunner.class)
 public class ForgedStreamMappingTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource();
 
     @Test
     @WithClasses({ StreamMapper.class, Source.class, Target.class })
@@ -55,6 +60,13 @@ public class ForgedStreamMappingTest {
         Source source2 = StreamMapper.INSTANCE.targetToSource( target );
         assertThat( source2 ).isNotNull();
         assertThat( source2.getFooStream() ).contains( "1", "2" );
+
+        generatedSource.forMapper( StreamMapper.class )
+            .content()
+            .as( "Mapper should not uas addAll" )
+            .doesNotContain( "addAll( " )
+            .as( "Mapper should not use Stream.empty()" )
+            .doesNotContain( "Stream.empty()" );
     }
 
     @Test
