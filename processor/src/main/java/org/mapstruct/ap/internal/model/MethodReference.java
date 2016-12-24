@@ -221,4 +221,30 @@ public class MethodReference extends MappingMethod implements Assignment {
     public List<ParameterBinding> getParameterBindings() {
         return parameterBindings;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 19 * hash + (this.declaringMapper != null ? this.declaringMapper.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
+        if ( obj == null ) {
+            return false;
+        }
+        if ( getClass() != obj.getClass() ) {
+            return false;
+        }
+        final MethodReference other = (MethodReference) obj;
+        if ( this.declaringMapper != other.declaringMapper && (this.declaringMapper == null
+            || !this.declaringMapper.equals( other.declaringMapper )) ) {
+            return false;
+        }
+        return super.equals( obj );
+    }
 }

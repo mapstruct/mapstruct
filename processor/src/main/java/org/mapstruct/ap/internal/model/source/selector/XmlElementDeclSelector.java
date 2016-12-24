@@ -66,18 +66,11 @@ public class XmlElementDeclSelector implements MethodSelector {
                                                                           List<Type> sourceTypes, Type targetType,
                                                                           SelectionCriteria criteria) {
 
-        // only true source methods are qualifying
-        if ( !(mappingMethod instanceof SourceMethod) ) {
-            return methods;
-        }
-
-        SourceMethod sourceMappingMethod = (SourceMethod) mappingMethod;
-
         List<SelectedMethod<T>> nameMatches = new ArrayList<SelectedMethod<T>>();
         List<SelectedMethod<T>> scopeMatches = new ArrayList<SelectedMethod<T>>();
         List<SelectedMethod<T>> nameAndScopeMatches = new ArrayList<SelectedMethod<T>>();
         XmlElementRefInfo xmlElementRefInfo =
-            findXmlElementRef( sourceMappingMethod.getResultType(), criteria.getTargetPropertyName() );
+            findXmlElementRef( mappingMethod.getResultType(), criteria.getTargetPropertyName() );
 
         for ( SelectedMethod<T> candidate : methods ) {
             if ( !( candidate.getMethod() instanceof SourceMethod ) ) {

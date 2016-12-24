@@ -242,4 +242,40 @@ public abstract class MappingMethod extends ModelElement {
     public List<ForgedMethod> getForgedMethods() {
         return forgedMethods;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 83 * hash + (this.parameters != null ? this.parameters.hashCode() : 0);
+        hash = 83 * hash + (this.returnType != null ? this.returnType.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
+        if ( obj == null ) {
+            return false;
+        }
+        if ( getClass() != obj.getClass() ) {
+            return false;
+        }
+        final MappingMethod other = (MappingMethod) obj;
+        if ( (this.name == null) ? (other.name != null) : !this.name.equals( other.name ) ) {
+            return false;
+        }
+        if ( this.parameters != other.parameters &&
+            (this.parameters == null || !this.parameters.equals( other.parameters )) ) {
+            return false;
+        }
+        if ( this.returnType != other.returnType &&
+            (this.returnType == null || !this.returnType.equals( other.returnType )) ) {
+            return false;
+        }
+        return true;
+    }
+
 }

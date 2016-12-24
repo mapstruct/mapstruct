@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.selection.jaxb.test1;
 
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -43,6 +44,9 @@ public class OrderType {
     @XmlElementRef(name = "shippingDetails", namespace = "http://www.mapstruct.org/ap/test/jaxb/selection/test1",
         type = JAXBElement.class)
     private JAXBElement<OrderShippingDetailsType> shippingDetails;
+    @XmlElementRef(name = "description", namespace = "http://www.mapstruct.org/itest/jaxb/xsd/test1",
+        type = JAXBElement.class)
+    protected List<JAXBElement<String>> description;
 
     public JAXBElement<Long> getOrderNumber1() {
         return orderNumber1;
@@ -66,6 +70,14 @@ public class OrderType {
 
     public void setShippingDetails(JAXBElement<OrderShippingDetailsType> value) {
         this.shippingDetails = value;
+    }
+
+    public List<JAXBElement<String>> getDescription() {
+        return description;
+    }
+
+    public void setDescription(List<JAXBElement<String>> description) {
+        this.description = description;
     }
 
 }

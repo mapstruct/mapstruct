@@ -105,4 +105,27 @@ public class Field extends ModelElement {
         this.typeRequiresImport = typeRequiresImport;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 43 * hash + (this.variableName != null ? this.variableName.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
+        if ( obj == null ) {
+            return false;
+        }
+        if ( getClass() != obj.getClass() ) {
+            return false;
+        }
+        final Field other = (Field) obj;
+        return !( (this.variableName == null) ?
+            (other.variableName != null) : !this.variableName.equals( other.variableName ) );
+    }
+
 }

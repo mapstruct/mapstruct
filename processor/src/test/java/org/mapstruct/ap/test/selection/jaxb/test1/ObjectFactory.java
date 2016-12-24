@@ -36,6 +36,8 @@ public class ObjectFactory {
         new QName( "http://www.mapstruct.org/ap/test/jaxb/selection/test1", "orderNumber2" );
     public static final QName ORDER_TYPE_SHIPPING_DETAILS_QNAME =
         new QName( "http://www.mapstruct.org/ap/test/jaxb/selection/test1", "shippingDetails" );
+    public static final QName ORDER_TYPE_DESCRIPTION_QNAME =
+        new QName("http://www.mapstruct.org/itest/jaxb/xsd/test1", "description");
 
     public ObjectFactory() {
     }
@@ -68,6 +70,12 @@ public class ObjectFactory {
             ORDER_TYPE_SHIPPING_DETAILS_QNAME,
             OrderShippingDetailsType.class, OrderType.class, value
         );
+    }
+
+    @XmlElementDecl(namespace = "http://www.mapstruct.org/itest/jaxb/xsd/test1",
+        name = "description", scope = OrderType.class)
+    public JAXBElement<String> createOrderTypeDescription(String value) {
+        return new JAXBElement<String>(ORDER_TYPE_DESCRIPTION_QNAME, String.class, OrderType.class, value);
     }
 
 }

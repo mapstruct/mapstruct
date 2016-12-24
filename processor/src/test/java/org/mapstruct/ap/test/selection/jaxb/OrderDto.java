@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.selection.jaxb;
 
+import java.util.List;
+
 /**
  * @author Sjaak Derksen
  */
@@ -26,6 +28,7 @@ public class OrderDto {
     private Long orderNumber1;
     private Long orderNumber2;
     private OrderShippingDetailsDto shippingDetails;
+    private List<String> description;
 
     public Long getOrderNumber1() {
         return orderNumber1;
@@ -50,4 +53,13 @@ public class OrderDto {
     public void setShippingDetails(OrderShippingDetailsDto shippingDetails) {
         this.shippingDetails = shippingDetails;
     }
+
+    public List<String> getDescription() {
+        return description;
+    }
+
+    public void setDescription(List<String> description) {
+        this.description = description;
+    }
+
 }

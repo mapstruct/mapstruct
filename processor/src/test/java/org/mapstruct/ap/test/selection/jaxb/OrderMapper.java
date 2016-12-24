@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.selection.jaxb;
 
-import javax.xml.bind.JAXBElement;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.ap.test.selection.jaxb.test1.ObjectFactory;
 import org.mapstruct.ap.test.selection.jaxb.test1.OrderType;
@@ -42,9 +40,4 @@ public abstract class OrderMapper {
 
     public abstract OrderShippingDetailsType dtoToOrderShippingDetailsType(OrderShippingDetailsDto target);
 
-    // TODO, remove this method when #134 is fixed
-    public JAXBElement<OrderShippingDetailsType> dtoToOrderShippingDetailsTypeJB(OrderShippingDetailsDto target) {
-        ObjectFactory of1 = new ObjectFactory();
-        return of1.createOrderTypeShippingDetails( INSTANCE.dtoToOrderShippingDetailsType( target ) );
-    }
 }

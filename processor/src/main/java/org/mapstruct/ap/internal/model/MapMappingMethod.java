@@ -368,6 +368,15 @@ public class MapMappingMethod extends MappingMethod {
             }
         }
 
+        if ( this.factoryMethod != null ) {
+            if ( !this.factoryMethod.equals( other.factoryMethod ) ) {
+                return false;
+            }
+        }
+        else if ( other.factoryMethod != null ) {
+            return false;
+        }
+
         return isMapNullToDefault() == other.isMapNullToDefault();
     }
 

@@ -64,6 +64,7 @@ public class IterableMappingMethod extends MappingMethod {
         private FormattingParameters formattingParameters;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
         private ForgedMethod forgedMethod;
+        private String callingContextTargetPropertyName;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -90,6 +91,11 @@ public class IterableMappingMethod extends MappingMethod {
             return this;
         }
 
+        public Builder callingContextTargetPropertyName(String callingContextTargetPropertyName) {
+            this.callingContextTargetPropertyName = callingContextTargetPropertyName;
+            return this;
+        }
+
         public IterableMappingMethod build() {
 
 
@@ -111,7 +117,7 @@ public class IterableMappingMethod extends MappingMethod {
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 targetElementType,
-                null, // there is no targetPropertyName
+                callingContextTargetPropertyName,
                 formattingParameters,
                 selectionParameters,
                 sourceRHS,
@@ -377,6 +383,15 @@ public class IterableMappingMethod extends MappingMethod {
             }
         }
         else if ( other.selectionParameters != null ) {
+            return false;
+        }
+
+        if ( this.factoryMethod != null ) {
+            if ( !this.factoryMethod.equals( other.factoryMethod ) ) {
+                return false;
+            }
+        }
+        else if ( other.factoryMethod != null ) {
             return false;
         }
 
