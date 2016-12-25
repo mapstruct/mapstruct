@@ -21,7 +21,7 @@ package org.mapstruct.ap.internal.conversion;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -74,8 +74,11 @@ public class BigDecimalToStringConversion extends AbstractNumberToStringConversi
 
     @Override
     public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
-        HelperMethod helperMethod = new CreateDecimalFormat( conversionContext.getTypeFactory() );
-        return Arrays.asList( helperMethod );
+        List<HelperMethod> helpers = new ArrayList();
+        if ( conversionContext.getNumberFormat() != null ) {
+            helpers.add( new CreateDecimalFormat( conversionContext.getTypeFactory() ) );
+        }
+        return helpers;
     }
 
     private void appendDecimalFormatter(StringBuilder sb, ConversionContext conversionContext) {

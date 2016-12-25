@@ -22,12 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import org.junit.Rule;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * Tests conversions between {@link BigInteger} and numbers as well as String.
@@ -36,6 +38,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @RunWith(AnnotationProcessorTestRunner.class)
 public class BigNumbersConversionTest {
+
+   private final GeneratedSource generatedSource = new GeneratedSource();
+
+    @Rule
+    public GeneratedSource getGeneratedSource() {
+        return generatedSource;
+    }
 
     @Test
     @IssueKey("21")
@@ -187,5 +196,12 @@ public class BigNumbersConversionTest {
         assertThat( source.getDd() ).isEqualTo( new BigDecimal( "12.0" ) );
         assertThat( source.getString() ).isEqualTo( new BigDecimal( "13.45" ) );
         assertThat( source.getBigInteger() ).isEqualTo( new BigDecimal( "14" ) );
+    }
+
+    @Test
+    @IssueKey("1009")
+    @WithClasses({ BigIntegerSource.class, BigIntegerTarget.class, BigIntegerMapper.class })
+    public void shouldNotGenerateCreateDecimalFormatMethod() {
+        getGeneratedSource().forMapper( BigIntegerMapper.class ).content().doesNotContain( "createDecimalFormat" );
     }
 }
