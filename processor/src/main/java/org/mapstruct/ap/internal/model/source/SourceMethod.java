@@ -185,7 +185,7 @@ public class SourceMethod implements Method {
         public SourceMethod build() {
 
             MappingOptions mappingOptions =
-                new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
+                    new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
 
             SourceMethod sourceMethod = new SourceMethod(
                 declaringMapper,
@@ -334,7 +334,8 @@ public class SourceMethod implements Method {
     }
 
     public boolean reverses(SourceMethod method) {
-        return getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
+        return isAbstract()
+            && getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
             && equals( first( getSourceParameters() ).getType(), method.getResultType() )
             && equals( getResultType(), first( method.getSourceParameters() ).getType() );
     }
@@ -346,7 +347,8 @@ public class SourceMethod implements Method {
     }
 
     public boolean canInheritFrom(SourceMethod method) {
-        return isMapMapping() == method.isMapMapping()
+        return method.isAbstract()
+            && isMapMapping() == method.isMapMapping()
             && isIterableMapping() == method.isIterableMapping()
             && isEnumMapping() == method.isEnumMapping()
             && getResultType().isAssignableTo( method.getResultType() )
@@ -600,6 +602,14 @@ public class SourceMethod implements Method {
 
     public boolean isBeforeMappingMethod() {
         return Executables.isBeforeMappingMethod( getExecutable() );
+    }
+
+    /**
+     * @return returns true for interface methods (see jls 9.4) lacking a default or static modifier and for abstract
+     * methods
+     */
+    public boolean isAbstract() {
+        return executable.getModifiers().contains( Modifier.ABSTRACT );
     }
 
     @Override

@@ -23,6 +23,7 @@ import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingInheritanceStrategy;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -32,17 +33,21 @@ import org.mapstruct.factory.Mappers;
     config = AutoInheritedConfig.class,
     mappingInheritanceStrategy = MappingInheritanceStrategy.EXPLICIT
 )
-public interface CarMapperWithExplicitInheritance {
-    CarMapperWithExplicitInheritance INSTANCE = Mappers.getMapper( CarMapperWithExplicitInheritance.class );
+public abstract class CarMapperWithExplicitInheritance {
+    public static final CarMapperWithExplicitInheritance INSTANCE =
+        Mappers.getMapper( CarMapperWithExplicitInheritance.class );
 
     @InheritConfiguration(name = "baseDtoToEntity")
     @Mapping(target = "color", source = "colour")
-    CarEntity toCarEntity(CarDto carDto);
+    public abstract CarEntity toCarEntity(CarDto carDto);
 
     @InheritInverseConfiguration(name = "toCarEntity")
-    CarDto toCarDto(CarEntity entity);
+    public abstract CarDto toCarDto(CarEntity entity);
 
     @InheritConfiguration(name = "toCarEntity")
     @Mapping(target = "auditTrail", constant = "fixed")
-    CarEntity toCarEntityWithFixedAuditTrail(CarDto carDto);
+    public abstract CarEntity toCarEntityWithFixedAuditTrail(CarDto carDto);
+
+    // this method should not be considered. See issue #1013
+    public void toCarEntity(CarDto carDto, @MappingTarget CarEntity carEntity) { }
 }
