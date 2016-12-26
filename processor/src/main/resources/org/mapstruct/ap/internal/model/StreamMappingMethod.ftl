@@ -116,10 +116,10 @@
                                     .collect( Collectors.toCollection( <@iterableCollectionSupplier /> ) )
                                 );
         <#else>
-            <@returnLocalVerDefOrUpdate>
+            <@returnLocalVarDefOrUpdate>
                 <#lt>${sourceParameter.name}<@streamMapSupplier />
                     .collect( Collectors.toCollection( <@iterableCollectionSupplier /> ) );
-            </@returnLocalVerDefOrUpdate>
+            </@returnLocalVarDefOrUpdate>
 
         </#if>
     <#else>
@@ -128,13 +128,13 @@
             <#--TODO fhr: after the the result is no longer the same instance, how does it affect the
                 Before mapping methods. Does it even make sense to have before mapping on a stream? -->
             <#if sourceParameter.type.arrayType>
-                <@returnLocalVerDefOrUpdate>Stream.of( ${sourceParameter.name} )<@streamMapSupplier />;</@returnLocalVerDefOrUpdate>
+                <@returnLocalVarDefOrUpdate>Stream.of( ${sourceParameter.name} )<@streamMapSupplier />;</@returnLocalVarDefOrUpdate>
             <#elseif sourceParameter.type.collectionType>
-                <@returnLocalVerDefOrUpdate>${sourceParameter.name}.stream()<@streamMapSupplier />;</@returnLocalVerDefOrUpdate>
+                <@returnLocalVarDefOrUpdate>${sourceParameter.name}.stream()<@streamMapSupplier />;</@returnLocalVarDefOrUpdate>
             <#elseif sourceParameter.type.iterableType>
-                <@returnLocalVerDefOrUpdate>StreamSupport.stream( ${sourceParameter.name}.spliterator(), false )<@streamMapSupplier />;</@returnLocalVerDefOrUpdate>
+                <@returnLocalVarDefOrUpdate>StreamSupport.stream( ${sourceParameter.name}.spliterator(), false )<@streamMapSupplier />;</@returnLocalVarDefOrUpdate>
             <#else>
-                <@returnLocalVerDefOrUpdate>${sourceParameter.name}<@streamMapSupplier />;</@returnLocalVerDefOrUpdate>
+                <@returnLocalVarDefOrUpdate>${sourceParameter.name}<@streamMapSupplier />;</@returnLocalVarDefOrUpdate>
             </#if>
         </#if>
 
@@ -205,6 +205,6 @@
         </#if>
     </@compress>
 </#macro>
-<#macro returnLocalVerDefOrUpdate>
+<#macro returnLocalVarDefOrUpdate>
     <#if canReturnImmediatelly><#if returnType.name != "void">return </#if><#elseif !needVarDefine><@iterableLocalVarDef/> ${resultName} = <#else>${resultName} = </#if><#nested />
 </#macro>
