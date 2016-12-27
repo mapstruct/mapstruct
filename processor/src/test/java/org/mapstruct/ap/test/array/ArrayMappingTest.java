@@ -29,10 +29,16 @@ import org.mapstruct.ap.test.array._target.ScientistDto;
 import org.mapstruct.ap.test.array.source.Scientist;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOptions;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @WithClasses( { Scientist.class, ScientistDto.class, ScienceMapper.class } )
 @RunWith(AnnotationProcessorTestRunner.class)
+@ProcessorOptions( {
+    @ProcessorOption( name = "mapstruct.suppressGeneratorVersionInfoComment", value = "true" ),
+    @ProcessorOption( name = "mapstruct.suppressGeneratorTimestamp", value = "true" )
+} )
 @IssueKey("108")
 public class ArrayMappingTest {
 
