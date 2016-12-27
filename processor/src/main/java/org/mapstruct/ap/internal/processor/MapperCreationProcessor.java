@@ -18,10 +18,6 @@
  */
 package org.mapstruct.ap.internal.processor;
 
-import static org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism.AUTO_INHERIT_FROM_CONFIG;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.join;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
@@ -53,6 +48,8 @@ import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
 import org.mapstruct.ap.internal.model.StreamMappingMethod;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
+import org.mapstruct.ap.internal.model.WithElementMappingMethod;
+import org.mapstruct.ap.internal.model.WithElementMappingMethodBuilder;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
@@ -73,6 +70,10 @@ import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
+
+import static org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism.AUTO_INHERIT_FROM_CONFIG;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.join;
 
 /**
  * A {@link ModelElementProcessor} which creates a {@link Mapper} from the given
@@ -332,26 +333,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             boolean hasFactoryMethod = false;
 
             if ( method.isIterableMapping() ) {
-
-                IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
-
-                FormattingParameters formattingParameters = null;
-                SelectionParameters selectionParameters = null;
-                NullValueMappingStrategyPrism nullValueMappingStrategy = null;
-
-                if ( mappingOptions.getIterableMapping() != null ) {
-                    formattingParameters = mappingOptions.getIterableMapping().getFormattingParameters();
-                    selectionParameters = mappingOptions.getIterableMapping().getSelectionParameters();
-                    nullValueMappingStrategy = mappingOptions.getIterableMapping().getNullValueMappingStrategy();
-                }
-
-                IterableMappingMethod iterableMappingMethod = builder
-                    .mappingContext( mappingContext )
-                    .method( method )
-                    .formattingParameters( formattingParameters )
-                    .selectionParameters( selectionParameters )
-                    .nullValueMappingStrategy( nullValueMappingStrategy )
-                    .build();
+                IterableMappingMethod iterableMappingMethod = createWithElementMappingMethod(
+                    method,
+                    mappingOptions,
+                    new IterableMappingMethod.Builder()
+                );
 
                 hasFactoryMethod = iterableMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( iterableMappingMethod );
@@ -413,7 +399,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
             }
             else if ( method.isStreamMapping() ) {
-                StreamMappingMethod streamMappingMethod = createStreamMappingMethod( method, mappingOptions );
+                StreamMappingMethod streamMappingMethod = createWithElementMappingMethod(
+                    method,
+                    mappingOptions,
+                    new StreamMappingMethod.Builder()
+                );
 
                 // If we do StreamMapping that means that internally there is a way to generate the result type
                 hasFactoryMethod =
@@ -456,10 +446,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return mappingMethods;
     }
 
-    private StreamMappingMethod createStreamMappingMethod(SourceMethod method, MappingOptions mappingOptions) {
-        // TODO this is the same as the if with the isIterableMapping, I think that we need
-        // to refactor the IterableMapping Builder and be able to reuse the common logic
-        StreamMappingMethod.Builder builder = new StreamMappingMethod.Builder();
+    private <M extends WithElementMappingMethod> M createWithElementMappingMethod(SourceMethod method,
+        MappingOptions mappingOptions, WithElementMappingMethodBuilder<?, M> builder) {
 
         FormattingParameters formattingParameters = null;
         SelectionParameters selectionParameters = null;

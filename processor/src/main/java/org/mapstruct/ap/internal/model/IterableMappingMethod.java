@@ -20,22 +20,15 @@ package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
-import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
-import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
-import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one iterable type to another. The collection
@@ -45,119 +38,36 @@ import org.mapstruct.ap.internal.util.Strings;
  */
 public class IterableMappingMethod extends WithElementMappingMethod {
 
-    public static class Builder {
+    public static class Builder extends WithElementMappingMethodBuilder<Builder, IterableMappingMethod> {
 
-        private Method method;
-        private MappingBuilderContext ctx;
-        private SelectionParameters selectionParameters;
-        private FormattingParameters formattingParameters;
-        private NullValueMappingStrategyPrism nullValueMappingStrategy;
-        private ForgedMethod forgedMethod;
-        private String callingContextTargetPropertyName;
-
-        public Builder mappingContext(MappingBuilderContext mappingContext) {
-            this.ctx = mappingContext;
-            return this;
+        public Builder() {
+            super( Builder.class, "collection element" );
         }
 
-        public Builder method(Method sourceMethod) {
-            this.method = sourceMethod;
-            return this;
+        @Override
+        protected Type getElementType(Type parameterType) {
+            return parameterType.isArrayType() ? parameterType.getComponentType() : first(
+                parameterType.determineTypeArguments( Iterable.class ) ).getTypeBound();
         }
 
-        public Builder formattingParameters(FormattingParameters formattingParameters) {
-            this.formattingParameters = formattingParameters;
-            return this;
-        }
-
-        public Builder selectionParameters(SelectionParameters selectionParameters) {
-            this.selectionParameters = selectionParameters;
-            return this;
-        }
-
-        public Builder nullValueMappingStrategy(NullValueMappingStrategyPrism nullValueMappingStrategy) {
-            this.nullValueMappingStrategy = nullValueMappingStrategy;
-            return this;
-        }
-
-        public Builder callingContextTargetPropertyName(String callingContextTargetPropertyName) {
-            this.callingContextTargetPropertyName = callingContextTargetPropertyName;
-            return this;
-        }
-
-        public IterableMappingMethod build() {
-
-
-            Type sourceParameterType = first( method.getSourceParameters() ).getType();
+        @Override
+        protected Assignment getWrapper(Assignment assignment, Method method) {
             Type resultType = method.getResultType();
-
-            Type sourceElementType =
-                sourceParameterType.isArrayType() ? sourceParameterType.getComponentType() : first(
-                    sourceParameterType.determineTypeArguments( Iterable.class ) ).getTypeBound();
-            Type targetElementType =
-                resultType.isArrayType() ? resultType.getComponentType() : first(
-                    resultType.determineTypeArguments( Iterable.class ) ).getTypeBound();
-
-            String loopVariableName =
-                Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
-
-            SourceRHS sourceRHS = new SourceRHS( loopVariableName, sourceElementType, new HashSet<String>(),
-                "collection element" );
-            Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
-                method,
-                targetElementType,
-                callingContextTargetPropertyName,
-                formattingParameters,
-                selectionParameters,
-                sourceRHS,
-                false
-            );
-
-            if ( assignment == null ) {
-
-                assignment = forgeMapping( sourceRHS, sourceElementType, targetElementType );
-
-            }
-            else {
-                if ( method instanceof ForgedMethod ) {
-                    ForgedMethod forgedMethod = (ForgedMethod) method;
-                    forgedMethod.addThrownTypes( assignment.getThrownTypes() );
-
-                }
-            }
             // target accessor is setter, so decorate assignment as setter
             if ( resultType.isArrayType() ) {
-                assignment = new LocalVarWrapper( assignment, method.getThrownTypes(), resultType, false );
+                return new LocalVarWrapper( assignment, method.getThrownTypes(), resultType, false );
             }
             else {
-                assignment = new SetterWrapper( assignment, method.getThrownTypes(), false );
+                return new SetterWrapper( assignment, method.getThrownTypes(), false );
             }
+        }
 
-            // mapNullToDefault
-            boolean mapNullToDefault = false;
-            if ( method.getMapperConfiguration() != null ) {
-                mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
-            }
-
-            MethodReference factoryMethod = null;
-            if ( !method.isUpdateMethod() ) {
-                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null );
-            }
-
-            Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
-            existingVariables.add( loopVariableName );
-
-            List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleCallbackFactory.beforeMappingMethods(
-                method,
-                selectionParameters,
-                ctx,
-                existingVariables );
-            List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleCallbackFactory.afterMappingMethods(
-                method,
-                selectionParameters,
-                ctx,
-                existingVariables );
-
+        @Override
+        protected IterableMappingMethod instantiateMappingMethod(Method method, Assignment assignment,
+            MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+            List<LifecycleCallbackMethodReference> beforeMappingMethods,
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
+            ForgedMethod forgedMethod) {
             return new IterableMappingMethod(
                 method,
                 assignment,
@@ -170,49 +80,6 @@ public class IterableMappingMethod extends WithElementMappingMethod {
                 forgedMethod
             );
         }
-
-        private Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, Type targetType) {
-
-            ForgedMethodHistory forgedMethodHistory = null;
-            if ( method instanceof ForgedMethod ) {
-                forgedMethodHistory = ( (ForgedMethod) method ).getHistory();
-            }
-            String name = getName( sourceType, targetType );
-            forgedMethod = new ForgedMethod(
-                name,
-                sourceType,
-                targetType,
-                method.getMapperConfiguration(),
-                method.getExecutable(),
-                method.getContextParameters(),
-                forgedMethodHistory
-            );
-
-            Assignment assignment = new MethodReference(
-                forgedMethod,
-                null,
-                ParameterBinding.fromParameters( forgedMethod.getParameters() ) );
-
-            assignment.setAssignment( sourceRHS );
-
-            return assignment;
-        }
-
-        private String getName(Type sourceType, Type targetType) {
-            String fromName = getName( sourceType );
-            String toName = getName( targetType );
-            return Strings.decapitalize( fromName + "To" + toName );
-        }
-
-        private String getName(Type type) {
-            StringBuilder builder = new StringBuilder();
-            for ( Type typeParam : type.getTypeParameters() ) {
-                builder.append( typeParam.getIdentification() );
-            }
-            builder.append( type.getIdentification() );
-            return builder.toString();
-        }
-
     }
 
     private IterableMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
