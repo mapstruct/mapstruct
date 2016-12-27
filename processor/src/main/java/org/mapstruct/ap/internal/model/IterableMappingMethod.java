@@ -20,17 +20,13 @@ package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.lang.model.type.TypeKind;
-
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
-import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
@@ -47,14 +43,7 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Gunnar Morling
  */
-public class IterableMappingMethod extends MappingMethod {
-
-    private final Assignment elementAssignment;
-    private final MethodReference factoryMethod;
-    private final boolean overridden;
-    private final boolean mapNullToDefault;
-    private final String loopVariableName;
-    private final SelectionParameters selectionParameters;
+public class IterableMappingMethod extends WithElementMappingMethod {
 
     public static class Builder {
 
@@ -231,81 +220,17 @@ public class IterableMappingMethod extends MappingMethod {
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
                                   SelectionParameters selectionParameters, ForgedMethod forgedMethod) {
-        super( method, beforeMappingReferences, afterMappingReferences,
-            forgedMethod == null ? Collections.<ForgedMethod>emptyList() :
-                java.util.Collections.singletonList( forgedMethod )
+        super(
+            method,
+            parameterAssignment,
+            factoryMethod,
+            mapNullToDefault,
+            loopVariableName,
+            beforeMappingReferences,
+            afterMappingReferences,
+            selectionParameters,
+            forgedMethod
         );
-        this.elementAssignment = parameterAssignment;
-        this.factoryMethod = factoryMethod;
-        this.overridden = method.overridesMethod();
-        this.mapNullToDefault = mapNullToDefault;
-        this.loopVariableName = loopVariableName;
-        this.selectionParameters = selectionParameters;
-    }
-
-    public Parameter getSourceParameter() {
-        for ( Parameter parameter : getParameters() ) {
-            if ( !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
-                return parameter;
-            }
-        }
-
-        throw new IllegalStateException( "Method " + this + " has no source parameter." );
-    }
-
-    public Assignment getElementAssignment() {
-        return elementAssignment;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        Set<Type> types = super.getImportTypes();
-        if ( elementAssignment != null ) {
-            types.addAll( elementAssignment.getImportTypes() );
-        }
-        if ( ( factoryMethod == null ) && ( !isExistingInstanceMapping() ) ) {
-            if ( getReturnType().getImplementationType() != null ) {
-                types.addAll( getReturnType().getImplementationType().getImportTypes() );
-            }
-        }
-        return types;
-    }
-
-    public boolean isMapNullToDefault() {
-        return mapNullToDefault;
-    }
-
-    public boolean isOverridden() {
-        return overridden;
-    }
-
-    public String getLoopVariableName() {
-        return loopVariableName;
-    }
-
-    public String getDefaultValue() {
-        TypeKind kind = getResultElementType().getTypeMirror().getKind();
-        switch ( kind ) {
-            case BOOLEAN:
-                return "false";
-            case BYTE:
-            case SHORT:
-            case INT:
-            case CHAR:  /*"'\u0000'" would have been better, but depends on platformencoding */
-                return "0";
-            case LONG:
-                return "0L";
-            case FLOAT:
-                return "0.0f";
-            case DOUBLE:
-                return "0.0d";
-            default:
-                return "null";
-        }
-    }
-
-    public MethodReference getFactoryMethod() {
-        return this.factoryMethod;
     }
 
     public Type getSourceElementType() {
@@ -327,75 +252,4 @@ public class IterableMappingMethod extends MappingMethod {
             return first( getResultType().determineTypeArguments( Iterable.class ) );
         }
     }
-
-    public String getIndex1Name() {
-        return Strings.getSaveVariableName( "i", loopVariableName, getSourceParameter().getName(), getResultName() );
-    }
-
-    public String getIndex2Name() {
-        return Strings.getSaveVariableName( "j", loopVariableName, getSourceParameter().getName(), getResultName() );
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ( ( getResultType() == null ) ? 0 : getResultType().hashCode() );
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if ( this == obj ) {
-            return true;
-        }
-        if ( obj == null ) {
-            return false;
-        }
-        if ( getClass() != obj.getClass() ) {
-            return false;
-        }
-        IterableMappingMethod other = (IterableMappingMethod) obj;
-
-        if ( !getResultType().equals( other.getResultType() ) ) {
-            return false;
-        }
-
-        if ( getSourceParameters().size() != other.getSourceParameters().size() ) {
-            return false;
-        }
-
-        for ( int i = 0; i < getSourceParameters().size(); i++ ) {
-            if ( !getSourceParameters().get( i ).getType().equals( other.getSourceParameters().get( i ).getType() ) ) {
-                return false;
-            }
-            List<Type> thisTypeParameters = getSourceParameters().get( i ).getType().getTypeParameters();
-            List<Type> otherTypeParameters = other.getSourceParameters().get( i ).getType().getTypeParameters();
-
-            if ( !thisTypeParameters.equals( otherTypeParameters ) ) {
-                return false;
-            }
-        }
-
-        if ( this.selectionParameters != null ) {
-            if ( !this.selectionParameters.equals( other.selectionParameters ) ) {
-                return false;
-            }
-        }
-        else if ( other.selectionParameters != null ) {
-            return false;
-        }
-
-        if ( this.factoryMethod != null ) {
-            if ( !this.factoryMethod.equals( other.factoryMethod ) ) {
-                return false;
-            }
-        }
-        else if ( other.factoryMethod != null ) {
-            return false;
-        }
-
-        return isMapNullToDefault() == other.isMapNullToDefault();
-    }
-
 }
