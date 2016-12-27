@@ -27,15 +27,10 @@ import java.util.stream.StreamSupport;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.Java8FunctionWrapper;
-import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
-import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
-import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -49,116 +44,35 @@ public class StreamMappingMethod extends WithElementMappingMethod {
 
     private final Set<Type> helperImports;
 
-    public static class Builder {
+    public static class Builder extends WithElementMappingMethodBuilder<Builder, StreamMappingMethod> {
 
-        private Method method;
-        private MappingBuilderContext ctx;
-        private SelectionParameters selectionParameters;
-        private FormattingParameters formattingParameters;
-        private NullValueMappingStrategyPrism nullValueMappingStrategy;
-        private ForgedMethod forgedMethod;
-        private String callingContextTargetPropertyName;
-
-        public Builder mappingContext(MappingBuilderContext mappingContext) {
-            this.ctx = mappingContext;
-            return this;
+        public Builder() {
+            super( Builder.class, "stream element" );
         }
 
-        public Builder method(Method sourceMethod) {
-            this.method = sourceMethod;
-            return this;
+        @Override
+        protected Type getElementType(Type parameterType) {
+            return StreamMappingMethod.getElementType( parameterType );
         }
 
-        public Builder formattingParameters(FormattingParameters formattingParameters) {
-            this.formattingParameters = formattingParameters;
-            return this;
+        @Override
+        protected Assignment getWrapper(Assignment assignment, Method method) {
+            return new Java8FunctionWrapper( assignment );
         }
 
-        public Builder selectionParameters(SelectionParameters selectionParameters) {
-            this.selectionParameters = selectionParameters;
-            return this;
-        }
-
-        public Builder nullValueMappingStrategy(NullValueMappingStrategyPrism nullValueMappingStrategy) {
-            this.nullValueMappingStrategy = nullValueMappingStrategy;
-            return this;
-        }
-
-        public Builder callingContextTargetPropertyName(String callingContextTargetPropertyName) {
-            this.callingContextTargetPropertyName = callingContextTargetPropertyName;
-            return this;
-        }
-
-        public StreamMappingMethod build() {
-            //TODO the building of the methods is the same as the IterableMappingMethod, the only difference being
-            // the static extracted getElementType and the wrapper of the assignment using Java8FunctionWrapper
-
-            Type sourceParameterType = first( method.getSourceParameters() ).getType();
-            Type resultType = method.getResultType();
-
-            Type sourceElementType = getElementType( sourceParameterType );
-            Type targetElementType = getElementType( resultType );
-
-            String loopVariableName =
-                Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
-
-            SourceRHS sourceRHS = new SourceRHS( loopVariableName, sourceElementType, new HashSet<String>(),
-                "stream element"
-            );
-            Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
-                method,
-                targetElementType,
-                callingContextTargetPropertyName,
-                formattingParameters,
-                selectionParameters,
-                sourceRHS,
-                false
-            );
-
-            if ( assignment == null ) {
-                assignment = forgeMapping( sourceRHS, sourceElementType, targetElementType );
-            }
-            else {
-                if ( method instanceof ForgedMethod ) {
-                    ForgedMethod forgedMethod = (ForgedMethod) method;
-                    forgedMethod.addThrownTypes( assignment.getThrownTypes() );
-                }
-            }
-
-            assignment = new Java8FunctionWrapper( assignment );
-
-            // mapNullToDefault
-            boolean mapNullToDefault = false;
-            if ( method.getMapperConfiguration() != null ) {
-                mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
-            }
-
-            MethodReference factoryMethod = null;
-            if ( !method.isUpdateMethod() ) {
-                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null );
-            }
-
-            Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
-            existingVariables.add( loopVariableName );
-
-            List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleCallbackFactory.beforeMappingMethods(
-                method,
-                selectionParameters,
-                ctx,
-                existingVariables
-            );
-            List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleCallbackFactory.afterMappingMethods(
-                method,
-                selectionParameters,
-                ctx,
-                existingVariables
-            );
+        @Override
+        protected StreamMappingMethod instantiateMappingMethod(Method method, Assignment assignment,
+            MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+            List<LifecycleCallbackMethodReference> beforeMappingMethods,
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
+            ForgedMethod forgedMethod) {
 
             Set<Type> helperImports = new HashSet<Type>();
-            if ( resultType.isIterableType() ) {
+            if ( method.getResultType().isIterableType() ) {
                 helperImports.add( ctx.getTypeFactory().getType( Collectors.class ) );
             }
 
+            Type sourceParameterType = first( method.getSourceParameters() ).getType();
             if ( !sourceParameterType.isCollectionType() && !sourceParameterType.isArrayType() &&
                 sourceParameterType.isIterableType() ) {
                 helperImports.add( ctx.getTypeFactory().getType( StreamSupport.class ) );
@@ -176,48 +90,6 @@ public class StreamMappingMethod extends WithElementMappingMethod {
                 helperImports,
                 forgedMethod
             );
-        }
-
-        private Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, Type targetType) {
-            ForgedMethodHistory forgedMethodHistory = null;
-            if ( method instanceof ForgedMethod ) {
-                forgedMethodHistory = ( (ForgedMethod) method ).getHistory();
-            }
-            String name = getName( sourceType, targetType );
-            forgedMethod = new ForgedMethod(
-                name,
-                sourceType,
-                targetType,
-                method.getMapperConfiguration(),
-                method.getExecutable(),
-                method.getContextParameters(),
-                forgedMethodHistory
-            );
-
-            Assignment assignment = new MethodReference(
-                forgedMethod,
-                null,
-                ParameterBinding.fromParameters( forgedMethod.getParameters() )
-            );
-
-            assignment.setAssignment( sourceRHS );
-
-            return assignment;
-        }
-
-        private String getName(Type sourceType, Type targetType) {
-            String fromName = getName( sourceType );
-            String toName = getName( targetType );
-            return Strings.decapitalize( fromName + "To" + toName );
-        }
-
-        private String getName(Type type) {
-            StringBuilder builder = new StringBuilder();
-            for ( Type typeParam : type.getTypeParameters() ) {
-                builder.append( typeParam.getIdentification() );
-            }
-            builder.append( type.getIdentification() );
-            return builder.toString();
         }
     }
 

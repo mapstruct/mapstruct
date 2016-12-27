@@ -232,7 +232,6 @@ public class PropertyMapping extends ModelElement {
             this.rightHandSide = getSourceRHS( sourceReference );
             rightHandSide.setUseElementAsSourceTypeForMatching(
                 targetWriteAccessorType == TargetWriteAccessorType.ADDER );
-            Type sourceType = rightHandSide.getSourceType();
 
             // all the tricky cases will be excluded for the time being.
             boolean preferUpdateMethods;
@@ -253,6 +252,7 @@ public class PropertyMapping extends ModelElement {
                 preferUpdateMethods
             );
 
+            Type sourceType = rightHandSide.getSourceType();
             // No mapping found. Try to forge a mapping
             if ( assignment == null ) {
                 if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
@@ -540,26 +540,23 @@ public class PropertyMapping extends ModelElement {
         private Assignment forgeStreamMapping(Type sourceType, Type targetType, SourceRHS source,
                                               ExecutableElement element) {
 
-            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element );
-
             StreamMappingMethod.Builder builder = new StreamMappingMethod.Builder();
-            StreamMappingMethod streamMappingMethod = builder
-                .mappingContext( ctx )
-                .method( methodRef )
-                .selectionParameters( selectionParameters )
-                .callingContextTargetPropertyName( targetPropertyName )
-                .build();
-
-            return getForgedAssignment( source, methodRef, streamMappingMethod );
+            return forgeWithElementMapping( sourceType, targetType, source, element, builder );
         }
 
         private Assignment forgeIterableMapping(Type sourceType, Type targetType, SourceRHS source,
                                                 ExecutableElement element) {
 
-            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element );
             IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
+            return forgeWithElementMapping( sourceType, targetType, source, element, builder );
+        }
 
-            IterableMappingMethod iterableMappingMethod = builder
+        private Assignment forgeWithElementMapping(Type sourceType, Type targetType, SourceRHS source,
+            ExecutableElement element, WithElementMappingMethodBuilder<?, ? extends WithElementMappingMethod> builder) {
+
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element );
+
+            WithElementMappingMethod iterableMappingMethod = builder
                 .mappingContext( ctx )
                 .method( methodRef )
                 .selectionParameters( selectionParameters )

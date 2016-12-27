@@ -39,7 +39,7 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Filip Hrisafov
  */
-abstract class WithElementMappingMethod extends MappingMethod {
+public abstract class WithElementMappingMethod extends MappingMethod {
     private final Assignment elementAssignment;
     private final MethodReference factoryMethod;
     private final boolean overridden;
