@@ -1736,7 +1736,7 @@ The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy`
 [[checking-source-property-for-null-arguments]]
 === Controlling checking result for 'null' properties in bean mapping
 
-MapStruct offers control over when to generate a `null` check. By default (`nullValueCheckStrategy = NullValueMappingStrategy.ON_IMPLICIT_CONVERSION`) a `null` check will be generated for:
+MapStruct offers control over when to generate a `null` check. By default (`nullValueCheckStrategy = NullValueCheckStrategy.ON_IMPLICIT_CONVERSION`) a `null` check will be generated for:
 
 * direct setting of source value to target value when target is primitive and is source not.
 * applying type conversion and then:
@@ -1746,9 +1746,9 @@ MapStruct offers control over when to generate a `null` check. By default (`null
 
 First calling a mapping method on the source property is not protected by a null check. Therefor generated mapping methods will do a null check prior to carrying out mapping on a source property. Handwritten mapping methods must take care of null value checking. They have the possibility to add 'meaning' to `null`. For instance: mapping `null` to a default value.
 
-The option `nullValueCheckStrategy = NullValueMappingStrategy.ALWAYS` will always include a null check when source is non primitive, unless a source presence checker is defined on the source bean.
+The option `nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS` will always include a null check when source is non primitive, unless a source presence checker is defined on the source bean.
 
-The strategy works in a hierarchical fashion. `@Mapper#nullValueMappingStrategy` will override `@MappingConfig#nullValueMappingStrategy`.
+The strategy works in a hierarchical fashion. `@Mapper#nullValueCheckStrategy` will override `@MappingConfig#nullValueCheckStrategy`.
 
 [[source-presence-check]]
 === Source presence checking
