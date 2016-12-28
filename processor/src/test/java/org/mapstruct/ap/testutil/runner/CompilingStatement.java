@@ -24,9 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -196,8 +193,6 @@ abstract class CompilingStatement extends Statement {
             ).isEqualTo(
                 CompilationResult.SUCCEEDED
             );
-
-            assertGeneratedClasses();
         }
         else {
             assertThat( actualResult.getCompilationResult() ).describedAs(
@@ -208,21 +203,6 @@ abstract class CompilingStatement extends Statement {
         assertDiagnostics( actualResult.getDiagnostics(), expectedResult.getDiagnostics() );
 
         assertCheckstyleRules();
-    }
-
-    private void assertGeneratedClasses() throws UnsupportedEncodingException {
-        if ( sourceOutputDir != null ) {
-            File sourceOutputDirFIle = new File( sourceOutputDir );
-            List<File> generatedFiles = findGeneratedFiles( sourceOutputDirFIle );
-            for ( File resource : generatedFiles ) {
-                String generatedFile = resource.getPath().replace( sourceOutputDirFIle.getPath() + File.separator, "" );
-                URL expectedFile = getClass().getClassLoader().getResource( generatedFile );
-                if ( expectedFile != null ) {
-                    File expectedResource = new File( URLDecoder.decode( expectedFile.getFile(), "UTF-8" ) );
-                    assertThat( resource ).hasSameContentAs( expectedResource );
-                }
-            }
-        }
     }
 
     private void assertCheckstyleRules() throws Exception {

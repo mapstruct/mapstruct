@@ -19,11 +19,18 @@
 package org.mapstruct.ap.testutil.runner;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mapstruct.ap.testutil.assertions.JavaFileAssert;
+
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * A {@link TestRule} to perform assertions on generated source files.
@@ -45,9 +52,30 @@ public class GeneratedSource implements TestRule {
      */
     private static ThreadLocal<CompilingStatement> compilingStatement = new ThreadLocal<CompilingStatement>();
 
+    private List<Class<?>> fixturesFor;
+
+    /**
+     * Instantiates the Rule.
+     */
+    public GeneratedSource() {
+        fixturesFor = new ArrayList<Class<?>>();
+    }
+
+    /**
+     * This constructor creates the rule with mappers that need to be compared with a static content.
+     * The comparison is done for mappers and the are compared against a Java file that matches the name of the
+     * Mapper that would have been created for the fixture.
+     *
+     * @param fixturesFor the classes that need to be compared with a static content
+     */
+    public GeneratedSource(Class<?>... fixturesFor) {
+        this.fixturesFor = new ArrayList<Class<?>>();
+        addComparisonToFixtureFor( fixturesFor );
+    }
+
     @Override
     public Statement apply(Statement base, Description description) {
-        return base;
+        return new GeneratedSourceStatement( base );
     }
 
     static void setCompilingStatement(CompilingStatement compilingStatement) {
@@ -58,14 +86,33 @@ public class GeneratedSource implements TestRule {
         GeneratedSource.compilingStatement.remove();
     }
 
+
+    /**
+     * Adds more mappers that need to be compared.
+     *
+     * The comparison is done for mappers and the are compared against a Java file that matches the name of the
+     * Mapper that would have been created for the fixture.
+     *
+     * @param fixturesFor the classes that need to be compared with
+     */
+    public void addComparisonToFixtureFor(Class<?>... fixturesFor) {
+        for ( Class<?> fixture : fixturesFor ) {
+            this.fixturesFor.add( fixture );
+        }
+    }
+
     /**
      * @param mapperClass the class annotated with {@code &#064;Mapper}
      *
      * @return an assert for the *Impl.java for the given mapper
      */
     public JavaFileAssert forMapper(Class<?> mapperClass) {
-        String generatedJavaFileName = mapperClass.getName().replace( '.', '/' ).concat( "Impl.java" );
+        String generatedJavaFileName = getMapperName( mapperClass );
         return forJavaFile( generatedJavaFileName );
+    }
+
+    private String getMapperName(Class<?> mapperClass) {
+        return mapperClass.getName().replace( '.', '/' ).concat( "Impl.java" );
     }
 
     /**
@@ -85,5 +132,39 @@ public class GeneratedSource implements TestRule {
      */
     public JavaFileAssert forJavaFile(String path) {
         return new JavaFileAssert( new File( compilingStatement.get().getSourceOutputDir() + "/" + path ) );
+    }
+
+    private class GeneratedSourceStatement extends Statement {
+        private final Statement next;
+
+        private GeneratedSourceStatement(Statement next) {
+            this.next = next;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            next.evaluate();
+            handleFixtureComparison();
+        }
+    }
+
+    private void handleFixtureComparison() throws UnsupportedEncodingException {
+        for ( Class<?> fixture : fixturesFor ) {
+            String expectedFixture = getMapperName( fixture );
+            URL expectedFile = getClass().getClassLoader().getResource( expectedFixture );
+            if ( expectedFile == null ) {
+                fail( String.format(
+                    "No reference file could be found for Mapper %s. You should create a file %s",
+                    fixture.getName(),
+                    expectedFixture
+                ) );
+            }
+            else {
+                File expectedResource = new File( URLDecoder.decode( expectedFile.getFile(), "UTF-8" ) );
+                forMapper( fixture ).hasSameMapperContent( expectedResource );
+            }
+            fixture.getPackage().getName();
+        }
+
     }
 }
