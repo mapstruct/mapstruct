@@ -40,6 +40,7 @@
         <module>core-common</module>
         <module>core</module>
         <module>core-jdk8</module>
+        <module>formatter</module>
         <module>processor</module>
         <module>integrationtest</module>
     </modules>

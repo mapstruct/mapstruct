@@ -43,6 +43,10 @@
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mapstruct-formatter</artifactId>
+        </dependency>
 
         <!-- Compile-only; Using "provided" scope as there is no such scope in Maven;
         these dependencies are not required at runtime, only for prism generation
@@ -57,12 +61,14 @@
             <artifactId>mapstruct</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-compiler-jdt</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
@@ -100,6 +106,17 @@
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-container-default</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Eclipse dependencies that are available through shading in Maven, but required in the IDE tests -->
+        <dependency>
+            <groupId>org.eclipse.core</groupId>
+            <artifactId>org.eclipse.core.resources</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.text</groupId>
+            <artifactId>org.eclipse.text</artifactId>
             <scope>test</scope>
         </dependency>
 

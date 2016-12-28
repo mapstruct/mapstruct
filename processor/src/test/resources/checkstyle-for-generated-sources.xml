@@ -118,7 +118,7 @@
         <module name="LeftCurly"/>
         <module name="NeedBraces"/>
         <module name="RightCurly">
-            <property name="option" value="alone"/>
+            <property name="option" value="same"/>
         </module>
 
 
