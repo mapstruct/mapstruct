@@ -547,6 +547,7 @@ public class PropertyMapping extends ModelElement {
                 .mappingContext( ctx )
                 .method( methodRef )
                 .selectionParameters( selectionParameters )
+                .callingContextTargetPropertyName( targetPropertyName )
                 .build();
 
             return getForgedAssignment( source, methodRef, streamMappingMethod );

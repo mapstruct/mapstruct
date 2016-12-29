@@ -67,6 +67,7 @@ public class StreamMappingMethod extends MappingMethod {
         private FormattingParameters formattingParameters;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
         private ForgedMethod forgedMethod;
+        private String callingContextTargetPropertyName;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
@@ -93,6 +94,11 @@ public class StreamMappingMethod extends MappingMethod {
             return this;
         }
 
+        public Builder callingContextTargetPropertyName(String callingContextTargetPropertyName) {
+            this.callingContextTargetPropertyName = callingContextTargetPropertyName;
+            return this;
+        }
+
         public StreamMappingMethod build() {
             //TODO the building of the methods is the same as the IterableMappingMethod, the only difference being
             // the static extracted getElementType and the wrapper of the assignment using Java8FunctionWrapper
@@ -112,7 +118,7 @@ public class StreamMappingMethod extends MappingMethod {
             Assignment assignment = ctx.getMappingResolver().getTargetAssignment(
                 method,
                 targetElementType,
-                null, // there is no targetPropertyName
+                callingContextTargetPropertyName,
                 formattingParameters,
                 selectionParameters,
                 sourceRHS,
@@ -375,6 +381,15 @@ public class StreamMappingMethod extends MappingMethod {
             }
         }
         else if ( other.selectionParameters != null ) {
+            return false;
+        }
+
+        if ( this.factoryMethod != null ) {
+            if ( !this.factoryMethod.equals( other.factoryMethod ) ) {
+                return false;
+            }
+        }
+        else if ( other.factoryMethod != null ) {
             return false;
         }
 
