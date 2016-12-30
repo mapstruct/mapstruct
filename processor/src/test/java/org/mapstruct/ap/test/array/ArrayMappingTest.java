@@ -39,7 +39,8 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
 public class ArrayMappingTest {
 
     @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource( ScienceMapper.class );
+    public final GeneratedSource generatedSource = new GeneratedSource()
+        .addComparisonToFixtureFor( ScienceMapper.class );
 
     @Test
     public void shouldCopyArraysInBean() {

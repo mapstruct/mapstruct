@@ -46,32 +46,15 @@ import static org.assertj.core.api.Assertions.fail;
  */
 public class GeneratedSource implements TestRule {
 
+    private final static String FIXTURES_ROOT = "fixtures/";
+
     /**
      * static ThreadLocal, as the {@link CompilingStatement} must inject itself statically for this rule to gain access
      * to the statement's information. As test execution of different classes in parallel is supported.
      */
     private static ThreadLocal<CompilingStatement> compilingStatement = new ThreadLocal<CompilingStatement>();
 
-    private List<Class<?>> fixturesFor;
-
-    /**
-     * Instantiates the Rule.
-     */
-    public GeneratedSource() {
-        fixturesFor = new ArrayList<Class<?>>();
-    }
-
-    /**
-     * This constructor creates the rule with mappers that need to be compared with a static content.
-     * The comparison is done for mappers and the are compared against a Java file that matches the name of the
-     * Mapper that would have been created for the fixture.
-     *
-     * @param fixturesFor the classes that need to be compared with a static content
-     */
-    public GeneratedSource(Class<?>... fixturesFor) {
-        this.fixturesFor = new ArrayList<Class<?>>();
-        addComparisonToFixtureFor( fixturesFor );
-    }
+    private List<Class<?>> fixturesFor = new ArrayList<Class<?>>();
 
     @Override
     public Statement apply(Statement base, Description description) {
@@ -94,11 +77,13 @@ public class GeneratedSource implements TestRule {
      * Mapper that would have been created for the fixture.
      *
      * @param fixturesFor the classes that need to be compared with
+     * @return the same rule for chaining
      */
-    public void addComparisonToFixtureFor(Class<?>... fixturesFor) {
+    public GeneratedSource addComparisonToFixtureFor(Class<?>... fixturesFor) {
         for ( Class<?> fixture : fixturesFor ) {
             this.fixturesFor.add( fixture );
         }
+        return this;
     }
 
     /**
@@ -150,7 +135,7 @@ public class GeneratedSource implements TestRule {
 
     private void handleFixtureComparison() throws UnsupportedEncodingException {
         for ( Class<?> fixture : fixturesFor ) {
-            String expectedFixture = getMapperName( fixture );
+            String expectedFixture = FIXTURES_ROOT + getMapperName( fixture );
             URL expectedFile = getClass().getClassLoader().getResource( expectedFixture );
             if ( expectedFile == null ) {
                 fail( String.format(
