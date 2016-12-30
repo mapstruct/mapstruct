@@ -20,12 +20,16 @@ package org.mapstruct.ap.test.bugs._913;
 
 import java.util.HashSet;
 import java.util.Set;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * All these test cases test the possible combinations in the SetterMapperForCollections.
@@ -46,6 +50,14 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Helper.class})
 @IssueKey( "913" )
 public class Issue913SetterMapperForCollectionsTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        DomainDtoWithNvmsNullMapper.class,
+        DomainDtoWithNvmsDefaultMapper.class,
+        DomainDtoWithPresenceCheckMapper.class,
+        DomainDtoWithNcvsAlwaysMapper.class
+    );
 
     /**
      * The null value mapping strategy on type level (Mapper) should generate forged methods for the

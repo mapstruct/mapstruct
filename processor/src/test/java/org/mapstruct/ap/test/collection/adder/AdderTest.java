@@ -18,13 +18,10 @@
  */
 package org.mapstruct.ap.test.collection.adder;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.collection.adder._target.AdderUsageObserver;
@@ -46,6 +43,11 @@ import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sjaak Derksen
@@ -74,6 +76,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class AdderTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        SourceTargetMapper.class,
+        SourceTargetMapperStrategyDefault.class,
+        SourceTargetMapperStrategySetterPreferred.class
+    );
 
     @IssueKey("241")
     @Test
@@ -252,6 +261,7 @@ public class AdderTest {
         Foo.class
     } )
     public void testMissingImport() throws DogException {
+        generatedSource.addComparisonToFixtureFor( Source2Target2Mapper.class );
 
         Source2 source = new Source2();
         source.setAttributes( Arrays.asList( new Foo() ) );
