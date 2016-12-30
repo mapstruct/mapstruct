@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.fail;
  */
 public class GeneratedSource implements TestRule {
 
-    private final static String FIXTURES_ROOT = "fixtures/";
+    private static final String FIXTURES_ROOT = "fixtures/";
 
     /**
      * static ThreadLocal, as the {@link CompilingStatement} must inject itself statically for this rule to gain access
