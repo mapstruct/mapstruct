@@ -20,13 +20,23 @@ package org.mapstruct.ap.testutil.assertions;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.assertj.core.api.AbstractCharSequenceAssert;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.FileAssert;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import org.assertj.core.api.AbstractCharSequenceAssert;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.FileAssert;
+import org.assertj.core.api.exception.RuntimeIOException;
+import org.assertj.core.error.ShouldHaveSameContent;
+import org.assertj.core.internal.Diff;
+import org.assertj.core.internal.Failures;
+import org.assertj.core.util.diff.Delta;
+
+import static java.lang.String.format;
 
 /**
  * Allows to perform assertions on .java source files.
@@ -34,6 +44,14 @@ import com.google.common.io.Files;
  * @author Andreas Gudian
  */
 public class JavaFileAssert extends FileAssert {
+
+    private static final String FIRST_LINE_LICENSE_REGEX = ".*Copyright 2012-\\d{4} Gunnar Morling.*";
+    private static final String GENERATED_DATE_REGEX = "\\s+date = " +
+        "\"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{4}\",";
+    private static final String GENERATED_COMMENTS_REGEX = "\\s+comments = \"version: , compiler: .*, environment: " +
+        ".*\"";
+
+    private Diff diff = new Diff();
     /**
      * @param actual the actual file
      */
@@ -74,6 +92,69 @@ public class JavaFileAssert extends FileAssert {
      */
     public void containsNoImportFor(Class<?> importedClass) {
         content().doesNotContain( getClassImportDeclaration( importedClass ) );
+    }
+
+    /**
+     * Verifies that the expected file has the same content as this Java file. The verification ignores
+     * the license header and the date/comments line from the {@code @Generated} annotation.
+     *
+     * @param expected the file that should be matched
+     */
+    public void hasSameMapperContent(File expected) {
+        Charset charset = Charset.forName( "UTF-8" );
+        try {
+            List<Delta<String>> diffs = new ArrayList<Delta<String>>( this.diff.diff(
+                actual,
+                charset,
+                expected,
+                charset
+            ) );
+            Iterator<Delta<String>> iterator = diffs.iterator();
+            while ( iterator.hasNext() ) {
+                Delta<String> delta = iterator.next();
+                if ( ignoreDelta( delta ) ) {
+                    iterator.remove();
+                }
+            }
+            if ( !diffs.isEmpty() ) {
+                throw Failures.instance()
+                    .failure( info, ShouldHaveSameContent.shouldHaveSameContent( actual, expected, diffs ) );
+            }
+        }
+        catch ( IOException e ) {
+            throw new RuntimeIOException( format(
+                "Unable to compare contents of files:<%s> and:<%s>",
+                actual,
+                expected
+            ), e );
+        }
+    }
+
+    /**
+     * Checks if the delta should be ignored. The delta is ignored if it is a deletion type for the license header
+     * or if it is a change delta for the date/comments part of a {@code @Generated} annotation.
+     *
+     * @param delta that needs to be checked
+     *
+     * @return {@code true} if this delta should be ignored, {@code false} otherwise
+     */
+    private boolean ignoreDelta(Delta<String> delta) {
+        if ( delta.getType() == Delta.TYPE.DELETE ) {
+            List<String> lines = delta.getOriginal().getLines();
+            return lines.size() > 2 && lines.get( 1 ).matches( FIRST_LINE_LICENSE_REGEX );
+        }
+        else if ( delta.getType() == Delta.TYPE.CHANGE ) {
+            List<String> lines = delta.getOriginal().getLines();
+            if ( lines.size() == 1 ) {
+                return lines.get( 0 ).matches( GENERATED_DATE_REGEX );
+            }
+            else if ( lines.size() == 2 ) {
+                return lines.get( 0 ).matches( GENERATED_DATE_REGEX ) &&
+                    lines.get( 1 ).matches( GENERATED_COMMENTS_REGEX );
+            }
+        }
+
+        return false;
     }
 
     /**
