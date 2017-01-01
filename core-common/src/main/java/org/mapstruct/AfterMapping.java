@@ -23,36 +23,40 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.mapstruct.util.Experimental;
-
 /**
  * Marks a method to be invoked at the end of a generated mapping method, right before the last {@code return} statement
- * of the mapping method. The method can be implemented in an abstract mapper class or be declared in a type (class or
- * interface) referenced in {@link Mapper#uses()} in order to be used in a mapping method.
+ * of the mapping method. The method can be implemented in an abstract mapper class, be declared in a type (class or
+ * interface) referenced in {@link Mapper#uses()}, or in a type used as {@code @}{@link Context} parameter in order to
+ * be used in a mapping method.
  * <p>
- * Only methods with return type {@code void} may be annotated with this annotation.
- * <p>
- * If the method has parameters, the method invocation is only generated if all parameters can be <em>assigned</em> by
- * the source or target parameters of the mapping method:
+ * The method invocation is only generated if the return type of the method (if non-{@code void}) is assignable to the
+ * return type of the mapping method and all parameters can be <em>assigned</em> by the available source, target or
+ * context parameters of the mapping method:
  * <ul>
  * <li>A parameter annotated with {@code @}{@link MappingTarget} is populated with the target instance of the mapping.
  * </li>
  * <li>A parameter annotated with {@code @}{@link TargetType} is populated with the target type of the mapping.</li>
- * <li>Any other parameter is populated with a source parameter of the mapping, whereas each source parameter is used
- * once at most.</li>
+ * <li>Parameters annotated with {@code @}{@link Context} are populated with the context parameters of the mapping
+ * method.</li>
+ * <li>Any other parameter is populated with a source parameter of the mapping.</li>
  * </ul>
  * <p>
- * All <em>after-mapping</em> methods that can be applied to a mapping method will be used. Their order is determined by
- * their location of definition:
- * <ul>
- * <li>The order of methods within one type can not be guaranteed, as it depends on the compiler and the processing
- * environment implementation.</li>
- * <li>Methods declared in one type are used after methods declared in their super-type.</li>
- * <li>Methods implemented in the mapper itself are used before methods from types referenced in {@link Mapper#uses()}.
+ * For non-{@code void} methods, the return value of the method invocation is returned as the result of the mapping
+ * method if it is not {@code null}.
+ * <p>
+ * All <em>after-mapping</em> methods that can be applied to a mapping method will be used. {@code @}{@link Qualifier} /
+ * {@code @}{@link Named} can be used to filter the methods to use.
+ * <p>
+ * The order of the method invocation is determined by their location of definition:
+ * <ol>
+ * <li>Methods declared on {@code @}{@link Context} parameters, ordered by the parameter order.</li>
+ * <li>Methods implemented in the mapper itself.</li>
+ * <li>Methods from types referenced in {@link Mapper#uses()}, in the order of the type declaration in the annotation.
  * </li>
- * <li>Types referenced in {@link Mapper#uses()} are searched for <em>after-mapping</em> methods in the order specified
- * in the annotation.</li>
- * </ul>
+ * <li>Methods declared in one type are used after methods declared in their super-type</li>
+ * </ol>
+ * <em>Important:</em> the order of methods declared within one type can not be guaranteed, as it depends on the
+ * compiler and the processing environment implementation.
  * <p>
  * Example:
  *
@@ -97,8 +101,8 @@ import org.mapstruct.util.Experimental;
  *
  * @author Andreas Gudian
  * @see BeforeMapping
+ * @see Context
  */
-@Experimental
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
 public @interface AfterMapping {
