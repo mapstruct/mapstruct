@@ -18,8 +18,7 @@
  */
 package org.mapstruct.ap.test.updatemethods;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -28,6 +27,9 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -52,11 +54,15 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 })
 public class UpdateMethodsTest {
 
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource();
+
     @Test
     @WithClasses( {
         OrganizationMapper.class
     } )
     public void testPreferUpdateMethod() {
+        generatedSource.addComparisonToFixtureFor( OrganizationMapper.class );
 
         OrganizationEntity organizationEntity = new OrganizationEntity();
         CompanyEntity companyEntity = new CompanyEntity();
@@ -85,6 +91,7 @@ public class UpdateMethodsTest {
         OrganizationMapper.class
     } )
     public void testUpdateMethodClearsExistingValues() {
+        generatedSource.addComparisonToFixtureFor( OrganizationMapper.class );
 
         OrganizationEntity organizationEntity = new OrganizationEntity();
         CompanyEntity companyEntity = new CompanyEntity();
@@ -109,6 +116,7 @@ public class UpdateMethodsTest {
         OrganizationMapper.class
     })
     public void testPreferUpdateMethodSourceObjectNotDefined() {
+        generatedSource.addComparisonToFixtureFor( OrganizationMapper.class );
 
         OrganizationEntity organizationEntity = new OrganizationEntity();
 
@@ -134,6 +142,7 @@ public class UpdateMethodsTest {
         DepartmentInBetween.class
     } )
     public void testPreferUpdateMethodEncapsulatingCreateMethod() {
+        generatedSource.addComparisonToFixtureFor( CompanyMapper.class );
 
         CompanyEntity companyEntity = new CompanyEntity();
 

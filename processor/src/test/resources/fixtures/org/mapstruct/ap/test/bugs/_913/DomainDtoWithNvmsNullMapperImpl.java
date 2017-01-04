@@ -1,0 +1,276 @@
+/**
+ *  Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  and/or other contributors as indicated by the @authors tag. See the
+ *  copyright.txt file in the distribution for a full listing of all
+ *  contributors.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+package org.mapstruct.ap.test.bugs._913;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Generated;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2016-12-30T19:07:28+0100",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+)
+public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMapper {
+
+    private final Helper helper = new Helper();
+
+    @Override
+    public Domain create(Dto source) {
+        if ( source == null ) {
+            return null;
+        }
+
+        Domain domain = new Domain();
+
+        Set<Long> set = stringListToLongSet( source.getStringsInitialized() );
+        if ( set != null ) {
+            domain.setLongsInitialized( set );
+        }
+        Set<Long> set_ = stringListToLongSet( source.getStrings() );
+        if ( set_ != null ) {
+            domain.setLongs( set_ );
+        }
+        List<String> list = source.getStrings();
+        if ( list != null ) {
+            domain.setStrings(       new HashSet<String>( list )
+            );
+        }
+        List<String> list_ = source.getStringsWithDefault();
+        if ( list_ != null ) {
+            domain.setStringsWithDefault(       new ArrayList<String>( list_ )
+            );
+        }
+        else {
+            domain.setStringsWithDefault( helper.toList( "3" ) );
+        }
+        List<String> list__ = source.getStringsInitialized();
+        if ( list__ != null ) {
+            domain.setStringsInitialized(       new HashSet<String>( list__ )
+            );
+        }
+
+        return domain;
+    }
+
+    @Override
+    public void update(Dto source, Domain target) {
+        if ( source == null ) {
+            return;
+        }
+
+        if ( target.getLongs() != null ) {
+            Set<Long> set = stringListToLongSet( source.getStrings() );
+            if ( set != null ) {
+                target.getLongs().clear();
+                target.getLongs().addAll( set );
+            }
+            else {
+                target.setLongs( null );
+            }
+        }
+        else {
+            Set<Long> set = stringListToLongSet( source.getStrings() );
+            if ( set != null ) {
+                target.setLongs( set );
+            }
+        }
+        if ( target.getStrings() != null ) {
+            List<String> list = source.getStrings();
+            if ( list != null ) {
+                target.getStrings().clear();
+                target.getStrings().addAll( list );
+            }
+            else {
+                target.setStrings( null );
+            }
+        }
+        else {
+            List<String> list = source.getStrings();
+            if ( list != null ) {
+                target.setStrings(       new HashSet<String>( list )
+                );
+            }
+        }
+        if ( target.getLongsInitialized() != null ) {
+            Set<Long> set_ = stringListToLongSet( source.getStringsInitialized() );
+            if ( set_ != null ) {
+                target.getLongsInitialized().clear();
+                target.getLongsInitialized().addAll( set_ );
+            }
+            else {
+                target.setLongsInitialized( null );
+            }
+        }
+        else {
+            Set<Long> set_ = stringListToLongSet( source.getStringsInitialized() );
+            if ( set_ != null ) {
+                target.setLongsInitialized( set_ );
+            }
+        }
+        if ( target.getStringsWithDefault() != null ) {
+            List<String> list_ = source.getStringsWithDefault();
+            if ( list_ != null ) {
+                target.getStringsWithDefault().clear();
+                target.getStringsWithDefault().addAll( list_ );
+            }
+            else {
+                target.setStringsWithDefault( helper.toList( "3" ) );
+            }
+        }
+        else {
+            List<String> list_ = source.getStringsWithDefault();
+            if ( list_ != null ) {
+                target.setStringsWithDefault(       new ArrayList<String>( list_ )
+                );
+            }
+            else {
+                target.setStringsWithDefault( helper.toList( "3" ) );
+            }
+        }
+        if ( target.getStringsInitialized() != null ) {
+            List<String> list__ = source.getStringsInitialized();
+            if ( list__ != null ) {
+                target.getStringsInitialized().clear();
+                target.getStringsInitialized().addAll( list__ );
+            }
+            else {
+                target.setStringsInitialized( null );
+            }
+        }
+        else {
+            List<String> list__ = source.getStringsInitialized();
+            if ( list__ != null ) {
+                target.setStringsInitialized(       new HashSet<String>( list__ )
+                );
+            }
+        }
+    }
+
+    @Override
+    public Domain updateWithReturn(Dto source, Domain target) {
+        if ( source == null ) {
+            return null;
+        }
+
+        if ( target.getLongs() != null ) {
+            Set<Long> set = stringListToLongSet( source.getStrings() );
+            if ( set != null ) {
+                target.getLongs().clear();
+                target.getLongs().addAll( set );
+            }
+            else {
+                target.setLongs( null );
+            }
+        }
+        else {
+            Set<Long> set = stringListToLongSet( source.getStrings() );
+            if ( set != null ) {
+                target.setLongs( set );
+            }
+        }
+        if ( target.getStrings() != null ) {
+            List<String> list = source.getStrings();
+            if ( list != null ) {
+                target.getStrings().clear();
+                target.getStrings().addAll( list );
+            }
+            else {
+                target.setStrings( null );
+            }
+        }
+        else {
+            List<String> list = source.getStrings();
+            if ( list != null ) {
+                target.setStrings(       new HashSet<String>( list )
+                );
+            }
+        }
+        if ( target.getLongsInitialized() != null ) {
+            Set<Long> set_ = stringListToLongSet( source.getStringsInitialized() );
+            if ( set_ != null ) {
+                target.getLongsInitialized().clear();
+                target.getLongsInitialized().addAll( set_ );
+            }
+            else {
+                target.setLongsInitialized( null );
+            }
+        }
+        else {
+            Set<Long> set_ = stringListToLongSet( source.getStringsInitialized() );
+            if ( set_ != null ) {
+                target.setLongsInitialized( set_ );
+            }
+        }
+        if ( target.getStringsWithDefault() != null ) {
+            List<String> list_ = source.getStringsWithDefault();
+            if ( list_ != null ) {
+                target.getStringsWithDefault().clear();
+                target.getStringsWithDefault().addAll( list_ );
+            }
+            else {
+                target.setStringsWithDefault( helper.toList( "3" ) );
+            }
+        }
+        else {
+            List<String> list_ = source.getStringsWithDefault();
+            if ( list_ != null ) {
+                target.setStringsWithDefault(       new ArrayList<String>( list_ )
+                );
+            }
+            else {
+                target.setStringsWithDefault( helper.toList( "3" ) );
+            }
+        }
+        if ( target.getStringsInitialized() != null ) {
+            List<String> list__ = source.getStringsInitialized();
+            if ( list__ != null ) {
+                target.getStringsInitialized().clear();
+                target.getStringsInitialized().addAll( list__ );
+            }
+            else {
+                target.setStringsInitialized( null );
+            }
+        }
+        else {
+            List<String> list__ = source.getStringsInitialized();
+            if ( list__ != null ) {
+                target.setStringsInitialized(       new HashSet<String>( list__ )
+                );
+            }
+        }
+
+        return target;
+    }
+
+    protected Set<Long> stringListToLongSet(List<String> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        Set<Long> set = new HashSet<Long>();
+        for ( String string : list ) {
+            set.add( Long.parseLong( string ) );
+        }
+
+        return set;
+    }
+}

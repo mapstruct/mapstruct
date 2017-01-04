@@ -18,13 +18,15 @@
  */
 package org.mapstruct.ap.test.conversion.string;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
     Source.class,
@@ -35,6 +37,10 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 public class StringConversionTest {
 
     private static final String STRING_CONSTANT = "String constant";
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        SourceTargetMapper.class );
 
     @Test
     public void shouldApplyStringConversions() {

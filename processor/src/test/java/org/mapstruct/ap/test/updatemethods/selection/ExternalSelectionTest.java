@@ -18,12 +18,11 @@
  */
 package org.mapstruct.ap.test.updatemethods.selection;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.updatemethods.BossDto;
@@ -41,6 +40,9 @@ import org.mapstruct.ap.test.updatemethods.SecretaryEntity;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -68,11 +70,19 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 })
 public class ExternalSelectionTest {
 
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        OrganizationMapper1.class,
+        ExternalMapper.class,
+        DepartmentMapper.class
+    );
+
     @Test
     @WithClasses({
         OrganizationMapper1.class
     })
     public void shouldSelectGeneratedExternalMapper() {
+        generatedSource.addComparisonToFixtureFor( OrganizationMapper1.class );
 
         CompanyEntity entity = new CompanyEntity();
         CompanyDto dto = new CompanyDto();
@@ -85,6 +95,7 @@ public class ExternalSelectionTest {
     })
     @IssueKey("604")
     public void shouldSelectGeneratedExternalMapperWithImportForPropertyType() {
+        generatedSource.addComparisonToFixtureFor( OrganizationMapper3.class );
 
         BossEntity entity = new BossEntity();
         BossDto dto = new BossDto();
@@ -96,6 +107,7 @@ public class ExternalSelectionTest {
         OrganizationMapper2.class
     })
     public void shouldSelectGeneratedHandWrittenExternalMapper() {
+        generatedSource.addComparisonToFixtureFor( OrganizationMapper2.class );
 
         CompanyEntity entity = new CompanyEntity();
         CompanyDto dto = new CompanyDto();
