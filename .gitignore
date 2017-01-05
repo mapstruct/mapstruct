@@ -1,5 +1,6 @@
 # Eclipse
 .metadata
+.recommenders
 .classpath
 .project
 .settings
@@ -19,6 +20,7 @@ nb-configuration.xml
 # Build
 /**/target/
 test-output
+dependency-reduced-pom.xml
 
 # Misc.
 .DS_Store

@@ -146,11 +146,14 @@ abstract class CompilingStatement extends Statement {
     private static List<String> buildProcessorClasspath() {
         String[] whitelist =
             new String[] {
+                "mapstruct-formatter", // the formatter module, when run in single-module builds
+                "formatter" + File.separator + "target",  // the formatter module, when run in the IDE,
                 "processor" + File.separator + "target",  // the processor itself,
                 "freemarker",
                 "javax.inject",
                 "spring-context",
-                "joda-time" };
+                "joda-time",
+                "org.eclipse." };
 
         return filterBootClassPath( whitelist );
     }

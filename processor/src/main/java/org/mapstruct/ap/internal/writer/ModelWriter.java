@@ -18,20 +18,23 @@
  */
 package org.mapstruct.ap.internal.writer;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.tools.FileObject;
 
 import org.mapstruct.ap.internal.writer.Writable.Context;
+import org.mapstruct.ap.internal.writer.formatter.Formatter;
 
 import freemarker.cache.StrongCacheStorage;
 import freemarker.cache.TemplateLoader;
@@ -45,6 +48,7 @@ import freemarker.template.DefaultObjectWrapper;
  *
  * @author Gunnar Morling
  */
+@SuppressWarnings("unchecked")
 public class ModelWriter {
 
     /**
@@ -52,6 +56,8 @@ public class ModelWriter {
      * altered after original initialization
      */
     private static final Configuration CONFIGURATION;
+
+    private static final Map<String, String> DEFAULT_FORMATTER_PROPERTIES;
 
     static {
         try {
@@ -72,16 +78,32 @@ public class ModelWriter {
         CONFIGURATION.setCacheStorage( new StrongCacheStorage() );
         CONFIGURATION.setTemplateUpdateDelay( Integer.MAX_VALUE );
         CONFIGURATION.setLocalizedLookup( false );
+
+        DEFAULT_FORMATTER_PROPERTIES = new HashMap<String, String>();
+        try {
+            Properties props = new Properties();
+            props.load(
+                new InputStreamReader(
+                    ModelWriter.class
+                        .getResourceAsStream( "/org/mapstruct/ap/internal/default-formatter.properties" ) ) );
+            DEFAULT_FORMATTER_PROPERTIES.putAll( (Map) props );
+        }
+        catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     public void writeModel(FileObject sourceFile, Writable model) {
         try {
-            BufferedWriter writer = new BufferedWriter( new IndentationCorrectingWriter( sourceFile.openWriter() ) );
-
+            StringWriter buffer = new StringWriter( 1024 );
             Map<Class<?>, Object> values = new HashMap<Class<?>, Object>();
             values.put( Configuration.class, CONFIGURATION );
 
-            model.write( new DefaultModelElementWriterContext( values ), writer );
+            model.write( new DefaultModelElementWriterContext( values ), buffer );
+
+            Writer writer = sourceFile.openWriter();
+
+            writer.append( Formatter.formatSource( DEFAULT_FORMATTER_PROPERTIES, buffer.toString() ) );
 
             writer.flush();
             writer.close();
