@@ -18,8 +18,9 @@
  */
 package org.mapstruct.ap.test.ignore;
 
-import javax.tools.Diagnostic.Kind;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,9 +89,9 @@ public class IgnorePropertyTest {
             @Diagnostic(type = ErroneousTargetHasNoWriteAccessorMapper.class,
                 kind = Kind.ERROR,
                 line = 35,
-                messageRegExp = "Property \"hasTallons\" has no write accessor\\.")
+                messageRegExp = "Property \"hasClaws\" has no write accessor\\.")
         }
     )
-    public void shouldGiveWringingOnUnmapped() {
+    public void shouldGiveErrorOnMappingForReadOnlyProp() {
     }
 }
