@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.collection.adder._target.AdderUsageObserver;
@@ -46,6 +47,7 @@ import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * @author Sjaak Derksen
@@ -70,10 +72,21 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     IndoorPet.class,
     OutdoorPet.class,
     DogException.class,
-    CatException.class
+    CatException.class,
+    Target2.class,
+    Source2.class,
+    Source2Target2Mapper.class,
+    Foo.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class AdderTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        SourceTargetMapper.class,
+        SourceTargetMapperStrategyDefault.class,
+        SourceTargetMapperStrategySetterPreferred.class
+    );
 
     @IssueKey("241")
     @Test
@@ -245,13 +258,8 @@ public class AdderTest {
 
     @IssueKey( "310" )
     @Test
-    @WithClasses( {
-        Target2.class,
-        Source2.class,
-        Source2Target2Mapper.class,
-        Foo.class
-    } )
     public void testMissingImport() throws DogException {
+        generatedSource.addComparisonToFixtureFor( Source2Target2Mapper.class );
 
         Source2 source = new Source2();
         source.setAttributes( Arrays.asList( new Foo() ) );

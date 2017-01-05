@@ -23,11 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * All these test cases test the possible combinations in the SetterMapperForCollections.
@@ -48,6 +50,14 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     Helper.class})
 @IssueKey( "913" )
 public class Issue913SetterMapperForCollectionsTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        DomainDtoWithNvmsNullMapper.class,
+        DomainDtoWithNvmsDefaultMapper.class,
+        DomainDtoWithPresenceCheckMapper.class,
+        DomainDtoWithNcvsAlwaysMapper.class
+    );
 
     /**
      * The null value mapping strategy on type level (Mapper) should generate forged methods for the
@@ -325,8 +335,6 @@ public class Issue913SetterMapperForCollectionsTest {
 
     /**
      * These assert check if non-null and default mapping is working as expected.
-     *
-     * @param domain
      */
     private void doControlAsserts( Domain domain ) {
         assertThat( domain.getStringsInitialized() ).containsOnly( "5" );
@@ -336,8 +344,6 @@ public class Issue913SetterMapperForCollectionsTest {
 
     /**
      * These assert check if non-null and default mapping is working as expected.
-     *
-     * @param domain
      */
     private void doControlAsserts( Domain domain1, Domain domain2) {
         assertThat( domain1 ).isEqualTo( domain2 );

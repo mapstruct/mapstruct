@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.array;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,19 +33,14 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @WithClasses( { Scientist.class, ScientistDto.class, ScienceMapper.class } )
 @RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("108")
 public class ArrayMappingTest {
 
-    private final GeneratedSource generatedSource = new GeneratedSource();
-
     @Rule
-    public GeneratedSource getGeneratedSource() {
-        return generatedSource;
-    }
+    public final GeneratedSource generatedSource = new GeneratedSource()
+        .addComparisonToFixtureFor( ScienceMapper.class );
 
     @Test
     public void shouldCopyArraysInBean() {
@@ -238,6 +235,6 @@ public class ArrayMappingTest {
     @Test
     @IssueKey( "999" )
     public void shouldNotContainFQNForStringArray() {
-        getGeneratedSource().forMapper( ScienceMapper.class ).content().doesNotContain( "java.lang.String[]" );
+        generatedSource.forMapper( ScienceMapper.class ).content().doesNotContain( "java.lang.String[]" );
     }
 }

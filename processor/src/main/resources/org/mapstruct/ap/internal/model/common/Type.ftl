@@ -25,13 +25,6 @@
     <#elseif wildCardSuperBound>
         ? super <@includeModel object=typeBound />
     <#else>
-        <#if imported>
-            ${name}
-        <#else>
-            ${fullyQualifiedName}
-        </#if>
-    </#if>
-    <#if (!ext.raw?? && typeParameters?size > 0) >
-        <<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>>
+        <#if imported>${name}<#else>${fullyQualifiedName}</#if></#if><#if (!ext.raw?? && typeParameters?size > 0) ><<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>>
     </#if>
 </@compress>
