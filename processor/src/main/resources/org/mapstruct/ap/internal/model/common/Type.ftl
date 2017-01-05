@@ -1,7 +1,7 @@
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.common.Type" -->
 <#--
 
-     Copyright 2012-2016 Gunnar Morling (http://www.gunnarmorling.de/)
+     Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
      and/or other contributors as indicated by the @authors tag. See the
      copyright.txt file in the distribution for a full listing of all
      contributors.
