@@ -1338,6 +1338,8 @@ When an iterable or map mapping method declares an interface type as return type
 |`ConcurrentNavigableMap`|`ConcurrentSkipListMap`
 |===
 
+include::mapping-streams.asciidoc[]
+
 [[mapping-enum-types]]
 == Mapping Values
 

@@ -51,6 +51,7 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
+import org.mapstruct.ap.internal.model.StreamMappingMethod;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -411,6 +412,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     mappingMethods.add( enumMappingMethod );
                 }
             }
+            else if ( method.isStreamMapping() ) {
+                StreamMappingMethod streamMappingMethod = createStreamMappingMethod( method, mappingOptions );
+
+                // If we do StreamMapping that means that internally there is a way to generate the result type
+                hasFactoryMethod =
+                    streamMappingMethod.getFactoryMethod() != null || method.getResultType().isStreamType();
+                mappingMethods.add( streamMappingMethod );
+            }
             else {
 
                 NullValueMappingStrategyPrism nullValueMappingStrategy = null;
@@ -445,6 +454,30 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
         }
         return mappingMethods;
+    }
+
+    private StreamMappingMethod createStreamMappingMethod(SourceMethod method, MappingOptions mappingOptions) {
+        // TODO this is the same as the if with the isIterableMapping, I think that we need
+        // to refactor the IterableMapping Builder and be able to reuse the common logic
+        StreamMappingMethod.Builder builder = new StreamMappingMethod.Builder();
+
+        FormattingParameters formattingParameters = null;
+        SelectionParameters selectionParameters = null;
+        NullValueMappingStrategyPrism nullValueMappingStrategy = null;
+
+        if ( mappingOptions.getIterableMapping() != null ) {
+            formattingParameters = mappingOptions.getIterableMapping().getFormattingParameters();
+            selectionParameters = mappingOptions.getIterableMapping().getSelectionParameters();
+            nullValueMappingStrategy = mappingOptions.getIterableMapping().getNullValueMappingStrategy();
+        }
+
+        return builder
+            .mappingContext( mappingContext )
+            .method( method )
+            .formattingParameters( formattingParameters )
+            .selectionParameters( selectionParameters )
+            .nullValueMappingStrategy( nullValueMappingStrategy )
+            .build();
     }
 
     private void mergeInheritedOptions(SourceMethod method, MapperConfiguration mapperConfig,

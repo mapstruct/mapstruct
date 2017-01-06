@@ -28,10 +28,21 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 /**
- * Configures the mapping between two iterable types, e.g. {@code List<String>} and {@code List<Date>}.
+ * Configures the mapping between two iterable like types, e.g. {@code List<String>} and {@code List<Date>}.
+ *
  *
  * <p>Note: either  @IterableMapping#dateFormat, @IterableMapping#resultType or @IterableMapping#qualifiedBy
  * must be specified</p>
+ *
+ * Supported mappings are:
+ * <ul>
+ *     <li>{@code Iterable<A>} to/from {@code Iterable<B>}/{@code Iterable<A>}</li>
+ *     <li>{@code Iterable<A>} to/from {@code B[]}/{@code A[]}</li>
+ *     <li>{@code Iterable<A>} to/from {@code Stream<B>}/{@code Stream<A>}</li>
+ *     <li>{@code A[]} to/from {@code Stream<B>}/{@code Stream<A>}</li>
+ *     <li>{@code A[]} to/from {@code B[]}</li>
+ *     <li>{@code Stream<A>} to/from {@code Stream<B>}</li>
+ * </ul>
  *
  * @author Gunnar Morling
  */

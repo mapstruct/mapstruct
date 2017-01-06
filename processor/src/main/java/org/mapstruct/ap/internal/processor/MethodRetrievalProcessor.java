@@ -400,7 +400,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         Type parameterType = sourceParameters.get( 0 ).getType();
 
-        if ( parameterType.isIterableType() && !resultType.isIterableType() ) {
+        if ( parameterType.isIterableOrStreamType() && !resultType.isIterableOrStreamType() ) {
             messager.printMessage( method, Message.RETRIEVAL_ITERABLE_TO_NON_ITERABLE );
             return false;
         }
@@ -410,7 +410,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
-        if ( !parameterType.isIterableType() && resultType.isIterableType() ) {
+        if ( !parameterType.isIterableOrStreamType() && resultType.isIterableOrStreamType() ) {
             messager.printMessage( method, Message.RETRIEVAL_NON_ITERABLE_TO_ITERABLE );
             return false;
         }

@@ -18,17 +18,11 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.last;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 
@@ -58,6 +52,11 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -261,6 +260,11 @@ public class PropertyMapping extends ModelElement {
                 }
                 else if ( sourceType.isMapType() && targetType.isMapType() ) {
                     assignment = forgeMapMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
+                }
+                else if ( ( sourceType.isIterableType() && targetType.isStreamType() ) ||
+                    ( sourceType.isStreamType() && targetType.isStreamType() ) ||
+                    ( sourceType.isStreamType() && targetType.isIterableType() ) ) {
+                    assignment = forgeStreamMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
                 }
                 else {
                     assignment = forgeMapping( rightHandSide );
@@ -533,16 +537,70 @@ public class PropertyMapping extends ModelElement {
             return sourcePresenceChecker;
         }
 
+        private Assignment forgeStreamMapping(Type sourceType, Type targetType, SourceRHS source,
+                                              ExecutableElement element) {
+
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element );
+
+            StreamMappingMethod.Builder builder = new StreamMappingMethod.Builder();
+            StreamMappingMethod streamMappingMethod = builder
+                .mappingContext( ctx )
+                .method( methodRef )
+                .selectionParameters( selectionParameters )
+                .callingContextTargetPropertyName( targetPropertyName )
+                .build();
+
+            return getForgedAssignment( source, methodRef, streamMappingMethod );
+        }
+
         private Assignment forgeIterableMapping(Type sourceType, Type targetType, SourceRHS source,
                                                 ExecutableElement element) {
 
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element );
+            IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
+
+            IterableMappingMethod iterableMappingMethod = builder
+                .mappingContext( ctx )
+                .method( methodRef )
+                .selectionParameters( selectionParameters )
+                .callingContextTargetPropertyName( targetPropertyName )
+                .build();
+
+            return getForgedAssignment( source, methodRef, iterableMappingMethod );
+        }
+
+        private Assignment getForgedAssignment(SourceRHS source, ForgedMethod methodRef,
+                                               MappingMethod mappingMethod) {
             Assignment assignment = null;
+            if ( mappingMethod != null ) {
+                if ( !ctx.getMappingsToGenerate().contains( mappingMethod ) ) {
+                    ctx.getMappingsToGenerate().add( mappingMethod );
+                }
+                else {
+                    String existingName = ctx.getExistingMappingMethod( mappingMethod ).getName();
+                    methodRef = new ForgedMethod( existingName, methodRef );
+                }
+
+                assignment = new MethodReference(
+                    methodRef,
+                    null,
+                    ParameterBinding.fromParameters( methodRef.getParameters() )
+                );
+                assignment.setAssignment( source );
+                forgedMethods.addAll( mappingMethod.getForgedMethods() );
+            }
+
+            return assignment;
+        }
+
+        private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source,
+                                                 ExecutableElement element) {
             String name = getName( sourceType, targetType );
             name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
             // copy mapper configuration from the source method, its the same mapper
             MapperConfiguration config = method.getMapperConfiguration();
-            ForgedMethod methodRef = new ForgedMethod(
+            return new ForgedMethod(
                 name,
                 sourceType,
                 targetType,
@@ -556,62 +614,12 @@ public class PropertyMapping extends ModelElement {
                     targetType
                 )
             );
-            IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
-
-            IterableMappingMethod iterableMappingMethod = builder
-                .mappingContext( ctx )
-                .method( methodRef )
-                .selectionParameters( selectionParameters )
-                .callingContextTargetPropertyName( targetPropertyName )
-                .build();
-
-            if ( iterableMappingMethod != null ) {
-                if ( !ctx.getMappingsToGenerate().contains( iterableMappingMethod ) ) {
-                    ctx.getMappingsToGenerate().add( iterableMappingMethod );
-                }
-                else {
-                    String existingName = ctx.getExistingMappingMethod( iterableMappingMethod ).getName();
-                    methodRef = new ForgedMethod( existingName, methodRef );
-                }
-
-                assignment = new MethodReference(
-                    methodRef,
-                    null,
-                    ParameterBinding.fromParameters( methodRef.getParameters() ) );
-
-                assignment.setAssignment( source );
-
-                forgedMethods.addAll( iterableMappingMethod.getForgedMethods() );
-            }
-
-            return assignment;
         }
 
         private Assignment forgeMapMapping(Type sourceType, Type targetType, SourceRHS source,
                                            ExecutableElement element) {
 
-            Assignment assignment = null;
-
-            String name = getName( sourceType, targetType );
-            name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
-
-            // copy mapper configuration from the source method, its the same mapper
-            MapperConfiguration config = method.getMapperConfiguration();
-            ForgedMethod methodRef =
-                new ForgedMethod(
-                    name,
-                    sourceType,
-                    targetType,
-                    config,
-                    element,
-                    method.getContextParameters(),
-                new ForgedMethodHistory( getForgedMethodHistory( source ),
-                    source.getSourceErrorMessagePart(),
-                    targetPropertyName,
-                    source.getSourceType(),
-                    targetType
-                )
-            );
+            ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element );
 
             MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
             MapMappingMethod mapMappingMethod = builder
@@ -619,24 +627,7 @@ public class PropertyMapping extends ModelElement {
                 .method( methodRef )
                 .build();
 
-            if ( mapMappingMethod != null ) {
-                if ( !ctx.getMappingsToGenerate().contains( mapMappingMethod ) ) {
-                    ctx.getMappingsToGenerate().add( mapMappingMethod );
-                }
-                else {
-                    String existingName = ctx.getExistingMappingMethod( mapMappingMethod ).getName();
-                    methodRef = new ForgedMethod( existingName, methodRef );
-                }
-                assignment = new MethodReference(
-                    methodRef,
-                    null,
-                    ParameterBinding.fromParameters( methodRef.getParameters() ) );
-                assignment.setAssignment( source );
-
-                forgedMethods.addAll( mapMappingMethod.getForgedMethods() );
-            }
-
-            return assignment;
+            return getForgedAssignment( source, methodRef, mapMappingMethod );
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {

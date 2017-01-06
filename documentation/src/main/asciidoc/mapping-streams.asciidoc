@@ -1,0 +1,67 @@
+[[mapping-streams]]
+== Mapping Streams
+
+The mapping of `java.util.Stream` is done in a similar way as the mapping of collection types, i.e. by defining mapping
+methods with the required source and target types in a mapper interface.
+
+The generated code will contain the creation of a `Stream` from the provided `Iterable`/array or will collect the
+provided `Stream` into an `Iterable`/array. If a mapping method or an implicit conversion for the source and target
+element types exists, then this conversion will be done in `Stream#map()`. The following shows an example:
+
+.Mapper with stream mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    Set<String> integerStreamToStringSet(Stream<Integer> integers);
+
+    List<CarDto> carsToCarDtos(Stream<Car> cars);
+
+    CarDto carToCarDto(Car car);
+}
+----
+====
+
+The generated implementation of the `integerStreamToStringSet()` performs the conversion from `Integer` to `String` for
+each element, while the generated `carsToCarDtos()` method invokes the `carToCarDto()` method for each contained
+element as shown in the following:
+
+.Generated stream mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+@Override
+public Set<String> integerStreamToStringSet(Stream<Integer> integers) {
+    if ( integers == null ) {
+        return null;
+    }
+
+    return integers.stream().map( integer -> String.valueOf( integer ) )
+        .collect( Collectors.toCollection( HashSet<String>::new ) );
+}
+
+@Override
+public List<CarDto> carsToCarDtos(Stream<Car> cars) {
+    if ( cars == null ) {
+        return null;
+    }
+
+    return integers.stream().map( car -> carToCarDto( car ) )
+        .collect( Collectors.toCollection( ArrayList<CarDto>::new ) );
+}
+----
+====
+
+[WARNING]
+====
+If a mapping from a `Stream` to an `Iterable` or an array is performed, then the passed `Stream` will be consumed
+and it will no longer be possible to consume it.
+====
+
+The same implementation types as in <<implementation-types-for-collection-mappings>> are used for the creation of the
+collection when doing `Stream` to `Iterable` mapping.

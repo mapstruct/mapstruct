@@ -54,8 +54,9 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
-import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.Collections;
+import org.mapstruct.ap.internal.util.JavaStreamConstants;
 
 /**
  * Factory creating {@link Type} instances.
@@ -70,6 +71,7 @@ public class TypeFactory {
     private final TypeMirror iterableType;
     private final TypeMirror collectionType;
     private final TypeMirror mapType;
+    private final TypeMirror streamType;
 
     private final Map<String, Type> implementationTypes = new HashMap<String, Type>();
     private final Map<String, String> importedQualifiedTypesBySimpleName = new HashMap<String, String>();
@@ -82,6 +84,8 @@ public class TypeFactory {
         collectionType =
             typeUtils.erasure( elementUtils.getTypeElement( Collection.class.getCanonicalName() ).asType() );
         mapType = typeUtils.erasure( elementUtils.getTypeElement( Map.class.getCanonicalName() ).asType() );
+        TypeElement streamTypeElement = elementUtils.getTypeElement( JavaStreamConstants.STREAM_FQN );
+        streamType = streamTypeElement == null ? null : typeUtils.erasure( streamTypeElement.asType() );
 
         implementationTypes.put( Iterable.class.getName(), getType( ArrayList.class ) );
         implementationTypes.put( Collection.class.getName(), getType( ArrayList.class ) );
@@ -147,6 +151,7 @@ public class TypeFactory {
         boolean isIterableType = typeUtils.isSubtype( mirror, iterableType );
         boolean isCollectionType = typeUtils.isSubtype( mirror, collectionType );
         boolean isMapType = typeUtils.isSubtype( mirror, mapType );
+        boolean isStreamType = streamType != null && typeUtils.isSubtype( mirror, streamType );
 
         boolean isEnumType;
         boolean isInterface;
@@ -224,6 +229,7 @@ public class TypeFactory {
             isIterableType,
             isCollectionType,
             isMapType,
+            isStreamType,
             isImported( name, qualifiedName )
         );
     }
@@ -420,6 +426,7 @@ public class TypeFactory {
                 implementationType.isIterableType(),
                 implementationType.isCollectionType(),
                 implementationType.isMapType(),
+                implementationType.isStreamType(),
                 isImported( implementationType.getName(), implementationType.getFullyQualifiedName() )
             );
         }

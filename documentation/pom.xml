@@ -66,6 +66,7 @@
               </dependencies>
               <configuration>
                     <sourceHighlighter>coderay</sourceHighlighter>
+                    <sourceDocumentName>mapstruct-reference-guide.asciidoc</sourceDocumentName>
                     <attributes>
                         <mapstructVersion>${project.version}</mapstructVersion>
                         <icons>font</icons>
