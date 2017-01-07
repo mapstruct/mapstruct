@@ -18,14 +18,10 @@
  */
 package org.mapstruct.ap.test.selection.qualifier;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
@@ -50,6 +46,9 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  *
@@ -183,14 +182,19 @@ public class QualifierTest {
         ErroneousMovieFactoryMapper.class
     } )
     @ExpectedCompilationOutcome(
-             value = CompilationResult.FAILED,
-            diagnostics = {
-                @Diagnostic( type = ErroneousMovieFactoryMapper.class,
-                        kind = Kind.ERROR,
-                        line = 37,
-                        messageRegExp = "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in "
-                            + "@BeanMapping, define at least one of them." )
-            }
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMovieFactoryMapper.class,
+                kind = Kind.ERROR,
+                line = 37,
+                messageRegExp = "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in " +
+                    "@BeanMapping, define at least one of them."),
+            @Diagnostic(type = ErroneousMovieFactoryMapper.class,
+                kind = Kind.ERROR,
+                line = 37,
+                messageRegExp = "The return type .*\\.AbstractEntry is an abstract class or interface. Provide a non " +
+                    "abstract / non interface result type or a factory method.")
+        }
     )
     public void testEmptyBeanMapping() {
     }

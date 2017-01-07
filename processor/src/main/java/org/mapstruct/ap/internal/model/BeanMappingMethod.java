@@ -181,13 +181,29 @@ public class BeanMappingMethod extends MappingMethod {
             if ( factoryMethod == null ) {
                 if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
                     resultType = ctx.getTypeFactory().getType( selectionParameters.getResultType() );
-                    if ( !resultType.isAssignableTo( method.getResultType() ) ) {
+                    if ( resultType.isAbstract() ) {
+                        ctx.getMessager().printMessage(
+                            method.getExecutable(),
+                            beanMappingPrism.mirror,
+                            Message.BEANMAPPING_ABSTRACT,
+                            resultType,
+                            method.getResultType()
+                        );
+                    }
+                    else if ( !resultType.isAssignableTo( method.getResultType() ) ) {
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
                             beanMappingPrism.mirror,
                             Message.BEANMAPPING_NOT_ASSIGNABLE, resultType, method.getResultType()
                         );
                     }
+                }
+                else if ( !method.isUpdateMethod() && method.getReturnType().isAbstract() ) {
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        Message.GENERAL_ABSTRACT_RETURN_TYPE,
+                        method.getReturnType()
+                    );
                 }
             }
 

@@ -289,14 +289,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
 
             if ( beanMappingMethod != null ) {
-                boolean hasFactoryMethod = beanMappingMethod.getFactoryMethod() != null;
                 mappingMethods.add( beanMappingMethod );
-                if ( !hasFactoryMethod ) {
-                    // A factory method  is allowed to return an interface type and hence, the generated
-                    // implementation as well. The check below must only be executed if there's no factory
-                    // method that could be responsible.
-                    reportErrorIfNoImplementationTypeIsRegisteredForInterfaceReturnType( method );
-                }
             }
         }
 
@@ -438,10 +431,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     .build();
 
                 if ( beanMappingMethod != null ) {
-                    // We can consider that the mapping method has a factory method if it has one,
-                    // or if the result type of the methods is not an interface
-                    hasFactoryMethod = beanMappingMethod.getFactoryMethod() != null ||
-                        !beanMappingMethod.getResultType().isInterface();
+                    // We can consider that the bean mapping method can always be constructed. If there is a problem
+                    // it would have been reported in its build
+                    hasFactoryMethod = true;
                     mappingMethods.add( beanMappingMethod );
                 }
             }
