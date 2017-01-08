@@ -228,8 +228,8 @@ public class SourceMethod implements Method {
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
 
-        this.mappingTargetParameter = determineMappingTargetParameter( parameters );
-        this.targetTypeParameter = determineTargetTypeParameter( parameters );
+        this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
+        this.targetTypeParameter = Parameter.getTargetTypeParameter( parameters );
         this.isObjectFactory = determineIfIsObjectFactory( executable );
 
         this.typeUtils = typeUtils;
@@ -246,26 +246,6 @@ public class SourceMethod implements Method {
         return !isLifecycleCallbackMethod() && !returnType.isVoid()
             && hasNoMappingTargetParam
             && ( hasFactoryAnnotation || hasNoSourceParameters );
-    }
-
-    private Parameter determineMappingTargetParameter(Iterable<Parameter> parameters) {
-        for ( Parameter parameter : parameters ) {
-            if ( parameter.isMappingTarget() ) {
-                return parameter;
-            }
-        }
-
-        return null;
-    }
-
-    private Parameter determineTargetTypeParameter(Iterable<Parameter> parameters) {
-        for ( Parameter parameter : parameters ) {
-            if ( parameter.isTargetType() ) {
-                return parameter;
-            }
-        }
-
-        return null;
     }
 
     @Override

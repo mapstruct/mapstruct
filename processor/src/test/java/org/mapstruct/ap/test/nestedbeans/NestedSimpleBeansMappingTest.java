@@ -30,7 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     Wheel.class, WheelDto.class,
     Roof.class, RoofDto.class,
     UserDtoMapperClassic.class,
-    UserDtoMapperSmart.class
+    UserDtoMapperSmart.class,
+    UserDtoUpdateMapperSmart.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class NestedSimpleBeansMappingTest {
@@ -46,9 +47,30 @@ public class NestedSimpleBeansMappingTest {
         System.out.println( smartMapping );
         System.out.println( classicMapping );
 
-
         assertThat( smartMapping ).isNotNull();
         assertThat( smartMapping ).isEqualTo( classicMapping );
     }
 
+    @Test
+    public void shouldMapUpdateNestedBeans() {
+
+        User user = TestData.createUser();
+        user.getCar().setName( null );
+
+        // create a pre-exsiting smartMapping
+        UserDto smartMapping = new UserDto();
+        smartMapping.setCar( new CarDto() );
+        smartMapping.getCar().setName( "Toyota" );
+
+        // create a classic mapping and adapt expected result to Toyota
+        UserDto classicMapping = UserDtoMapperClassic.INSTANCE.userToUserDto( TestData.createUser() );
+        classicMapping.getCar().setName( "Toyota" );
+
+        // action
+        UserDtoUpdateMapperSmart.INSTANCE.userToUserDto( smartMapping, user );
+
+        // result
+        assertThat( smartMapping ).isNotNull();
+        assertThat( smartMapping ).isEqualTo( classicMapping );
+    }
 }

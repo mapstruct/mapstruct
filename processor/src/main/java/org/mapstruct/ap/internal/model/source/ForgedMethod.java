@@ -47,20 +47,21 @@ public class ForgedMethod implements Method {
 
     private final List<Parameter> sourceParameters;
     private final List<Parameter> contextParameters;
+    private final Parameter mappingTargetParameter;
 
     /**
      * Creates a new forged method with the given name.
      *
      * @param name the (unique name) for this method
      * @param sourceType the source type
-     * @param targetType the target type.
+     * @param returnType the return type.
      * @param mapperConfiguration the mapper configuration
      * @param positionHintElement element used to for reference to the position in the source file.
      * @param additionalParameters additional parameters to add to the forged method
      */
-    public ForgedMethod(String name, Type sourceType, Type targetType, MapperConfiguration mapperConfiguration,
+    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
                         ExecutableElement positionHintElement, List<Parameter> additionalParameters) {
-        this( name, sourceType, targetType, mapperConfiguration, positionHintElement, additionalParameters, null );
+        this( name, sourceType, returnType, mapperConfiguration, positionHintElement, additionalParameters, null );
     }
 
      /**
@@ -68,13 +69,13 @@ public class ForgedMethod implements Method {
      *
      * @param name the (unique name) for this method
      * @param sourceType the source type
-     * @param targetType the target type.
+     * @param returnType the return type.
      * @param mapperConfiguration the mapper configuration
      * @param positionHintElement element used to for reference to the position in the source file.
      * @param additionalParameters additional parameters to add to the forged method
      * @param history a parent forged method if this is a forged method within a forged method
      */
-    public ForgedMethod(String name, Type sourceType, Type targetType, MapperConfiguration mapperConfiguration,
+    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
                         ExecutableElement positionHintElement, List<Parameter> additionalParameters,
                         ForgedMethodHistory history) {
         String sourceParamName = Strings.decapitalize( sourceType.getName() );
@@ -85,8 +86,9 @@ public class ForgedMethod implements Method {
         this.parameters.addAll( additionalParameters );
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
+        this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
 
-        this.returnType = targetType;
+        this.returnType = returnType;
         this.thrownTypes = new ArrayList<Type>();
         this.name = Strings.sanitizeIdentifierName( name );
         this.mapperConfiguration = mapperConfiguration;
@@ -109,6 +111,7 @@ public class ForgedMethod implements Method {
 
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
+        this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
 
         this.name = name;
     }
@@ -165,7 +168,7 @@ public class ForgedMethod implements Method {
 
     @Override
     public Parameter getMappingTargetParameter() {
-        return null;
+        return mappingTargetParameter;
     }
 
     @Override
@@ -203,7 +206,7 @@ public class ForgedMethod implements Method {
 
     @Override
     public Type getResultType() {
-        return returnType;
+        return mappingTargetParameter != null ? mappingTargetParameter.getType() : returnType;
     }
 
     @Override
@@ -303,4 +306,5 @@ public class ForgedMethod implements Method {
         result = 31 * result + ( name != null ? name.hashCode() : 0 );
         return result;
     }
+
 }

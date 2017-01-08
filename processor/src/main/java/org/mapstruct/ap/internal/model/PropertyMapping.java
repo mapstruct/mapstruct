@@ -635,14 +635,24 @@ public class PropertyMapping extends ModelElement {
             if ( sourceType.isPrimitive() || targetType.isPrimitive() ) {
                 return null;
             }
+
             String name = getName( sourceType, targetType );
+            List<Parameter> parameters = new ArrayList( method.getContextParameters() );
+            Type returnType;
+            if ( method.isUpdateMethod() ) {
+                parameters.add( Parameter.forForgedMappingTarget( targetType ) );
+                returnType = ctx.getTypeFactory().createVoidType();
+            }
+            else {
+                returnType = targetType;
+            }
             ForgedMethod forgedMethod = new ForgedMethod(
                 name,
                 sourceType,
-                targetType,
+                returnType,
                 method.getMapperConfiguration(),
                 method.getExecutable(),
-                method.getContextParameters(),
+                parameters,
                 getForgedMethodHistory( sourceRHS )
             );
 

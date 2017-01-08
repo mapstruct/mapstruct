@@ -494,6 +494,15 @@ public class TypeFactory {
     }
 
     /**
+     * creates a void return type
+     *
+     * @return void type
+     */
+    public Type createVoidType() {
+        return getType( typeUtils.getNoType( TypeKind.VOID ) );
+    }
+
+    /**
      * Establishes the type bound:
      * <ol>
      * <li>{@code<? extends Number>}, returns Number</li>

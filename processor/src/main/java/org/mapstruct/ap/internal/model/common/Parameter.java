@@ -125,6 +125,15 @@ public class Parameter extends ModelElement {
             ContextPrism.getInstanceOn( element ) != null );
     }
 
+    public static Parameter forForgedMappingTarget(Type parameterType) {
+        return new Parameter(
+            "mappingTarget",
+            parameterType,
+            true,
+            false,
+            false);
+    }
+
     /**
      * @param parameters the parameters to filter
      * @return the parameters from the given list that are considered 'source parameters'
@@ -155,5 +164,25 @@ public class Parameter extends ModelElement {
         }
 
         return contextParameters;
+    }
+
+    public static Parameter getMappingTargetParameter(List<Parameter> parameters) {
+        for ( Parameter parameter : parameters ) {
+            if ( parameter.isMappingTarget() ) {
+                return parameter;
+            }
+        }
+
+        return null;
+    }
+
+    public static Parameter getTargetTypeParameter(List<Parameter> parameters) {
+        for ( Parameter parameter : parameters ) {
+            if ( parameter.isTargetType() ) {
+                return parameter;
+            }
+        }
+
+        return null;
     }
 }
