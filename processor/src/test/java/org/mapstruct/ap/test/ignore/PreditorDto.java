@@ -24,10 +24,10 @@ package org.mapstruct.ap.test.ignore;
  */
 public class PreditorDto {
 
-    private boolean hasTallons;
+    private boolean hasClaws;
 
-    public boolean isHasTallons() {
-        return hasTallons;
+    public boolean isHasClaws() {
+        return hasClaws;
     }
 
 }

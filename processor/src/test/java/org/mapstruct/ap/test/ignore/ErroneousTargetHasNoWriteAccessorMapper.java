@@ -32,7 +32,7 @@ public interface ErroneousTargetHasNoWriteAccessorMapper {
     ErroneousTargetHasNoWriteAccessorMapper INSTANCE =
         Mappers.getMapper( ErroneousTargetHasNoWriteAccessorMapper.class );
 
-    @Mapping( target = "hasTallons", ignore = true )
+    @Mapping(target = "hasClaws", constant = "true")
     PreditorDto preditorToDto( Preditor preditor );
 
 }

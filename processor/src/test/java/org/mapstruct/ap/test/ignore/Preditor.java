@@ -24,14 +24,13 @@ package org.mapstruct.ap.test.ignore;
  */
 public class Preditor {
 
-    private boolean hasTallons;
+    private boolean hasClaws;
 
-    public boolean isHasTallons() {
-        return hasTallons;
+    public boolean isHasClaws() {
+        return hasClaws;
     }
 
-    public void setHasTallons(boolean hasTallons) {
-        this.hasTallons = hasTallons;
+    public void setHasClaws(boolean hasClaws) {
+        this.hasClaws = hasClaws;
     }
-
 }

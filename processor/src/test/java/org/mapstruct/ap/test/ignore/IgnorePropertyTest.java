@@ -93,9 +93,9 @@ public class IgnorePropertyTest {
             @Diagnostic(type = ErroneousTargetHasNoWriteAccessorMapper.class,
                 kind = Kind.ERROR,
                 line = 35,
-                messageRegExp = "Property \"hasTallons\" has no write accessor\\.")
+                messageRegExp = "Property \"hasClaws\" has no write accessor\\.")
         }
     )
-    public void shouldGiveWringingOnUnmapped() {
+    public void shouldGiveErrorOnMappingForReadOnlyProp() {
     }
 }

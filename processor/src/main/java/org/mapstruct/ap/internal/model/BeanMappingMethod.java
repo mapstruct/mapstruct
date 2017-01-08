@@ -286,15 +286,28 @@ public class BeanMappingMethod extends MappingMethod {
                     if ( !unprocessedTargetProperties.containsKey( resultPropertyName ) ) {
                         boolean hasReadAccessor =
                             method.getResultType().getPropertyReadAccessors().containsKey( mapping.getTargetName() );
-                        ctx.getMessager().printMessage(
-                            method.getExecutable(),
-                            mapping.getMirror(),
-                            mapping.getSourceAnnotationValue(),
-                            hasReadAccessor ? Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE :
+
+                        if ( hasReadAccessor ) {
+                            if ( !mapping.isIgnored() ) {
+                                ctx.getMessager().printMessage(
+                                    method.getExecutable(),
+                                    mapping.getMirror(),
+                                    mapping.getSourceAnnotationValue(),
+                                    Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE,
+                                    mapping.getTargetName() );
+                                errorOccurred = true;
+                            }
+                        }
+                        else {
+                            ctx.getMessager().printMessage(
+                                method.getExecutable(),
+                                mapping.getMirror(),
+                                mapping.getSourceAnnotationValue(),
                                 Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE,
-                            mapping.getTargetName()
-                        );
-                        errorOccurred = true;
+                                mapping.getTargetName() );
+                            errorOccurred = true;
+                        }
+
                         continue;
                     }
 
