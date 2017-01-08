@@ -42,7 +42,8 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     CarEntity.class,
     CarMapperWithAutoInheritance.class,
     CarMapperWithExplicitInheritance.class,
-    AutoInheritedConfig.class
+    AutoInheritedConfig.class,
+    NotToBeUsedMapper.class
 })
 @IssueKey("168")
 public class InheritFromConfigTest {

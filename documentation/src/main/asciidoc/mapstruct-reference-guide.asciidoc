@@ -1869,6 +1869,11 @@ In case more than one method is applicable as source for the inheritance, the me
 
 A method can use `@InheritConfiguration` and override or amend the configuration by additionally applying `@Mapping`, `@BeanMapping`, etc.
 
+[NOTE]
+====
+`@InheritConfiguration` cannot refer to methods in a used mapper.
+====
+
 [[inverse-mappings]]
 === Inverse mappings
 
@@ -1904,6 +1909,11 @@ Methods that are considered for inverse inheritance need to be defined in the cu
 If multiple methods qualify, the method from which to inherit the configuration needs to be specified using the `name` property like this: `@InheritInverseConfiguration(name = "carToDto")`.
 
 Expressions and constants are excluded (silently ignored). Reverse mapping of nested source properties is experimental as of the 1.1.0.Beta2. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
+
+[NOTE]
+====
+`@InheritInverseConfiguration` cannot refer to methods in a used mapper.
+====
 
 [[shared-configurations]]
 === Shared configurations

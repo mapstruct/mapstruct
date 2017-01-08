@@ -30,6 +30,7 @@ import org.mapstruct.factory.Mappers;
  * @author Andreas Gudian
  */
 @Mapper(
+    uses = NotToBeUsedMapper.class,
     config = AutoInheritedConfig.class,
     mappingInheritanceStrategy = MappingInheritanceStrategy.EXPLICIT
 )

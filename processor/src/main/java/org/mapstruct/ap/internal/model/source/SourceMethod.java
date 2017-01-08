@@ -334,7 +334,8 @@ public class SourceMethod implements Method {
     }
 
     public boolean reverses(SourceMethod method) {
-        return isAbstract()
+        return getDeclaringMapper() == null
+            && isAbstract()
             && getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
             && equals( first( getSourceParameters() ).getType(), method.getResultType() )
             && equals( getResultType(), first( method.getSourceParameters() ).getType() );
@@ -347,7 +348,8 @@ public class SourceMethod implements Method {
     }
 
     public boolean canInheritFrom(SourceMethod method) {
-        return method.isAbstract()
+        return method.getDeclaringMapper() == null
+            && method.isAbstract()
             && isMapMapping() == method.isMapMapping()
             && isIterableMapping() == method.isIterableMapping()
             && isEnumMapping() == method.isEnumMapping()
