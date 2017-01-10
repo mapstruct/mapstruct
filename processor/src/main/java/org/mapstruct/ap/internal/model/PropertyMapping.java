@@ -552,11 +552,11 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment forgeWithElementMapping(Type sourceType, Type targetType, SourceRHS source,
-            ExecutableElement element, WithElementMappingMethodBuilder<?, ? extends WithElementMappingMethod> builder) {
+            ExecutableElement element, ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder) {
 
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element );
 
-            WithElementMappingMethod iterableMappingMethod = builder
+            ContainerMappingMethod iterableMappingMethod = builder
                 .mappingContext( ctx )
                 .method( methodRef )
                 .selectionParameters( selectionParameters )

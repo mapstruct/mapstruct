@@ -33,13 +33,13 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
- * A {@link MappingMethod} implemented by a {@link Mapper} class which does mapping of typed based methods.
+ * A {@link MappingMethod} implemented by a {@link Mapper} class which does mapping of generic types.
  * For example Iterable or Stream.
- * The typed elements are mapped either by a {@link TypeConversion} or another mapping method.
+ * The generic elements are mapped either by a {@link TypeConversion} or another mapping method.
  *
  * @author Filip Hrisafov
  */
-public abstract class WithElementMappingMethod extends MappingMethod {
+public abstract class ContainerMappingMethod extends MappingMethod {
     private final Assignment elementAssignment;
     private final MethodReference factoryMethod;
     private final boolean overridden;
@@ -47,7 +47,7 @@ public abstract class WithElementMappingMethod extends MappingMethod {
     private final String loopVariableName;
     private final SelectionParameters selectionParameters;
 
-    WithElementMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
+    ContainerMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
                                   boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
@@ -158,7 +158,7 @@ public abstract class WithElementMappingMethod extends MappingMethod {
         if ( getClass() != obj.getClass() ) {
             return false;
         }
-        WithElementMappingMethod other = (WithElementMappingMethod) obj;
+        ContainerMappingMethod other = (ContainerMappingMethod) obj;
 
         if ( !getResultType().equals( other.getResultType() ) ) {
             return false;
