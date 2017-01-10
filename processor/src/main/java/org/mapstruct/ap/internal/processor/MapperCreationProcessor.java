@@ -36,6 +36,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.BeanMappingMethod;
+import org.mapstruct.ap.internal.model.ContainerMappingMethod;
+import org.mapstruct.ap.internal.model.ContainerMappingMethodBuilder;
 import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.DefaultMapperReference;
 import org.mapstruct.ap.internal.model.DelegatingMethod;
@@ -48,8 +50,6 @@ import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
 import org.mapstruct.ap.internal.model.StreamMappingMethod;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
-import org.mapstruct.ap.internal.model.WithElementMappingMethod;
-import org.mapstruct.ap.internal.model.WithElementMappingMethodBuilder;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
@@ -446,8 +446,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return mappingMethods;
     }
 
-    private <M extends WithElementMappingMethod> M createWithElementMappingMethod(SourceMethod method,
-        MappingOptions mappingOptions, WithElementMappingMethodBuilder<?, M> builder) {
+    private <M extends ContainerMappingMethod> M createWithElementMappingMethod(SourceMethod method,
+        MappingOptions mappingOptions, ContainerMappingMethodBuilder<?, M> builder) {
 
         FormattingParameters formattingParameters = null;
         SelectionParameters selectionParameters = null;

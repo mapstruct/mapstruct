@@ -36,9 +36,9 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
  *
  * @author Gunnar Morling
  */
-public class IterableMappingMethod extends WithElementMappingMethod {
+public class IterableMappingMethod extends ContainerMappingMethod {
 
-    public static class Builder extends WithElementMappingMethodBuilder<Builder, IterableMappingMethod> {
+    public static class Builder extends ContainerMappingMethodBuilder<Builder, IterableMappingMethod> {
 
         public Builder() {
             super( Builder.class, "collection element" );

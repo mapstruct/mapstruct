@@ -40,11 +40,11 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  *
  * @author Filip Hrisafov
  */
-public class StreamMappingMethod extends WithElementMappingMethod {
+public class StreamMappingMethod extends ContainerMappingMethod {
 
     private final Set<Type> helperImports;
 
-    public static class Builder extends WithElementMappingMethodBuilder<Builder, StreamMappingMethod> {
+    public static class Builder extends ContainerMappingMethodBuilder<Builder, StreamMappingMethod> {
 
         public Builder() {
             super( Builder.class, "stream element" );

@@ -36,12 +36,15 @@ import org.mapstruct.ap.internal.util.Strings;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
- * Builder that can be used to build {@link WithElementMappingMethod}(s).
+ * Builder that can be used to build {@link ContainerMappingMethod}(s).
+ *
+ * @param <B> the builder itself that needs to be used for chaining
+ * @param <M> the method that the builder builds
  *
  * @author Filip Hrisafov
  */
-public abstract class WithElementMappingMethodBuilder<B extends WithElementMappingMethodBuilder<B, M>,
-    M extends WithElementMappingMethod> extends AbstractMappingMethodBuilder<B, M> {
+public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMethodBuilder<B, M>,
+    M extends ContainerMappingMethod> extends AbstractMappingMethodBuilder<B, M> {
 
     private Method method;
     private SelectionParameters selectionParameters;
@@ -51,7 +54,7 @@ public abstract class WithElementMappingMethodBuilder<B extends WithElementMappi
     private String errorMessagePart;
     private String callingContextTargetPropertyName;
 
-    WithElementMappingMethodBuilder(Class<B> selfType, String errorMessagePart) {
+    ContainerMappingMethodBuilder(Class<B> selfType, String errorMessagePart) {
         super( selfType );
         this.errorMessagePart = errorMessagePart;
     }
