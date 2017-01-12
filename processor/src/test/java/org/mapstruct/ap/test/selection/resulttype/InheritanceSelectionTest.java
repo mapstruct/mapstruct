@@ -18,13 +18,10 @@
  */
 package org.mapstruct.ap.test.selection.resulttype;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
@@ -35,6 +32,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  *
@@ -107,7 +106,8 @@ public class InheritanceSelectionTest {
             @Diagnostic(type = ResultTypeConstructingFruitInterfaceErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 36,
-                messageRegExp = "No implementation type is registered for return type .*\\.IsFruit."
+                messageRegExp = "The return type .*\\.IsFruit is an abstract class or interface. Provide a non " +
+                    "abstract / non interface result type or a factory method."
             )
         }
     )

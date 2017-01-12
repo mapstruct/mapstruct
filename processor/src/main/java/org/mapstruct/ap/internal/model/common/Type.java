@@ -189,6 +189,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return isVoid;
     }
 
+    public boolean isAbstract() {
+        return typeElement != null && typeElement.getModifiers().contains( Modifier.ABSTRACT );
+    }
+
     /**
      * @return this type's enum constants in case it is an enum, an empty list otherwise.
      */

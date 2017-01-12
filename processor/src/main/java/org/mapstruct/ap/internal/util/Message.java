@@ -30,6 +30,7 @@ public enum Message {
     // CHECKSTYLE:OFF
     BEANMAPPING_NO_ELEMENTS( "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in @BeanMapping, define at least one of them." ),
     BEANMAPPING_NOT_ASSIGNABLE( "%s not assignable to: %s." ),
+    BEANMAPPING_ABSTRACT( "The result type %s may not be an abstract class nor interface." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE( "Unknown property \"%s\" in return type." ),
     BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE( "Property \"%s\" has no write accessor." ),
     BEANMAPPING_SEVERAL_POSSIBLE_SOURCES( "Several possible source properties for target property \"%s\"." ),
@@ -77,6 +78,7 @@ public enum Message {
     DECORATOR_CONSTRUCTOR( "Specified decorator type has no default constructor nor a constructor with a single parameter accepting the decorated mapper type." ),
 
     GENERAL_NO_IMPLEMENTATION( "No implementation type is registered for return type %s." ),
+    GENERAL_ABSTRACT_RETURN_TYPE( "The return type %s is an abstract class or interface. Provide a non abstract / non interface result type or a factory method." ),
     GENERAL_AMBIGIOUS_MAPPING_METHOD( "Ambiguous mapping methods found for mapping %s to %s: %s." ),
     GENERAL_AMBIGIOUS_FACTORY_METHOD( "Ambiguous factory methods found for creating %s: %s." ),
     GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK( "No dateFormat check is supported for types %s, %s" ),
