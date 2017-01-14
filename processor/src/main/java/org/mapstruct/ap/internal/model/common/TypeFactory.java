@@ -54,9 +54,12 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
+import org.mapstruct.ap.internal.util.RoundContext;
+import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 
 /**
  * Factory creating {@link Type} instances.
@@ -67,6 +70,7 @@ public class TypeFactory {
 
     private final Elements elementUtils;
     private final Types typeUtils;
+    private RoundContext roundContext;
 
     private final TypeMirror iterableType;
     private final TypeMirror collectionType;
@@ -76,9 +80,10 @@ public class TypeFactory {
     private final Map<String, Type> implementationTypes = new HashMap<String, Type>();
     private final Map<String, String> importedQualifiedTypesBySimpleName = new HashMap<String, String>();
 
-    public TypeFactory(Elements elementUtils, Types typeUtils) {
+    public TypeFactory(Elements elementUtils, Types typeUtils, RoundContext roundContext) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
+        this.roundContext = roundContext;
 
         iterableType = typeUtils.erasure( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
         collectionType =
@@ -146,6 +151,10 @@ public class TypeFactory {
             throw new AnnotationProcessingException( "Encountered erroneous type " + mirror );
         }
 
+        if ( !isCleared( mirror ) ) {
+            throw new TypeHierarchyErroneousException( mirror );
+        }
+
         Type implementationType = getImplementationType( mirror );
 
         boolean isIterableType = typeUtils.isSubtype( mirror, iterableType );
@@ -160,7 +169,6 @@ public class TypeFactory {
         String qualifiedName;
         TypeElement typeElement;
         Type componentType;
-
 
         if ( mirror.getKind() == TypeKind.DECLARED ) {
             DeclaredType declaredType = (DeclaredType) mirror;
@@ -565,4 +573,27 @@ public class TypeFactory {
         return trimmedClassName;
     }
 
+    private boolean isCleared(TypeMirror type) {
+        if ( type.getKind() != TypeKind.DECLARED ) {
+            return true;
+        }
+
+        if ( roundContext.isCleared( type ) ) {
+            return true;
+        }
+
+        List<AstModifyingAnnotationProcessor> astModifyingAnnotationProcessors = roundContext
+                .getAnnotationProcessorContext()
+                .getAstModifyingAnnotationProcessors();
+
+        for ( AstModifyingAnnotationProcessor processor : astModifyingAnnotationProcessors ) {
+            if ( !processor.isTypeComplete( type ) ) {
+                return false;
+            }
+        }
+
+        roundContext.addClearedType( type );
+
+        return true;
+    }
 }

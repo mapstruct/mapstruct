@@ -19,23 +19,28 @@
 package org.mapstruct.ap.internal.util;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 /**
- * Indicates a type element was visited whose hierarchy was erroneous, because it has a non-existing super-type.
+ * Indicates a type was visited whose hierarchy was erroneous, because it has a non-existing super-type.
  *
  * @author Gunnar Morling
- *
  */
 public class TypeHierarchyErroneousException extends RuntimeException {
+
     private static final long serialVersionUID = 1L;
 
-    private TypeElement element;
+    private final TypeMirror type;
 
     public TypeHierarchyErroneousException(TypeElement element) {
-        this.element = element;
+        this( element.asType() );
     }
 
-    public TypeElement getElement() {
-        return element;
+    public TypeHierarchyErroneousException(TypeMirror type) {
+        this.type = type;
+    }
+
+    public TypeMirror getType() {
+        return type;
     }
 }

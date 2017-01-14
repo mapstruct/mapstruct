@@ -33,6 +33,7 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.workarounds.TypesDecorator;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
@@ -50,14 +51,17 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final VersionInformation versionInformation;
     private final Types delegatingTypes;
 
-    public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options) {
+    public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options,
+            RoundContext roundContext) {
+
         this.processingEnvironment = processingEnvironment;
         this.messager = new DelegatingMessager( processingEnvironment.getMessager() );
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
         this.delegatingTypes = new TypesDecorator( processingEnvironment, versionInformation );
         this.typeFactory = new TypeFactory(
             processingEnvironment.getElementUtils(),
-            delegatingTypes
+            delegatingTypes,
+            roundContext
         );
         this.options = options;
     }
