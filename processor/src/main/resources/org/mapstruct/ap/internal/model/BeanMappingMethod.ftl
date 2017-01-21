@@ -42,7 +42,6 @@
 
     	</#if>
     </#list>
-    <@nestedTargetObjects/>
     <#if (sourceParameters?size > 1)>
         <#list sourceParametersExcludingPrimitives as sourceParam>
             <#if (propertyMappingsByParameter[sourceParam.name]?size > 0)>
@@ -88,12 +87,4 @@
             <#if exceptionType_has_next>, </#if><#t>
         </#list>
     </@compress>
-</#macro>
-<#macro nestedTargetObjects>
-    <#list localVariablesToCreate as localVariable>
-    <@includeModel object=localVariable/> = <#if localVariable.factoryMethod??><@includeModel object=localVariable.factoryMethod targetType=localVariable.type/><#else>new <@includeModel object=localVariable.type/>()</#if>;
-    </#list>
-    <#list nestedLocalVariableAssignments as nestedLocalVariableAssignment>
-    <@includeModel object=nestedLocalVariableAssignment/>
-    </#list>
 </#macro>

@@ -48,6 +48,8 @@ public class ForgedMethod implements Method {
     private final List<Parameter> sourceParameters;
     private final List<Parameter> contextParameters;
     private final Parameter mappingTargetParameter;
+    private final MappingOptions mappingOptions;
+    private boolean autoMapping;
 
     /**
      * Creates a new forged method with the given name.
@@ -61,7 +63,43 @@ public class ForgedMethod implements Method {
      */
     public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
                         ExecutableElement positionHintElement, List<Parameter> additionalParameters) {
-        this( name, sourceType, returnType, mapperConfiguration, positionHintElement, additionalParameters, null );
+        this( name, sourceType, returnType, mapperConfiguration, positionHintElement, additionalParameters, null,
+            false, MappingOptions.empty() );
+    }
+
+   /**
+     * Creates a new forged method with the given name with history
+     *
+     * @param name the (unique name) for this method
+     * @param sourceType the source type
+     * @param returnType the return type.
+     * @param mapperConfiguration the mapper configuration
+     * @param positionHintElement element used to for reference to the position in the source file.
+     * @param additionalParameters additional parameters to add to the forged method
+     * @param history a parent forged method if this is a forged method within a forged method
+     */
+    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
+        ExecutableElement positionHintElement, List<Parameter> additionalParameters, ForgedMethodHistory history) {
+        this( name, sourceType, returnType, mapperConfiguration, positionHintElement, additionalParameters, history,
+            true, MappingOptions.empty() );
+    }
+
+   /**
+     * Creates a new forged method with the given name with mapping options
+     *
+     * @param name the (unique name) for this method
+     * @param sourceType the source type
+     * @param returnType the return type.
+     * @param mapperConfiguration the mapper configuration
+     * @param positionHintElement element used to for reference to the position in the source file.
+     * @param additionalParameters additional parameters to add to the forged method
+     * @param mappingOptions with mapping options
+     */
+    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
+        ExecutableElement positionHintElement, List<Parameter> additionalParameters,
+        MappingOptions mappingOptions) {
+        this( name, sourceType, returnType, mapperConfiguration, positionHintElement, additionalParameters, null,
+            false, mappingOptions );
     }
 
      /**
@@ -74,15 +112,17 @@ public class ForgedMethod implements Method {
      * @param positionHintElement element used to for reference to the position in the source file.
      * @param additionalParameters additional parameters to add to the forged method
      * @param history a parent forged method if this is a forged method within a forged method
+     * @param mappingOptions the mapping options for this method
      */
-    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
+    private ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
                         ExecutableElement positionHintElement, List<Parameter> additionalParameters,
-                        ForgedMethodHistory history) {
+                        ForgedMethodHistory history, boolean autoMapping, MappingOptions mappingOptions) {
         String sourceParamName = Strings.decapitalize( sourceType.getName() );
         String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
 
         this.parameters = new ArrayList<Parameter>( 1 + additionalParameters.size() );
-        this.parameters.add( new Parameter( sourceParamSafeName, sourceType ) );
+        Parameter sourceParameter = new Parameter( sourceParamSafeName, sourceType );
+        this.parameters.add( sourceParameter );
         this.parameters.addAll( additionalParameters );
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
@@ -94,6 +134,9 @@ public class ForgedMethod implements Method {
         this.mapperConfiguration = mapperConfiguration;
         this.positionHintElement = positionHintElement;
         this.history = history;
+        this.autoMapping = autoMapping;
+        this.mappingOptions = mappingOptions;
+        this.mappingOptions.initWithParameter( sourceParameter );
     }
 
     /**
@@ -108,10 +151,12 @@ public class ForgedMethod implements Method {
         this.mapperConfiguration = forgedMethod.mapperConfiguration;
         this.positionHintElement = forgedMethod.positionHintElement;
         this.history = forgedMethod.history;
+        this.autoMapping = forgedMethod.autoMapping;
 
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
+        this.mappingOptions = forgedMethod.mappingOptions;
 
         this.name = name;
     }
@@ -193,6 +238,10 @@ public class ForgedMethod implements Method {
 
     public ForgedMethodHistory getHistory() {
         return history;
+    }
+
+    public boolean isAutoMapping() {
+        return autoMapping;
     }
 
     public void addThrownTypes(List<Type> thrownTypesToAdd) {
@@ -279,6 +328,11 @@ public class ForgedMethod implements Method {
     }
 
     @Override
+    public MappingOptions getMappingOptions() {
+        return mappingOptions;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if ( this == o ) {
             return true;
@@ -306,5 +360,4 @@ public class ForgedMethod implements Method {
         result = 31 * result + ( name != null ? name.hashCode() : 0 );
         return result;
     }
-
 }

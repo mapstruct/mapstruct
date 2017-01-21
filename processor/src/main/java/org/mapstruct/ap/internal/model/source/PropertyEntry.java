@@ -29,14 +29,6 @@ import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 /**
  * A PropertyEntry contains information on the name, readAccessor (for source), readAccessor and writeAccessor
  * (for targets) and return type of a property.
- *
- * It can be shared between several nested properties. For example
- *
- * bean
- *
- * nestedMapping1 = "x.y1.z1" nestedMapping2 = "x.y1.z2" nestedMapping3 = "x.y2.z3"
- *
- * has property entries x, y1, y2, z1, z2, z3.
  */
 public class PropertyEntry {
 
@@ -113,6 +105,41 @@ public class PropertyEntry {
 
     public String getFullName() {
         return Strings.join( Arrays.asList(  fullName ), "." );
+    }
+
+    public PropertyEntry pop() {
+        if ( fullName.length > 1 ) {
+            String[] newFullName = Arrays.copyOfRange( fullName, 1, fullName.length );
+            return new PropertyEntry(newFullName, readAccessor, writeAccessor, presenceChecker, type );
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Arrays.deepHashCode( this.fullName );
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj ) {
+            return true;
+        }
+        if ( obj == null ) {
+            return false;
+        }
+        if ( getClass() != obj.getClass() ) {
+            return false;
+        }
+        final PropertyEntry other = (PropertyEntry) obj;
+        if ( !Arrays.deepEquals( this.fullName, other.fullName ) ) {
+            return false;
+        }
+        return true;
     }
 
 }

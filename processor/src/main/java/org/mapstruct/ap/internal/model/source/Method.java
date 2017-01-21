@@ -189,4 +189,10 @@ public interface Method {
      *         {@code @MappingTarget}.
      */
     boolean isUpdateMethod();
+
+    /**
+     *
+     * @return the mapping options for this method
+     */
+    MappingOptions getMappingOptions();
 }

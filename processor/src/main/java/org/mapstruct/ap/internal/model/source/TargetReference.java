@@ -202,14 +202,30 @@ public class TargetReference {
     }
 
     public List<String> getElementNames() {
-        List<String> elementName = new ArrayList<String>();
+        List<String> elementNames = new ArrayList<String>();
         if ( parameter != null ) {
             // only relevant for source properties
-            elementName.add( parameter.getName() );
+            elementNames.add( parameter.getName() );
         }
         for ( PropertyEntry propertyEntry : propertyEntries ) {
-            elementName.add( propertyEntry.getName() );
+            elementNames.add( propertyEntry.getName() );
         }
-        return elementName;
+        return elementNames;
+    }
+
+    public TargetReference pop() {
+        if ( propertyEntries.size() > 1 ) {
+            List<PropertyEntry> newPropertyEntries = new ArrayList<PropertyEntry>( propertyEntries.size() - 1 );
+            for ( PropertyEntry propertyEntry : propertyEntries ) {
+                PropertyEntry newPropertyEntry = propertyEntry.pop();
+                if ( newPropertyEntry != null ) {
+                    newPropertyEntries.add( newPropertyEntry );
+                }
+            }
+            return new TargetReference( null, newPropertyEntries, isValid );
+        }
+        else {
+            return null;
+        }
     }
 }

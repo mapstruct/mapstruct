@@ -18,14 +18,15 @@
  */
 package org.mapstruct.ap.test.nestedtargetproperties;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
 import org.mapstruct.factory.Mappers;
@@ -33,10 +34,10 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Sjaak Derksen
  */
-@Mapper
-public abstract class ChartEntryToArtist {
+@Mapper( nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS )
+public abstract class ChartEntryToArtistUpdate {
 
-    public static final ChartEntryToArtist MAPPER = Mappers.getMapper( ChartEntryToArtist.class );
+    public static final ChartEntryToArtistUpdate MAPPER = Mappers.getMapper( ChartEntryToArtistUpdate.class );
 
     @Mappings({
         @Mapping(target = "type", ignore = true),
@@ -47,28 +48,14 @@ public abstract class ChartEntryToArtist {
         @Mapping(target = "song.artist.label.studio.city", source = "city" ),
         @Mapping(target = "song.positions", source = "position" )
     })
-    public abstract Chart map(ChartEntry chartEntry);
-
-    @Mappings({
-        @Mapping(target = "type", ignore = true),
-        @Mapping(target = "name", source = "chartEntry2.chartName"),
-        @Mapping(target = "song.title", source = "chartEntry1.songTitle" ),
-        @Mapping(target = "song.artist.name", source = "chartEntry1.artistName" ),
-        @Mapping(target = "song.artist.label.studio.name", source = "chartEntry1.recordedAt"),
-        @Mapping(target = "song.artist.label.studio.city", source = "chartEntry1.city" ),
-        @Mapping(target = "song.positions", source = "chartEntry2.position" )
-    })
-    public abstract Chart map(ChartEntry chartEntry1, ChartEntry chartEntry2);
-
-    @InheritInverseConfiguration
-    public abstract ChartEntry map(Chart chart);
+    public abstract void map(ChartEntry chartEntry, @MappingTarget Chart chart );
 
     protected List<Integer> mapPosition(Integer in) {
         if ( in != null ) {
-            return new ArrayList<Integer>( Arrays.asList( in ) );
+            return Arrays.asList( in );
         }
         else {
-            return new ArrayList<Integer>();
+            return Collections.<Integer>emptyList();
         }
     }
 

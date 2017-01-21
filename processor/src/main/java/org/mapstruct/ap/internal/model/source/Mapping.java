@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
@@ -33,13 +32,14 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-
+import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.
@@ -184,6 +184,24 @@ public class Mapping {
         this.dependsOn = dependsOn;
     }
 
+    private Mapping( Mapping mapping, TargetReference targetReference ) {
+        this.sourceName = mapping.sourceName;
+        this.constant = mapping.constant;
+        this.javaExpression = mapping.javaExpression;
+        this.targetName = Strings.join( targetReference.getElementNames(), "." );
+        this.defaultValue = mapping.defaultValue;
+        this.isIgnored = mapping.isIgnored;
+        this.mirror = mapping.mirror;
+        this.sourceAnnotationValue = mapping.sourceAnnotationValue;
+        this.targetAnnotationValue = mapping.targetAnnotationValue;
+        this.formattingParameters = mapping.formattingParameters;
+        this.selectionParameters = mapping.selectionParameters;
+        this.dependsOnAnnotationValue = mapping.dependsOnAnnotationValue;
+        this.dependsOn = mapping.dependsOn;
+        this.sourceReference = mapping.sourceReference;
+        this.targetReference = targetReference;
+    }
+
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
                                         FormattingMessager messager) {
         if ( mappingPrism.expression().isEmpty() ) {
@@ -224,6 +242,21 @@ public class Mapping {
                 .method( method )
                 .messager( messager )
                 .typeFactory( typeFactory )
+                .build();
+        }
+    }
+
+    /**
+     * Initializes the mapping with a new source parameter.
+     *
+     * @param sourceParameter
+     */
+    public void init( Parameter sourceParameter ) {
+        if ( sourceReference != null ) {
+            SourceReference oldSourceReference = sourceReference;
+            sourceReference = new SourceReference.BuilderFromSourceReference()
+                .sourceParameter( sourceParameter )
+                .sourceReference( oldSourceReference )
                 .build();
         }
     }
@@ -288,6 +321,16 @@ public class Mapping {
 
     public TargetReference getTargetReference() {
         return targetReference;
+    }
+
+    public Mapping popTargetReference() {
+        if ( targetReference != null ) {
+            TargetReference newTargetReference = targetReference.pop();
+            if (newTargetReference != null ) {
+                return new Mapping(this, newTargetReference );
+            }
+        }
+        return null;
     }
 
     public List<String> getDependsOn() {

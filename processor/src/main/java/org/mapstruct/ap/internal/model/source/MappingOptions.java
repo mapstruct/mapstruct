@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model.source;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 
@@ -43,14 +45,37 @@ public class MappingOptions {
     private BeanMapping beanMapping;
     private List<ValueMapping> valueMappings;
     private boolean fullyInitialized;
+    private final boolean restrictToDefinedMappings;
 
     public MappingOptions(Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
-        BeanMapping beanMapping, List<ValueMapping> valueMappings ) {
+        BeanMapping beanMapping, List<ValueMapping> valueMappings, boolean restrictToDefinedMappings ) {
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;
         this.beanMapping = beanMapping;
         this.valueMappings = valueMappings;
+        this.restrictToDefinedMappings = restrictToDefinedMappings;
+    }
+
+    /**
+     * creates empty mapping options
+     *
+     * @return empty mapping options
+     */
+    public static MappingOptions empty() {
+        return new MappingOptions( Collections.<String, List<Mapping>>emptyMap(), null, null, null,
+            Collections.<ValueMapping>emptyList(), false );
+    }
+
+    /**
+     * creates mapping options with only regular mappings
+     *
+     * @param mappings regular mappings to add
+     * @return MappingOptions with only regular mappings
+     */
+    public static MappingOptions forMappingsOnly( Map<String, List<Mapping>> mappings ) {
+        return new MappingOptions( mappings, null, null, null, Collections.<ValueMapping>emptyList(), true );
+
     }
 
     /**
@@ -59,6 +84,146 @@ public class MappingOptions {
      */
     public Map<String, List<Mapping>> getMappings() {
         return mappings;
+    }
+
+    /**
+     * The target references are popped. The MappingOptions are keyed on the unique first entries of the
+     * target references.
+     *
+     * So, take
+     *
+     * targetReference 1: propertyEntryX.propertyEntryX1.propertyEntryX1a
+     * targetReference 2: propertyEntryX.propertyEntryX2
+     * targetReference 3: propertyEntryY.propertyY1
+     * targetReference 4: propertyEntryZ
+     *
+     * will be popped and grouped into entries:
+     *
+     * propertyEntryX - MappingOptions ( targetReference1: propertyEntryX1.propertyEntryX1a,
+     *                                   targetReference2: propertyEntryX2 )
+     * propertyEntryY - MappingOptions ( targetReference1: propertyEntryY1 )
+     *
+     * The key will be the former top level property, the MappingOptions will contain the remainders.
+     *
+     * So, 2 cloned new MappingOptions with popped targetReferences. Also Note that the not nested targetReference4
+     * disappeared.
+     *
+     * @return See above
+     */
+    public Map<PropertyEntry, MappingOptions> groupByPoppedTargetReferences() {
+
+        // group all mappings based on the top level name before popping
+        Map<PropertyEntry, List<Mapping>> mappingsKeyedByProperty = new HashMap<PropertyEntry, List<Mapping>>();
+        for ( List<Mapping> mapping : mappings.values() ) {
+            Mapping newMapping = first( mapping ).popTargetReference();
+            if ( newMapping != null ) {
+                // group properties on current name.
+                PropertyEntry property = first( first( mapping ).getTargetReference().getPropertyEntries() );
+                if ( !mappingsKeyedByProperty.containsKey( property ) ) {
+                    mappingsKeyedByProperty.put( property, new ArrayList<Mapping>() );
+                }
+                mappingsKeyedByProperty.get( property ).add( newMapping );
+            }
+        }
+
+        // now group them into mapping options
+        Map<PropertyEntry, MappingOptions> result = new HashMap<PropertyEntry, MappingOptions>();
+        for (  Map.Entry<PropertyEntry, List<Mapping>> mappingKeyedByProperty : mappingsKeyedByProperty.entrySet() ) {
+            Map<String, List<Mapping>> newEntries = new HashMap<String, List<Mapping>>();
+            for ( Mapping newEntry : mappingKeyedByProperty.getValue() ) {
+                newEntries.put( newEntry.getTargetName(), Arrays.asList( newEntry ) );
+            }
+            result.put( mappingKeyedByProperty.getKey(), forMappingsOnly( newEntries ) );
+        }
+        return result;
+    }
+
+    /**
+     * Check there are nested target references for this mapping options.
+     *
+     * @return boolean, true if there are nested target references
+     */
+    public boolean hasNestedTargetReferences() {
+        for ( List<Mapping> mappingList : mappings.values() ) {
+            for ( Mapping mapping : mappingList ) {
+                TargetReference targetReference = mapping.getTargetReference();
+                if ( targetReference.isValid() && targetReference.getPropertyEntries().size() > 1 ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @return all dependencies to other properties the contained mappings are dependent on
+     */
+    public List<String> collectNestedDependsOn() {
+
+        List<String> nestedDependsOn = new ArrayList<String>();
+        for ( List<Mapping> mappingList : mappings.values() ) {
+            for ( Mapping mapping : mappingList ) {
+                nestedDependsOn.addAll( mapping.getDependsOn() );
+            }
+        }
+        return nestedDependsOn;
+    }
+
+    /**
+     * Splits the MappingOptions into possibly more MappingOptions based on each source method parameter type.
+     *
+     * Note: this method is used for forging nested update methods. For that purpose, the same method with all
+     *       joined mappings should be generated. See also: NestedTargetPropertiesTest#shouldMapNestedComposedTarget
+     *
+     * @return the split mapping options.
+     *
+     */
+    public Map<Parameter, MappingOptions> groupBySourceParameter() {
+
+        Map<Parameter, List<Mapping>> mappingsKeyedByParameterType = new HashMap<Parameter, List<Mapping>>();
+        for ( List<Mapping> mappingList : mappings.values() ) {
+            for ( Mapping mapping : mappingList ) {
+                if ( mapping.getSourceReference() != null && mapping.getSourceReference().isValid() ) {
+                    Parameter parameter = mapping.getSourceReference().getParameter();
+                    if ( !mappingsKeyedByParameterType.containsKey( parameter ) ) {
+                        mappingsKeyedByParameterType.put( parameter, new ArrayList<Mapping>() );
+                    }
+                    mappingsKeyedByParameterType.get( parameter ).add( mapping );
+                }
+            }
+        }
+
+        Map<Parameter, MappingOptions> result = new HashMap<Parameter, MappingOptions>();
+        for (  Map.Entry<Parameter, List<Mapping>> entry : mappingsKeyedByParameterType.entrySet() ) {
+            result.put( entry.getKey(), MappingOptions.forMappingsOnly( groupByTargetName( entry.getValue() ) ) );
+        }
+        return result;
+    }
+
+    private Map<String, List<Mapping>> groupByTargetName( List<Mapping> mappingList ) {
+        Map<String, List<Mapping>> result = new HashMap<String, List<Mapping>>();
+        for ( Mapping mapping : mappingList ) {
+            if ( !result.containsKey( mapping.getTargetName() ) ) {
+                result.put( mapping.getTargetName(), new ArrayList<Mapping>() );
+            }
+            result.get( mapping.getTargetName() ).add( mapping );
+        }
+        return result;
+    }
+
+    /**
+     * Initializes the underlying mappings with a new property. Specifically used in in combination with forged methods
+     * where the new parameter name needs to be established at a later moment.
+     *
+     * @param sourceParameter the new source parameter
+     */
+    public void initWithParameter( Parameter sourceParameter ) {
+        for ( List<Mapping> mappingList : mappings.values() ) {
+            for ( Mapping mapping : mappingList )  {
+                mapping.init( sourceParameter );
+            }
+        }
     }
 
     public IterableMapping getIterableMapping() {
@@ -221,6 +386,10 @@ public class MappingOptions {
         // finall remove all duplicates
         mappings.keySet().removeAll( toBeRemoved );
 
+    }
+
+    public boolean isRestrictToDefinedMappings() {
+        return restrictToDefinedMappings;
     }
 
 }

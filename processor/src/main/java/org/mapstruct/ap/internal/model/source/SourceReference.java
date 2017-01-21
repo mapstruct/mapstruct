@@ -248,6 +248,29 @@ public class SourceReference {
         }
     }
 
+    /**
+     * Builds a {@link SourceReference} from a property.
+     */
+    public static class BuilderFromSourceReference {
+
+        private Parameter sourceParameter;
+        private SourceReference sourceReference;
+
+        public BuilderFromSourceReference sourceReference(SourceReference sourceReference) {
+            this.sourceReference = sourceReference;
+            return this;
+        }
+
+        public BuilderFromSourceReference sourceParameter(Parameter sourceParameter) {
+            this.sourceParameter = sourceParameter;
+            return this;
+        }
+
+        public SourceReference build() {
+            return new SourceReference( sourceParameter, sourceReference.propertyEntries, true );
+        }
+    }
+
     private SourceReference(Parameter sourceParameter, List<PropertyEntry> sourcePropertyEntries, boolean isValid) {
         this.parameter = sourceParameter;
         this.propertyEntries = sourcePropertyEntries;

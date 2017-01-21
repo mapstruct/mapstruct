@@ -27,6 +27,12 @@ import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Label;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
+import org.mapstruct.ap.test.nestedtargetproperties._target.FishDto;
+import org.mapstruct.ap.test.nestedtargetproperties._target.FishTankDto;
+import org.mapstruct.ap.test.nestedtargetproperties._target.WaterPlantDto;
+import org.mapstruct.ap.test.nestedtargetproperties.source.Fish;
+import org.mapstruct.ap.test.nestedtargetproperties.source.FishTank;
+import org.mapstruct.ap.test.nestedtargetproperties.source.WaterPlant;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -35,13 +41,28 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  *
  * @author Sjaak Derksen
  */
-@WithClasses({Song.class, Artist.class, Chart.class, Label.class, Studio.class, ChartEntry.class})
+@WithClasses({
+    Song.class,
+    Artist.class,
+    Chart.class,
+    Label.class,
+    Studio.class,
+    ChartEntry.class,
+    FishDto.class,
+    FishTankDto.class,
+    WaterPlantDto.class,
+    Fish.class,
+    FishTank.class,
+    WaterPlant.class,
+    ChartEntryToArtist.class,
+    ChartEntryToArtistUpdate.class,
+    FishTankMapper.class
+})
 @IssueKey("389")
 @RunWith(AnnotationProcessorTestRunner.class)
 public class NestedTargetPropertiesTest {
 
     @Test
-    @WithClasses({ChartEntryToArtist.class})
     public void shouldMapNestedTarget() {
 
         ChartEntry chartEntry = new ChartEntry();
@@ -71,7 +92,6 @@ public class NestedTargetPropertiesTest {
     }
 
     @Test
-    @WithClasses({ChartEntryToArtist.class})
     public void shouldMapNestedComposedTarget() {
 
         ChartEntry chartEntry1 = new ChartEntry();
@@ -103,7 +123,6 @@ public class NestedTargetPropertiesTest {
     }
 
     @Test
-    @WithClasses({ChartEntryToArtist.class})
     public void shouldReverseNestedTarget() {
 
         ChartEntry chartEntry = new ChartEntry();
@@ -125,4 +144,64 @@ public class NestedTargetPropertiesTest {
         assertThat( result.getRecordedAt() ).isEqualTo( "Live, First Avenue, Minneapolis" );
         assertThat( result.getSongTitle() ).isEqualTo( "Purple Rain" );
     }
+
+    @Test
+    public void shouldMapNestedTargetWitUpdate() {
+
+        ChartEntry chartEntry = new ChartEntry();
+        chartEntry.setArtistName( "Prince" );
+        chartEntry.setChartName( "US Billboard Hot Rock Songs" );
+        chartEntry.setCity( "Minneapolis" );
+        chartEntry.setPosition( 1 );
+        chartEntry.setRecordedAt( "Live, First Avenue, Minneapolis" );
+        chartEntry.setSongTitle( null );
+
+        Chart result = new Chart();
+        result.setSong( new Song() );
+        result.getSong().setTitle( "Raspberry Beret" );
+
+        ChartEntryToArtistUpdate.MAPPER.map( chartEntry, result );
+
+        assertThat( result.getName() ).isEqualTo( "US Billboard Hot Rock Songs" );
+        assertThat( result.getSong() ).isNotNull();
+        assertThat( result.getSong().getArtist() ).isNotNull();
+        assertThat( result.getSong().getTitle() ).isEqualTo( "Raspberry Beret" );
+        assertThat( result.getSong().getArtist().getName() ).isEqualTo( "Prince" );
+        assertThat( result.getSong().getArtist().getLabel() ).isNotNull();
+        assertThat( result.getSong().getArtist().getLabel().getStudio() ).isNotNull();
+        assertThat( result.getSong().getArtist().getLabel().getStudio().getName() )
+            .isEqualTo( "Live, First Avenue, Minneapolis" );
+        assertThat( result.getSong().getArtist().getLabel().getStudio().getCity() )
+            .isEqualTo( "Minneapolis" );
+        assertThat( result.getSong().getPositions() ).hasSize( 1 );
+        assertThat( result.getSong().getPositions().get( 0 ) ).isEqualTo( 1 );
+
+    }
+
+    @Test
+    public void automappingAndTargetNestingDemonstrator() {
+
+        FishTank source = new FishTank();
+        source.setName( "MyLittleFishTank" );
+        Fish fish = new Fish();
+        fish.setType( "Carp" );
+        WaterPlant waterplant = new WaterPlant();
+        waterplant.setKind( "Water Hyacinth" );
+        source.setFish( fish );
+        source.setPlant( waterplant );
+
+        FishTankDto target = FishTankMapper.INSTANCE.map( source );
+
+        // the nested property generates a method fishTankToFishDto(FishTank fishTank, FishDto mappingTarget)
+        // when name based mapping continues MapStruct searches for a property called `name` in fishTank (type
+        // 'FishTank'. If it is there, it should most cerntainly not be mapped to a mappingTarget of type 'FishDto'
+        assertThat( target.getFish() ).isNotNull();
+        assertThat( target.getFish().getKind() ).isEqualTo( "Carp" );
+        assertThat( target.getFish().getName() ).isNull();
+
+        // automapping takes care of mapping property "waterPlant".
+        assertThat( target.getPlant() ).isNotNull();
+        assertThat( target.getPlant().getKind() ).isEqualTo( "Water Hyacinth" );
+    }
+
 }

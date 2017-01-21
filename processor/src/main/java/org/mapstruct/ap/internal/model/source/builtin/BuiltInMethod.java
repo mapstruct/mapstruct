@@ -33,6 +33,7 @@ import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
@@ -275,5 +276,10 @@ public abstract class BuiltInMethod implements Method {
     @Override
     public boolean isUpdateMethod() {
         return getMappingTargetParameter() != null;
+    }
+
+    @Override
+    public MappingOptions getMappingOptions() {
+        return MappingOptions.empty();
     }
 }

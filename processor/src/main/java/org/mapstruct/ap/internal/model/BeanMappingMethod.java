@@ -19,12 +19,9 @@
 package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.last;
-import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,7 +39,6 @@ import javax.tools.Diagnostic;
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
-import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
@@ -50,6 +46,7 @@ import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBui
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -72,7 +69,7 @@ import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
  *
  * @author Gunnar Morling
  */
-public class BeanMappingMethod extends MappingMethod {
+public class BeanMappingMethod extends ContainerMappingMethod {
 
     private final List<PropertyMapping> propertyMappings;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
@@ -80,7 +77,6 @@ public class BeanMappingMethod extends MappingMethod {
     private final MethodReference factoryMethod;
     private final boolean mapNullToDefault;
     private final Type resultType;
-    private final NestedTargetObjects nestedTargetObjects;
     private final boolean overridden;
 
     public static class Builder {
@@ -94,7 +90,6 @@ public class BeanMappingMethod extends MappingMethod {
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
         private SelectionParameters selectionParameters;
         private final Set<String> existingVariableNames = new HashSet<String>();
-        private NestedTargetObjects nestedTargetObjects;
         private Map<String, List<Mapping>> methodMappings;
         private SingleMappingByTargetPropertyNameFunction singleMapping;
 
@@ -105,27 +100,20 @@ public class BeanMappingMethod extends MappingMethod {
 
         public Builder souceMethod(SourceMethod sourceMethod) {
             singleMapping = new SourceMethodSingleMapping( sourceMethod );
-            return setupMethodWithMapping( sourceMethod, sourceMethod.getMappingOptions().getMappings() );
+            return setupMethodWithMapping( sourceMethod );
         }
 
-        public Builder forgedMethod(Method sourceMethod) {
+        public Builder forgedMethod(Method method ) {
             singleMapping = new EmptySingleMapping();
-            return setupMethodWithMapping( sourceMethod, Collections.<String, List<Mapping>>emptyMap() );
+            return setupMethodWithMapping( method  );
         }
 
-        private Builder setupMethodWithMapping(Method sourceMethod, Map<String, List<Mapping>> mappings) {
+        private Builder setupMethodWithMapping(Method sourceMethod) {
             this.method = sourceMethod;
-            this.methodMappings = mappings;
+            this.methodMappings = sourceMethod.getMappingOptions().getMappings();
             CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
             Map<String, Accessor> accessors = method.getResultType().getPropertyWriteAccessors( cms );
             this.targetProperties = accessors.keySet();
-
-            this.nestedTargetObjects = new NestedTargetObjects.Builder()
-                .existingVariableNames( existingVariableNames )
-                .mappings( mappings )
-                .mappingBuilderContext( ctx )
-                .sourceMethod( method )
-                .build();
 
             this.unprocessedTargetProperties = new LinkedHashMap<String, Accessor>( accessors );
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
@@ -147,16 +135,19 @@ public class BeanMappingMethod extends MappingMethod {
 
         public BeanMappingMethod build() {
             // map properties with mapping
-            boolean mappingErrorOccured = handleDefinedSourceMappings();
+            boolean mappingErrorOccured = handleDefinedMappings();
             if ( mappingErrorOccured ) {
                 return null;
             }
 
-            // map properties without a mapping
-            applyPropertyNameBasedMapping();
+            if ( !method.getMappingOptions().isRestrictToDefinedMappings() ) {
 
-            // map parameters without a mapping
-            applyParameterNameBasedMapping();
+                // map properties without a mapping
+                applyPropertyNameBasedMapping();
+
+                // map parameters without a mapping
+                applyParameterNameBasedMapping();
+            }
 
             // report errors on unmapped properties
             reportErrorForUnmappedTargetPropertiesIfRequired();
@@ -223,10 +214,8 @@ public class BeanMappingMethod extends MappingMethod {
                 factoryMethod,
                 mapNullToDefault,
                 resultType,
-                existingVariableNames,
                 beforeMappingMethods,
-                afterMappingMethods,
-                nestedTargetObjects
+                afterMappingMethods
             );
         }
 
@@ -277,152 +266,200 @@ public class BeanMappingMethod extends MappingMethod {
          * It is furthermore checked whether the given mappings are correct. When an error occurs, the method continues
          * in search of more problems.
          */
-        private boolean handleDefinedSourceMappings() {
+        private boolean handleDefinedMappings() {
 
             boolean errorOccurred = false;
             Set<String> handledTargets = new HashSet<String>();
 
+            if ( method.getMappingOptions().hasNestedTargetReferences() ) {
+                handleDefinedNestedTargetMapping( handledTargets );
+            }
+
             for ( Map.Entry<String, List<Mapping>> entry : methodMappings.entrySet() ) {
                 for ( Mapping mapping : entry.getValue() ) {
-
-                    PropertyMapping propertyMapping = null;
-
-                    TargetReference targetRef = mapping.getTargetReference();
-                    String resultPropertyName = null;
-                    if ( targetRef.isValid() ) {
-                        resultPropertyName = first( targetRef.getPropertyEntries() ).getName();
-                    }
-
-                    if ( !unprocessedTargetProperties.containsKey( resultPropertyName ) ) {
-                        boolean hasReadAccessor =
-                            method.getResultType().getPropertyReadAccessors().containsKey( mapping.getTargetName() );
-
-                        if ( hasReadAccessor ) {
-                            if ( !mapping.isIgnored() ) {
-                                ctx.getMessager().printMessage(
-                                    method.getExecutable(),
-                                    mapping.getMirror(),
-                                    mapping.getSourceAnnotationValue(),
-                                    Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE,
-                                    mapping.getTargetName() );
+                    TargetReference targetReference = mapping.getTargetReference();
+                    if ( targetReference.isValid() ) {
+                        if ( !handledTargets.contains( first( targetReference.getPropertyEntries() ).getFullName() ) ) {
+                            if ( handleDefinedMapping( mapping, handledTargets ) ) {
                                 errorOccurred = true;
                             }
                         }
-                        else {
-                            ctx.getMessager().printMessage(
-                                method.getExecutable(),
-                                mapping.getMirror(),
-                                mapping.getSourceAnnotationValue(),
-                                Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE,
-                                mapping.getTargetName() );
-                            errorOccurred = true;
-                        }
-
-                        continue;
                     }
-
-                    PropertyEntry targetProperty = last( targetRef.getPropertyEntries() );
-
-                    // unknown properties given via dependsOn()?
-                    for ( String dependency : mapping.getDependsOn() ) {
-                        if ( !targetProperties.contains( dependency ) ) {
-                            ctx.getMessager().printMessage(
-                                method.getExecutable(),
-                                mapping.getMirror(),
-                                mapping.getDependsOnAnnotationValue(),
-                                Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON,
-                                dependency
-                            );
-                            errorOccurred = true;
-                        }
-                    }
-
-                    // check the mapping options
-                    // its an ignored property mapping
-                    if ( mapping.isIgnored() ) {
-                        propertyMapping = null;
-                        handledTargets.add( mapping.getTargetName() );
-                    }
-
-                    // its a plain-old property mapping
-                    else if ( mapping.getSourceName() != null ) {
-
-                        // determine source parameter
-                        SourceReference sourceRef = mapping.getSourceReference();
-                        if ( sourceRef.isValid() ) {
-
-                            // targetProperty == null can occur: we arrived here because we want as many errors
-                            // as possible before we stop analysing
-                            propertyMapping = new PropertyMappingBuilder()
-                                .mappingContext( ctx )
-                                .sourceMethod( method )
-                                .targetProperty( targetProperty )
-                                .targetPropertyName( mapping.getTargetName() )
-                                .sourceReference( sourceRef )
-                                .selectionParameters( mapping.getSelectionParameters() )
-                                .formattingParameters( mapping.getFormattingParameters() )
-                                .existingVariableNames( existingVariableNames )
-                                .dependsOn( mapping.getDependsOn() )
-                                .defaultValue( mapping.getDefaultValue() )
-                                .localTargetVarName( nestedTargetObjects.getLocalVariableName( targetRef ) )
-                                .build();
-                            handledTargets.add( resultPropertyName );
-                            unprocessedSourceParameters.remove( sourceRef.getParameter() );
-                        }
-                        else {
-                            errorOccurred = true;
-                            continue;
-                        }
-                    }
-
-                    // its a constant
-                    else if ( mapping.getConstant() != null ) {
-
-                        propertyMapping = new ConstantMappingBuilder()
-                            .mappingContext( ctx )
-                            .sourceMethod( method )
-                            .constantExpression( "\"" + mapping.getConstant() + "\"" )
-                            .targetProperty( targetProperty )
-                            .targetPropertyName( mapping.getTargetName() )
-                            .formattingParameters( mapping.getFormattingParameters() )
-                            .selectionParameters( mapping.getSelectionParameters() )
-                            .existingVariableNames( existingVariableNames )
-                            .dependsOn( mapping.getDependsOn() )
-                            .localTargetVarName( nestedTargetObjects.getLocalVariableName( targetRef ) )
-                            .build();
-                        handledTargets.add( mapping.getTargetName() );
-                    }
-
-                    // its an expression
-                    else if ( mapping.getJavaExpression() != null ) {
-
-                        propertyMapping = new JavaExpressionMappingBuilder()
-                            .mappingContext( ctx )
-                            .sourceMethod( method )
-                            .javaExpression( mapping.getJavaExpression() )
-                            .existingVariableNames( existingVariableNames )
-                            .targetProperty( targetProperty )
-                            .targetPropertyName( mapping.getTargetName() )
-                            .dependsOn( mapping.getDependsOn() )
-                            .localTargetVarName( nestedTargetObjects.getLocalVariableName( targetRef ) )
-                            .build();
-                        handledTargets.add( mapping.getTargetName() );
-                    }
-
-                    // remaining are the mappings without a 'source' so, 'only' a date format or qualifiers
-
-                    if ( propertyMapping != null ) {
-                        propertyMappings.add( propertyMapping );
+                    else if ( reportErrorOnTargetObject( mapping ) ) {
+                        errorOccurred = true;
                     }
                 }
             }
-
             for ( String handledTarget : handledTargets ) {
                 // In order to avoid: "Unknown property foo in return type" in case of duplicate
                 // target mappings
                 unprocessedTargetProperties.remove( handledTarget );
             }
 
+            return errorOccurred;
+        }
+
+        private void handleDefinedNestedTargetMapping(Set<String> handledTargets) {
+
+            Map<PropertyEntry, MappingOptions> optionsByNestedTarget =
+                method.getMappingOptions().groupByPoppedTargetReferences();
+            for ( Entry<PropertyEntry, MappingOptions> entryByTP : optionsByNestedTarget.entrySet() ) {
+
+                Map<Parameter, MappingOptions> optionsBySourceParam = entryByTP.getValue().groupBySourceParameter();
+                for ( Entry<Parameter, MappingOptions> entryByParam : optionsBySourceParam.entrySet() ) {
+
+                    SourceReference sourceRef = new SourceReference.BuilderFromProperty()
+                        .sourceParameter( entryByParam.getKey() )
+                        .name( entryByTP.getKey().getName() )
+                        .build();
+
+                    PropertyMapping propertyMapping = new PropertyMappingBuilder()
+                        .mappingContext( ctx )
+                        .sourceMethod( method )
+                        .targetProperty( entryByTP.getKey() )
+                        .targetPropertyName( entryByTP.getKey().getName() )
+                        .sourceReference( sourceRef )
+                        .existingVariableNames( existingVariableNames )
+                        .dependsOn( entryByParam.getValue().collectNestedDependsOn() )
+                        .forgeMethodWithMappingOptions( entryByParam.getValue() )
+                        .build();
+                    unprocessedSourceParameters.remove( sourceRef.getParameter() );
+
+                    if ( propertyMapping != null ) {
+                        propertyMappings.add( propertyMapping );
+                    }
+                }
+                handledTargets.add( entryByTP.getKey().getName() );
+            }
+
+        }
+
+        private boolean handleDefinedMapping(Mapping mapping, Set<String> handledTargets) {
+
+            boolean errorOccured = false;
+
+            PropertyMapping propertyMapping = null;
+
+            TargetReference targetRef = mapping.getTargetReference();
+            PropertyEntry targetProperty = first( targetRef.getPropertyEntries() );
+
+            // unknown properties given via dependsOn()?
+            for ( String dependency : mapping.getDependsOn() ) {
+                if ( !targetProperties.contains( dependency ) ) {
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        mapping.getMirror(),
+                        mapping.getDependsOnAnnotationValue(),
+                        Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON,
+                        dependency
+                    );
+                    errorOccured = true;
+                }
+            }
+
+            // check the mapping options
+            // its an ignored property mapping
+            if ( mapping.isIgnored() ) {
+                propertyMapping = null;
+                handledTargets.add( mapping.getTargetName() );
+            }
+
+            // its a plain-old property mapping
+            else if ( mapping.getSourceName() != null ) {
+
+                // determine source parameter
+                SourceReference sourceRef = mapping.getSourceReference();
+                if ( sourceRef.isValid() ) {
+
+                    // targetProperty == null can occur: we arrived here because we want as many errors
+                    // as possible before we stop analysing
+                    propertyMapping = new PropertyMappingBuilder()
+                        .mappingContext( ctx )
+                        .sourceMethod( method )
+                        .targetProperty( targetProperty )
+                        .targetPropertyName( mapping.getTargetName() )
+                        .sourceReference( sourceRef )
+                        .selectionParameters( mapping.getSelectionParameters() )
+                        .formattingParameters( mapping.getFormattingParameters() )
+                        .existingVariableNames( existingVariableNames )
+                        .dependsOn( mapping.getDependsOn() )
+                        .defaultValue( mapping.getDefaultValue() )
+                        .build();
+                    handledTargets.add( targetProperty.getName() );
+                    unprocessedSourceParameters.remove( sourceRef.getParameter() );
+                }
+                else {
+                   errorOccured = true;
+                }
+            }
+
+            // its a constant
+            else if ( mapping.getConstant() != null ) {
+
+                propertyMapping = new ConstantMappingBuilder()
+                    .mappingContext( ctx )
+                    .sourceMethod( method )
+                    .constantExpression( "\"" + mapping.getConstant() + "\"" )
+                    .targetProperty( targetProperty )
+                    .targetPropertyName( mapping.getTargetName() )
+                    .formattingParameters( mapping.getFormattingParameters() )
+                    .selectionParameters( mapping.getSelectionParameters() )
+                    .existingVariableNames( existingVariableNames )
+                    .dependsOn( mapping.getDependsOn() )
+                    .build();
+                handledTargets.add( mapping.getTargetName() );
+            }
+
+            // its an expression
+            else if ( mapping.getJavaExpression() != null ) {
+
+                propertyMapping = new JavaExpressionMappingBuilder()
+                    .mappingContext( ctx )
+                    .sourceMethod( method )
+                    .javaExpression( mapping.getJavaExpression() )
+                    .existingVariableNames( existingVariableNames )
+                    .targetProperty( targetProperty )
+                    .targetPropertyName( mapping.getTargetName() )
+                    .dependsOn( mapping.getDependsOn() )
+                    .build();
+                handledTargets.add( mapping.getTargetName() );
+            }
+
+            // remaining are the mappings without a 'source' so, 'only' a date format or qualifiers
+            if ( propertyMapping != null ) {
+                propertyMappings.add( propertyMapping );
+            }
+
+            return errorOccured;
+        }
+
+        private boolean reportErrorOnTargetObject(Mapping mapping) {
+
+            boolean errorOccurred = false;
+
+            boolean hasReadAccessor
+                = method.getResultType().getPropertyReadAccessors().containsKey( mapping.getTargetName() );
+
+            if ( hasReadAccessor ) {
+                if ( !mapping.isIgnored() ) {
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        mapping.getMirror(),
+                        mapping.getSourceAnnotationValue(),
+                        Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE,
+                        mapping.getTargetName() );
+                    errorOccurred = true;
+                }
+            }
+            else {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    mapping.getMirror(),
+                    mapping.getSourceAnnotationValue(),
+                    Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE,
+                    mapping.getTargetName() );
+                errorOccurred = true;
+            }
             return errorOccurred;
         }
 
@@ -574,9 +611,10 @@ public class BeanMappingMethod extends MappingMethod {
 
             //we handle forged methods differently than the usual source ones. in
             if ( method instanceof ForgedMethod ) {
-                if ( targetProperties.isEmpty() || !unprocessedTargetProperties.isEmpty() ) {
 
-                    ForgedMethod forgedMethod = (ForgedMethod) this.method;
+                ForgedMethod forgedMethod = (ForgedMethod) this.method;
+                if ( forgedMethod.isAutoMapping()
+                    && ( targetProperties.isEmpty() || !unprocessedTargetProperties.isEmpty() ) ) {
 
                     if ( forgedMethod.getHistory() == null ) {
                         Type sourceType = this.method.getParameters().get( 0 ).getType();
@@ -628,11 +666,19 @@ public class BeanMappingMethod extends MappingMethod {
                               MethodReference factoryMethod,
                               boolean mapNullToDefault,
                               Type resultType,
-                              Collection<String> existingVariableNames,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                              List<LifecycleCallbackMethodReference> afterMappingReferences,
-                              NestedTargetObjects nestedTargetObjects) {
-        super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences );
+                              List<LifecycleCallbackMethodReference> afterMappingReferences) {
+        super(
+            method,
+            null,
+            factoryMethod,
+            mapNullToDefault,
+            null,
+            beforeMappingReferences,
+            afterMappingReferences,
+            null
+        );
+
         this.propertyMappings = propertyMappings;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
@@ -652,7 +698,6 @@ public class BeanMappingMethod extends MappingMethod {
         this.factoryMethod = factoryMethod;
         this.mapNullToDefault = mapNullToDefault;
         this.resultType = resultType;
-        this.nestedTargetObjects = nestedTargetObjects.init( this.getResultName() );
         this.overridden = method.overridesMethod();
     }
 
@@ -668,18 +713,12 @@ public class BeanMappingMethod extends MappingMethod {
         return mappingsByParameter;
     }
 
-    public Set<LocalVariable> getLocalVariablesToCreate() {
-        return this.nestedTargetObjects.localVariables;
-    }
-
-    public Set<NestedLocalVariableAssignment> getNestedLocalVariableAssignments() {
-        return this.nestedTargetObjects.nestedAssignments;
-    }
-
+    @Override
     public boolean isMapNullToDefault() {
         return mapNullToDefault;
     }
 
+    @Override
     public boolean isOverridden() {
         return overridden;
     }
@@ -701,7 +740,6 @@ public class BeanMappingMethod extends MappingMethod {
         for ( PropertyMapping propertyMapping : propertyMappings ) {
             types.addAll( propertyMapping.getImportTypes() );
         }
-        types.addAll( nestedTargetObjects.getImportTypes() );
 
         return types;
     }
@@ -727,148 +765,45 @@ public class BeanMappingMethod extends MappingMethod {
         return sourceParameters;
     }
 
+    @Override
     public MethodReference getFactoryMethod() {
         return this.factoryMethod;
     }
 
-    private static class NestedTargetObjects {
+    @Override
+    public Type getResultElementType() {
+        return null;
+    }
 
-        private final Set<LocalVariable> localVariables;
-        private final Set<NestedLocalVariableAssignment> nestedAssignments;
-        // local variable names indexed by fullname
-        private final Map<String, String> localVariableNames;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( getResultType() == null ) ? 0 : getResultType().hashCode() );
+        return result;
+    }
 
-        private Set<Type> getImportTypes() {
-            Set<Type> importedTypes = new HashSet<Type>();
-            for ( LocalVariable localVariableToCreate : localVariables ) {
-                importedTypes.add( localVariableToCreate.getType() );
-            }
-            return importedTypes;
+    @Override
+    public boolean equals(Object obj) {
+
+        if ( this == obj ) {
+            return true;
+        }
+        if ( obj == null || getClass() != obj.getClass() ) {
+            return false;
         }
 
-        private static class Builder {
+        BeanMappingMethod that = (BeanMappingMethod) obj;
 
-            private Map<String, List<Mapping>> mappings;
-            private Set<String> existingVariableNames;
-            private MappingBuilderContext ctx;
-            private Method method;
-
-            private Builder mappings(Map<String, List<Mapping>> mappings) {
-                this.mappings = mappings;
-                return this;
-            }
-
-            private Builder existingVariableNames(Set<String> existingVariableNames) {
-                this.existingVariableNames = existingVariableNames;
-                return this;
-            }
-
-            private Builder mappingBuilderContext(MappingBuilderContext ctx) {
-                this.ctx = ctx;
-                return this;
-            }
-
-            private Builder sourceMethod(Method method) {
-                this.method = method;
-                return this;
-            }
-
-            private NestedTargetObjects build() {
-
-                Map<String, PropertyEntry> uniquePropertyEntries = new HashMap<String, PropertyEntry>();
-                Map<String, String> localVariableNames = new HashMap<String, String>();
-                Set<LocalVariable> localVariables = new HashSet<LocalVariable>();
-
-                // colllect unique local variables
-                for ( Map.Entry<String, List<Mapping>> mapping : mappings.entrySet() ) {
-
-                    TargetReference targetRef = first( mapping.getValue() ).getTargetReference();
-                    List<PropertyEntry> propertyEntries = targetRef.getPropertyEntries();
-
-                    for ( int i = 0; i < propertyEntries.size() - 1; i++ ) {
-                        PropertyEntry entry = propertyEntries.get( i );
-                        uniquePropertyEntries.put( entry.getFullName(), entry );
-                    }
-
-                }
-
-                // assign variable names and create local variables.
-                for ( PropertyEntry propertyEntry : uniquePropertyEntries.values() ) {
-                    String name = getSaveVariableName( propertyEntry.getName(), existingVariableNames );
-                    existingVariableNames.add( name );
-                    Type type = propertyEntry.getType();
-                    Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, type, null );
-                    localVariables.add( new LocalVariable( name, type, factoryMethod ) );
-                    localVariableNames.put( propertyEntry.getFullName(), name );
-                }
-
-
-                Set<NestedLocalVariableAssignment> relations = new HashSet<NestedLocalVariableAssignment>();
-
-                // create relations branches (getter / setter) -- need to go to postInit()
-                for ( Map.Entry<String, List<Mapping>> mapping : mappings.entrySet() ) {
-
-                    TargetReference targetRef = first( mapping.getValue() ).getTargetReference();
-                    List<PropertyEntry> propertyEntries = targetRef.getPropertyEntries();
-
-                    for ( int i = 0; i < propertyEntries.size() - 1; i++ ) {
-                        // null means the targetBean is the methods targetBean. Needs to be set later.
-                        String targetBean = null;
-                        if ( i > 0 ) {
-                            PropertyEntry targetPropertyEntry = propertyEntries.get( i - 1 );
-                            targetBean = localVariableNames.get( targetPropertyEntry.getFullName() );
-                        }
-                        PropertyEntry sourcePropertyEntry = propertyEntries.get( i );
-                        String targetAccessor = sourcePropertyEntry.getWriteAccessor().getSimpleName().toString();
-                        String sourceRef = localVariableNames.get( sourcePropertyEntry.getFullName() );
-                        relations.add( new NestedLocalVariableAssignment(
-                            targetBean,
-                            targetAccessor,
-                            sourceRef,
-                            sourcePropertyEntry.getWriteAccessor().getExecutable() == null
-                        ) );
-                    }
-                }
-
-                return new NestedTargetObjects( localVariables, localVariableNames, relations );
-            }
+        if ( !super.equals( obj ) ) {
+            return false;
         }
-
-        private NestedTargetObjects(Set<LocalVariable> localVariables, Map<String, String> localVariableNames,
-                                    Set<NestedLocalVariableAssignment> relations) {
-            this.localVariables = localVariables;
-            this.localVariableNames = localVariableNames;
-            this.nestedAssignments = relations;
-        }
-
-        /**
-         * returns a local vaRriable name when relevant (so when not the 'parameter' targetBean should be used)
-         *
-         * @param targetRef
-         *
-         * @return generated local variable name
-         */
-        private String getLocalVariableName(TargetReference targetRef) {
-            String result = null;
-            List<PropertyEntry> propertyEntries = targetRef.getPropertyEntries();
-            if ( propertyEntries.size() > 1 ) {
-                result = localVariableNames.get( propertyEntries.get( propertyEntries.size() - 2 ).getFullName() );
-            }
-            return result;
-        }
-
-        private NestedTargetObjects init(String targetBeanName) {
-            for ( NestedLocalVariableAssignment nestedAssignment : nestedAssignments ) {
-                if ( nestedAssignment.getTargetBean() == null ) {
-                    nestedAssignment.setTargetBean( targetBeanName );
-                }
-            }
-            return this;
-        }
-
+        return propertyMappings != null ? propertyMappings.equals( that.propertyMappings ) :
+            that.propertyMappings == null;
     }
 
     private interface SingleMappingByTargetPropertyNameFunction {
+
         Mapping getSingleMappingByTargetPropertyName(String targetPropertyName);
     }
 

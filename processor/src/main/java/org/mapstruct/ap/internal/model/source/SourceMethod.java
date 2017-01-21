@@ -185,7 +185,7 @@ public class SourceMethod implements Method {
         public SourceMethod build() {
 
             MappingOptions mappingOptions =
-                    new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings );
+                    new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings, false );
 
             SourceMethod sourceMethod = new SourceMethod(
                 declaringMapper,
