@@ -95,6 +95,12 @@ public interface Assignment {
     String getSourceReference();
 
     /**
+     *
+     * @return true when the source reference is the source parameter (and not a property of the source parameter type)
+     */
+    boolean isSourceReferenceParameter();
+
+    /**
      * the source presence checker reference
      *
      * @return source reference

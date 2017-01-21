@@ -160,6 +160,11 @@ public class MethodReference extends MappingMethod implements Assignment {
         return assignment.getSourceParameterName();
     }
 
+    @Override
+    public boolean isSourceReferenceParameter() {
+        return assignment.isSourceReferenceParameter();
+    }
+
     /**
      * @return the type of the single source parameter that is not the {@code @TargetType} parameter
      */

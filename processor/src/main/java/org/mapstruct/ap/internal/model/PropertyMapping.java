@@ -275,7 +275,7 @@ public class PropertyMapping extends ModelElement {
                     assignment = assignToArray( targetType, assignment );
                 }
                 else {
-                    assignment = assignToPlain( sourceType, targetType, targetWriteAccessorType, assignment );
+                    assignment = assignToPlain( targetType, targetWriteAccessorType, assignment );
                 }
             }
             else {
@@ -324,7 +324,7 @@ public class PropertyMapping extends ModelElement {
             return null;
         }
 
-        private Assignment assignToPlain(Type sourceType, Type targetType, TargetWriteAccessorType targetAccessorType,
+        private Assignment assignToPlain(Type targetType, TargetWriteAccessorType targetAccessorType,
                                          Assignment rightHandSide) {
 
             Assignment result;
@@ -352,7 +352,7 @@ public class PropertyMapping extends ModelElement {
                 }
                 Assignment factory = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
                 return new UpdateWrapper( rhs, method.getThrownTypes(), factory, isFieldAssignment(),  targetType,
-                    true );
+                    !rhs.isSourceReferenceParameter() );
             }
             else {
                 NullValueCheckStrategyPrism nvcs = method.getMapperConfiguration().getNullValueCheckStrategy();

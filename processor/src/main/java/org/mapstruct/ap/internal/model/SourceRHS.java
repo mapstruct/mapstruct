@@ -66,6 +66,11 @@ public class SourceRHS extends ModelElement implements Assignment {
     }
 
     @Override
+    public boolean isSourceReferenceParameter() {
+        return sourceReference.equals( sourceParameterName );
+    }
+
+    @Override
     public String getSourcePresenceCheckerReference() {
         return sourcePresenceCheckerReference;
     }

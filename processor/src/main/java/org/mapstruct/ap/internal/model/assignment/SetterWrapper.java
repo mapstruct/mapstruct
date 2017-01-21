@@ -88,7 +88,7 @@ public class SetterWrapper extends AssignmentWrapper {
     * @return include a null check
     */
     private boolean includeSourceNullCheck(Assignment rhs, NullValueCheckStrategyPrism nvms, Type targetType) {
-        return !rhs.getSourceReference().equals( rhs.getSourceParameterName() )
+        return !rhs.isSourceReferenceParameter()
             && !rhs.getSourceType().isPrimitive()
             && (ALWAYS == nvms || rhs.getType().isConverted() || rhs.getSourceLocalVarName() != null
             || (rhs.getType().isDirect() && targetType.isPrimitive()));

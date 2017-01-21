@@ -87,6 +87,11 @@ public class TypeConversion extends ModelElement implements Assignment {
     }
 
     @Override
+    public boolean isSourceReferenceParameter() {
+        return assignment.isSourceReferenceParameter();
+    }
+
+    @Override
     public String getSourcePresenceCheckerReference() {
         return assignment.getSourcePresenceCheckerReference();
     }
