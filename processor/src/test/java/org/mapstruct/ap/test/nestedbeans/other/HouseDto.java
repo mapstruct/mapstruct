@@ -16,22 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedbeans;
+package org.mapstruct.ap.test.nestedbeans.other;
 
-public class User {
+public class HouseDto {
 
     private String name;
-    private Car car;
-    private Car secondCar;
-    private House house;
+    private int year;
+    private RoofDto roof;
 
-    public User() {
+    public HouseDto() {
     }
 
-    public User(String name, Car car, House house) {
+    public HouseDto(String name, int year, RoofDto roof) {
         this.name = name;
-        this.car = car;
-        this.house = house;
+        this.year = year;
+        this.roof = roof;
     }
 
     public String getName() {
@@ -42,28 +41,20 @@ public class User {
         this.name = name;
     }
 
-    public Car getCar() {
-        return car;
+    public int getYear() {
+        return year;
     }
 
-    public void setCar(Car car) {
-        this.car = car;
+    public void setYear(int year) {
+        this.year = year;
     }
 
-    public Car getSecondCar() {
-        return secondCar;
+    public RoofDto getRoof() {
+        return roof;
     }
 
-    public void setSecondCar(Car secondCar) {
-        this.secondCar = secondCar;
-    }
-
-    public House getHouse() {
-        return house;
-    }
-
-    public void setHouse(House house) {
-        this.house = house;
+    public void setRoof(RoofDto roof) {
+        this.roof = roof;
     }
 
     @Override
@@ -75,32 +66,32 @@ public class User {
             return false;
         }
 
-        User user = (User) o;
+        HouseDto houseDto = (HouseDto) o;
 
-        if ( name != null ? !name.equals( user.name ) : user.name != null ) {
+        if ( year != houseDto.year ) {
             return false;
         }
-        if ( car != null ? !car.equals( user.car ) : user.car != null ) {
+        if ( name != null ? !name.equals( houseDto.name ) : houseDto.name != null ) {
             return false;
         }
-        return house != null ? house.equals( user.house ) : user.house == null;
+        return roof != null ? roof.equals( houseDto.roof ) : houseDto.roof == null;
 
     }
 
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + ( car != null ? car.hashCode() : 0 );
-        result = 31 * result + ( house != null ? house.hashCode() : 0 );
+        result = 31 * result + year;
+        result = 31 * result + ( roof != null ? roof.hashCode() : 0 );
         return result;
     }
 
     @Override
     public String toString() {
-        return "User{" +
+        return "HouseDto{" +
             "name='" + name + '\'' +
-            ", car=" + car +
-            ", house=" + house +
+            ", year=" + year +
+            ", roof=" + roof +
             '}';
     }
 

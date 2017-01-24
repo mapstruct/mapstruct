@@ -28,4 +28,5 @@ public interface UserDtoMapperSmart {
 
     UserDto userToUserDto(User user);
 
+    org.mapstruct.ap.test.nestedbeans.other.UserDto userToUserDto2( User user );
 }

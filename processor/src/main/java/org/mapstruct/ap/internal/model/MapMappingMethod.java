@@ -20,7 +20,6 @@ package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +28,8 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
-import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -53,25 +50,16 @@ public class MapMappingMethod extends MappingMethod {
     private final boolean overridden;
     private final boolean mapNullToDefault;
 
-    public static class Builder {
+    public static class Builder extends AbstractMappingMethodBuilder<Builder, MapMappingMethod> {
 
         private FormattingParameters keyFormattingParameters;
         private FormattingParameters valueFormattingParameters;
-        private Method method;
-        private MappingBuilderContext ctx;
         private NullValueMappingStrategyPrism nullValueMappingStrategy;
         private SelectionParameters keySelectionParameters;
         private SelectionParameters valueSelectionParameters;
-        private List<ForgedMethod> forgedMethods = new ArrayList<ForgedMethod>();
 
-        public Builder mappingContext(MappingBuilderContext mappingContext) {
-            this.ctx = mappingContext;
-            return this;
-        }
-
-        public Builder method(Method sourceMethod) {
-            this.method = sourceMethod;
-            return this;
+        public Builder() {
+            super( Builder.class );
         }
 
         public Builder keySelectionParameters(SelectionParameters keySelectionParameters) {
@@ -181,70 +169,21 @@ public class MapMappingMethod extends MappingMethod {
                 factoryMethod,
                 mapNullToDefault,
                 beforeMappingMethods,
-                afterMappingMethods,
-                forgedMethods
+                afterMappingMethods
             );
         }
 
-        private Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, Type targetType) {
-
-            String name = getName( sourceType, targetType );
-            ForgedMethodHistory history = null;
-            if ( method instanceof ForgedMethod ) {
-                history = ( (ForgedMethod) method ).getHistory();
-            }
-            ForgedMethod forgedMethod = new ForgedMethod(
-                name,
-                sourceType,
-                targetType,
-                method.getMapperConfiguration(),
-                method.getExecutable(),
-                method.getContextParameters(),
-                new ForgedMethodHistory( history,
-                        Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),
-                        Strings.stubPropertyName( targetType.getName() ),
-                        sourceRHS.getSourceType(),
-                        targetType,
-                        true,
-                        sourceRHS.getSourceErrorMessagePart()
-                )
-            );
-
-            Assignment assignment = new MethodReference(
-                forgedMethod,
-                null,
-                ParameterBinding.fromParameters( forgedMethod.getParameters() ) );
-
-            assignment.setAssignment( sourceRHS );
-
-            forgedMethods.add( forgedMethod );
-
-            return assignment;
+        @Override
+        protected boolean shouldUsePropertyNamesInHistory() {
+            return true;
         }
-
-        private String getName(Type sourceType, Type targetType) {
-            String fromName = getName( sourceType );
-            String toName = getName( targetType );
-            return Strings.decapitalize( fromName + "To" + toName );
-        }
-
-        private String getName(Type type) {
-            StringBuilder builder = new StringBuilder();
-            for ( Type typeParam : type.getTypeParameters() ) {
-                builder.append( typeParam.getIdentification() );
-            }
-            builder.append( type.getIdentification() );
-            return builder.toString();
-        }
-
     }
 
     private MapMappingMethod(Method method, Assignment keyAssignment, Assignment valueAssignment,
                              MethodReference factoryMethod, boolean mapNullToDefault,
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                             List<LifecycleCallbackMethodReference> afterMappingReferences,
-                             List<ForgedMethod> forgedMethods) {
-        super( method, beforeMappingReferences, afterMappingReferences, forgedMethods );
+                             List<LifecycleCallbackMethodReference> afterMappingReferences) {
+        super( method, beforeMappingReferences, afterMappingReferences );
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;

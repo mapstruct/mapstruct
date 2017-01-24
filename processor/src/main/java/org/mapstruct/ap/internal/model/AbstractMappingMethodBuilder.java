@@ -19,25 +19,72 @@
 
 package org.mapstruct.ap.internal.model;
 
+import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.ForgedMethod;
+import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
+import org.mapstruct.ap.internal.util.Strings;
+
 /**
  * An abstract builder that can be reused for building {@link MappingMethod}(s).
  *
  * @author Filip Hrisafov
  */
 public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMethodBuilder<B, M>,
-    M extends MappingMethod> {
-
-    protected B myself;
-    protected MappingBuilderContext ctx;
+    M extends MappingMethod> extends AbstractBaseBuilder<B> {
 
     public AbstractMappingMethodBuilder(Class<B> selfType) {
-        myself = selfType.cast( this );
-    }
-
-    public B mappingContext(MappingBuilderContext mappingContext) {
-        this.ctx = mappingContext;
-        return myself;
+        super( selfType );
     }
 
     public abstract M build();
+
+    /**
+     * @return {@code true} if property names should be used for the creation of the {@link ForgedMethodHistory}.
+     */
+    protected abstract boolean shouldUsePropertyNamesInHistory();
+
+    Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, Type targetType) {
+
+        String name = getName( sourceType, targetType );
+        name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
+        ForgedMethodHistory history = null;
+        if ( method instanceof ForgedMethod ) {
+            history = ( (ForgedMethod) method ).getHistory();
+        }
+        ForgedMethod forgedMethod = new ForgedMethod(
+            name,
+            sourceType,
+            targetType,
+            method.getMapperConfiguration(),
+            method.getExecutable(),
+            method.getContextParameters(),
+            new ForgedMethodHistory(
+                history,
+                Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),
+                Strings.stubPropertyName( targetType.getName() ),
+                sourceRHS.getSourceType(),
+                targetType,
+                shouldUsePropertyNamesInHistory(),
+                sourceRHS.getSourceErrorMessagePart()
+            )
+        );
+
+        return createForgedBeanAssignment( sourceRHS, forgedMethod );
+    }
+
+    private String getName(Type sourceType, Type targetType) {
+        String fromName = getName( sourceType );
+        String toName = getName( targetType );
+        return Strings.decapitalize( fromName + "To" + toName );
+    }
+
+    private String getName(Type type) {
+        StringBuilder builder = new StringBuilder();
+        for ( Type typeParam : type.getTypeParameters() ) {
+            builder.append( typeParam.getIdentification() );
+        }
+        builder.append( type.getIdentification() );
+        return builder.toString();
+    }
 }

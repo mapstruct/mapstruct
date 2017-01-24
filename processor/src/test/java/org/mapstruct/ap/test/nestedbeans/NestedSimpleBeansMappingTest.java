@@ -29,6 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
     User.class, UserDto.class, Car.class, CarDto.class, House.class, HouseDto.class,
     Wheel.class, WheelDto.class,
     Roof.class, RoofDto.class,
+    org.mapstruct.ap.test.nestedbeans.other.CarDto.class,
+    org.mapstruct.ap.test.nestedbeans.other.UserDto.class,
+    org.mapstruct.ap.test.nestedbeans.other.HouseDto.class,
+    org.mapstruct.ap.test.nestedbeans.other.RoofDto.class,
+    org.mapstruct.ap.test.nestedbeans.other.WheelDto.class,
     UserDtoMapperClassic.class,
     UserDtoMapperSmart.class,
     UserDtoUpdateMapperSmart.class

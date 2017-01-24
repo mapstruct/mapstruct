@@ -19,12 +19,9 @@
 package org.mapstruct.ap.internal.processor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.lang.model.element.ExecutableElement;
@@ -52,7 +49,6 @@ import org.mapstruct.ap.internal.model.StreamMappingMethod;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -153,7 +149,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private Mapper getMapper(TypeElement element, MapperConfiguration mapperConfig, List<SourceMethod> methods) {
         List<MapperReference> mapperReferences = mappingContext.getMapperReferences();
-        List<MappingMethod> mappingMethods = getAllMappingMethods( mapperConfig, methods );
+        List<MappingMethod> mappingMethods = getMappingMethods( mapperConfig, methods );
         mappingMethods.addAll( mappingContext.getUsedVirtualMappings() );
         mappingMethods.addAll( mappingContext.getMappingsToGenerate() );
 
@@ -260,55 +256,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         return extraImports;
-    }
-
-    private List<MappingMethod> getAllMappingMethods(MapperConfiguration mapperConfig, List<SourceMethod> methods) {
-        List<MappingMethod> mappingMethods = getMappingMethods( mapperConfig, methods );
-
-        Collection<ForgedMethod> excludedForgedMethods = new HashSet<ForgedMethod>( );
-        Collection<ForgedMethod> forgedMethods = collectAllForgedMethods( mappingMethods, excludedForgedMethods );
-
-        while ( !forgedMethods.isEmpty() ) {
-            List<MappingMethod> mappingMethodsFromForged = createBeanMapping( forgedMethods );
-            forgedMethods = collectAllForgedMethods( mappingMethodsFromForged, excludedForgedMethods );
-            mappingMethods.addAll( mappingMethodsFromForged );
-        }
-
-        return mappingMethods;
-    }
-
-    private List<MappingMethod> createBeanMapping(Collection<ForgedMethod> forgedMethods) {
-        List<MappingMethod> mappingMethods = new ArrayList<MappingMethod>();
-
-        for ( ForgedMethod method : forgedMethods ) {
-
-            BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
-            BeanMappingMethod beanMappingMethod = builder
-                .mappingContext( mappingContext )
-                .forgedMethod( method )
-                .build();
-
-
-            if ( beanMappingMethod != null ) {
-                mappingMethods.add( beanMappingMethod );
-            }
-        }
-
-        return mappingMethods;
-    }
-
-    private Collection<ForgedMethod> collectAllForgedMethods(Collection<MappingMethod> mappingMethods,
-                                                             Collection<ForgedMethod> excludedForgedMethods) {
-        Set<ForgedMethod> forgedMethods = new HashSet<ForgedMethod>();
-        for ( MappingMethod mappingMethod : mappingMethods ) {
-            for ( ForgedMethod forgedMethod : mappingMethod.getForgedMethods() ) {
-                if ( !excludedForgedMethods.contains( forgedMethod )) {
-                    forgedMethods.add( forgedMethod );
-                    excludedForgedMethods.add( forgedMethod );
-                }
-            }
-        }
-        return forgedMethods;
     }
 
     private List<MappingMethod> getMappingMethods(MapperConfiguration mapperConfig, List<SourceMethod> methods) {

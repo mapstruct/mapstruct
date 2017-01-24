@@ -122,6 +122,11 @@ public class CollectionMappingTest {
                 line = 30,
                 messageRegExp = "Can't map Map key \".* nonMappableMap\\{:key\\}\" to \".* nonMappableMap\\{:key\\}\". "
                     + "Consider to declare/implement a mapping method: .*."),
+            @Diagnostic(type = ErroneousCollectionNonMappableMapMapper.class,
+                kind = Kind.ERROR,
+                line = 30,
+                messageRegExp = "Can't map Map value \".* nonMappableMap\\{:value\\}\" to \".* " +
+                    "nonMappableMap\\{:value\\}\". Consider to declare/implement a mapping method: .*."),
         }
     )
     public void shouldGenerateNonMappleMethodForMapMapping() {

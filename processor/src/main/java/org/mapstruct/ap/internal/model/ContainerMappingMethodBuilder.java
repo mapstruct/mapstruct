@@ -23,10 +23,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
-import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
-import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -46,22 +44,15 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMethodBuilder<B, M>,
     M extends ContainerMappingMethod> extends AbstractMappingMethodBuilder<B, M> {
 
-    private Method method;
     private SelectionParameters selectionParameters;
     private FormattingParameters formattingParameters;
     private NullValueMappingStrategyPrism nullValueMappingStrategy;
-    private ForgedMethod forgedMethod;
     private String errorMessagePart;
     private String callingContextTargetPropertyName;
 
     ContainerMappingMethodBuilder(Class<B> selfType, String errorMessagePart) {
         super( selfType );
         this.errorMessagePart = errorMessagePart;
-    }
-
-    public B method(Method sourceMethod) {
-        this.method = sourceMethod;
-        return myself;
     }
 
     public B formattingParameters(FormattingParameters formattingParameters) {
@@ -157,8 +148,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             loopVariableName,
             beforeMappingMethods,
             afterMappingMethods,
-            selectionParameters,
-            forgedMethod
+            selectionParameters
         );
     }
 
@@ -166,58 +156,14 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                                                   boolean mapNullToDefault, String loopVariableName,
                                                   List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
-                                                  SelectionParameters selectionParameters, ForgedMethod forgedMethod);
+        SelectionParameters selectionParameters);
 
     protected abstract Type getElementType(Type parameterType);
 
     protected abstract Assignment getWrapper(Assignment assignment, Method method);
 
-    private Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, Type targetType) {
-        ForgedMethodHistory forgedMethodHistory = null;
-        if ( method instanceof ForgedMethod ) {
-            forgedMethodHistory = ( (ForgedMethod) method ).getHistory();
-        }
-        String name = getName( sourceType, targetType );
-        forgedMethod = new ForgedMethod(
-            name,
-            sourceType,
-            targetType,
-            method.getMapperConfiguration(),
-            method.getExecutable(),
-            method.getContextParameters(),
-            new ForgedMethodHistory( forgedMethodHistory,
-                Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),
-                Strings.stubPropertyName( targetType.getName() ),
-                sourceRHS.getSourceType(),
-                targetType,
-                false,
-                sourceRHS.getSourceErrorMessagePart()
-            )
-        );
-
-        Assignment assignment = new MethodReference(
-            forgedMethod,
-            null,
-            ParameterBinding.fromParameters( forgedMethod.getParameters() )
-        );
-
-        assignment.setAssignment( sourceRHS );
-
-        return assignment;
-    }
-
-    private String getName(Type sourceType, Type targetType) {
-        String fromName = getName( sourceType );
-        String toName = getName( targetType );
-        return Strings.decapitalize( fromName + "To" + toName );
-    }
-
-    private String getName(Type type) {
-        StringBuilder builder = new StringBuilder();
-        for ( Type typeParam : type.getTypeParameters() ) {
-            builder.append( typeParam.getIdentification() );
-        }
-        builder.append( type.getIdentification() );
-        return builder.toString();
+    @Override
+    protected boolean shouldUsePropertyNamesInHistory() {
+        return false;
     }
 }

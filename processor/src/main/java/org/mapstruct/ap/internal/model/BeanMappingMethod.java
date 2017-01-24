@@ -217,11 +217,6 @@ public class BeanMappingMethod extends MappingMethod {
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariableNames );
 
-            List<ForgedMethod> allForgedMethods = new ArrayList<ForgedMethod>();
-            for ( PropertyMapping propertyMapping : propertyMappings ) {
-                allForgedMethods.addAll( propertyMapping.getForgedMethods() );
-            }
-
             return new BeanMappingMethod(
                 method,
                 propertyMappings,
@@ -231,8 +226,7 @@ public class BeanMappingMethod extends MappingMethod {
                 existingVariableNames,
                 beforeMappingMethods,
                 afterMappingMethods,
-                nestedTargetObjects,
-                allForgedMethods
+                nestedTargetObjects
             );
         }
 
@@ -637,9 +631,8 @@ public class BeanMappingMethod extends MappingMethod {
                               Collection<String> existingVariableNames,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
                               List<LifecycleCallbackMethodReference> afterMappingReferences,
-                              NestedTargetObjects nestedTargetObjects,
-                              List<ForgedMethod> allForgedMethods) {
-        super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences, allForgedMethods );
+                              NestedTargetObjects nestedTargetObjects) {
+        super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences );
         this.propertyMappings = propertyMappings;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
