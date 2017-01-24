@@ -27,6 +27,14 @@ public class GarageDto {
     private List<CarDto> cars;
     private List<CarDto> usedCars;
 
+    public GarageDto() {
+    }
+
+    public GarageDto(List<CarDto> cars, List<CarDto> usedCars) {
+        this.cars = cars;
+        this.usedCars = usedCars;
+    }
+
     public List<CarDto> getCars() {
         return cars;
     }
@@ -43,4 +51,28 @@ public class GarageDto {
         this.usedCars = usedCars;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+
+        GarageDto garageDto = (GarageDto) o;
+
+        if ( cars != null ? !cars.equals( garageDto.cars ) : garageDto.cars != null ) {
+            return false;
+        }
+        return usedCars != null ? usedCars.equals( garageDto.usedCars ) : garageDto.usedCars == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = cars != null ? cars.hashCode() : 0;
+        result = 31 * result + ( usedCars != null ? usedCars.hashCode() : 0 );
+        return result;
+    }
 }

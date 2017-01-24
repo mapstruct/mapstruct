@@ -23,6 +23,13 @@ import java.util.Map;
 public class Entity {
     private Map<Bar, Bar> map;
 
+    public Entity() {
+    }
+
+    public Entity(Map<Bar, Bar> map) {
+        this.map = map;
+    }
+
     public Map<Bar, Bar> getMap() {
         return map;
     }
@@ -31,4 +38,23 @@ public class Entity {
         this.map = map;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+
+        Entity entity = (Entity) o;
+
+        return map != null ? map.equals( entity.map ) : entity.map == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return map != null ? map.hashCode() : 0;
+    }
 }

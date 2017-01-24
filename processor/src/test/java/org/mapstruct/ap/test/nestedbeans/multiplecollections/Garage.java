@@ -26,6 +26,14 @@ public class Garage {
     private List<Car> cars;
     private List<Car> usedCars;
 
+    public Garage() {
+    }
+
+    public Garage(List<Car> cars, List<Car> usedCars) {
+        this.cars = cars;
+        this.usedCars = usedCars;
+    }
+
     public List<Car> getCars() {
         return cars;
     }
@@ -42,4 +50,28 @@ public class Garage {
         this.usedCars = usedCars;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+
+        Garage garage = (Garage) o;
+
+        if ( cars != null ? !cars.equals( garage.cars ) : garage.cars != null ) {
+            return false;
+        }
+        return usedCars != null ? usedCars.equals( garage.usedCars ) : garage.usedCars == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = cars != null ? cars.hashCode() : 0;
+        result = 31 * result + ( usedCars != null ? usedCars.hashCode() : 0 );
+        return result;
+    }
 }

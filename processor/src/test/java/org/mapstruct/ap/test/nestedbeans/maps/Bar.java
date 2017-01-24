@@ -21,6 +21,13 @@ package org.mapstruct.ap.test.nestedbeans.maps;
 public class Bar {
     private String name;
 
+    public Bar() {
+    }
+
+    public Bar(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
@@ -29,4 +36,23 @@ public class Bar {
         this.name = name;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+
+        Bar bar = (Bar) o;
+
+        return name != null ? name.equals( bar.name ) : bar.name == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
 }

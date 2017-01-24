@@ -23,12 +23,38 @@ import java.util.Map;
 public class Dto {
     private Map<BarDto, BarDto> map;
 
+    public Dto() {
+    }
+
+    public Dto(Map<BarDto, BarDto> map) {
+        this.map = map;
+    }
+
     public Map<BarDto, BarDto> getMap() {
         return map;
     }
 
-    public void setMap( Map<BarDto, BarDto> map) {
+    public void setMap(Map<BarDto, BarDto> map) {
         this.map = map;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+
+        Dto dto = (Dto) o;
+
+        return map != null ? map.equals( dto.map ) : dto.map == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return map != null ? map.hashCode() : 0;
+    }
 }
