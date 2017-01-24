@@ -28,7 +28,6 @@ import java.util.stream.StreamSupport;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.Java8FunctionWrapper;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
@@ -64,8 +63,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         protected StreamMappingMethod instantiateMappingMethod(Method method, Assignment assignment,
             MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
-            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
-            ForgedMethod forgedMethod) {
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
 
             Set<Type> helperImports = new HashSet<Type>();
             if ( method.getResultType().isIterableType() ) {
@@ -87,8 +85,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                 beforeMappingMethods,
                 afterMappingMethods,
                 selectionParameters,
-                helperImports,
-                forgedMethod
+                helperImports
             );
         }
     }
@@ -97,8 +94,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                                 boolean mapNullToDefault, String loopVariableName,
                                 List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                 List<LifecycleCallbackMethodReference> afterMappingReferences,
-                                SelectionParameters selectionParameters, Set<Type> helperImports,
-                                ForgedMethod forgedMethod) {
+        SelectionParameters selectionParameters, Set<Type> helperImports) {
         super(
             method,
             parameterAssignment,
@@ -107,8 +103,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,
-            selectionParameters,
-            forgedMethod
+            selectionParameters
         );
         this.helperImports = helperImports;
     }

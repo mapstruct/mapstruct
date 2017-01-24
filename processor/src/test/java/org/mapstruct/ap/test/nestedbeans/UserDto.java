@@ -22,6 +22,7 @@ public class UserDto {
 
     private String name;
     private CarDto car;
+    private CarDto secondCar;
     private HouseDto house;
 
     public UserDto() {
@@ -47,6 +48,14 @@ public class UserDto {
 
     public void setCar(CarDto car) {
         this.car = car;
+    }
+
+    public CarDto getSecondCar() {
+        return secondCar;
+    }
+
+    public void setSecondCar(CarDto secondCar) {
+        this.secondCar = secondCar;
     }
 
     public HouseDto getHouse() {

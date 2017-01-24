@@ -18,16 +18,13 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.util.Strings;
@@ -48,14 +45,11 @@ public abstract class ContainerMappingMethod extends MappingMethod {
     private final SelectionParameters selectionParameters;
 
     ContainerMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
-                                  boolean mapNullToDefault, String loopVariableName,
-                                  List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                                  List<LifecycleCallbackMethodReference> afterMappingReferences,
-                                  SelectionParameters selectionParameters, ForgedMethod forgedMethod) {
-        super( method, beforeMappingReferences, afterMappingReferences,
-            forgedMethod == null ? Collections.<ForgedMethod>emptyList() :
-                java.util.Collections.singletonList( forgedMethod )
-        );
+        boolean mapNullToDefault, String loopVariableName,
+        List<LifecycleCallbackMethodReference> beforeMappingReferences,
+        List<LifecycleCallbackMethodReference> afterMappingReferences,
+        SelectionParameters selectionParameters) {
+        super( method, beforeMappingReferences, afterMappingReferences );
         this.elementAssignment = parameterAssignment;
         this.factoryMethod = factoryMethod;
         this.overridden = method.overridesMethod();

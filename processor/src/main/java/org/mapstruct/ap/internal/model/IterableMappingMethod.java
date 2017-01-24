@@ -26,7 +26,6 @@ import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
@@ -66,8 +65,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         protected IterableMappingMethod instantiateMappingMethod(Method method, Assignment assignment,
             MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
-            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
-            ForgedMethod forgedMethod) {
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
             return new IterableMappingMethod(
                 method,
                 assignment,
@@ -76,8 +74,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
                 loopVariableName,
                 beforeMappingMethods,
                 afterMappingMethods,
-                selectionParameters,
-                forgedMethod
+                selectionParameters
             );
         }
     }
@@ -86,7 +83,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
                                   boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
-                                  SelectionParameters selectionParameters, ForgedMethod forgedMethod) {
+        SelectionParameters selectionParameters) {
         super(
             method,
             parameterAssignment,
@@ -95,8 +92,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,
-            selectionParameters,
-            forgedMethod
+            selectionParameters
         );
     }
 

@@ -16,19 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedbeans;
+package org.mapstruct.ap.test.nestedbeans.other;
 
-public class User {
+public class UserDto {
 
     private String name;
-    private Car car;
-    private Car secondCar;
-    private House house;
+    private CarDto car;
+    private HouseDto house;
 
-    public User() {
+    public UserDto() {
     }
 
-    public User(String name, Car car, House house) {
+    public UserDto(String name, CarDto car, HouseDto house) {
         this.name = name;
         this.car = car;
         this.house = house;
@@ -42,27 +41,19 @@ public class User {
         this.name = name;
     }
 
-    public Car getCar() {
+    public CarDto getCar() {
         return car;
     }
 
-    public void setCar(Car car) {
+    public void setCar(CarDto car) {
         this.car = car;
     }
 
-    public Car getSecondCar() {
-        return secondCar;
-    }
-
-    public void setSecondCar(Car secondCar) {
-        this.secondCar = secondCar;
-    }
-
-    public House getHouse() {
+    public HouseDto getHouse() {
         return house;
     }
 
-    public void setHouse(House house) {
+    public void setHouse(HouseDto house) {
         this.house = house;
     }
 
@@ -75,15 +66,15 @@ public class User {
             return false;
         }
 
-        User user = (User) o;
+        UserDto userDto = (UserDto) o;
 
-        if ( name != null ? !name.equals( user.name ) : user.name != null ) {
+        if ( name != null ? !name.equals( userDto.name ) : userDto.name != null ) {
             return false;
         }
-        if ( car != null ? !car.equals( user.car ) : user.car != null ) {
+        if ( car != null ? !car.equals( userDto.car ) : userDto.car != null ) {
             return false;
         }
-        return house != null ? house.equals( user.house ) : user.house == null;
+        return house != null ? house.equals( userDto.house ) : userDto.house == null;
 
     }
 
@@ -97,7 +88,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "UserDto{" +
             "name='" + name + '\'' +
             ", car=" + car +
             ", house=" + house +
