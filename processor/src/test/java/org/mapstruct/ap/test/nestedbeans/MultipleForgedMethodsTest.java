@@ -21,11 +21,11 @@ package org.mapstruct.ap.test.nestedbeans;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.nestedbeans.maps.AntonymsDictionary;
+import org.mapstruct.ap.test.nestedbeans.maps.AntonymsDictionaryDto;
 import org.mapstruct.ap.test.nestedbeans.maps.AutoMapMapper;
-import org.mapstruct.ap.test.nestedbeans.maps.Bar;
-import org.mapstruct.ap.test.nestedbeans.maps.BarDto;
-import org.mapstruct.ap.test.nestedbeans.maps.Dto;
-import org.mapstruct.ap.test.nestedbeans.maps.Entity;
+import org.mapstruct.ap.test.nestedbeans.maps.Word;
+import org.mapstruct.ap.test.nestedbeans.maps.WordDto;
 import org.mapstruct.ap.test.nestedbeans.multiplecollections.Garage;
 import org.mapstruct.ap.test.nestedbeans.multiplecollections.GarageDto;
 import org.mapstruct.ap.test.nestedbeans.multiplecollections.MultipleListMapper;
@@ -42,23 +42,32 @@ import java.util.HashMap;
 public class MultipleForgedMethodsTest {
 
     @WithClasses({
-        Bar.class, BarDto.class, Dto.class, Entity.class, AutoMapMapper.class
+        Word.class, WordDto.class, AntonymsDictionaryDto.class, AntonymsDictionary.class, AutoMapMapper.class
     })
     @Test
     public void testNestedMapsAutoMap() {
 
-        HashMap<BarDto, BarDto> dtoMap = new HashMap<BarDto, BarDto>();
-        HashMap<Bar, Bar> entityMap = new HashMap<Bar, Bar>();
-        for ( int i = 0; i < 10; i++ ) {
-            String key = "key-" + i;
-            String value = "value-" + i;
-            dtoMap.put( new BarDto( key ), new BarDto( value ) );
-            entityMap.put( new Bar( key ), new Bar( value ) );
+        HashMap<WordDto, WordDto> dtoAntonyms = new HashMap<WordDto, WordDto>();
+        HashMap<Word, Word> entityAntonyms = new HashMap<Word, Word>();
+
+        String[] words = { "black", "good", "up", "left", "fast" };
+        String[] antonyms = { "white", "bad", "down", "right", "slow" };
+
+        assert words.length == antonyms.length : "Words length and antonyms length differ, please fix test data";
+
+        for ( int i = 0; i < words.length; i++ ) {
+            String word = words[i];
+            String antonym = antonyms[i];
+            dtoAntonyms.put( new WordDto( word ), new WordDto( antonym ) );
+            entityAntonyms.put( new Word( word ), new Word( antonym ) );
         }
 
-        Entity mappedEntity = AutoMapMapper.INSTANCE.entityToDto( new Dto( dtoMap ) );
+        AntonymsDictionary mappedAntonymsDictionary = AutoMapMapper.INSTANCE.entityToDto(
+            new AntonymsDictionaryDto( dtoAntonyms ) );
 
-        Assert.assertEquals( "Mapper did not map dto to entity correctly", new Entity( entityMap ), mappedEntity );
+        Assert.assertEquals( "Mapper did not map dto to entity correctly", new AntonymsDictionary( entityAntonyms ),
+            mappedAntonymsDictionary
+        );
     }
 
     @WithClasses({

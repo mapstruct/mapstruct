@@ -18,22 +18,24 @@
  */
 package org.mapstruct.ap.test.nestedbeans.maps;
 
-public class BarDto {
-    private String name;
+import java.util.Map;
 
-    public BarDto() {
+public class AntonymsDictionary {
+    private Map<Word, Word> antonyms;
+
+    public AntonymsDictionary() {
     }
 
-    public BarDto(String name) {
-        this.name = name;
+    public AntonymsDictionary(Map<Word, Word> antonyms) {
+        this.antonyms = antonyms;
     }
 
-    public String getName() {
-        return name;
+    public Map<Word, Word> getAntonyms() {
+        return antonyms;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAntonyms(Map<Word, Word> antonyms) {
+        this.antonyms = antonyms;
     }
 
     @Override
@@ -45,14 +47,14 @@ public class BarDto {
             return false;
         }
 
-        BarDto barDto = (BarDto) o;
+        AntonymsDictionary antonymsDictionary = (AntonymsDictionary) o;
 
-        return name != null ? name.equals( barDto.name ) : barDto.name == null;
+        return antonyms != null ? antonyms.equals( antonymsDictionary.antonyms ) : antonymsDictionary.antonyms == null;
 
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return antonyms != null ? antonyms.hashCode() : 0;
     }
 }

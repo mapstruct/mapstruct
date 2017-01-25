@@ -18,22 +18,22 @@
  */
 package org.mapstruct.ap.test.nestedbeans.maps;
 
-public class Bar {
-    private String name;
+public class WordDto {
+    private String textValue;
 
-    public Bar() {
+    public WordDto() {
     }
 
-    public Bar(String name) {
-        this.name = name;
+    public WordDto(String textValue) {
+        this.textValue = textValue;
     }
 
-    public String getName() {
-        return name;
+    public String getTextValue() {
+        return textValue;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTextValue(String textValue) {
+        this.textValue = textValue;
     }
 
     @Override
@@ -45,14 +45,14 @@ public class Bar {
             return false;
         }
 
-        Bar bar = (Bar) o;
+        WordDto wordDto = (WordDto) o;
 
-        return name != null ? name.equals( bar.name ) : bar.name == null;
+        return textValue != null ? textValue.equals( wordDto.textValue ) : wordDto.textValue == null;
 
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return textValue != null ? textValue.hashCode() : 0;
     }
 }

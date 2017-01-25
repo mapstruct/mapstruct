@@ -18,24 +18,22 @@
  */
 package org.mapstruct.ap.test.nestedbeans.maps;
 
-import java.util.Map;
+public class Word {
+    private String textValue;
 
-public class Dto {
-    private Map<BarDto, BarDto> map;
-
-    public Dto() {
+    public Word() {
     }
 
-    public Dto(Map<BarDto, BarDto> map) {
-        this.map = map;
+    public Word(String textValue) {
+        this.textValue = textValue;
     }
 
-    public Map<BarDto, BarDto> getMap() {
-        return map;
+    public String getTextValue() {
+        return textValue;
     }
 
-    public void setMap(Map<BarDto, BarDto> map) {
-        this.map = map;
+    public void setTextValue(String textValue) {
+        this.textValue = textValue;
     }
 
     @Override
@@ -47,14 +45,14 @@ public class Dto {
             return false;
         }
 
-        Dto dto = (Dto) o;
+        Word word = (Word) o;
 
-        return map != null ? map.equals( dto.map ) : dto.map == null;
+        return textValue != null ? textValue.equals( word.textValue ) : word.textValue == null;
 
     }
 
     @Override
     public int hashCode() {
-        return map != null ? map.hashCode() : 0;
+        return textValue != null ? textValue.hashCode() : 0;
     }
 }

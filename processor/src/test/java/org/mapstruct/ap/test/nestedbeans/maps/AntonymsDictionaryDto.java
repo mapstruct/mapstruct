@@ -20,22 +20,22 @@ package org.mapstruct.ap.test.nestedbeans.maps;
 
 import java.util.Map;
 
-public class Entity {
-    private Map<Bar, Bar> map;
+public class AntonymsDictionaryDto {
+    private Map<WordDto, WordDto> antonyms;
 
-    public Entity() {
+    public AntonymsDictionaryDto() {
     }
 
-    public Entity(Map<Bar, Bar> map) {
-        this.map = map;
+    public AntonymsDictionaryDto(Map<WordDto, WordDto> antonyms) {
+        this.antonyms = antonyms;
     }
 
-    public Map<Bar, Bar> getMap() {
-        return map;
+    public Map<WordDto, WordDto> getAntonyms() {
+        return antonyms;
     }
 
-    public void setMap(Map<Bar, Bar> map) {
-        this.map = map;
+    public void setAntonyms(Map<WordDto, WordDto> antonyms) {
+        this.antonyms = antonyms;
     }
 
     @Override
@@ -47,14 +47,15 @@ public class Entity {
             return false;
         }
 
-        Entity entity = (Entity) o;
+        AntonymsDictionaryDto antonymsDictionaryDto = (AntonymsDictionaryDto) o;
 
-        return map != null ? map.equals( entity.map ) : entity.map == null;
+        return antonyms != null ? antonyms.equals( antonymsDictionaryDto.antonyms ) :
+            antonymsDictionaryDto.antonyms == null;
 
     }
 
     @Override
     public int hashCode() {
-        return map != null ? map.hashCode() : 0;
+        return antonyms != null ? antonyms.hashCode() : 0;
     }
 }
