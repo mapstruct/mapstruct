@@ -44,7 +44,8 @@ public interface AstModifyingAnnotationProcessor {
      * given type's structure after this invocation).
      *
      * @param type The type of interest
-     * @return {@code true} if this processor has fully processed the given type, {@code false} otherwise.
+     * @return {@code true} if this processor has fully processed the given type (or has no interest in processing this
+     * type altogether), {@code false} otherwise.
      */
     boolean isTypeComplete(TypeMirror type);
 }
