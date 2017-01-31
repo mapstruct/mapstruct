@@ -147,11 +147,6 @@ public class TypeFactory {
     }
 
     public Type getType(TypeMirror mirror) {
-
-        if ( mirror.getKind() == TypeKind.ERROR ) {
-            throw new AnnotationProcessingException( "Encountered erroneous type " + mirror );
-        }
-
         if ( !canBeProcessed( mirror ) ) {
             throw new TypeHierarchyErroneousException( mirror );
         }
@@ -580,6 +575,10 @@ public class TypeFactory {
      * processed the type.
      */
     private boolean canBeProcessed(TypeMirror type) {
+        if ( type.getKind() == TypeKind.ERROR ) {
+            return false;
+        }
+
         if ( type.getKind() != TypeKind.DECLARED ) {
             return true;
         }
