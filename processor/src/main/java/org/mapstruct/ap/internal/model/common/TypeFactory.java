@@ -70,7 +70,7 @@ public class TypeFactory {
 
     private final Elements elementUtils;
     private final Types typeUtils;
-    private RoundContext roundContext;
+    private final RoundContext roundContext;
 
     private final TypeMirror iterableType;
     private final TypeMirror collectionType;
@@ -147,11 +147,12 @@ public class TypeFactory {
     }
 
     public Type getType(TypeMirror mirror) {
+
         if ( mirror.getKind() == TypeKind.ERROR ) {
             throw new AnnotationProcessingException( "Encountered erroneous type " + mirror );
         }
 
-        if ( !isCleared( mirror ) ) {
+        if ( !canBeProcessed( mirror ) ) {
             throw new TypeHierarchyErroneousException( mirror );
         }
 
@@ -573,12 +574,17 @@ public class TypeFactory {
         return trimmedClassName;
     }
 
-    private boolean isCleared(TypeMirror type) {
+    /**
+     * Whether the given type is ready to be processed or not. It can be processed if it is not of kind
+     * {@link TypeKind#ERROR} and all {@link AstModifyingAnnotationProcessor}s (if any) indicated that they've fully
+     * processed the type.
+     */
+    private boolean canBeProcessed(TypeMirror type) {
         if ( type.getKind() != TypeKind.DECLARED ) {
             return true;
         }
 
-        if ( roundContext.isCleared( type ) ) {
+        if ( roundContext.isReadyForProcessing( type ) ) {
             return true;
         }
 
@@ -592,7 +598,7 @@ public class TypeFactory {
             }
         }
 
-        roundContext.addClearedType( type );
+        roundContext.addTypeReadyForProcessing( type );
 
         return true;
     }
