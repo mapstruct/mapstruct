@@ -69,7 +69,7 @@ import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
  *
  * @author Gunnar Morling
  */
-public class BeanMappingMethod extends ContainerMappingMethod {
+public class BeanMappingMethod extends NormalTypeMappingMethod {
 
     private final List<PropertyMapping> propertyMappings;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
@@ -667,13 +667,10 @@ public class BeanMappingMethod extends ContainerMappingMethod {
                               List<LifecycleCallbackMethodReference> afterMappingReferences) {
         super(
             method,
-            null,
             factoryMethod,
             mapNullToDefault,
-            null,
             beforeMappingReferences,
-            afterMappingReferences,
-            null
+            afterMappingReferences
         );
 
         this.propertyMappings = propertyMappings;
@@ -750,16 +747,9 @@ public class BeanMappingMethod extends ContainerMappingMethod {
     }
 
     @Override
-    public Type getResultElementType() {
-        return null;
-    }
-
-    @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ( ( getResultType() == null ) ? 0 : getResultType().hashCode() );
-        return result;
+        //Needed for Checkstyle, otherwise it fails due to EqualsHashCode rule
+        return super.hashCode();
     }
 
     @Override
