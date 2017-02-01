@@ -36,11 +36,8 @@ import org.mapstruct.ap.internal.util.Strings;
  *
  * @author Filip Hrisafov
  */
-public abstract class ContainerMappingMethod extends MappingMethod {
+public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     private final Assignment elementAssignment;
-    private final MethodReference factoryMethod;
-    private final boolean overridden;
-    private final boolean mapNullToDefault;
     private final String loopVariableName;
     private final SelectionParameters selectionParameters;
 
@@ -49,11 +46,8 @@ public abstract class ContainerMappingMethod extends MappingMethod {
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters) {
-        super( method, beforeMappingReferences, afterMappingReferences );
+        super( method, factoryMethod, mapNullToDefault, beforeMappingReferences, afterMappingReferences );
         this.elementAssignment = parameterAssignment;
-        this.factoryMethod = factoryMethod;
-        this.overridden = method.overridesMethod();
-        this.mapNullToDefault = mapNullToDefault;
         this.loopVariableName = loopVariableName;
         this.selectionParameters = selectionParameters;
     }
@@ -78,20 +72,7 @@ public abstract class ContainerMappingMethod extends MappingMethod {
         if ( elementAssignment != null ) {
             types.addAll( elementAssignment.getImportTypes() );
         }
-        if ( ( factoryMethod == null ) && ( !isExistingInstanceMapping() ) ) {
-            if ( getReturnType().getImplementationType() != null ) {
-                types.addAll( getReturnType().getImplementationType().getImportTypes() );
-            }
-        }
         return types;
-    }
-
-    public boolean isMapNullToDefault() {
-        return mapNullToDefault;
-    }
-
-    public boolean isOverridden() {
-        return overridden;
     }
 
     public String getLoopVariableName() {
@@ -119,10 +100,6 @@ public abstract class ContainerMappingMethod extends MappingMethod {
         }
     }
 
-    public MethodReference getFactoryMethod() {
-        return this.factoryMethod;
-    }
-
     public abstract Type getResultElementType();
 
     public String getIndex1Name() {
@@ -135,10 +112,8 @@ public abstract class ContainerMappingMethod extends MappingMethod {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ( ( getResultType() == null ) ? 0 : getResultType().hashCode() );
-        return result;
+        //Needed for Checkstyle, otherwise it fails due to EqualsHashCode rule
+        return super.hashCode();
     }
 
     @Override
@@ -152,27 +127,12 @@ public abstract class ContainerMappingMethod extends MappingMethod {
         if ( getClass() != obj.getClass() ) {
             return false;
         }
+
+        if ( !super.equals( obj ) ) {
+            return false;
+        }
+
         ContainerMappingMethod other = (ContainerMappingMethod) obj;
-
-        if ( !getResultType().equals( other.getResultType() ) ) {
-            return false;
-        }
-
-        if ( getSourceParameters().size() != other.getSourceParameters().size() ) {
-            return false;
-        }
-
-        for ( int i = 0; i < getSourceParameters().size(); i++ ) {
-            if ( !getSourceParameters().get( i ).getType().equals( other.getSourceParameters().get( i ).getType() ) ) {
-                return false;
-            }
-            List<Type> thisTypeParameters = getSourceParameters().get( i ).getType().getTypeParameters();
-            List<Type> otherTypeParameters = other.getSourceParameters().get( i ).getType().getTypeParameters();
-
-            if ( !thisTypeParameters.equals( otherTypeParameters ) ) {
-                return false;
-            }
-        }
 
         if ( this.selectionParameters != null ) {
             if ( !this.selectionParameters.equals( other.selectionParameters ) ) {
@@ -183,7 +143,7 @@ public abstract class ContainerMappingMethod extends MappingMethod {
             return false;
         }
 
-        return isMapNullToDefault() == other.isMapNullToDefault();
+        return true;
     }
 
 }

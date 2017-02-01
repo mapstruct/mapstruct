@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,19 +34,18 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Strings;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one {@code Map} type to another. Keys and
  * values are mapped either by a {@link TypeConversion} or another mapping method if required.
  *
  * @author Gunnar Morling
  */
-public class MapMappingMethod extends MappingMethod {
+public class MapMappingMethod extends NormalTypeMappingMethod {
 
     private final Assignment keyAssignment;
     private final Assignment valueAssignment;
-    private final MethodReference factoryMethod;
-    private final boolean overridden;
-    private final boolean mapNullToDefault;
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, MapMappingMethod> {
 
@@ -183,13 +180,10 @@ public class MapMappingMethod extends MappingMethod {
                              MethodReference factoryMethod, boolean mapNullToDefault,
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
                              List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        super( method, beforeMappingReferences, afterMappingReferences );
+        super( method, factoryMethod, mapNullToDefault, beforeMappingReferences, afterMappingReferences );
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;
-        this.factoryMethod = factoryMethod;
-        this.overridden = method.overridesMethod();
-        this.mapNullToDefault = mapNullToDefault;
     }
 
     public Parameter getSourceParameter() {
@@ -229,12 +223,6 @@ public class MapMappingMethod extends MappingMethod {
         if ( valueAssignment != null ) {
             types.addAll( valueAssignment.getImportTypes() );
         }
-        if ( ( factoryMethod == null ) && ( !isExistingInstanceMapping() ) ) {
-            types.addAll( getReturnType().getImportTypes() );
-            if ( getReturnType().getImplementationType() != null ) {
-                types.addAll( getReturnType().getImplementationType().getImportTypes() );
-            }
-        }
 
         return types;
     }
@@ -259,71 +247,4 @@ public class MapMappingMethod extends MappingMethod {
             getParameterNames()
         );
     }
-
-    public MethodReference getFactoryMethod() {
-        return this.factoryMethod;
-    }
-
-    public boolean isMapNullToDefault() {
-        return mapNullToDefault;
-    }
-
-    public boolean isOverridden() {
-        return overridden;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ( ( getResultType() == null ) ? 0 : getResultType().hashCode() );
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if ( this == obj ) {
-            return true;
-        }
-        if ( obj == null ) {
-            return false;
-        }
-        if ( getClass() != obj.getClass() ) {
-            return false;
-        }
-        MapMappingMethod other = (MapMappingMethod) obj;
-
-        if ( !getResultType().equals( other.getResultType() ) ) {
-            return false;
-        }
-
-        if ( getSourceParameters().size() != other.getSourceParameters().size() ) {
-            return false;
-        }
-
-        for ( int i = 0; i < getSourceParameters().size(); i++ ) {
-            if ( !getSourceParameters().get( i ).getType().equals( other.getSourceParameters().get( i ).getType() ) ) {
-                return false;
-            }
-
-            List<Type> thisTypeParameters = getSourceParameters().get( i ).getType().getTypeParameters();
-            List<Type> otherTypeParameters = other.getSourceParameters().get( i ).getType().getTypeParameters();
-
-            if ( !thisTypeParameters.equals( otherTypeParameters ) ) {
-                return false;
-            }
-        }
-
-        if ( this.factoryMethod != null ) {
-            if ( !this.factoryMethod.equals( other.factoryMethod ) ) {
-                return false;
-            }
-        }
-        else if ( other.factoryMethod != null ) {
-            return false;
-        }
-
-        return isMapNullToDefault() == other.isMapNullToDefault();
-    }
-
 }
