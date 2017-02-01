@@ -74,10 +74,7 @@ public class BeanMappingMethod extends ContainerMappingMethod {
     private final List<PropertyMapping> propertyMappings;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
-    private final MethodReference factoryMethod;
-    private final boolean mapNullToDefault;
     private final Type resultType;
-    private final boolean overridden;
 
     public static class Builder {
 
@@ -695,10 +692,7 @@ public class BeanMappingMethod extends ContainerMappingMethod {
                 }
             }
         }
-        this.factoryMethod = factoryMethod;
-        this.mapNullToDefault = mapNullToDefault;
         this.resultType = resultType;
-        this.overridden = method.overridesMethod();
     }
 
     public List<PropertyMapping> getPropertyMappings() {
@@ -711,16 +705,6 @@ public class BeanMappingMethod extends ContainerMappingMethod {
 
     public Map<String, List<PropertyMapping>> getPropertyMappingsByParameter() {
         return mappingsByParameter;
-    }
-
-    @Override
-    public boolean isMapNullToDefault() {
-        return mapNullToDefault;
-    }
-
-    @Override
-    public boolean isOverridden() {
-        return overridden;
     }
 
     @Override
@@ -763,11 +747,6 @@ public class BeanMappingMethod extends ContainerMappingMethod {
             }
         }
         return sourceParameters;
-    }
-
-    @Override
-    public MethodReference getFactoryMethod() {
-        return this.factoryMethod;
     }
 
     @Override
