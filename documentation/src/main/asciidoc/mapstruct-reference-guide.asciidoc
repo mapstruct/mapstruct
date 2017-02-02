@@ -924,6 +924,54 @@ public class CarMapperImpl implements CarMapper {
 ----
 ====
 
+[[passing-context]]
+=== Passing context or state objects to custom methods
+
+Additional _context_ or _state_ information can be passed through generated mapping methods to custom methods with `@Context` parameters. Such parameters are passed to other mapping methods, `@ObjectFactory` methods (see <<object-factories>>) or `@BeforeMapping` / `@AfterMapping` methods (see <<customizing-mappings-with-before-and-after>>) when applicable and can thus be used in custom code.
+
+`@Context` parameters are also searched for `@BeforeMapping` / `@AfterMapping` methods, which are called on the provided context parameter value if applicable.
+
+*Note:* no `null` checks are performed before calling before/after mapping methods on context parameters. The caller needs to make sure that `null` is not passed in that case.
+
+For generated code to call a method that is declared with `@Context` parameters, the declaration of the mapping method being generated needs to contain at least those (or assignable) `@Context` parameters as well. The generated code will not create new instances of missing `@Context` parameters nor will it pass a literal `null` instead.
+
+.Using `@Context` parameters for passing data down to hand-written property mapping methods
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public abstract CarDto toCar(Car car, @Context Locale translationLocale);
+
+protected OwnerManualDto translateOwnerManual(OwnerManual ownerManual, @Context Locale locale) {
+    // manually implemented logic to translate the OwnerManual with the given Locale
+}
+----
+====
+
+MapStruct will then generate something like this:
+
+.Generated code
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+//GENERATED CODE
+public CarDto toCar(Car car, Locale translationLocale) {
+    if ( car == null ) {
+        return null;
+    }
+
+    CarDto carDto = new CarDto();
+
+    carDto.setOwnerManual( translateOwnerManual( car.getOwnerManual(), translationLocale );
+    // more generated mapping code
+
+    return carDto;
+}
+----
+====
+
+
 [[mapping-method-resolution]]
 === Mapping method resolution
 
@@ -1492,8 +1540,7 @@ By default, the generated code for mapping one bean type into another will call 
 
 Alternatively you can plug in custom object factories which will be invoked to obtain instances of the target type. One use case for this is JAXB which creates `ObjectFactory` classes for obtaining new instances of schema types.
 
-To make use of custom factories register them via `@Mapper#uses()` as described in <<invoking-other-mappers>>. When creating the target object of a bean mapping, MapStruct will look for a parameterless method, 
-a method annotated with `@ObjectFactory`, or a method with only one `@TargetType` parameter that returns the required target type and invoke this method instead of calling the default constructor:
+To make use of custom factories register them via `@Mapper#uses()` as described in <<invoking-other-mappers>>, or implement them directly in your mapper. When creating the target object of a bean mapping, MapStruct will look for a parameterless method, a method annotated with `@ObjectFactory`, or a method with only one `@TargetType` parameter that returns the required target type and invoke this method instead of calling the default constructor:
 
 .Custom object factories
 ====
@@ -1569,9 +1616,9 @@ public class CarMapperImpl implements CarMapper {
 ----
 ====
 
-In addition, annotating a factory with `@ObjectFactory` lets you gain access to the mapping sources. 
+In addition, annotating a factory method with `@ObjectFactory` lets you gain access to the mapping sources.
 Source objects can be added as parameters in the same way as for mapping method. The `@ObjectFactory`
-annotation is necessary to let MapStruct know that the given method is only a factory method. 
+annotation is necessary to let MapStruct know that the given method is only a factory method.
 
 .Custom object factories with `@ObjectFactory`
 
@@ -1583,7 +1630,7 @@ public class DtoFactory {
 
      @ObjectFactory
      public CarDto createCarDto(Car car) {
-         return // ... custom factory logic 
+         return // ... custom factory logic
      }
 }
 ----
@@ -1908,7 +1955,7 @@ Methods that are considered for inverse inheritance need to be defined in the cu
 
 If multiple methods qualify, the method from which to inherit the configuration needs to be specified using the `name` property like this: `@InheritInverseConfiguration(name = "carToDto")`.
 
-Expressions and constants are excluded (silently ignored). Reverse mapping of nested source properties is experimental as of the 1.1.0.Beta2. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
+Expressions and constants are excluded (silently ignored). Reverse mapping of nested source properties is experimental as of the 1.1.0.Beta2 release. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
 
 [NOTE]
 ====
@@ -2142,7 +2189,7 @@ private PersonMapper personMapper; // injects the decorator, with the injected o
 
 Decorators may not always fit the needs when it comes to customizing mappers. For example, if you need to perform the customization not only for a few selected methods, but for all methods that map specific super-types: in that case, you can use *callback methods* that are invoked before the mapping starts or after the mapping finished.
 
-Callback methods can be implemented in the abstract mapper itself or in a type reference in `Mapper#uses`.
+Callback methods can be implemented in the abstract mapper itself, in a type reference in `Mapper#uses`, or in a type used as `@Context` parameter.
 
 .Mapper with @BeforeMapping and @AfterMapping hooks
 ====
@@ -2187,16 +2234,14 @@ public class VehicleMapperImpl extends VehicleMapper {
 ----
 ====
 
-If the `@BeforeMapping` / `@AfterMapping` method has parameters, the method invocation is only generated if all parameters can be *assigned* by the source or target parameters of the mapping method:
+If the `@BeforeMapping` / `@AfterMapping` method has parameters, the method invocation is only generated if the return type of the method (if non-`void`) is assignable to the return type of the mapping method and all parameters can be *assigned* by the source or target parameters of the mapping method:
 
 * A parameter annotated with `@MappingTarget` is populated with the target instance of the mapping.
 * A parameter annotated with `@TargetType` is populated with the target type of the mapping.
-* Any other parameter is populated with a source parameter of the mapping, whereas each source parameter is used once at most.
+* Parameters annotated with `@Context` are populated with the context parameters of the mapping method.
+* Any other parameter is populated with a source parameter of the mapping.
 
-If the before/after-mapping method has a return type other than `void`, it will be checked to match the target type of the mapping methods.
-Only the callback methods with a matching return type (or `void`) will be called in that mapping method. 
-
-If a callback method returns a non-null value, this value will be returned from the mapping method.
+For non-`void` methods, the return value of the method invocation is returned as the result of the mapping method if it is not `null`.
 
 As with mapping methods, it is possible to specify type parameters for before/after-mapping methods.
 
@@ -2243,17 +2288,23 @@ public class VehicleMapperImpl extends VehicleMapper {
 
 All before/after-mapping methods that *can* be applied to a mapping method *will* be used. <<selection-based-on-qualifiers>> can be used to further control which methods may be chosen and which not. For that, the qualifier annotation needs to be applied to the before/after-method and referenced in `BeanMapping#qualifiedBy` or `IterableMapping#qualifiedBy`.
 
-The order in which the selected methods are applied is roughly determined by their location of definition (although you should consider it a *code smell* if you need to rely on their order):
+The order of the method invocation is determined primarily by their variant:
 
-* The order of methods within one type can not be guaranteed, as it depends on the compiler and the processing environment implementation.
-* Methods declared in one type are used after methods declared in their super-type.
-* Methods implemented in the mapper itself are used before methods from types referenced in `Mapper#uses`.
-* Types referenced in `Mapper#uses` are searched for before/after-mapping methods in the order specified in the annotation.
+1. `@BeforeMapping` methods without an `@MappingTarget` parameter are called before any null-checks on source
+ parameters and constructing a new target bean.
+2. `@BeforeMapping` methods with an `@MappingTarget` parameter are called after constructing a new target bean.
+3. `@AfterMapping` methods are called at the end of the mapping method before the last `return` statement.
 
-[WARNING]
-====
-`@BeforeMapping` and `@AfterMapping` are considered experimental as of the 1.0.0.CR1 release. Details in the selection of before/after mapping methods that are applicable for a mapping method or the order in which they are called might still be changed.
-====
+Within those groups, the method invocations are ordered by their location of definition:
+
+1. Methods declared on `@Context` parameters, ordered by the parameter order.
+2. Methods implemented in the mapper itself.
+3. Methods from types referenced in `Mapper#uses()`, in the order of the type declaration in the annotation.
+4. Methods declared in one type are used after methods declared in their super-type.
+
+*Important:* the order of methods declared within one type can not be guaranteed, as it depends on the compiler and the processing environment implementation.
+
+
 [[using-spi]]
 == Using the MapStruct SPI
 === Custom Accessor Naming Strategy

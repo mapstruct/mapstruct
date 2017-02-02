@@ -39,7 +39,6 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
  * @author Gunnar Morling
  */
 public class MethodReference extends MappingMethod implements Assignment {
-
     private final MapperReference declaringMapper;
     private final Set<Type> importTypes;
     private final List<Type> thrownTypes;
@@ -52,29 +51,32 @@ public class MethodReference extends MappingMethod implements Assignment {
      */
     private final String contextParam;
 
-
     /**
      * A reference to another mapping method or typeConversion in case this is a two-step mapping, e.g. from
      * {@code JAXBElement<Bar>} to {@code Foo} to for which a nested method call will be generated:
-     * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}
-     *
-     * If there's no nested typeConversion or other mapping method, this will be a {@link Direct} assignment.
+     * {@code setFoo(barToFoo( jaxbElemToValue( bar) ) )}. If there's no nested typeConversion or other mapping method,
+     * this will be a direct assignment.
      */
     private Assignment assignment;
 
     private final Type definingType;
     private final List<ParameterBinding> parameterBindings;
+    private final Parameter providingParameter;
 
     /**
      * Creates a new reference to the given method.
      *
      * @param method the target method of the reference
      * @param declaringMapper the method declaring the mapper; {@code null} if the current mapper itself
+     * @param providingParameter The parameter providing the mapper, or {@code null} if the method is defined by the
+     *            mapper itself or by {@code declaringMapper}.
      * @param parameterBindings the parameter bindings of this method reference
      */
-    public MethodReference(Method method, MapperReference declaringMapper, List<ParameterBinding> parameterBindings) {
+    protected MethodReference(Method method, MapperReference declaringMapper, Parameter providingParameter,
+                              List<ParameterBinding> parameterBindings) {
         super( method );
         this.declaringMapper = declaringMapper;
+        this.providingParameter = providingParameter;
         this.parameterBindings = parameterBindings;
         this.contextParam = null;
         Set<Type> imported = new HashSet<Type>();
@@ -93,9 +95,10 @@ public class MethodReference extends MappingMethod implements Assignment {
         this.definingType = method.getDefiningType();
    }
 
-    public MethodReference(BuiltInMethod method, ConversionContext contextParam) {
+    private MethodReference(BuiltInMethod method, ConversionContext contextParam) {
         super( method );
         this.declaringMapper = null;
+        this.providingParameter = null;
         this.contextParam = method.getContextParameter( contextParam );
         this.importTypes = Collections.emptySet();
         this.thrownTypes = Collections.emptyList();
@@ -106,6 +109,10 @@ public class MethodReference extends MappingMethod implements Assignment {
 
     public MapperReference getDeclaringMapper() {
         return declaringMapper;
+    }
+
+    public Parameter getProvidingParameter() {
+        return providingParameter;
     }
 
     public String getMapperVariableName() {
@@ -229,9 +236,11 @@ public class MethodReference extends MappingMethod implements Assignment {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 19 * hash + (this.declaringMapper != null ? this.declaringMapper.hashCode() : 0);
-        return hash;
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ( ( declaringMapper == null ) ? 0 : declaringMapper.hashCode() );
+        result = prime * result + ( ( providingParameter == null ) ? 0 : providingParameter.hashCode() );
+        return result;
     }
 
     @Override
@@ -239,17 +248,47 @@ public class MethodReference extends MappingMethod implements Assignment {
         if ( this == obj ) {
             return true;
         }
-        if ( obj == null ) {
+        if ( !super.equals( obj ) ) {
             return false;
         }
         if ( getClass() != obj.getClass() ) {
             return false;
         }
-        final MethodReference other = (MethodReference) obj;
-        if ( this.declaringMapper != other.declaringMapper && (this.declaringMapper == null
-            || !this.declaringMapper.equals( other.declaringMapper )) ) {
+        MethodReference other = (MethodReference) obj;
+        if ( declaringMapper == null ) {
+            if ( other.declaringMapper != null ) {
+                return false;
+            }
+        }
+        else if ( !declaringMapper.equals( other.declaringMapper ) ) {
             return false;
         }
-        return super.equals( obj );
+        if ( providingParameter == null ) {
+            if ( other.providingParameter != null ) {
+                return false;
+            }
+        }
+        else if ( !providingParameter.equals( other.providingParameter ) ) {
+            return false;
+        }
+        return true;
+    }
+
+    public static MethodReference forBuiltInMethod(BuiltInMethod method, ConversionContext contextParam) {
+        return new MethodReference( method, contextParam );
+    }
+
+    public static MethodReference forForgedMethod(Method method, List<ParameterBinding> parameterBindings) {
+        return new MethodReference( method, null, null, parameterBindings );
+    }
+
+    public static MethodReference forParameterProvidedMethod(Method method, Parameter providingParameter,
+            List<ParameterBinding> parameterBindings) {
+        return new MethodReference( method, null, providingParameter, parameterBindings );
+    }
+
+    public static MethodReference forMapperReference(Method method, MapperReference declaringMapper,
+            List<ParameterBinding> parameterBindings) {
+        return new MethodReference( method, declaringMapper, null, parameterBindings );
     }
 }

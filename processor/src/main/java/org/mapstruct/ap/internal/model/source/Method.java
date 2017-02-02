@@ -86,6 +86,11 @@ public interface Method {
     List<Parameter> getContextParameters();
 
     /**
+     * @return a mapping between {@link #getContextParameters()} to factory and lifecycle methods provided by them.
+     */
+    ParameterProvidedMethods getContextProvidedMethods();
+
+    /**
      * Returns the parameter designated as mapping target (if present) {@link org.mapstruct.MappingTarget}
      *
      * @return mapping target parameter (when present) null otherwise.

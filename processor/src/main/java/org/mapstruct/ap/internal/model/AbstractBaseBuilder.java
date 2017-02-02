@@ -76,11 +76,9 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             methodRef = new ForgedMethod( existingName, methodRef );
         }
 
-        Assignment assignment = new MethodReference(
+        Assignment assignment = MethodReference.forForgedMethod(
             methodRef,
-            null,
-            ParameterBinding.fromParameters( methodRef.getParameters() )
-        );
+            ParameterBinding.fromParameters( methodRef.getParameters() ) );
         assignment.setAssignment( source );
 
         return assignment;

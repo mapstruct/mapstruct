@@ -18,13 +18,14 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
+import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -40,14 +41,18 @@ public class LifecycleCallbackMethodReference extends MethodReference {
     private final Type methodResultType;
     private final String targetVariableName;
 
-    public LifecycleCallbackMethodReference(SourceMethod method, MapperReference mapperReference,
-                                            List<ParameterBinding> parameterBindings,
-                                            Type methodReturnType, Type methodResultType,
-                                            Set<String> existingVariableNames) {
-        super( method, mapperReference, parameterBindings );
-        this.declaringType = method.getDeclaringMapper();
-        this.methodReturnType = methodReturnType;
-        this.methodResultType = methodResultType;
+    private LifecycleCallbackMethodReference(SelectedMethod<SourceMethod> lifecycleMethod,
+                                             MapperReference mapperReference, Parameter providingParameter,
+                                             Method containingMethod, Set<String> existingVariableNames) {
+        super(
+            lifecycleMethod.getMethod(),
+            mapperReference,
+            providingParameter,
+            lifecycleMethod.getParameterBindings() );
+
+        this.declaringType = lifecycleMethod.getMethod().getDeclaringMapper();
+        this.methodReturnType = containingMethod.getReturnType();
+        this.methodResultType = containingMethod.getResultType();
 
         if ( hasReturnType() ) {
             this.targetVariableName = Strings.getSaveVariableName( "target", existingVariableNames );
@@ -106,5 +111,30 @@ public class LifecycleCallbackMethodReference extends MethodReference {
      */
     public boolean hasReturnType() {
         return !getReturnType().isVoid();
+    }
+
+    public static LifecycleCallbackMethodReference forParameterProvidedMethod(
+            SelectedMethod<SourceMethod> lifecycleMethod,
+            Parameter providingParameter, Method containingMethod,
+            Set<String> existingVariableNames) {
+
+        return new LifecycleCallbackMethodReference(
+            lifecycleMethod,
+            null,
+            providingParameter,
+            containingMethod,
+            existingVariableNames );
+    }
+
+    public static LifecycleCallbackMethodReference forMethodReference(SelectedMethod<SourceMethod> lifecycleMethod,
+            MapperReference mapperReference, Method containingMethod,
+            Set<String> existingVariableNames) {
+
+        return new LifecycleCallbackMethodReference(
+            lifecycleMethod,
+            mapperReference,
+            null,
+            containingMethod,
+            existingVariableNames );
     }
 }

@@ -40,6 +40,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  * <li>passing the parameter to factory methods (with and without {@link ObjectFactory})
  * <li>passing the parameter to lifecycle methods (in this case, {@link BeforeMapping}
  * <li>passing multiple parameters, with varied order of context params and mapping source params
+ * <li>calling lifecycle methods on context params
  * </ul>
  *
  * @author Andreas Gudian
@@ -50,9 +51,12 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     NodeDto.class,
     NodeMapperWithContext.class,
     AutomappingNodeMapperWithContext.class,
+    AutomappingNodeMapperWithSelfContainingContext.class,
     CycleContext.class,
     FactoryContext.class,
-    CycleContextLifecycleMethods.class })
+    CycleContextLifecycleMethods.class,
+    FactoryContextMethods.class,
+    SelfContainingCycleContext.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class ContextParameterTest {
 
@@ -80,6 +84,26 @@ public class ContextParameterTest {
         NodeDto updated = new NodeDto( 0 );
         AutomappingNodeMapperWithContext.INSTANCE
             .nodeToNodeDto( root, updated, new CycleContext(), new FactoryContext( 1, 10 ) );
+        assertResult( updated );
+    }
+
+    @Test
+    public void automappingWithSelfContainingContextCorrectlyResolvesCycles() {
+        Node root = buildNodes();
+        NodeDto rootDto = AutomappingNodeMapperWithSelfContainingContext.INSTANCE
+            .nodeToNodeDto(
+                root,
+                new SelfContainingCycleContext(),
+                new FactoryContext( 0, MAGIC_NUMBER_OFFSET ) );
+        assertResult( rootDto );
+
+        NodeDto updated = new NodeDto( 0 );
+        AutomappingNodeMapperWithSelfContainingContext.INSTANCE
+            .nodeToNodeDto(
+                root,
+                updated,
+                new SelfContainingCycleContext(),
+                new FactoryContext( 1, 10 ) );
         assertResult( updated );
     }
 

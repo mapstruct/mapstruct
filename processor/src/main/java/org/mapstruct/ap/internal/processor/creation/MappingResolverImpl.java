@@ -165,7 +165,7 @@ public class MappingResolverImpl implements MappingResolver {
 
         MapperReference ref = findMapperReference( matchingFactoryMethod.getMethod() );
 
-        return new MethodReference(
+        return MethodReference.forMapperReference(
             matchingFactoryMethod.getMethod(),
             ref,
             matchingFactoryMethod.getParameterBindings() );
@@ -325,7 +325,7 @@ public class MappingResolverImpl implements MappingResolver {
                 ConversionContext ctx = new DefaultConversionContext( typeFactory, messager,
                                                                       sourceType,
                                                                       targetType, dateFormat, numberFormat);
-                Assignment methodReference = new MethodReference( matchingBuiltInMethod.getMethod(), ctx );
+                Assignment methodReference = MethodReference.forBuiltInMethod( matchingBuiltInMethod.getMethod(), ctx );
                 methodReference.setAssignment( sourceRHS );
                 return methodReference;
             }
@@ -521,11 +521,10 @@ public class MappingResolverImpl implements MappingResolver {
                                                      Type targetType) {
             MapperReference mapperReference = findMapperReference( method.getMethod() );
 
-            return new MethodReference(
+            return MethodReference.forMapperReference(
                 method.getMethod(),
                 mapperReference,
-                method.getParameterBindings()
-            );
+                method.getParameterBindings() );
         }
 
         /**

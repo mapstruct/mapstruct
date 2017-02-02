@@ -18,22 +18,30 @@
  */
 package org.mapstruct.ap.test.context;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+
+import org.mapstruct.BeforeMapping;
 import org.mapstruct.Context;
-import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.TargetType;
 
 /**
+ * A type to be used as {@link Context} parameter to track cycles in graphs.
+ *
  * @author Andreas Gudian
  */
-@Mapper(uses = { CycleContextLifecycleMethods.class, FactoryContextMethods.class })
-public interface AutomappingNodeMapperWithContext {
+public class SelfContainingCycleContext {
+    private Map<Object, Object> knownInstances = new IdentityHashMap<Object, Object>();
 
-    AutomappingNodeMapperWithContext INSTANCE =
-        Mappers.getMapper( AutomappingNodeMapperWithContext.class );
+    @BeforeMapping
+    @SuppressWarnings("unchecked")
+    public <T> T getMappedInstance(Object source, @TargetType Class<T> targetType) {
+        return (T) knownInstances.get( source );
+    }
 
-    NodeDto nodeToNodeDto(Node node, @Context CycleContext cycleContext, @Context FactoryContext factoryContext);
-
-    void nodeToNodeDto(Node node, @MappingTarget NodeDto nodeDto, @Context CycleContext cycleContext,
-            @Context FactoryContext factoryContext);
+    @BeforeMapping
+    public void storeMappedInstance(Object source, @MappingTarget Object target) {
+        knownInstances.put( source, target );
+    }
 }

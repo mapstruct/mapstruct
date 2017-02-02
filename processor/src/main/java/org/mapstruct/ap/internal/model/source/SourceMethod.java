@@ -71,6 +71,7 @@ public class SourceMethod implements Method {
 
     private final List<Parameter> sourceParameters;
     private final List<Parameter> contextParameters;
+    private final ParameterProvidedMethods contextProvidedMethods;
 
     private List<String> parameterNames;
 
@@ -101,6 +102,7 @@ public class SourceMethod implements Method {
         private MapperConfiguration mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
         private List<ValueMapping> valueMappings;
+        private ParameterProvidedMethods contextProvidedMethods;
 
         public Builder setDeclaringMapper(Type declaringMapper) {
             this.declaringMapper = declaringMapper;
@@ -182,23 +184,17 @@ public class SourceMethod implements Method {
             return this;
         }
 
+        public Builder setContextProvidedMethods(ParameterProvidedMethods contextProvidedMethods) {
+            this.contextProvidedMethods = contextProvidedMethods;
+            return this;
+        }
+
         public SourceMethod build() {
 
             MappingOptions mappingOptions =
                     new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings, false );
 
-            SourceMethod sourceMethod = new SourceMethod(
-                declaringMapper,
-                executable,
-                parameters,
-                returnType,
-                exceptionTypes,
-                mappingOptions,
-                typeUtils,
-                typeFactory,
-                mapperConfig,
-                prototypeMethods,
-                definingType );
+            SourceMethod sourceMethod = new SourceMethod( this, mappingOptions );
 
             if ( mappings != null ) {
                 for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
@@ -211,32 +207,29 @@ public class SourceMethod implements Method {
         }
     }
 
-    @SuppressWarnings( "checkstyle:parameternumber" )
-    private SourceMethod(Type declaringMapper, ExecutableElement executable, List<Parameter> parameters,
-                         Type returnType, List<Type> exceptionTypes, MappingOptions mappingOptions, Types typeUtils,
-                         TypeFactory typeFactory, MapperConfiguration config, List<SourceMethod> prototypeMethods,
-                         Type mapperToImplement) {
-        this.declaringMapper = declaringMapper;
-        this.executable = executable;
-        this.parameters = parameters;
-        this.returnType = returnType;
-        this.exceptionTypes = exceptionTypes;
-        this.accessibility = Accessibility.fromModifiers( executable.getModifiers() );
+    private SourceMethod(Builder builder, MappingOptions mappingOptions) {
+        this.declaringMapper = builder.declaringMapper;
+        this.executable = builder.executable;
+        this.parameters = builder.parameters;
+        this.returnType = builder.returnType;
+        this.exceptionTypes = builder.exceptionTypes;
+        this.accessibility = Accessibility.fromModifiers( builder.executable.getModifiers() );
 
         this.mappingOptions = mappingOptions;
 
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
+        this.contextProvidedMethods = builder.contextProvidedMethods;
 
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
         this.targetTypeParameter = Parameter.getTargetTypeParameter( parameters );
         this.isObjectFactory = determineIfIsObjectFactory( executable );
 
-        this.typeUtils = typeUtils;
-        this.typeFactory = typeFactory;
-        this.config = config;
-        this.prototypeMethods = prototypeMethods;
-        this.mapperToImplement = mapperToImplement;
+        this.typeUtils = builder.typeUtils;
+        this.typeFactory = builder.typeFactory;
+        this.config = builder.mapperConfig;
+        this.prototypeMethods = builder.prototypeMethods;
+        this.mapperToImplement = builder.definingType;
     }
 
     private boolean determineIfIsObjectFactory(ExecutableElement executable) {
@@ -276,6 +269,11 @@ public class SourceMethod implements Method {
     @Override
     public List<Parameter> getContextParameters() {
         return contextParameters;
+    }
+
+    @Override
+    public ParameterProvidedMethods getContextProvidedMethods() {
+        return contextProvidedMethods;
     }
 
     @Override
@@ -549,6 +547,7 @@ public class SourceMethod implements Method {
         return exceptionTypes;
     }
 
+    @Override
     public MappingOptions getMappingOptions() {
         return mappingOptions;
     }

@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 /**
  * Configures the mapping between two bean types.
  * <p>
- * Either {@link #resultType()} , {@link #qualifiedBy()} or {@link #nullValueMappingStrategy()} must be specified.
+ * Either {@link #resultType()}, {@link #qualifiedBy()} or {@link #nullValueMappingStrategy()} must be specified.
  * </p>
  *
  * @author Sjaak Derksen
@@ -44,21 +44,23 @@ public @interface BeanMapping {
     Class<?> resultType() default void.class;
 
     /**
-     * A qualifier can be specified to aid the selection process of a suitable factory method. This is useful in case
-     * multiple factory method (hand written of internal) qualify and result in an 'Ambiguous factory methods' error.
-     *
+     * A qualifier can be specified to aid the selection process of a suitable factory method or filtering applicable
+     * {@code @}{@link BeforeMapping} / {@code @}{@link AfterMapping} methods. This is useful in case multiple factory
+     * method (hand written of internal) qualify and result in an 'Ambiguous factory methods' error.
+     * <p>
      * A qualifier is a custom annotation and can be placed on either a hand written mapper class or a method.
      *
      * @return the qualifiers
+     * @see BeanMapping#qualifiedByName()
      */
     Class<? extends Annotation>[] qualifiedBy() default { };
 
     /**
-     * See: { @link #qualifiedBy() }. String form of a predefined { @link @Qualifier }. The { @link @Qualifier }
-     * is more verbose, but offers more flexibility in terms of for instance refactoring. At the other hand, there
-     * is no need to define own annotations.
+     * Similar to {@link #qualifiedBy()}, but used in combination with {@code @}{@link Named} in case no custom
+     * qualifier annotation is defined.
      *
      * @return the qualifiers
+     * @see Named
      */
     String[] qualifiedByName() default { };
 

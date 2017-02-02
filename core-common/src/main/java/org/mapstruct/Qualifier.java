@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
  * For more info see:
  * <ul>
  * <li>{@link Mapping#qualifiedBy() }</li>
+ * <li>{@link BeanMapping#qualifiedBy() }</li>
  * <li>{@link IterableMapping#qualifiedBy() }</li>
  * <li>{@link MapMapping#keyQualifiedBy() }</li>
  * <li>{@link MapMapping#valueQualifiedBy() }</li>
@@ -44,9 +45,10 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  *
- * <b>NOTE: </b>Qualifiers should have {@link RetentionPolicy#CLASS}.
+ * <b>NOTE:</b> Qualifiers should have {@link RetentionPolicy#CLASS}.
  *
  * @author Sjaak Derksen
+ * @see Named
  */
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.CLASS)

@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,8 +32,6 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Builder that can be used to build {@link ContainerMappingMethod}(s).
@@ -75,6 +75,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         return myself;
     }
 
+    @Override
     public final M build() {
         Type sourceParameterType = first( method.getSourceParameters() ).getType();
         Type resultType = method.getResultType();

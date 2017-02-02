@@ -24,44 +24,43 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * By default beans are created during the mapping process with the default constructor.
- * This method allows to mark a method as a factory method to create beans.
- * The type of the factory method is determined by its return type. A factory is used
- * to create a bean if their types match.
+ * This annotation marks a method as a <em>factory method</em> to create beans.
  * <p>
- * The factory method can retrieve the mapping sources by specifying
- * them as parameters, exactly like mapping and lifecycle methods do. This allows the factory
- * method to create target beans based on source beans.
- * The use of source parameters opens up a variety of possibilities. For example,
- * a factory method for entities can look up an
- * EntityManager to check whether the entity already exists and then return its
- * managed instance.
+ * By default beans are created during the mapping process with the default constructor. If a factory method with a
+ * return type that is assignable to the required object type is present, then the factory method is used instead.
+ * <p>
+ * Factory methods can be defined without parameters, with an {@code @}{@link TargetType} parameter, a {@code @}
+ * {@link Context} parameter, or with a mapping methods source parameter. If any of those parameters are defined, then
+ * the mapping method that is supposed to use the factory method needs to be declared with an assignable result type,
+ * assignable context parameter, and/or assignable source types.
+ * <p>
+ * <strong>Note:</strong> the usage of this annotation is <em>optional</em> if no source parameters are part of the
+ * signature, i.e. it is declared without parameters or only with {@code @}{@link TargetType} and/or {@code @}
+ * {@link Context}.
+ * <p>
+ * <strong>Example:</strong> Using a factory method for entities to check whether the entity already exists in the
+ * EntityManager and then returns the managed instance:
  *
  * <pre>
- * {@literal @}ApplicationScoped // CDI component model
+ * <code>
+ * &#64;ApplicationScoped // CDI component model
  * public class ReferenceMapper {
  *
- *     {@literal @}PersistenceContext
+ *     &#64;PersistenceContext
  *     private EntityManager em;
  *
- *     {@literal @}ObjectFactory
- *     public SomeEntity resolve(SomeDto dto) {
- *         SomeEntity entity = em.find(SomeEntity.class, dto.getId());
- *         return entity != null ? entity : new SomeEntity();
+ *     &#64;ObjectFactory
+ *     public &lt;T extends AbstractEntity&gt; T resolve(AbstractDto sourceDto, &#64;TargetType Class&lt;T&gt; type) {
+ *         T entity = em.find( type, sourceDto.getId() );
+ *         return entity != null ? entity : type.newInstance();
  *     }
  * }
+ * </code>
  * </pre>
- *
- * If no such parameters
- * are provided, the use of this annotation is optional.
- *
  * <p>
- * If there are two factory methods, both serving the same type, one with no parameters
- * and one taking sources as input, then the one with the source parameters is favored.
- * If multiple factory method take sources as input, them the one is chosen which allows a
- * valid assignment from mapping source parameters to those factory parameters. If
- * there are multiple such factories, an ambiguity exception is thrown.
- * </p>
+ * If there are two factory methods, both serving the same type, one with no parameters and one taking sources as input,
+ * then the one with the source parameters is favored. If there are multiple such factories, an ambiguity error is
+ * shown.
  *
  * @author Remo Meier
  * @since 1.2

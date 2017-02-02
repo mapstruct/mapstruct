@@ -107,6 +107,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         }
     }
 
+    @Override
     public Type getResultElementType() {
         if ( getResultType().isArrayType() ) {
             return getResultType().getComponentType();

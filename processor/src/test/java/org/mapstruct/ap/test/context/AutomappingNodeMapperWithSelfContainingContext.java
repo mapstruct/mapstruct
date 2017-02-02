@@ -21,25 +21,20 @@ package org.mapstruct.ap.test.context;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.ap.test.context.Node.Attribute;
-import org.mapstruct.ap.test.context.NodeDto.AttributeDto;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
  */
-@Mapper(uses = { CycleContextLifecycleMethods.class, FactoryContextMethods.class })
-public interface NodeMapperWithContext {
-    NodeMapperWithContext INSTANCE = Mappers.getMapper( NodeMapperWithContext.class );
+@Mapper(uses = FactoryContextMethods.class)
+public interface AutomappingNodeMapperWithSelfContainingContext {
 
-    NodeDto nodeToNodeDto(@Context FactoryContext factoryContext, Node node, @Context CycleContext cycleContext);
+    AutomappingNodeMapperWithSelfContainingContext INSTANCE =
+        Mappers.getMapper( AutomappingNodeMapperWithSelfContainingContext.class );
 
-    void nodeToNodeDto(@Context FactoryContext factoryContext, Node node, @MappingTarget NodeDto nodeDto,
-            @Context CycleContext cycleContext);
-
-    AttributeDto attributeToAttributeDto(Attribute attribute, @Context CycleContext cycleContext,
+    NodeDto nodeToNodeDto(Node node, @Context SelfContainingCycleContext cycleContext,
             @Context FactoryContext factoryContext);
 
-    void attributeToAttributeDto(Attribute attribute, @MappingTarget AttributeDto nodeDto,
-            @Context CycleContext cycleContext, @Context FactoryContext factoryContext);
+    void nodeToNodeDto(Node node, @MappingTarget NodeDto nodeDto, @Context SelfContainingCycleContext cycleContext,
+            @Context FactoryContext factoryContext);
 }

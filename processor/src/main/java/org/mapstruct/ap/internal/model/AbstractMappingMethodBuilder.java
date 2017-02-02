@@ -59,6 +59,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
             method.getMapperConfiguration(),
             method.getExecutable(),
             method.getContextParameters(),
+            method.getContextProvidedMethods(),
             new ForgedMethodHistory(
                 history,
                 Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),

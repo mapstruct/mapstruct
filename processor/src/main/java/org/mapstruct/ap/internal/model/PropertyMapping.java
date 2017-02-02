@@ -18,11 +18,17 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 
@@ -52,11 +58,6 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.last;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -105,7 +106,6 @@ public class PropertyMapping extends ModelElement {
         protected TargetWriteAccessorType targetWriteAccessorType;
         protected Type targetType;
         protected Accessor targetReadAccessor;
-        protected TargetWriteAccessorType targetReadAccessorType;
         protected String targetPropertyName;
 
         protected List<String> dependsOn;
@@ -124,17 +124,11 @@ public class PropertyMapping extends ModelElement {
             this.targetWriteAccessor = targetProp.getWriteAccessor();
             this.targetType = targetProp.getType();
             this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
-            if ( targetReadAccessor != null ) {
-                this.targetReadAccessorType = TargetWriteAccessorType.of( targetReadAccessor );
-            }
             return (T) this;
         }
 
         public T targetReadAccessor(Accessor targetReadAccessor) {
             this.targetReadAccessor = targetReadAccessor;
-            if ( targetReadAccessor != null ) {
-                this.targetReadAccessorType = TargetWriteAccessorType.of( targetReadAccessor );
-            }
             return (T) this;
         }
 
@@ -487,7 +481,8 @@ public class PropertyMapping extends ModelElement {
                     sourceType,
                     config,
                     method.getExecutable(),
-                    method.getContextParameters() );
+                    method.getContextParameters(),
+                    method.getContextProvidedMethods() );
 
                 NestedPropertyMappingMethod.Builder builder = new NestedPropertyMappingMethod.Builder();
                 NestedPropertyMappingMethod nestedPropertyMapping = builder
@@ -578,6 +573,7 @@ public class PropertyMapping extends ModelElement {
                 config,
                 element,
                 method.getContextParameters(),
+                method.getContextProvidedMethods(),
                 getForgedMethodHistory( source, suffix )
             );
         }
@@ -608,7 +604,7 @@ public class PropertyMapping extends ModelElement {
             String name = getName( sourceType, targetType );
             name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
-            List<Parameter> parameters = new ArrayList( method.getContextParameters() );
+            List<Parameter> parameters = new ArrayList<Parameter>( method.getContextParameters() );
             Type returnType;
             // there's only one case for forging a method with mapping options: nested target properties.
             // they should always forge an update method
@@ -628,6 +624,7 @@ public class PropertyMapping extends ModelElement {
                     method.getMapperConfiguration(),
                     method.getExecutable(),
                     parameters,
+                    method.getContextProvidedMethods(),
                     forgeMethodWithMappingOptions
                 );
             }
@@ -639,6 +636,7 @@ public class PropertyMapping extends ModelElement {
                     method.getMapperConfiguration(),
                     method.getExecutable(),
                     parameters,
+                    method.getContextProvidedMethods(),
                     getForgedMethodHistory( sourceRHS )
                 );
             }

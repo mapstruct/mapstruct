@@ -23,12 +23,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
-import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
+import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 
 /**
@@ -55,7 +57,7 @@ public final class LifecycleCallbackFactory {
         return collectLifecycleCallbackMethods(
             method,
             selectionParameters,
-            filterBeforeMappingMethods( ctx.getSourceModel() ),
+            filterBeforeMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
             ctx,
             existingVariableNames );
     }
@@ -74,9 +76,27 @@ public final class LifecycleCallbackFactory {
         return collectLifecycleCallbackMethods(
             method,
             selectionParameters,
-            filterAfterMappingMethods( ctx.getSourceModel() ),
+            filterAfterMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
             ctx,
             existingVariableNames );
+    }
+
+    private static List<SourceMethod> getAllAvailableMethods(Method method, List<SourceMethod> sourceModelMethods) {
+        ParameterProvidedMethods contextProvidedMethods = method.getContextProvidedMethods();
+        if ( contextProvidedMethods.isEmpty() ) {
+            return sourceModelMethods;
+        }
+
+        List<SourceMethod> methodsProvidedByParams = contextProvidedMethods
+            .getAllProvidedMethodsInParameterOrder( method.getContextParameters() );
+
+        List<SourceMethod> availableMethods =
+            new ArrayList<SourceMethod>( methodsProvidedByParams.size() + sourceModelMethods.size() );
+
+        availableMethods.addAll( methodsProvidedByParams );
+        availableMethods.addAll( sourceModelMethods );
+
+        return availableMethods;
     }
 
     private static List<LifecycleCallbackMethodReference> collectLifecycleCallbackMethods(
@@ -107,15 +127,27 @@ public final class LifecycleCallbackFactory {
 
         List<LifecycleCallbackMethodReference> result = new ArrayList<LifecycleCallbackMethodReference>();
         for ( SelectedMethod<SourceMethod> candidate : candidates ) {
-            MapperReference mapperReference = findMapperReference( ctx.getMapperReferences(), candidate.getMethod() );
-            result.add(
-                new LifecycleCallbackMethodReference(
-                    candidate.getMethod(),
-                    mapperReference,
-                    candidate.getParameterBindings(),
-                    method.getReturnType(),
-                    method.getResultType(),
+            Parameter providingParameter =
+                method.getContextProvidedMethods().getParameterForProvidedMethod( candidate.getMethod() );
+
+            if ( providingParameter != null ) {
+                result.add( LifecycleCallbackMethodReference.forParameterProvidedMethod(
+                    candidate,
+                    providingParameter,
+                    method,
                     existingVariableNames ) );
+            }
+            else {
+                MapperReference mapperReference = findMapperReference(
+                    ctx.getMapperReferences(),
+                    candidate.getMethod() );
+
+                result.add( LifecycleCallbackMethodReference.forMethodReference(
+                    candidate,
+                    mapperReference,
+                    method,
+                    existingVariableNames ) );
+            }
         }
         return result;
     }

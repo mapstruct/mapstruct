@@ -31,9 +31,9 @@ public class FactoryContext {
     private int nodeCounter;
     private int attributeMagicNumberOffset;
 
-    public FactoryContext(int initialCounter, int attributeMaticNumberOffset) {
+    public FactoryContext(int initialCounter, int attributeMagicNumberOffset) {
         this.nodeCounter = initialCounter;
-        this.attributeMagicNumberOffset = attributeMaticNumberOffset;
+        this.attributeMagicNumberOffset = attributeMagicNumberOffset;
     }
 
     public NodeDto createNode() {

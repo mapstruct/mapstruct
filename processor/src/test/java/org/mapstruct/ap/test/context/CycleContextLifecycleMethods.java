@@ -21,24 +21,12 @@ package org.mapstruct.ap.test.context;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Context;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.ObjectFactory;
 import org.mapstruct.TargetType;
-import org.mapstruct.ap.test.context.Node.Attribute;
-import org.mapstruct.ap.test.context.NodeDto.AttributeDto;
 
 /**
  * @author Andreas Gudian
  */
 public class CycleContextLifecycleMethods {
-
-    public NodeDto createNodeDto(@Context FactoryContext context) {
-        return context.createNode();
-    }
-
-    @ObjectFactory
-    public AttributeDto createAttributeDto(Attribute source, @Context FactoryContext context) {
-        return context.createAttributeDto( source );
-    }
 
     @BeforeMapping
     public <T> T getInstance(Object source, @TargetType Class<T> type, @Context CycleContext cycleContext) {

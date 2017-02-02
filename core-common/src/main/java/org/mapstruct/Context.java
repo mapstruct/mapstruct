@@ -25,14 +25,22 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a parameter of a method to be treated as <em>mapping context</em>. Such parameters are passed to other mapping
- * methods, {@link ObjectFactory} methods or {@link BeforeMapping}/{@link AfterMapping} methods when applicable and can
- * thus be used in custom code. The {@link Context} parameters are otherwise ignored by MapStruct.
+ * methods, {@code @}{@link ObjectFactory} methods or {@code @}{@link BeforeMapping}/{@code @}{@link AfterMapping}
+ * methods when applicable and can thus be used in custom code.
  * <p>
- * For generated code to call a method that is declared with {@link Context} parameters, the declaration of the mapping
- * method being generated needs to contain at least those (or assignable) {@link Context} parameters as well. MapStruct
- * will not create new instances of missing {@link Context} parameters nor will it pass {@code null} instead.
+ * The type of an {@code @Context} parameter is also inspected for
+ * {@code @}{@link BeforeMapping}/{@code @}{@link AfterMapping} methods, which are called on the provided context
+ * parameter value if applicable.
  * <p>
- * Example:
+ * <strong>Note:</strong> no {@code null} checks are performed before calling before/after mapping methods on context
+ * parameters. The caller needs to make sure that no {@code null} are passed in that case.
+ * <p>
+ * For generated code to call a method that is declared with {@code @Context} parameters, the declaration of the mapping
+ * method being generated needs to contain at least those (or assignable) {@code @Context} parameters as well. MapStruct
+ * will not create new instances of missing {@code @Context} parameters nor will it pass {@code null} instead.
+ * <p>
+ * <strong>Example 1:</strong> Using {@code @Context} parameters for passing data down to hand-written property mapping
+ * methods and {@code @}{@link BeforeMapping} methods:
  *
  * <pre>
  * <code>
@@ -49,13 +57,8 @@ import java.lang.annotation.Target;
  * }
  *
  * &#64;BeforeMapping
- * protected void logMappedVehicle(Vehicle mappedVehicle) {
- *     // do something with the vehicle
- * }
- *
- * &#64;BeforeMapping
  * protected void notCalled(Vehicle mappedVehicle, &#64;Context DifferentMappingContextType context) {
- *     // not called, because DifferentMappingContextType is not available
+ *     // not called, because no context parameter of type DifferentMappingContextType is available
  *     // within toCar(Car, VehicleRegistration, Locale)
  * }
  *
@@ -63,7 +66,6 @@ import java.lang.annotation.Target;
  *
  * public CarDto toCar(Car car, VehicleRegistration context, Locale localeToUse) {
  *     registerVehicle( car, context );
- *     logMappedVehicle( car );
  *
  *     if ( car == null ) {
  *         return null;
@@ -75,6 +77,61 @@ import java.lang.annotation.Target;
  *     // more generated mapping code
  *
  *     return carDto;
+ * }
+ * </code>
+ * </pre>
+ * <p>
+ * <strong>Example 2:</strong> Using an {@code @Context} parameter with a type that provides its own {@code @}
+ * {@link BeforeMapping} methods to handle cycles in Graph structures:
+ *
+ * <pre>
+ * <code>
+ * // type of the context parameter
+ * public class CyclicGraphContext {
+ *     private Map&lt;Object, Object&gt; knownInstances = new IdentityHashMap&lt;&gt;();
+ *
+ *     &#64;BeforeMapping
+ *     public &lt;T extends NodeDto&gt; T getMappedInstance(Object source, &#64;TargetType Class&lt;T&gt; targetType) {
+ *         return (T) knownInstances.get( source );
+ *     }
+ *
+ *     &#64;BeforeMapping
+ *     public void storeMappedInstance(Object source, &#64;MappingTarget NodeDto target) {
+ *         knownInstances.put( source, target );
+ *     }
+ * }
+ *
+ * &#64;Mapper
+ * public interface GraphMapper {
+ *     NodeDto toNodeDto(Node node, &#64;Context CyclicGraphContext cycleContext);
+ * }
+ *
+ *
+ * // generates:
+ *
+ * public NodeDto toNodeDto(Node node, CyclicGraphContext cycleContext) {
+ *     NodeDto target = cycleContext.getMappedInstance( node, NodeDto.class );
+ *     if ( target != null ) {
+ *         return target;
+ *     }
+ *
+ *     if ( node == null ) {
+ *         return null;
+ *     }
+ *
+ *     NodeDto nodeDto = new NodeDto();
+ *
+ *     cycleContext.storeMappedInstance( node, nodeDto );
+ *
+ *     nodeDto.setParent( toNodeDto( node.getParent(), cycleContext ) );
+ *     List&lt;NodeDto&gt; list = nodeListToNodeDtoList( node.getChildren(), cycleContext );
+ *     if ( list != null ) {
+ *         nodeDto.setChildren( list );
+ *     }
+ *
+ *     // more mapping code
+ *
+ *     return nodeDto;
  * }
  * </code>
  * </pre>

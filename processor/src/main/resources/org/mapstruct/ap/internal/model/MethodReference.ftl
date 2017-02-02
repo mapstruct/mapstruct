@@ -20,13 +20,15 @@
 -->
 <@compress single_line=true>
     <#-- method is either internal to the mapper class, or external (via uses) declaringMapper!=null -->
-    <#if declaringMapper??><#if static><@includeModel object=declaringMapper.type/><#else>${mapperVariableName}</#if>.<@params/>
+    <#if declaringMapper??><#if static><@includeModel object=declaringMapper.type/><#else>${mapperVariableName}</#if>.<@methodCall/>
+    <#-- method is provided by a context parameter  -->
+    <#elseif providingParameter??><#if static><@includeModel object=providingParameter.type/><#else>${providingParameter.name}</#if>.<@methodCall/>
     <#-- method is referenced java8 static method in the mapper to implement (interface)  -->
-    <#elseif static><@includeModel object=definingType/>.<@params/>
+    <#elseif static><@includeModel object=definingType/>.<@methodCall/>
     <#else>
-    <@params/>
+    <@methodCall/>
     </#if>
-    <#macro params>
+    <#macro methodCall>
         <@compress>
             ${name}<#if (parameterBindings?size > 0)>( <@arguments/> )<#else>()</#if>
         </@compress>

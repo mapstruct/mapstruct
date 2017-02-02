@@ -31,6 +31,7 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -87,6 +88,11 @@ public abstract class HelperMethod implements Method {
     @Override
     public List<Parameter> getContextParameters() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public ParameterProvidedMethods getContextProvidedMethods() {
+        return ParameterProvidedMethods.empty();
     }
 
     /**

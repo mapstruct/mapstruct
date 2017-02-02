@@ -44,6 +44,7 @@ import org.mapstruct.ap.internal.model.source.BeanMapping;
 import org.mapstruct.ap.internal.model.source.IterableMapping;
 import org.mapstruct.ap.internal.model.source.MapMapping;
 import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.ValueMapping;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
@@ -91,7 +92,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 mapperConfig.getAnnotationMirror() );
         }
 
-        List<SourceMethod> prototypeMethods = retrievePrototypeMethods( mapperConfig );
+        List<SourceMethod> prototypeMethods = retrievePrototypeMethods( mapperTypeElement, mapperConfig );
         return retrieveMethods( mapperTypeElement, mapperTypeElement, mapperConfig, prototypeMethods );
     }
 
@@ -100,7 +101,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return 1;
     }
 
-    private List<SourceMethod> retrievePrototypeMethods(MapperConfiguration mapperConfig ) {
+    private List<SourceMethod> retrievePrototypeMethods(TypeElement mapperTypeElement,
+            MapperConfiguration mapperConfig) {
         if ( mapperConfig.config() == null ) {
             return Collections.emptyList();
         }
@@ -123,7 +125,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     parameters,
                     containsTargetTypeParameter,
                     mapperConfig,
-                    prototypeMethods
+                    prototypeMethods,
+                    mapperTypeElement
                 );
 
             if ( method != null ) {
@@ -198,7 +201,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 parameters,
                 containsTargetTypeParameter,
                 mapperConfig,
-                prototypeMethods );
+                prototypeMethods,
+                mapperToImplement );
         }
         // otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( method, parameters, returnType )
@@ -211,10 +215,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private SourceMethod getMethodRequiringImplementation(ExecutableType methodType, ExecutableElement method,
-                                                          List<Parameter> parameters,
-                                                          boolean containsTargetTypeParameter,
-                                                          MapperConfiguration mapperConfig,
-                                                          List<SourceMethod> prototypeMethods ) {
+            List<Parameter> parameters,
+            boolean containsTargetTypeParameter,
+            MapperConfiguration mapperConfig,
+            List<SourceMethod> prototypeMethods,
+            TypeElement mapperToImplement) {
         Type returnType = typeFactory.getReturnType( methodType );
         List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
         List<Parameter> sourceParameters = Parameter.getSourceParameters( parameters );
@@ -236,30 +241,56 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return null;
         }
 
+        ParameterProvidedMethods contextProvidedMethods =
+            retrieveLifecycleMethodsFromContext( contextParameters, mapperToImplement, mapperConfig );
+
         return new SourceMethod.Builder()
-                .setExecutable( method )
-                .setParameters( parameters )
-                .setReturnType( returnType )
-                .setExceptionTypes( exceptionTypes )
-                .setMappings( getMappings( method ) )
-                .setIterableMapping(
-                    IterableMapping.fromPrism(
-                        IterableMappingPrism.getInstanceOn( method ), method, messager
-                    )
-                )
-                .setMapMapping(
-                    MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager )
-                )
-                .setBeanMapping(
-                    BeanMapping.fromPrism( BeanMappingPrism.getInstanceOn( method ), method, messager )
-                )
-                .setValueMappings( getValueMappings( method ) )
-                .setTypeUtils( typeUtils )
-                .setMessager( messager )
-                .setTypeFactory( typeFactory )
-                .setMapperConfiguration( mapperConfig )
-                .setPrototypeMethods( prototypeMethods )
+            .setExecutable( method )
+            .setParameters( parameters )
+            .setReturnType( returnType )
+            .setExceptionTypes( exceptionTypes )
+            .setMappings( getMappings( method ) )
+            .setIterableMapping(
+                IterableMapping.fromPrism(
+                    IterableMappingPrism.getInstanceOn( method ),
+                    method,
+                    messager ) )
+            .setMapMapping(
+                MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager ) )
+            .setBeanMapping(
+                BeanMapping.fromPrism( BeanMappingPrism.getInstanceOn( method ), method, messager ) )
+            .setValueMappings( getValueMappings( method ) )
+            .setTypeUtils( typeUtils )
+            .setMessager( messager )
+            .setTypeFactory( typeFactory )
+            .setMapperConfiguration( mapperConfig )
+            .setPrototypeMethods( prototypeMethods )
+            .setContextProvidedMethods( contextProvidedMethods )
             .build();
+    }
+
+    private ParameterProvidedMethods retrieveLifecycleMethodsFromContext(
+            List<Parameter> contextParameters, TypeElement mapperToImplement, MapperConfiguration mapperConfig) {
+
+        ParameterProvidedMethods.Builder builder = ParameterProvidedMethods.builder();
+        for ( Parameter contextParam : contextParameters ) {
+            List<SourceMethod> contextParamMethods = retrieveMethods(
+                contextParam.getType().getTypeElement(),
+                mapperToImplement,
+                mapperConfig,
+                Collections.<SourceMethod> emptyList() );
+
+            List<SourceMethod> lifecycleMethods = new ArrayList<SourceMethod>( contextParamMethods.size() );
+            for ( SourceMethod sourceMethod : contextParamMethods ) {
+                if ( sourceMethod.isLifecycleCallbackMethod() ) {
+                    lifecycleMethods.add( sourceMethod );
+                }
+            }
+
+            builder.addMethodsForParameter( contextParam, lifecycleMethods );
+        }
+
+        return builder.build();
     }
 
     private SourceMethod getReferencedMethod(TypeElement usedMapper, ExecutableType methodType,
