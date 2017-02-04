@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.GeneratedType" -->
 <#--
 
      Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
@@ -18,7 +19,9 @@
      limitations under the License.
 
 -->
+<#if hasPackageName()>
 package ${packageName};
+</#if>
 
 <#list importTypes as importedType>
 import ${importedType.importName};

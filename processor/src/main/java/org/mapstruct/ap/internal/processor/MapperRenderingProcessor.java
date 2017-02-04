@@ -57,7 +57,11 @@ public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, M
     }
 
     private void createSourceFile(GeneratedType model, ModelWriter modelWriter, Filer filer) {
-        String fileName = model.getPackageName() + "." + model.getName();
+        String fileName = "";
+        if ( model.hasPackageName() ) {
+            fileName += model.getPackageName() + ".";
+        }
+        fileName += model.getName();
 
         JavaFileObject sourceFile;
         try {
