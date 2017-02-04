@@ -758,10 +758,11 @@ public class Type extends ModelElement implements Comparable<Type> {
             return "0";
         }
         if ( "char".equals( getName() ) ) {
-            return "'\\u0000'";
+            //"'\u0000'" would have been better, but depends on platform encoding
+                return "0";
         }
         if ( "double".equals( getName() ) ) {
-            return "0.0";
+            return "0.0d";
         }
         if ( "float".equals( getName() ) ) {
             return "0.0f";
