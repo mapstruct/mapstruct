@@ -20,7 +20,6 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.List;
 import java.util.Set;
-import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -77,27 +76,6 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
 
     public String getLoopVariableName() {
         return loopVariableName;
-    }
-
-    public String getDefaultValue() {
-        TypeKind kind = getResultElementType().getTypeMirror().getKind();
-        switch ( kind ) {
-            case BOOLEAN:
-                return "false";
-            case BYTE:
-            case SHORT:
-            case INT:
-            case CHAR:  /*"'\u0000'" would have been better, but depends on platformencoding */
-                return "0";
-            case LONG:
-                return "0L";
-            case FLOAT:
-                return "0.0f";
-            case DOUBLE:
-                return "0.0d";
-            default:
-                return "null";
-        }
     }
 
     public abstract Type getResultElementType();
