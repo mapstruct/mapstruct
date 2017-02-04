@@ -43,6 +43,7 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithServiceImplementation;
 import org.mapstruct.ap.testutil.WithServiceImplementations;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.DisableCheckstyle;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOptions;
@@ -78,6 +79,7 @@ abstract class CompilingStatement extends Statement {
 
     private final FrameworkMethod method;
     private final CompilationCache compilationCache;
+    private final boolean runCheckstyle;
     private Statement next;
 
     private String classOutputDir;
@@ -88,6 +90,7 @@ abstract class CompilingStatement extends Statement {
     CompilingStatement(FrameworkMethod method, CompilationCache compilationCache) {
         this.method = method;
         this.compilationCache = compilationCache;
+        this.runCheckstyle = !method.getMethod().getDeclaringClass().isAnnotationPresent( DisableCheckstyle.class );
 
         this.compilationRequest = new CompilationRequest( getTestClasses(), getServices(), getProcessorOptions() );
     }
@@ -202,7 +205,9 @@ abstract class CompilingStatement extends Statement {
 
         assertDiagnostics( actualResult.getDiagnostics(), expectedResult.getDiagnostics() );
 
-        assertCheckstyleRules();
+        if ( runCheckstyle ) {
+            assertCheckstyleRules();
+        }
     }
 
     private void assertCheckstyleRules() throws Exception {

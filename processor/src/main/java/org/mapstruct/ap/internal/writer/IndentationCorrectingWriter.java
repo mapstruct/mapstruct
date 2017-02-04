@@ -117,11 +117,11 @@ class IndentationCorrectingWriter extends Writer {
                 switch ( c ) {
                     case '{':
                     case '(':
-                        context.indentationLevel++;
+                        context.incrementIndentationLevel();
                         return IN_TEXT;
                     case '}':
                     case ')':
-                        context.indentationLevel--;
+                        context.decrementIndentationLevel();
                         return IN_TEXT;
                     case '\"':
                         return IN_STRING;
@@ -139,10 +139,11 @@ class IndentationCorrectingWriter extends Writer {
              */
             @Override
             void doOnEntry(StateContext context) throws IOException {
-                context.writer.write( getIndentation( context.indentationLevel ) );
+                context.writer.write( getIndentation( context.getIndentationLevel() ) );
 
                 if ( DEBUG ) {
-                    System.out.print( new String( getIndentation( context.indentationLevel ) ).replace( " ", "_" ) );
+                    System.out.print( new String( getIndentation( context.getIndentationLevel() ) )
+                            .replace( " ", "_" ) );
                 }
             }
 
@@ -173,11 +174,11 @@ class IndentationCorrectingWriter extends Writer {
                 switch ( c ) {
                     case '{':
                     case '(':
-                        context.indentationLevel++;
+                        context.incrementIndentationLevel();
                         return IN_TEXT;
                     case '}':
                     case ')':
-                        context.indentationLevel--;
+                        context.decrementIndentationLevel();
                         return IN_TEXT;
                     case '\"':
                         return IN_STRING;
@@ -298,14 +299,14 @@ class IndentationCorrectingWriter extends Writer {
                 switch ( c ) {
                     case '{':
                     case '(':
-                        context.indentationLevel++;
+                        context.incrementIndentationLevel();
                         return START_OF_LINE;
                     case '}':
                         if ( context.consecutiveLineBreaks > 0 ) {
                             context.consecutiveLineBreaks = 0; // remove previous blank lines
                         }
                     case ')':
-                        context.indentationLevel--;
+                        context.decrementIndentationLevel();
                         return START_OF_LINE;
                     case '\r':
                         return isWindows() ? IN_LINE_BREAK : AFTER_LINE_BREAK;
@@ -407,7 +408,7 @@ class IndentationCorrectingWriter extends Writer {
         /**
          * Keeps track of the current indentation level, as implied by brace characters.
          */
-        int indentationLevel;
+        private int indentationLevel;
 
         /**
          * The number of consecutive line-breaks when within {@link State#AFTER_LINE_BREAK}.
@@ -422,6 +423,23 @@ class IndentationCorrectingWriter extends Writer {
             this.characters = characters;
             this.lastStateChange = off;
             this.currentIndex = 0;
+        }
+
+        void incrementIndentationLevel() {
+            indentationLevel++;
+        }
+
+        void decrementIndentationLevel() {
+            // decrementing below 0 indicates misbalanced braces in the code, typically because too many closing braces
+            // are given in an expression; we let that code pass through, the compiler will complain eventually about
+            // the malformed source file
+            if ( indentationLevel > 0 ) {
+                indentationLevel--;
+            }
+        }
+
+        int getIndentationLevel() {
+            return indentationLevel;
         }
     }
 }
