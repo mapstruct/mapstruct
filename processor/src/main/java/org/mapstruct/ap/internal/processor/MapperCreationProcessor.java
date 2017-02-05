@@ -424,10 +424,15 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         initializingMethods.add( method );
 
         MappingOptions mappingOptions = method.getMappingOptions();
-        List<SourceMethod> applicablePrototypeMethods = method.getApplicablePrototypeMethods();
+        List<SourceMethod> applicableReversePrototypeMethods = method.getApplicableReversePrototypeMethods();
 
         MappingOptions inverseMappingOptions =
-            getInverseMappingOptions( availableMethods, method, initializingMethods, mapperConfig );
+            getInverseMappingOptions( join( availableMethods, applicableReversePrototypeMethods ),
+                method,
+                initializingMethods,
+                mapperConfig );
+
+        List<SourceMethod> applicablePrototypeMethods = method.getApplicablePrototypeMethods();
 
         MappingOptions templateMappingOptions =
             getTemplateMappingOptions(
@@ -455,6 +460,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 messager.printMessage(
                     method.getExecutable(),
                     Message.INHERITCONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH,
+                    Strings.join( applicablePrototypeMethods, ", " ) );
+            }
+
+            if ( applicableReversePrototypeMethods.size() == 1 ) {
+                mappingOptions.applyInheritedOptions(
+                    first( applicableReversePrototypeMethods ).getMappingOptions(),
+                    true,
+                    method,
+                    messager,
+                    typeFactory );
+            }
+            else if ( applicableReversePrototypeMethods.size() > 1 ) {
+                messager.printMessage(
+                    method.getExecutable(),
+                    Message.INHERITINVERSECONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH,
                     Strings.join( applicablePrototypeMethods, ", " ) );
             }
         }
@@ -497,7 +517,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             // method is configured as being reverse method, collect candidates
             List<SourceMethod> candidates = new ArrayList<SourceMethod>();
             for ( SourceMethod oneMethod : rawMethods ) {
-                if ( oneMethod.reverses( method ) ) {
+                if ( method.reverses( oneMethod ) ) {
                     candidates.add( oneMethod );
                 }
             }
@@ -559,7 +579,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
      * Returns the configuring forward method's options in case the given method is annotated with
      * {@code @InheritConfiguration} and exactly one such configuring method can unambiguously be selected (as per the
      * source/target type and optionally the name given via {@code @InheritConfiguration}). The method cannot be marked
-     * forward mapping itself (hence 'ohter'). And neither can it contain an {@code @InheritReverseConfiguration}
+     * forward mapping itself (hence 'other'). And neither can it contain an {@code @InheritReverseConfiguration}
      */
     private MappingOptions getTemplateMappingOptions(List<SourceMethod> rawMethods, SourceMethod method,
                                                      List<SourceMethod> initializingMethods,
