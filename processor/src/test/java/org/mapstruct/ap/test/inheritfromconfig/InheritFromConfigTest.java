@@ -126,6 +126,21 @@ public class InheritFromConfigTest {
     }
 
     @Test
+    @IssueKey( "1065" )
+    @WithClasses({ CarMapperReverseWithExplicitInheritance.class } )
+    public void explicitInheritedMappingIsAppliedInReverseDirectlyFromConfig() {
+
+        CarEntity carEntity = new CarEntity();
+        carEntity.setColor( "red" );
+        carEntity.setPrimaryKey( 42L );
+
+        CarDto carDto = CarMapperReverseWithExplicitInheritance.INSTANCE.toCarDto( carEntity );
+
+        assertThat( carDto.getColour() ).isEqualTo( "red" );
+        assertThat( carDto.getId() ).isEqualTo( 42L );
+    }
+
+    @Test
     public void explicitInheritedMappingWithTwoLevelsIsOverriddenAtMethodLevel() {
         CarDto carDto = newTestDto();
 

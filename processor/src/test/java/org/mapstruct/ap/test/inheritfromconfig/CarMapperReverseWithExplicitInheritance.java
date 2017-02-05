@@ -16,26 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedsourceproperties;
+package org.mapstruct.ap.test.inheritfromconfig;
 
-import org.mapstruct.MapperConfig;
+import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.ReportingPolicy;
-import org.mapstruct.ap.test.nestedsourceproperties._target.BaseChartEntry;
-import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
+import org.mapstruct.MappingInheritanceStrategy;
+import org.mapstruct.factory.Mappers;
 
 /**
- *
- * @author Sjaak Derksen
+ * @author Andreas Gudian
  */
-@MapperConfig( unmappedTargetPolicy = ReportingPolicy.ERROR )
-public interface ArtistToChartEntryConfig {
+@Mapper(
+    config = AutoInheritedConfig.class,
+    mappingInheritanceStrategy = MappingInheritanceStrategy.EXPLICIT
+)
+public abstract class CarMapperReverseWithExplicitInheritance {
+    public static final CarMapperReverseWithExplicitInheritance INSTANCE =
+        Mappers.getMapper( CarMapperReverseWithExplicitInheritance.class );
 
-    @Mappings({
-        @Mapping(target = "songTitle", source = "title"),
-        @Mapping(target = "artistName", source = "artist.name"),
-        @Mapping(target = "chartName", ignore = true )
-    })
-    BaseChartEntry mapForwardConfig( Song song );
+    @InheritInverseConfiguration(name = "baseDtoToEntity")
+    @Mapping( target = "colour", source = "color" )
+    public abstract CarDto toCarDto(CarEntity entity);
+
 }

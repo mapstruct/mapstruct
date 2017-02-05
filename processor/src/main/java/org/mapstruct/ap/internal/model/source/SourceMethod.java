@@ -76,6 +76,7 @@ public class SourceMethod implements Method {
     private List<String> parameterNames;
 
     private List<SourceMethod> applicablePrototypeMethods;
+    private List<SourceMethod> applicableReversePrototypeMethods;
 
     private Boolean isBeanMapping;
     private Boolean isEnumMapping;
@@ -312,11 +313,11 @@ public class SourceMethod implements Method {
     }
 
     public boolean reverses(SourceMethod method) {
-        return getDeclaringMapper() == null
-            && isAbstract()
+        return method.getDeclaringMapper() == null
+            && method.isAbstract()
             && getSourceParameters().size() == 1 && method.getSourceParameters().size() == 1
-            && equals( first( getSourceParameters() ).getType(), method.getResultType() )
-            && equals( getResultType(), first( method.getSourceParameters() ).getType() );
+            && first( getSourceParameters() ).getType().isAssignableTo( method.getResultType() )
+            && getResultType().isAssignableTo( first( method.getSourceParameters() ).getType() );
     }
 
     public boolean isSame(SourceMethod method) {
@@ -484,6 +485,20 @@ public class SourceMethod implements Method {
         }
 
         return applicablePrototypeMethods;
+    }
+
+    public List<SourceMethod> getApplicableReversePrototypeMethods() {
+        if ( applicableReversePrototypeMethods == null ) {
+            applicableReversePrototypeMethods = new ArrayList<SourceMethod>();
+
+            for ( SourceMethod prototype : prototypeMethods ) {
+                if ( reverses( prototype ) ) {
+                    applicableReversePrototypeMethods.add( prototype );
+                }
+            }
+        }
+
+        return applicableReversePrototypeMethods;
     }
 
     private static boolean allParametersAreAssignable(List<Parameter> fromParams, List<Parameter> toParams) {
