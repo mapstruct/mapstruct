@@ -31,6 +31,7 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
@@ -106,6 +107,10 @@ public abstract class GeneratedType extends ModelElement {
 
     public String getPackageName() {
         return packageName;
+    }
+
+    public boolean hasPackageName() {
+        return !Strings.isEmpty( packageName );
     }
 
     public String getName() {
