@@ -338,6 +338,7 @@ public class CarMapperImpl implements CarMapper {
         if ( car.getCategory() != null ) {
             carDto.setCategory( car.getCategory().toString() );
         }
+        carDto.setEngine( engineTtoEngineDto( car.getEngine() ) );
 
         return carDto;
     }
@@ -346,13 +347,31 @@ public class CarMapperImpl implements CarMapper {
     public PersonDto personToPersonDto(Person person) {
         //...
     }
+
+    private EngineDto engineToEngineDto(Engine engine) {
+        if ( engine == null ) {
+            return null;
+        }
+
+        EngineDto engineDto = new EngineDto();
+
+        engineDto.setHorsePower(engine.getHorsePower());
+        engineDto.setFuel(engine.getFuel());
+
+        return engineDto;
+    }
 }
 ----
 ====
 
 The general philosophy of MapStruct is to generate code which looks as much as possible as if you had written it yourself from hand. In particular this means that the values are copied from source to target by plain getter/setter invocations instead of reflection or similar.
 
-As the example shows the generated code takes into account any name mappings specified via `@Mapping`. If the type of a mapped attribute is different in source and target entity, MapStruct will either apply an automatic conversion (as e.g. for the _price_ property, see also <<implicit-type-conversions>>) or optionally invoke another mapping method (as e.g. for the _driver_ property, see also <<mapping-object-references>>).
+As the example shows the generated code takes into account any name mappings specified via `@Mapping`.
+If the type of a mapped attribute is different in source and target entity,
+MapStruct will either apply an automatic conversion (as e.g. for the _price_ property, see also <<implicit-type-conversions>>)
+or optionally invoke / create another mapping method (as e.g. for the _driver_ / _engine_ property, see also <<mapping-object-references>>).
+MapStruct will only create a new mapping method if and only if the source and target property are properties of a Bean and they themselves are Beans or simple properties.
+i.e. they are not `Collection` or `Map` type properties.
 
 Collection-typed attributes with the same element type will be copied by creating a new instance of the target collection type containing the elements from the source property. For collection-typed attributes with different element types each element will be mapped individually and added to the target collection (see <<mapping-collections>>).
 
@@ -805,7 +824,8 @@ When generating the implementation of a mapping method, MapStruct will apply the
 * If source and target attribute have the same type, the value will be simply copied from source to target. If the attribute is a collection (e.g. a `List`) a copy of the collection will be set into the target attribute.
 * If source and target attribute type differ, check whether there is a another mapping method which has the type of the source attribute as parameter type and the type of the target attribute as return type. If such a method exists it will be invoked in the generated mapping implementation.
 * If no such method exists MapStruct will look whether a built-in conversion for the source and target type of the attribute exists. If this is the case, the generated mapping code will apply this conversion.
-* Otherwise an error will be raised at build time, indicating the non-mappable attribute.
+* If no such method was found MapStruct will try to generate an internal method that will do the mapping between the source and target attributes
+* If MapStruct could not create a name based mapping method an error will be raised at build time, indicating the non-mappable attribute and its path.
 
 [[invoking-other-mappers]]
 === Invoking other mappers
