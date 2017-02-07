@@ -19,6 +19,7 @@
 package org.mapstruct.ap.test.nestedtargetproperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
@@ -36,6 +37,7 @@ import org.mapstruct.ap.test.nestedtargetproperties.source.WaterPlant;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  *
@@ -61,6 +63,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @IssueKey("389")
 @RunWith(AnnotationProcessorTestRunner.class)
 public class NestedTargetPropertiesTest {
+
+    @Rule
+    public GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        ChartEntryToArtist.class,
+        ChartEntryToArtistUpdate.class,
+        FishTankMapper.class
+    );
 
     @Test
     public void shouldMapNestedTarget() {
