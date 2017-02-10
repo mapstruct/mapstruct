@@ -222,6 +222,7 @@ public class PropertyMapping extends ModelElement {
          * Force the created mapping to use update methods when forging a method.
          *
          * @param forceUpdateMethod whether the mapping should force update method for forged mappings
+         * @return the builder for chaining
          */
         public PropertyMappingBuilder forceUpdateMethod(boolean forceUpdateMethod) {
             this.forceUpdateMethod = forceUpdateMethod;
@@ -585,7 +586,8 @@ public class PropertyMapping extends ModelElement {
                 element,
                 method.getContextParameters(),
                 method.getContextProvidedMethods(),
-                getForgedMethodHistory( source, suffix )
+                getForgedMethodHistory( source, suffix ),
+                null
             );
         }
 
@@ -627,32 +629,17 @@ public class PropertyMapping extends ModelElement {
             else {
                 returnType = targetType;
             }
-            ForgedMethod forgedMethod;
-            if ( forgeMethodWithMappingOptions != null ) {
-                forgedMethod = new ForgedMethod(
-                    name,
-                    sourceType,
-                    returnType,
-                    method.getMapperConfiguration(),
-                    method.getExecutable(),
-                    parameters,
-                    method.getContextProvidedMethods(),
-                    forgeMethodWithMappingOptions
-                );
-            }
-            else {
-                forgedMethod = new ForgedMethod(
-                    name,
-                    sourceType,
-                    returnType,
-                    method.getMapperConfiguration(),
-                    method.getExecutable(),
-                    parameters,
-                    method.getContextProvidedMethods(),
-                    getForgedMethodHistory( sourceRHS )
-                );
-            }
-
+            ForgedMethod forgedMethod = new ForgedMethod(
+                name,
+                sourceType,
+                returnType,
+                method.getMapperConfiguration(),
+                method.getExecutable(),
+                parameters,
+                method.getContextProvidedMethods(),
+                getForgedMethodHistory( sourceRHS ),
+                forgeMethodWithMappingOptions
+            );
             return createForgedBeanAssignment( sourceRHS, forgedMethod );
         }
 

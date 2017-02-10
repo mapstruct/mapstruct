@@ -68,7 +68,8 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
                 targetType,
                 shouldUsePropertyNamesInHistory(),
                 sourceRHS.getSourceErrorMessagePart()
-            )
+            ),
+            null
         );
 
         return createForgedBeanAssignment( sourceRHS, forgedMethod );
