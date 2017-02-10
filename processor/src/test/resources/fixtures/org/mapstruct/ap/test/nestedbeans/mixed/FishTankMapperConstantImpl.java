@@ -16,22 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedtargetproperties;
+package org.mapstruct.ap.test.nestedbeans.mixed;
 
 import javax.annotation.Generated;
-import org.mapstruct.ap.test.nestedtargetproperties._target.FishDto;
-import org.mapstruct.ap.test.nestedtargetproperties._target.FishTankDto;
-import org.mapstruct.ap.test.nestedtargetproperties._target.WaterPlantDto;
-import org.mapstruct.ap.test.nestedtargetproperties.source.Fish;
-import org.mapstruct.ap.test.nestedtargetproperties.source.FishTank;
-import org.mapstruct.ap.test.nestedtargetproperties.source.WaterPlant;
+import org.mapstruct.ap.test.nestedbeans.mixed._target.FishDto;
+import org.mapstruct.ap.test.nestedbeans.mixed._target.FishTankDto;
+import org.mapstruct.ap.test.nestedbeans.mixed._target.WaterPlantDto;
+import org.mapstruct.ap.test.nestedbeans.mixed.source.Fish;
+import org.mapstruct.ap.test.nestedbeans.mixed.source.FishTank;
+import org.mapstruct.ap.test.nestedbeans.mixed.source.WaterPlant;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-02-07T21:05:06+0100",
+    date = "2017-02-13T00:35:18+0100",
     comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
 )
-public class FishTankMapperImpl implements FishTankMapper {
+public class FishTankMapperConstantImpl implements FishTankMapperConstant {
 
     @Override
     public FishTankDto map(FishTank source) {
@@ -41,38 +41,23 @@ public class FishTankMapperImpl implements FishTankMapper {
 
         FishTankDto fishTankDto = new FishTankDto();
 
-        fishTankDto.setFish( fishTankToFishDto( source ) );
+        fishTankDto.setFish( fishToFishDto( source.getFish() ) );
         fishTankDto.setPlant( waterPlantToWaterPlantDto( source.getPlant() ) );
+        fishTankDto.setName( source.getName() );
 
         return fishTankDto;
     }
 
-    private String fishTankFishType(FishTank fishTank) {
-        if ( fishTank == null ) {
-            return null;
-        }
-        Fish fish = fishTank.getFish();
+    protected FishDto fishToFishDto(Fish fish) {
         if ( fish == null ) {
-            return null;
-        }
-        String type = fish.getType();
-        if ( type == null ) {
-            return null;
-        }
-        return type;
-    }
-
-    protected FishDto fishTankToFishDto(FishTank fishTank) {
-        if ( fishTank == null ) {
             return null;
         }
 
         FishDto fishDto = new FishDto();
 
-        String type = fishTankFishType( fishTank );
-        if ( type != null ) {
-            fishDto.setKind( type );
-        }
+        fishDto.setKind( fish.getType() );
+
+        fishDto.setName( "Nemo" );
 
         return fishDto;
     }

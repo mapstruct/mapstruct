@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedtargetproperties._target;
+package org.mapstruct.ap.test.nestedbeans.mixed._target;
 
 /**
  *
@@ -26,6 +26,10 @@ public class FishTankDto {
 
     private FishDto fish;
     private WaterPlantDto plant;
+    private String name;
+    private MaterialDto material;
+    private OrnamentDto ornament;
+    private WaterQualityDto quality;
 
     public FishDto getFish() {
         return fish;
@@ -41,6 +45,38 @@ public class FishTankDto {
 
     public void setPlant(WaterPlantDto plant) {
         this.plant = plant;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public MaterialDto getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(MaterialDto material) {
+        this.material = material;
+    }
+
+    public OrnamentDto getOrnament() {
+        return ornament;
+    }
+
+    public void setOrnament(OrnamentDto ornament) {
+        this.ornament = ornament;
+    }
+
+    public WaterQualityDto getQuality() {
+        return quality;
+    }
+
+    public void setQuality(WaterQualityDto quality) {
+        this.quality = quality;
     }
 
 }

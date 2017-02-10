@@ -28,12 +28,6 @@ import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Label;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Song;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
-import org.mapstruct.ap.test.nestedtargetproperties._target.FishDto;
-import org.mapstruct.ap.test.nestedtargetproperties._target.FishTankDto;
-import org.mapstruct.ap.test.nestedtargetproperties._target.WaterPlantDto;
-import org.mapstruct.ap.test.nestedtargetproperties.source.Fish;
-import org.mapstruct.ap.test.nestedtargetproperties.source.FishTank;
-import org.mapstruct.ap.test.nestedtargetproperties.source.WaterPlant;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
@@ -50,16 +44,9 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
     Label.class,
     Studio.class,
     ChartEntry.class,
-    FishDto.class,
-    FishTankDto.class,
-    WaterPlantDto.class,
-    Fish.class,
-    FishTank.class,
-    WaterPlant.class,
     ChartEntryToArtist.class,
-    ChartEntryToArtistUpdate.class,
-    FishTankMapper.class
-})
+    ChartEntryToArtistUpdate.class
+} )
 @IssueKey("389")
 @RunWith(AnnotationProcessorTestRunner.class)
 public class NestedTargetPropertiesTest {
@@ -67,8 +54,7 @@ public class NestedTargetPropertiesTest {
     @Rule
     public GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
         ChartEntryToArtist.class,
-        ChartEntryToArtistUpdate.class,
-        FishTankMapper.class
+        ChartEntryToArtistUpdate.class
     );
 
     @Test
@@ -186,31 +172,4 @@ public class NestedTargetPropertiesTest {
         assertThat( result.getSong().getPositions().get( 0 ) ).isEqualTo( 1 );
 
     }
-
-    @Test
-    public void automappingAndTargetNestingDemonstrator() {
-
-        FishTank source = new FishTank();
-        source.setName( "MyLittleFishTank" );
-        Fish fish = new Fish();
-        fish.setType( "Carp" );
-        WaterPlant waterplant = new WaterPlant();
-        waterplant.setKind( "Water Hyacinth" );
-        source.setFish( fish );
-        source.setPlant( waterplant );
-
-        FishTankDto target = FishTankMapper.INSTANCE.map( source );
-
-        // the nested property generates a method fishTankToFishDto(FishTank fishTank, FishDto mappingTarget)
-        // when name based mapping continues MapStruct searches for a property called `name` in fishTank (type
-        // 'FishTank'. If it is there, it should most cerntainly not be mapped to a mappingTarget of type 'FishDto'
-        assertThat( target.getFish() ).isNotNull();
-        assertThat( target.getFish().getKind() ).isEqualTo( "Carp" );
-        assertThat( target.getFish().getName() ).isNull();
-
-        // automapping takes care of mapping property "waterPlant".
-        assertThat( target.getPlant() ).isNotNull();
-        assertThat( target.getPlant().getKind() ).isEqualTo( "Water Hyacinth" );
-    }
-
 }
