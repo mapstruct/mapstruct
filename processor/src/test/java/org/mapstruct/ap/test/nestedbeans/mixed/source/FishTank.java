@@ -16,25 +16,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedtargetproperties._target;
+package org.mapstruct.ap.test.nestedbeans.mixed.source;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class FishDto {
+public class FishTank {
 
-    private String kind;
-
-    // make sure that mapping on name does not happen based on name mapping
+    private Fish fish;
+    private WaterPlant plant;
     private String name;
+    private MaterialType material;
+    private Interior interior;
+    private WaterQuality quality;
 
-    public String getKind() {
-        return kind;
+    public Fish getFish() {
+        return fish;
     }
 
-    public void setKind(String kind) {
-        this.kind = kind;
+    public void setFish(Fish fish) {
+        this.fish = fish;
+    }
+
+    public WaterPlant getPlant() {
+        return plant;
+    }
+
+    public void setPlant(WaterPlant plant) {
+        this.plant = plant;
     }
 
     public String getName() {
@@ -44,4 +54,29 @@ public class FishDto {
     public void setName(String name) {
         this.name = name;
     }
+
+    public MaterialType getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(MaterialType material) {
+        this.material = material;
+    }
+
+    public Interior getInterior() {
+        return interior;
+    }
+
+    public void setInterior(Interior interior) {
+        this.interior = interior;
+    }
+
+    public WaterQuality getQuality() {
+        return quality;
+    }
+
+    public void setQuality(WaterQuality quality) {
+        this.quality = quality;
+    }
+
 }

@@ -16,31 +16,34 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedtargetproperties.source;
+package org.mapstruct.ap.test.nestedbeans.mixed._target;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class FishTank {
+public class FishTankWithNestedDocumentDto {
 
-    private Fish fish;
-    private WaterPlant plant;
+    private FishDto fish;
+    private WaterPlantDto plant;
     private String name;
+    private MaterialDto material;
+    private OrnamentDto ornament;
+    private WaterQualityWithDocumentDto quality;
 
-    public Fish getFish() {
+    public FishDto getFish() {
         return fish;
     }
 
-    public void setFish(Fish fish) {
+    public void setFish(FishDto fish) {
         this.fish = fish;
     }
 
-    public WaterPlant getPlant() {
+    public WaterPlantDto getPlant() {
         return plant;
     }
 
-    public void setPlant(WaterPlant plant) {
+    public void setPlant(WaterPlantDto plant) {
         this.plant = plant;
     }
 
@@ -50,6 +53,30 @@ public class FishTank {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public MaterialDto getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(MaterialDto material) {
+        this.material = material;
+    }
+
+    public OrnamentDto getOrnament() {
+        return ornament;
+    }
+
+    public void setOrnament(OrnamentDto ornament) {
+        this.ornament = ornament;
+    }
+
+    public WaterQualityWithDocumentDto getQuality() {
+        return quality;
+    }
+
+    public void setQuality(WaterQualityWithDocumentDto quality) {
+        this.quality = quality;
     }
 
 }

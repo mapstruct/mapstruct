@@ -16,23 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedtargetproperties;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ap.test.nestedtargetproperties._target.FishTankDto;
-import org.mapstruct.ap.test.nestedtargetproperties.source.FishTank;
-import org.mapstruct.factory.Mappers;
+package org.mapstruct.ap.test.nestedbeans.mixed.source;
 
 /**
  *
  * @author Sjaak Derksen
  */
-@Mapper
-public interface FishTankMapper {
+public class WaterPlant {
 
-    FishTankMapper INSTANCE = Mappers.getMapper( FishTankMapper.class );
+    private String kind;
 
-    @Mapping(target = "fish.kind", source = "fish.type")
-    FishTankDto map( FishTank source  );
+    public String getKind() {
+        return kind;
+    }
+
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
 }

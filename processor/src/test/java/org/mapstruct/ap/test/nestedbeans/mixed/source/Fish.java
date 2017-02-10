@@ -16,22 +16,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedtargetproperties.source;
+package org.mapstruct.ap.test.nestedbeans.mixed.source;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class WaterPlant {
+public class Fish {
 
-    private String kind;
+    private String type;
 
-    public String getKind() {
-        return kind;
+    public String getType() {
+        return type;
     }
 
-    public void setKind(String kind) {
-        this.kind = kind;
+    public void setType(String type) {
+        this.type = type;
     }
 
 }

@@ -16,13 +16,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedtargetproperties.source;
+package org.mapstruct.ap.test.nestedbeans.mixed._target;
 
 /**
  *
  * @author Sjaak Derksen
  */
-public class Fish {
+public class OrnamentDto {
 
     private String type;
 
