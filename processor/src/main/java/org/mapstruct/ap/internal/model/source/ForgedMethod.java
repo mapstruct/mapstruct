@@ -49,7 +49,6 @@ public class ForgedMethod implements Method {
     private final List<Parameter> contextParameters;
     private final Parameter mappingTargetParameter;
     private final MappingOptions mappingOptions;
-    private final boolean autoMapping;
     private final ParameterProvidedMethods contextProvidedMethods;
 
     /**
@@ -76,66 +75,7 @@ public class ForgedMethod implements Method {
             additionalParameters,
             parameterProvidedMethods,
             null,
-            false,
-            MappingOptions.empty() );
-    }
-
-   /**
-     * Creates a new forged method with the given name with history
-     *
-     * @param name the (unique name) for this method
-     * @param sourceType the source type
-     * @param returnType the return type.
-     * @param mapperConfiguration the mapper configuration
-     * @param positionHintElement element used to for reference to the position in the source file.
-     * @param additionalParameters additional parameters to add to the forged method
-     * @param parameterProvidedMethods additional factory/lifecycle methods to consider that are provided by context
-     *            parameters
-     * @param history a parent forged method if this is a forged method within a forged method
-     */
-    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
-                        ExecutableElement positionHintElement, List<Parameter> additionalParameters,
-                        ParameterProvidedMethods parameterProvidedMethods, ForgedMethodHistory history) {
-        this(
-            name,
-            sourceType,
-            returnType,
-            mapperConfiguration,
-            positionHintElement,
-            additionalParameters,
-            parameterProvidedMethods,
-            history,
-            true,
-            MappingOptions.empty() );
-    }
-
-   /**
-     * Creates a new forged method with the given name with mapping options
-     *
-     * @param name the (unique name) for this method
-     * @param sourceType the source type
-     * @param returnType the return type.
-     * @param mapperConfiguration the mapper configuration
-     * @param positionHintElement element used to for reference to the position in the source file.
-     * @param additionalParameters additional parameters to add to the forged method
-     * @param parameterProvidedMethods additional factory/lifecycle methods to consider that are provided by context
-     *            parameters
-     * @param mappingOptions with mapping options
-     */
-    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
-                        ExecutableElement positionHintElement, List<Parameter> additionalParameters,
-                        ParameterProvidedMethods parameterProvidedMethods, MappingOptions mappingOptions) {
-        this(
-            name,
-            sourceType,
-            returnType,
-            mapperConfiguration,
-            positionHintElement,
-            additionalParameters,
-            parameterProvidedMethods,
-            null,
-            false,
-            mappingOptions );
+            null );
     }
 
      /**
@@ -152,10 +92,10 @@ public class ForgedMethod implements Method {
      * @param history a parent forged method if this is a forged method within a forged method
      * @param mappingOptions the mapping options for this method
      */
-    private ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
+    public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
                         ExecutableElement positionHintElement, List<Parameter> additionalParameters,
                         ParameterProvidedMethods parameterProvidedMethods, ForgedMethodHistory history,
-                        boolean autoMapping, MappingOptions mappingOptions) {
+                        MappingOptions mappingOptions) {
         String sourceParamName = Strings.decapitalize( sourceType.getName() );
         String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
 
@@ -174,8 +114,7 @@ public class ForgedMethod implements Method {
         this.mapperConfiguration = mapperConfiguration;
         this.positionHintElement = positionHintElement;
         this.history = history;
-        this.autoMapping = autoMapping;
-        this.mappingOptions = mappingOptions;
+        this.mappingOptions = mappingOptions == null ? MappingOptions.empty() : mappingOptions;
         this.mappingOptions.initWithParameter( sourceParameter );
     }
 
@@ -191,7 +130,6 @@ public class ForgedMethod implements Method {
         this.mapperConfiguration = forgedMethod.mapperConfiguration;
         this.positionHintElement = forgedMethod.positionHintElement;
         this.history = forgedMethod.history;
-        this.autoMapping = forgedMethod.autoMapping;
 
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
@@ -287,7 +225,7 @@ public class ForgedMethod implements Method {
     }
 
     public boolean isAutoMapping() {
-        return autoMapping;
+        return mappingOptions.getValueMappings().isEmpty();
     }
 
     public void addThrownTypes(List<Type> thrownTypesToAdd) {
