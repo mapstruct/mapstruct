@@ -303,6 +303,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( Entry<PropertyEntry, MappingOptions> entryByTP : optionsByNestedTarget.entrySet() ) {
 
                 Map<Parameter, MappingOptions> optionsBySourceParam = entryByTP.getValue().groupBySourceParameter();
+                boolean forceUpdateMethod = optionsBySourceParam.keySet().size() > 1;
                 for ( Entry<Parameter, MappingOptions> entryByParam : optionsBySourceParam.entrySet() ) {
 
                     SourceReference sourceRef = new SourceReference.BuilderFromProperty()
@@ -319,6 +320,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .existingVariableNames( existingVariableNames )
                         .dependsOn( entryByParam.getValue().collectNestedDependsOn() )
                         .forgeMethodWithMappingOptions( entryByParam.getValue() )
+                        .forceUpdateMethod( forceUpdateMethod )
                         .build();
                     unprocessedSourceParameters.remove( sourceRef.getParameter() );
 

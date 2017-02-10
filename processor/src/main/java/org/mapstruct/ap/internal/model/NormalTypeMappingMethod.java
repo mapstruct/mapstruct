@@ -71,7 +71,7 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
+        int result = super.hashCode();
         result = prime * result + ( ( getResultType() == null ) ? 0 : getResultType().hashCode() );
         return result;
     }
@@ -88,6 +88,10 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
             return false;
         }
         NormalTypeMappingMethod other = (NormalTypeMappingMethod) obj;
+
+        if ( !super.equals( obj ) ) {
+            return false;
+        }
 
         if ( !getResultType().equals( other.getResultType() ) ) {
             return false;

@@ -187,6 +187,7 @@ public class PropertyMapping extends ModelElement {
         private FormattingParameters formattingParameters;
         private SelectionParameters selectionParameters;
         private MappingOptions forgeMethodWithMappingOptions;
+        private boolean forceUpdateMethod;
 
         PropertyMappingBuilder() {
             super( PropertyMappingBuilder.class );
@@ -214,6 +215,16 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder forgeMethodWithMappingOptions(MappingOptions mappingOptions) {
             this.forgeMethodWithMappingOptions = mappingOptions;
+            return this;
+        }
+
+        /**
+         * Force the created mapping to use update methods when forging a method.
+         *
+         * @param forceUpdateMethod whether the mapping should force update method for forged mappings
+         */
+        public PropertyMappingBuilder forceUpdateMethod(boolean forceUpdateMethod) {
+            this.forceUpdateMethod = forceUpdateMethod;
             return this;
         }
 
@@ -607,8 +618,9 @@ public class PropertyMapping extends ModelElement {
             List<Parameter> parameters = new ArrayList<Parameter>( method.getContextParameters() );
             Type returnType;
             // there's only one case for forging a method with mapping options: nested target properties.
-            // they should always forge an update method
-            if ( method.isUpdateMethod() || forgeMethodWithMappingOptions != null ) {
+            // They should forge an update method only if we set the forceUpdateMethod. This is set to true,
+            // because we are forging a Mapping for a method with multiple source parameters.
+            if ( method.isUpdateMethod() || forceUpdateMethod ) {
                 parameters.add( Parameter.forForgedMappingTarget( targetType ) );
                 returnType = ctx.getTypeFactory().createVoidType();
             }

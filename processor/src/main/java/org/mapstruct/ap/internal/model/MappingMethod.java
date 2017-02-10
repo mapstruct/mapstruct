@@ -220,7 +220,6 @@ public abstract class MappingMethod extends ModelElement {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 83 * hash + (this.name != null ? this.name.hashCode() : 0);
         hash = 83 * hash + (this.parameters != null ? this.parameters.hashCode() : 0);
         hash = 83 * hash + (this.returnType != null ? this.returnType.hashCode() : 0);
         return hash;
@@ -237,10 +236,10 @@ public abstract class MappingMethod extends ModelElement {
         if ( getClass() != obj.getClass() ) {
             return false;
         }
+        //Do not add name to the equals check.
+        //Reason: Whenever we forge methods we can reuse mappings if they are the same. However, if we take the name
+        // into consideration, they'll never be the same, because we create safe methods names.
         final MappingMethod other = (MappingMethod) obj;
-        if ( (this.name == null) ? (other.name != null) : !this.name.equals( other.name ) ) {
-            return false;
-        }
         if ( this.parameters != other.parameters &&
             (this.parameters == null || !this.parameters.equals( other.parameters )) ) {
             return false;
