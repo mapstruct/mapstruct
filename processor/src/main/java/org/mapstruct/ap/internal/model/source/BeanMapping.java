@@ -73,7 +73,7 @@ public class BeanMapping {
      *
      * @return bean mapping that needs to be used for Mappings
      */
-    public static BeanMapping forMappingsOnly() {
+    public static BeanMapping forForgedMethods() {
         return new BeanMapping( null, null, ReportingPolicyPrism.IGNORE );
     }
 
