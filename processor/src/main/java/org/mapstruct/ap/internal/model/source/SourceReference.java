@@ -320,6 +320,17 @@ public class SourceReference {
         return new SourceReference( replacement, propertyEntries, isValid );
     }
 
+    public SourceReference pop() {
+        if ( propertyEntries.size() > 1 ) {
+            List<PropertyEntry> newPropertyEntries =
+                new ArrayList<PropertyEntry>( propertyEntries.subList( 1, propertyEntries.size() ) );
+            return new SourceReference( parameter, newPropertyEntries, isValid );
+        }
+        else {
+            return null;
+        }
+    }
+
     @Override
     public String toString() {
 

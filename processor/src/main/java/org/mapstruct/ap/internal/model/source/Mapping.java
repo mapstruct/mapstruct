@@ -202,6 +202,24 @@ public class Mapping {
         this.targetReference = targetReference;
     }
 
+    private Mapping( Mapping mapping, SourceReference sourceReference ) {
+        this.sourceName = Strings.join( sourceReference.getElementNames(), "." );
+        this.constant = mapping.constant;
+        this.javaExpression = mapping.javaExpression;
+        this.targetName = mapping.targetName;
+        this.defaultValue = mapping.defaultValue;
+        this.isIgnored = mapping.isIgnored;
+        this.mirror = mapping.mirror;
+        this.sourceAnnotationValue = mapping.sourceAnnotationValue;
+        this.targetAnnotationValue = mapping.targetAnnotationValue;
+        this.formattingParameters = mapping.formattingParameters;
+        this.selectionParameters = mapping.selectionParameters;
+        this.dependsOnAnnotationValue = mapping.dependsOnAnnotationValue;
+        this.dependsOn = mapping.dependsOn;
+        this.sourceReference = sourceReference;
+        this.targetReference = mapping.targetReference;
+    }
+
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
                                         FormattingMessager messager) {
         if ( mappingPrism.expression().isEmpty() ) {
@@ -328,6 +346,16 @@ public class Mapping {
             TargetReference newTargetReference = targetReference.pop();
             if (newTargetReference != null ) {
                 return new Mapping(this, newTargetReference );
+            }
+        }
+        return null;
+    }
+
+    public Mapping popSourceReference() {
+        if ( sourceReference != null ) {
+            SourceReference newSourceReference = sourceReference.pop();
+            if (newSourceReference != null ) {
+                return new Mapping(this, newSourceReference );
             }
         }
         return null;
