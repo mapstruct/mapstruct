@@ -50,6 +50,7 @@ public class ForgedMethod implements Method {
     private final Parameter mappingTargetParameter;
     private final MappingOptions mappingOptions;
     private final ParameterProvidedMethods contextProvidedMethods;
+    private final boolean forgedNameBased;
 
     /**
      * Creates a new forged method with the given name.
@@ -75,7 +76,8 @@ public class ForgedMethod implements Method {
             additionalParameters,
             parameterProvidedMethods,
             null,
-            null );
+            null,
+            false );
     }
 
      /**
@@ -91,11 +93,12 @@ public class ForgedMethod implements Method {
      *            parameters
      * @param history a parent forged method if this is a forged method within a forged method
      * @param mappingOptions the mapping options for this method
+     * @param forgedNameBased forges a name based (matched) mapping method
      */
     public ForgedMethod(String name, Type sourceType, Type returnType, MapperConfiguration mapperConfiguration,
                         ExecutableElement positionHintElement, List<Parameter> additionalParameters,
                         ParameterProvidedMethods parameterProvidedMethods, ForgedMethodHistory history,
-                        MappingOptions mappingOptions) {
+                        MappingOptions mappingOptions, boolean forgedNameBased) {
         String sourceParamName = Strings.decapitalize( sourceType.getName() );
         String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
 
@@ -116,6 +119,7 @@ public class ForgedMethod implements Method {
         this.history = history;
         this.mappingOptions = mappingOptions == null ? MappingOptions.empty() : mappingOptions;
         this.mappingOptions.initWithParameter( sourceParameter );
+        this.forgedNameBased = forgedNameBased;
     }
 
     /**
@@ -138,6 +142,7 @@ public class ForgedMethod implements Method {
         this.contextProvidedMethods = forgedMethod.contextProvidedMethods;
 
         this.name = name;
+        this.forgedNameBased = forgedMethod.forgedNameBased;
     }
 
     @Override
@@ -224,8 +229,8 @@ public class ForgedMethod implements Method {
         return history;
     }
 
-    public boolean isAutoMapping() {
-        return mappingOptions.getValueMappings().isEmpty();
+    public boolean isForgedNamedBased() {
+        return forgedNameBased;
     }
 
     public void addThrownTypes(List<Type> thrownTypesToAdd) {
