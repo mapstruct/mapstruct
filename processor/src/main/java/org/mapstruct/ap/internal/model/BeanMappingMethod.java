@@ -664,7 +664,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             ReportingPolicyPrism unmappedTargetPolicy = getUnmappedTargetPolicy();
 
             //we handle automapping forged methods differently than the usual source ones. in
-            if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).isAutoMapping() ) {
+            if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).isForgedNamedBased() ) {
 
                 ForgedMethod forgedMethod = (ForgedMethod) this.method;
                 if ( targetProperties.isEmpty() || !unprocessedTargetProperties.isEmpty() ) {

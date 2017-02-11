@@ -188,6 +188,7 @@ public class PropertyMapping extends ModelElement {
         private SelectionParameters selectionParameters;
         private MappingOptions forgeMethodWithMappingOptions;
         private boolean forceUpdateMethod;
+        private boolean forgedNamedBased = true;
 
         PropertyMappingBuilder() {
             super( PropertyMappingBuilder.class );
@@ -226,6 +227,16 @@ public class PropertyMapping extends ModelElement {
          */
         public PropertyMappingBuilder forceUpdateMethod(boolean forceUpdateMethod) {
             this.forceUpdateMethod = forceUpdateMethod;
+            return this;
+        }
+
+        /**
+         * @param forgedNamedBased mapping is based on forging
+         *
+         * @return the builder for chaining
+         */
+        public PropertyMappingBuilder forgedNamedBased(boolean forgedNamedBased) {
+            this.forgedNamedBased = forgedNamedBased;
             return this;
         }
 
@@ -587,7 +598,8 @@ public class PropertyMapping extends ModelElement {
                 method.getContextParameters(),
                 method.getContextProvidedMethods(),
                 getForgedMethodHistory( source, suffix ),
-                null
+                null,
+                forgedNamedBased
             );
         }
 
@@ -638,7 +650,8 @@ public class PropertyMapping extends ModelElement {
                 parameters,
                 method.getContextProvidedMethods(),
                 getForgedMethodHistory( sourceRHS ),
-                forgeMethodWithMappingOptions
+                forgeMethodWithMappingOptions,
+                forgedNamedBased
             );
             return createForgedBeanAssignment( sourceRHS, forgedMethod );
         }
