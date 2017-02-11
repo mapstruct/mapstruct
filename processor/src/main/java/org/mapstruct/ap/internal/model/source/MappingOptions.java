@@ -79,7 +79,14 @@ public class MappingOptions {
      * @return MappingOptions with only regular mappings
      */
     public static MappingOptions forMappingsOnly( Map<String, List<Mapping>> mappings ) {
-        return new MappingOptions( mappings, null, null, null, Collections.<ValueMapping>emptyList(), true );
+        return new MappingOptions(
+            mappings,
+            null,
+            null,
+            BeanMapping.forMappingsOnly(),
+            Collections.<ValueMapping>emptyList(),
+            true
+        );
 
     }
 
