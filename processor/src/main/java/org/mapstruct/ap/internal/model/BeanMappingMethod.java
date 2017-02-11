@@ -46,6 +46,7 @@ import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBui
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.Mapping;
+import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -574,6 +575,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private ReportingPolicyPrism getUnmappedTargetPolicy() {
+            MappingOptions mappingOptions = method.getMappingOptions();
+            if ( mappingOptions.getBeanMapping() != null &&
+                mappingOptions.getBeanMapping().getReportingPolicy() != null ) {
+                return mappingOptions.getBeanMapping().getReportingPolicy();
+            }
+
             MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
 
             return mapperSettings.unmappedTargetPolicy( ctx.getOptions() );
@@ -584,12 +591,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // fetch settings from element to implement
             ReportingPolicyPrism unmappedTargetPolicy = getUnmappedTargetPolicy();
 
-            //we handle forged methods differently than the usual source ones. in
-            if ( method instanceof ForgedMethod ) {
+            //we handle automapping forged methods differently than the usual source ones. in
+            if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).isAutoMapping() ) {
 
                 ForgedMethod forgedMethod = (ForgedMethod) this.method;
-                if ( forgedMethod.isAutoMapping()
-                    && ( targetProperties.isEmpty() || !unprocessedTargetProperties.isEmpty() ) ) {
+                if ( targetProperties.isEmpty() || !unprocessedTargetProperties.isEmpty() ) {
 
                     if ( forgedMethod.getHistory() == null ) {
                         Type sourceType = this.method.getParameters().get( 0 ).getType();

@@ -23,6 +23,7 @@ import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
@@ -35,6 +36,7 @@ public class BeanMapping {
 
     private final SelectionParameters selectionParameters;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
+    private final ReportingPolicyPrism reportingPolicy;
 
     public static BeanMapping fromPrism(BeanMappingPrism beanMapping, ExecutableElement method,
         FormattingMessager messager) {
@@ -61,12 +63,25 @@ public class BeanMapping {
             beanMapping.qualifiedByName(),
             resultTypeIsDefined ? beanMapping.resultType() : null );
 
-        return new BeanMapping(cmp, nullValueMappingStrategy );
+        //TODO Do we want to add the reporting policy to the BeanMapping as well? To give more granular support?
+        return new BeanMapping( cmp, nullValueMappingStrategy, null );
     }
 
-    private BeanMapping( SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms ) {
+    /**
+     * This method should be used to generate BeanMappings for our internal generated Mappings. Like forged update
+     * methods.
+     *
+     * @return bean mapping that needs to be used for Mappings
+     */
+    public static BeanMapping forMappingsOnly() {
+        return new BeanMapping( null, null, ReportingPolicyPrism.IGNORE );
+    }
+
+    private BeanMapping(SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms,
+        ReportingPolicyPrism reportingPolicy) {
         this.selectionParameters = selectionParameters;
         this.nullValueMappingStrategy = nvms;
+        this.reportingPolicy = reportingPolicy;
     }
 
     public SelectionParameters getSelectionParameters() {
@@ -77,4 +92,7 @@ public class BeanMapping {
         return nullValueMappingStrategy;
     }
 
+    public ReportingPolicyPrism getReportingPolicy() {
+        return reportingPolicy;
+    }
 }
