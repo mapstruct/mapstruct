@@ -21,7 +21,6 @@ package org.mapstruct.ap.internal.model.source;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -87,58 +86,6 @@ public class MappingOptions {
     }
 
     /**
-     * The target references are popped. The MappingOptions are keyed on the unique first entries of the
-     * target references.
-     *
-     * So, take
-     *
-     * targetReference 1: propertyEntryX.propertyEntryX1.propertyEntryX1a
-     * targetReference 2: propertyEntryX.propertyEntryX2
-     * targetReference 3: propertyEntryY.propertyY1
-     * targetReference 4: propertyEntryZ
-     *
-     * will be popped and grouped into entries:
-     *
-     * propertyEntryX - MappingOptions ( targetReference1: propertyEntryX1.propertyEntryX1a,
-     *                                   targetReference2: propertyEntryX2 )
-     * propertyEntryY - MappingOptions ( targetReference1: propertyEntryY1 )
-     *
-     * The key will be the former top level property, the MappingOptions will contain the remainders.
-     *
-     * So, 2 cloned new MappingOptions with popped targetReferences. Also Note that the not nested targetReference4
-     * disappeared.
-     *
-     * @return See above
-     */
-    public Map<PropertyEntry, MappingOptions> groupByPoppedTargetReferences() {
-
-        // group all mappings based on the top level name before popping
-        Map<PropertyEntry, List<Mapping>> mappingsKeyedByProperty = new HashMap<PropertyEntry, List<Mapping>>();
-        for ( List<Mapping> mapping : mappings.values() ) {
-            Mapping newMapping = first( mapping ).popTargetReference();
-            if ( newMapping != null ) {
-                // group properties on current name.
-                PropertyEntry property = first( first( mapping ).getTargetReference().getPropertyEntries() );
-                if ( !mappingsKeyedByProperty.containsKey( property ) ) {
-                    mappingsKeyedByProperty.put( property, new ArrayList<Mapping>() );
-                }
-                mappingsKeyedByProperty.get( property ).add( newMapping );
-            }
-        }
-
-        // now group them into mapping options
-        Map<PropertyEntry, MappingOptions> result = new HashMap<PropertyEntry, MappingOptions>();
-        for (  Map.Entry<PropertyEntry, List<Mapping>> mappingKeyedByProperty : mappingsKeyedByProperty.entrySet() ) {
-            Map<String, List<Mapping>> newEntries = new HashMap<String, List<Mapping>>();
-            for ( Mapping newEntry : mappingKeyedByProperty.getValue() ) {
-                newEntries.put( newEntry.getTargetName(), Arrays.asList( newEntry ) );
-            }
-            result.put( mappingKeyedByProperty.getKey(), forMappingsOnly( newEntries ) );
-        }
-        return result;
-    }
-
-    /**
      * Check there are nested target references for this mapping options.
      *
      * @return boolean, true if there are nested target references
@@ -168,48 +115,6 @@ public class MappingOptions {
             }
         }
         return nestedDependsOn;
-    }
-
-    /**
-     * Splits the MappingOptions into possibly more MappingOptions based on each source method parameter type.
-     *
-     * Note: this method is used for forging nested update methods. For that purpose, the same method with all
-     *       joined mappings should be generated. See also: NestedTargetPropertiesTest#shouldMapNestedComposedTarget
-     *
-     * @return the split mapping options.
-     *
-     */
-    public Map<Parameter, MappingOptions> groupBySourceParameter() {
-
-        Map<Parameter, List<Mapping>> mappingsKeyedByParameterType = new HashMap<Parameter, List<Mapping>>();
-        for ( List<Mapping> mappingList : mappings.values() ) {
-            for ( Mapping mapping : mappingList ) {
-                if ( mapping.getSourceReference() != null && mapping.getSourceReference().isValid() ) {
-                    Parameter parameter = mapping.getSourceReference().getParameter();
-                    if ( !mappingsKeyedByParameterType.containsKey( parameter ) ) {
-                        mappingsKeyedByParameterType.put( parameter, new ArrayList<Mapping>() );
-                    }
-                    mappingsKeyedByParameterType.get( parameter ).add( mapping );
-                }
-            }
-        }
-
-        Map<Parameter, MappingOptions> result = new HashMap<Parameter, MappingOptions>();
-        for (  Map.Entry<Parameter, List<Mapping>> entry : mappingsKeyedByParameterType.entrySet() ) {
-            result.put( entry.getKey(), MappingOptions.forMappingsOnly( groupByTargetName( entry.getValue() ) ) );
-        }
-        return result;
-    }
-
-    private Map<String, List<Mapping>> groupByTargetName( List<Mapping> mappingList ) {
-        Map<String, List<Mapping>> result = new HashMap<String, List<Mapping>>();
-        for ( Mapping mapping : mappingList ) {
-            if ( !result.containsKey( mapping.getTargetName() ) ) {
-                result.put( mapping.getTargetName(), new ArrayList<Mapping>() );
-            }
-            result.get( mapping.getTargetName() ).add( mapping );
-        }
-        return result;
     }
 
     /**
