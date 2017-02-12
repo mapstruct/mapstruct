@@ -46,7 +46,6 @@ import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBui
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.Mapping;
-import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -298,38 +297,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
         private void handleDefinedNestedTargetMapping(Set<String> handledTargets) {
 
-            Map<PropertyEntry, MappingOptions> optionsByNestedTarget =
-                method.getMappingOptions().groupByPoppedTargetReferences();
-            for ( Entry<PropertyEntry, MappingOptions> entryByTP : optionsByNestedTarget.entrySet() ) {
+            NestedTargetPropertyMappingHolder holder = new NestedTargetPropertyMappingHolder.Builder()
+                .mappingContext( ctx )
+                .method( method )
+                .existingVariableNames( existingVariableNames )
+                .build();
 
-                Map<Parameter, MappingOptions> optionsBySourceParam = entryByTP.getValue().groupBySourceParameter();
-                boolean forceUpdateMethod = optionsBySourceParam.keySet().size() > 1;
-                for ( Entry<Parameter, MappingOptions> entryByParam : optionsBySourceParam.entrySet() ) {
-
-                    SourceReference sourceRef = new SourceReference.BuilderFromProperty()
-                        .sourceParameter( entryByParam.getKey() )
-                        .name( entryByTP.getKey().getName() )
-                        .build();
-
-                    PropertyMapping propertyMapping = new PropertyMappingBuilder()
-                        .mappingContext( ctx )
-                        .sourceMethod( method )
-                        .targetProperty( entryByTP.getKey() )
-                        .targetPropertyName( entryByTP.getKey().getName() )
-                        .sourceReference( sourceRef )
-                        .existingVariableNames( existingVariableNames )
-                        .dependsOn( entryByParam.getValue().collectNestedDependsOn() )
-                        .forgeMethodWithMappingOptions( entryByParam.getValue() )
-                        .forceUpdateMethod( forceUpdateMethod )
-                        .build();
-                    unprocessedSourceParameters.remove( sourceRef.getParameter() );
-
-                    if ( propertyMapping != null ) {
-                        propertyMappings.add( propertyMapping );
-                    }
-                }
-                handledTargets.add( entryByTP.getKey().getName() );
-            }
+            unprocessedSourceParameters.removeAll( holder.getProcessedSourceParameters() );
+            propertyMappings.addAll( holder.getPropertyMappings() );
+            handledTargets.addAll( holder.getHandledTargets() );
 
         }
 
