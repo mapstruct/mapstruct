@@ -82,7 +82,10 @@ public class AutomappingAndNestedTest {
 
     @Rule
     public GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
-        FishTankMapperConstant.class
+        FishTankMapper.class,
+        FishTankMapperConstant.class,
+        FishTankMapperExpression.class,
+        FishTankMapperWithDocument.class
     );
 
     @Test
