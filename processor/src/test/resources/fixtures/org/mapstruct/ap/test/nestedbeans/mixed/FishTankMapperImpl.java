@@ -39,8 +39,8 @@ import org.mapstruct.ap.test.nestedbeans.mixed.source.WaterQualityReport;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-02-12T21:48:04+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_45 (Oracle Corporation)"
+    date = "2017-02-19T16:25:02+0100",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
 )
 public class FishTankMapperImpl implements FishTankMapper {
 
@@ -76,7 +76,7 @@ public class FishTankMapperImpl implements FishTankMapper {
         fishTankDto.setMaterial( fishTankToMaterialDto( source ) );
         fishTankDto.setFish( fishToFishDto( source.getFish() ) );
         fishTankDto.setQuality( waterQualityToWaterQualityDto( source.getQuality() ) );
-        Ornament ornament = sourceInteriorOrnament1( source );
+        Ornament ornament = sourceInteriorOrnament( source );
         if ( ornament != null ) {
             fishTankDto.setOrnament( ornamentToOrnamentDto( ornament ) );
         }
@@ -181,7 +181,6 @@ public class FishTankMapperImpl implements FishTankMapper {
     }
 
     private Ornament sourceInteriorOrnament(FishTank fishTank) {
-
         if ( fishTank == null ) {
             return null;
         }
@@ -220,22 +219,6 @@ public class FishTankMapperImpl implements FishTankMapper {
         return waterPlantDto;
     }
 
-    private Ornament sourceInteriorOrnament1(FishTank fishTank) {
-
-        if ( fishTank == null ) {
-            return null;
-        }
-        Interior interior = fishTank.getInterior();
-        if ( interior == null ) {
-            return null;
-        }
-        Ornament ornament = interior.getOrnament();
-        if ( ornament == null ) {
-            return null;
-        }
-        return ornament;
-    }
-
     protected Fish fishDtoToFish(FishDto fishDto) {
         if ( fishDto == null ) {
             return null;
@@ -249,7 +232,6 @@ public class FishTankMapperImpl implements FishTankMapper {
     }
 
     private String waterQualityReportDtoOrganisationName(WaterQualityReportDto waterQualityReportDto) {
-
         if ( waterQualityReportDto == null ) {
             return null;
         }
@@ -317,7 +299,6 @@ public class FishTankMapperImpl implements FishTankMapper {
     }
 
     private MaterialTypeDto sourceMaterialMaterialType(FishTankDto fishTankDto) {
-
         if ( fishTankDto == null ) {
             return null;
         }
