@@ -38,6 +38,13 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
  * @author Andreas Gudian
  */
 public class MappingOptions {
+    private static final MappingOptions EMPTY = new MappingOptions( Collections.<String, List<Mapping>>emptyMap(),
+        null,
+        null,
+        null,
+        Collections.<ValueMapping>emptyList(),
+        false
+    );
     private Map<String, List<Mapping>> mappings;
     private IterableMapping iterableMapping;
     private MapMapping mapMapping;
@@ -62,8 +69,7 @@ public class MappingOptions {
      * @return empty mapping options
      */
     public static MappingOptions empty() {
-        return new MappingOptions( Collections.<String, List<Mapping>>emptyMap(), null, null, null,
-            Collections.<ValueMapping>emptyList(), false );
+        return EMPTY;
     }
 
     /**
