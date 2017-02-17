@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.nestedsourceproperties._target.AdderUsageObserver;
@@ -40,6 +41,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * @author Sjaak Derksen
@@ -49,9 +51,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @RunWith(AnnotationProcessorTestRunner.class)
 public class NestedSourcePropertiesTest {
 
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource();
+
     @Test
     @WithClasses({ ArtistToChartEntry.class })
     public void shouldGenerateImplementationForPropertyNamesOnly() {
+        generatedSource.addComparisonToFixtureFor( ArtistToChartEntry.class );
 
         Studio studio = new Studio();
         studio.setName( "Abbey Road" );

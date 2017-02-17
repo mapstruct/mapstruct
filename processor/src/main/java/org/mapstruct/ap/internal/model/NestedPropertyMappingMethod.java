@@ -118,9 +118,10 @@ public class NestedPropertyMappingMethod extends MappingMethod {
         if ( getClass() != obj.getClass() ) {
             return false;
         }
+
         NestedPropertyMappingMethod other = (NestedPropertyMappingMethod) obj;
 
-        if ( !getReturnType().equals( other.getReturnType() ) ) {
+        if ( !super.equals( obj ) ) {
             return false;
         }
 
@@ -134,7 +135,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             }
         }
 
-        if ( !getName().equals( other.getName() ) ) {
+        if ( !safePropertyEntries.equals( other.safePropertyEntries ) ) {
             return false;
         }
 
@@ -176,6 +177,40 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             return type;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( !( o instanceof SafePropertyEntry ) ) {
+                return false;
+            }
+
+            SafePropertyEntry that = (SafePropertyEntry) o;
+
+            if ( readAccessorName != null ? !readAccessorName.equals( that.readAccessorName ) :
+                that.readAccessorName != null ) {
+                return false;
+            }
+
+            if ( presenceCheckerName != null ? !presenceCheckerName.equals( that.presenceCheckerName ) :
+                that.presenceCheckerName != null ) {
+                return false;
+            }
+
+            if ( type != null ? !type.equals( that.type ) : that.type != null ) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = readAccessorName != null ? readAccessorName.hashCode() : 0;
+            result = 31 * result + ( presenceCheckerName != null ? presenceCheckerName.hashCode() : 0 );
+            result = 31 * result + ( type != null ? type.hashCode() : 0 );
+            return result;
+        }
     }
 }
 
