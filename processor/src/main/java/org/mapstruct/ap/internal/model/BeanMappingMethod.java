@@ -147,6 +147,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 applyParameterNameBasedMapping();
             }
 
+            // Process the unprocessed defined targets
             handleUnprocessedDefinedTargets();
 
             // report errors on unmapped properties
@@ -220,11 +221,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         /**
-         * If there were nested defined targets that have not been handled. The we need to process them at he end.
+         * If there were nested defined targets that have not been handled. Then we need to process them at the end.
          */
         private void handleUnprocessedDefinedTargets() {
             Iterator<Entry<String, List<Mapping>>> iterator = unprocessedDefinedTargets.entrySet().iterator();
 
+            // For each of the unprocessed defined targets forge a mapping for each of the
+            // method source parameters. The generated mappings are not going to use forged name based mappings.
             while ( iterator.hasNext() ) {
                 Entry<String, List<Mapping>> entry = iterator.next();
                 String propertyName = entry.getKey();
@@ -315,6 +318,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             boolean errorOccurred = false;
             Set<String> handledTargets = new HashSet<String>();
 
+            // first we have to handle nested target mappings
             if ( method.getMappingOptions().hasNestedTargetReferences() ) {
                 handleDefinedNestedTargetMapping( handledTargets );
             }
@@ -355,6 +359,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             unprocessedSourceParameters.removeAll( holder.getProcessedSourceParameters() );
             propertyMappings.addAll( holder.getPropertyMappings() );
             handledTargets.addAll( holder.getHandledTargets() );
+            // Store all the unprocessed defined targets.
             for ( Entry<PropertyEntry, List<Mapping>> entry : holder.getUnprocessedDefinedTarget().entrySet() ) {
                 if ( entry.getValue().isEmpty() ) {
                     continue;
@@ -424,6 +429,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             // its a constant
+            // if we have an unprocessed target that means that it most probably is nested and we should
+            // not generated any mapping for it now. Eventually it will be done though
             else if ( mapping.getConstant() != null && !unprocessedDefinedTargets.containsKey( propertyName ) ) {
 
                 propertyMapping = new ConstantMappingBuilder()
@@ -441,6 +448,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             // its an expression
+            // if we have an unprocessed target that means that it most probably is nested and we should
+            // not generated any mapping for it now. Eventually it will be done though
             else if ( mapping.getJavaExpression() != null && !unprocessedDefinedTargets.containsKey( propertyName ) ) {
 
                 propertyMapping = new JavaExpressionMappingBuilder()

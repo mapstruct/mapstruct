@@ -128,28 +128,39 @@ public class NestedTargetPropertyMappingHolder {
             Set<String> handledTargets = new HashSet<String>();
             List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
 
+            // first we group by the first property in the target properties and for each of those
+            // properties we get the new mappings as if the first property did not exist.
             GroupedTargetReferences groupedByTP = groupByTargetReferences( method.getMappingOptions() );
             Map<PropertyEntry, List<Mapping>> unprocessedDefinedTarget = new HashMap<PropertyEntry, List<Mapping>>();
 
             for ( Map.Entry<PropertyEntry, List<Mapping>> entryByTP : groupedByTP.poppedTargetReferences.entrySet() ) {
                 PropertyEntry targetProperty = entryByTP.getKey();
+                //Now we are grouping the already popped mappings by the source parameter(s) of the method
                 GroupedBySourceParameters groupedBySourceParam = groupBySourceParameter(
                     entryByTP.getValue(),
                     groupedByTP.singleTargetReferences.get( targetProperty )
                 );
                 boolean forceUpdateMethod = groupedBySourceParam.groupedBySourceParameter.keySet().size() > 1;
 
+                // All not processed mappings that should have been applied to all are part of the unprocessed
+                // defined targets
                 unprocessedDefinedTarget.put( targetProperty, groupedBySourceParam.notProcessedAppliesToAll );
                 for ( Map.Entry<Parameter, List<Mapping>> entryByParam : groupedBySourceParam
                     .groupedBySourceParameter.entrySet() ) {
 
                     Parameter sourceParameter = entryByParam.getKey();
 
+                    // Lastly we need to group by the source references. This will allow us to actually create
+                    // the next mappings by popping source elements
                     GroupedSourceReferences groupedSourceReferences = groupByPoppedSourceReferences(
                         entryByParam.getValue(),
                         groupedByTP.singleTargetReferences.get( targetProperty )
                     );
 
+                    // For all the groupedBySourceReferences we need to create property mappings
+                    // from the Mappings and not restrict on the defined mappings (allow to forge name based mapping)
+                    // if we have composite methods i.e. more then 2 parameters then we have to force a creation
+                    // of an update method in our generation
                     for ( Map.Entry<PropertyEntry, List<Mapping>> entryBySP : groupedSourceReferences
                         .groupedBySourceReferences
                         .entrySet() ) {
@@ -180,6 +191,9 @@ public class NestedTargetPropertyMappingHolder {
                         handledTargets.add( entryByTP.getKey().getName() );
                     }
 
+                    // For the nonNested mappings (assymetric) Mappings we also forge mappings
+                    // However, here we do not forge name based mappings and we only
+                    // do update on the defined Mappings.
                     if ( !groupedSourceReferences.nonNested.isEmpty() ) {
                         MappingOptions nonNestedOptions = MappingOptions.forMappingsOnly(
                             groupByTargetName( groupedSourceReferences.nonNested ),
@@ -220,24 +234,43 @@ public class NestedTargetPropertyMappingHolder {
          * The target references are popped. The {@code List<}{@link Mapping}{@code >} are keyed on the unique first
          * entries of the target references.
          *
-         * So, take
+         * <p>
+         * <p>
+         * Group all target references by their first property and for each such mapping use a new one where the
+         * first property will be removed from it. If a {@link org.mapstruct.Mapping} cannot be popped, i.e. it
+         * contains a non nested target property just keep it as is (this is usually needed to control how an
+         * intermediary level can be mapped).
          *
-         * targetReference 1: propertyEntryX.propertyEntryX1.propertyEntryX1a
-         * targetReference 2: propertyEntryX.propertyEntryX2
-         * targetReference 3: propertyEntryY.propertyY1
-         * targetReference 4: propertyEntryZ
+         * <p>
+         * <p>
+         * We start with the following mappings:
          *
-         * will be popped and grouped into entries:
+         * <pre>
+         * {@literal @}Mapping(target = "fish.kind", source = "fish.type"),
+         * {@literal @}Mapping(target = "fish.name", ignore = true),
+         * {@literal @}Mapping(target = "ornament", ignore = true ),
+         * {@literal @}Mapping(target = "material.materialType", source = "material"),
+         * {@literal @}Mapping(target = "document", source = "report"),
+         * {@literal @}Mapping(target = "document.organisation.name", source = "report.organisationName")
+         * </pre>
          *
-         * propertyEntryX - List ( targetReference1: propertyEntryX1.propertyEntryX1a,
-         * targetReference2: propertyEntryX2 )
-         * propertyEntryY - List ( targetReference1: propertyEntryY1 )
+         * We will get this:
          *
-         * The key will be the former top level property, the MappingOptions will contain the remainders.
+         * <pre>
+         * // All target references are popped and grouped by their first property
+         * GroupedTargetReferences.poppedTargetReferences {
+         *     fish:     {@literal @}Mapping(target = "kind", source = "fish.type"),
+         *               {@literal @}Mapping(target = "name", ignore = true);
+         *     material: {@literal @}Mapping(target = "materialType", source = "material");
+         *     document: {@literal @}Mapping(target = "organization.name", source = "report.organizationName");
+         * }
          *
-         * If the target reference cannot be popped it is stored in a different map. That looks like:
-         *
-         * propertyEntryZ - List ( targetReference4: propertyEntryZ )
+         * //This references are not nested and we they stay as they were
+         * GroupedTargetReferences.singleTargetReferences {
+         *     document: {@literal @}Mapping(target = "document", source = "report");
+         *     ornament: {@literal @}Mapping(target = "ornament", ignore = true );
+         * }
+         * </pre>
          *
          * @param mappingOptions that need to be used to create the {@link GroupedTargetReferences}
          *
@@ -274,6 +307,78 @@ public class NestedTargetPropertyMappingHolder {
          *
          * Note: this method is used for forging nested update methods. For that purpose, the same method with all
          * joined mappings should be generated. See also: NestedTargetPropertiesTest#shouldMapNestedComposedTarget
+         *
+         * Mappings:
+         * <pre>
+         * {@literal @}Mapping(target = "organization.name", source = "report.organizationName");
+         * </pre>
+         *
+         * singleTargetReferences:
+         * <pre>
+         * {@literal @}Mapping(target = "document", source = "report");
+         * </pre>
+         *
+         * We assume that all properties belong to the same source parameter (fish). We are getting this in return:
+         *
+         * <pre>
+         * GroupedBySourceParameters.groupedBySourceParameter {
+         *     fish: {@literal @}Mapping(target = "organization.name", source = "report.organizationName");
+         * }
+         *
+         * GroupedBySourceParameters.notProcessedAppliesToAll {} //empty
+         *
+         * </pre>
+         *
+         * Notice how the {@code singleTargetReferences} are missing. They are used for situations when there are
+         * mappings without source. Such as:
+         * Mappings:
+         * <pre>
+         * {@literal @}Mapping(target = "organization.name", expression="java(\"Dunno\")");
+         * </pre>
+         *
+         * singleTargetReferences:
+         * <pre>
+         * {@literal @}Mapping(target = "document", source = "report");
+         * </pre>
+         *
+         * The mappings have no source reference so we cannot extract the source parameter from them. When mappings
+         * have no source properties then we apply those to all of them. In this case we have a single target
+         * reference that can provide a source parameter. So we will get:
+         * <pre>
+         * GroupedBySourceParameters.groupedBySourceParameter {
+         *     fish: {@literal @}Mapping(target = "organization.name", expression="java(\"Dunno\")");
+         * }
+         *
+         * GroupedBySourceParameters.notProcessedAppliesToAll {} //empty
+         * </pre>
+         *
+         * <p>
+         * See also how the {@code singleTargetReferences} are not part of the mappings. They are used <b>only</b> to
+         * make sure that their source parameter is taken into consideration in the next step.
+         *
+         * <p>
+         * The {@code notProcessedAppliesToAll} contains all Mappings that should have been applied to all but have not
+         * because there were no other mappings that we could have used to pass them along. These
+         * {@link org.mapstruct.Mapping}(s) are used later on for normal mapping.
+         *
+         * <p>
+         * If we only had:
+         * <pre>
+         * {@literal @}Mapping(target = "document", source = "report");
+         * {@literal @}Mapping(target = "ornament", ignore = true );
+         * </pre>
+         *
+         * Then we only would have had:
+         * <pre>
+         * GroupedBySourceParameters.notProcessedAppliesToAll {
+         * {@literal @}Mapping(target = "document", source = "report");
+         * {@literal @}Mapping(target = "ornament", ignore = true );
+         * }
+         * </pre>
+         *
+         * These mappings will be part of the {@code GroupedBySourceParameters.notProcessedAppliesToAll} and are
+         * used to be passed to the normal defined mapping.
+         *
          *
          * @param mappings that mappings that need to be used for the grouping
          * @param singleTargetReferences a List containing all non-nested mappings for the same grouped target
@@ -317,6 +422,26 @@ public class NestedTargetPropertyMappingHolder {
         /**
          * Creates a nested grouping by popping the source mappings. See the description of the class to see what is
          * generated.
+         *
+         * Mappings:
+         * <pre>
+         * {@literal @}Mapping(target = "organization.name", source = "report.organizationName");
+         * </pre>
+         *
+         * singleTargetReferences:
+         * <pre>
+         * {@literal @}Mapping(target = "document", source = "report");
+         * </pre>
+         *
+         * And we get:
+         *
+         * <pre>
+         * GroupedSourceReferences.groupedBySourceReferences {
+         *     report: {@literal @}Mapping(target = "organization.name", source = "organizationName");
+         * }
+         * </pre>
+         *
+         *
          *
          * @param mappings the list of {@link Mapping} that needs to be used for grouping on popped source references
          * @param singleTargetReferences the single target references that match the source mappings
@@ -484,7 +609,7 @@ public class NestedTargetPropertyMappingHolder {
      * sourceReference 5: propertyEntryZ2
      * </pre>
      *
-     * <br />
+     * <p>
      * If Mappings that should apply to all were found, but no grouping was found, they will be located in a
      * different list:
      */
