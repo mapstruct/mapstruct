@@ -78,3 +78,10 @@ MapStruct continues to generate mapping code here. That mapping it self can be g
 This even works for constants and expression. Which is shown in the final example: `@Mapping(target="quality.document.organisation.name", constant="NoIdeaInc")`.
 
 MapStruct will perform a null check on each nested property in the source.
+
+[TIP]
+====
+Instead of configuring everything via the parent method we encourage users to explicitly write their own nested methods.
+This puts the configuration of the nested mapping into one place (method) where it can be reused from several methods in the upper level,
+instead of re-configuring the same things on all of those upper methods.
+====
