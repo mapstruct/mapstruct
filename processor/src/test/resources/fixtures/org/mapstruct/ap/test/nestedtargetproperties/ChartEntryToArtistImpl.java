@@ -229,7 +229,6 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
     }
 
     private String chartSongTitle(Chart chart) {
-
         if ( chart == null ) {
             return null;
         }
@@ -245,7 +244,6 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
     }
 
     private String chartSongArtistLabelStudioCity(Chart chart) {
-
         if ( chart == null ) {
             return null;
         }
@@ -273,7 +271,6 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
     }
 
     private String chartSongArtistLabelStudioName(Chart chart) {
-
         if ( chart == null ) {
             return null;
         }
@@ -301,7 +298,6 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
     }
 
     private String chartSongArtistName(Chart chart) {
-
         if ( chart == null ) {
             return null;
         }
@@ -321,7 +317,6 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
     }
 
     private List<Integer> chartSongPositions(Chart chart) {
-
         if ( chart == null ) {
             return null;
         }

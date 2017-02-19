@@ -48,7 +48,6 @@ public class FishTankMapperImpl implements FishTankMapper {
     }
 
     private String fishTankFishType(FishTank fishTank) {
-
         if ( fishTank == null ) {
             return null;
         }
