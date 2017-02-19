@@ -447,12 +447,26 @@ Specifying the parameter in which the property resides is mandatory when using t
 Mapping methods with several source parameters will return `null` in case all the source parameters are `null`. Otherwise the target object will be instantiated and all properties from the provided parameters will be propagated.
 ====
 
-[TIP]
+MapStruct also offers the possibility to directly refer to a source parameter. 
+
+.Mapping method directly referring to a source parameter
 ====
-Suppose the signature was: `DeliveryAddressDto personAndAddressToDeliveryAddressDto(Person person, Integer hn)`.
-Then by referring to the method parameter `hn` instead of a property, a non bean type (like the `java.lang.Integer`) can be mapped directly to a target property:
-@Mapping(source = "hn", target = "houseNumber")
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface AddressMapper {
+
+    @Mappings({
+        @Mapping(source = "person.description", target = "description"),
+        @Mapping(source = "hn", target = "houseNumber")
+    })
+    DeliveryAddressDto personAndAddressToDeliveryAddressDto(Person person, Integer hn);
+}
+----
 ====
+
+In this case the source parameter is directly mapped into the target as the example above demonstrates. The parameter `hn`, a non bean type (in this case `java.lang.Integer`) is mapped to `houseNumber`.
 
 [[updating-bean-instances]]
 === Updating existing bean instances
