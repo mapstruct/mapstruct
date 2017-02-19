@@ -105,7 +105,6 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
     }
 
     private String songArtistLabelStudioCity(Song song) {
-
         if ( song == null ) {
             return null;
         }
@@ -129,7 +128,6 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
     }
 
     private String songArtistLabelStudioName(Song song) {
-
         if ( song == null ) {
             return null;
         }
@@ -153,7 +151,6 @@ public class ArtistToChartEntryImpl implements ArtistToChartEntry {
     }
 
     private String songArtistName(Song song) {
-
         if ( song == null ) {
             return null;
         }
