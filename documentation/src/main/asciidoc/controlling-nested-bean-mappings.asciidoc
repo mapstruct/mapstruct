@@ -1,0 +1,80 @@
+[[controlling-nested-bean-mappings]]
+=== Controlling nested bean mappings
+
+As explained above, MapStruct will generate a method based on the name of the source and target property. Unfortunately, in many occasions these names do not match.
+
+The ‘.’ notation in an `@Mapping` source or target type can be used to control how properties should be mapped when names do not match.
+There is an elaborate https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-nested-bean-mappings[example] in our examples repository to explain how this problem can be overcome.
+
+In the simplest scenario there’s a property on a nested level that needs to be corrected.
+Take for instance a property ‘fish’ which has an identical name in `FishTankDto` and `FishTank` (`fish`).
+For this property MapStruct automatically generates a mapping: `protected FishDto fishToFishDto(Fish fish)`.
+MapStruct cannot be aware of the deviating properties `kind` and `type`.
+Therefore this can be addressed in a `@Mapping(target = "fish.kind", source = "fish.type")`.
+This tells MapStruct to deviate from looking for a name `kind` at this level and map it to `type`.
+
+.Mapper controlling nested beans mappings I
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface FishTankMapper {
+
+    @Mappings({
+        @Mapping(target = "fish.kind", source = "fish.type"),
+        @Mapping(target = "fish.name", ignore = true),
+        @Mapping(target = "ornament", source = "interior.ornament"),
+        @Mapping(target = "material.materialType", source = "material"),
+        @Mapping(target = "quality.report.organisation.name", source = "quality.report.organisationName")
+    })
+    FishTankDto map( FishTank source );
+}
+----
+====
+
+The same constructs can be used to ignore certain properties at a nesting level, as is demonstrated in the second `@Mapping` rule.
+
+MapStruct can even be used to “cherry pick” properties when source and target do not share the same nesting level (the same number of properties).
+This can be done in the source – and in the target type. This is demonstrated in the next 2 rules: `@Mapping(target = "ornament", source = "interior.ornament")` and `@Mapping(target = "material.materialType", source = "material")`.
+
+The latter can even be done when mappings first share a common base.
+For example: all properties that share the same name of `Quality` are mapped to `QualityDto`.
+Likewise, all properties of `Report` are mapped to `ReportDto`, with one exception: `organisation` in `OrganisationDto` is left empty (since there is no organization at the source level).
+Only the `name` is populated with the `organisationName` from `Report`.
+This is demonstrated in `@Mapping(target = "quality.report.organisation.name", source = "quality.report.organisationName")`
+
+Coming back to the original example: what if `kind` and `type` would be beans themselves?
+In that case MapStruct would again generate a method continuing to map.
+Such is demonstrated in the next example:
+
+
+.Mapper controlling nested beans mappings II
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface FishTankMapperWithDocument {
+
+    @Mappings({
+        @Mapping(target = "fish.kind", source = "fish.type"),
+        @Mapping(target = "fish.name", expression = "java(\"Jaws\")"),
+        @Mapping(target = "plant", ignore = true ),
+        @Mapping(target = "ornament", ignore = true ),
+        @Mapping(target = "material", ignore = true),
+        @Mapping(target = "quality.document", source = "quality.report"),
+        @Mapping(target = "quality.document.organisation.name", constant = "NoIdeaInc" )
+    })
+    FishTankWithNestedDocumentDto map( FishTank source );
+
+}
+----
+====
+
+Note what happens in `@Mapping(target = "quality.document", source = "quality.report")`.
+`DocumentDto` does not exist as such on the target side. It is mapped from `Report`.
+MapStruct continues to generate mapping code here. That mapping it self can be guided towards another name.
+This even works for constants and expression. Which is shown in the final example: `@Mapping(target = "quality.document.organisation.name", constant = "NoIdeaInc" )`.
+
+MapStruct will perform a null check on each nested property in the source.

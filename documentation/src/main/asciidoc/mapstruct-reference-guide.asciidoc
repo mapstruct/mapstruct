@@ -447,35 +447,11 @@ Specifying the parameter in which the property resides is mandatory when using t
 Mapping methods with several source parameters will return `null` in case all the source parameters are `null`. Otherwise the target object will be instantiated and all properties from the provided parameters will be propagated.
 ====
 
-[[nested-mappings]]
-=== Nested mappings
-
-MapStruct will handle nested mappings (in source), by means of the `.` notation:
-
-.Mapping method with several source parameters
-====
-[source, java, linenums]
-[subs="verbatim,attributes"]
-----
-@Mappings({
-    @Mapping(target = "chartName", source = "chart.name"),
-    @Mapping(target = "title", source = "song.title"),
-    @Mapping(target = "artistName", source = "song.artist.name"),
-    @Mapping(target = "recordedAt", source = "song.artist.label.studio.name"),
-    @Mapping(target = "city", source = "song.artist.label.studio.city"),
-    @Mapping(target = "position", source = "position")
-})
-ChartEntry map(Chart chart, Song song, Integer position);
-----
-====
-
-Note: the parameter name (`chart`, `song`, `position`) is required, since there are several source parameters in the mapping. If there's only one source parameter, the parameter name can be ommited.
-
-MapStruct will perform a null check on each nested property in the source.
-
 [TIP]
 ====
-Also non java bean source parameters (like the `java.lang.Integer`) can be mapped in this fashion.
+Suppose the signature was: `DeliveryAddressDto personAndAddressToDeliveryAddressDto(Person person, Integer hn)`.
+Then by referring to the method parameter `hn` instead of a property, a non bean type (like the `java.lang.Integer`) can be mapped directly to a target property:
+@Mapping(source = "hn", target = "houseNumber")
 ====
 
 [[updating-bean-instances]]
@@ -806,6 +782,8 @@ When generating the implementation of a mapping method, MapStruct will apply the
 * If source and target attribute type differ, check whether there is a another mapping method which has the type of the source attribute as parameter type and the type of the target attribute as return type. If such a method exists it will be invoked in the generated mapping implementation.
 * If no such method exists MapStruct will look whether a built-in conversion for the source and target type of the attribute exists. If this is the case, the generated mapping code will apply this conversion.
 * Otherwise an error will be raised at build time, indicating the non-mappable attribute.
+
+include::controlling-nested-bean-mappings.asciidoc[]
 
 [[invoking-other-mappers]]
 === Invoking other mappers
