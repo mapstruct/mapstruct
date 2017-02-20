@@ -105,7 +105,9 @@ public class ValueMappingMethod extends MappingMethod {
                     nullTarget = nullTargetValue.getTarget();
                 }
                 if ( defaultTargetValue != null ) {
-                    defaultTarget = defaultTargetValue.getTarget();
+                    // If the default target value is NULL then we should map it to null
+                    defaultTarget = MappingConstantsPrism.NULL.equals( defaultTargetValue.getTarget() ) ? null :
+                        defaultTargetValue.getTarget();
                 }
                 else {
                     throwIllegalArgumentException = true;

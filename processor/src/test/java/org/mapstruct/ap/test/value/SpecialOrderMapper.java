@@ -20,7 +20,9 @@ package org.mapstruct.ap.test.value;
 
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.Named;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
 import org.mapstruct.factory.Mappers;
@@ -33,8 +35,11 @@ public interface SpecialOrderMapper {
 
     SpecialOrderMapper INSTANCE = Mappers.getMapper( SpecialOrderMapper.class );
 
+
+    @Mapping(target = "orderType", source = "orderType", qualifiedByName = "orderTypeToExternalOrderType")
     OrderDto orderEntityToDto(OrderEntity order);
 
+    @Named("orderTypeToExternalOrderType")
     @ValueMappings({
         @ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
         @ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
@@ -42,7 +47,14 @@ public interface SpecialOrderMapper {
     })
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 
-    @InheritInverseConfiguration
+    @InheritInverseConfiguration(name = "orderTypeToExternalOrderType")
     @ValueMapping( target = "EXTRA", source = "SPECIAL" )
     OrderType externalOrderTypeToOrderType(ExternalOrderType orderType);
+
+    @ValueMappings({
+        @ValueMapping(source = MappingConstants.NULL, target = "DEFAULT"),
+        @ValueMapping(source = "STANDARD", target = MappingConstants.NULL),
+        @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
+    })
+    ExternalOrderType anyRemainingToNull(OrderType orderType);
 }
