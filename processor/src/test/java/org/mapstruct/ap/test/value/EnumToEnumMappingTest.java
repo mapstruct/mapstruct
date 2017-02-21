@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.tools.Diagnostic.Kind;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -30,6 +31,7 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * Test for the generation and invocation of enum mapping methods.
@@ -41,6 +43,13 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
     OrderType.class, OrderDto.class, ExternalOrderType.class })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class EnumToEnumMappingTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        DefaultOrderMapper.class,
+        OrderMapper.class,
+        SpecialOrderMapper.class
+    );
 
     @Test
     public void shouldGenerateEnumMappingMethod() {
@@ -186,6 +195,29 @@ public class EnumToEnumMappingTest {
         assertThat( orderDto ).isNotNull();
         assertThat( orderDto.getOrderType() ).isEqualTo( ExternalOrderType.DEFAULT );
 
+    }
+
+    @IssueKey( "1091" )
+    @Test
+    public void shouldMapAnyRemainingToNullCorrectly() throws Exception {
+        ExternalOrderType externalOrderType = SpecialOrderMapper.INSTANCE.anyRemainingToNull( OrderType.RETAIL );
+        assertThat( externalOrderType )
+            .isNotNull()
+            .isEqualTo( ExternalOrderType.RETAIL );
+
+        externalOrderType = SpecialOrderMapper.INSTANCE.anyRemainingToNull( OrderType.B2B );
+        assertThat( externalOrderType )
+            .isNotNull()
+            .isEqualTo( ExternalOrderType.B2B );
+
+        externalOrderType = SpecialOrderMapper.INSTANCE.anyRemainingToNull( OrderType.EXTRA );
+        assertThat( externalOrderType ).isNull();
+
+        externalOrderType = SpecialOrderMapper.INSTANCE.anyRemainingToNull( OrderType.STANDARD );
+        assertThat( externalOrderType ).isNull();
+
+        externalOrderType = SpecialOrderMapper.INSTANCE.anyRemainingToNull( OrderType.NORMAL );
+        assertThat( externalOrderType ).isNull();
     }
 
     @Test
