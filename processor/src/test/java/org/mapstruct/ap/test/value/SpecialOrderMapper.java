@@ -34,7 +34,7 @@ import org.mapstruct.factory.Mappers;
 public interface SpecialOrderMapper {
 
     SpecialOrderMapper INSTANCE = Mappers.getMapper( SpecialOrderMapper.class );
-    
+
     @Mapping(target = "orderType", source = "orderType", qualifiedByName = "orderTypeToExternalOrderType")
     OrderDto orderEntityToDto(OrderEntity order);
 
