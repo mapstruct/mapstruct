@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper" -->
 <#--
 
      Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
