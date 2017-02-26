@@ -61,7 +61,7 @@ public abstract class SourceTargetMapper {
     @InheritInverseConfiguration
     public abstract Set<Colour> stringSetToColourSet(Set<String> colours);
 
-    public abstract Set<Number> integerSetToNumberSet(Stream<Integer> integers);
+    public abstract Set<Number> integerStreamToNumberSet(Stream<Integer> integers);
 
     protected StringHolder toStringHolder(String string) {
         return new StringHolder( string );

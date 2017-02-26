@@ -209,9 +209,9 @@ public class StreamMappingTest {
     }
 
     @Test
-    public void shouldMapIntegerSetToNumberSet() {
+    public void shouldMapIntegerStreamToNumberSet() {
         Set<Number> numbers = SourceTargetMapper.INSTANCE
-            .integerSetToNumberSet( new HashSet<Integer>( Arrays.asList( 123, 456 ) ).stream() );
+            .integerStreamToNumberSet( Arrays.asList( 123, 456 ).stream() );
 
         assertThat( numbers ).isNotNull();
         assertThat( numbers ).containsOnly( 123, 456 );
