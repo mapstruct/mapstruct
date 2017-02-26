@@ -18,10 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import java.io.Writer;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.writer.FreeMarkerModelElementWriter;
 import org.mapstruct.ap.internal.writer.FreeMarkerWritable;
 import org.mapstruct.ap.internal.writer.Writable;
 
@@ -32,11 +30,6 @@ import org.mapstruct.ap.internal.writer.Writable;
  * @author Gunnar Morling
  */
 public abstract class ModelElement extends FreeMarkerWritable {
-
-    @Override
-    public void write(Context context, Writer writer) throws Exception {
-        new FreeMarkerModelElementWriter().write( this, context, writer );
-    }
 
     /**
      * Returns a set containing those {@link Type}s referenced by this model element for which an import statement needs
