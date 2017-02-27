@@ -335,10 +335,7 @@ public class ForgedMethod implements Method {
         if ( parameters != null ? !parameters.equals( that.parameters ) : that.parameters != null ) {
             return false;
         }
-        if ( returnType != null ? !returnType.equals( that.returnType ) : that.returnType != null ) {
-            return false;
-        }
-        return name != null ? name.equals( that.name ) : that.name == null;
+        return returnType != null ? returnType.equals( that.returnType ) : that.returnType == null;
 
     }
 
@@ -346,7 +343,6 @@ public class ForgedMethod implements Method {
     public int hashCode() {
         int result = parameters != null ? parameters.hashCode() : 0;
         result = 31 * result + ( returnType != null ? returnType.hashCode() : 0 );
-        result = 31 * result + ( name != null ? name.hashCode() : 0 );
         return result;
     }
 }

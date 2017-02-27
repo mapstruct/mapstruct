@@ -87,6 +87,7 @@ public enum Message {
     GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK( "No dateFormat check is supported for types %s, %s" ),
     GENERAL_VALID_DATE( "Given date format \"%s\" is valid.", Diagnostic.Kind.NOTE ),
     GENERAL_INVALID_DATE( "Given date format \"%s\" is invalid. Message: \"%s\"." ),
+    GENERAL_NOT_ALL_FORGED_CREATED( "Internal Error in creation of Forged Methods, it was expected all Forged Methods to finished with creation, but %s did not" ),
 
     RETRIEVAL_NO_INPUT_ARGS( "Can't generate mapping method with no input arguments." ),
     RETRIEVAL_DUPLICATE_MAPPING_TARGETS( "Can't generate mapping method with more than one @MappingTarget parameter." ),

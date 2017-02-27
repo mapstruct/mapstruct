@@ -168,6 +168,11 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .implPackage( mapperConfig.implementationPackage() )
             .build();
 
+        if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {
+            messager.printMessage( element, Message.GENERAL_NOT_ALL_FORGED_CREATED,
+                mappingContext.getForgedMethodsUnderCreation().keySet() );
+        }
+
         return mapper;
     }
 

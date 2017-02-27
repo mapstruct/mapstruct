@@ -19,7 +19,7 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -131,7 +131,8 @@ public class NestedTargetPropertyMappingHolder {
             // first we group by the first property in the target properties and for each of those
             // properties we get the new mappings as if the first property did not exist.
             GroupedTargetReferences groupedByTP = groupByTargetReferences( method.getMappingOptions() );
-            Map<PropertyEntry, List<Mapping>> unprocessedDefinedTarget = new HashMap<PropertyEntry, List<Mapping>>();
+            Map<PropertyEntry, List<Mapping>> unprocessedDefinedTarget
+                = new LinkedHashMap<PropertyEntry, List<Mapping>>();
 
             for ( Map.Entry<PropertyEntry, List<Mapping>> entryByTP : groupedByTP.poppedTargetReferences.entrySet() ) {
                 PropertyEntry targetProperty = entryByTP.getKey();
@@ -279,8 +280,10 @@ public class NestedTargetPropertyMappingHolder {
         private GroupedTargetReferences groupByTargetReferences(MappingOptions mappingOptions) {
             Map<String, List<Mapping>> mappings = mappingOptions.getMappings();
             // group all mappings based on the top level name before popping
-            Map<PropertyEntry, List<Mapping>> mappingsKeyedByProperty = new HashMap<PropertyEntry, List<Mapping>>();
-            Map<PropertyEntry, List<Mapping>> singleTargetReferences = new HashMap<PropertyEntry, List<Mapping>>();
+            Map<PropertyEntry, List<Mapping>> mappingsKeyedByProperty
+                = new LinkedHashMap<PropertyEntry, List<Mapping>>();
+            Map<PropertyEntry, List<Mapping>> singleTargetReferences
+                = new LinkedHashMap<PropertyEntry, List<Mapping>>();
             for ( List<Mapping> mapping : mappings.values() ) {
                 PropertyEntry property = first( first( mapping ).getTargetReference().getPropertyEntries() );
                 Mapping newMapping = first( mapping ).popTargetReference();
@@ -388,7 +391,7 @@ public class NestedTargetPropertyMappingHolder {
         private GroupedBySourceParameters groupBySourceParameter(List<Mapping> mappings,
             List<Mapping> singleTargetReferences) {
 
-            Map<Parameter, List<Mapping>> mappingsKeyedByParameter = new HashMap<Parameter, List<Mapping>>();
+            Map<Parameter, List<Mapping>> mappingsKeyedByParameter = new LinkedHashMap<Parameter, List<Mapping>>();
             List<Mapping> appliesToAll = new ArrayList<Mapping>();
             for ( Mapping mapping : mappings ) {
                 if ( mapping.getSourceReference() != null && mapping.getSourceReference().isValid() ) {
@@ -453,7 +456,8 @@ public class NestedTargetPropertyMappingHolder {
             List<Mapping> nonNested = new ArrayList<Mapping>();
             List<Mapping> appliesToAll = new ArrayList<Mapping>();
             // group all mappings based on the top level name before popping
-            Map<PropertyEntry, List<Mapping>> mappingsKeyedByProperty = new HashMap<PropertyEntry, List<Mapping>>();
+            Map<PropertyEntry, List<Mapping>> mappingsKeyedByProperty
+                = new LinkedHashMap<PropertyEntry, List<Mapping>>();
             for ( Mapping mapping : mappings ) {
 
                 Mapping newMapping = mapping.popSourceReference();
@@ -499,7 +503,7 @@ public class NestedTargetPropertyMappingHolder {
         }
 
         private Map<String, List<Mapping>> groupByTargetName(List<Mapping> mappingList) {
-            Map<String, List<Mapping>> result = new HashMap<String, List<Mapping>>();
+            Map<String, List<Mapping>> result = new LinkedHashMap<String, List<Mapping>>();
             for ( Mapping mapping : mappingList ) {
                 if ( !result.containsKey( mapping.getTargetName() ) ) {
                     result.put( mapping.getTargetName(), new ArrayList<Mapping>() );

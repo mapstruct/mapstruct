@@ -19,7 +19,9 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.TypeElement;
@@ -29,6 +31,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -120,6 +123,8 @@ public class MappingBuilderContext {
     private final List<MapperReference> mapperReferences;
     private final MappingResolver mappingResolver;
     private final List<MappingMethod> mappingsToGenerate = new ArrayList<MappingMethod>();
+    private final Map<ForgedMethod, ForgedMethod> forgedMethodsUnderCreation =
+        new HashMap<ForgedMethod, ForgedMethod>(  );
 
     public MappingBuilderContext(TypeFactory typeFactory,
                           Elements elementUtils,
@@ -139,6 +144,19 @@ public class MappingBuilderContext {
         this.mapperTypeElement = mapper;
         this.sourceModel = sourceModel;
         this.mapperReferences = mapperReferences;
+    }
+
+    /**
+     * Returns a map which is used to track which forged methods are under creation.
+     * Used for cutting the possible infinite recursion of forged method creation.
+     *
+     * Map is used instead of set because not all fields of ForgedMethods are used in equals/hashCode and we are
+     * interested only in the first created ForgedMethod
+     *
+     * @return map of forged methods
+     */
+    public Map<ForgedMethod, ForgedMethod> getForgedMethodsUnderCreation() {
+        return forgedMethodsUnderCreation;
     }
 
     public TypeElement getMapperTypeElement() {
