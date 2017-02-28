@@ -999,7 +999,11 @@ When working with JAXB, e.g. when converting a `String` to a corresponding `JAXB
 [[selection-based-on-qualifiers]]
 === Mapping method selection based on qualifiers
 
-In many occasions one requires mapping methods with the same method signature (appart from the name) that have different behavior. MapStruct has a handy mechanism to deal with such situations: `@Qualifier`. A ‘qualifier’ is a custom annotation that the user can write, ‘stick onto’ a mapping method which is included as used mapper, and can be referred to in a bean property mapping, iterable mapping or map mapping.  Multiple qualifiers can be ‘stuck onto’ a method and mapping.
+In many occasions one requires mapping methods with the same method signature (appart from the name) that have different behavior.
+MapStruct has a handy mechanism to deal with such situations: `@Qualifier` (`org.mapstruct.Qualifier`).
+A ‘qualifier’ is a custom annotation that the user can write, ‘stick onto’ a mapping method which is included as used mapper
+and can be referred to in a bean property mapping, iterable mapping or map mapping.
+Multiple qualifiers can be ‘stuck onto’ a method and mapping.
 
 So, lets say there is a hand-written method to map titles with a `String` return type and `String` argument amongst many other referenced mappers with the same `String` return type  - `String` argument signature:
 
@@ -1046,6 +1050,8 @@ Enter the qualifier approach:
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
+import org.mapstruct.Qualifier;
+
 @Qualifier
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
@@ -1061,6 +1067,8 @@ And, some qualifiers to indicate which translator to use to map from source lang
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
+import org.mapstruct.Qualifier;
+
 @Qualifier
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
@@ -1070,6 +1078,8 @@ public @interface EnglishToGerman {
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
+import org.mapstruct.Qualifier;
+
 @Qualifier
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
