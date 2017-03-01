@@ -20,6 +20,7 @@ package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
@@ -62,12 +63,13 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
-        protected IterableMappingMethod instantiateMappingMethod(Method method, Assignment assignment,
-            MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+        protected IterableMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
+            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
             return new IterableMappingMethod(
                 method,
+                existingVariables,
                 assignment,
                 factoryMethod,
                 mapNullToDefault,
@@ -79,13 +81,14 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         }
     }
 
-    private IterableMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
-                                  boolean mapNullToDefault, String loopVariableName,
+    private IterableMappingMethod(Method method, Collection<String> existingVariables, Assignment parameterAssignment,
+                                  MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters) {
         super(
             method,
+            existingVariables,
             parameterAssignment,
             factoryMethod,
             mapNullToDefault,

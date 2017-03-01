@@ -22,6 +22,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -211,6 +212,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             return new BeanMappingMethod(
                 method,
+                existingVariableNames,
                 propertyMappings,
                 factoryMethod,
                 mapNullToDefault,
@@ -724,6 +726,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     }
 
     private BeanMappingMethod(Method method,
+                              Collection<String> existingVariableNames,
                               List<PropertyMapping> propertyMappings,
                               MethodReference factoryMethod,
                               boolean mapNullToDefault,
@@ -732,6 +735,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<LifecycleCallbackMethodReference> afterMappingReferences) {
         super(
             method,
+            existingVariableNames,
             factoryMethod,
             mapNullToDefault,
             beforeMappingReferences,

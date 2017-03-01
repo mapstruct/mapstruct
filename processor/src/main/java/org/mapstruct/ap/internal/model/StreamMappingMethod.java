@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,8 +61,8 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
-        protected StreamMappingMethod instantiateMappingMethod(Method method, Assignment assignment,
-            MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+        protected StreamMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
+            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
 
@@ -78,6 +79,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
 
             return new StreamMappingMethod(
                 method,
+                existingVariables,
                 assignment,
                 factoryMethod,
                 mapNullToDefault,
@@ -90,13 +92,14 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         }
     }
 
-    private StreamMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
-                                boolean mapNullToDefault, String loopVariableName,
+    private StreamMappingMethod(Method method, Collection<String> existingVariables, Assignment parameterAssignment,
+                                MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                 List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                 List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters, Set<Type> helperImports) {
         super(
             method,
+            existingVariables,
             parameterAssignment,
             factoryMethod,
             mapNullToDefault,

@@ -20,6 +20,7 @@ package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -143,6 +144,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
         return instantiateMappingMethod(
             method,
+            existingVariables,
             assignment,
             factoryMethod,
             mapNullToDefault,
@@ -153,7 +155,8 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         );
     }
 
-    protected abstract M instantiateMappingMethod(Method method, Assignment assignment, MethodReference factoryMethod,
+    protected abstract M instantiateMappingMethod(Method method, Collection<String> existingVariables,
+                                                  Assignment assignment, MethodReference factoryMethod,
                                                   boolean mapNullToDefault, String loopVariableName,
                                                   List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,

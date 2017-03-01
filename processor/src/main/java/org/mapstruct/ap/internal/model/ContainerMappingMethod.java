@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -39,16 +40,21 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     private final Assignment elementAssignment;
     private final String loopVariableName;
     private final SelectionParameters selectionParameters;
+    private final String index1Name;
+    private final String index2Name;
 
-    ContainerMappingMethod(Method method, Assignment parameterAssignment, MethodReference factoryMethod,
-        boolean mapNullToDefault, String loopVariableName,
+    ContainerMappingMethod(Method method, Collection<String> existingVariables, Assignment parameterAssignment,
+        MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters) {
-        super( method, factoryMethod, mapNullToDefault, beforeMappingReferences, afterMappingReferences );
+        super( method, existingVariables, factoryMethod, mapNullToDefault, beforeMappingReferences,
+            afterMappingReferences );
         this.elementAssignment = parameterAssignment;
         this.loopVariableName = loopVariableName;
         this.selectionParameters = selectionParameters;
+        this.index1Name = Strings.getSaveVariableName( "i", existingVariables );
+        this.index2Name = Strings.getSaveVariableName( "j", existingVariables );
     }
 
     public Parameter getSourceParameter() {
@@ -81,11 +87,11 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     public abstract Type getResultElementType();
 
     public String getIndex1Name() {
-        return Strings.getSaveVariableName( "i", loopVariableName, getSourceParameter().getName(), getResultName() );
+        return index1Name;
     }
 
     public String getIndex2Name() {
-        return Strings.getSaveVariableName( "j", loopVariableName, getSourceParameter().getName(), getResultName() );
+        return index2Name;
     }
 
     @Override

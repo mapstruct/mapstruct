@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -36,10 +37,11 @@ public abstract class NormalTypeMappingMethod extends MappingMethod {
     private final boolean overridden;
     private final boolean mapNullToDefault;
 
-    NormalTypeMappingMethod(Method method, MethodReference factoryMethod, boolean mapNullToDefault,
+    NormalTypeMappingMethod(Method method, Collection<String> existingVariableNames, MethodReference factoryMethod,
+        boolean mapNullToDefault,
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        super( method, beforeMappingReferences, afterMappingReferences );
+        super( method, existingVariableNames, beforeMappingReferences, afterMappingReferences );
         this.factoryMethod = factoryMethod;
         this.overridden = method.overridesMethod();
         this.mapNullToDefault = mapNullToDefault;

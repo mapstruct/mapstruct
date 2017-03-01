@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -161,6 +162,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             return new MapMappingMethod(
                 method,
+                existingVariables,
                 keyAssignment,
                 valueAssignment,
                 factoryMethod,
@@ -176,11 +178,12 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
         }
     }
 
-    private MapMappingMethod(Method method, Assignment keyAssignment, Assignment valueAssignment,
-                             MethodReference factoryMethod, boolean mapNullToDefault,
+    private MapMappingMethod(Method method, Collection<String> existingVariableNames, Assignment keyAssignment,
+                             Assignment valueAssignment, MethodReference factoryMethod, boolean mapNullToDefault,
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
                              List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        super( method, factoryMethod, mapNullToDefault, beforeMappingReferences, afterMappingReferences );
+        super( method, existingVariableNames, factoryMethod, mapNullToDefault, beforeMappingReferences,
+            afterMappingReferences );
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;
