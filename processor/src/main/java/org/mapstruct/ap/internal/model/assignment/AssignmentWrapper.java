@@ -24,6 +24,8 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
+import com.github.javaparser.ast.expr.Expression;
+
 /**
  * Base class for decorators (wrappers). Decorator pattern is used to decorate assignments.
  *
@@ -114,5 +116,10 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
      */
     public boolean isFieldAssignment() {
         return fieldAssignment;
+    }
+
+    @Override
+    public Expression getAst(Context context) {
+        return null;
     }
 }

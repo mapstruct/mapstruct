@@ -33,6 +33,8 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 
+import com.github.javaparser.ast.Node;
+
 /**
  * A method implemented or referenced by a {@link Mapper} class.
  *
@@ -215,6 +217,11 @@ public abstract class MappingMethod extends ModelElement {
 
     public List<LifecycleCallbackMethodReference> getBeforeMappingReferencesWithoutMappingTarget() {
         return beforeMappingReferencesWithoutMappingTarget;
+    }
+
+    @Override
+    public Node getAst(Context context) {
+        return null;
     }
 
     @Override

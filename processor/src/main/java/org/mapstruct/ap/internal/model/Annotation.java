@@ -25,6 +25,10 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.Name;
+import com.github.javaparser.ast.expr.NormalAnnotationExpr;
+
 /**
  * Represents a Java 5 annotation.
  *
@@ -59,5 +63,12 @@ public class Annotation extends ModelElement {
 
     public List<String> getProperties() {
         return properties;
+    }
+
+    @Override
+    public Node getAst(Context context) {
+        NormalAnnotationExpr node = new NormalAnnotationExpr();
+        node.setName( new Name( type.isImported() ? type.getName() : type.getFullyQualifiedName() ) );
+        return node;
     }
 }

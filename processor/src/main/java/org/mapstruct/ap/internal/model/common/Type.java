@@ -50,6 +50,9 @@ import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
+import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
  * Each type corresponds to a {@link TypeMirror}, i.e. there are different instances for e.g. {@code Set<String>} and
@@ -881,5 +884,13 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
 
         return null;
+    }
+
+    @Override
+    public com.github.javaparser.ast.type.Type getAst(Context context) {
+        // TODO imports, generic bounds
+        ClassOrInterfaceType ast = new ClassOrInterfaceType();
+        ast.setName( new SimpleName( getName() ) );
+        return ast;
     }
 }

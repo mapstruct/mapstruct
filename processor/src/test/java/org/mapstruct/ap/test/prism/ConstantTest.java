@@ -33,8 +33,8 @@ public class ConstantTest {
 
     @Test
     public void constantsShouldBeEqual() {
-        assertThat( MappingConstants.ANY_REMAINING ).isEqualTo( MappingConstantsPrism.ANY_REMAINING );
-        assertThat( MappingConstants.ANY_UNMAPPED ).isEqualTo( MappingConstantsPrism.ANY_UNMAPPED );
+        assertThat( MappingConstants.ANY_REMAINING )
+            .isEqualTo( MappingConstantsPrism.ANY_REMAINING ); assertThat( MappingConstants.ANY_UNMAPPED ).isEqualTo( MappingConstantsPrism.ANY_UNMAPPED );
         assertThat( MappingConstants.NULL ).isEqualTo( MappingConstantsPrism.NULL );
     }
 }

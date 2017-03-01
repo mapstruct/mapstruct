@@ -18,13 +18,20 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.SimpleName;
 
 /**
  * Wraps the assignment in a target setter.
@@ -69,6 +76,18 @@ public class SetterWrapper extends AssignmentWrapper {
 
     public boolean isIncludeSourceNullCheck() {
         return includeSourceNullCheck;
+    }
+
+    @Override
+    public Expression getAst(Context context) {
+        Map<String, Object> ext = context.get( Map.class );
+        NodeList<Expression> args = new NodeList<Expression>();
+        args.add( getAssignment().getAst( context ) );
+        return new MethodCallExpr(
+                new NameExpr( ext.get( "targetBeanName" ).toString() ),
+                new SimpleName( ext.get( "targetWriteAccessorName" ).toString() ),
+                args
+        );
     }
 
    /**
