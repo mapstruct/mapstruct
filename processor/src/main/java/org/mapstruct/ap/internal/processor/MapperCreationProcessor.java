@@ -317,7 +317,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 // prefer value mappings over enum mapping
                 ValueMappingMethod valueMappingMethod = new ValueMappingMethod.Builder()
                     .mappingContext( mappingContext )
-                    .souceMethod( method )
+                    .method( method )
                     .valueMappings( mappingOptions.getValueMappings() )
                     .build();
                 mappingMethods.add( valueMappingMethod );

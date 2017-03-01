@@ -18,10 +18,12 @@
  */
 package org.mapstruct.ap.test.nestedbeans;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     User.class, UserDto.class, Car.class, CarDto.class, House.class, HouseDto.class,
     Wheel.class, WheelDto.class,
     Roof.class, RoofDto.class,
+    RoofType.class, ExternalRoofType.class,
     org.mapstruct.ap.test.nestedbeans.other.CarDto.class,
     org.mapstruct.ap.test.nestedbeans.other.UserDto.class,
     org.mapstruct.ap.test.nestedbeans.other.HouseDto.class,
@@ -40,6 +43,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class NestedSimpleBeansMappingTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
+        UserDtoMapperClassic.class,
+        UserDtoMapperSmart.class,
+        UserDtoUpdateMapperSmart.class
+    );
 
     @Test
     public void shouldMapNestedBeans() {

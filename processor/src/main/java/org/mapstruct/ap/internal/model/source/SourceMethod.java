@@ -381,9 +381,7 @@ public class SourceMethod implements Method {
 
     public boolean isEnumMapping() {
         if ( isEnumMapping == null ) {
-            isEnumMapping = getSourceParameters().size() == 1
-                && first( getSourceParameters() ).getType().isEnumType()
-                && getResultType().isEnumType();
+            isEnumMapping = MappingMethodUtils.isEnumMapping( this );
         }
         return isEnumMapping;
     }

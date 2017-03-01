@@ -20,12 +20,14 @@ package org.mapstruct.ap.test.nestedbeans;
 
 public class Roof {
     private int color;
+    private RoofType type;
 
     public Roof() {
     }
 
-    public Roof(int color) {
+    public Roof(int color, RoofType type) {
         this.color = color;
+        this.type = type;
     }
 
     public int getColor() {
@@ -40,7 +42,16 @@ public class Roof {
     public String toString() {
         return "Roof{" +
             "color='" + color + '\'' +
+            "type='" + type + '\'' +
             '}';
     }
 
+    public RoofType getType() {
+        return type;
+    }
+
+    public Roof setType(RoofType type) {
+        this.type = type;
+        return this;
+    }
 }

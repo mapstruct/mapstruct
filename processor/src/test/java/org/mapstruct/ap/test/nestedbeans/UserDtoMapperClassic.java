@@ -40,4 +40,6 @@ public interface UserDtoMapperClassic {
 
     WheelDto mapWheel(Wheel wheels);
 
+    ExternalRoofType mapRoofType(RoofType roofType);
+
 }
