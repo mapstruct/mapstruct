@@ -56,7 +56,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      *
      * @return See above
      */
-    Assignment createForgedBeanAssignment(SourceRHS sourceRHS, ForgedMethod forgedMethod) {
+    Assignment createForgedAssignment(SourceRHS sourceRHS, ForgedMethod forgedMethod) {
         MappingMethod forgedMappingMethod;
         if ( MappingMethodUtils.isEnumMapping( forgedMethod ) ) {
             forgedMappingMethod = new ValueMappingMethod.Builder()

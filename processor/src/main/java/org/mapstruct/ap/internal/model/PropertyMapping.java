@@ -654,7 +654,7 @@ public class PropertyMapping extends ModelElement {
                 forgeMethodWithMappingOptions,
                 forgedNamedBased
             );
-            return createForgedBeanAssignment( sourceRHS, forgedMethod );
+            return createForgedAssignment( sourceRHS, forgedMethod );
         }
 
         private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS) {
