@@ -781,7 +781,14 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     @Override
     public int hashCode() {
-        return typeMirror.hashCode();
+        // javadoc typemirror: "Types should be compared using the utility methods in Types. There is no guarantee
+        // that any particular type will always be represented by the same object." This is true when the objects
+        // are in another jar than the mapper. So the qualfiedName is a better candidate.
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((packageName == null) ? 0 : packageName.hashCode());
+        return result;
     }
 
     @Override
