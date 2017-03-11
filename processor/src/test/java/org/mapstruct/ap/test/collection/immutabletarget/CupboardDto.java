@@ -16,17 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.prism;
+package org.mapstruct.ap.test.collection.immutabletarget;
+
+import java.util.List;
 
 /**
- * Prism for the enum {@link org.mapstruct.CollectionMappingStrategy}
  *
- * @author Andreas Gudian
+ * @author Sjaak Derksen
  */
-public enum CollectionMappingStrategyPrism {
+public class CupboardDto {
 
-    ACCESSOR_ONLY,
-    SETTER_PREFERRED,
-    ADDER_PREFERRED,
-    TARGET_IMMUTABLE;
+    private List<String> content;
+
+    public List<String> getContent() {
+        return content;
+    }
+
+    public void setContent(List<String> content) {
+        this.content = content;
+    }
 }

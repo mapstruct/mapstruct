@@ -16,17 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.prism;
+package org.mapstruct.ap.test.collection.immutabletarget;
+
+import org.mapstruct.CollectionMappingStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Prism for the enum {@link org.mapstruct.CollectionMappingStrategy}
  *
- * @author Andreas Gudian
+ * @author Sjaak Derksen
  */
-public enum CollectionMappingStrategyPrism {
+@Mapper( collectionMappingStrategy = CollectionMappingStrategy.TARGET_IMMUTABLE )
+public interface ErroneousCupboardMapper {
 
-    ACCESSOR_ONLY,
-    SETTER_PREFERRED,
-    ADDER_PREFERRED,
-    TARGET_IMMUTABLE;
+    ErroneousCupboardMapper INSTANCE = Mappers.getMapper( ErroneousCupboardMapper.class );
+
+    void map( CupboardDto in, @MappingTarget CupboardEntityOnlyGetter out );
 }

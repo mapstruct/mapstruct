@@ -469,7 +469,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             // the current target accessor can also be a getter method.
             // The following if block, checks if the target accessor should be overruled by an add method.
             if ( cmStrategy == CollectionMappingStrategyPrism.SETTER_PREFERRED
-                || cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
+                || cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED
+                || cmStrategy == CollectionMappingStrategyPrism.TARGET_IMMUTABLE ) {
 
                 // first check if there's a setter method.
                 Accessor adderMethod = null;

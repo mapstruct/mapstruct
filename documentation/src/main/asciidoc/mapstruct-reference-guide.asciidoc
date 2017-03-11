@@ -466,7 +466,7 @@ Specifying the parameter in which the property resides is mandatory when using t
 Mapping methods with several source parameters will return `null` in case all the source parameters are `null`. Otherwise the target object will be instantiated and all properties from the provided parameters will be propagated.
 ====
 
-MapStruct also offers the possibility to directly refer to a source parameter. 
+MapStruct also offers the possibility to directly refer to a source parameter.
 
 .Mapping method directly referring to a source parameter
 ====
@@ -1338,7 +1338,7 @@ public Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source) 
 [[collection-mapping-strategies]]
 === Collection mapping strategies
 
-MapStruct has a `CollectionMappingStrategy`, with the possible values: `ACCESSOR_ONLY`, `SETTER_PREFERRED` and `ADDER_PREFERRED`.
+MapStruct has a `CollectionMappingStrategy`, with the possible values: `ACCESSOR_ONLY`, `SETTER_PREFERRED`, `ADDER_PREFERRED` and `TARGET_IMMUTABLE`.
 
 In the table below, the dash `-` indicates a property name. Next, the trailing `s` indicates the plural form. The table explains the options and how they are apply to the presence/absense of a `set-s`, `add-` and / or `get-s` method on the target object:
 
@@ -1366,6 +1366,13 @@ In the table below, the dash `-` indicates a property name. Next, the trailing `
 |add-
 |get-s
 |get-s
+
+|`TARGET_IMMUTABLE`
+|set-s
+|exception
+|set-s
+|exception
+|set-s
 |===
 
 Some background: An `adder` method is typically used in case of http://www.eclipse.org/webtools/dali/[generated (JPA) entities], to add a single element (entity) to an underlying collection. Invoking the adder establishes a parent-child relation between parent - the bean (entity) on which the adder is invoked - and its child(ren), the elements (entities) in the collection. To find the appropriate `adder`, MapStruct will try to make a match between the generic parameter type of the underlying collection and the single argument of a candidate `adder`. When there are more candidates, the plural `setter` / `getter` name is converted to singular and will be used in addition to make a match.

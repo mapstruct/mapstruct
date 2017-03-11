@@ -52,6 +52,7 @@ import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceReference;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
@@ -400,10 +401,15 @@ public class PropertyMapping extends ModelElement {
 
             Assignment result = rhs;
 
-            if ( targetAccessorType == TargetWriteAccessorType.SETTER ||
-                targetAccessorType == TargetWriteAccessorType.FIELD ) {
+            CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
+            boolean targetImmutable = cms == CollectionMappingStrategyPrism.TARGET_IMMUTABLE;
 
-                if ( result.isCallingUpdateMethod() ) {
+            if ( targetAccessorType == TargetWriteAccessorType.SETTER ||
+                 targetAccessorType == TargetWriteAccessorType.FIELD ) {
+
+
+                if ( result.isCallingUpdateMethod() && !targetImmutable) {
+
                     // call to an update method
                     if ( targetReadAccessor == null ) {
                         ctx.getMessager().printMessage(
@@ -423,6 +429,7 @@ public class PropertyMapping extends ModelElement {
                     );
                 }
                 else {
+
                     // target accessor is setter, so wrap the setter in setter map/ collection handling
                     result = new SetterWrapperForCollectionsAndMaps(
                         result,
@@ -430,11 +437,20 @@ public class PropertyMapping extends ModelElement {
                         targetType,
                         method.getMapperConfiguration().getNullValueCheckStrategy(),
                         ctx.getTypeFactory(),
-                        targetWriteAccessorType == TargetWriteAccessorType.FIELD
+                        targetWriteAccessorType == TargetWriteAccessorType.FIELD,
+                        targetImmutable
                     );
                 }
             }
             else {
+                if ( targetImmutable ) {
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        Message.PROPERTYMAPPING_NO_WRITE_ACCESSOR_FOR_TARGET_TYPE,
+                        targetPropertyName
+                    );
+                }
+
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
                 result = new GetterWrapperForCollectionsAndMaps( result,
                                                                  method.getThrownTypes(),

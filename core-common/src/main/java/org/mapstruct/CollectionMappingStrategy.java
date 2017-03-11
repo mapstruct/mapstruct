@@ -30,7 +30,8 @@ public enum CollectionMappingStrategy {
      * {@code orderDto.setOrderLines(order.getOrderLines)}.
      * <p>
      * If no setter is available but a getter method, this will be used, under the assumption it has been initialized:
-     * {@code orderDto.getOrderLines().addAll(order.getOrderLines)}.
+     * {@code orderDto.getOrderLines().addAll(order.getOrderLines)}. This will also be the case when using
+     * {@link MappingTarget} (updating existing instances).
      */
     ACCESSOR_ONLY,
 
@@ -51,5 +52,13 @@ public enum CollectionMappingStrategy {
      * Identical to {@link #SETTER_PREFERRED}, only that adder methods will be preferred over setter methods, if both
      * are present for a given collection-typed property.
      */
-    ADDER_PREFERRED;
+    ADDER_PREFERRED,
+
+    /**
+     * Identical to {@link #SETTER_PREFERRED}, however the target collection will not be cleared and accessed via
+     * addAll in case of updating existing bean instances, see: {@link MappingTarget}.
+     *
+     * Instead the target accessor (e.g. set) will be used on the target bean to set the collection.
+     */
+    TARGET_IMMUTABLE;
 }

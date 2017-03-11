@@ -22,7 +22,7 @@
 <#import "../macro/CommonMacros.ftl" as lib>
 <@lib.sourceLocalVarAssignment/>
 <@lib.handleExceptions>
-  <#if ext.existingInstanceMapping>
+  <#if ext.existingInstanceMapping && !targetImmutable>
     if ( ${ext.targetBeanName}.${ext.targetReadAccessorName} != null ) {
         <@lib.handleLocalVarNullCheck>
             ${ext.targetBeanName}.${ext.targetReadAccessorName}.clear();

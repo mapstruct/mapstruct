@@ -47,13 +47,15 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
     private final boolean includeSourceNullCheck;
     private final Type targetType;
     private final TypeFactory typeFactory;
+    private final boolean targetImmutable;
 
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
                                               List<Type> thrownTypesToExclude,
                                               Type targetType,
                                               NullValueCheckStrategyPrism nvms,
                                               TypeFactory typeFactory,
-                                              boolean fieldAssignment) {
+                                              boolean fieldAssignment,
+                                              boolean targetImmutable ) {
 
         super(
             decoratedAssignment,
@@ -64,6 +66,7 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
         this.includeSourceNullCheck = ALWAYS == nvms;
         this.targetType = targetType;
         this.typeFactory = typeFactory;
+        this.targetImmutable = targetImmutable;
     }
 
     @Override
@@ -94,6 +97,10 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
 
     public boolean isEnumSet() {
         return "java.util.EnumSet".equals( targetType.getFullyQualifiedName() );
+    }
+
+    public boolean isTargetImmutable() {
+        return targetImmutable;
     }
 
 }
