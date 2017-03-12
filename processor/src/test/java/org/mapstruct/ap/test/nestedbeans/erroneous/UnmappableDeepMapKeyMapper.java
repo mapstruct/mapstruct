@@ -20,7 +20,7 @@ package org.mapstruct.ap.test.nestedbeans.erroneous;
 
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(uses = RoofTypeMapper.class)
 public abstract class UnmappableDeepMapKeyMapper {
 
     abstract UserDto userToUserDto(User user);

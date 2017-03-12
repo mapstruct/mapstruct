@@ -28,9 +28,10 @@ import java.util.Set;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.source.ForgedMethod;
+import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
-import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.ValueMapping;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.MappingConstantsPrism;
@@ -49,10 +50,11 @@ public class ValueMappingMethod extends MappingMethod {
     private final String defaultTarget;
     private final String nullTarget;
     private final boolean throwIllegalArgumentException;
+    private final boolean overridden;
 
     public static class Builder {
 
-        private SourceMethod method;
+        private Method method;
         private MappingBuilderContext ctx;
         private final List<ValueMapping> trueValueMappings = new ArrayList<ValueMapping>();
         private ValueMapping defaultTargetValue = null;
@@ -64,7 +66,7 @@ public class ValueMappingMethod extends MappingMethod {
             return this;
         }
 
-        public Builder souceMethod(SourceMethod sourceMethod) {
+        public Builder method(Method sourceMethod) {
             this.method = sourceMethod;
             return this;
         }
@@ -128,7 +130,7 @@ public class ValueMappingMethod extends MappingMethod {
                 throwIllegalArgumentException, beforeMappingMethods, afterMappingMethods );
         }
 
-        private List<MappingEntry> enumToEnumMapping(SourceMethod method) {
+        private List<MappingEntry> enumToEnumMapping(Method method) {
 
             List<MappingEntry> mappings = new ArrayList<MappingEntry>();
             List<String> unmappedSourceConstants
@@ -161,10 +163,20 @@ public class ValueMappingMethod extends MappingMethod {
                 }
 
                 if ( defaultTargetValue == null && !unmappedSourceConstants.isEmpty() ) {
+                    String sourceErrorMessage = "source";
+                    String targetErrorMessage = "target";
+                    if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getHistory() != null ) {
+                        ForgedMethodHistory history = ( (ForgedMethod) method ).getHistory();
+                        sourceErrorMessage = history.createSourcePropertyErrorMessage();
+                        targetErrorMessage =
+                            "\"" + history.getTargetType().toString() + " " + history.createTargetPropertyName() + "\"";
+                    }
                     // all sources should now be matched, there's no default to fall back to, so if sources remain,
                     // we have an issue.
                     ctx.getMessager().printMessage( method.getExecutable(),
                         Message.VALUE_MAPPING_UNMAPPED_SOURCES,
+                        sourceErrorMessage,
+                        targetErrorMessage,
                         Strings.join( unmappedSourceConstants, ", " )
                     );
 
@@ -173,7 +185,7 @@ public class ValueMappingMethod extends MappingMethod {
             return mappings;
         }
 
-        private SelectionParameters getSelectionParameters(SourceMethod method) {
+        private SelectionParameters getSelectionParameters(Method method) {
             BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
             if ( beanMappingPrism != null ) {
                 List<TypeMirror> qualifiers = beanMappingPrism.qualifiedBy();
@@ -184,7 +196,7 @@ public class ValueMappingMethod extends MappingMethod {
             return null;
         }
 
-        private boolean reportErrorIfMappedEnumConstantsDontExist(SourceMethod method) {
+        private boolean reportErrorIfMappedEnumConstantsDontExist(Method method) {
             List<String> sourceEnumConstants = first( method.getSourceParameters() ).getType().getEnumConstants();
             List<String> targetEnumConstants = method.getReturnType().getEnumConstants();
 
@@ -251,6 +263,7 @@ public class ValueMappingMethod extends MappingMethod {
         this.nullTarget = nullTarget;
         this.defaultTarget = defaultTarget;
         this.throwIllegalArgumentException = throwIllegalArgumentException;
+        this.overridden = method.overridesMethod();
     }
 
     public List<MappingEntry> getValueMappings() {
@@ -271,6 +284,10 @@ public class ValueMappingMethod extends MappingMethod {
 
     public Parameter getSourceParameter() {
         return first( getParameters() );
+    }
+
+    public boolean isOverridden() {
+        return overridden;
     }
 
     public static class MappingEntry {

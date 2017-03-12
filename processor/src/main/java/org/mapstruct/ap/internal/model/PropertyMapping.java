@@ -634,7 +634,8 @@ public class PropertyMapping extends ModelElement {
             // there's only one case for forging a method with mapping options: nested target properties.
             // They should forge an update method only if we set the forceUpdateMethod. This is set to true,
             // because we are forging a Mapping for a method with multiple source parameters.
-            if ( method.isUpdateMethod() || forceUpdateMethod ) {
+            // If the target type is enum, then we can't create an update method
+            if ( !targetType.isEnumType() && ( method.isUpdateMethod() || forceUpdateMethod ) ) {
                 parameters.add( Parameter.forForgedMappingTarget( targetType ) );
                 returnType = ctx.getTypeFactory().createVoidType();
             }
@@ -653,7 +654,7 @@ public class PropertyMapping extends ModelElement {
                 forgeMethodWithMappingOptions,
                 forgedNamedBased
             );
-            return createForgedBeanAssignment( sourceRHS, forgedMethod );
+            return createForgedAssignment( sourceRHS, forgedMethod );
         }
 
         private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS) {

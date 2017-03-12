@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model;
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
+import org.mapstruct.ap.internal.model.source.MappingMethodUtils;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
@@ -55,11 +56,21 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      *
      * @return See above
      */
-    Assignment createForgedBeanAssignment(SourceRHS sourceRHS, ForgedMethod forgedMethod) {
-        BeanMappingMethod forgedMappingMethod = new BeanMappingMethod.Builder()
-            .forgedMethod( forgedMethod )
-            .mappingContext( ctx )
-            .build();
+    Assignment createForgedAssignment(SourceRHS sourceRHS, ForgedMethod forgedMethod) {
+        MappingMethod forgedMappingMethod;
+        if ( MappingMethodUtils.isEnumMapping( forgedMethod ) ) {
+            forgedMappingMethod = new ValueMappingMethod.Builder()
+                .method( forgedMethod )
+                .valueMappings( forgedMethod.getMappingOptions().getValueMappings() )
+                .mappingContext( ctx )
+                .build();
+        }
+        else {
+            forgedMappingMethod = new BeanMappingMethod.Builder()
+                .forgedMethod( forgedMethod )
+                .mappingContext( ctx )
+                .build();
+        }
 
         return createForgedAssignment( sourceRHS, forgedMethod, forgedMappingMethod );
     }

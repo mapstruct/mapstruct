@@ -73,7 +73,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
             true
         );
 
-        return createForgedBeanAssignment( sourceRHS, forgedMethod );
+        return createForgedAssignment( sourceRHS, forgedMethod );
     }
 
     private String getName(Type sourceType, Type targetType) {

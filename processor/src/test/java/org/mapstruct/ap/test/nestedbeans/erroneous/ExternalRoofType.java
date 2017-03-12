@@ -16,25 +16,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedbeans;
+package org.mapstruct.ap.test.nestedbeans.erroneous;
 
-import java.util.Arrays;
 
-public class TestData {
+/**
+ * @author Filip Hrisafov
+ */
+public enum ExternalRoofType {
 
-    private TestData() {
-
-    }
-
-    public static User createUser() {
-        return new User( "John", new Car( "Chrysler", 1955, Arrays.asList(
-            new Wheel().front().left(),
-            new Wheel().front().right(),
-            new Wheel().rear().left(),
-            new Wheel().rear().right()
-        ) ),
-            new House( "Black", 1834, new Roof( 1, RoofType.BOX ) )
-        );
-    }
-
+    OPEN, BOX, GAMBREL, STANDARD
 }

@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.nestedbeans;
 
 public class RoofDto {
     private String color;
+    private ExternalRoofType type;
 
     public RoofDto() {
     }
@@ -36,6 +37,15 @@ public class RoofDto {
         this.color = color;
     }
 
+    public ExternalRoofType getType() {
+        return type;
+    }
+
+    public RoofDto setType(ExternalRoofType type) {
+        this.type = type;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if ( this == o ) {
@@ -47,20 +57,26 @@ public class RoofDto {
 
         RoofDto roofDto = (RoofDto) o;
 
+        if ( type != ( (RoofDto) o ).type ) {
+            return false;
+        }
+
         return color != null ? color.equals( roofDto.color ) : roofDto.color == null;
 
     }
 
     @Override
     public int hashCode() {
-        return color != null ? color.hashCode() : 0;
+        int result = color != null ? color.hashCode() : 0;
+        result = 31 * result + ( type != null ? type.hashCode() : 0 );
+        return result;
     }
 
     @Override
     public String toString() {
         return "RoofDto{" +
             "color='" + color + '\'' +
+            "type='" + type + '\'' +
             '}';
     }
-
 }

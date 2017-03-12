@@ -19,8 +19,8 @@
      limitations under the License.
 
 -->
-@Override
-public <@includeModel object=returnType/> ${name}(<@includeModel object=sourceParameter/>) {
+<#if overridden>@Override</#if>
+<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<@includeModel object=sourceParameter/>) {
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
         <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
         <#if !callback_has_next>

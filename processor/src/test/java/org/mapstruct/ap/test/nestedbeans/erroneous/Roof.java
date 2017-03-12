@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.nestedbeans.erroneous;
 
 public class Roof {
     private Color color;
+    private RoofType type;
 
     public Color getColor() {
         return color;
@@ -27,5 +28,14 @@ public class Roof {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public RoofType getType() {
+        return type;
+    }
+
+    public Roof setType(RoofType type) {
+        this.type = type;
+        return this;
     }
 }

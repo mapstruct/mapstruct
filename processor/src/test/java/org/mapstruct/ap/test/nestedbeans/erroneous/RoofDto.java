@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.nestedbeans.erroneous;
 
 public class RoofDto {
     private ColorDto color;
+    private ExternalRoofType type;
 
     public ColorDto getColor() {
         return color;
@@ -27,5 +28,13 @@ public class RoofDto {
 
     public void setColor(ColorDto color) {
         this.color = color;
+    }
+
+    public ExternalRoofType getType() {
+        return type;
+    }
+
+    public void setType(ExternalRoofType type) {
+        this.type = type;
     }
 }

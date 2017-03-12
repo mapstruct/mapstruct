@@ -16,25 +16,32 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.nestedbeans;
+package org.mapstruct.ap.test.nestedbeans.erroneous;
 
-import java.util.Arrays;
+import org.mapstruct.Mapper;
 
-public class TestData {
+@Mapper
+public abstract class UnmappableEnumMapper {
 
-    private TestData() {
+    abstract UserDto userToUserDto(User user);
 
+    public ColorDto map(Color color) {
+        return new ColorDto();
     }
 
-    public static User createUser() {
-        return new User( "John", new Car( "Chrysler", 1955, Arrays.asList(
-            new Wheel().front().left(),
-            new Wheel().front().right(),
-            new Wheel().rear().left(),
-            new Wheel().rear().right()
-        ) ),
-            new House( "Black", 1834, new Roof( 1, RoofType.BOX ) )
-        );
+    public CarDto map(Car carDto) {
+        return new CarDto();
     }
 
+    public DictionaryDto map(Dictionary dictionary) {
+        return new DictionaryDto();
+    }
+
+    public ComputerDto map(Computer computer) {
+        return new ComputerDto();
+    }
+
+    public CatDto map(Cat cat) {
+        return new CatDto();
+    }
 }

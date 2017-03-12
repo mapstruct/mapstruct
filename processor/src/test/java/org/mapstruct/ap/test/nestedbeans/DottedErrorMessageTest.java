@@ -31,10 +31,12 @@ import org.mapstruct.ap.test.nestedbeans.erroneous.Cat;
 import org.mapstruct.ap.test.nestedbeans.erroneous.CatDto;
 import org.mapstruct.ap.test.nestedbeans.erroneous.Info;
 import org.mapstruct.ap.test.nestedbeans.erroneous.InfoDto;
+import org.mapstruct.ap.test.nestedbeans.erroneous.RoofTypeMapper;
 import org.mapstruct.ap.test.nestedbeans.erroneous.UnmappableCollectionElementPropertyMapper;
 import org.mapstruct.ap.test.nestedbeans.erroneous.UnmappableDeepListMapper;
 import org.mapstruct.ap.test.nestedbeans.erroneous.UnmappableDeepMapKeyMapper;
 import org.mapstruct.ap.test.nestedbeans.erroneous.UnmappableDeepMapValueMapper;
+import org.mapstruct.ap.test.nestedbeans.erroneous.UnmappableEnumMapper;
 import org.mapstruct.ap.test.nestedbeans.erroneous.UnmappableValuePropertyMapper;
 import org.mapstruct.ap.test.nestedbeans.erroneous.UserDto;
 import org.mapstruct.ap.test.nestedbeans.erroneous.User;
@@ -42,11 +44,13 @@ import org.mapstruct.ap.test.nestedbeans.erroneous.WheelDto;
 import org.mapstruct.ap.test.nestedbeans.erroneous.Wheel;
 import org.mapstruct.ap.test.nestedbeans.erroneous.Car;
 import org.mapstruct.ap.test.nestedbeans.erroneous.CarDto;
+import org.mapstruct.ap.test.nestedbeans.erroneous.ExternalRoofType;
 import org.mapstruct.ap.test.nestedbeans.erroneous.House;
 import org.mapstruct.ap.test.nestedbeans.erroneous.HouseDto;
 import org.mapstruct.ap.test.nestedbeans.erroneous.Color;
 import org.mapstruct.ap.test.nestedbeans.erroneous.ColorDto;
 import org.mapstruct.ap.test.nestedbeans.erroneous.Roof;
+import org.mapstruct.ap.test.nestedbeans.erroneous.RoofType;
 import org.mapstruct.ap.test.nestedbeans.erroneous.RoofDto;
 import org.mapstruct.ap.test.nestedbeans.erroneous.UnmappableDeepNestingMapper;
 import org.mapstruct.ap.test.nestedbeans.erroneous.Word;
@@ -60,6 +64,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @WithClasses({
     Car.class, CarDto.class, Color.class, ColorDto.class,
     House.class, HouseDto.class, Roof.class, RoofDto.class,
+    RoofType.class, ExternalRoofType.class, RoofTypeMapper.class,
     User.class, UserDto.class, Wheel.class, WheelDto.class,
     Dictionary.class, DictionaryDto.class, Word.class, WordDto.class,
     ForeignWord.class, ForeignWordDto.class,
@@ -182,5 +187,24 @@ public class DottedErrorMessageTest {
         }
     )
     public void testMapValueProperty() {
+    }
+
+    @Test
+    @WithClasses({
+        UnmappableEnumMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = UnmappableEnumMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 26,
+                messageRegExp = "The following constants from the property \".*RoofType house\\.roof\\.type\" enum " +
+                    "have no corresponding constant in the \".*ExternalRoofType house\\.roof\\.type\" enum and must " +
+                    "be be mapped via adding additional mappings: NORMAL\\."
+            )
+        }
+    )
+    public void testMapEnumProperty() {
     }
 }
