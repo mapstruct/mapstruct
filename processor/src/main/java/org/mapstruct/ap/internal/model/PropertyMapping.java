@@ -48,6 +48,7 @@ import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceReference;
@@ -504,8 +505,8 @@ public class PropertyMapping extends ModelElement {
                     sourceType,
                     config,
                     method.getExecutable(),
-                    method.getContextParameters(),
-                    method.getContextProvidedMethods() );
+                    Collections.<Parameter> emptyList(),
+                    ParameterProvidedMethods.empty() );
 
                 NestedPropertyMappingMethod.Builder builder = new NestedPropertyMappingMethod.Builder();
                 NestedPropertyMappingMethod nestedPropertyMapping = builder
