@@ -28,6 +28,8 @@ import java.util.Set;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.source.ForgedMethod;
+import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.ValueMapping;
@@ -161,10 +163,20 @@ public class ValueMappingMethod extends MappingMethod {
                 }
 
                 if ( defaultTargetValue == null && !unmappedSourceConstants.isEmpty() ) {
+                    String sourceErrorMessage = "source";
+                    String targetErrorMessage = "target";
+                    if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getHistory() != null ) {
+                        ForgedMethodHistory history = ( (ForgedMethod) method ).getHistory();
+                        sourceErrorMessage = history.createSourcePropertyErrorMessage();
+                        targetErrorMessage =
+                            "\"" + history.getTargetType().toString() + " " + history.createTargetPropertyName() + "\"";
+                    }
                     // all sources should now be matched, there's no default to fall back to, so if sources remain,
                     // we have an issue.
                     ctx.getMessager().printMessage( method.getExecutable(),
                         Message.VALUE_MAPPING_UNMAPPED_SOURCES,
+                        sourceErrorMessage,
+                        targetErrorMessage,
                         Strings.join( unmappedSourceConstants, ", " )
                     );
 

@@ -19,30 +19,14 @@
 package org.mapstruct.ap.test.nestedbeans.erroneous;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ValueMapping;
 
-@Mapper(uses = RoofTypeMapper.class)
-public abstract class UnmappableDeepMapKeyMapper {
+/**
+ * @author Filip Hrisafov
+ */
+@Mapper
+public interface RoofTypeMapper {
 
-    abstract UserDto userToUserDto(User user);
-
-    public CarDto map(Car carDto) {
-        return new CarDto();
-    }
-
-    public HouseDto map(House house) {
-        return new HouseDto();
-    }
-
-    public ForeignWordDto map(ForeignWord word) {
-        return new ForeignWordDto();
-    }
-
-    public ComputerDto map(Computer computer) {
-        return new ComputerDto();
-    }
-
-    public CatDto map(Cat cat) {
-        return new CatDto();
-    }
-
+    @ValueMapping( source = "NORMAL", target = "STANDARD")
+    ExternalRoofType map(RoofType type);
 }

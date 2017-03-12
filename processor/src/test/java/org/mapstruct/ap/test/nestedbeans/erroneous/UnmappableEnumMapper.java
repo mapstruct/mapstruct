@@ -20,21 +20,21 @@ package org.mapstruct.ap.test.nestedbeans.erroneous;
 
 import org.mapstruct.Mapper;
 
-@Mapper(uses = RoofTypeMapper.class)
-public abstract class UnmappableDeepMapKeyMapper {
+@Mapper
+public abstract class UnmappableEnumMapper {
 
     abstract UserDto userToUserDto(User user);
+
+    public ColorDto map(Color color) {
+        return new ColorDto();
+    }
 
     public CarDto map(Car carDto) {
         return new CarDto();
     }
 
-    public HouseDto map(House house) {
-        return new HouseDto();
-    }
-
-    public ForeignWordDto map(ForeignWord word) {
-        return new ForeignWordDto();
+    public DictionaryDto map(Dictionary dictionary) {
+        return new DictionaryDto();
     }
 
     public ComputerDto map(Computer computer) {
@@ -44,5 +44,4 @@ public abstract class UnmappableDeepMapKeyMapper {
     public CatDto map(Cat cat) {
         return new CatDto();
     }
-
 }
