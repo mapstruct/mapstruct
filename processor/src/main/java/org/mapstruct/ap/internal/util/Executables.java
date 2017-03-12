@@ -203,7 +203,10 @@ public class Executables {
      *
      * @return the executable elements usable in the type
      */
-    public static List<Accessor> getAllEnclosedAccessors(Elements elementUtils, TypeElement element) {
+    public static List<Accessor> getAllEnclosedAccessors( Elements elementUtils, TypeElement element ) {
+        if (element == null) {
+            return java.util.Collections.emptyList();
+        }
         List<Accessor> enclosedElements = new ArrayList<Accessor>();
         element = replaceTypeElementIfNecessary( elementUtils, element );
         addEnclosedElementsInHierarchy( elementUtils, enclosedElements, element, element );

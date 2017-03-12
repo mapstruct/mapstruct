@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.LinkedHashMap;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -40,6 +41,7 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
  * Represents a mapping method with source and target type and the mappings between the properties of source and target
@@ -74,6 +76,7 @@ public class SourceMethod implements Method {
     private final ParameterProvidedMethods contextProvidedMethods;
 
     private List<String> parameterNames;
+    private Map<String, Accessor> getSourceReadAccessors;
 
     private List<SourceMethod> applicablePrototypeMethods;
     private List<SourceMethod> applicableReversePrototypeMethods;
@@ -611,5 +614,20 @@ public class SourceMethod implements Method {
     @Override
     public boolean isUpdateMethod() {
         return getMappingTargetParameter() != null;
+    }
+
+    public Map<String, Accessor> getGetSourceReadAccessors() {
+
+        if (getSourceReadAccessors == null) {
+            Map<String, Accessor> map = new LinkedHashMap<String, Accessor>();
+
+            for (Parameter parameter : getSourceParameters()) {
+                map.putAll( parameter.getType().getPropertyReadAccessors() );
+            }
+            getSourceReadAccessors = Collections.unmodifiableMap( map );
+
+        }
+
+        return getSourceReadAccessors;
     }
 }
