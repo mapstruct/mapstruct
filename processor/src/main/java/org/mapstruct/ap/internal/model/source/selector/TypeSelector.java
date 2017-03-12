@@ -59,7 +59,7 @@ public class TypeSelector implements MethodSelector {
         List<ParameterBinding> availableBindings;
         if ( sourceTypes.isEmpty() ) {
             // if no source types are given, we have a factory or lifecycle method
-            availableBindings = getAvailableParameterBindingsFromMethod( mappingMethod );
+            availableBindings = getAvailableParameterBindingsFromMethod( mappingMethod, targetType );
         }
         else {
             availableBindings = getAvailableParameterBindingsFromSourceTypes( sourceTypes, targetType, mappingMethod );
@@ -81,11 +81,11 @@ public class TypeSelector implements MethodSelector {
         return result;
     }
 
-    private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method) {
+    private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType) {
         List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( method.getParameters().size() + 2 );
 
         availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
-        addMappingTargetAndTargetTypeBindings( availableParams, method.getResultType() );
+        addMappingTargetAndTargetTypeBindings( availableParams, targetType );
 
         return availableParams;
     }

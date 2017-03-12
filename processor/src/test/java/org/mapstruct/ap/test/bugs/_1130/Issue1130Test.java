@@ -16,37 +16,40 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._1124;
+package org.mapstruct.ap.test.bugs._1130;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.bugs._1124.Issue1124Mapper.DTO;
-import org.mapstruct.ap.test.bugs._1124.Issue1124Mapper.Entity;
-import org.mapstruct.ap.test.bugs._1124.Issue1124Mapper.MappingContext;
+import org.mapstruct.TargetType;
+import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.ADto;
+import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.AEntity;
+import org.mapstruct.ap.test.bugs._1130.Issue1130Mapper.BEntity;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
 
 /**
+ * Tests that when calling an update method for a previously null property, the factory method is called even if that
+ * factory method has a {@link TargetType} annotation.
+ *
  * @author Andreas Gudian
  */
-@IssueKey("1124")
+@IssueKey("1130")
 @RunWith(AnnotationProcessorTestRunner.class)
-@WithClasses(Issue1124Mapper.class)
-public class Issue1124Test {
+@WithClasses(Issue1130Mapper.class)
+public class Issue1130Test {
     @Test
-    public void nestedPropertyWithContextCompiles() {
-        Entity entity = new Entity();
+    public void factoryMethodWithTargetTypeInUpdateMethods() {
+        AEntity aEntity = new AEntity();
+        aEntity.setB( new BEntity() );
 
-        Entity subEntity = new Entity();
-        subEntity.setId( 42L );
-        entity.setEntity( subEntity );
+        ADto aDto = new ADto();
+        Mappers.getMapper( Issue1130Mapper.class ).mergeA( aEntity, aDto );
 
-        DTO dto = Mappers.getMapper( Issue1124Mapper.class ).map( entity, new MappingContext() );
-
-        assertThat( dto.getId() ).isEqualTo( 42L );
+        assertThat( aDto.getB() ).isNotNull();
+        assertThat( aDto.getB().getPassedViaConstructor() ).isEqualTo( "created by factory" );
     }
 }
