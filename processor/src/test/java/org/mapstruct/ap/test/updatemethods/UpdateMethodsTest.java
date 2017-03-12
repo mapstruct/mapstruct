@@ -190,21 +190,23 @@ public class UpdateMethodsTest {
 
     @Test
     @WithClasses( {
-        ErroneousCompanyMapper1.class,
+        CompanyMapper1.class,
         DepartmentInBetween.class,
         UnmappableCompanyDto.class,
         UnmappableDepartmentDto.class
 
     } )
     @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
+        value = CompilationResult.SUCCEEDED,
         diagnostics = {
-            @Diagnostic(type = ErroneousCompanyMapper1.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
+            @Diagnostic(type = CompanyMapper1.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 36,
-                messageRegExp = "Can't map property \".*UnmappableDepartmentDto department\" to \".*DepartmentEntity " +
-                    "department.")
+                messageRegExp = "Unmapped target property: \"employees\"\\. Mapping from property \"" +
+                    ".*UnmappableDepartmentDto department\" to \".*DepartmentEntity department.")
         }
     )
-    public void testShouldFailOnTwoNestedUpdateMethods() { }
+    public void testShouldNotUseTwoNestedUpdateMethods() {
+        generatedSource.addComparisonToFixtureFor( CompanyMapper1.class );
+    }
 }
