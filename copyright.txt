@@ -1,31 +1,31 @@
 ﻿Contributors
 ============
 
-Andreas Gudian
-Christian Schuster
-Christophe Labouisse
-Ciaran Liedeman
-Dilip Krishnan
-Dmytro Polovinkin
-Ewald Volkert
-Filip Hrisafov
-Gunnar Morling
-Ivo Smid
-Markus Heberling
-Michael Pardo
-Mustafa Caylak
-Oliver Ehrenmüller
-Paul Strugnell
-Pascal Grün
-Pavel Makhov
-Peter Larson
-Remko Plantenga
-Remo Meier
-Samuel Wright
-Sebastian Hasait
-Sean Huang
-Sjaak Derksen
-Stefan May
-Timo Eckhardt
-Tomek Gubala
-Vincent Alexander Beelte
+Andreas Gudian - https://github.com/agudian
+Christian Schuster - https://github.com/chschu
+Christophe Labouisse - https://github.com/ggtools
+Ciaran Liedeman - https://github.com/cliedeman
+Dilip Krishnan - https://github.com/dilipkrish
+Dmytro Polovinkin - https://github.com/navpil
+Ewald Volkert - https://github.com/eforest
+Filip Hrisafov - https://github.com/filiphr
+Gunnar Morling - https://github.com/gunnarmorling
+Ivo Smid - https://github.com/bedla
+Markus Heberling - https://github.com/tisoft
+Michael Pardo - https://github.com/pardom
+Mustafa Caylak - https://github.com/luxmeter
+Oliver Ehrenmüller - https://github.com/greuelpirat
+Paul Strugnell - https://github.com/ps-powa
+Pascal Grün - https://github.com/pascalgn
+Pavel Makhov - https://github.com/streetturtle
+Peter Larson - https://github.com/pjlarson
+Remko Plantenga - https://github.com/sonata82
+Remo Meier - https://github.com/remmeier
+Samuel Wright - https://github.com/samwright
+Sebastian Hasait - https://github.com/shasait
+Sean Huang - https://github.com/seanjob
+Sjaak Derksen - https://github.com/sjaakd
+Stefan May - https://github.com/osthus-sm
+Timo Eckhardt - https://github.com/timoe
+Tomek Gubala - https://github.com/vgtworld
+Vincent Alexander Beelte - https://github.com/grandmasterpixel
