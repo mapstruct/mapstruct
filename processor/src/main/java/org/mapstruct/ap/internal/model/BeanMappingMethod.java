@@ -674,52 +674,71 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // fetch settings from element to implement
             ReportingPolicyPrism unmappedTargetPolicy = getUnmappedTargetPolicy();
 
-            //we handle automapping forged methods differently than the usual source ones. in
-            if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).isForgedNamedBased() ) {
-
-                ForgedMethod forgedMethod = (ForgedMethod) this.method;
-                if ( targetProperties.isEmpty() || !unprocessedTargetProperties.isEmpty() ) {
-
-                    if ( forgedMethod.getHistory() == null ) {
-                        Type sourceType = this.method.getParameters().get( 0 ).getType();
-                        Type targetType = this.method.getReturnType();
-                        ctx.getMessager().printMessage(
-                            this.method.getExecutable(),
-                            Message.PROPERTYMAPPING_FORGED_MAPPING_NOT_FOUND,
-                            sourceType,
-                            targetType,
-                            targetType,
-                            sourceType
-                        );
-                    }
-                    else {
-                        ForgedMethodHistory history = forgedMethod.getHistory();
-                        ctx.getMessager().printMessage(
-                            this.method.getExecutable(),
-                            Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
-                            history.createSourcePropertyErrorMessage(),
-                            history.getTargetType(),
-                            history.createTargetPropertyName(),
-                            history.getTargetType(),
-                            history.getSourceType()
-                        );
-                    }
-
+            if ( method instanceof ForgedMethod && targetProperties.isEmpty() ) {
+                //TODO until we solve 1140 we report this error when the target properties are empty
+                ForgedMethod forgedMethod = (ForgedMethod) method;
+                if ( forgedMethod.getHistory() == null ) {
+                    Type sourceType = this.method.getParameters().get( 0 ).getType();
+                    Type targetType = this.method.getReturnType();
+                    ctx.getMessager().printMessage(
+                        this.method.getExecutable(),
+                        Message.PROPERTYMAPPING_FORGED_MAPPING_NOT_FOUND,
+                        sourceType,
+                        targetType,
+                        targetType,
+                        sourceType
+                    );
+                }
+                else {
+                    ForgedMethodHistory history = forgedMethod.getHistory();
+                    ctx.getMessager().printMessage(
+                        this.method.getExecutable(),
+                        Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
+                        history.createSourcePropertyErrorMessage(),
+                        history.getTargetType(),
+                        history.createTargetPropertyName(),
+                        history.getTargetType(),
+                        history.getSourceType()
+                    );
                 }
             }
             else if ( !unprocessedTargetProperties.isEmpty() && unmappedTargetPolicy.requiresReport() ) {
 
                 Message msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
                     Message.BEANMAPPING_UNMAPPED_TARGETS_ERROR : Message.BEANMAPPING_UNMAPPED_TARGETS_WARNING;
-
-                ctx.getMessager().printMessage(
-                    method.getExecutable(),
-                    msg,
+                Object[] args = new Object[] {
                     MessageFormat.format(
                         "{0,choice,1#property|1<properties}: \"{1}\"",
                         unprocessedTargetProperties.size(),
                         Strings.join( unprocessedTargetProperties.keySet(), ", " )
                     )
+                };
+                if ( method instanceof ForgedMethod ) {
+                    msg = unmappedTargetPolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
+                        Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR :
+                        Message.BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING;
+                    String sourceErrorMessage = method.getParameters().get( 0 ).getType().toString();
+                    String targetErrorMessage = method.getReturnType().toString();
+                    if ( ( (ForgedMethod) method ).getHistory() != null ) {
+                        ForgedMethodHistory history = ( (ForgedMethod) method ).getHistory();
+                        sourceErrorMessage = history.createSourcePropertyErrorMessage();
+                        targetErrorMessage = MessageFormat.format(
+                            "\"{0} {1}\"",
+                            history.getTargetType(),
+                            history.createTargetPropertyName()
+                        );
+                    }
+                    args = new Object[] {
+                        args[0],
+                        sourceErrorMessage,
+                        targetErrorMessage
+                    };
+                }
+
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    msg,
+                    args
                 );
             }
         }

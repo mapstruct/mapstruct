@@ -37,6 +37,8 @@ public enum Message {
     BEANMAPPING_SEVERAL_POSSIBLE_TARGET_ACCESSORS( "Found several matching getters for property \"%s\"." ),
     BEANMAPPING_UNMAPPED_TARGETS_WARNING( "Unmapped target %s.", Diagnostic.Kind.WARNING ),
     BEANMAPPING_UNMAPPED_TARGETS_ERROR( "Unmapped target %s." ),
+    BEANMAPPING_UNMAPPED_FORGED_TARGETS_WARNING( "Unmapped target %s. Mapping from %s to %s.", Diagnostic.Kind.WARNING ),
+    BEANMAPPING_UNMAPPED_FORGED_TARGETS_ERROR( "Unmapped target %s. Mapping from %s to %s." ),
     BEANMAPPING_CYCLE_BETWEEN_PROPERTIES( "Cycle(s) between properties given via dependsOn(): %s." ),
     BEANMAPPING_UNKNOWN_PROPERTY_IN_DEPENDS_ON( "\"%s\" is no property of the method return type." ),
 
