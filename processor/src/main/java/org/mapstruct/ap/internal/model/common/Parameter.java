@@ -96,24 +96,27 @@ public class Parameter extends ModelElement {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 23 * hash + (this.name != null ? this.name.hashCode() : 0);
-        return hash;
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + ( type != null ? type.hashCode() : 0 );
+        return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if ( obj == null ) {
+    public boolean equals(Object o) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
             return false;
         }
-        if ( getClass() != obj.getClass() ) {
+
+        Parameter parameter = (Parameter) o;
+
+        if ( name != null ? !name.equals( parameter.name ) : parameter.name != null ) {
             return false;
         }
-        final Parameter other = (Parameter) obj;
-        if ( (this.name == null) ? (other.name != null) : !this.name.equals( other.name ) ) {
-            return false;
-        }
-        return true;
+        return type != null ? type.equals( parameter.type ) : parameter.type == null;
+
     }
 
     public static Parameter forElementAndType(VariableElement element, Type parameterType) {

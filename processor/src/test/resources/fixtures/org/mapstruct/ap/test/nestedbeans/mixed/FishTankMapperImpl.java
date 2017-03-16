@@ -52,8 +52,8 @@ public class FishTankMapperImpl implements FishTankMapper {
 
         FishTankDto fishTankDto = new FishTankDto();
 
-        fishTankDto.setMaterial( fishTankToMaterialDto( source ) );
         fishTankDto.setFish( fishToFishDto( source.getFish() ) );
+        fishTankDto.setMaterial( fishTankToMaterialDto( source ) );
         fishTankDto.setQuality( waterQualityToWaterQualityDto( source.getQuality() ) );
         Ornament ornament = sourceInteriorOrnament( source );
         if ( ornament != null ) {
@@ -73,8 +73,8 @@ public class FishTankMapperImpl implements FishTankMapper {
 
         FishTankDto fishTankDto = new FishTankDto();
 
-        fishTankDto.setMaterial( fishTankToMaterialDto( source ) );
         fishTankDto.setFish( fishToFishDto( source.getFish() ) );
+        fishTankDto.setMaterial( fishTankToMaterialDto( source ) );
         fishTankDto.setQuality( waterQualityToWaterQualityDto( source.getQuality() ) );
         Ornament ornament = sourceInteriorOrnament( source );
         if ( ornament != null ) {
@@ -107,6 +107,18 @@ public class FishTankMapperImpl implements FishTankMapper {
         return fishTank;
     }
 
+    protected FishDto fishToFishDto(Fish fish) {
+        if ( fish == null ) {
+            return null;
+        }
+
+        FishDto fishDto = new FishDto();
+
+        fishDto.setKind( fish.getType() );
+
+        return fishDto;
+    }
+
     protected MaterialTypeDto materialTypeToMaterialTypeDto(MaterialType materialType) {
         if ( materialType == null ) {
             return null;
@@ -129,18 +141,6 @@ public class FishTankMapperImpl implements FishTankMapper {
         materialDto.setMaterialType( materialTypeToMaterialTypeDto( fishTank.getMaterial() ) );
 
         return materialDto;
-    }
-
-    protected FishDto fishToFishDto(Fish fish) {
-        if ( fish == null ) {
-            return null;
-        }
-
-        FishDto fishDto = new FishDto();
-
-        fishDto.setKind( fish.getType() );
-
-        return fishDto;
     }
 
     protected WaterQualityOrganisationDto waterQualityReportToWaterQualityOrganisationDto(WaterQualityReport waterQualityReport) {
