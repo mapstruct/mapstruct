@@ -397,6 +397,8 @@
                     <version>${org.apache.maven.plugins.surefire.version}</version>
                     <configuration>
                         <forkCount>${forkCount}</forkCount>
+                        <!-- Travis build workaround -->
+                        <argLine>-Xms1024m -Xmx3072m</argLine>
                     </configuration>
                     <dependencies>
                         <dependency>
