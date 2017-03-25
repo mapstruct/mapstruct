@@ -149,8 +149,9 @@ public class TargetReference {
                     break;
                 }
 
-                if ( (i == entryNames.length - 1) || (Executables.isSetterMethod( targetWriteAccessor ) ) ) {
-                    // only intermediate nested properties when they are a true setter
+                if ( ( i == entryNames.length - 1 ) || ( Executables.isSetterMethod( targetWriteAccessor )
+                    || Executables.isFieldAccessor( targetWriteAccessor ) ) ) {
+                    // only intermediate nested properties when they are a true setter or field accessor
                     // the last may be other readAccessor (setter / getter / adder).
 
                     if ( Executables.isGetterMethod( targetWriteAccessor ) ||
