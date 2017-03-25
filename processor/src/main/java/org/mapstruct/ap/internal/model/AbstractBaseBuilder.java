@@ -97,7 +97,10 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         if ( mappingMethod == null ) {
             return null;
         }
-        if ( !ctx.getMappingsToGenerate().contains( mappingMethod ) ) {
+        if (methodRef.getMappingOptions().isRestrictToDefinedMappings() ||
+            !ctx.getMappingsToGenerate().contains( mappingMethod )) {
+            // If the mapping options are restricted only to the defined mappings, then use the mapping method.
+            // See https://github.com/mapstruct/mapstruct/issues/1148
             ctx.getMappingsToGenerate().add( mappingMethod );
         }
         else {
