@@ -31,18 +31,20 @@ public class DefaultConversionContext implements ConversionContext {
     private final FormattingMessager messager;
     private final Type sourceType;
     private final Type targetType;
+    private final FormattingParameters formattingParameters;
     private final String dateFormat;
     private final String numberFormat;
     private final TypeFactory typeFactory;
 
     public DefaultConversionContext(TypeFactory typeFactory, FormattingMessager messager, Type sourceType,
-                                    Type targetType, String dateFormat, String numberFormat) {
+        Type targetType, FormattingParameters formattingParameters) {
         this.typeFactory = typeFactory;
         this.messager = messager;
         this.sourceType = sourceType;
         this.targetType = targetType;
-        this.dateFormat = dateFormat;
-        this.numberFormat = numberFormat;
+        this.formattingParameters = formattingParameters;
+        this.dateFormat = this.formattingParameters.getDate();
+        this.numberFormat = this.formattingParameters.getNumber();
         validateDateFormat();
     }
 
@@ -55,7 +57,12 @@ public class DefaultConversionContext implements ConversionContext {
             DateFormatValidationResult validationResult = dateFormatValidator.validate( dateFormat );
 
             if ( !validationResult.isValid() ) {
-                validationResult.printErrorMessage( messager );
+                validationResult.printErrorMessage(
+                    messager,
+                    formattingParameters.getElement(),
+                    formattingParameters.getMirror(),
+                    formattingParameters.getDateAnnotationValue()
+                );
             }
         }
     }

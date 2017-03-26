@@ -22,6 +22,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.prism.MapMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -82,11 +83,19 @@ public class MapMapping {
 
         FormattingParameters keyFormatting = new FormattingParameters(
             mapMapping.keyDateFormat(),
-            mapMapping.keyNumberFormat() );
+            mapMapping.keyNumberFormat(),
+            mapMapping.mirror,
+            mapMapping.values.keyDateFormat(),
+            method
+        );
 
         FormattingParameters valueFormatting = new FormattingParameters(
             mapMapping.valueDateFormat(),
-            mapMapping.valueNumberFormat() );
+            mapMapping.valueNumberFormat(),
+            mapMapping.mirror,
+            mapMapping.values.valueDateFormat(),
+            method
+        );
 
         return new MapMapping(
             keyFormatting,

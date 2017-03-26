@@ -32,6 +32,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
@@ -140,7 +142,13 @@ public class Mapping {
             mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
 
 
-        FormattingParameters formattingParam = new FormattingParameters( dateFormat, numberFormat );
+        FormattingParameters formattingParam = new FormattingParameters(
+            dateFormat,
+            numberFormat,
+            mappingPrism.mirror,
+            mappingPrism.values.dateFormat(),
+            element
+        );
         SelectionParameters selectionParams = new SelectionParameters(
             mappingPrism.qualifiedBy(),
             mappingPrism.qualifiedByName(),
