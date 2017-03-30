@@ -72,8 +72,7 @@ public class WrapperForCollectionsAndMaps extends AssignmentWrapper {
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>();
         imported.addAll( super.getImportTypes() );
-        imported.add( nullCheckLocalVarType );
-        imported.addAll( nullCheckLocalVarType.getTypeParameters() );
+        imported.addAll( nullCheckLocalVarType.getImportTypes() );
         return imported;
     }
 
