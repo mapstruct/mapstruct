@@ -78,7 +78,12 @@ public class DefaultConversionContextTest {
         Type type = typeWithFQN( JavaTimeConstants.ZONED_DATE_TIME_FQN );
         StatefulMessagerMock statefulMessagerMock = new StatefulMessagerMock();
         new DefaultConversionContext(
-                        null, statefulMessagerMock, type, type, "qwertz", null);
+            null,
+            statefulMessagerMock,
+            type,
+            type,
+            new FormattingParameters( "qwertz", null, null, null, null )
+        );
         assertThat( statefulMessagerMock.getLastKindPrinted() ).isEqualTo( Diagnostic.Kind.ERROR );
     }
 
@@ -87,7 +92,12 @@ public class DefaultConversionContextTest {
         Type type = typeWithFQN( JavaTimeConstants.ZONED_DATE_TIME_FQN );
         StatefulMessagerMock statefulMessagerMock = new StatefulMessagerMock();
         new DefaultConversionContext(
-                        null, statefulMessagerMock, type, type, null, null);
+            null,
+            statefulMessagerMock,
+            type,
+            type,
+            new FormattingParameters( null, null, null, null, null )
+        );
         assertThat( statefulMessagerMock.getLastKindPrinted() ).isNull();
     }
 
@@ -95,8 +105,12 @@ public class DefaultConversionContextTest {
     public void testUnsupportedType() {
         Type type = typeWithFQN( "java.lang.String" );
         StatefulMessagerMock statefulMessagerMock = new StatefulMessagerMock();
-        new DefaultConversionContext(
-                        null, statefulMessagerMock, type, type, "qwertz", null);
+        new DefaultConversionContext( null,
+            statefulMessagerMock,
+            type,
+            type,
+            new FormattingParameters( "qwertz", null, null, null, null )
+        );
         assertThat( statefulMessagerMock.getLastKindPrinted() ).isNull();
     }
 
@@ -128,19 +142,22 @@ public class DefaultConversionContextTest {
 
         @Override
         public void printMessage(Message msg, Object... arg) {
-            lastKindPrinted = msg.getDiagnosticKind();
+            throw new UnsupportedOperationException( "Should not be called" );
         }
 
         @Override
         public void printMessage(Element e, Message msg, Object... arg) {
+            throw new UnsupportedOperationException( "Should not be called" );
         }
 
         @Override
         public void printMessage(Element e, AnnotationMirror a, Message msg, Object... arg) {
+            throw new UnsupportedOperationException( "Should not be called" );
         }
 
         @Override
         public void printMessage(Element e, AnnotationMirror a, AnnotationValue v, Message msg, Object... arg) {
+            lastKindPrinted = msg.getDiagnosticKind();
         }
 
         public Diagnostic.Kind getLastKindPrinted() {

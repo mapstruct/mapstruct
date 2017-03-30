@@ -22,6 +22,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.prism.IterableMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -69,7 +70,11 @@ public class IterableMapping {
 
         FormattingParameters formatting = new FormattingParameters(
             iterableMapping.dateFormat(),
-            iterableMapping.numberFormat() );
+            iterableMapping.numberFormat(),
+            iterableMapping.mirror,
+            iterableMapping.values.dateFormat(),
+            method
+        );
 
         return new IterableMapping( formatting,
             selection,

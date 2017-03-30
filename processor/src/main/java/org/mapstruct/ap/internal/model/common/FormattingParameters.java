@@ -16,7 +16,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model.source;
+package org.mapstruct.ap.internal.model.common;
+
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
 
 /**
  *
@@ -24,12 +28,21 @@ package org.mapstruct.ap.internal.model.source;
  */
 public class FormattingParameters {
 
+    public static final FormattingParameters EMPTY = new FormattingParameters( null, null, null, null, null );
+
     private final String date;
     private final String number;
+    private final AnnotationMirror mirror;
+    private final AnnotationValue dateAnnotationValue;
+    private final Element element;
 
-    public FormattingParameters(String date, String number) {
+    public FormattingParameters(String date, String number, AnnotationMirror mirror,
+        AnnotationValue dateAnnotationValue, Element element) {
         this.date = date;
         this.number = number;
+        this.mirror = mirror;
+        this.dateAnnotationValue = dateAnnotationValue;
+        this.element = element;
     }
 
     public String getDate() {
@@ -40,4 +53,15 @@ public class FormattingParameters {
         return number;
     }
 
+    public AnnotationMirror getMirror() {
+        return mirror;
+    }
+
+    public AnnotationValue getDateAnnotationValue() {
+        return dateAnnotationValue;
+    }
+
+    public Element getElement() {
+        return element;
+    }
 }

@@ -49,7 +49,7 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.source.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
@@ -111,18 +111,10 @@ public class MappingResolverImpl implements MappingResolver {
         SelectionCriteria criteria =
             SelectionCriteria.forMappingMethods( selectionParameters, targetPropertyName, preferUpdateMapping );
 
-        String dateFormat = null;
-        String numberFormat = null;
-        if ( formattingParameters != null ) {
-            dateFormat = formattingParameters.getDate();
-            numberFormat = formattingParameters.getNumber();
-        }
-
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
             mappingMethod,
-            dateFormat,
-            numberFormat,
+            formattingParameters,
             sourceRHS,
             criteria
         );
@@ -186,24 +178,23 @@ public class MappingResolverImpl implements MappingResolver {
 
         private final Method mappingMethod;
         private final List<Method> methods;
-        private final String dateFormat;
-        private final String numberFormat;
         private final SelectionCriteria selectionCriteria;
         private final SourceRHS sourceRHS;
         private final boolean savedPreferUpdateMapping;
+        private final FormattingParameters formattingParameters;
 
         // resolving via 2 steps creates the possibillity of wrong matches, first builtin method matches,
         // second doesn't. In that case, the first builtin method should not lead to a virtual method
         // so this set must be cleared.
         private final Set<VirtualMappingMethod> virtualMethodCandidates;
 
-        private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod, String dateFormat,
-                                 String numberFormat, SourceRHS sourceRHS, SelectionCriteria criteria) {
+        private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod,
+            FormattingParameters formattingParameters, SourceRHS sourceRHS, SelectionCriteria criteria) {
 
             this.mappingMethod = mappingMethod;
             this.methods = filterPossibleCandidateMethods( sourceModel );
-            this.dateFormat = dateFormat;
-            this.numberFormat = numberFormat;
+            this.formattingParameters =
+                formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
             this.sourceRHS = sourceRHS;
             this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
             this.selectionCriteria = criteria;
@@ -286,8 +277,13 @@ public class MappingResolverImpl implements MappingResolver {
             if ( conversionProvider == null ) {
                 return null;
             }
-            ConversionContext ctx = new DefaultConversionContext( typeFactory, messager, sourceType, targetType,
-                    dateFormat, numberFormat );
+            ConversionContext ctx = new DefaultConversionContext(
+                typeFactory,
+                messager,
+                sourceType,
+                targetType,
+                formattingParameters
+            );
 
             // add helper methods required in conversion
             for ( HelperMethod helperMethod : conversionProvider.getRequiredHelperMethods( ctx ) ) {
@@ -322,9 +318,13 @@ public class MappingResolverImpl implements MappingResolver {
 
             if ( matchingBuiltInMethod != null ) {
                 virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod.getMethod() ) );
-                ConversionContext ctx = new DefaultConversionContext( typeFactory, messager,
-                                                                      sourceType,
-                                                                      targetType, dateFormat, numberFormat);
+                ConversionContext ctx = new DefaultConversionContext(
+                    typeFactory,
+                    messager,
+                    sourceType,
+                    targetType,
+                    formattingParameters
+                );
                 Assignment methodReference = MethodReference.forBuiltInMethod( matchingBuiltInMethod.getMethod(), ctx );
                 methodReference.setAssignment( sourceRHS );
                 return methodReference;
