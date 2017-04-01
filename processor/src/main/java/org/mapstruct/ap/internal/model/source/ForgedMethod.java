@@ -18,17 +18,20 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.lang.model.element.ExecutableElement;
-
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+
+import javax.lang.model.element.ExecutableElement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This method will be generated in absence of a suitable abstract method to implement.
@@ -51,6 +54,7 @@ public class ForgedMethod implements Method {
     private final MappingOptions mappingOptions;
     private final ParameterProvidedMethods contextProvidedMethods;
     private final boolean forgedNameBased;
+    private final Map<String, Accessor> sourceReadAccessors;
 
     /**
      * Creates a new forged method with the given name.
@@ -120,6 +124,36 @@ public class ForgedMethod implements Method {
         this.mappingOptions = mappingOptions == null ? MappingOptions.empty() : mappingOptions;
         this.mappingOptions.initWithParameter( sourceParameter );
         this.forgedNameBased = forgedNameBased;
+        sourceReadAccessors = initSourceReadAccessors( getSourceParameters(), mappingOptions );
+    }
+
+    private Map<String, Accessor> initSourceReadAccessors( List<Parameter> sourceParameters,
+                                                           MappingOptions mappingOptions) {
+        if ( mappingOptions == null ) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, Accessor> map = new LinkedHashMap<String, Accessor>();
+
+        Map<String, String> bindings = new LinkedHashMap<String, String>();
+        if ( mappingOptions.getMappings() != null ) {
+            for ( Map.Entry<String, List<Mapping>> entry : mappingOptions.getMappings().entrySet() ) {
+                if ( entry.getValue() != null && entry.getValue().size() > 0 ) {
+                    bindings.put( entry.getKey(), entry.getValue().get( 0 ).getSourceName() );
+                }
+            }
+        }
+
+        for ( Parameter parameter : sourceParameters ) {
+            map.putAll( parameter.getType().getPropertyReadAccessors() );
+        }
+
+        for ( Map.Entry<String, String> entry : bindings.entrySet() ) {
+            if ( map.get( entry.getValue() ) != null ) {
+                map.put( entry.getKey(), map.remove( entry.getValue() ) );
+            }
+        }
+        return Collections.unmodifiableMap( map );
     }
 
     /**
@@ -143,6 +177,7 @@ public class ForgedMethod implements Method {
 
         this.name = name;
         this.forgedNameBased = forgedMethod.forgedNameBased;
+        this.sourceReadAccessors = forgedMethod.sourceReadAccessors;
     }
 
     @Override
@@ -319,6 +354,10 @@ public class ForgedMethod implements Method {
     @Override
     public MappingOptions getMappingOptions() {
         return mappingOptions;
+    }
+
+    public Map<String, Accessor> getSourceReadAccessors() {
+        return sourceReadAccessors;
     }
 
     @Override

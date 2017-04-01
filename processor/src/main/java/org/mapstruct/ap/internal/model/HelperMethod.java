@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
@@ -34,6 +35,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
  * A non mapping method to be generated.
@@ -264,5 +266,9 @@ public abstract class HelperMethod implements Method {
     @Override
     public boolean isUpdateMethod() {
         return false; // irrelevant
+    }
+
+    public Map<String, Accessor> getSourceReadAccessors() {
+        return Collections.emptyMap();
     }
 }

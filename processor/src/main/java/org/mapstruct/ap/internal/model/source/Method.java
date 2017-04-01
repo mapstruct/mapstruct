@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.model.source;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.lang.model.element.ExecutableElement;
 
@@ -27,6 +28,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
  * This interface makes available common method properties and a matching method There are 2 known implementors:
@@ -200,4 +202,11 @@ public interface Method {
      * @return the mapping options for this method
      */
     MappingOptions getMappingOptions();
+
+    /**
+     *
+     * @return map of possible accessors
+     */
+
+    Map<String, Accessor> getSourceReadAccessors();
 }

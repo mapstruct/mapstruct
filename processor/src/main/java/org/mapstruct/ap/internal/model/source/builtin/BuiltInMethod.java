@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
@@ -38,6 +39,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
  * Represents a "built-in" mapping method which will be added as private method to the generated mapper. Built-in
@@ -287,5 +289,9 @@ public abstract class BuiltInMethod implements Method {
     @Override
     public MappingOptions getMappingOptions() {
         return MappingOptions.empty();
+    }
+
+    public Map<String, Accessor> getSourceReadAccessors() {
+        return Collections.emptyMap();
     }
 }

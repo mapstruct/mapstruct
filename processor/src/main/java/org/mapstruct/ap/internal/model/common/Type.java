@@ -18,14 +18,12 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.Executables;
+import org.mapstruct.ap.internal.util.Filters;
+import org.mapstruct.ap.internal.util.Nouns;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -42,13 +40,14 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.Filters;
-import org.mapstruct.ap.internal.util.Nouns;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -437,6 +436,11 @@ public class Type extends ModelElement implements Comparable<Type> {
         return presenceCheckers;
     }
 
+    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
+        return getPropertyWriteAccessors( cmStrategy, Collections.<String, Accessor>emptyMap() );
+    }
+
+
     /**
      * getPropertyWriteAccessors returns a map of the write accessors according to the CollectionMappingStrategy. These
      * accessors include:
@@ -450,7 +454,8 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @param cmStrategy collection mapping strategy
      * @return an unmodifiable map of all write accessors indexed by property name
      */
-    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
+    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy,
+                                                            Map<String, Accessor> sourceAccessor ) {
         // collect all candidate target accessors
         List<Accessor> candidates = new ArrayList<Accessor>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
@@ -461,8 +466,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             String targetPropertyName = Executables.getPropertyName( candidate );
 
             Accessor readAccessor = getPropertyReadAccessors().get( targetPropertyName );
-
-            Type preferredType = determinePreferredType( readAccessor );
+            Accessor sourceReadAccessor = sourceAccessor.get( targetPropertyName );
+            TypeMirror preferredType = determinePreferredType( readAccessor, sourceReadAccessor );
             Type targetType = determineTargetType( candidate );
 
             // A target access is in general a setter method on the target object. However, in case of collections,
@@ -496,8 +501,19 @@ public class Type extends ModelElement implements Comparable<Type> {
             }
 
             Accessor previousCandidate = result.get( targetPropertyName );
-            if ( previousCandidate == null || preferredType == null || ( targetType != null
-                && typeUtils.isAssignable( preferredType.getTypeMirror(), targetType.getTypeMirror() ) ) ) {
+
+
+            if (previousCandidate != null
+                    && sourceAccessor != null
+                    && sourceReadAccessor != null
+                    && !isBetter( previousCandidate, candidate,
+                    sourceReadAccessor.getAccessedType() ) ) {
+                continue;
+            }
+
+
+            if (previousCandidate == null || preferredType == null || (targetType != null
+                    && typeUtils.isAssignable( preferredType, targetType.getTypeMirror() ) ) ) {
                 result.put( targetPropertyName, candidate );
             }
         }
@@ -505,9 +521,40 @@ public class Type extends ModelElement implements Comparable<Type> {
         return result;
     }
 
-    private Type determinePreferredType(Accessor readAccessor) {
+    private TypeMirror extractTypeMirror( Accessor accessor ) {
+        if ( accessor.getExecutable() == null ) {
+            return null;
+        }
+        return accessor.getExecutable().getParameters().get( 0 ).asType();
+    }
+
+    private boolean isBetter( Accessor previousCandidate, Accessor nextCandidate, TypeMirror preferredType ) {
+        TypeMirror previousType = extractTypeMirror( previousCandidate );
+        TypeMirror nextType = extractTypeMirror( nextCandidate );
+        if ( nextType == null ) {
+            return false;
+        }
+
+        if (typeUtils.isSameType( previousType, preferredType )) {
+            return false;
+        }
+
+        if (typeUtils.isSameType( nextType, preferredType )) {
+            return true;
+        }
+        if (typeUtils.isAssignable( nextType, preferredType )
+                && !typeUtils.isAssignable( previousType, preferredType )) {
+            return true;
+        }
+        return false;
+    }
+
+    private TypeMirror determinePreferredType(Accessor readAccessor, Accessor sourceReadAccessor) {
+        if ( sourceReadAccessor != null ) {
+            return sourceReadAccessor.getAccessedType();
+        }
         if ( readAccessor != null ) {
-            return typeFactory.getReturnType( (DeclaredType) typeMirror, readAccessor );
+            return typeFactory.getReturnType( (DeclaredType) typeMirror, readAccessor ).getTypeMirror();
         }
         return null;
     }

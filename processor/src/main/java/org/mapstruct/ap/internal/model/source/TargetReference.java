@@ -141,7 +141,8 @@ public class TargetReference {
             for ( int i = 0; i < entryNames.length; i++ ) {
 
                 Accessor targetReadAccessor = nextType.getPropertyReadAccessors().get( entryNames[i] );
-                Accessor targetWriteAccessor = nextType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
+                Accessor targetWriteAccessor = nextType.getPropertyWriteAccessors( cms,
+                        method.getSourceReadAccessors() ).get( entryNames[i] );
                 if ( targetWriteAccessor == null || ( i < entryNames.length - 1 && targetReadAccessor == null) ) {
                     // there should always be a write accessor and there should be read accessor mandatory for all
                     // but the last
