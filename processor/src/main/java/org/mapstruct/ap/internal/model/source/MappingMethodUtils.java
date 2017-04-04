@@ -18,6 +18,14 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
@@ -44,5 +52,34 @@ public final class MappingMethodUtils {
         return method.getSourceParameters().size() == 1
             && first( method.getSourceParameters() ).getType().isEnumType()
             && method.getResultType().isEnumType();
+    }
+
+    public static Map<String, Accessor> getSourceReadAccessors(List<Parameter> sourceParameters,
+                                                          MappingOptions mappingOptions) {
+
+        if ( mappingOptions == null ) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, Accessor> map = new LinkedHashMap<String, Accessor>();
+        Map<String, String> bindings = new LinkedHashMap<String, String>();
+        if ( mappingOptions.getMappings() != null ) {
+            for ( Map.Entry<String, List<Mapping>> entry : mappingOptions.getMappings().entrySet() ) {
+                if ( entry.getValue() != null && entry.getValue().size() > 0 ) {
+                    bindings.put( entry.getKey(), entry.getValue().get( 0 ).getSourceName() );
+                }
+            }
+        }
+
+        for ( Parameter parameter : sourceParameters ) {
+            map.putAll( parameter.getType().getPropertyReadAccessors() );
+        }
+
+        for ( Map.Entry<String, String> entry : bindings.entrySet() ) {
+            if ( map.get( entry.getValue() ) != null ) {
+                map.put( entry.getKey(), map.remove( entry.getValue() ) );
+            }
+        }
+        return Collections.unmodifiableMap( map );
     }
 }

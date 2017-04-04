@@ -18,6 +18,19 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.util.Types;
+
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -28,19 +41,6 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.util.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Represents a mapping method with source and target type and the mappings between the properties of source and target
@@ -234,36 +234,7 @@ public class SourceMethod implements Method {
         this.config = builder.mapperConfig;
         this.prototypeMethods = builder.prototypeMethods;
         this.mapperToImplement = builder.definingType;
-        this.sourceReadAccessors = initSourceReadAccessors( sourceParameters, mappingOptions );
-    }
-
-    private Map<String, Accessor> initSourceReadAccessors( List<Parameter> sourceParameters,
-                                                          MappingOptions mappingOptions) {
-
-        if ( mappingOptions == null ) {
-            return Collections.emptyMap();
-        }
-
-        Map<String, Accessor> map = new LinkedHashMap<String, Accessor>();
-        Map<String, String> bindings = new LinkedHashMap<String, String>();
-        if ( mappingOptions.getMappings() != null ) {
-            for ( Map.Entry<String, List<Mapping>> entry : mappingOptions.getMappings().entrySet() ) {
-                if ( entry.getValue() != null && entry.getValue().size() > 0 ) {
-                    bindings.put( entry.getKey(), entry.getValue().get( 0 ).getSourceName() );
-                }
-            }
-        }
-
-        for ( Parameter parameter : sourceParameters ) {
-            map.putAll( parameter.getType().getPropertyReadAccessors() );
-        }
-
-        for ( Map.Entry<String, String> entry : bindings.entrySet() ) {
-            if ( map.get( entry.getValue() ) != null ) {
-                map.put( entry.getKey(), map.remove( entry.getValue() ) );
-            }
-        }
-        return Collections.unmodifiableMap( map );
+        this.sourceReadAccessors = MappingMethodUtils.getSourceReadAccessors( sourceParameters, mappingOptions );
     }
 
     private boolean determineIfIsObjectFactory(ExecutableElement executable) {
