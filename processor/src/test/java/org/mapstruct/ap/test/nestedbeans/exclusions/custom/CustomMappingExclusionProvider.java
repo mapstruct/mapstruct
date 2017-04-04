@@ -16,25 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erroneous;
+package org.mapstruct.ap.test.nestedbeans.exclusions.custom;
 
-import java.util.List;
+import javax.lang.model.element.Name;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.NoProperties;
-import org.mapstruct.ap.test.WithProperties;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.ap.spi.DefaultMappingExclusionProvider;
+import org.mapstruct.ap.spi.MappingExclusionProvider;
 
 /**
- *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-@Mapper
-public interface ErroneousCollectionNoElementMappingFound {
+public class CustomMappingExclusionProvider extends DefaultMappingExclusionProvider
+    implements MappingExclusionProvider {
 
-    ErroneousCollectionNoElementMappingFound INSTANCE =
-        Mappers.getMapper( ErroneousCollectionNoElementMappingFound.class );
-
-    List<NoProperties> map(List<WithProperties> source);
-
+    @Override
+    protected boolean isFullyQualifiedNameExcluded(Name name) {
+        //For some reason the eclipse compiler does not work when you try to do NestedTarget.class
+        return super.isFullyQualifiedNameExcluded( name ) ||
+            name.toString().equals( "org.mapstruct.ap.test.nestedbeans.exclusions.custom.Target.NestedTarget" );
+    }
 }

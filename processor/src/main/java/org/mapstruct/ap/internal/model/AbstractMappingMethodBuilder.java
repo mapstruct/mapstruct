@@ -45,7 +45,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
     protected abstract boolean shouldUsePropertyNamesInHistory();
 
     Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, Type targetType) {
-        if ( isDisableSubMappingMethodsGeneration() ) {
+        if ( !canGenerateAutoSubMappingBetween( sourceType, targetType ) ) {
             return null;
         }
 

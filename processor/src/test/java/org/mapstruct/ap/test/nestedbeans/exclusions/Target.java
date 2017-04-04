@@ -16,25 +16,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erroneous;
+package org.mapstruct.ap.test.nestedbeans.exclusions;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.NoProperties;
-import org.mapstruct.ap.test.WithProperties;
-import org.mapstruct.factory.Mappers;
-
 /**
- *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-@Mapper
-public interface ErroneousCollectionNoElementMappingFound {
+class Target {
 
-    ErroneousCollectionNoElementMappingFound INSTANCE =
-        Mappers.getMapper( ErroneousCollectionNoElementMappingFound.class );
+    class TargetDeepNested {
+        //CHECKSTYLE:OFF
+        public List<String> types;
+        //CHECKSTYLE:ON
+    }
 
-    List<NoProperties> map(List<WithProperties> source);
+    class TargetNested {
+        //CHECKSTYLE:OFF
+        public TargetDeepNested deepNestedType;
+        //CHECKSTYLE:ON
+    }
 
+    //CHECKSTYLE:OFF
+    public Date date;
+    public GregorianCalendar calendar;
+    public List<String> types;
+    //public TargetNested nestedMyType;
+    //CHECKSTYLE:ON
 }

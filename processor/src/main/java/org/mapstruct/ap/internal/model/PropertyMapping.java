@@ -304,13 +304,7 @@ public class PropertyMapping extends ModelElement {
                 }
             }
             else {
-                reportCannotCreateMapping(
-                    method,
-                    rightHandSide.getSourceErrorMessagePart(),
-                    rightHandSide,
-                    targetType,
-                    targetPropertyName
-                );
+                reportCannotCreateMapping();
             }
 
             return new PropertyMapping(
@@ -323,6 +317,31 @@ public class PropertyMapping extends ModelElement {
                 dependsOn,
                 getDefaultValueAssignment( assignment )
             );
+        }
+
+        /**
+         * Report that a mapping could not be created.
+         */
+        private void reportCannotCreateMapping() {
+            if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getHistory() != null ) {
+                ForgedMethodHistory history =  ( (ForgedMethod) method ).getHistory();
+                reportCannotCreateMapping(
+                    method,
+                    history.createSourcePropertyErrorMessage(),
+                    history.getSourceType(),
+                    history.getTargetType(),
+                    history.createTargetPropertyName()
+                );
+            }
+            else {
+                reportCannotCreateMapping(
+                    method,
+                    rightHandSide.getSourceErrorMessagePart(),
+                    rightHandSide.getSourceType(),
+                    targetType,
+                    targetPropertyName
+                );
+            }
         }
 
         private Assignment getDefaultValueAssignment( Assignment rhs ) {
@@ -582,11 +601,11 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {
-            if ( forgedNamedBased && isDisableSubMappingMethodsGeneration() ) {
+            Type sourceType = sourceRHS.getSourceType();
+            if ( forgedNamedBased && !canGenerateAutoSubMappingBetween( sourceType, targetType ) ) {
                 return null;
             }
 
-            Type sourceType = sourceRHS.getSourceType();
 
             //Fail fast. If we could not find the method by now, no need to try
             if ( sourceType.isPrimitive() || targetType.isPrimitive() ) {

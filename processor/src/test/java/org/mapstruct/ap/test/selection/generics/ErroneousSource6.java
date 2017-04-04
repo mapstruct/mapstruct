@@ -18,15 +18,17 @@
  */
 package org.mapstruct.ap.test.selection.generics;
 
+import org.mapstruct.ap.test.NoProperties;
+
 public class ErroneousSource6 {
 
-    private WildCardSuperWrapper<String> foo;
+    private WildCardSuperWrapper<NoProperties> foo;
 
-    public WildCardSuperWrapper<String> getFoo() {
+    public WildCardSuperWrapper<NoProperties> getFoo() {
         return foo;
     }
 
-    public void setFoo(WildCardSuperWrapper<String> foo) {
+    public void setFoo(WildCardSuperWrapper<NoProperties> foo) {
         this.foo = foo;
     }
 }

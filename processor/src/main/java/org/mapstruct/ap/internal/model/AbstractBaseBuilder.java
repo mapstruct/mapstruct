@@ -50,7 +50,27 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         return myself;
     }
 
-    boolean isDisableSubMappingMethodsGeneration() {
+    /**
+     * Checks if MapStruct is allowed to generate an automatic sub-mapping between {@code sourceType} and @{code
+     * targetType}.
+     * This will evaluate to {@code true}, when:
+     * <li>
+     * <ul>Automatic sub-mapping methods generation is not disabled</ul>
+     * <ul>MapStruct is allowed to generate an automatic sub-mapping between the {@code sourceType} and {@code
+     * targetType}</ul>
+     * </li>
+     *
+     * @param sourceType candidate source type to generate a sub-mapping from
+     * @param targetType candidate target type to generate a sub-mapping for
+     *
+     * @return {@code true} if MapStruct can try to generate an automatic sub-mapping between the types.
+     */
+    boolean canGenerateAutoSubMappingBetween(Type sourceType, Type targetType) {
+        return !isDisableSubMappingMethodsGeneration() &&
+            ctx.canGenerateAutoSubMappingBetween( sourceType, targetType );
+    }
+
+    private boolean isDisableSubMappingMethodsGeneration() {
         MapperConfiguration configuration = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
         return configuration.isDisableSubMappingMethodsGeneration();
     }
@@ -123,11 +143,11 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      *
      * @param method the method that should be mapped
      * @param sourceErrorMessagePart the error message part for the source
-     * @param sourceRHS the {@link SourceRHS}
+     * @param sourceType the source type of the mapping
      * @param targetType the type of the target mapping
      * @param targetPropertyName the name of the target property
      */
-    void reportCannotCreateMapping(Method method, String sourceErrorMessagePart, SourceRHS sourceRHS, Type targetType,
+    void reportCannotCreateMapping(Method method, String sourceErrorMessagePart, Type sourceType, Type targetType,
         String targetPropertyName) {
         ctx.getMessager().printMessage(
             method.getExecutable(),
@@ -136,7 +156,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             targetType,
             targetPropertyName,
             targetType,
-            sourceRHS.getSourceType() /* original source type */
+            sourceType
         );
     }
 }

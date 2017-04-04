@@ -22,6 +22,8 @@ import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.NoProperties;
+import org.mapstruct.ap.test.WithProperties;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -108,16 +110,16 @@ public class ErroneousStreamMappingTest {
     }
 
     @Test
-    @WithClasses({ ErroneousStreamToStreamNoElementMappingFound.class })
+    @WithClasses({ ErroneousStreamToStreamNoElementMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousStreamToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 36,
-                messageRegExp = "Can't map Stream element \".*AttributedString attributedString\" to \".*String " +
-                    "string\". Consider to declare/implement a mapping method: \".*String map(.*AttributedString " +
-                    "value)")
+                line = 37,
+                messageRegExp = "Can't map Stream element \".*WithProperties withProperties\" to \".*NoProperties " +
+                    "noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
+                    ".*WithProperties value\\)")
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToStream() {
@@ -140,16 +142,17 @@ public class ErroneousStreamMappingTest {
     }
 
     @Test
-    @WithClasses({ ErroneousListToStreamNoElementMappingFound.class })
+    @WithClasses({ ErroneousListToStreamNoElementMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousListToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 37,
+                line = 38,
                 messageRegExp =
-                    "Can't map Stream element \".*AttributedString attributedString\" to \".*String string\". " +
-                        "Consider to declare/implement a mapping method: \".*String map\\(.*AttributedString value\\)")
+                    "Can't map Stream element \".*WithProperties withProperties\" to \".*NoProperties noProperties\"." +
+                        " Consider to declare/implement a mapping method: \".*NoProperties map\\(.*WithProperties " +
+                        "value\\)")
         }
     )
     public void shouldFailOnNoElementMappingFoundForListToStream() {
@@ -172,16 +175,16 @@ public class ErroneousStreamMappingTest {
     }
 
     @Test
-    @WithClasses({ ErroneousStreamToListNoElementMappingFound.class })
+    @WithClasses({ ErroneousStreamToListNoElementMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousStreamToListNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 37,
+                line = 38,
                 messageRegExp =
-                    "Can't map Stream element \".*AttributedString attributedString\" to .*String string\"." +
-                        " Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
+                    "Can't map Stream element \".*WithProperties withProperties\" to .*NoProperties noProperties\"." +
+                        " Consider to declare/implement a mapping method: \".*NoProperties map(.*WithProperties value)")
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToList() {

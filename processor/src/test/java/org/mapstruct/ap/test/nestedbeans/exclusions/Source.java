@@ -16,25 +16,39 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erroneous;
+package org.mapstruct.ap.test.nestedbeans.exclusions;
 
 import java.util.List;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.NoProperties;
-import org.mapstruct.ap.test.WithProperties;
-import org.mapstruct.factory.Mappers;
-
 /**
- *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-@Mapper
-public interface ErroneousCollectionNoElementMappingFound {
+class Source {
 
-    ErroneousCollectionNoElementMappingFound INSTANCE =
-        Mappers.getMapper( ErroneousCollectionNoElementMappingFound.class );
+    static class DeepNestedType {
+        //CHECKSTYLE:OFF
+        public List<MyType> types;
+        //CHECKSTYLE:ON
+    }
 
-    List<NoProperties> map(List<WithProperties> source);
+    static class NestedMyType {
+        //CHECKSTYLE:OFF
+        public DeepNestedType deepNestedType;
+        //CHECKSTYLE:ON
+    }
 
+    static class MyType {
+        //CHECKSTYLE:OFF
+        public String someProperty;
+        //CHECKSTYLE:ON
+    }
+
+    //CHECKSTYLE:OFF
+    public MyType date;
+    public MyType calendar;
+    public List<MyType> types;
+    //TODO Nested error messages do not work yet. I think that this should be solved as part of #1150
+    // (or we solve that one first :))
+    //public NestedMyType nestedMyType;
+    //CHECKSTYLE:ON
 }

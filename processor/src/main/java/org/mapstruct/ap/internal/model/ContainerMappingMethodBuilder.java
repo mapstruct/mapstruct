@@ -121,7 +121,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                 reportCannotCreateMapping(
                     method,
                     String.format( "%s \"%s\"", sourceRHS.getSourceErrorMessagePart(), sourceRHS.getSourceType() ),
-                    sourceRHS,
+                    sourceRHS.getSourceType(),
                     targetElementType,
                     ""
                 );
