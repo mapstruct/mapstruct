@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF8"?>
+<toolchains>
+    <toolchain>
+        <type>jdk</type>
+        <provides>
+            <version>1.6</version>
+            <vendor>oracle</vendor>
+            <id>jdk1.6</id>
+        </provides>
+        <configuration>
+            <jdkHome>/usr/lib/jvm/java-6-openjdk-amd64/</jdkHome>
+        </configuration>
+    </toolchain>
+    <toolchain>
+        <type>jdk</type>
+        <provides>
+            <version>1.7</version>
+            <vendor>oracle</vendor>
+            <id>jdk1.7</id>
+        </provides>
+        <configuration>
+            <jdkHome>/usr/lib/jvm/java-7-oracle/</jdkHome>
+        </configuration>
+    </toolchain>
+    <toolchain>
+        <type>jdk</type>
+        <provides>
+            <version>1.8</version>
+            <vendor>oracle</vendor>
+            <id>jdk1.8</id>
+        </provides>
+        <configuration>
+            <jdkHome>/usr/lib/jvm/java-8-oracle/</jdkHome>
+        </configuration>
+    </toolchain>
+    
+</toolchains>
