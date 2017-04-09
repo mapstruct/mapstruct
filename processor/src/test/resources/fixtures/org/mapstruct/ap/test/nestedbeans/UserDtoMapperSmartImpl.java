@@ -24,8 +24,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-03-01T22:15:23+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2017-04-09T23:25:54+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_121 (Oracle Corporation)"
 )
 public class UserDtoMapperSmartImpl implements UserDtoMapperSmart {
 
@@ -95,10 +95,7 @@ public class UserDtoMapperSmartImpl implements UserDtoMapperSmart {
 
         carDto.setName( car.getName() );
         carDto.setYear( car.getYear() );
-        List<WheelDto> list = wheelListToWheelDtoList( car.getWheels() );
-        if ( list != null ) {
-            carDto.setWheels( list );
-        }
+        carDto.setWheels( wheelListToWheelDtoList( car.getWheels() ) );
 
         return carDto;
     }
@@ -185,10 +182,7 @@ public class UserDtoMapperSmartImpl implements UserDtoMapperSmart {
 
         carDto.setName( car.getName() );
         carDto.setYear( car.getYear() );
-        List<org.mapstruct.ap.test.nestedbeans.other.WheelDto> list = wheelListToWheelDtoList1( car.getWheels() );
-        if ( list != null ) {
-            carDto.setWheels( list );
-        }
+        carDto.setWheels( wheelListToWheelDtoList1( car.getWheels() ) );
 
         return carDto;
     }

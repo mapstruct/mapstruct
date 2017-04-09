@@ -19,9 +19,7 @@
 package org.mapstruct.ap.internal.model.assignment;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -66,14 +64,6 @@ public class WrapperForCollectionsAndMaps extends AssignmentWrapper {
             }
         }
         return result;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>();
-        imported.addAll( super.getImportTypes() );
-        imported.addAll( nullCheckLocalVarType.getImportTypes() );
-        return imported;
     }
 
     public String getNullCheckLocalVarName() {

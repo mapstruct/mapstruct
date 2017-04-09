@@ -26,8 +26,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2016-12-30T19:07:28+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2017-04-22T09:19:18+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_131 (Oracle Corporation)"
 )
 public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlwaysMapper {
 
@@ -42,16 +42,23 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         Domain domain = new Domain();
 
         if ( source.hasStringsInitialized() ) {
-            Set<Long> set = stringListToLongSet( source.getStringsInitialized() );
-            domain.setLongsInitialized( set );
+            domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
+        }
+        else {
+            domain.setLongsInitialized( null );
         }
         if ( source.hasStrings() ) {
-            Set<Long> set1 = stringListToLongSet( source.getStrings() );
-            domain.setLongs( set1 );
+            domain.setLongs( stringListToLongSet( source.getStrings() ) );
+        }
+        else {
+            domain.setLongs( null );
         }
         if ( source.hasStrings() ) {
             List<String> list = source.getStrings();
             domain.setStrings( new HashSet<String>( list ) );
+        }
+        else {
+            domain.setStrings( null );
         }
         if ( source.hasStringsWithDefault() ) {
             List<String> list1 = source.getStringsWithDefault();
@@ -63,6 +70,9 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         if ( source.hasStringsInitialized() ) {
             List<String> list2 = source.getStringsInitialized();
             domain.setStringsInitialized( new HashSet<String>( list2 ) );
+        }
+        else {
+            domain.setStringsInitialized( null );
         }
 
         return domain;
@@ -76,22 +86,19 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
 
         if ( target.getLongs() != null ) {
             if ( source.hasStrings() ) {
-                Set<Long> set = stringListToLongSet( source.getStrings() );
                 target.getLongs().clear();
-                target.getLongs().addAll( set );
+                target.getLongs().addAll( stringListToLongSet( source.getStrings() ) );
             }
         }
         else {
             if ( source.hasStrings() ) {
-                Set<Long> set = stringListToLongSet( source.getStrings() );
-                target.setLongs( set );
+                target.setLongs( stringListToLongSet( source.getStrings() ) );
             }
         }
         if ( target.getStrings() != null ) {
             if ( source.hasStrings() ) {
-                List<String> list = source.getStrings();
                 target.getStrings().clear();
-                target.getStrings().addAll( list );
+                target.getStrings().addAll( source.getStrings() );
             }
         }
         else {
@@ -102,22 +109,19 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         if ( target.getLongsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
-                Set<Long> set1 = stringListToLongSet( source.getStringsInitialized() );
                 target.getLongsInitialized().clear();
-                target.getLongsInitialized().addAll( set1 );
+                target.getLongsInitialized().addAll( stringListToLongSet( source.getStringsInitialized() ) );
             }
         }
         else {
             if ( source.hasStringsInitialized() ) {
-                Set<Long> set1 = stringListToLongSet( source.getStringsInitialized() );
-                target.setLongsInitialized( set1 );
+                target.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
             }
         }
         if ( target.getStringsWithDefault() != null ) {
             if ( source.hasStringsWithDefault() ) {
-                List<String> list1 = source.getStringsWithDefault();
                 target.getStringsWithDefault().clear();
-                target.getStringsWithDefault().addAll( list1 );
+                target.getStringsWithDefault().addAll( source.getStringsWithDefault() );
             }
             else {
                 target.setStringsWithDefault( helper.toList( "3" ) );
@@ -134,9 +138,8 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         if ( target.getStringsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
-                List<String> list2 = source.getStringsInitialized();
                 target.getStringsInitialized().clear();
-                target.getStringsInitialized().addAll( list2 );
+                target.getStringsInitialized().addAll( source.getStringsInitialized() );
             }
         }
         else {
@@ -155,22 +158,19 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
 
         if ( target.getLongs() != null ) {
             if ( source.hasStrings() ) {
-                Set<Long> set = stringListToLongSet( source.getStrings() );
                 target.getLongs().clear();
-                target.getLongs().addAll( set );
+                target.getLongs().addAll( stringListToLongSet( source.getStrings() ) );
             }
         }
         else {
             if ( source.hasStrings() ) {
-                Set<Long> set = stringListToLongSet( source.getStrings() );
-                target.setLongs( set );
+                target.setLongs( stringListToLongSet( source.getStrings() ) );
             }
         }
         if ( target.getStrings() != null ) {
             if ( source.hasStrings() ) {
-                List<String> list = source.getStrings();
                 target.getStrings().clear();
-                target.getStrings().addAll( list );
+                target.getStrings().addAll( source.getStrings() );
             }
         }
         else {
@@ -181,22 +181,19 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         if ( target.getLongsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
-                Set<Long> set1 = stringListToLongSet( source.getStringsInitialized() );
                 target.getLongsInitialized().clear();
-                target.getLongsInitialized().addAll( set1 );
+                target.getLongsInitialized().addAll( stringListToLongSet( source.getStringsInitialized() ) );
             }
         }
         else {
             if ( source.hasStringsInitialized() ) {
-                Set<Long> set1 = stringListToLongSet( source.getStringsInitialized() );
-                target.setLongsInitialized( set1 );
+                target.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
             }
         }
         if ( target.getStringsWithDefault() != null ) {
             if ( source.hasStringsWithDefault() ) {
-                List<String> list1 = source.getStringsWithDefault();
                 target.getStringsWithDefault().clear();
-                target.getStringsWithDefault().addAll( list1 );
+                target.getStringsWithDefault().addAll( source.getStringsWithDefault() );
             }
             else {
                 target.setStringsWithDefault( helper.toList( "3" ) );
@@ -213,9 +210,8 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         if ( target.getStringsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
-                List<String> list2 = source.getStringsInitialized();
                 target.getStringsInitialized().clear();
-                target.getStringsInitialized().addAll( list2 );
+                target.getStringsInitialized().addAll( source.getStringsInitialized() );
             }
         }
         else {

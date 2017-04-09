@@ -62,11 +62,15 @@
            requires: caller to implement String:getNullCheckLocalVarName()
                      caller to implement Type:getNullCheckLocalVarType()
 -->
-<#macro handleLocalVarNullCheck>
+<#macro handleLocalVarNullCheck needs_explicit_local_var>
   <#if sourcePresenceCheckerReference??>
     if ( ${sourcePresenceCheckerReference} ) {
-      <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
-      <#nested>
+      <#if needs_explicit_local_var>
+        <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
+        <#nested>
+      <#else>
+        <#nested>
+      </#if>
     }
   <#else>
     <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
@@ -80,6 +84,13 @@
   }
   </#if>
 </#macro>
+<#--
+    Gives the value that needs to be assigned. If there is a sourcePresenceCheckerReference then a direct
+    lib.handleAssignment is done, otherwise nullCheckLocalVarName is used.
+
+    requires:        caller to implement String:getNullCheckLocalVarName()
+-->
+<#macro handleWithAssignmentOrNullCheckVar><#if sourcePresenceCheckerReference??><@lib.handleAssignment/><#else>${nullCheckLocalVarName}</#if></#macro>
 <#--
   macro: handleExceptions
 

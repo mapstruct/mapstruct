@@ -38,21 +38,19 @@ import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
-import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceReference;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
@@ -79,7 +77,7 @@ public class PropertyMapping extends ModelElement {
     private final List<String> dependsOn;
     private final Assignment defaultValueAssignment;
 
-    private enum TargetWriteAccessorType {
+    public enum TargetWriteAccessorType {
         FIELD,
         GETTER,
         SETTER,
@@ -98,6 +96,10 @@ public class PropertyMapping extends ModelElement {
             else {
                 return TargetWriteAccessorType.FIELD;
             }
+        }
+
+        public static boolean isFieldAssignment(TargetWriteAccessorType accessorType) {
+            return accessorType == FIELD;
         }
     }
 
@@ -396,68 +398,15 @@ public class PropertyMapping extends ModelElement {
 
         private Assignment assignToCollection(Type targetType, TargetWriteAccessorType targetAccessorType,
                                             Assignment rhs) {
-
-            Assignment result = rhs;
-
-            CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
-            boolean targetImmutable = cms == CollectionMappingStrategyPrism.TARGET_IMMUTABLE;
-
-            if ( targetAccessorType == TargetWriteAccessorType.SETTER ||
-                 targetAccessorType == TargetWriteAccessorType.FIELD ) {
-
-
-                if ( result.isCallingUpdateMethod() && !targetImmutable) {
-
-                    // call to an update method
-                    if ( targetReadAccessor == null ) {
-                        ctx.getMessager().printMessage(
-                            method.getExecutable(),
-                            Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
-                            targetPropertyName
-                        );
-                    }
-                    Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
-                    result = new UpdateWrapper(
-                        result,
-                        method.getThrownTypes(),
-                        factoryMethod,
-                        isFieldAssignment(),
-                        targetType,
-                        true
-                    );
-                }
-                else {
-
-                    // target accessor is setter, so wrap the setter in setter map/ collection handling
-                    result = new SetterWrapperForCollectionsAndMaps(
-                        result,
-                        method.getThrownTypes(),
-                        targetType,
-                        method.getMapperConfiguration().getNullValueCheckStrategy(),
-                        ctx.getTypeFactory(),
-                        targetWriteAccessorType == TargetWriteAccessorType.FIELD,
-                        targetImmutable
-                    );
-                }
-            }
-            else {
-                if ( targetImmutable ) {
-                    ctx.getMessager().printMessage(
-                        method.getExecutable(),
-                        Message.PROPERTYMAPPING_NO_WRITE_ACCESSOR_FOR_TARGET_TYPE,
-                        targetPropertyName
-                    );
-                }
-
-                // target accessor is getter, so wrap the setter in getter map/ collection handling
-                result = new GetterWrapperForCollectionsAndMaps( result,
-                                                                 method.getThrownTypes(),
-                                                                 targetType,
-                                                                 isFieldAssignment()
-                                                               );
-            }
-
-            return result;
+            return new CollectionAssignmentBuilder()
+                .mappingBuilderContext( ctx )
+                .method( method )
+                .targetReadAccessor( targetReadAccessor )
+                .targetType( targetType )
+                .targetPropertyName( targetPropertyName )
+                .targetAccessorType( targetAccessorType )
+                .rightHandSide( rhs )
+                .build();
         }
 
         private Assignment assignToArray(Type targetType, Assignment rightHandSide) {

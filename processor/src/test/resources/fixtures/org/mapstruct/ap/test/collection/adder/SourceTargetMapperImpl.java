@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.collection.adder;
 
-import java.util.List;
 import javax.annotation.Generated;
 import org.mapstruct.ap.test.collection.adder._target.IndoorPet;
 import org.mapstruct.ap.test.collection.adder._target.Target;
@@ -32,8 +31,8 @@ import org.mapstruct.ap.test.collection.adder.source.SourceTeeth;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2016-12-30T19:10:39+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2017-04-09T23:05:40+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_121 (Oracle Corporation)"
 )
 public class SourceTargetMapperImpl implements SourceTargetMapper {
 
@@ -71,10 +70,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Source source1 = new Source();
 
         try {
-            List<String> list = petMapper.toSourcePets( source.getPets() );
-            if ( list != null ) {
-                source1.setPets( list );
-            }
+            source1.setPets( petMapper.toSourcePets( source.getPets() ) );
         }
         catch ( CatException e ) {
             throw new RuntimeException( e );

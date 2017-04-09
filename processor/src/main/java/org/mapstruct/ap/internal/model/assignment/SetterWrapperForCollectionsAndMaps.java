@@ -18,44 +18,21 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
-
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
 
 /**
- * This wrapper handles the situation were an assignment is done via the setter.
- *
- * In case of a pre-existing target the wrapper checks if there is an collection or map initialized on the target bean
- * (not null). If so it uses the addAll (for collections) or putAll (for maps). The collection / map is cleared in case
- * of a pre-existing target {@link org.mapstruct.MappingTarget }before adding the source entries.
- *
- * If there is no pre-existing target, or the target Collection / Map is not initialized (null) the setter is used to
- * create a new Collection / Map with the copy constructor.
+ * This wrapper handles the situation where an assignment is done via the setter, without doing anything special.
  *
  * @author Sjaak Derksen
  */
 public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAndMaps {
 
-    private final boolean includeSourceNullCheck;
-    private final Type targetType;
-    private final TypeFactory typeFactory;
-    private final boolean targetImmutable;
-
     public SetterWrapperForCollectionsAndMaps(Assignment decoratedAssignment,
-                                              List<Type> thrownTypesToExclude,
-                                              Type targetType,
-                                              NullValueCheckStrategyPrism nvms,
-                                              TypeFactory typeFactory,
-                                              boolean fieldAssignment,
-                                              boolean targetImmutable ) {
+        List<Type> thrownTypesToExclude,
+        Type targetType,
+        boolean fieldAssignment) {
 
         super(
             decoratedAssignment,
@@ -63,44 +40,5 @@ public class SetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
             targetType,
             fieldAssignment
         );
-        this.includeSourceNullCheck = ALWAYS == nvms;
-        this.targetType = targetType;
-        this.typeFactory = typeFactory;
-        this.targetImmutable = targetImmutable;
     }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        Set<Type> imported = super.getImportTypes();
-        if ( isDirectAssignment() ) {
-            if ( targetType.getImplementationType() != null ) {
-                imported.addAll( targetType.getImplementationType().getImportTypes() );
-            }
-            else {
-                imported.addAll( targetType.getImportTypes() );
-            }
-
-            if ( isEnumSet() ) {
-                imported.add( typeFactory.getType( EnumSet.class ) );
-            }
-        }
-        return imported;
-    }
-
-    public boolean isIncludeSourceNullCheck() {
-        return includeSourceNullCheck;
-    }
-
-    public boolean isDirectAssignment() {
-        return getType() == DIRECT;
-    }
-
-    public boolean isEnumSet() {
-        return "java.util.EnumSet".equals( targetType.getFullyQualifiedName() );
-    }
-
-    public boolean isTargetImmutable() {
-        return targetImmutable;
-    }
-
 }
