@@ -302,14 +302,12 @@ public class PropertyMapping extends ModelElement {
                 }
             }
             else {
-                ctx.getMessager().printMessage(
-                    method.getExecutable(),
-                    Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
+                reportCannotCreateMapping(
+                    method,
                     rightHandSide.getSourceErrorMessagePart(),
+                    rightHandSide,
                     targetType,
-                    targetPropertyName,
-                    targetType,
-                    rightHandSide.getSourceType() /* original source type */
+                    targetPropertyName
                 );
             }
 
@@ -635,6 +633,9 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {
+            if ( forgedNamedBased && isDisableSubMappingMethodsGeneration() ) {
+                return null;
+            }
 
             Type sourceType = sourceRHS.getSourceType();
 

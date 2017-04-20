@@ -115,11 +115,28 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 36,
-                messageRegExp = "Can't map Stream element .*AttributedString attributedString\" to .*String string\"." +
-                        " Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
+                messageRegExp = "Can't map Stream element \".*AttributedString attributedString\" to \".*String " +
+                    "string\". Consider to declare/implement a mapping method: \".*String map(.*AttributedString " +
+                    "value)")
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToStream() {
+    }
+
+    @Test
+    @IssueKey("993")
+    @WithClasses({ ErroneousStreamToStreamNoElementMappingFoundDisabledAuto.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousStreamToStreamNoElementMappingFoundDisabledAuto.class,
+                kind = Kind.ERROR,
+                line = 32,
+                messageRegExp = "Can't map stream element \".*AttributedString\" to \".*String \". Consider to " +
+                    "declare/implement a mapping method: \".*String map(.*AttributedString value)")
+        }
+    )
+    public void shouldFailOnNoElementMappingFoundForStreamToStreamWithDisabledAuto() {
     }
 
     @Test
@@ -130,11 +147,28 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousListToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 37,
-                messageRegExp = "Can't map .*AttributedString attributedString\" to .*String string\". " +
-                    "Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
+                messageRegExp =
+                    "Can't map Stream element \".*AttributedString attributedString\" to \".*String string\". " +
+                        "Consider to declare/implement a mapping method: \".*String map\\(.*AttributedString value\\)")
         }
     )
     public void shouldFailOnNoElementMappingFoundForListToStream() {
+    }
+
+    @Test
+    @IssueKey("993")
+    @WithClasses({ ErroneousListToStreamNoElementMappingFoundDisabledAuto.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousListToStreamNoElementMappingFoundDisabledAuto.class,
+                kind = Kind.ERROR,
+                line = 33,
+                messageRegExp = "Can't map stream element \".*AttributedString\" to \".*String \". Consider to " +
+                    "declare/implement a mapping method: \".*String map\\(.*AttributedString value\\)")
+        }
+    )
+    public void shouldFailOnNoElementMappingFoundForListToStreamWithDisabledAuto() {
     }
 
     @Test
@@ -145,10 +179,27 @@ public class ErroneousStreamMappingTest {
             @Diagnostic(type = ErroneousStreamToListNoElementMappingFound.class,
                 kind = Kind.ERROR,
                 line = 37,
-                messageRegExp = "Can't map Stream element .*AttributedString attributedString\" to .*String string\"." +
+                messageRegExp =
+                    "Can't map Stream element \".*AttributedString attributedString\" to .*String string\"." +
                         " Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
         }
     )
     public void shouldFailOnNoElementMappingFoundForStreamToList() {
+    }
+
+    @Test
+    @IssueKey("993")
+    @WithClasses({ ErroneousStreamToListNoElementMappingFoundDisabledAuto.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousStreamToListNoElementMappingFoundDisabledAuto.class,
+                kind = Kind.ERROR,
+                line = 33,
+                messageRegExp = "Can't map stream element \".*AttributedString\" to .*String \". Consider to " +
+                    "declare/implement a mapping method: \".*String map(.*AttributedString value)")
+        }
+    )
+    public void shouldFailOnNoElementMappingFoundForStreamToListWithDisabledAuto() {
     }
 }

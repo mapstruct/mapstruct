@@ -194,6 +194,18 @@ public class MapperConfiguration {
         return mapperPrism.componentModel(); // fall back to default defined in the annotation
     }
 
+    public boolean isDisableSubMappingMethodsGeneration() {
+        if ( mapperPrism.disableSubMappingMethodsGeneration() ) {
+            return mapperPrism.disableSubMappingMethodsGeneration();
+        }
+
+        if ( mapperConfigPrism != null && mapperConfigPrism.disableSubMappingMethodsGeneration() ) {
+            return mapperConfigPrism.disableSubMappingMethodsGeneration();
+        }
+
+        return mapperPrism.disableSubMappingMethodsGeneration(); // fall back to default defined in the annotation
+    }
+
     public DeclaredType config() {
         return config;
     }

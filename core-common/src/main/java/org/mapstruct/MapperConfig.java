@@ -146,4 +146,22 @@ public @interface MapperConfig {
      * @return strategy how to do null checking
      */
     NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
+
+    /**
+     * If MapStruct could not find another mapping method or apply an automatic conversion it will try to generate a
+     * sub-mapping method between the two beans. If this property is set to {@code true} MapStruct will not try to
+     * automatically generate sub-mapping methods.
+     * <p>
+     * Can be overridden by {@link Mapper#disableSubMappingMethodsGeneration()}
+     * <p>
+     * Note: If you need to use {@code disableSubMappingMethodsGeneration} please contact the MapStruct team at
+     * <a href="http://mapstruct.org">mapstruct.org</a> or
+     * <a href="https://github.com/mapstruct/mapstruct">github.com/mapstruct/mapstruct</a> to share what problem you
+     * are facing with the automatic sub-mapping generation.
+     *
+     * @return whether the automatic generation of sub-mapping methods is disabled
+     *
+     * @since 1.2
+     */
+    boolean disableSubMappingMethodsGeneration() default false;
 }

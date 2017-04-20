@@ -124,6 +124,23 @@ public class ErroneousCollectionMappingTest {
     }
 
     @Test
+    @IssueKey("993")
+    @WithClasses({ ErroneousCollectionNoElementMappingFoundDisabledAuto.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousCollectionNoElementMappingFoundDisabledAuto.class,
+                kind = Kind.ERROR,
+                line = 32,
+                messageRegExp =
+                    "Can't map collection element \".*AttributedString\" to \".*String \". " +
+                        "Consider to declare/implement a mapping method: \".*String map\\(.*AttributedString value\\)")
+        }
+    )
+    public void shouldFailOnNoElementMappingFoundWithDisabledAuto() {
+    }
+
+    @Test
     @IssueKey("459")
     @WithClasses({ ErroneousCollectionNoKeyMappingFound.class })
     @ExpectedCompilationOutcome(
@@ -140,6 +157,22 @@ public class ErroneousCollectionMappingTest {
     }
 
     @Test
+    @IssueKey("993")
+    @WithClasses({ ErroneousCollectionNoKeyMappingFoundDisabledAuto.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousCollectionNoKeyMappingFoundDisabledAuto.class,
+                kind = Kind.ERROR,
+                line = 32,
+                messageRegExp = "Can't map map key \".*AttributedString\" to \".*String \". " +
+                    "Consider to declare/implement a mapping method: \".*String map\\(.*AttributedString value\\)")
+        }
+    )
+    public void shouldFailOnNoKeyMappingFoundWithDisabledAuto() {
+    }
+
+    @Test
     @IssueKey("459")
     @WithClasses({ ErroneousCollectionNoValueMappingFound.class })
     @ExpectedCompilationOutcome(
@@ -153,5 +186,21 @@ public class ErroneousCollectionMappingTest {
         }
     )
     public void shouldFailOnNoValueMappingFound() {
+    }
+
+    @Test
+    @IssueKey("993")
+    @WithClasses({ ErroneousCollectionNoValueMappingFoundDisabledAuto.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousCollectionNoValueMappingFoundDisabledAuto.class,
+                kind = Kind.ERROR,
+                line = 32,
+                messageRegExp = "Can't map map value \".*AttributedString\" to \".*String \". " +
+                    "Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
+        }
+    )
+    public void shouldFailOnNoValueMappingFoundWithDisabledAuto() {
     }
 }

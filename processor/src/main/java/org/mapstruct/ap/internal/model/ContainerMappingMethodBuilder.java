@@ -112,6 +112,21 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                 forgedMethod.addThrownTypes( assignment.getThrownTypes() );
             }
         }
+        if ( assignment == null ) {
+            if ( method instanceof ForgedMethod ) {
+                // leave messaging to calling property mapping
+                return null;
+            }
+            else {
+                reportCannotCreateMapping(
+                    method,
+                    String.format( "%s \"%s\"", sourceRHS.getSourceErrorMessagePart(), sourceRHS.getSourceType() ),
+                    sourceRHS,
+                    targetElementType,
+                    ""
+                );
+            }
+        }
 
         assignment = getWrapper( assignment, method );
 

@@ -110,6 +110,27 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 keyAssignment = forgeMapping( keySourceRHS, keySourceType, keyTargetType );
             }
 
+
+            if ( keyAssignment == null ) {
+                if ( method instanceof ForgedMethod ) {
+                    // leave messaging to calling property mapping
+                    return null;
+                }
+                else {
+                    reportCannotCreateMapping(
+                        method,
+                        String.format(
+                            "%s \"%s\"",
+                            keySourceRHS.getSourceErrorMessagePart(),
+                            keySourceRHS.getSourceType()
+                        ),
+                        keySourceRHS,
+                        keyTargetType,
+                        ""
+                    );
+                }
+            }
+
             // find mapping method or conversion for value
             Type valueSourceType = sourceTypeParams.get( 1 ).getTypeBound();
             Type valueTargetType = resultTypeParams.get( 1 ).getTypeBound();
@@ -138,6 +159,26 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             if ( valueAssignment == null ) {
                 valueAssignment = forgeMapping( valueSourceRHS, valueSourceType, valueTargetType );
+            }
+
+            if ( valueAssignment == null ) {
+                if ( method instanceof ForgedMethod ) {
+                    // leave messaging to calling property mapping
+                    return null;
+                }
+                else {
+                    reportCannotCreateMapping(
+                        method,
+                        String.format(
+                            "%s \"%s\"",
+                            valueSourceRHS.getSourceErrorMessagePart(),
+                            valueSourceRHS.getSourceType()
+                        ),
+                        valueSourceRHS,
+                        valueTargetType,
+                        ""
+                    );
+                }
             }
 
             // mapNullToDefault

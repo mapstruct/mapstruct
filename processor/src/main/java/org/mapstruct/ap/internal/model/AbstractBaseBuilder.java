@@ -20,9 +20,12 @@ package org.mapstruct.ap.internal.model;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.MappingMethodUtils;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.Message;
 
 /**
  * @author Filip Hrisafov
@@ -45,6 +48,11 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
     public B method(Method sourceMethod) {
         this.method = sourceMethod;
         return myself;
+    }
+
+    boolean isDisableSubMappingMethodsGeneration() {
+        MapperConfiguration configuration = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
+        return configuration.isDisableSubMappingMethodsGeneration();
     }
 
     /**
@@ -108,5 +116,27 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         assignment.setAssignment( source );
 
         return assignment;
+    }
+
+    /**
+     * Reports that a mapping could not be created.
+     *
+     * @param method the method that should be mapped
+     * @param sourceErrorMessagePart the error message part for the source
+     * @param sourceRHS the {@link SourceRHS}
+     * @param targetType the type of the target mapping
+     * @param targetPropertyName the name of the target property
+     */
+    void reportCannotCreateMapping(Method method, String sourceErrorMessagePart, SourceRHS sourceRHS, Type targetType,
+        String targetPropertyName) {
+        ctx.getMessager().printMessage(
+            method.getExecutable(),
+            Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
+            sourceErrorMessagePart,
+            targetType,
+            targetPropertyName,
+            targetType,
+            sourceRHS.getSourceType() /* original source type */
+        );
     }
 }
