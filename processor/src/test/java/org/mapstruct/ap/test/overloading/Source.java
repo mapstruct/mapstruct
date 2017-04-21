@@ -28,11 +28,18 @@ public class Source {
         this.updatedOn = updatedOn;
     }
 
+    public Source() {
+    }
+
     public Date getUpdatedOn() {
         return updatedOn;
     }
 
     public void setUpdatedOn(Date updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    public void setUpdatedOn(long updatedOn) {
+        this.updatedOn = new Date( updatedOn );
     }
 }

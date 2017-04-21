@@ -18,21 +18,16 @@
  */
 package org.mapstruct.ap.test.overloading;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mapstruct.ap.testutil.WithClasses;
-import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.MapperConfig;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingInheritanceStrategy;
+import org.mapstruct.ReportingPolicy;
 
-@WithClasses({
-        SourceTargetMapper.class,
-        Source.class,
-        Target.class,
-        OverloadingMapperConfig.class
-})
-@RunWith(AnnotationProcessorTestRunner.class)
-public class OverloadingTest {
+@MapperConfig(unmappedTargetPolicy = ReportingPolicy.ERROR,
+    mappingInheritanceStrategy = MappingInheritanceStrategy.AUTO_INHERIT_FROM_CONFIG)
+public interface OverloadingMapperConfig {
 
-    @Test
-    public void testShouldGenerateCorrectMapperImplementation() {
-    }
+    @Mapping(target = "updatedOn", source = "updatedOnTarget")
+    Source targetToSourceReversed(Target source);
+
 }

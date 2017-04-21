@@ -18,16 +18,20 @@
  */
 package org.mapstruct.ap.test.overloading;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(config = OverloadingMapperConfig.class)
 public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mapping(target = "updatedOnTarget", source = "updatedOn")
     Target sourceToTarget( Source source );
+
+    @InheritInverseConfiguration
+    Source targetToSourceReversed( Target source);
 
 }
