@@ -322,7 +322,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             // first we have to handle nested target mappings
             if ( method.getMappingOptions().hasNestedTargetReferences() ) {
-                handleDefinedNestedTargetMapping( handledTargets );
+                if ( handleDefinedNestedTargetMapping( handledTargets ) ) {
+                    errorOccurred = true;
+                }
             }
 
             for ( Map.Entry<String, List<Mapping>> entry : methodMappings.entrySet() ) {
@@ -335,7 +337,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             }
                         }
                     }
-                    else if ( reportErrorOnTargetObject( mapping ) ) {
+                    else {
                         errorOccurred = true;
                     }
                 }
@@ -350,7 +352,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return errorOccurred;
         }
 
-        private void handleDefinedNestedTargetMapping(Set<String> handledTargets) {
+        private boolean handleDefinedNestedTargetMapping(Set<String> handledTargets) {
 
             NestedTargetPropertyMappingHolder holder = new NestedTargetPropertyMappingHolder.Builder()
                 .mappingContext( ctx )
@@ -368,6 +370,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
                 unprocessedDefinedTargets.put( entry.getKey().getName(), entry.getValue() );
             }
+            return holder.isErrorOccurred();
         }
 
         private boolean handleDefinedMapping(Mapping mapping, Set<String> handledTargets) {
@@ -472,36 +475,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             return errorOccured;
-        }
-
-        private boolean reportErrorOnTargetObject(Mapping mapping) {
-
-            boolean errorOccurred = false;
-
-            boolean hasReadAccessor
-                = method.getResultType().getPropertyReadAccessors().containsKey( mapping.getTargetName() );
-
-            if ( hasReadAccessor ) {
-                if ( !mapping.isIgnored() ) {
-                    ctx.getMessager().printMessage(
-                        method.getExecutable(),
-                        mapping.getMirror(),
-                        mapping.getSourceAnnotationValue(),
-                        Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE,
-                        mapping.getTargetName() );
-                    errorOccurred = true;
-                }
-            }
-            else {
-                ctx.getMessager().printMessage(
-                    method.getExecutable(),
-                    mapping.getMirror(),
-                    mapping.getSourceAnnotationValue(),
-                    Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE,
-                    mapping.getTargetName() );
-                errorOccurred = true;
-            }
-            return errorOccurred;
         }
 
         /**

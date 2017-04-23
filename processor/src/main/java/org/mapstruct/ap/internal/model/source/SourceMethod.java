@@ -200,7 +200,7 @@ public class SourceMethod implements Method {
             if ( mappings != null ) {
                 for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
                     for ( Mapping mapping : entry.getValue() ) {
-                        mapping.init( sourceMethod, messager, typeFactory, false );
+                        mapping.init( sourceMethod, messager, typeFactory );
                     }
                 }
             }

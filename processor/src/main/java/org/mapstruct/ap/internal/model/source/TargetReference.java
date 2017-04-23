@@ -72,6 +72,24 @@ public class TargetReference {
         private SourceMethod method;
         private FormattingMessager messager;
         private TypeFactory typeFactory;
+        private boolean isReverse;
+        /**
+         * Needed when we are building from reverse mapping. It is needed, so we can remove the first level if it is
+         * needed.
+         * E.g. If we have a mapping like:
+         * <code>
+         * {@literal @}Mapping( target = "letterSignature", source = "dto.signature" )
+         * </code>
+         *
+         * When it is reversed it will look like:
+         * <code>
+         * {@literal @}Mapping( target = "dto.signature", source = "letterSignature" )
+         * </code>
+         *
+         * The {@code dto} needs to be considered as a possibility for a target name only if a Target Reference for
+         * a reverse is created.
+         */
+        private Parameter reverseSourceParameter;
 
         public BuilderFromTargetMapping messager(FormattingMessager messager) {
             this.messager = messager;
@@ -94,6 +112,12 @@ public class TargetReference {
         }
 
         public BuilderFromTargetMapping isReverse(boolean isReverse) {
+            this.isReverse = isReverse;
+            return this;
+        }
+
+        public BuilderFromTargetMapping reverseSourceParameter(Parameter reverseSourceParameter) {
+            this.reverseSourceParameter = reverseSourceParameter;
             return this;
         }
 
@@ -112,24 +136,31 @@ public class TargetReference {
             boolean foundEntryMatch;
             Type resultType = method.getResultType();
 
-            // there can be 3 situations
+            // there can be 4 situations
             // 1. Return type
-            // 2. @MappingTarget, with
-            // 3. or without parameter name.
+            // 2. A reverse target reference where the source parameter name is used in the original mapping
+            // 3. @MappingTarget, with
+            // 4. or without parameter name.
             String[] targetPropertyNames = segments;
-            List<PropertyEntry> entries = getTargetEntries( resultType, targetPropertyNames );
+            List<PropertyEntry> entries = getTargetEntries( resultType, targetPropertyNames, false );
             foundEntryMatch = (entries.size() == targetPropertyNames.length);
-            if ( !foundEntryMatch && segments.length > 1 ) {
+            if ( !foundEntryMatch && segments.length > 1
+                && matchesSourceOrTargetParameter( segments[0], parameter, reverseSourceParameter, isReverse ) ) {
                 targetPropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
-                entries = getTargetEntries( resultType, targetPropertyNames );
+                entries = getTargetEntries( resultType, targetPropertyNames, false );
                 foundEntryMatch = (entries.size() == targetPropertyNames.length);
+            }
+
+            if ( !foundEntryMatch ) {
+                // This is called only for reporting errors
+                getTargetEntries( resultType, targetPropertyNames, true );
             }
 
             // foundEntryMatch = isValid, errors are handled in the BeanMapping, where the error context is known
             return new TargetReference( parameter, entries, foundEntryMatch );
         }
 
-        private List<PropertyEntry> getTargetEntries(Type type, String[] entryNames) {
+        private List<PropertyEntry> getTargetEntries(Type type, String[] entryNames, boolean reportError) {
 
             // initialize
             CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
@@ -142,45 +173,149 @@ public class TargetReference {
 
                 Accessor targetReadAccessor = nextType.getPropertyReadAccessors().get( entryNames[i] );
                 Accessor targetWriteAccessor = nextType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
-                if ( targetWriteAccessor == null || ( i < entryNames.length - 1 && targetReadAccessor == null) ) {
-                    // there should always be a write accessor and there should be read accessor mandatory for all
-                    // but the last
-                    // TODO error handling when full fledged target mapping is in place.
+                boolean isLast = i == entryNames.length - 1;
+                boolean isNotLast = i < entryNames.length - 1;
+                if ( isWriteAccessorNotValidWhenNotLast( targetWriteAccessor, isNotLast )
+                    || isWriteAccessorNotValidWhenLast( targetWriteAccessor, targetReadAccessor, mapping, isLast )
+                    || ( isNotLast && targetReadAccessor == null ) ) {
+                    // there should always be a write accessor (except for the last when the mapping is ignored and
+                    // there is a read accessor) and there should be read accessor mandatory for all but the last
+                    if ( reportError ) {
+                        //TODO maybe it would be better if we store the errors in the builder and do a report in the
+                        // end, so not iterate this twice
+                        reportError( targetWriteAccessor, targetReadAccessor );
+                    }
                     break;
                 }
 
-                if ( ( i == entryNames.length - 1 ) || ( Executables.isSetterMethod( targetWriteAccessor )
+                if ( isLast || ( Executables.isSetterMethod( targetWriteAccessor )
                     || Executables.isFieldAccessor( targetWriteAccessor ) ) ) {
                     // only intermediate nested properties when they are a true setter or field accessor
                     // the last may be other readAccessor (setter / getter / adder).
 
-                    if ( Executables.isGetterMethod( targetWriteAccessor ) ||
-                        Executables.isFieldAccessor( targetWriteAccessor ) ) {
-                        nextType = typeFactory.getReturnType(
-                            (DeclaredType) nextType.getTypeMirror(),
-                            targetWriteAccessor );
-                    }
-                    else {
-                        nextType = typeFactory.getSingleParameter(
-                            (DeclaredType) nextType.getTypeMirror(),
-                            targetWriteAccessor ).getType();
-                    }
+                    nextType = findNextType( nextType, targetWriteAccessor, targetReadAccessor, isLast );
 
                     // check if an entry alread exists, otherwise create
                     String[] fullName = Arrays.copyOfRange( entryNames, 0, i + 1 );
                     PropertyEntry propertyEntry = PropertyEntry.forTargetReference( fullName, targetReadAccessor,
                         targetWriteAccessor, nextType );
                     targetEntries.add( propertyEntry );
-                    }
-
                 }
 
+            }
+
             return targetEntries;
+        }
+
+        /**
+         * Finds the next type based on the initial type.
+         *
+         * @param initial for which a next type should be found
+         * @param targetWriteAccessor the write accessor
+         * @param targetReadAccessor the read accessor
+         * @param isLast whether this is the call for the last accessor
+         *
+         * @return the next type that should be used for finding a property entry
+         */
+        private Type findNextType(Type initial, Accessor targetWriteAccessor,
+            Accessor targetReadAccessor, boolean isLast) {
+            if ( !isLast && targetWriteAccessor == null ) {
+                throw new IllegalArgumentException(
+                    "Write Accessor is null, but is not last. This is an internal error in the Processor" );
+            }
+            Type nextType;
+            Accessor toUse = targetWriteAccessor != null ? targetWriteAccessor : targetReadAccessor;
+            if ( Executables.isGetterMethod( toUse ) ||
+                Executables.isFieldAccessor( toUse ) ) {
+                nextType = typeFactory.getReturnType(
+                    (DeclaredType) initial.getTypeMirror(),
+                    toUse
+                );
+            }
+            else {
+                nextType = typeFactory.getSingleParameter(
+                    (DeclaredType) initial.getTypeMirror(),
+                    toUse
+                ).getType();
+            }
+            return nextType;
+        }
+
+        private void reportError(Accessor targetWriteAccessor, Accessor targetReadAccessor) {
+            if ( targetWriteAccessor == null && targetReadAccessor == null ) {
+                reportMappingError(
+                    Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE,
+                    mapping.getTargetName()
+                );
+            }
+            else if ( targetWriteAccessor == null ) {
+                reportMappingError(
+                    Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE,
+                    mapping.getTargetName()
+                );
+            }
         }
 
         private void reportMappingError(Message msg, Object... objects) {
             messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
                 msg, objects );
+        }
+
+        /**
+         * A write accessor is not valid if it is {@code null} and it is not last. i.e. for nested target mappings
+         * there must be a write accessor for all entries except the last one.
+         *
+         * @param accessor that needs to be checked
+         * @param isNotLast whether or not this is the last write accessor in the entry chain
+         *
+         * @return {@code true} if the accessor is not valid, {@code false} otherwise
+         */
+        private static boolean isWriteAccessorNotValidWhenNotLast(Accessor accessor, boolean isNotLast) {
+            return accessor == null && isNotLast;
+        }
+
+        /**
+         * For a last accessor to be valid, a read accessor should exist and the mapping should be ignored. All other
+         * cases represent an invalid write accessor. This method will evaluate to {@code true} if the following is
+         * {@code true}:
+         * <ul>
+         * <li>{@code writeAccessor} is {@code null}</li>
+         * <li>It is for the last entry</li>
+         * <li>A read accessor does not exist, or the mapping is not ignored</li>
+         * </ul>
+         *
+         * @param writeAccessor that needs to be checked
+         * @param readAccessor that is used
+         * @param mapping that is used
+         * @param isLast whether or not this is the last write accessor in the entry chain
+         *
+         * @return {@code true} if the write accessor is not valid, {@code false} otherwise. See description for more
+         * information
+         */
+        private static boolean isWriteAccessorNotValidWhenLast(Accessor writeAccessor, Accessor readAccessor,
+            Mapping mapping, boolean isLast) {
+            return writeAccessor == null && isLast && ( readAccessor == null || !mapping.isIgnored() );
+        }
+
+        /**
+         * Validates that the {@code segment} is the same as the {@code targetParameter} or the {@code
+         * reverseSourceParameter} names
+         *
+         * @param segment that needs to be checked
+         * @param targetParameter the target parameter if it exists
+         * @param reverseSourceParameter the reverse source parameter if it exists
+         * @param isReverse whether a reverse {@link TargetReference} is being built
+         *
+         * @return {@code true} if the segment matches the name of the {@code targetParameter} or the name of the
+         * {@code reverseSourceParameter} when this is a reverse {@link TargetReference} is being built, {@code
+         * false} otherwise
+         */
+        private static boolean matchesSourceOrTargetParameter(String segment, Parameter targetParameter,
+            Parameter reverseSourceParameter, boolean isReverse) {
+            boolean matchesTargetParameter =
+                targetParameter != null && targetParameter.getName().equals( segment );
+            return matchesTargetParameter
+                || isReverse && reverseSourceParameter != null && reverseSourceParameter.getName().equals( segment );
         }
     }
 
