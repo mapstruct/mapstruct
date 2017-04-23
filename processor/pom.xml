@@ -143,6 +143,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- to get jacoco report we need to set argLine in surefire,
+                        without this snippet the jacoco argLine is lost -->
+                    <argLine>@{argLine}</argLine>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
