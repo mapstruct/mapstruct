@@ -146,7 +146,7 @@
                 <configuration>
                     <!-- to get jacoco report we need to set argLine in surefire,
                         without this snippet the jacoco argLine is lost -->
-                    <argLine>@{argLine}</argLine>
+                    <argLine>@{argLine} -Xms1024m -Xmx3072m</argLine>
                 </configuration>
             </plugin>
             <plugin>
