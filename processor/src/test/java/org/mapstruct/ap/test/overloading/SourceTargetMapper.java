@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.overloading;
 
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,10 +29,11 @@ public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
+    @InheritConfiguration
     @Mapping(target = "updatedOnTarget", source = "updatedOn")
     Target sourceToTarget( Source source );
 
-    @InheritInverseConfiguration
+    @InheritInverseConfiguration(name = "sourceToTarget")
     Source targetToSourceReversed( Target source);
 
 }

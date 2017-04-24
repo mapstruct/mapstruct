@@ -23,6 +23,7 @@ import java.util.Date;
 public class Target {
 
     private long updatedOnTarget;
+    private long updatedOnTarget2;
 
     public long getUpdatedOnTarget() {
         return updatedOnTarget;
@@ -37,5 +38,20 @@ public class Target {
             return;
         }
         this.updatedOnTarget = updatedOn.getTime();
+    }
+
+    public long getUpdatedOnTarget2() {
+        return updatedOnTarget2;
+    }
+
+    public void setUpdatedOnTarget2(long updatedOnTarget2) {
+        this.updatedOnTarget2 = updatedOnTarget2;
+    }
+
+    public void setUpdatedOnTarget2( Date updatedOn ) {
+        if (updatedOn == null) {
+            return;
+        }
+        this.updatedOnTarget2 = updatedOn.getTime();
     }
 }

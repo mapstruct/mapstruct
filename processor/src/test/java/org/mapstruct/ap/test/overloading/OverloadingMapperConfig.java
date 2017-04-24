@@ -27,7 +27,7 @@ import org.mapstruct.ReportingPolicy;
     mappingInheritanceStrategy = MappingInheritanceStrategy.AUTO_INHERIT_FROM_CONFIG)
 public interface OverloadingMapperConfig {
 
-    @Mapping(target = "updatedOn", source = "updatedOnTarget")
-    Source targetToSourceReversed(Target source);
+    @Mapping(target = "updatedOnTarget2", source = "updatedOn2")
+    Target sourceToTargetConfig( Source source );
 
 }

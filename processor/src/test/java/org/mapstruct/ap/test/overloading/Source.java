@@ -23,6 +23,7 @@ import java.util.Date;
 public class Source {
 
     private Date updatedOn;
+    private Date updatedOn2;
 
     public Source(Date updatedOn) {
         this.updatedOn = updatedOn;
@@ -41,5 +42,17 @@ public class Source {
 
     public void setUpdatedOn(long updatedOn) {
         this.updatedOn = new Date( updatedOn );
+    }
+
+    public Date getUpdatedOn2() {
+        return updatedOn2;
+    }
+
+    public void setUpdatedOn2(Date updatedOn2) {
+        this.updatedOn2 = updatedOn2;
+    }
+
+    public void setUpdatedOn2(long updatedOn) {
+        this.updatedOn2 = new Date( updatedOn );
     }
 }
