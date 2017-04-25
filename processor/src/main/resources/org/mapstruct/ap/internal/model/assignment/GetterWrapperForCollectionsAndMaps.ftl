@@ -26,8 +26,8 @@ if ( ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesi
       <#if ext.existingInstanceMapping>
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing />.clear();
       </#if>
-      <@lib.handleLocalVarNullCheck>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing />.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${nullCheckLocalVarName} );
+      <@lib.handleLocalVarNullCheck needs_explicit_local_var=false>
+        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing />.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( <@lib.handleWithAssignmentOrNullCheckVar/> );
       </@lib.handleLocalVarNullCheck>
     </@lib.handleExceptions>
 }

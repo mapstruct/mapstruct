@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.bugs._913;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,9 +27,11 @@ import java.util.Set;
  * @author Sjaak Derksen
  */
 public class Domain {
+    static final Set<String> DEFAULT_STRINGS = new HashSet<String>();
+    static final Set<Long> DEFAULT_LONGS = new HashSet<Long>();
 
-    private Set<String> strings;
-    private Set<Long> longs;
+    private Set<String> strings = DEFAULT_STRINGS;
+    private Set<Long> longs = DEFAULT_LONGS;
     private Set<String> stringsInitialized;
     private Set<Long> longsInitialized;
     private List<String> stringsWithDefault;

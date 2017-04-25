@@ -26,8 +26,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2016-12-30T19:07:27+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2017-04-09T23:02:48+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_121 (Oracle Corporation)"
 )
 public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefaultMapper {
 
@@ -39,17 +39,14 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
         Domain domain = new Domain();
 
         if ( source != null ) {
-            Set<Long> set = stringListToLongSet( source.getStringsInitialized() );
-            if ( set != null ) {
-                domain.setLongsInitialized( set );
-            }
-            Set<Long> set1 = stringListToLongSet( source.getStrings() );
-            if ( set1 != null ) {
-                domain.setLongs( set1 );
-            }
+            domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
+            domain.setLongs( stringListToLongSet( source.getStrings() ) );
             List<String> list = source.getStrings();
             if ( list != null ) {
                 domain.setStrings( new HashSet<String>( list ) );
+            }
+            else {
+                domain.setStrings( null );
             }
             List<String> list1 = source.getStringsWithDefault();
             if ( list1 != null ) {
@@ -61,6 +58,9 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             List<String> list2 = source.getStringsInitialized();
             if ( list2 != null ) {
                 domain.setStringsInitialized( new HashSet<String>( list2 ) );
+            }
+            else {
+                domain.setStringsInitialized( null );
             }
         }
 

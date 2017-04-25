@@ -18,15 +18,14 @@
  */
 package org.mapstruct.ap.test.collection.adder;
 
-import java.util.List;
 import javax.annotation.Generated;
 import org.mapstruct.ap.test.collection.adder._target.Target;
 import org.mapstruct.ap.test.collection.adder.source.Source;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2016-12-30T19:10:39+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2017-04-09T23:05:40+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_121 (Oracle Corporation)"
 )
 public class SourceTargetMapperStrategyDefaultImpl implements SourceTargetMapperStrategyDefault {
 
@@ -41,10 +40,7 @@ public class SourceTargetMapperStrategyDefaultImpl implements SourceTargetMapper
         Target target = new Target();
 
         try {
-            List<Long> list = petMapper.toPets( source.getPets() );
-            if ( list != null ) {
-                target.setPets( list );
-            }
+            target.setPets( petMapper.toPets( source.getPets() ) );
         }
         catch ( CatException e ) {
             throw new RuntimeException( e );

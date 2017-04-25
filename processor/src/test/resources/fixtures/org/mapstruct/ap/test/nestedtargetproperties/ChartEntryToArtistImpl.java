@@ -29,8 +29,8 @@ import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-02-07T21:05:06+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2017-04-09T23:27:41+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_121 (Oracle Corporation)"
 )
 public class ChartEntryToArtistImpl extends ChartEntryToArtist {
 
@@ -152,10 +152,7 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         Song song = new Song();
 
         song.setArtist( chartEntryToArtist( chartEntry ) );
-        List<Integer> list = mapPosition( chartEntry.getPosition() );
-        if ( list != null ) {
-            song.setPositions( list );
-        }
+        song.setPositions( mapPosition( chartEntry.getPosition() ) );
         song.setTitle( chartEntry.getSongTitle() );
 
         return song;

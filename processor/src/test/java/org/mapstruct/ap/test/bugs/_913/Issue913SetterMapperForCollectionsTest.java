@@ -63,6 +63,10 @@ public class Issue913SetterMapperForCollectionsTest {
      * The null value mapping strategy on type level (Mapper) should generate forged methods for the
      * conversion from string to long that return null in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
+     *
+     * The generated code should not use a local variable for setting {@code longs}, but it should use a local
+     * variable for setting {@code strings} as a direct assignment and the copy constructor is used, in case the
+     * assignment is {@code null} then {@code null} should be set for {@code string}
      */
     @Test
     public void shouldReturnNullForNvmsReturnNullForCreate() {
@@ -173,6 +177,7 @@ public class Issue913SetterMapperForCollectionsTest {
         Dto dto = new Dto();
         Domain domain = new Domain();
         Set<Long> longIn = new HashSet<Long>();
+        longIn.add( 10L );
         domain.setLongs( longIn );
         domain.setStrings( new HashSet<String>() );
         DomainDtoWithNvmsDefaultMapper.INSTANCE.update( dto, domain );
@@ -198,10 +203,13 @@ public class Issue913SetterMapperForCollectionsTest {
         Dto dto = new Dto();
         Domain domain1 = new Domain();
         Set<Long> longIn = new HashSet<Long>();
+        longIn.add( 10L );
         domain1.setLongs( longIn );
         domain1.setStrings( new HashSet<String>() );
+        domain1.getStrings().add( "30" );
         Domain domain2 = DomainDtoWithNvmsDefaultMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
+        assertThat( domain2 ).isSameAs( domain1 );
         doControlAsserts( domain1, domain2 );
         assertThat( domain1.getLongs() ).isEqualTo( domain2.getLongs() );
         assertThat( domain1.getStrings() ).isNull();
@@ -240,12 +248,14 @@ public class Issue913SetterMapperForCollectionsTest {
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain = new Domain();
         domain.setLongs( new HashSet<Long>() );
+        domain.getLongs().add( 10L );
         domain.setStrings( new HashSet<String>() );
+        domain.getStrings().add( "30" );
         DomainDtoWithPresenceCheckMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
-        assertThat( domain.getStrings() ).isEmpty();
-        assertThat( domain.getLongs() ).isEmpty();
+        assertThat( domain.getStrings() ).containsExactly( "30" );
+        assertThat( domain.getLongs() ).containsExactly( 10L );
     }
 
     /**
@@ -261,15 +271,18 @@ public class Issue913SetterMapperForCollectionsTest {
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain1 = new Domain();
         domain1.setLongs( new HashSet<Long>() );
+        domain1.getLongs().add( 10L );
         domain1.setStrings( new HashSet<String>() );
+        domain1.getStrings().add( "30" );
         Domain domain2 = DomainDtoWithPresenceCheckMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
+        assertThat( domain2 ).isSameAs( domain1 );
         doControlAsserts( domain1, domain2 );
         assertThat( domain1.getLongs() ).isEqualTo( domain2.getLongs() );
-        assertThat( domain1.getStrings() ).isEmpty();
-        assertThat( domain1.getLongs() ).isEmpty();
-        assertThat( domain2.getStrings() ).isEmpty();
-        assertThat( domain2.getLongs() ).isEmpty();
+        assertThat( domain1.getStrings() ).containsExactly( "30" );
+        assertThat( domain1.getLongs() ).containsExactly( 10L );
+        assertThat( domain2.getStrings() ).containsExactly( "30" );
+        assertThat( domain2.getLongs() ).containsExactly( 10L );
     }
 
     /**
@@ -301,12 +314,14 @@ public class Issue913SetterMapperForCollectionsTest {
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain = new Domain();
         domain.setLongs( new HashSet<Long>() );
+        domain.getLongs().add( 10L );
         domain.setStrings( new HashSet<String>() );
+        domain.getStrings().add( "30" );
         DomainDtoWithNcvsAlwaysMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
-        assertThat( domain.getStrings() ).isEmpty();
-        assertThat( domain.getLongs() ).isEmpty();
+        assertThat( domain.getStrings() ).containsExactly( "30" );
+        assertThat( domain.getLongs() ).containsExactly( 10L );
     }
 
     /**
@@ -322,15 +337,18 @@ public class Issue913SetterMapperForCollectionsTest {
         DtoWithPresenceCheck dto = new DtoWithPresenceCheck();
         Domain domain1 = new Domain();
         domain1.setLongs( new HashSet<Long>() );
+        domain1.getLongs().add( 10L );
         domain1.setStrings( new HashSet<String>() );
+        domain1.getStrings().add( "30" );
         Domain domain2 = DomainDtoWithNcvsAlwaysMapper.INSTANCE.updateWithReturn( dto, domain1 );
 
+        assertThat( domain2 ).isSameAs( domain1 );
         doControlAsserts( domain1, domain2 );
         assertThat( domain1.getLongs() ).isEqualTo( domain2.getLongs() );
-        assertThat( domain1.getStrings() ).isEmpty();
-        assertThat( domain1.getLongs() ).isEmpty();
-        assertThat( domain2.getStrings() ).isEmpty();
-        assertThat( domain2.getLongs() ).isEmpty();
+        assertThat( domain1.getStrings() ).containsExactly( "30" );
+        assertThat( domain1.getLongs() ).containsExactly( 10L );
+        assertThat( domain2.getStrings() ).containsExactly( "30" );
+        assertThat( domain2.getLongs() ).containsExactly( 10L );
     }
 
     /**

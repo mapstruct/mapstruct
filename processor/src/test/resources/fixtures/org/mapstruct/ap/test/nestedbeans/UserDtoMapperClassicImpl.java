@@ -24,8 +24,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-03-01T22:15:21+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2017-04-09T23:25:54+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_121 (Oracle Corporation)"
 )
 public class UserDtoMapperClassicImpl implements UserDtoMapperClassic {
 
@@ -55,10 +55,7 @@ public class UserDtoMapperClassicImpl implements UserDtoMapperClassic {
 
         carDto.setName( car.getName() );
         carDto.setYear( car.getYear() );
-        List<WheelDto> list = mapWheels( car.getWheels() );
-        if ( list != null ) {
-            carDto.setWheels( list );
-        }
+        carDto.setWheels( mapWheels( car.getWheels() ) );
 
         return carDto;
     }

@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -56,4 +58,12 @@ public class GetterWrapperForCollectionsAndMaps extends WrapperForCollectionsAnd
         );
     }
 
+    @Override
+    public Set<Type> getImportTypes() {
+        Set<Type> imported = new HashSet<Type>( super.getImportTypes() );
+        if ( getSourcePresenceCheckerReference() == null ) {
+            imported.addAll( getNullCheckLocalVarType().getImportTypes() );
+        }
+        return imported;
+    }
 }

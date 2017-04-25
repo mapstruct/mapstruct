@@ -22,39 +22,5 @@
 <#import "../macro/CommonMacros.ftl" as lib>
 <@lib.sourceLocalVarAssignment/>
 <@lib.handleExceptions>
-  <#if ext.existingInstanceMapping && !targetImmutable>
-    if ( ${ext.targetBeanName}.${ext.targetReadAccessorName} != null ) {
-        <@lib.handleLocalVarNullCheck>
-            ${ext.targetBeanName}.${ext.targetReadAccessorName}.clear();
-            ${ext.targetBeanName}.${ext.targetReadAccessorName}.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( ${nullCheckLocalVarName} );
-        </@lib.handleLocalVarNullCheck>
-        <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference?? && !includeSourceNullCheck>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleLocalVarNullCheck -->
-          ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>null</@lib.handleWrite>;
-        }
-        </#if>
-        }
-    else {
-      <@callTargetWriteAccessor/>
-    }
-  <#else>
-    <@callTargetWriteAccessor/>
-  </#if>
+  ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
 </@lib.handleExceptions>
-<#--
-  assigns the target via the regular target write accessor (usually the setter)
--->
-<#macro callTargetWriteAccessor>
-    <@lib.handleLocalVarNullCheck>
-        ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if directAssignment><@wrapLocalVarInCollectionInitializer/><#else>${nullCheckLocalVarName}</#if></@lib.handleWrite>;
-  </@lib.handleLocalVarNullCheck>
-</#macro>
-<#--
-  wraps the local variable in a collection initializer (new collection, or EnumSet.copyOf)
--->
-<#macro wrapLocalVarInCollectionInitializer><@compress single_line=true>
-    <#if enumSet>
-      EnumSet.copyOf( ${nullCheckLocalVarName} )
-    <#else>
-      new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>( ${nullCheckLocalVarName} )
-    </#if>
-</@compress></#macro>
