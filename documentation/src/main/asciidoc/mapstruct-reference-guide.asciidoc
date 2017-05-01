@@ -1909,6 +1909,69 @@ public CarDto carToCarDto(Car car) throws GearException {
 
 Some **notes** on null checks. MapStruct does provide null checking only when required: when applying type-conversions or constructing a new type by invoking its constructor. This means that the user is responsible in hand-written code for returning valid non-null objects. Also null objects can be handed to hand-written code, since MapStruct does not want to make assumptions on the meaning assigned by the user to a null object. Hand-written code has to deal with this.
 
+[[avoiding-object-cycles]]
+=== Avoiding object cycles
+
+Using a combination of `@BeforeMapping` and `@AfterMapping` it is possible to write a generic Mapper which is able to
+map objects with cycles.
+
+.Static Mapper with cycle avoidance support
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class CycleAvoidanceMapper {
+    private static final ThreadLocal<Integer> LEVEL = new ThreadLocal<>();
+    private static final ThreadLocal<Map<Object, Object>> MAPPING = new ThreadLocal<>();
+
+    private CycleAvoidanceMapper() {
+        // Only allow static access
+    }
+
+    @BeforeMapping
+    @SuppressWarnings("unchecked")
+    public static <T> T getInstance(Object source, @TargetType Class<T> type) {
+        Map<Object, Object> mapping = MAPPING.get();
+        if ( mapping == null ) {
+            return null;
+        }
+        else {
+            return (T) mapping.get( source );
+        }
+    }
+
+    @BeforeMapping
+    public static void setInstance(Object source, @MappingTarget Object target) {
+        Integer level = LEVEL.get();
+        if ( level == null ) {
+            LEVEL.set( 1 );
+            MAPPING.set( new IdentityHashMap<>() );
+        }
+        else {
+            LEVEL.set( level + 1 );
+        }
+        MAPPING.get().put( source, target );
+    }
+
+    @AfterMapping
+    public static void cleanup() {
+        Integer level = LEVEL.get();
+        if ( level == 1 ) {
+            MAPPING.set( null );
+            LEVEL.set( null );
+        }
+        else {
+            LEVEL.set( level - 1 );
+        }
+    }
+}
+----
+====
+
+You can find a complete example in the
+https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-mapping-with-cycles[mapstruct-examples-cycles-mapping]
+project on GitHub.
+
 == Reusing mapping configurations
 
 This chapter discusses different means of reusing mapping configurations for several mapping methods: "inheritance" of configuration from other methods and sharing central configuration between multiple mapper types.
