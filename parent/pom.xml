@@ -77,6 +77,23 @@
       <tag>HEAD</tag>
   </scm>
 
+    <repositories>
+        <repository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Maven Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>auto</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <issueManagement>
         <system>GitHub Issues</system>
         <url>https://github.com/mapstruct/mapstruct/issues</url>
