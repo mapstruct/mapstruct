@@ -35,8 +35,13 @@ public <@includeModel object=returnType/> ${name}(<@includeModel object=sourcePa
 
     switch ( ${sourceParameter.name} ) {
     <#list enumMappings as enumMapping>
+        <#if enumMapping.target.equals("null")>
+        case ${enumMapping.source}: ${resultName} = null;
+            break;
+        <#else>
         case ${enumMapping.source}: ${resultName} = <@includeModel object=returnType/>.${enumMapping.target};
             break;
+        </#if>
     </#list>
     default: throw new IllegalArgumentException( "Unexpected enum constant: " + ${sourceParameter.name} );
     }

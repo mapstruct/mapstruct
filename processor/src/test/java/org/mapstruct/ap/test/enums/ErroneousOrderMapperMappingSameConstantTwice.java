@@ -37,7 +37,8 @@ public interface ErroneousOrderMapperMappingSameConstantTwice {
         @Mapping(source = "EXTRA", target = "SPECIAL"),
         @Mapping(source = "EXTRA", target = "DEFAULT"),
         @Mapping(source = "STANDARD", target = "DEFAULT"),
-        @Mapping(source = "NORMAL", target = "DEFAULT")
+        @Mapping(source = "NORMAL", target = "DEFAULT"),
+        @Mapping(source = "NULLABLE", target = "null")
     })
     ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
 }

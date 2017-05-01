@@ -154,7 +154,8 @@ public class EnumMappingMethod extends MappingMethod {
                         );
                         foundIncorrectMapping = true;
                     }
-                    else if ( !targetEnumConstants.contains( mappedConstant.getTargetName() ) ) {
+                    else if ( !targetEnumConstants.contains( mappedConstant.getTargetName() )
+                        && !mappedConstant.getTargetName().equals("null") ) {
                         ctx.getMessager().printMessage( method.getExecutable(),
                             mappedConstant.getMirror(),
                             mappedConstant.getTargetAnnotationValue(),
