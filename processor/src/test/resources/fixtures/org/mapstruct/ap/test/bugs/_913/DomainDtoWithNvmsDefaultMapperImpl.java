@@ -26,8 +26,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-04-09T23:02:48+0200",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_121 (Oracle Corporation)"
+    date = "2017-05-06T00:06:21+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_131 (Oracle Corporation)"
 )
 public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefaultMapper {
 
@@ -254,7 +254,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             return new HashSet<Long>();
         }
 
-        Set<Long> set = new HashSet<Long>();
+        Set<Long> set = new HashSet<Long>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
         for ( String string : list ) {
             set.add( Long.parseLong( string ) );
         }

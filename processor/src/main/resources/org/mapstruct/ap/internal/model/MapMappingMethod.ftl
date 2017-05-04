@@ -35,7 +35,7 @@
                  ${resultName}.clear();
                  return<#if returnType.name != "void"> ${resultName}</#if>;
             <#else>
-                 return <@returnObjectCreation/>;
+                 return <@includeModel object=iterableCreation useSizeIfPossible=false/>;
             </#if>
         </#if>
     }
@@ -43,7 +43,7 @@
     <#if existingInstanceMapping>
         ${resultName}.clear();
     <#else>
-        <@includeModel object=resultType /> ${resultName} = <@returnObjectCreation/>;
+        <@includeModel object=resultType /> ${resultName} = <@includeModel object=iterableCreation useSizeIfPossible=true/>;
     </#if>
 
     <#list beforeMappingReferencesWithMappingTarget as callback>
@@ -81,18 +81,5 @@
             <@includeModel object=exceptionType/>
             <#if exceptionType_has_next>, </#if><#t>
         </#list>
-    </@compress>
-</#macro>
-<#macro returnObjectCreation>
-    <@compress single_line=true>
-        <#if factoryMethod??>
-             <@includeModel object=factoryMethod targetType=resultType/>
-        <#else>
-             new
-             <#if resultType.implementationType??>
-                  <@includeModel object=resultType.implementationType />
-             <#else>
-                  <@includeModel object=resultType /></#if>()
-        </#if>
     </@compress>
 </#macro>

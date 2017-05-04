@@ -36,11 +36,13 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 @WithClasses({
     Source.class,
@@ -51,6 +53,10 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class DefaultCollectionImplementationTest {
+
+    @Rule
+    public final GeneratedSource generatedSource = new GeneratedSource()
+        .addComparisonToFixtureFor( SourceTargetMapper.class );
 
     @Test
     @IssueKey("6")

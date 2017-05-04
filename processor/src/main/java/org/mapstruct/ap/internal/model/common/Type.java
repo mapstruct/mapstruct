@@ -70,7 +70,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final TypeElement typeElement;
     private final List<Type> typeParameters;
 
-    private final Type implementationType;
+    private final ImplementationType implementationType;
     private final Type componentType;
 
     private final String packageName;
@@ -103,7 +103,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
                 TypeMirror typeMirror, TypeElement typeElement,
-                List<Type> typeParameters, Type implementationType, Type componentType,
+                List<Type> typeParameters, ImplementationType implementationType, Type componentType,
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported) {
@@ -209,6 +209,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      * type, {@code null} otherwise.
      */
     public Type getImplementationType() {
+        return implementationType != null ? implementationType.getType() : null;
+    }
+
+    public ImplementationType getImplementation() {
         return implementationType;
     }
 

@@ -28,8 +28,8 @@ import org.mapstruct.ap.test.array.source.Scientist;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2016-12-28T17:52:06+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2017-05-03T23:47:43+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_131 (Oracle Corporation)"
 )
 public class ScienceMapperImpl implements ScienceMapper {
 
@@ -94,7 +94,7 @@ public class ScienceMapperImpl implements ScienceMapper {
             return null;
         }
 
-        List<ScientistDto> list = new ArrayList<ScientistDto>();
+        List<ScientistDto> list = new ArrayList<ScientistDto>( scientists.length );
         for ( Scientist scientist : scientists ) {
             list.add( scientistToDto( scientist ) );
         }

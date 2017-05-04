@@ -61,6 +61,10 @@ import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
+
 /**
  * Factory creating {@link Type} instances.
  *
@@ -77,7 +81,7 @@ public class TypeFactory {
     private final TypeMirror mapType;
     private final TypeMirror streamType;
 
-    private final Map<String, Type> implementationTypes = new HashMap<String, Type>();
+    private final Map<String, ImplementationType> implementationTypes = new HashMap<String, ImplementationType>();
     private final Map<String, String> importedQualifiedTypesBySimpleName = new HashMap<String, String>();
 
     public TypeFactory(Elements elementUtils, Types typeUtils, RoundContext roundContext) {
@@ -92,19 +96,25 @@ public class TypeFactory {
         TypeElement streamTypeElement = elementUtils.getTypeElement( JavaStreamConstants.STREAM_FQN );
         streamType = streamTypeElement == null ? null : typeUtils.erasure( streamTypeElement.asType() );
 
-        implementationTypes.put( Iterable.class.getName(), getType( ArrayList.class ) );
-        implementationTypes.put( Collection.class.getName(), getType( ArrayList.class ) );
-        implementationTypes.put( List.class.getName(), getType( ArrayList.class ) );
+        implementationTypes.put( Iterable.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
+        implementationTypes.put( Collection.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
+        implementationTypes.put( List.class.getName(), withInitialCapacity( getType( ArrayList.class ) ) );
 
-        implementationTypes.put( Set.class.getName(), getType( HashSet.class ) );
-        implementationTypes.put( SortedSet.class.getName(), getType( TreeSet.class ) );
-        implementationTypes.put( NavigableSet.class.getName(), getType( TreeSet.class ) );
+        implementationTypes.put( Set.class.getName(), withLoadFactorAdjustment( getType( HashSet.class ) ) );
+        implementationTypes.put( SortedSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
+        implementationTypes.put( NavigableSet.class.getName(), withDefaultConstructor( getType( TreeSet.class ) ) );
 
-        implementationTypes.put( Map.class.getName(), getType( HashMap.class ) );
-        implementationTypes.put( SortedMap.class.getName(), getType( TreeMap.class ) );
-        implementationTypes.put( NavigableMap.class.getName(), getType( TreeMap.class ) );
-        implementationTypes.put( ConcurrentMap.class.getName(), getType( ConcurrentHashMap.class ) );
-        implementationTypes.put( ConcurrentNavigableMap.class.getName(), getType( ConcurrentSkipListMap.class ) );
+        implementationTypes.put( Map.class.getName(), withLoadFactorAdjustment( getType( HashMap.class ) ) );
+        implementationTypes.put( SortedMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
+        implementationTypes.put( NavigableMap.class.getName(), withDefaultConstructor( getType( TreeMap.class ) ) );
+        implementationTypes.put(
+            ConcurrentMap.class.getName(),
+            withLoadFactorAdjustment( getType( ConcurrentHashMap.class ) )
+        );
+        implementationTypes.put(
+            ConcurrentNavigableMap.class.getName(),
+            withDefaultConstructor( getType( ConcurrentSkipListMap.class ) )
+        );
     }
 
     public Type getType(Class<?> type) {
@@ -151,7 +161,7 @@ public class TypeFactory {
             throw new TypeHierarchyErroneousException( mirror );
         }
 
-        Type implementationType = getImplementationType( mirror );
+        ImplementationType implementationType = getImplementationType( mirror );
 
         boolean isIterableType = typeUtils.isSubtype( mirror, iterableType );
         boolean isCollectionType = typeUtils.isSubtype( mirror, collectionType );
@@ -397,20 +407,21 @@ public class TypeFactory {
                                         typeUtils.getPrimitiveType( TypeKind.VOID );
     }
 
-    private Type getImplementationType(TypeMirror mirror) {
+    private ImplementationType getImplementationType(TypeMirror mirror) {
         if ( mirror.getKind() != TypeKind.DECLARED ) {
             return null;
         }
 
         DeclaredType declaredType = (DeclaredType) mirror;
 
-        Type implementationType = implementationTypes.get(
+        ImplementationType implementation = implementationTypes.get(
             ( (TypeElement) declaredType.asElement() ).getQualifiedName()
                 .toString()
         );
 
-        if ( implementationType != null ) {
-            return new Type(
+        if ( implementation != null ) {
+            Type implementationType = implementation.getType();
+            Type replacement = new Type(
                 typeUtils,
                 elementUtils,
                 this,
@@ -433,6 +444,7 @@ public class TypeFactory {
                 implementationType.isStreamType(),
                 isImported( implementationType.getName(), implementationType.getFullyQualifiedName() )
             );
+            return implementation.createNew( replacement );
         }
 
         return null;

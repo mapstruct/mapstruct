@@ -42,6 +42,7 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     private final SelectionParameters selectionParameters;
     private final String index1Name;
     private final String index2Name;
+    private IterableCreation iterableCreation;
 
     ContainerMappingMethod(Method method, Collection<String> existingVariables, Assignment parameterAssignment,
         MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
@@ -67,6 +68,13 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
         throw new IllegalStateException( "Method " + this + " has no source parameter." );
     }
 
+    public IterableCreation getIterableCreation() {
+        if ( iterableCreation == null ) {
+            iterableCreation = IterableCreation.create( this, getSourceParameter() );
+        }
+        return iterableCreation;
+    }
+
     public Assignment getElementAssignment() {
         return elementAssignment;
     }
@@ -76,6 +84,10 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
         Set<Type> types = super.getImportTypes();
         if ( elementAssignment != null ) {
             types.addAll( elementAssignment.getImportTypes() );
+        }
+
+        if ( iterableCreation != null ) {
+            types.addAll( iterableCreation.getImportTypes() );
         }
         return types;
     }

@@ -26,7 +26,7 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-04-22T09:19:18+0200",
+    date = "2017-05-06T00:06:20+0200",
     comments = "version: , compiler: javac, environment: Java 1.8.0_131 (Oracle Corporation)"
 )
 public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlwaysMapper {
@@ -229,7 +229,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
             return null;
         }
 
-        Set<Long> set = new HashSet<Long>();
+        Set<Long> set = new HashSet<Long>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
         for ( String string : list ) {
             set.add( Long.parseLong( string ) );
         }

@@ -24,8 +24,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-04-09T23:25:54+0200",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_121 (Oracle Corporation)"
+    date = "2017-05-04T00:00:46+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_131 (Oracle Corporation)"
 )
 public class UserDtoMapperClassicImpl implements UserDtoMapperClassic {
 
@@ -95,7 +95,7 @@ public class UserDtoMapperClassicImpl implements UserDtoMapperClassic {
             return null;
         }
 
-        List<WheelDto> list = new ArrayList<WheelDto>();
+        List<WheelDto> list = new ArrayList<WheelDto>( wheels.size() );
         for ( Wheel wheel : wheels ) {
             list.add( mapWheel( wheel ) );
         }

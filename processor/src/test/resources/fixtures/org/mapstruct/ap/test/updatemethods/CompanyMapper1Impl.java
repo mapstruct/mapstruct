@@ -24,8 +24,8 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-03-13T22:32:15+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_121 (Oracle Corporation)"
+    date = "2017-05-06T00:11:06+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_131 (Oracle Corporation)"
 )
 public class CompanyMapper1Impl implements CompanyMapper1 {
 
@@ -96,7 +96,7 @@ public class CompanyMapper1Impl implements CompanyMapper1 {
             return null;
         }
 
-        Map<SecretaryEntity, EmployeeEntity> map1 = new HashMap<SecretaryEntity, EmployeeEntity>();
+        Map<SecretaryEntity, EmployeeEntity> map1 = new HashMap<SecretaryEntity, EmployeeEntity>( Math.max( (int) ( map.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<SecretaryDto, EmployeeDto> entry : map.entrySet() ) {
             SecretaryEntity key = secretaryDtoToSecretaryEntity( entry.getKey() );
