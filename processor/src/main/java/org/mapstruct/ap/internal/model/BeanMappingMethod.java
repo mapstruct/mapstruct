@@ -322,9 +322,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             // first we have to handle nested target mappings
             if ( method.getMappingOptions().hasNestedTargetReferences() ) {
-                if ( handleDefinedNestedTargetMapping( handledTargets ) ) {
-                    errorOccurred = true;
-                }
+                errorOccurred = handleDefinedNestedTargetMapping( handledTargets );
             }
 
             for ( Map.Entry<String, List<Mapping>> entry : methodMappings.entrySet() ) {
@@ -370,7 +368,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
                 unprocessedDefinedTargets.put( entry.getKey().getName(), entry.getValue() );
             }
-            return holder.isErrorOccurred();
+            return holder.hasErrorOccurred();
         }
 
         private boolean handleDefinedMapping(Mapping mapping, Set<String> handledTargets) {

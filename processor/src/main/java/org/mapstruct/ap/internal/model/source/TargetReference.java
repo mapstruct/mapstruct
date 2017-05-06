@@ -90,6 +90,12 @@ public class TargetReference {
          * a reverse is created.
          */
         private Parameter reverseSourceParameter;
+        /**
+         * During {@link #getTargetEntries(Type, String[])} an error can occur. However, we are invoking
+         * that multiple times because the first entry can also be the name of the parameter. Therefore we keep
+         * the error message until the end when we can report it.
+         */
+        private Message errorMessage;
 
         public BuilderFromTargetMapping messager(FormattingMessager messager) {
             this.messager = messager;
@@ -142,25 +148,26 @@ public class TargetReference {
             // 3. @MappingTarget, with
             // 4. or without parameter name.
             String[] targetPropertyNames = segments;
-            List<PropertyEntry> entries = getTargetEntries( resultType, targetPropertyNames, false );
+            List<PropertyEntry> entries = getTargetEntries( resultType, targetPropertyNames );
             foundEntryMatch = (entries.size() == targetPropertyNames.length);
             if ( !foundEntryMatch && segments.length > 1
                 && matchesSourceOrTargetParameter( segments[0], parameter, reverseSourceParameter, isReverse ) ) {
                 targetPropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
-                entries = getTargetEntries( resultType, targetPropertyNames, false );
+                entries = getTargetEntries( resultType, targetPropertyNames );
                 foundEntryMatch = (entries.size() == targetPropertyNames.length);
             }
 
-            if ( !foundEntryMatch ) {
+            if ( !foundEntryMatch && errorMessage != null) {
                 // This is called only for reporting errors
-                getTargetEntries( resultType, targetPropertyNames, true );
+                reportMappingError( errorMessage, mapping.getTargetName() );
             }
 
-            // foundEntryMatch = isValid, errors are handled in the BeanMapping, where the error context is known
+            // foundEntryMatch = isValid, errors are handled here, and the BeanMapping uses that to ignore
+            // the creation of mapping for invalid TargetReferences
             return new TargetReference( parameter, entries, foundEntryMatch );
         }
 
-        private List<PropertyEntry> getTargetEntries(Type type, String[] entryNames, boolean reportError) {
+        private List<PropertyEntry> getTargetEntries(Type type, String[] entryNames) {
 
             // initialize
             CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
@@ -180,11 +187,7 @@ public class TargetReference {
                     || ( isNotLast && targetReadAccessor == null ) ) {
                     // there should always be a write accessor (except for the last when the mapping is ignored and
                     // there is a read accessor) and there should be read accessor mandatory for all but the last
-                    if ( reportError ) {
-                        //TODO maybe it would be better if we store the errors in the builder and do a report in the
-                        // end, so not iterate this twice
-                        reportError( targetWriteAccessor, targetReadAccessor );
-                    }
+                    setErrorMessage( targetWriteAccessor, targetReadAccessor );
                     break;
                 }
 
@@ -193,7 +196,7 @@ public class TargetReference {
                     // only intermediate nested properties when they are a true setter or field accessor
                     // the last may be other readAccessor (setter / getter / adder).
 
-                    nextType = findNextType( nextType, targetWriteAccessor, targetReadAccessor, isLast );
+                    nextType = findNextType( nextType, targetWriteAccessor, targetReadAccessor );
 
                     // check if an entry alread exists, otherwise create
                     String[] fullName = Arrays.copyOfRange( entryNames, 0, i + 1 );
@@ -213,16 +216,9 @@ public class TargetReference {
          * @param initial for which a next type should be found
          * @param targetWriteAccessor the write accessor
          * @param targetReadAccessor the read accessor
-         * @param isLast whether this is the call for the last accessor
-         *
          * @return the next type that should be used for finding a property entry
          */
-        private Type findNextType(Type initial, Accessor targetWriteAccessor,
-            Accessor targetReadAccessor, boolean isLast) {
-            if ( !isLast && targetWriteAccessor == null ) {
-                throw new IllegalArgumentException(
-                    "Write Accessor is null, but is not last. This is an internal error in the Processor" );
-            }
+        private Type findNextType(Type initial, Accessor targetWriteAccessor, Accessor targetReadAccessor) {
             Type nextType;
             Accessor toUse = targetWriteAccessor != null ? targetWriteAccessor : targetReadAccessor;
             if ( Executables.isGetterMethod( toUse ) ||
@@ -241,18 +237,12 @@ public class TargetReference {
             return nextType;
         }
 
-        private void reportError(Accessor targetWriteAccessor, Accessor targetReadAccessor) {
+        private void setErrorMessage(Accessor targetWriteAccessor, Accessor targetReadAccessor) {
             if ( targetWriteAccessor == null && targetReadAccessor == null ) {
-                reportMappingError(
-                    Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE,
-                    mapping.getTargetName()
-                );
+                errorMessage = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE;
             }
             else if ( targetWriteAccessor == null ) {
-                reportMappingError(
-                    Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE,
-                    mapping.getTargetName()
-                );
+                errorMessage = Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE;
             }
         }
 

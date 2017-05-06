@@ -108,7 +108,7 @@ public class NestedTargetPropertyMappingHolder {
     /**
      * @return {@code true} if an error occurred during the creation of the nested mappings
      */
-    public boolean isErrorOccurred() {
+    public boolean hasErrorOccurred() {
         return errorOccurred;
     }
 
