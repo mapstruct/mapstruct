@@ -47,6 +47,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     private final Assignment keyAssignment;
     private final Assignment valueAssignment;
+    private IterableCreation iterableCreation;
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, MapMappingMethod> {
 
@@ -268,6 +269,10 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             types.addAll( valueAssignment.getImportTypes() );
         }
 
+        if ( iterableCreation != null ) {
+            types.addAll( iterableCreation.getImportTypes() );
+        }
+
         return types;
     }
 
@@ -290,5 +295,12 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             "entry",
             getParameterNames()
         );
+    }
+
+    public IterableCreation getIterableCreation() {
+        if ( iterableCreation == null ) {
+            iterableCreation = IterableCreation.create( this, getSourceParameter() );
+        }
+        return iterableCreation;
     }
 }

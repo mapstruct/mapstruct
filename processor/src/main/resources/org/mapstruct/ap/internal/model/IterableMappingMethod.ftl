@@ -47,7 +47,7 @@
                     ${resultName}.clear();
                     return<#if returnType.name != "void"> ${resultName}</#if>;
                 <#else>
-                    return <@iterableCreation/>;
+                    return <@includeModel object=iterableCreation useSizeIfPossible=false/>;
                 </#if>
             </#if>
         </#if>
@@ -63,7 +63,7 @@
             ${resultName}.clear();
         <#else>
             <#-- Use the interface type on the left side, except it is java.lang.Iterable; use the implementation type - if present - on the right side -->
-            <@iterableLocalVarDef/> ${resultName} = <@iterableCreation/>;
+            <@iterableLocalVarDef/> ${resultName} = <@includeModel object=iterableCreation useSizeIfPossible=true/>;
         </#if>
     </#if>
     <#list beforeMappingReferencesWithMappingTarget as callback>
@@ -122,19 +122,6 @@
             <@includeModel object=resultType.implementationType/>
         <#else>
             <@includeModel object=resultType/>
-        </#if>
-    </@compress>
-</#macro>
-<#macro iterableCreation>
-    <@compress single_line=true>
-        <#if factoryMethod??>
-            <@includeModel object=factoryMethod targetType=resultType/>
-        <#else>
-            new
-            <#if resultType.implementationType??>
-                <@includeModel object=resultType.implementationType/>
-            <#else>
-                <@includeModel object=resultType/></#if>()
         </#if>
     </@compress>
 </#macro>

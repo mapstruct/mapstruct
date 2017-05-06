@@ -26,7 +26,7 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-04-22T09:19:17+0200",
+    date = "2017-05-06T00:06:21+0200",
     comments = "version: , compiler: javac, environment: Java 1.8.0_131 (Oracle Corporation)"
 )
 public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresenceCheckMapper {
@@ -219,7 +219,7 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
             return null;
         }
 
-        Set<Long> set = new HashSet<Long>();
+        Set<Long> set = new HashSet<Long>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
         for ( String string : list ) {
             set.add( Long.parseLong( string ) );
         }
