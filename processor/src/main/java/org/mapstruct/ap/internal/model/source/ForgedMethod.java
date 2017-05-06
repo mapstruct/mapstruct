@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.lang.model.element.ExecutableElement;
 
@@ -29,6 +30,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
  * This method will be generated in absence of a suitable abstract method to implement.
@@ -51,6 +53,7 @@ public class ForgedMethod implements Method {
     private final MappingOptions mappingOptions;
     private final ParameterProvidedMethods contextProvidedMethods;
     private final boolean forgedNameBased;
+    private final Map<String, Accessor> sourceReadAccessors;
 
     /**
      * Creates a new forged method with the given name.
@@ -120,6 +123,7 @@ public class ForgedMethod implements Method {
         this.mappingOptions = mappingOptions == null ? MappingOptions.empty() : mappingOptions;
         this.mappingOptions.initWithParameter( sourceParameter );
         this.forgedNameBased = forgedNameBased;
+        this.sourceReadAccessors = MappingMethodUtils.getSourceReadAccessors( getSourceParameters(), mappingOptions );
     }
 
     /**
@@ -143,6 +147,7 @@ public class ForgedMethod implements Method {
 
         this.name = name;
         this.forgedNameBased = forgedMethod.forgedNameBased;
+        this.sourceReadAccessors = forgedMethod.sourceReadAccessors;
     }
 
     @Override
@@ -319,6 +324,10 @@ public class ForgedMethod implements Method {
     @Override
     public MappingOptions getMappingOptions() {
         return mappingOptions;
+    }
+
+    public Map<String, Accessor> getSourceReadAccessors() {
+        return sourceReadAccessors;
     }
 
     @Override

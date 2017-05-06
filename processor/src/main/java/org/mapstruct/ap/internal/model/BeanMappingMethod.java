@@ -111,7 +111,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             this.method = sourceMethod;
             this.methodMappings = sourceMethod.getMappingOptions().getMappings();
             CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
-            Map<String, Accessor> accessors = method.getResultType().getPropertyWriteAccessors( cms );
+            Map<String, Accessor> srcReadAccessors = sourceMethod.getSourceReadAccessors();
+
+            Map<String, Accessor> accessors = method.getResultType().getPropertyWriteAccessors( cms,
+                    ( srcReadAccessors ) );
+
             this.targetProperties = accessors.keySet();
 
             this.unprocessedTargetProperties = new LinkedHashMap<String, Accessor>( accessors );
