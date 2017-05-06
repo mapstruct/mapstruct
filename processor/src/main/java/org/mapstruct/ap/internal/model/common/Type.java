@@ -441,6 +441,11 @@ public class Type extends ModelElement implements Comparable<Type> {
         return presenceCheckers;
     }
 
+    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
+        return getPropertyWriteAccessors( cmStrategy, Collections.<String, Accessor>emptyMap() );
+    }
+
+
     /**
      * getPropertyWriteAccessors returns a map of the write accessors according to the CollectionMappingStrategy. These
      * accessors include:
@@ -454,7 +459,8 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @param cmStrategy collection mapping strategy
      * @return an unmodifiable map of all write accessors indexed by property name
      */
-    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy ) {
+    public Map<String, Accessor> getPropertyWriteAccessors( CollectionMappingStrategyPrism cmStrategy,
+                                                            Map<String, Accessor> sourceAccessor ) {
         // collect all candidate target accessors
         List<Accessor> candidates = new ArrayList<Accessor>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
@@ -500,13 +506,47 @@ public class Type extends ModelElement implements Comparable<Type> {
             }
 
             Accessor previousCandidate = result.get( targetPropertyName );
-            if ( previousCandidate == null || preferredType == null || ( targetType != null
-                && typeUtils.isAssignable( preferredType.getTypeMirror(), targetType.getTypeMirror() ) ) ) {
+
+
+            if (previousCandidate != null
+                    && sourceAccessor != null
+                    && sourceAccessor.get( targetPropertyName ) != null
+                    && isBetter( previousCandidate, candidate,
+                    sourceAccessor.get( targetPropertyName ).getAccessedType() ) ) {
+                result.put( targetPropertyName, candidate );
+                continue;
+            }
+
+
+            if (previousCandidate == null || preferredType == null || (targetType != null
+                    && typeUtils.isAssignable( preferredType.getTypeMirror(), targetType.getTypeMirror() ) ) ) {
                 result.put( targetPropertyName, candidate );
             }
         }
 
         return result;
+    }
+
+    private TypeMirror extractTypeMirror( Accessor accessor ) {
+        return accessor.getExecutable().getParameters().get( 0 ).asType();
+    }
+
+    private boolean isBetter( Accessor previousCandidate, Accessor nextCandidate, TypeMirror preferredType ) {
+        TypeMirror previousType = extractTypeMirror( previousCandidate );
+        TypeMirror nextType = extractTypeMirror( nextCandidate );
+
+        if (typeUtils.isSameType( previousType, preferredType )) {
+            return false;
+        }
+
+        if (typeUtils.isSameType( nextType, preferredType )) {
+            return true;
+        }
+        if (typeUtils.isAssignable( nextType, preferredType )
+                && !typeUtils.isAssignable( previousType, preferredType )) {
+            return true;
+        }
+        return false;
     }
 
     private Type determinePreferredType(Accessor readAccessor) {
