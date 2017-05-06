@@ -1,7 +1,8 @@
 = MapStruct {mapstructVersion} Reference Guide
 :revdate: {docdate}
 :toc: right
-:Author: Gunnar Morling, Andreas Gudian, Sjaak Derksen and the MapStruct community
+:sectanchors:
+:Author: Gunnar Morling, Andreas Gudian, Sjaak Derksen, Filip Hrisafov and the MapStruct community
 
 [[Preface]]
 == Preface
