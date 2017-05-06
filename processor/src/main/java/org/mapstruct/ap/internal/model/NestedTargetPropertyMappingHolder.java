@@ -31,6 +31,7 @@ import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SourceReference;
+import org.mapstruct.ap.internal.model.source.TargetReference;
 import org.mapstruct.ap.internal.util.Extractor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -63,15 +64,17 @@ public class NestedTargetPropertyMappingHolder {
     private final Set<String> handledTargets;
     private final List<PropertyMapping> propertyMappings;
     private final Map<PropertyEntry, List<Mapping>> unprocessedDefinedTarget;
+    private final boolean errorOccurred;
 
     public NestedTargetPropertyMappingHolder(
         List<Parameter> processedSourceParameters, Set<String> handledTargets,
         List<PropertyMapping> propertyMappings,
-        Map<PropertyEntry, List<Mapping>> unprocessedDefinedTarget) {
+        Map<PropertyEntry, List<Mapping>> unprocessedDefinedTarget, boolean errorOccurred) {
         this.processedSourceParameters = processedSourceParameters;
         this.handledTargets = handledTargets;
         this.propertyMappings = propertyMappings;
         this.unprocessedDefinedTarget = unprocessedDefinedTarget;
+        this.errorOccurred = errorOccurred;
     }
 
     /**
@@ -100,6 +103,13 @@ public class NestedTargetPropertyMappingHolder {
      */
     public Map<PropertyEntry, List<Mapping>> getUnprocessedDefinedTarget() {
         return unprocessedDefinedTarget;
+    }
+
+    /**
+     * @return {@code true} if an error occurred during the creation of the nested mappings
+     */
+    public boolean hasErrorOccurred() {
+        return errorOccurred;
     }
 
     public static class Builder {
@@ -227,7 +237,8 @@ public class NestedTargetPropertyMappingHolder {
                 processedSourceParameters,
                 handledTargets,
                 propertyMappings,
-                unprocessedDefinedTarget
+                unprocessedDefinedTarget,
+                groupedByTP.errorOccurred
             );
         }
 
@@ -284,9 +295,16 @@ public class NestedTargetPropertyMappingHolder {
                 = new LinkedHashMap<PropertyEntry, List<Mapping>>();
             Map<PropertyEntry, List<Mapping>> singleTargetReferences
                 = new LinkedHashMap<PropertyEntry, List<Mapping>>();
+            boolean errorOccurred = false;
             for ( List<Mapping> mapping : mappings.values() ) {
-                PropertyEntry property = first( first( mapping ).getTargetReference().getPropertyEntries() );
-                Mapping newMapping = first( mapping ).popTargetReference();
+                Mapping firstMapping = first( mapping );
+                TargetReference targetReference = firstMapping.getTargetReference();
+                if ( !targetReference.isValid() ) {
+                    errorOccurred = true;
+                    continue;
+                }
+                PropertyEntry property = first( targetReference.getPropertyEntries() );
+                Mapping newMapping = firstMapping.popTargetReference();
                 if ( newMapping != null ) {
                     // group properties on current name.
                     if ( !mappingsKeyedByProperty.containsKey( property ) ) {
@@ -298,11 +316,11 @@ public class NestedTargetPropertyMappingHolder {
                     if ( !singleTargetReferences.containsKey( property ) ) {
                         singleTargetReferences.put( property, new ArrayList<Mapping>() );
                     }
-                    singleTargetReferences.get( property ).add( first( mapping ) );
+                    singleTargetReferences.get( property ).add( firstMapping );
                 }
             }
 
-            return new GroupedTargetReferences( mappingsKeyedByProperty, singleTargetReferences );
+            return new GroupedTargetReferences( mappingsKeyedByProperty, singleTargetReferences, errorOccurred );
         }
 
         /**
@@ -576,11 +594,13 @@ public class NestedTargetPropertyMappingHolder {
     private static class GroupedTargetReferences {
         private final Map<PropertyEntry, List<Mapping>> poppedTargetReferences;
         private final Map<PropertyEntry, List<Mapping>> singleTargetReferences;
+        private final boolean errorOccurred;
 
         private GroupedTargetReferences(Map<PropertyEntry, List<Mapping>> poppedTargetReferences,
-            Map<PropertyEntry, List<Mapping>> singleTargetReferences) {
+            Map<PropertyEntry, List<Mapping>> singleTargetReferences, boolean errorOccurred) {
             this.poppedTargetReferences = poppedTargetReferences;
             this.singleTargetReferences = singleTargetReferences;
+            this.errorOccurred = errorOccurred;
         }
     }
 

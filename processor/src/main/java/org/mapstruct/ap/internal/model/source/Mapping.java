@@ -252,7 +252,21 @@ public class Mapping {
             ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
     }
 
-    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory, boolean isReverse) {
+    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
+        init( method, messager, typeFactory, false, null );
+    }
+
+    /**
+     * Initialize the Mapping.
+     *
+     * @param method the source method that the mapping belongs to
+     * @param messager the messager that can be used for outputting messages
+     * @param typeFactory the type factory
+     * @param isReverse whether the init is for a reverse mapping
+     * @param reverseSourceParameter the source parameter from the revers mapping
+     */
+    private void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory, boolean isReverse,
+        Parameter reverseSourceParameter) {
 
         if ( !method.isEnumMapping() ) {
             sourceReference = new SourceReference.BuilderFromMapping()
@@ -268,6 +282,7 @@ public class Mapping {
                 .method( method )
                 .messager( messager )
                 .typeFactory( typeFactory )
+                .reverseSourceParameter( reverseSourceParameter )
                 .build();
         }
     }
@@ -408,7 +423,13 @@ public class Mapping {
             Collections.<String>emptyList()
         );
 
-        reverse.init( method, messager, typeFactory, true );
+        reverse.init(
+            method,
+            messager,
+            typeFactory,
+            true,
+            sourceReference != null ? sourceReference.getParameter() : null
+        );
         return reverse;
     }
 
