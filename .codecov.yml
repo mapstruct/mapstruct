@@ -1,0 +1,7 @@
+coverage:
+  status:
+    project:
+      default:
+        # basic
+        threshold: 0.05
+comment: off

@@ -3,6 +3,8 @@ jdk:
   - oraclejdk8
 install: true
 script: mvn clean install -DprocessorIntegrationTest.toolchainsFile=etc/toolchains-travis-jenkins.xml -B -V
+after_success:
+  - mvn jacoco:report && bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
 
 sudo: false
 cache:
