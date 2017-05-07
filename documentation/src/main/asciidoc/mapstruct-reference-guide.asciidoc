@@ -3,6 +3,8 @@
 :toc: right
 :sectanchors:
 :Author: Gunnar Morling, Andreas Gudian, Sjaak Derksen, Filip Hrisafov and the MapStruct community
+:processor-dir: ../../../../processor
+:processor-ap-test: {processor-dir}/src/test/java/org/mapstruct/ap/test
 
 [[Preface]]
 == Preface
@@ -2463,4 +2465,59 @@ To use a custom SPI implementation, it must be located in a seperate .jar file t
 [TIP]
 Fore more details: There's the above example is present in our our examples repository (https://github.com/mapstruct/mapstruct-examples).
 
+[mapping-exclusion-provider]
+=== Mapping Exclusion Provider
 
+MapStruct offers the possibility to override the `MappingExclusionProvider` via the Service Provider Interface (SPI).
+A nice example is to not allow MapStruct to create an automatic sub-mapping for a certain type,
+i.e. MapStruct will not try to generate an automatic sub-mapping method for an excluded type.
+
+[NOTE]
+====
+The `DefaultMappingExclusionProvider` will exclude all types under the `java` or `javax` packages.
+This means that MapStruct will not try to generate an automatic sub-mapping method between some custom type and some java type.
+====
+
+.Source object
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/Source.java[tag=documentation]
+----
+====
+
+.Target object
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/Target.java[tag=documentation]
+----
+====
+
+.Mapper definition
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/ErroneousCustomExclusionMapper.java[tag=documentation]
+----
+====
+
+We want to exclude the `NestedTarget` from the automatic sub-mapping method generation from MapStruct.
+
+.CustomMappingExclusionProvider
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/CustomMappingExclusionProvider.java[tag=documentation]
+----
+====
+
+To use a custom SPI implementation, it must be located in a seperate .jar file
+together with the file `META-INF/services/org.mapstruct.ap.spi.MappingExclusionProvider` with the fully qualified name of your custom implementation as content
+(e.g. `org.mapstruct.example.CustomMappingExclusionProvider`).
+This .jar file needs to be added to the annotation processor classpath
+(i.e. add it next to the place where you added the mapstruct-processor jar).

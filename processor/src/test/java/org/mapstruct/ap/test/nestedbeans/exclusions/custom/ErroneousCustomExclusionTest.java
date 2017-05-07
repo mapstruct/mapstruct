@@ -45,7 +45,7 @@ public class ErroneousCustomExclusionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCustomExclusionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 30,
                 messageRegExp = "Can't map property \".*NestedSource nested\" to \".*NestedTarget nested\"\\. " +
                     "Consider to declare/implement a mapping method: \".*NestedTarget map\\(.*NestedSource value\\)" +
                     "\"\\.")

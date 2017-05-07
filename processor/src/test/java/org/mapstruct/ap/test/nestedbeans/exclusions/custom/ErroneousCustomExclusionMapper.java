@@ -23,8 +23,10 @@ import org.mapstruct.Mapper;
 /**
  * @author Filip Hrisafov
  */
+// tag::documentation[]
 @Mapper
 public interface ErroneousCustomExclusionMapper {
 
     Target map(Source source);
 }
+// end::documentation[]

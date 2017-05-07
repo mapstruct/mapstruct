@@ -21,15 +21,35 @@ package org.mapstruct.ap.test.nestedbeans.exclusions.custom;
 /**
  * @author Filip Hrisafov
  */
+// tag::documentation[]
 public class Target {
 
     static class NestedTarget {
-        //CHECKSTYLE:OFF
-        public String property;
-        //CHECKSTYLE:ON
+        private String property;
+        // getters and setters
+        // end::documentation[]
+
+        public String getProperty() {
+            return property;
+        }
+
+        public void setProperty(String property) {
+            this.property = property;
+        }
+        // tag::documentation[]
     }
 
-    //CHECKSTYLE:OFF
-    public NestedTarget nested;
-    //CHECKSTYLE:ON
+    private NestedTarget nested;
+    // getters and setters
+    // end::documentation[]
+
+    public NestedTarget getNested() {
+        return nested;
+    }
+
+    public void setNested(NestedTarget nested) {
+        this.nested = nested;
+    }
+    // tag::documentation[]
 }
+// end::documentation[]

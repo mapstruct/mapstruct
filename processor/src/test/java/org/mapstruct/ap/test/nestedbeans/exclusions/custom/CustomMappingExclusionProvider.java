@@ -18,21 +18,27 @@
  */
 package org.mapstruct.ap.test.nestedbeans.exclusions.custom;
 
+// tag::documentation[]
 import javax.lang.model.element.Name;
 
 import org.mapstruct.ap.spi.DefaultMappingExclusionProvider;
 import org.mapstruct.ap.spi.MappingExclusionProvider;
 
+// end::documentation[]
 /**
  * @author Filip Hrisafov
  */
+// tag::documentation[]
 public class CustomMappingExclusionProvider extends DefaultMappingExclusionProvider
     implements MappingExclusionProvider {
 
     @Override
     protected boolean isFullyQualifiedNameExcluded(Name name) {
+        // end::documentation[]
         //For some reason the eclipse compiler does not work when you try to do NestedTarget.class
+        // tag::documentation[]
         return super.isFullyQualifiedNameExcluded( name ) ||
             name.toString().equals( "org.mapstruct.ap.test.nestedbeans.exclusions.custom.Target.NestedTarget" );
     }
 }
+// end::documentation[]
