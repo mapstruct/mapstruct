@@ -127,7 +127,7 @@ public class SourceReference {
                 if ( segments.length > 1 && parameter != null ) {
                     sourcePropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                     entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                    foundEntryMatch = (entries.size() == sourcePropertyNames.length);
+                    foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
                 }
                 else {
                     // its only a parameter, no property
@@ -141,14 +141,14 @@ public class SourceReference {
                 sourcePropertyNames = segments;
                 parameter = method.getSourceParameters().get( 0 );
                 entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                foundEntryMatch = (entries.size() == sourcePropertyNames.length);
+                foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
 
                 if ( !foundEntryMatch ) {
                     //Lets see if the expression contains the parameterName, so parameterName.propName1.propName2
                     if ( parameter.getName().equals( segments[0] ) ) {
                         sourcePropertyNames = Arrays.copyOfRange( segments, 1, segments.length );
                         entries = getSourceEntries( parameter.getType(), sourcePropertyNames );
-                        foundEntryMatch = (entries.size() == sourcePropertyNames.length);
+                        foundEntryMatch = ( entries.size() == sourcePropertyNames.length );
                     }
                     else {
                         // segment[0] cannot be attributed to the parameter name.
@@ -161,7 +161,8 @@ public class SourceReference {
 
                 if ( parameter != null ) {
                     reportMappingError( Message.PROPERTYMAPPING_NO_PROPERTY_IN_PARAMETER, parameter.getName(),
-                        Strings.join( Arrays.asList( sourcePropertyNames ), "." ) );
+                        Strings.join( Arrays.asList( sourcePropertyNames ), "." )
+                    );
                 }
                 else {
                     int notFoundPropertyIndex;
@@ -202,12 +203,15 @@ public class SourceReference {
                 Map<String, Accessor> sourceReadAccessors = newType.getPropertyReadAccessors();
                 Map<String, ExecutableElementAccessor> sourcePresenceCheckers = newType.getPropertyPresenceCheckers();
 
-                for (  Map.Entry<String, Accessor> getter : sourceReadAccessors.entrySet() ) {
+                for ( Map.Entry<String, Accessor> getter : sourceReadAccessors.entrySet() ) {
                     if ( getter.getKey().equals( entryName ) ) {
-                        newType = typeFactory.getReturnType( (DeclaredType) newType.getTypeMirror(),
-                              getter.getValue() );
+                        newType = typeFactory.getReturnType(
+                            (DeclaredType) newType.getTypeMirror(),
+                            getter.getValue()
+                        );
                         sourceEntries.add( forSourceReference( entryName, getter.getValue(),
-                              sourcePresenceCheckers.get( entryName ), newType ) );
+                            sourcePresenceCheckers.get( entryName ), newType
+                        ) );
                         matchFound = true;
                         break;
                     }
@@ -221,7 +225,8 @@ public class SourceReference {
 
         private void reportMappingError(Message msg, Object... objects) {
             messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
-                                   msg, objects );
+                msg, objects
+            );
         }
     }
 

@@ -102,9 +102,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return setupMethodWithMapping( sourceMethod );
         }
 
-        public Builder forgedMethod(Method method ) {
+        public Builder forgedMethod(Method method) {
             singleMapping = new EmptySingleMapping();
-            return setupMethodWithMapping( method  );
+            return setupMethodWithMapping( method );
         }
 
         private Builder setupMethodWithMapping(Method sourceMethod) {
@@ -206,7 +206,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 method,
                 selectionParameters,
                 ctx,
-                existingVariableNames );
+                existingVariableNames
+            );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariableNames );
 
@@ -427,7 +428,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     unprocessedSourceParameters.remove( sourceRef.getParameter() );
                 }
                 else {
-                   errorOccured = true;
+                    errorOccured = true;
                 }
             }
 
