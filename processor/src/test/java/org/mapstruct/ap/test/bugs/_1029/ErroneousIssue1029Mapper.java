@@ -44,7 +44,8 @@ public interface ErroneousIssue1029Mapper {
      */
     @Mappings({
         @Mapping(target = "outdated", ignore = true),
-        @Mapping(target = "computedMapping", ignore = true)
+        @Mapping(target = "computedMapping", ignore = true),
+        @Mapping(target = "knownProp", ignore = true)
     })
     Deck toDeckWithSomeIgnores(DeckForm form);
 
@@ -71,12 +72,22 @@ public interface ErroneousIssue1029Mapper {
 
         private LocalDateTime lastUpdated;
 
+        private String knownProp;
+
         public Long getId() {
             return id;
         }
 
         public void setId(Long id) {
             this.id = id;
+        }
+
+        public String getKnownProp() {
+            return knownProp;
+        }
+
+        public void setKnownProp(String knownProp) {
+            this.knownProp = knownProp;
         }
 
         public LocalDateTime getLastUpdated() {

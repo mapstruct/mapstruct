@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import javax.lang.model.type.DeclaredType;
 
@@ -32,6 +33,7 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
+import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
@@ -95,7 +97,7 @@ public class TargetReference {
          * that multiple times because the first entry can also be the name of the parameter. Therefore we keep
          * the error message until the end when we can report it.
          */
-        private Message errorMessage;
+        private MappingErrorMessage errorMessage;
 
         public BuilderFromTargetMapping messager(FormattingMessager messager) {
             this.messager = messager;
@@ -159,7 +161,7 @@ public class TargetReference {
 
             if ( !foundEntryMatch && errorMessage != null) {
                 // This is called only for reporting errors
-                reportMappingError( errorMessage, mapping.getTargetName() );
+                errorMessage.report();
             }
 
             // foundEntryMatch = isValid, errors are handled here, and the BeanMapping uses that to ignore
@@ -187,7 +189,7 @@ public class TargetReference {
                     || ( isNotLast && targetReadAccessor == null ) ) {
                     // there should always be a write accessor (except for the last when the mapping is ignored and
                     // there is a read accessor) and there should be read accessor mandatory for all but the last
-                    setErrorMessage( targetWriteAccessor, targetReadAccessor );
+                    setErrorMessage( targetWriteAccessor, targetReadAccessor, entryNames, i, nextType );
                     break;
                 }
 
@@ -237,18 +239,14 @@ public class TargetReference {
             return nextType;
         }
 
-        private void setErrorMessage(Accessor targetWriteAccessor, Accessor targetReadAccessor) {
+        private void setErrorMessage(Accessor targetWriteAccessor, Accessor targetReadAccessor, String[] entryNames,
+                                     int index, Type nextType) {
             if ( targetWriteAccessor == null && targetReadAccessor == null ) {
-                errorMessage = Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE;
+                errorMessage = new NoPropertyErrorMessage( mapping, method, messager, entryNames, index, nextType );
             }
             else if ( targetWriteAccessor == null ) {
-                errorMessage = Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE;
+                errorMessage = new NoWriteAccessorErrorMessage( mapping, method, messager );
             }
-        }
-
-        private void reportMappingError(Message msg, Object... objects) {
-            messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
-                msg, objects );
         }
 
         /**
@@ -354,4 +352,72 @@ public class TargetReference {
             return null;
         }
     }
+
+    private abstract static class MappingErrorMessage {
+        private final Mapping mapping;
+        private final SourceMethod method;
+        private final FormattingMessager messager;
+
+        private MappingErrorMessage(Mapping mapping, SourceMethod method, FormattingMessager messager) {
+            this.mapping = mapping;
+            this.method = method;
+            this.messager = messager;
+        }
+
+        abstract void report();
+
+        protected void printErrorMessage(Message message, Object... args) {
+            Object[] errorArgs = new Object[args.length + 1];
+            errorArgs[0] = mapping.getTargetName();
+            System.arraycopy( args, 0, errorArgs, 1, args.length );
+            messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
+                message, errorArgs
+            );
+        }
+    }
+
+    private static class NoWriteAccessorErrorMessage extends MappingErrorMessage {
+
+        private NoWriteAccessorErrorMessage(Mapping mapping, SourceMethod method, FormattingMessager messager) {
+            super( mapping, method, messager );
+        }
+
+        @Override
+        public void report() {
+            printErrorMessage( Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE );
+        }
+    }
+
+    private static class NoPropertyErrorMessage extends MappingErrorMessage {
+
+        private final String[] entryNames;
+        private final int index;
+        private final Type nextType;
+
+        private NoPropertyErrorMessage(Mapping mapping, SourceMethod method, FormattingMessager messager,
+                                       String[] entryNames, int index, Type nextType) {
+            super( mapping, method, messager );
+            this.entryNames = entryNames;
+            this.index = index;
+            this.nextType = nextType;
+        }
+
+        @Override
+        public void report() {
+
+            Set<String> readAccessors = nextType.getPropertyReadAccessors().keySet();
+            String mostSimilarProperty = Strings.getMostSimilarWord(
+                entryNames[index],
+                readAccessors
+            );
+
+            String prefix = "";
+            for ( int i = 0; i < index; i++ ) {
+                prefix += entryNames[i] + ".";
+            }
+
+            printErrorMessage( Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE, prefix + mostSimilarProperty );
+        }
+    }
+
 }
