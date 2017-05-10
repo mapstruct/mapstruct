@@ -164,7 +164,14 @@ public class SourceReference {
                         Strings.join( Arrays.asList( sourcePropertyNames ), "." ) );
                 }
                 else {
-                    reportMappingError( Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName() );
+                    String mostSimilarWord = Strings.getMostSimilarWord(
+                        mapping.getSourceName(),
+                        method.getParameters().get( 0 ).getType().getPropertyReadAccessors().keySet()
+                    );
+                    reportMappingError(
+                        Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName(),
+                        mostSimilarWord
+                    );
                 }
                 isValid = false;
             }

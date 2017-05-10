@@ -32,6 +32,7 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 
+import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
@@ -159,7 +160,7 @@ public class TargetReference {
 
             if ( !foundEntryMatch && errorMessage != null) {
                 // This is called only for reporting errors
-                reportMappingError( errorMessage, mapping.getTargetName() );
+                reportMappingError();
             }
 
             // foundEntryMatch = isValid, errors are handled here, and the BeanMapping uses that to ignore
@@ -246,9 +247,22 @@ public class TargetReference {
             }
         }
 
-        private void reportMappingError(Message msg, Object... objects) {
-            messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
-                msg, objects );
+        private void reportMappingError() {
+            if ( errorMessage == Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE ) {
+                String mostSimilarProperty = Strings.getMostSimilarWord(
+                    mapping.getTargetName(),
+                    method.getResultType().getPropertyReadAccessors().keySet()
+                );
+                messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
+                    errorMessage, mapping.getTargetName(), mostSimilarProperty
+                );
+
+            }
+            else {
+                messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
+                    errorMessage, mapping.getTargetName()
+                );
+            }
         }
 
         /**

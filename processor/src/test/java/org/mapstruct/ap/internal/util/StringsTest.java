@@ -102,4 +102,13 @@ public class StringsTest {
         assertThat( Strings.sanitizeIdentifierName( "int[]" ) ).isEqualTo( "intArray" );
     }
 
+    @Test
+    public void findMostSimilarWord() throws Exception {
+        String mostSimilarWord = Strings.getMostSimilarWord(
+            "fulName",
+            Arrays.asList( "fullAge", "fullName", "address", "status" )
+        );
+        assertThat( mostSimilarWord ).isEqualTo( "fullName" );
+    }
+
 }
