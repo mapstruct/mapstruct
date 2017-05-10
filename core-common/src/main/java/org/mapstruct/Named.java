@@ -89,7 +89,7 @@ import java.lang.annotation.Target;
  * @see MapMapping#keyQualifiedByName()
  * @see MapMapping#valueQualifiedByName()
  */
-@Target( { ElementType.TYPE, ElementType.METHOD } )
+@Target( { ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER } )
 @Retention( RetentionPolicy.CLASS )
 @Qualifier
 public @interface Named {
