@@ -24,6 +24,8 @@ public class Person {
 
     private int fullAge;
 
+    private Garage garage;
+
     public String getFullName() {
         return fullName;
     }
@@ -38,5 +40,13 @@ public class Person {
 
     public void setFullAge(int fullAge) {
         this.fullAge = fullAge;
+    }
+
+    public Garage getGarage() {
+        return garage;
+    }
+
+    public void setGarage(Garage garage) {
+        this.garage = garage;
     }
 }

@@ -165,13 +165,28 @@ public class SourceReference {
                     );
                 }
                 else {
+                    int notFoundPropertyIndex;
+                    Type sourceType;
+                    if ( entries.isEmpty() ) {
+                        notFoundPropertyIndex = 0;
+                        sourceType = method.getParameters().get( 0 ).getType();
+                    }
+                    else {
+                        int lastFoundEntryIndex = entries.size() - 1;
+                        notFoundPropertyIndex = lastFoundEntryIndex + 1;
+                        sourceType = entries.get( lastFoundEntryIndex ).getType();
+                    }
                     String mostSimilarWord = Strings.getMostSimilarWord(
-                        mapping.getSourceName(),
-                        method.getParameters().get( 0 ).getType().getPropertyReadAccessors().keySet()
+                        sourcePropertyNames[notFoundPropertyIndex],
+                        sourceType.getPropertyReadAccessors().keySet()
                     );
+                    String prefix = "";
+                    for ( int i = 0; i < notFoundPropertyIndex; i++ ) {
+                        prefix += sourcePropertyNames[i] + ".";
+                    }
                     reportMappingError(
                         Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName(),
-                        mostSimilarWord
+                        prefix + mostSimilarWord
                     );
                 }
                 isValid = false;

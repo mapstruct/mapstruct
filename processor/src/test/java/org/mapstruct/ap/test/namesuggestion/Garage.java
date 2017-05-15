@@ -18,35 +18,15 @@
  */
 package org.mapstruct.ap.test.namesuggestion;
 
-public class PersonDto {
+public class Garage {
 
-    private String name;
+    private String color;
 
-    private int age;
-
-    private GarageDto garage;
-
-    public String getName() {
-        return name;
+    public String getColor() {
+        return color;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public GarageDto getGarage() {
-        return garage;
-    }
-
-    public void setGarage(GarageDto garage) {
-        this.garage = garage;
+    public void setColor(String color) {
+        this.color = color;
     }
 }

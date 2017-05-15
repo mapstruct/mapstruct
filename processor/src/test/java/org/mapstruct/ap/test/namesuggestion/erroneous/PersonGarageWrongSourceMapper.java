@@ -16,37 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.namesuggestion;
+package org.mapstruct.ap.test.namesuggestion.erroneous;
 
-public class PersonDto {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ap.test.namesuggestion.Person;
+import org.mapstruct.ap.test.namesuggestion.PersonDto;
+import org.mapstruct.factory.Mappers;
 
-    private String name;
+@Mapper
+public interface PersonGarageWrongSourceMapper {
 
-    private int age;
+    PersonGarageWrongSourceMapper MAPPER = Mappers.getMapper( PersonGarageWrongSourceMapper.class );
 
-    private GarageDto garage;
+    @Mapping(source = "garage.colour", target = "garage.color")
+    Person mapPerson(PersonDto dto);
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public GarageDto getGarage() {
-        return garage;
-    }
-
-    public void setGarage(GarageDto garage) {
-        this.garage = garage;
-    }
 }

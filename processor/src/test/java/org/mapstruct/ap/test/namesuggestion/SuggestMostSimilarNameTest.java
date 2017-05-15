@@ -21,6 +21,8 @@ package org.mapstruct.ap.test.namesuggestion;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.namesuggestion.erroneous.PersonAgeMapper;
+import org.mapstruct.ap.test.namesuggestion.erroneous.PersonGarageWrongSourceMapper;
+import org.mapstruct.ap.test.namesuggestion.erroneous.PersonGarageWrongTargetMapper;
 import org.mapstruct.ap.test.namesuggestion.erroneous.PersonNameMapper;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -30,7 +32,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
-    Person.class, PersonDto.class
+    Person.class, PersonDto.class, Garage.class, GarageDto.class
 })
 public class SuggestMostSimilarNameTest {
 
@@ -64,5 +66,37 @@ public class SuggestMostSimilarNameTest {
         }
     )
     public void testNameSuggestion() {
+    }
+
+    @Test
+    @WithClasses({
+        PersonGarageWrongTargetMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = PersonGarageWrongTargetMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 32,
+                messageRegExp = "Unknown property.*Did you mean \"garage\\.color\"\\?")
+        }
+    )
+    public void testGarageTargetSuggestion() {
+    }
+
+    @Test
+    @WithClasses({
+        PersonGarageWrongSourceMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = PersonGarageWrongSourceMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 32,
+                messageRegExp = ".*source.*Did you mean \"garage\\.color\"\\?")
+        }
+    )
+    public void testGarageSourceSuggestion() {
     }
 }
