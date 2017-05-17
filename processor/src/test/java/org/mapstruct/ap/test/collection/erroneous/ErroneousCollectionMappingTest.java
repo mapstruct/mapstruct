@@ -22,6 +22,8 @@ import javax.tools.Diagnostic.Kind;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.NoProperties;
+import org.mapstruct.ap.test.WithProperties;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -108,16 +110,16 @@ public class ErroneousCollectionMappingTest {
 
     @Test
     @IssueKey("459")
-    @WithClasses({ ErroneousCollectionNoElementMappingFound.class })
+    @WithClasses({ ErroneousCollectionNoElementMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 37,
-                messageRegExp =
-                    "Can't map Collection element \".*AttributedString attributedString\" to \".*String string\". " +
-                        "Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
+                line = 38,
+                messageRegExp = "Can't map Collection element \".*WithProperties withProperties\" to \".*NoProperties" +
+                    " noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
+                    ".*WithProperties value\\)")
         }
     )
     public void shouldFailOnNoElementMappingFound() {
@@ -142,15 +144,16 @@ public class ErroneousCollectionMappingTest {
 
     @Test
     @IssueKey("459")
-    @WithClasses({ ErroneousCollectionNoKeyMappingFound.class })
+    @WithClasses({ ErroneousCollectionNoKeyMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoKeyMappingFound.class,
                 kind = Kind.ERROR,
-                line = 37,
-                messageRegExp = "Can't map Map key \".*AttributedString attributedString\" to \".*String string\". " +
-                    "Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
+                line = 38,
+                messageRegExp = "Can't map Map key \".*WithProperties withProperties\" to \".*NoProperties " +
+                    "noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
+                    ".*WithProperties value\\)")
         }
     )
     public void shouldFailOnNoKeyMappingFound() {
@@ -174,15 +177,16 @@ public class ErroneousCollectionMappingTest {
 
     @Test
     @IssueKey("459")
-    @WithClasses({ ErroneousCollectionNoValueMappingFound.class })
+    @WithClasses({ ErroneousCollectionNoValueMappingFound.class, NoProperties.class, WithProperties.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoValueMappingFound.class,
                 kind = Kind.ERROR,
-                line = 37,
-                messageRegExp = "Can't map Map value \".*AttributedString attributedString\" to \".*String string\". " +
-                    "Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
+                line = 38,
+                messageRegExp = "Can't map Map value \".*WithProperties withProperties\" to \".*NoProperties " +
+                    "noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
+                    ".*WithProperties value\\)")
         }
     )
     public void shouldFailOnNoValueMappingFound() {

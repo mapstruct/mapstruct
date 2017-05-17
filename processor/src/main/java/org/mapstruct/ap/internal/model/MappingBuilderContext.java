@@ -29,15 +29,17 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.Services;
+import org.mapstruct.ap.spi.MappingExclusionProvider;
 
 /**
  * This class provides the context for the builders.
@@ -53,6 +55,11 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
  * @author Sjaak Derksen
  */
 public class MappingBuilderContext {
+
+    private static final MappingExclusionProvider SUB_MAPPING_EXCLUSION_PROVIDER = Services.get(
+        MappingExclusionProvider.class,
+        new DefaultMappingExclusionProvider()
+    );
 
     /**
      * Resolves the most suitable way for mapping an element (property, iterable element etc.) from source to target.
@@ -222,4 +229,23 @@ public class MappingBuilderContext {
         return mappingResolver.getUsedVirtualMappings();
     }
 
+    /**
+     * @param sourceType from which an automatic sub-mapping needs to be generated
+     * @param targetType to which an automatic sub-mapping needs to be generated
+     *
+     * @return {@code true} if MapStruct is allowed to try and generate an automatic sub-mapping between the
+     * source and target {@link Type}
+     */
+    public boolean canGenerateAutoSubMappingBetween(Type sourceType, Type targetType) {
+        return canGenerateAutoSubMappingFor( sourceType ) && canGenerateAutoSubMappingFor( targetType );
+    }
+
+    /**
+     * @param type that MapStruct wants to use to genrate an autoamtic sub-mapping for/from
+     *
+     * @return {@code true} if the type is not excluded from the {@link MappingExclusionProvider}
+     */
+    private boolean canGenerateAutoSubMappingFor(Type type) {
+        return type.getTypeElement() != null && !SUB_MAPPING_EXCLUSION_PROVIDER.isExcluded( type.getTypeElement() );
+    }
 }

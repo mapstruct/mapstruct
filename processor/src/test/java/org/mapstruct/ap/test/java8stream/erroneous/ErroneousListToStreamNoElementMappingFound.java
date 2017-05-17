@@ -18,11 +18,12 @@
  */
 package org.mapstruct.ap.test.java8stream.erroneous;
 
-import java.text.AttributedString;
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.NoProperties;
+import org.mapstruct.ap.test.WithProperties;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -34,5 +35,5 @@ public interface ErroneousListToStreamNoElementMappingFound {
     ErroneousListToStreamNoElementMappingFound INSTANCE =
         Mappers.getMapper( ErroneousListToStreamNoElementMappingFound.class );
 
-    Stream<String> mapCollectionToStream(List<AttributedString> source);
+    Stream<NoProperties> mapCollectionToStream(List<WithProperties> source);
 }

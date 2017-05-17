@@ -18,10 +18,11 @@
  */
 package org.mapstruct.ap.test.collection.erroneous;
 
-import java.text.AttributedString;
 import java.util.Map;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.NoProperties;
+import org.mapstruct.ap.test.WithProperties;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -34,6 +35,6 @@ public interface ErroneousCollectionNoKeyMappingFound {
     ErroneousCollectionNoKeyMappingFound INSTANCE =
         Mappers.getMapper( ErroneousCollectionNoKeyMappingFound.class );
 
-    Map<String, String> map(Map<AttributedString, String> source);
+    Map<NoProperties, String> map(Map<WithProperties, String> source);
 
 }

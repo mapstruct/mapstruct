@@ -125,7 +125,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                             keySourceRHS.getSourceErrorMessagePart(),
                             keySourceRHS.getSourceType()
                         ),
-                        keySourceRHS,
+                        keySourceRHS.getSourceType(),
                         keyTargetType,
                         ""
                     );
@@ -175,7 +175,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                             valueSourceRHS.getSourceErrorMessagePart(),
                             valueSourceRHS.getSourceType()
                         ),
-                        valueSourceRHS,
+                        valueSourceRHS.getSourceType(),
                         valueTargetType,
                         ""
                     );

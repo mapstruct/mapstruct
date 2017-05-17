@@ -3,6 +3,8 @@
 :toc: right
 :sectanchors:
 :Author: Gunnar Morling, Andreas Gudian, Sjaak Derksen, Filip Hrisafov and the MapStruct community
+:processor-dir: ../../../../processor
+:processor-ap-test: {processor-dir}/src/test/java/org/mapstruct/ap/test
 
 [[Preface]]
 == Preface
@@ -815,7 +817,7 @@ When generating the implementation of a mapping method, MapStruct will apply the
 * If source and target attribute have the same type, the value will be simply copied from source to target. If the attribute is a collection (e.g. a `List`) a copy of the collection will be set into the target attribute.
 * If source and target attribute type differ, check whether there is a another mapping method which has the type of the source attribute as parameter type and the type of the target attribute as return type. If such a method exists it will be invoked in the generated mapping implementation.
 * If no such method exists MapStruct will look whether a built-in conversion for the source and target type of the attribute exists. If this is the case, the generated mapping code will apply this conversion.
-* If no such method was found MapStruct will try to generate an internal method that will do the mapping between the source and target attributes
+* If no such method was found MapStruct will try to generate an automatic sub-mapping method that will do the mapping between the source and target attributes
 * If MapStruct could not create a name based mapping method an error will be raised at build time, indicating the non-mappable attribute and its path.
 
 include::controlling-nested-bean-mappings.asciidoc[]
@@ -2458,9 +2460,64 @@ public class CustomAccessorNamingStrategy extends DefaultAccessorNamingStrategy 
 ====
 The `CustomAccessorNamingStrategy` makes use of the `DefaultAccessorNamingStrategy` (also available in mapstruct-processor) and relies on that class to leave most of the default behaviour unchanged.
 
-To use a custom SPI implementation, it must be located in a seperate .jar file together with the file `META-INF/services/org.mapstruct.ap.spi.AccessorNamingStrategy` with the fully qualified name of your custom implementation as content (e.g. `org.mapstruct.example.CustomAccessorNamingStrategy`). This .jar file needs to be added to the annotation processor classpath (i.e. add it next to the place where you added the mapstruct-processor jar).
+To use a custom SPI implementation, it must be located in a separate JAR file together with the file `META-INF/services/org.mapstruct.ap.spi.AccessorNamingStrategy` with the fully qualified name of your custom implementation as content (e.g. `org.mapstruct.example.CustomAccessorNamingStrategy`). This JAR file needs to be added to the annotation processor classpath (i.e. add it next to the place where you added the mapstruct-processor jar).
 
 [TIP]
 Fore more details: There's the above example is present in our our examples repository (https://github.com/mapstruct/mapstruct-examples).
 
+[mapping-exclusion-provider]
+=== Mapping Exclusion Provider
 
+MapStruct offers the possibility to override the `MappingExclusionProvider` via the Service Provider Interface (SPI).
+A nice example is to not allow MapStruct to create an automatic sub-mapping for a certain type,
+i.e. MapStruct will not try to generate an automatic sub-mapping method for an excluded type.
+
+[NOTE]
+====
+The `DefaultMappingExclusionProvider` will exclude all types under the `java` or `javax` packages.
+This means that MapStruct will not try to generate an automatic sub-mapping method between some custom type and some type declared in the Java class library.
+====
+
+.Source object
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/Source.java[tag=documentation]
+----
+====
+
+.Target object
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/Target.java[tag=documentation]
+----
+====
+
+.Mapper definition
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/ErroneousCustomExclusionMapper.java[tag=documentation]
+----
+====
+
+We want to exclude the `NestedTarget` from the automatic sub-mapping method generation.
+
+.CustomMappingExclusionProvider
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/nestedbeans/exclusions/custom/CustomMappingExclusionProvider.java[tag=documentation]
+----
+====
+
+To use a custom SPI implementation, it must be located in a separate JAR file
+together with the file `META-INF/services/org.mapstruct.ap.spi.MappingExclusionProvider` with the fully qualified name of your custom implementation as content
+(e.g. `org.mapstruct.example.CustomMappingExclusionProvider`).
+This JAR file needs to be added to the annotation processor classpath
+(i.e. add it next to the place where you added the mapstruct-processor jar).

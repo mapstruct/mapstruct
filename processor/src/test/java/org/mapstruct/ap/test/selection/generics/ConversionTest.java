@@ -18,18 +18,19 @@
  */
 package org.mapstruct.ap.test.selection.generics;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.math.BigDecimal;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.NoProperties;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for the invocation of generic methods for mapping bean properties.
@@ -162,13 +163,18 @@ public class ConversionTest {
     }
 
     @Test
-    @WithClasses({ ErroneousSource6.class, ErroneousTarget6.class, ErroneousSourceTargetMapper6.class })
+    @WithClasses({
+        ErroneousSource6.class,
+        ErroneousTarget6.class,
+        ErroneousSourceTargetMapper6.class,
+        NoProperties.class
+    })
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper6.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
-                messageRegExp = "Can't map property \"java.lang.String "
+                messageRegExp = "Can't map property \".*NoProperties "
                     + "foo\\.wrapped\" to"
                     + " \"org.mapstruct.ap.test.selection.generics.TypeA " +
                     "foo\\.wrapped\"")

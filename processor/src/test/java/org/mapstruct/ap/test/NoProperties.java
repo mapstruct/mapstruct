@@ -16,25 +16,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erroneous;
-
-import java.util.List;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.NoProperties;
-import org.mapstruct.ap.test.WithProperties;
-import org.mapstruct.factory.Mappers;
+package org.mapstruct.ap.test;
 
 /**
- *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-@Mapper
-public interface ErroneousCollectionNoElementMappingFound {
-
-    ErroneousCollectionNoElementMappingFound INSTANCE =
-        Mappers.getMapper( ErroneousCollectionNoElementMappingFound.class );
-
-    List<NoProperties> map(List<WithProperties> source);
-
+public class NoProperties {
 }

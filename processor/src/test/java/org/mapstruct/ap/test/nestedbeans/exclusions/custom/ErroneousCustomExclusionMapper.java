@@ -16,25 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.collection.erroneous;
-
-import java.util.List;
+package org.mapstruct.ap.test.nestedbeans.exclusions.custom;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.ap.test.NoProperties;
-import org.mapstruct.ap.test.WithProperties;
-import org.mapstruct.factory.Mappers;
 
 /**
- *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
+// tag::documentation[]
 @Mapper
-public interface ErroneousCollectionNoElementMappingFound {
+public interface ErroneousCustomExclusionMapper {
 
-    ErroneousCollectionNoElementMappingFound INSTANCE =
-        Mappers.getMapper( ErroneousCollectionNoElementMappingFound.class );
-
-    List<NoProperties> map(List<WithProperties> source);
-
+    Target map(Source source);
 }
+// end::documentation[]
