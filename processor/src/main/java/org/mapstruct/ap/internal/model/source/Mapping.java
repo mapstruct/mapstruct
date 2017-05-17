@@ -32,6 +32,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -72,12 +73,11 @@ public class Mapping {
     private TargetReference targetReference;
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
-                                                               ExecutableElement method,
-                                                               FormattingMessager messager) {
+        ExecutableElement method, FormattingMessager messager, Types typeUtils) {
         Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
-            Mapping mapping = fromMappingPrism( mappingPrism, method, messager );
+            Mapping mapping = fromMappingPrism( mappingPrism, method, messager, typeUtils );
             if ( mapping != null ) {
                 List<Mapping> mappingsOfProperty = mappings.get( mappingPrism.target() );
                 if ( mappingsOfProperty == null ) {
@@ -97,7 +97,7 @@ public class Mapping {
     }
 
     public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element,
-                                           FormattingMessager messager) {
+        FormattingMessager messager, Types typeUtils) {
 
         if ( mappingPrism.target().isEmpty() ) {
             messager.printMessage(
@@ -152,7 +152,9 @@ public class Mapping {
         SelectionParameters selectionParams = new SelectionParameters(
             mappingPrism.qualifiedBy(),
             mappingPrism.qualifiedByName(),
-            resultTypeIsDefined ? mappingPrism.resultType() : null);
+            resultTypeIsDefined ? mappingPrism.resultType() : null,
+            typeUtils
+        );
 
         return new Mapping(
             source,

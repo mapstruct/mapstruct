@@ -572,7 +572,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                         continue;
                     }
                     VariableElement arg = executable.getParameters().get( 0 );
-                    if ( arg.asType().equals( typeArg ) ) {
+                    if ( typeUtils.isSameType( arg.asType(), typeArg ) ) {
                         candidates.add( adder );
                     }
                 }

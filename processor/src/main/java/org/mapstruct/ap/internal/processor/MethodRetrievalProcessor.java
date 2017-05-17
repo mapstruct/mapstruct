@@ -254,11 +254,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 IterableMapping.fromPrism(
                     IterableMappingPrism.getInstanceOn( method ),
                     method,
-                    messager ) )
+                    messager,
+                    typeUtils
+                ) )
             .setMapMapping(
-                MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager ) )
+                MapMapping.fromPrism( MapMappingPrism.getInstanceOn( method ), method, messager, typeUtils ) )
             .setBeanMapping(
-                BeanMapping.fromPrism( BeanMappingPrism.getInstanceOn( method ), method, messager ) )
+                BeanMapping.fromPrism( BeanMappingPrism.getInstanceOn( method ), method, messager, typeUtils ) )
             .setValueMappings( getValueMappings( method ) )
             .setTypeUtils( typeUtils )
             .setMessager( messager )
@@ -510,14 +512,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             if ( !mappings.containsKey( mappingAnnotation.target() ) ) {
                 mappings.put( mappingAnnotation.target(), new ArrayList<Mapping>() );
             }
-            Mapping mapping = Mapping.fromMappingPrism( mappingAnnotation, method, messager );
+            Mapping mapping = Mapping.fromMappingPrism( mappingAnnotation, method, messager, typeUtils );
             if ( mapping != null ) {
                 mappings.get( mappingAnnotation.target() ).add( mapping );
             }
         }
 
         if ( mappingsAnnotation != null ) {
-            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager ) );
+            mappings.putAll( Mapping.fromMappingsPrism( mappingsAnnotation, method, messager, typeUtils ) );
         }
 
         return mappings;

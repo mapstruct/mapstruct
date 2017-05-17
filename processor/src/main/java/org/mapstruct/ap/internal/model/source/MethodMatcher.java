@@ -395,7 +395,7 @@ public class MethodMatcher {
      */
     private TypeParameterElement getTypeParamFromCandidate(TypeMirror t) {
         for ( TypeParameterElement candidateTypeParam : candidateMethod.getExecutable().getTypeParameters() ) {
-            if ( candidateTypeParam.asType().equals( t ) ) {
+            if ( typeUtils.isSameType( candidateTypeParam.asType(), t ) ) {
                 return candidateTypeParam;
             }
         }

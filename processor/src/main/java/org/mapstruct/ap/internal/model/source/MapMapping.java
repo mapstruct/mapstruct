@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model.source;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.prism.MapMappingPrism;
@@ -43,7 +44,7 @@ public class MapMapping {
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
     public static MapMapping fromPrism(MapMappingPrism mapMapping, ExecutableElement method,
-                                       FormattingMessager messager) {
+        FormattingMessager messager, Types typeUtils) {
         if ( mapMapping == null ) {
             return null;
         }
@@ -74,12 +75,16 @@ public class MapMapping {
         SelectionParameters keySelection = new SelectionParameters(
             mapMapping.keyQualifiedBy(),
             mapMapping.keyQualifiedByName(),
-            keyTargetTypeIsDefined ? mapMapping.keyTargetType() : null);
+            keyTargetTypeIsDefined ? mapMapping.keyTargetType() : null,
+            typeUtils
+        );
 
         SelectionParameters valueSelection = new SelectionParameters(
             mapMapping.valueQualifiedBy(),
             mapMapping.valueQualifiedByName(),
-            valueTargetTypeIsDefined ? mapMapping.valueTargetType() : null);
+            valueTargetTypeIsDefined ? mapMapping.valueTargetType() : null,
+            typeUtils
+        );
 
         FormattingParameters keyFormatting = new FormattingParameters(
             mapMapping.keyDateFormat(),

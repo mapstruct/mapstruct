@@ -20,6 +20,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
@@ -39,7 +40,7 @@ public class BeanMapping {
     private final ReportingPolicyPrism reportingPolicy;
 
     public static BeanMapping fromPrism(BeanMappingPrism beanMapping, ExecutableElement method,
-        FormattingMessager messager) {
+        FormattingMessager messager, Types typeUtils) {
 
         if ( beanMapping == null ) {
             return null;
@@ -61,7 +62,9 @@ public class BeanMapping {
         SelectionParameters cmp = new SelectionParameters(
             beanMapping.qualifiedBy(),
             beanMapping.qualifiedByName(),
-            resultTypeIsDefined ? beanMapping.resultType() : null );
+            resultTypeIsDefined ? beanMapping.resultType() : null,
+            typeUtils
+        );
 
         //TODO Do we want to add the reporting policy to the BeanMapping as well? To give more granular support?
         return new BeanMapping( cmp, nullValueMappingStrategy, null );

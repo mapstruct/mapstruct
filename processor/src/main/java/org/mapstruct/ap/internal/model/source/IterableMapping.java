@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model.source;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.prism.IterableMappingPrism;
@@ -41,7 +42,7 @@ public class IterableMapping {
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
     public static IterableMapping fromPrism(IterableMappingPrism iterableMapping, ExecutableElement method,
-                                            FormattingMessager messager) {
+        FormattingMessager messager, Types typeUtils) {
         if ( iterableMapping == null ) {
             return null;
         }
@@ -66,7 +67,9 @@ public class IterableMapping {
         SelectionParameters selection = new SelectionParameters(
             iterableMapping.qualifiedBy(),
             iterableMapping.qualifiedByName(),
-            elementTargetTypeIsDefined ? iterableMapping.elementTargetType() : null );
+            elementTargetTypeIsDefined ? iterableMapping.elementTargetType() : null,
+            typeUtils
+        );
 
         FormattingParameters formatting = new FormattingParameters(
             iterableMapping.dateFormat(),

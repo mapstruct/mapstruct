@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
@@ -118,7 +119,7 @@ public class ValueMappingMethod extends MappingMethod {
             }
 
             // do before / after lifecycle mappings
-            SelectionParameters selectionParameters = getSelectionParameters( method );
+            SelectionParameters selectionParameters = getSelectionParameters( method, ctx.getTypeUtils() );
             Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
                 LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
@@ -185,13 +186,13 @@ public class ValueMappingMethod extends MappingMethod {
             return mappings;
         }
 
-        private SelectionParameters getSelectionParameters(Method method) {
+        private SelectionParameters getSelectionParameters(Method method, Types typeUtils) {
             BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
             if ( beanMappingPrism != null ) {
                 List<TypeMirror> qualifiers = beanMappingPrism.qualifiedBy();
                 List<String> qualifyingNames = beanMappingPrism.qualifiedByName();
                 TypeMirror resultType = beanMappingPrism.resultType();
-                return new SelectionParameters( qualifiers, qualifyingNames, resultType );
+                return new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
             }
             return null;
         }

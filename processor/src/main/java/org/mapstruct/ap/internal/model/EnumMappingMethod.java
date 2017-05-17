@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.source.EnumMapping;
@@ -99,7 +100,7 @@ public class EnumMappingMethod extends MappingMethod {
                 }
             }
 
-            SelectionParameters selectionParameters = getSelecionParameters( method );
+            SelectionParameters selectionParameters = getSelecionParameters( method, ctx.getTypeUtils() );
 
             Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
@@ -110,13 +111,13 @@ public class EnumMappingMethod extends MappingMethod {
             return new EnumMappingMethod( method, enumMappings, beforeMappingMethods, afterMappingMethods );
         }
 
-        private static SelectionParameters getSelecionParameters(SourceMethod method) {
+        private static SelectionParameters getSelecionParameters(SourceMethod method, Types typeUtils) {
             BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( method.getExecutable() );
             if ( beanMappingPrism != null ) {
                 List<TypeMirror> qualifiers = beanMappingPrism.qualifiedBy();
                 List<String> qualifyingNames = beanMappingPrism.qualifiedByName();
                 TypeMirror resultType = beanMappingPrism.resultType();
-                return new SelectionParameters( qualifiers, qualifyingNames, resultType );
+                return new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
             }
             return null;
         }

@@ -20,6 +20,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.List;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 /**
  * Holding parameters common to the selection process, common to IterableMapping, BeanMapping, PropertyMapping and
@@ -32,11 +33,14 @@ public class SelectionParameters {
     private final List<TypeMirror> qualifiers;
     private final List<String> qualifyingNames;
     private final TypeMirror resultType;
+    private final Types typeUtils;
 
-    public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType ) {
+    public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
+        Types typeUtils) {
         this.qualifiers = qualifiers;
         this.qualifyingNames = qualifyingNames;
         this.resultType = resultType;
+        this.typeUtils = typeUtils;
     }
 
     /**
@@ -67,9 +71,8 @@ public class SelectionParameters {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 97 * hash + (this.qualifiers != null ? this.qualifiers.hashCode() : 0);
         hash = 97 * hash + (this.qualifyingNames != null ? this.qualifyingNames.hashCode() : 0);
-        hash = 97 * hash + (this.resultType != null ? this.resultType.hashCode() : 0);
+        hash = 97 * hash + (this.resultType != null ? this.resultType.toString().hashCode() : 0);
         return hash;
     }
 
@@ -103,6 +106,31 @@ public class SelectionParameters {
         }
         else {
             return object1.equals( object2 );
+        }
+    }
+
+    private boolean equals(List<TypeMirror> mirrors1, List<TypeMirror> mirrors2) {
+        if ( mirrors1 == null ) {
+            return (mirrors2 == null);
+        }
+        else if ( mirrors2 == null || mirrors1.size() != mirrors2.size() ) {
+            return false;
+        }
+
+        for ( int i = 0; i < mirrors1.size(); i++ ) {
+            if ( !equals( mirrors1.get( i ), mirrors2.get( i ) ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean equals(TypeMirror mirror1, TypeMirror mirror2) {
+        if ( mirror1 == null ) {
+            return (mirror2 == null);
+        }
+        else {
+            return mirror2 != null && typeUtils.isSameType( mirror1, mirror2 );
         }
     }
 }
