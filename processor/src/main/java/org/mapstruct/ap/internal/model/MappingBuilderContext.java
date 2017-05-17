@@ -39,7 +39,6 @@ import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Services;
-import org.mapstruct.ap.spi.DefaultMappingExclusionProvider;
 import org.mapstruct.ap.spi.MappingExclusionProvider;
 
 /**

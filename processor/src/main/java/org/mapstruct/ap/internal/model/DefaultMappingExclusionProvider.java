@@ -16,11 +16,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.spi;
+package org.mapstruct.ap.internal.model;
 
 import java.util.regex.Pattern;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
+
+import org.mapstruct.ap.spi.MappingExclusionProvider;
 
 /**
  * The default implementation of the {@link MappingExclusionProvider} service provider interface.
@@ -32,7 +34,7 @@ import javax.lang.model.element.TypeElement;
  * @author Filip Hrisafov
  * @since 1.2
  */
-public class DefaultMappingExclusionProvider implements MappingExclusionProvider {
+class DefaultMappingExclusionProvider implements MappingExclusionProvider {
     private static final Pattern JAVA_JAVAX_PACKAGE = Pattern.compile( "^javax?\\..*" );
 
     @Override
