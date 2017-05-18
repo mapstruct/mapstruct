@@ -331,6 +331,18 @@ public class SourceReference {
         }
     }
 
+    public SourceReference popIntoParameter() {
+        if ( propertyEntries.size() == 1 ) {
+            Type paramType = propertyEntries.get( 0 ).getType();
+            String paramName = Strings.getSaveVariableName( paramType.getName() );
+            Parameter param = new Parameter( paramName, paramType );
+            return new SourceReference( param, new ArrayList<PropertyEntry>( ), isValid );
+        }
+        else {
+            return null;
+        }
+    }
+
     @Override
     public String toString() {
 

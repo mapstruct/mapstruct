@@ -369,6 +369,16 @@ public class Mapping {
         return null;
     }
 
+    public Mapping popSourceReferenceIntoParam() {
+        if ( sourceReference != null ) {
+            SourceReference newSourceReference = sourceReference.popIntoParameter();
+            if (newSourceReference != null ) {
+                return new Mapping(this, newSourceReference );
+            }
+        }
+        return null;
+    }
+
     public List<String> getDependsOn() {
         return dependsOn;
     }

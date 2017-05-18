@@ -196,30 +196,37 @@ public class NestedTargetPropertyMappingHolder {
                     // However, here we do not forge name based mappings and we only
                     // do update on the defined Mappings.
                     if ( !groupedSourceReferences.nonNested.isEmpty() ) {
-                        MappingOptions nonNestedOptions = MappingOptions.forMappingsOnly(
-                            groupByTargetName( groupedSourceReferences.nonNested ),
-                            true
-                        );
-                        SourceReference reference = new SourceReference.BuilderFromProperty()
-                            .sourceParameter( sourceParameter )
-                            .name( targetProperty.getName() )
-                            .build();
 
-                        PropertyMapping propertyMapping = createPropertyMappingForNestedTarget(
-                            nonNestedOptions,
-                            targetProperty,
-                            reference,
-                            forceUpdateMethod
-                        );
+// SJDE: here we go from sourceparam to prop.
+                        List<Mapping> newNonNested = new ArrayList<Mapping>();
 
-                        if ( propertyMapping != null ) {
-                            propertyMappings.add( propertyMapping );
+                        for ( Mapping newNN : groupedSourceReferences.nonNested ) {
+                            newNonNested.add( newNN.popSourceReferenceIntoParam() );
                         }
 
-                        handledTargets.add( entryByTP.getKey().getName() );
-                    }
+                        MappingOptions nonNestedOptions = MappingOptions.forMappingsOnly(
+                            groupByTargetName( newNonNested ),
+                            true
+                        );
 
-                    unprocessedDefinedTarget.put( targetProperty, groupedSourceReferences.notProcessedAppliesToAll );
+                        for ( Mapping mapping : groupedSourceReferences.nonNested ) {
+
+                            PropertyMapping propertyMapping = createPropertyMappingForNestedTarget(
+                                nonNestedOptions,
+                                targetProperty,
+                                mapping.getSourceReference(),
+                                forceUpdateMethod
+                            );
+
+                            if ( propertyMapping != null ) {
+                                propertyMappings.add( propertyMapping );
+                            }
+
+                            handledTargets.add( entryByTP.getKey().getName() );
+                        }
+
+                        unprocessedDefinedTarget.put( targetProperty, groupedSourceReferences.notProcessedAppliesToAll );
+                    }
                 }
             }
 

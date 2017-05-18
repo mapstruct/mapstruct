@@ -640,7 +640,7 @@ public class PropertyMapping extends ModelElement {
             Type sourceType = sourceRHS.getSourceType();
 
             //Fail fast. If we could not find the method by now, no need to try
-            if ( sourceType.isPrimitive() || targetType.isPrimitive() ) {
+            if ( targetType.isPrimitive() ) {
                 return null;
             }
 
