@@ -32,7 +32,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
-    Person.class, PersonDto.class, Garage.class, GarageDto.class
+    Person.class, PersonDto.class, Garage.class, GarageDto.class, ColorRgb.class, ColorRgbDto.class
 })
 public class SuggestMostSimilarNameTest {
 
@@ -78,7 +78,11 @@ public class SuggestMostSimilarNameTest {
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 32,
-                messageRegExp = "Unknown property.*Did you mean \"garage\\.color\"\\?")
+                messageRegExp = "Unknown property \"garage\\.colour\\.rgb\".*Did you mean \"garage\\.color\"\\?"),
+            @Diagnostic(type = PersonGarageWrongTargetMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 35,
+                messageRegExp = "Unknown property \"garage\\.colour\".*Did you mean \"garage\\.color\"\\?")
         }
     )
     public void testGarageTargetSuggestion() {
@@ -94,7 +98,11 @@ public class SuggestMostSimilarNameTest {
             @Diagnostic(type = PersonGarageWrongSourceMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 32,
-                messageRegExp = ".*source.*Did you mean \"garage\\.color\"\\?")
+                messageRegExp = "No property named \"garage\\.colour\\.rgb\".*Did you mean \"garage\\.color\"\\?"),
+            @Diagnostic(type = PersonGarageWrongSourceMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 35,
+                messageRegExp = "No property named \"garage\\.colour\".*Did you mean \"garage\\.color\"\\?")
         }
     )
     public void testGarageSourceSuggestion() {

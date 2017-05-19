@@ -18,15 +18,15 @@
  */
 package org.mapstruct.ap.test.namesuggestion;
 
-public class GarageDto {
+public class ColorRgbDto {
 
-    private ColorRgbDto color;
+    private String rgb;
 
-    public ColorRgbDto getColor() {
-        return color;
+    public String getRgb() {
+        return rgb;
     }
 
-    public void setColor(ColorRgbDto color) {
-        this.color = color;
+    public void setRgb(String rgb) {
+        this.rgb = rgb;
     }
 }

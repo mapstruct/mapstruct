@@ -20,13 +20,13 @@ package org.mapstruct.ap.test.namesuggestion;
 
 public class Garage {
 
-    private String color;
+    private ColorRgb color;
 
-    public String getColor() {
+    public ColorRgb getColor() {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(ColorRgb color) {
         this.color = color;
     }
 }

@@ -29,7 +29,10 @@ public interface PersonGarageWrongSourceMapper {
 
     PersonGarageWrongSourceMapper MAPPER = Mappers.getMapper( PersonGarageWrongSourceMapper.class );
 
-    @Mapping(source = "garage.colour", target = "garage.color")
+    @Mapping(source = "garage.colour.rgb", target = "garage.color.rgb")
     Person mapPerson(PersonDto dto);
+
+    @Mapping(source = "garage.colour", target = "garage.color")
+    Person mapPersonGarage(PersonDto dto);
 
 }
