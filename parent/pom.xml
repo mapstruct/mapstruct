@@ -534,6 +534,9 @@
                         <exclude>.gitignore</exclude>
                         <exclude>.factorypath</exclude>
                         <exclude>.checkstyle</exclude>
+                        <exclude>*.yml</exclude>
+                        <exclude>**/*.asciidoc</exclude>
+                        <exclude>**/binding.xjb</exclude>
                     </excludes>
                 </configuration>
                 <executions>

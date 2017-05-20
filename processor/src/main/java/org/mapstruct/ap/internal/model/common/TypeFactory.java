@@ -521,10 +521,10 @@ public class TypeFactory {
     /**
      * Establishes the type bound:
      * <ol>
-     * <li>{@code<? extends Number>}, returns Number</li>
-     * <li>{@code<? super Number>}, returns Number</li>
-     * <li>{@code<?>}, returns Object</li>
-     * <li>{@code<T extends Number>, returns Number}</li>
+     * <li>{@code <? extends Number>}, returns Number</li>
+     * <li>{@code <? super Number>}, returns Number</li>
+     * <li>{@code <?>}, returns Object</li>
+     * <li>{@code <T extends Number>, returns Number}</li>
      * </ol>
      *
      * @param typeMirror the type to return the bound for

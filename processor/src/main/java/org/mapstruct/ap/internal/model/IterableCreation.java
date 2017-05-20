@@ -27,7 +27,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 
 /**
  * Model element that can be used to create a type of {@link Iterable} or {@link java.util.Map}. If an implementation
- * type is used and the target type has a constructor with {@link int} as parameter and the source parameter is of
+ * type is used and the target type has a constructor with {@code int} as parameter and the source parameter is of
  * {@link java.util.Collection}, {@link java.util.Map} or {@code Array} type then MapStruct will use that constructor
  * with the {@code size} / {@code length} from the source parameter.
  *

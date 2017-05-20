@@ -838,10 +838,10 @@ public class Type extends ModelElement implements Comparable<Type> {
     /**
      * Establishes the type bound:
      * <ol>
-     * <li>{@code<? extends Number>}, returns Number</li>
-     * <li>{@code<? super Number>}, returns Number</li>
-     * <li>{@code<?>}, returns Object</li>
-     * <li>{@code<T extends Number>, returns Number}</li>
+     * <li>{@code <? extends Number>}, returns Number</li>
+     * <li>{@code <? super Number>}, returns Number</li>
+     * <li>{@code <?>}, returns Object</li>
+     * <li>{@code <T extends Number>, returns Number}</li>
      * </ol>
      * @return the bound for this parameter
      */

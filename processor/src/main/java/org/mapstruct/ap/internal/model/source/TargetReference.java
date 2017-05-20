@@ -411,12 +411,10 @@ public class TargetReference {
                 readAccessors
             );
 
-            String prefix = "";
-            for ( int i = 0; i < index; i++ ) {
-                prefix += entryNames[i] + ".";
-            }
+            List<String> elements = new ArrayList<String>( Arrays.asList( entryNames ).subList( 0, index ) );
+            elements.add( mostSimilarProperty );
 
-            printErrorMessage( Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE, prefix + mostSimilarProperty );
+            printErrorMessage( Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE, Strings.join( elements, "." ) );
         }
     }
 
