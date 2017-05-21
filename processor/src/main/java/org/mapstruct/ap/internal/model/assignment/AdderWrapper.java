@@ -63,7 +63,7 @@ public class AdderWrapper extends AssignmentWrapper {
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>();
         imported.addAll( super.getImportTypes() );
-        imported.add( getSourceType().getTypeParameters().get( 0 ) );
+        imported.add( getSourceType().getTypeParameters().get( 0 ).getTypeBound() );
         return imported;
     }
 
