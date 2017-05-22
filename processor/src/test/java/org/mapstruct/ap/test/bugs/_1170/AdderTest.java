@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._1170._target.Target;
@@ -30,7 +29,6 @@ import org.mapstruct.ap.test.bugs._1170.source.Source;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * @author Cornelius Dirmeier
@@ -43,11 +41,6 @@ import org.mapstruct.ap.testutil.runner.GeneratedSource;
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class AdderTest {
-
-    @Rule
-    public final GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(
-        AdderSourceTargetMapper.class
-    );
 
     @IssueKey("1170")
     @Test

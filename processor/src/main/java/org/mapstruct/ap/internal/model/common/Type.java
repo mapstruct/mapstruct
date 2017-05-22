@@ -380,11 +380,11 @@ public class Type extends ModelElement implements Comparable<Type> {
             return true;
         }
 
-        TypeMirror typeMirrotToMatch = isWildCardExtendsBound() ? getTypeBound().typeMirror : typeMirror;
-        TypeMirror otherTypeMirrotToMatch = other.isWildCardSuperBound() ?
+        TypeMirror typeMirrorToMatch = isWildCardExtendsBound() ? getTypeBound().typeMirror : typeMirror;
+        TypeMirror otherTypeMirrorToMatch = other.isWildCardSuperBound() ?
                 other.getTypeBound().typeMirror : other.typeMirror;
 
-        return typeUtils.isAssignable( typeMirrotToMatch, otherTypeMirrotToMatch );
+        return typeUtils.isAssignable( typeMirrorToMatch, otherTypeMirrorToMatch );
     }
 
     /**
