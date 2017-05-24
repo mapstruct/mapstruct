@@ -39,8 +39,8 @@ import org.mapstruct.ap.test.nestedbeans.mixed.source.WaterQualityReport;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-02-19T16:25:02+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2017-04-24T17:26:46+0200",
+    comments = "version: , compiler: javac, environment: Java 1.8.0_131 (Oracle Corporation)"
 )
 public class FishTankMapperImpl implements FishTankMapper {
 
@@ -74,7 +74,7 @@ public class FishTankMapperImpl implements FishTankMapper {
         FishTankDto fishTankDto = new FishTankDto();
 
         fishTankDto.setFish( fishToFishDto( source.getFish() ) );
-        fishTankDto.setMaterial( fishTankToMaterialDto( source ) );
+        fishTankDto.setMaterial( fishTankToMaterialDto1( source ) );
         fishTankDto.setQuality( waterQualityToWaterQualityDto( source.getQuality() ) );
         Ornament ornament = sourceInteriorOrnament( source );
         if ( ornament != null ) {
@@ -217,6 +217,30 @@ public class FishTankMapperImpl implements FishTankMapper {
         waterPlantDto.setKind( waterPlant.getKind() );
 
         return waterPlantDto;
+    }
+
+    protected MaterialDto fishTankToMaterialDto1(FishTank fishTank) {
+        if ( fishTank == null ) {
+            return null;
+        }
+
+        MaterialDto materialDto = new MaterialDto();
+
+        materialDto.setMaterialType( materialTypeToMaterialTypeDto( fishTank.getMaterial() ) );
+
+        return materialDto;
+    }
+
+    protected WaterQualityOrganisationDto waterQualityReportToWaterQualityOrganisationDto1(WaterQualityReport waterQualityReport) {
+        if ( waterQualityReport == null ) {
+            return null;
+        }
+
+        WaterQualityOrganisationDto waterQualityOrganisationDto = new WaterQualityOrganisationDto();
+
+        waterQualityOrganisationDto.setName( waterQualityReport.getOrganisationName() );
+
+        return waterQualityOrganisationDto;
     }
 
     protected Fish fishDtoToFish(FishDto fishDto) {
