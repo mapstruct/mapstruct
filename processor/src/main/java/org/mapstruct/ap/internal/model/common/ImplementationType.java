@@ -68,7 +68,7 @@ public class ImplementationType {
     }
 
     /**
-     * @return {@code true} if the underlying type has a constructor for {@link int} {@code initialCapacity}, {@code
+     * @return {@code true} if the underlying type has a constructor for {@code int} {@code initialCapacity}, {@code
      * false} otherwise
      */
     public boolean hasInitialCapacityConstructor() {

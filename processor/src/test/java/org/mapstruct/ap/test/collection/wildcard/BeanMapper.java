@@ -42,7 +42,7 @@ public abstract class BeanMapper {
     }
 
     JAXBElement<? super BigDecimal> map(BigDecimal value) {
-        return new JAXBElement( new QName( "test" ), BigDecimal.class, value );
+        return new JAXBElement<BigDecimal>( new QName( "test" ), BigDecimal.class, value );
     }
 
 }

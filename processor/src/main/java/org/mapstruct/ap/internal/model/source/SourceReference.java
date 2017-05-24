@@ -20,6 +20,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import static org.mapstruct.ap.internal.model.source.PropertyEntry.forSourceReference;
 import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -165,28 +166,23 @@ public class SourceReference {
                     );
                 }
                 else {
-                    int notFoundPropertyIndex;
-                    Type sourceType;
-                    if ( entries.isEmpty() ) {
-                        notFoundPropertyIndex = 0;
-                        sourceType = method.getParameters().get( 0 ).getType();
-                    }
-                    else {
-                        int lastFoundEntryIndex = entries.size() - 1;
-                        notFoundPropertyIndex = lastFoundEntryIndex + 1;
-                        sourceType = entries.get( lastFoundEntryIndex ).getType();
+                    int notFoundPropertyIndex = 0;
+                    Type sourceType = method.getParameters().get( 0 ).getType();
+                    if ( !entries.isEmpty() ) {
+                        notFoundPropertyIndex = entries.size();
+                        sourceType = last( entries ).getType();
                     }
                     String mostSimilarWord = Strings.getMostSimilarWord(
                         sourcePropertyNames[notFoundPropertyIndex],
                         sourceType.getPropertyReadAccessors().keySet()
                     );
-                    String prefix = "";
-                    for ( int i = 0; i < notFoundPropertyIndex; i++ ) {
-                        prefix += sourcePropertyNames[i] + ".";
-                    }
+                    List<String> elements = new ArrayList<String>(
+                        Arrays.asList( sourcePropertyNames ).subList( 0, notFoundPropertyIndex )
+                    );
+                    elements.add( mostSimilarWord );
                     reportMappingError(
                         Message.PROPERTYMAPPING_INVALID_PROPERTY_NAME, mapping.getSourceName(),
-                        prefix + mostSimilarWord
+                        Strings.join( elements, "." )
                     );
                 }
                 isValid = false;

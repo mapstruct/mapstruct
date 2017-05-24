@@ -74,7 +74,7 @@ public class BigDecimalToStringConversion extends AbstractNumberToStringConversi
 
     @Override
     public List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext) {
-        List<HelperMethod> helpers = new ArrayList();
+        List<HelperMethod> helpers = new ArrayList<HelperMethod>();
         if ( conversionContext.getNumberFormat() != null ) {
             helpers.add( new CreateDecimalFormat( conversionContext.getTypeFactory() ) );
         }

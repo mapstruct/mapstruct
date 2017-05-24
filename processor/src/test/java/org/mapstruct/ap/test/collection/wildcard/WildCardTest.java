@@ -153,7 +153,7 @@ public class WildCardTest {
     public void shouldMapBean() {
 
         GoodIdea aGoodIdea = new GoodIdea();
-        aGoodIdea.setContent( new JAXBElement( new QName( "test" ), BigDecimal.class, BigDecimal.ONE ) );
+        aGoodIdea.setContent( new JAXBElement<BigDecimal>( new QName( "test" ), BigDecimal.class, BigDecimal.ONE ) );
         aGoodIdea.setDescription( BigDecimal.ZERO );
 
         CunningPlan aCunningPlan = BeanMapper.STM.transformA( aGoodIdea );

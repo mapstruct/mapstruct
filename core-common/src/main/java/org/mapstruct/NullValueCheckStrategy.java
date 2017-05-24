@@ -30,12 +30,13 @@ public enum NullValueCheckStrategy {
 
     /**
      * This option includes a null check. When:
-     * <p>
+     * <br>
+     * <br>
      * <ol>
      *   <li>a source value is directly assigned to a target</li>
      *   <li>a source value assigned to a target by calling a type conversion on the target first</li>
      * </ol>
-     * <p>
+     * <br>
      * <b>NOTE:</b> mapping methods (generated or hand written) are excluded from this null check. They are intended to
      * handle a null source value as 'valid' input.
      *
