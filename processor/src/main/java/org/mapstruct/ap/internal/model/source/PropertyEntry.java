@@ -142,4 +142,8 @@ public class PropertyEntry {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return type + " " + Strings.join( Arrays.asList( fullName ), "." );
+    }
 }

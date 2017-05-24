@@ -859,4 +859,3 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     }
 
 }
-

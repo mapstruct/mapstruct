@@ -117,7 +117,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         if ( mappingMethod == null ) {
             return null;
         }
-        if ( !ctx.getMappingsToGenerate().contains( mappingMethod ) ) {
+        if (!ctx.getMappingsToGenerate().contains( mappingMethod )) {
             ctx.getMappingsToGenerate().add( mappingMethod );
         }
         else {
