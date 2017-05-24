@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.nestedbeans;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -59,50 +57,29 @@ public class NestedSimpleBeansMappingTest {
         UserDtoUpdateMapperSmart.class
     );
 
-    /**
-     * Extracts all non synthetic declared fields from a class. This is needed, because jacoco adds a synthetic field
-     * to the classes and also assertj does not support testing that all fields are exactly there.
-     * This will be needed until <a href="https://github.com/joel-costigliola/assertj-core/issues/953">953</a> from
-     * assertj-core is implemented.
-     *
-     * @param clazz to extract from
-     *
-     * @return all the non synthetic declared fields
-     */
-    private static List<Field> extractAllFields(Class<?> clazz) {
-        List<Field> nonSyntheticFields = new ArrayList<Field>();
-        for ( Field field : clazz.getDeclaredFields() ) {
-            if ( !field.isSynthetic() ) {
-                nonSyntheticFields.add( field );
-            }
-        }
-
-        return nonSyntheticFields;
-    }
-
     @Test
     public void shouldHaveAllFields() throws Exception {
         // If this test fails that means something new was added to the structure of the User/UserDto.
         // Make sure that the other tests are also updated (the new field is asserted)
-        Object[] userFields = new String[] { "name", "car", "secondCar", "house" };
-        assertThat( extractAllFields( User.class ) ).extracting( "name" ).containsExactlyInAnyOrder( userFields );
-        assertThat( extractAllFields( UserDto.class ) ).extracting( "name" ).containsExactlyInAnyOrder( userFields );
+        String[] userFields = new String[] { "name", "car", "secondCar", "house" };
+        assertThat( User.class ).hasOnlyDeclaredFields( userFields );
+        assertThat( UserDto.class ).hasOnlyDeclaredFields( userFields );
 
-        Object[] carFields = new String[] { "name", "year", "wheels" };
-        assertThat( extractAllFields( Car.class ) ).extracting( "name" ).containsExactlyInAnyOrder( carFields );
-        assertThat( extractAllFields( CarDto.class ) ).extracting( "name" ).containsExactlyInAnyOrder( carFields );
+        String[] carFields = new String[] { "name", "year", "wheels" };
+        assertThat( Car.class ).hasOnlyDeclaredFields( carFields );
+        assertThat( CarDto.class ).hasOnlyDeclaredFields( carFields );
 
-        Object[] wheelFields = new String[] { "front", "right" };
-        assertThat( extractAllFields( Wheel.class ) ).extracting( "name" ).containsExactlyInAnyOrder( wheelFields );
-        assertThat( extractAllFields( WheelDto.class ) ).extracting( "name" ).containsExactlyInAnyOrder( wheelFields );
+        String[] wheelFields = new String[] { "front", "right" };
+        assertThat( Wheel.class ).hasOnlyDeclaredFields( wheelFields );
+        assertThat( WheelDto.class ).hasOnlyDeclaredFields( wheelFields );
 
-        Object[] houseFields = new String[] { "name", "year", "roof" };
-        assertThat( extractAllFields( House.class ) ).extracting( "name" ).containsExactlyInAnyOrder( houseFields );
-        assertThat( extractAllFields( HouseDto.class ) ).extracting( "name" ).containsExactlyInAnyOrder( houseFields );
+        String[] houseFields = new String[] { "name", "year", "roof" };
+        assertThat( House.class ).hasOnlyDeclaredFields( houseFields );
+        assertThat( HouseDto.class ).hasOnlyDeclaredFields( houseFields );
 
-        Object[] roofFields = new String[] { "color", "type" };
-        assertThat( extractAllFields( Roof.class ) ).extracting( "name" ).containsExactlyInAnyOrder( roofFields );
-        assertThat( extractAllFields( RoofDto.class ) ).extracting( "name" ).containsExactlyInAnyOrder( roofFields );
+        String[] roofFields = new String[] { "color", "type" };
+        assertThat( Roof.class ).hasOnlyDeclaredFields( roofFields );
+        assertThat( RoofDto.class ).hasOnlyDeclaredFields( roofFields );
     }
 
     @Test

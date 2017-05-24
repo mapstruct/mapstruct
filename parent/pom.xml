@@ -50,7 +50,7 @@
         <com.puppycrawl.tools.checkstyle.version>7.2</com.puppycrawl.tools.checkstyle.version>
         <add.release.arguments />
         <forkCount>1</forkCount>
-        <assertj.version>3.5.2</assertj.version>
+        <assertj.version>3.7.0</assertj.version>
     </properties>
 
     <licenses>
