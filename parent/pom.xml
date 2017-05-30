@@ -506,6 +506,16 @@
                     <artifactId>properties-maven-plugin</artifactId>
                     <version>1.0-alpha-2</version>
                 </plugin>
+                <plugin>
+                    <groupId>de.thetaphi</groupId>
+                    <artifactId>forbiddenapis</artifactId>
+                    <version>2.3</version>
+                    <configuration>
+                        <signaturesFiles>
+                            <signaturesFile>${project.basedir}/../etc/forbidden-apis.txt</signaturesFile>
+                        </signaturesFiles>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -525,6 +535,7 @@
                         <exclude>**/mapstruct.xml</exclude>
                         <exclude>**/toolchains-*.xml</exclude>
                         <exclude>**/eclipse-formatter-config.xml</exclude>
+                        <exclude>**/forbidden-apis.txt</exclude>
                         <exclude>**/checkstyle-for-generated-sources.xml</exclude>
                         <exclude>**/nb-configuration.xml</exclude>
                         <exclude>maven-settings.xml</exclude>

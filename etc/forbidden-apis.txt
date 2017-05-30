@@ -1,0 +1,4 @@
+
+@defaultMessage TypeMirror equals and hashCode are not stable. Types.isSameType(TypeMirror, TypeMirror) should be used
+javax.lang.model.type.TypeMirror#hashCode()
+javax.lang.model.type.TypeMirror#equals(java.lang.Object)
