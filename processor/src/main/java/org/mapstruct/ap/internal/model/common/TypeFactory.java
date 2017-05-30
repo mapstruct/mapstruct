@@ -175,6 +175,7 @@ public class TypeFactory {
         String qualifiedName;
         TypeElement typeElement;
         Type componentType;
+        boolean isImported;
 
         if ( mirror.getKind() == TypeKind.DECLARED ) {
             DeclaredType declaredType = (DeclaredType) mirror;
@@ -195,28 +196,38 @@ public class TypeFactory {
             }
 
             componentType = null;
+            isImported = isImported( name, qualifiedName );
         }
         else if ( mirror.getKind() == TypeKind.ARRAY ) {
             TypeMirror componentTypeMirror = getComponentType( mirror );
+            StringBuilder builder = new StringBuilder("[]");
+
+            while ( componentTypeMirror.getKind() == TypeKind.ARRAY ) {
+                componentTypeMirror = getComponentType( componentTypeMirror );
+                builder.append( "[]" );
+            }
 
             if ( componentTypeMirror.getKind() == TypeKind.DECLARED ) {
                 DeclaredType declaredType = (DeclaredType) componentTypeMirror;
                 TypeElement componentTypeElement = (TypeElement) declaredType.asElement();
 
-                name = componentTypeElement.getSimpleName().toString() + "[]";
+                String arraySuffix = builder.toString();
+                name = componentTypeElement.getSimpleName().toString() + arraySuffix;
                 packageName = elementUtils.getPackageOf( componentTypeElement ).getQualifiedName().toString();
-                qualifiedName = componentTypeElement.getQualifiedName().toString() + "[]";
+                qualifiedName = componentTypeElement.getQualifiedName().toString() + arraySuffix;
+                isImported = isImported( name, qualifiedName );
             }
             else {
                 name = mirror.toString();
                 packageName = null;
                 qualifiedName = name;
+                isImported = false;
             }
 
             isEnumType = false;
             isInterface = false;
             typeElement = null;
-            componentType = getType( componentTypeMirror );
+            componentType = getType( getComponentType( mirror ) );
         }
         else {
             isEnumType = false;
@@ -226,6 +237,7 @@ public class TypeFactory {
             qualifiedName = name;
             typeElement = null;
             componentType = null;
+            isImported = false;
         }
 
         return new Type(
@@ -244,7 +256,7 @@ public class TypeFactory {
             isCollectionType,
             isMapType,
             isStreamType,
-            isImported( name, qualifiedName )
+            isImported
         );
     }
 

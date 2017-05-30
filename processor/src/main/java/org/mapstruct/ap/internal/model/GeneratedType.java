@@ -199,6 +199,14 @@ public abstract class GeneratedType extends ModelElement {
         return importedTypes;
     }
 
+    public SortedSet<String> getImportTypeNames() {
+        SortedSet<String> importTypeNames = new TreeSet<String>();
+        for ( Type type : getImportTypes() ) {
+            importTypeNames.add( type.getImportName() );
+        }
+        return importTypeNames;
+    }
+
     public Constructor getConstructor() {
         return constructor;
     }
@@ -222,7 +230,7 @@ public abstract class GeneratedType extends ModelElement {
             return false;
         }
 
-        if ( typeToAdd.getTypeMirror().getKind() != TypeKind.DECLARED ) {
+        if ( typeToAdd.getTypeMirror().getKind() != TypeKind.DECLARED && !typeToAdd.isArrayType() ) {
             return false;
         }
 

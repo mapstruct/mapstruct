@@ -23,8 +23,8 @@
 package ${packageName};
 </#if>
 
-<#list importTypes as importedType>
-import ${importedType.importName};
+<#list importTypeNames as importedType>
+import ${importedType};
 </#list>
 
 <#if !generatedTypeAvailable>/*</#if>

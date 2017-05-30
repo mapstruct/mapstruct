@@ -290,7 +290,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return The name of this type as to be used within import statements.
      */
     public String getImportName() {
-        return isArrayType() ? qualifiedName.substring( 0, qualifiedName.length() - 2 ) : qualifiedName;
+        return isArrayType() ? TypeFactory.trimSimpleClassName( qualifiedName ) : qualifiedName;
     }
 
     @Override
