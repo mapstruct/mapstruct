@@ -820,6 +820,11 @@ When generating the implementation of a mapping method, MapStruct will apply the
 * If no such method was found MapStruct will try to generate an automatic sub-mapping method that will do the mapping between the source and target attributes
 * If MapStruct could not create a name based mapping method an error will be raised at build time, indicating the non-mappable attribute and its path.
 
+[NOTE]
+====
+In order to stop MapStruct from generating automatic sub-mapping methods, one can use `@Mapper( disableSubMappingMethodsGeneration = true )`.
+====
+
 include::controlling-nested-bean-mappings.asciidoc[]
 
 [[invoking-other-mappers]]
