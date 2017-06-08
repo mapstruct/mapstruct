@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.DisableCheckstyle;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
@@ -34,6 +35,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
 @RunWith(AnnotationProcessorTestRunner.class)
+@DisableCheckstyle
 public class OnewayTest {
 
     @Test

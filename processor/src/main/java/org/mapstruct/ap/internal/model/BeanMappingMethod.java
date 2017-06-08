@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -63,6 +64,24 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+
+import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.BinaryExpr.Operator;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -804,6 +823,76 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
         return sourceParameters;
+    }
+
+    @Override
+    public MethodDeclaration getAst(Context context) {
+        final Map<String, Object> ext = new HashMap<String, Object>();
+
+        context = new Context() {
+
+            @Override
+            public <T> T get(Class<T> type) {
+                if ( type == Map.class ) {
+                    ext.put( "targetBeanName", getResultName() );
+                    return (T) ext;
+                }
+
+                return null;
+            }
+        };
+
+        NodeList<com.github.javaparser.ast.body.Parameter> parameters = new NodeList<com.github.javaparser.ast.body.Parameter>();
+
+        for ( Parameter parameter : getParameters() ) {
+            parameters.add( parameter.getAst( context ) );
+        }
+        MethodDeclaration ast = new MethodDeclaration(
+            EnumSet.of( Modifier.PUBLIC ),
+            getName(),
+            getResultType().getAst( context ),
+            parameters
+        );
+
+        NodeList<Statement> returnNull = new NodeList<Statement>();
+        returnNull.add( new ReturnStmt( new NullLiteralExpr() ) );
+
+        IfStmt paramNullCheck = new IfStmt(
+            new BinaryExpr( new NameExpr( parameters.get( 0 ).getName() ), new NullLiteralExpr(), Operator.EQUALS ),
+            new BlockStmt( NodeList.<Statement>nodeList( new ReturnStmt( new NullLiteralExpr() ) ) ),
+            null
+        );
+
+        ExpressionStmt returnValueInstantiation = new ExpressionStmt(
+            new VariableDeclarationExpr(
+                new VariableDeclarator(
+                    getResultType().getAst( context ),
+                    getResultName(),
+                    new ObjectCreationExpr(
+                        null,
+                        new ClassOrInterfaceType( getResultType().getName() ),
+                        new NodeList<Expression>()
+                    )
+                )
+            )
+        );
+
+        NodeList<Statement> statements = new NodeList<Statement>();
+        statements.add( paramNullCheck );
+        statements.add( returnValueInstantiation );
+
+        for ( PropertyMapping propertyMapping : propertyMappings ) {
+            statements.add( propertyMapping.getAst( context ) );
+        }
+
+        statements.add( new ReturnStmt( new NameExpr( getResultName() ) ) );
+        BlockStmt body = new BlockStmt( statements );
+
+        ast.setBody( body );
+
+        return ast;
+
+
     }
 
     @Override

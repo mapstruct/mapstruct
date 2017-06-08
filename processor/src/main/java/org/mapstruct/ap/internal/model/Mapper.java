@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -30,6 +33,15 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.version.VersionInformation;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.NormalAnnotationExpr;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 /**
  * Represents a type implementing a mapper interface (annotated with {@code @Mapper}). This is the root object of the
@@ -194,6 +206,35 @@ public class Mapper extends GeneratedType {
     public boolean hasCustomImplementation() {
         return customImplName || customPackage;
     }
+
+    @Override
+    public CompilationUnit getAst(Context context) {
+        CompilationUnit ast = new CompilationUnit( getPackageName() );
+
+        for ( Type importType : getImportTypes() ) {
+            ast.addImport( importType.getImportName() );
+        }
+
+        ClassOrInterfaceDeclaration type = new ClassOrInterfaceDeclaration( EnumSet.of( Modifier.PUBLIC ), false, getName() );
+        type.setImplementedTypes( NodeList.<ClassOrInterfaceType>nodeList( new ClassOrInterfaceType( getInterfaceName() ) ) );
+
+        NormalAnnotationExpr generated = new NormalAnnotationExpr();
+        generated.setName( "Generated" );
+        generated.addPair( "value", "\"org.mapstruct.ap.MappingProcessor\"" );
+        generated.addPair( "date", "\"" + new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssZ" ).format( new Date() ) + "\"" );
+        generated.addPair( "comments", "\"version: " + getVersionInformation().getMapStructVersion() + ", compiler: " + getVersionInformation().getCompiler() + ", environment: Java " + getVersionInformation().getRuntimeVersion() + "\"" );
+
+        type.setAnnotations( NodeList.<AnnotationExpr>nodeList( generated ) );
+
+        for ( MappingMethod mappingMethod : getMethods() ) {
+            type.addMember( (BodyDeclaration<?>) mappingMethod.getAst( context ) );
+        }
+
+        ast.addType( type );
+
+        return ast;
+    }
+
 
     @Override
     protected String getTemplateName() {

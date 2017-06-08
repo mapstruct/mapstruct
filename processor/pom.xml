@@ -44,6 +44,12 @@
             <artifactId>freemarker</artifactId>
         </dependency>
 
+<dependency>
+    <groupId>com.github.javaparser</groupId>
+    <artifactId>javaparser-core</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
         <!-- Compile-only; Using "provided" scope as there is no such scope in Maven;
         these dependencies are not required at runtime, only for prism generation
         and tests -->

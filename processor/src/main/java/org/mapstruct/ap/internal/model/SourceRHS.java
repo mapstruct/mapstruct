@@ -27,6 +27,8 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
 
+import com.github.javaparser.ast.expr.Expression;
+
 /**
  * SourceRHS Assignment. Right Hand Side (RHS), source part of the assignment.
  *
@@ -44,14 +46,16 @@ public class SourceRHS extends ModelElement implements Assignment {
     private final String sourcePresenceCheckerReference;
     private boolean useElementAsSourceTypeForMatching = false;
     private final String sourceParameterName;
+    private Expression ast;
 
     public SourceRHS(String sourceReference, Type sourceType, Set<String> existingVariableNames,
         String sourceErrorMessagePart ) {
-        this( sourceReference, sourceReference, null, sourceType, existingVariableNames, sourceErrorMessagePart );
+        this( null, sourceReference, sourceReference, null, sourceType, existingVariableNames, sourceErrorMessagePart );
     }
 
-    public SourceRHS(String sourceParameterName, String sourceReference, String sourcePresenceCheckerReference,
+    public SourceRHS(Expression ast, String sourceParameterName, String sourceReference, String sourcePresenceCheckerReference,
         Type sourceType, Set<String> existingVariableNames,  String sourceErrorMessagePart ) {
+        this.ast = ast;
         this.sourceReference = sourceReference;
         this.sourceType = sourceType;
         this.existingVariableNames = existingVariableNames;
@@ -155,4 +159,8 @@ public class SourceRHS extends ModelElement implements Assignment {
         return sourceParameterName;
     }
 
+    @Override
+    public Expression getAst(Context context) {
+        return ast;
+    }
 }

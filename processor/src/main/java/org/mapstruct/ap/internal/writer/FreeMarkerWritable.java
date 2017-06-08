@@ -20,6 +20,8 @@ package org.mapstruct.ap.internal.writer;
 
 import java.io.Writer;
 
+import com.github.javaparser.ast.Node;
+
 /**
  * A {@link Writable} which uses the FreeMarker template engine to generate the output.
  *
@@ -29,7 +31,18 @@ public abstract class FreeMarkerWritable implements Writable {
 
     @Override
     public void write(Context context, Writer writer) throws Exception {
-        new FreeMarkerModelElementWriter().write( this, context, writer );
+        Node ast = getAst( context );
+
+        if ( ast != null ) {
+            writer.append( ast.toString() );
+        }
+        else {
+            new FreeMarkerModelElementWriter().write( this, context, writer );
+        }
+    }
+
+    public Node getAst(Context context) {
+        return null;
     }
 
     /**

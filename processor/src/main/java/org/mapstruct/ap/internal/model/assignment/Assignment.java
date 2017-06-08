@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.writer.Writable.Context;
+
+import com.github.javaparser.ast.expr.Expression;
 
 /**
  * Assignment represents all kind of manners a source can be assigned to a target.
@@ -154,4 +157,6 @@ public interface Assignment {
     AssignmentType getType();
 
     boolean isCallingUpdateMethod();
+
+    Expression getAst(Context context);
 }

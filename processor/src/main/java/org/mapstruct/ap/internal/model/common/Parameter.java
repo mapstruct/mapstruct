@@ -95,6 +95,11 @@ public class Parameter extends ModelElement {
     }
 
     @Override
+    public com.github.javaparser.ast.body.Parameter getAst(Context context) {
+        return new com.github.javaparser.ast.body.Parameter( type.getAst( context ), name );
+    }
+
+    @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + ( type != null ? type.hashCode() : 0 );

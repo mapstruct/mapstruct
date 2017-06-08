@@ -32,6 +32,11 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.SimpleName;
+
 /**
  * Represents a reference to another method, e.g. used to map a bean property from source to target type or to
  * instantiate the return value of a mapping method (rather than calling the {@code new} operator).
@@ -232,6 +237,15 @@ public class MethodReference extends MappingMethod implements Assignment {
 
     public List<ParameterBinding> getParameterBindings() {
         return parameterBindings;
+    }
+
+    @Override
+    public Expression getAst(Context context) {
+        return new MethodCallExpr(
+                null,
+                new SimpleName( getName() ),
+                NodeList.<Expression>nodeList( assignment.getAst( context ) )
+        );
     }
 
     @Override

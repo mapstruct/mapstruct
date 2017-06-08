@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
@@ -58,6 +59,10 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -457,7 +462,12 @@ public class PropertyMapping extends ModelElement {
             else if ( propertyEntries.size() == 1 ) {
                 PropertyEntry propertyEntry = propertyEntries.get( 0 );
                 String sourceRef = sourceParam.getName() + "." + ValueProvider.of( propertyEntry.getReadAccessor() );
-                return new SourceRHS( sourceParam.getName(),
+                MethodCallExpr ast = new MethodCallExpr(
+                        new NameExpr( sourceParam.getName() ),
+                        propertyEntry.getReadAccessor().getSimpleName().toString()
+                );
+                return new SourceRHS( ast,
+                                      sourceParam.getName(),
                                       sourceRef,
                                       getSourcePresenceCheckerRef( sourceReference ),
                                       propertyEntry.getType(),
@@ -504,7 +514,8 @@ public class PropertyMapping extends ModelElement {
                     forgedName = ctx.getExistingMappingMethod( nestedPropertyMapping ).getName();
                 }
                 String sourceRef = forgedName + "( " + sourceParam.getName() + " )";
-                SourceRHS sourceRhs = new SourceRHS( sourceParam.getName(),
+                SourceRHS sourceRhs = new SourceRHS( null,
+                                                     sourceParam.getName(),
                                                      sourceRef,
                                                      getSourcePresenceCheckerRef( sourceReference ),
                                                      sourceType,
@@ -927,6 +938,13 @@ public class PropertyMapping extends ModelElement {
 
     public List<String> getDependsOn() {
         return dependsOn;
+    }
+
+    @Override
+    public ExpressionStmt getAst(Context context) {
+        Map<String, Object> ext = context.get( Map.class );
+        ext.put( "targetWriteAccessorName", targetWriteAccessorName );
+        return new ExpressionStmt( assignment.getAst( context ) );
     }
 
     @Override
