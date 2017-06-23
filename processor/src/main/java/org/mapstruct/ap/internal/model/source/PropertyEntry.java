@@ -80,7 +80,7 @@ public class PropertyEntry {
      */
     public static PropertyEntry forSourceReference(String name, Accessor readAccessor,
                                                    ExecutableElementAccessor presenceChecker, Type type) {
-        return new PropertyEntry( new String[]{name}, readAccessor, null, presenceChecker, type );
+        return new PropertyEntry(new String[]{name}, readAccessor, null, presenceChecker, type);
     }
 
     public String getName() {

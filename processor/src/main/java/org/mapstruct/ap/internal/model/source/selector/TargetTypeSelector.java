@@ -57,7 +57,10 @@ public class TargetTypeSelector implements MethodSelector {
                 new ArrayList<SelectedMethod<T>>( methods.size() );
 
             for ( SelectedMethod<T> method : methods ) {
-                TypeMirror resultTypeMirror = method.getMethod().getResultType().getTypeElement().asType();
+                // We need to use getMappingType to allow builder Types to show up as valid targets
+                // for the types they build.
+                final TypeMirror resultTypeMirror = method.getMethod().getResultType().getMappingType();
+
                 if ( typeUtils.isSameType( qualifyingTypeMirror, resultTypeMirror ) ) {
                     candidatesWithQualifyingTargetType.add( method );
                 }

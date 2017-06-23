@@ -74,6 +74,14 @@ public class PropertyMapping extends ModelElement {
     private final String targetWriteAccessorName;
     private final ValueProvider targetReadAccessorProvider;
     private final Type targetType;
+
+    /**
+     * If this property is written using a builder, this type will represents the builder's type.  {@link #targetType}
+     * will always represent the type that's being built.
+     *
+     * If this property is not written using a builder, this value will be null.
+     */
+    private final Type targetWriteType;
     private final Assignment assignment;
     private final List<String> dependsOn;
     private final Assignment defaultValueAssignment;
@@ -110,6 +118,7 @@ public class PropertyMapping extends ModelElement {
         protected Accessor targetWriteAccessor;
         protected TargetWriteAccessorType targetWriteAccessorType;
         protected Type targetType;
+        protected Type targetWriteType;
         protected Accessor targetReadAccessor;
         protected String targetPropertyName;
 
@@ -147,22 +156,19 @@ public class PropertyMapping extends ModelElement {
 
         private Type determineTargetType() {
             // This is a bean mapping method, so we know the result is a declared type
-            DeclaredType resultType = (DeclaredType) (targetWriteAccessor.getBuilderType() != null
-                    ? targetWriteAccessor.getBuilderType()
-                    : method.getResultType().getTypeMirror());
-
+            DeclaredType writeType = method.getResultType().getWriteType();
 
             switch ( targetWriteAccessorType ) {
                 case ADDER:
                 case SETTER:
                     return ctx.getTypeFactory()
-                        .getSingleParameter( resultType, targetWriteAccessor )
+                        .getSingleParameter( writeType, targetWriteAccessor )
                         .getType();
                 case GETTER:
                 case FIELD:
                 default:
                     return ctx.getTypeFactory()
-                        .getReturnType( resultType, targetWriteAccessor );
+                        .getReturnType( writeType, targetWriteAccessor );
             }
         }
 
@@ -317,7 +323,7 @@ public class PropertyMapping extends ModelElement {
                 targetWriteAccessor.getSimpleName().toString(),
                 ValueProvider.of( targetReadAccessor ),
                 targetType,
-                assignment,
+                    targetWriteType, assignment,
                 dependsOn,
                 getDefaultValueAssignment( assignment )
             );
@@ -792,6 +798,7 @@ public class PropertyMapping extends ModelElement {
                 targetWriteAccessor.getSimpleName().toString(),
                 ValueProvider.of( targetReadAccessor ),
                 targetType,
+                targetWriteType,
                 assignment,
                 dependsOn,
                 null
@@ -856,6 +863,7 @@ public class PropertyMapping extends ModelElement {
                 targetWriteAccessor.getSimpleName().toString(),
                 ValueProvider.of( targetReadAccessor ),
                 targetType,
+                targetWriteType,
                 assignment,
                 dependsOn,
                 null
@@ -867,22 +875,23 @@ public class PropertyMapping extends ModelElement {
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name, String targetWriteAccessorName,
                             ValueProvider targetReadAccessorProvider,
-                            Type targetType, Assignment propertyAssignment,
-                            List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            Type targetType, Type targetWriteType, Assignment propertyAssignment,
+                            List<String> dependsOn, Assignment defaultValueAssignment) {
         this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
-            targetType, propertyAssignment, dependsOn, defaultValueAssignment
+            targetType, targetWriteType, propertyAssignment, dependsOn, defaultValueAssignment
         );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             ValueProvider targetReadAccessorProvider, Type targetType,
-                            Assignment assignment,
-        List<String> dependsOn, Assignment defaultValueAssignment) {
+                            Type targetWriteType, Assignment assignment,
+                            List<String> dependsOn, Assignment defaultValueAssignment) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
         this.targetReadAccessorProvider = targetReadAccessorProvider;
         this.targetType = targetType;
+        this.targetWriteType = targetWriteType;
 
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
@@ -910,6 +919,15 @@ public class PropertyMapping extends ModelElement {
 
     public Type getTargetType() {
         return targetType;
+    }
+
+    /**
+     *
+     * @return If this property is written using a builder, this method returns the builder's type.  {@link #targetType}
+     * will always represent the type that's being built.  If this property is not written using a builder, this value will be null.
+     */
+    public Type getTargetWriteType() {
+        return targetWriteType;
     }
 
     public Assignment getAssignment() {

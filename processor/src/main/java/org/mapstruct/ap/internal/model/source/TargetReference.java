@@ -37,12 +37,6 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
-import javax.lang.model.type.DeclaredType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 /**
  * This class describes the target side of a property mapping.
  * <p>
@@ -238,10 +232,8 @@ public class TargetReference {
                 );
             }
             else {
-                nextType = typeFactory.getSingleParameter(
-                        (DeclaredType) (toUse.getBuilderType() != null ? toUse.getBuilderType() : initial.getTypeMirror()),
-                    toUse
-                ).getType();
+                // With builders, the includingType is different when you are writing.
+                nextType = typeFactory.getSingleParameter( initial.getWriteType(), toUse ).getType();
             }
             return nextType;
         }

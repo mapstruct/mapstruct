@@ -18,14 +18,13 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
-import org.mapstruct.ap.internal.prism.MappedByBuilderPrism;
+import java.util.Set;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
-import javax.lang.model.type.TypeMirror;
-import java.util.Set;
+
+import org.mapstruct.ap.internal.prism.MappedByBuilderPrism;
 
 /**
  * This is an abstract implementation of an {@link Accessor} that provides the common implementation.
@@ -35,19 +34,11 @@ import java.util.Set;
 abstract class AbstractAccessor<T extends Element> implements Accessor {
 
     protected final T element;
-    private final TypeMirror builderType;
+    protected final boolean isBuilder;
 
     AbstractAccessor(T element) {
         this.element = element;
-        if (element.getEnclosingElement().getKind() == ElementKind.CLASS) {
-            Element enclosingClass = element.getEnclosingElement();
-
-            boolean isBuilder = enclosingClass.getEnclosingElement().getKind() == ElementKind.CLASS &&
-                    MappedByBuilderPrism.getInstanceOn(enclosingClass.getEnclosingElement()) != null;
-            this.builderType = isBuilder ? enclosingClass.asType() : null;
-        } else {
-            this.builderType = null;
-        }
+        this.isBuilder = MappedByBuilderPrism.getInstanceOn( element.getEnclosingElement().getEnclosingElement() ) != null;
     }
 
     @Override
@@ -66,12 +57,8 @@ abstract class AbstractAccessor<T extends Element> implements Accessor {
     }
 
     @Override
-    public TypeMirror getBuilderType() {
-        return builderType;
+    public boolean isBuilder() {
+        return isBuilder;
     }
 
-    @Override
-    public boolean isBuilder() {
-        return builderType != null;
-    }
 }

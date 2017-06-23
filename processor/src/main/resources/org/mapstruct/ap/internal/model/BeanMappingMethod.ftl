@@ -34,7 +34,7 @@
     </#if>
 
     <#if !existingInstanceMapping>
-        <#if resultType.builder><@includeModel object=resultType.builderOptions.builderClass/><#else><@includeModel object=resultType/></#if> ${resultName} = <#if resultType.builder><@includeModel object=resultType/>.${resultType.builderOptions.staticBuilderMethod}()<#elseif factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else>new <@includeModel object=resultType/>()</#if>;
+        <#if resultType.mappedByBuilder><@includeModel object=resultType.builderOptions.builderType/><#else><@includeModel object=resultType/></#if> ${resultName} = <#if resultType.mappedByBuilder><@includeModel object=resultType/>.${resultType.builderOptions.staticBuilderFactoryMethod}()<#elseif factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else>new <@includeModel object=resultType/>()</#if>;
 
     </#if>
     <#list beforeMappingReferencesWithMappingTarget as callback>
@@ -76,7 +76,7 @@
     	</#if>
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     </#list>
-    <#if resultType.builder>
+    <#if resultType.mappedByBuilder>
 
         return ${resultName}.${resultType.builderOptions.buildMethod}();
     <#elseif returnType.name != "void">
