@@ -18,14 +18,12 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.Executables;
+import org.mapstruct.ap.internal.util.Filters;
+import org.mapstruct.ap.internal.util.Nouns;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -42,13 +40,14 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.Filters;
-import org.mapstruct.ap.internal.util.Nouns;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -69,6 +68,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final TypeMirror typeMirror;
     private final TypeElement typeElement;
     private final List<Type> typeParameters;
+
+    private final BuilderOptions builderOptions;
 
     private final ImplementationType implementationType;
     private final Type componentType;
@@ -103,7 +104,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
                 TypeMirror typeMirror, TypeElement typeElement,
-                List<Type> typeParameters, ImplementationType implementationType, Type componentType,
+                List<Type> typeParameters, ImplementationType implementationType, BuilderOptions builderOptions, Type componentType,
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported) {
@@ -117,6 +118,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.typeParameters = typeParameters;
         this.componentType = componentType;
         this.implementationType = implementationType;
+
+        this.builderOptions = builderOptions;
 
         this.packageName = packageName;
         this.name = name;
@@ -193,6 +196,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return typeElement != null && typeElement.getModifiers().contains( Modifier.ABSTRACT );
     }
 
+    public BuilderOptions getBuilderOptions() {
+        return builderOptions;
+    }
+
     /**
      * @return this type's enum constants in case it is an enum, an empty list otherwise.
      */
@@ -255,6 +262,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return (typeMirror.getKind() == TypeKind.TYPEVAR);
     }
 
+    public boolean isBuilder() {
+        return builderOptions != null;
+    }
+
     /**
      * Whether this type is a sub-type of {@link java.util.stream.Stream}.
      *
@@ -299,6 +310,10 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         if ( getTypeMirror().getKind() == TypeKind.DECLARED ) {
             result.add( this );
+        }
+
+        if ( builderOptions != null ) {
+            result.add( builderOptions.getBuilderClass() );
         }
 
         if ( componentType != null ) {
@@ -354,6 +369,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             typeElement,
             typeParameters,
             implementationType,
+            builderOptions,
             componentType,
             packageName,
             name,
@@ -464,6 +480,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         Map<String, Accessor> result = new LinkedHashMap<String, Accessor>();
 
         for ( Accessor candidate : candidates ) {
+
             String targetPropertyName = Executables.getPropertyName( candidate );
 
             Accessor readAccessor = getPropertyReadAccessors().get( targetPropertyName );
@@ -480,6 +497,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
                 // first check if there's a setter method.
                 Accessor adderMethod = null;
+
                 if ( Executables.isSetterMethod( candidate )
                     // ok, the current accessor is a setter. So now the strategy determines what to use
                     && cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
@@ -519,12 +537,18 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private Type determineTargetType(Accessor candidate) {
-        Parameter parameter = typeFactory.getSingleParameter( (DeclaredType) typeMirror, candidate );
+        final DeclaredType includingType;
+        if (candidate.getBuilderType() != null) {
+            includingType = (DeclaredType) candidate.getBuilderType();
+        } else {
+            includingType = (DeclaredType) typeMirror;
+        }
+        Parameter parameter = typeFactory.getSingleParameter( includingType, candidate );
         if ( parameter != null ) {
             return parameter.getType();
         }
         else if ( Executables.isGetterMethod( candidate ) || Executables.isFieldAccessor( candidate ) ) {
-            return typeFactory.getReturnType( (DeclaredType) typeMirror, candidate );
+            return typeFactory.getReturnType( includingType, candidate );
         }
         return null;
     }
@@ -532,6 +556,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     private List<Accessor> getAllAccessors() {
         if ( allAccessors == null ) {
             allAccessors = Executables.getAllEnclosedAccessors( elementUtils, typeElement );
+            if (builderOptions != null) {
+                allAccessors.addAll(Executables.getAllEnclosedAccessors(elementUtils, builderOptions.getBuilderClass().getTypeElement()));
+            }
         }
 
         return allAccessors;

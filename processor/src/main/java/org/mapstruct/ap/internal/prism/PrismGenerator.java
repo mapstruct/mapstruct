@@ -18,9 +18,8 @@
  */
 package org.mapstruct.ap.internal.prism;
 
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlElementRef;
-
+import net.java.dev.hickory.prism.GeneratePrism;
+import net.java.dev.hickory.prism.GeneratePrisms;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
@@ -30,6 +29,7 @@ import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.MapMapping;
+import org.mapstruct.MappedByBuilder;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
 import org.mapstruct.Mapping;
@@ -42,8 +42,8 @@ import org.mapstruct.TargetType;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
 
-import net.java.dev.hickory.prism.GeneratePrism;
-import net.java.dev.hickory.prism.GeneratePrisms;
+import javax.xml.bind.annotation.XmlElementDecl;
+import javax.xml.bind.annotation.XmlElementRef;
 
 /**
  * Triggers the generation of prism types using <a href="https://java.net/projects/hickory">Hickory</a>.
@@ -54,6 +54,7 @@ import net.java.dev.hickory.prism.GeneratePrisms;
     @GeneratePrism(value = Mapper.class, publicAccess = true),
     @GeneratePrism(value = Mapping.class, publicAccess = true),
     @GeneratePrism(value = Mappings.class, publicAccess = true),
+    @GeneratePrism(value = MappedByBuilder.class, publicAccess = true),
     @GeneratePrism(value = IterableMapping.class, publicAccess = true),
     @GeneratePrism(value = BeanMapping.class, publicAccess = true),
     @GeneratePrism(value = MapMapping.class, publicAccess = true),

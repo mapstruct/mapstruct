@@ -18,12 +18,12 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
-import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeMirror;
+import java.util.Set;
 
 /**
  * This represents an Accessor that can be used for writing/reading a property to/from a bean.
@@ -61,4 +61,18 @@ public interface Accessor {
      * @return the underlying {@link Element}
      */
     Element getElement();
+
+    /**
+     * If this accessor is attached to a builder, then this method will return the type of the
+     * builder implementation.  This helps prevent the system from looking up information for this
+     * access based on the target class, instead of the builder class.
+     * @return The TypeMirror for the builder, if applicable.  Otherwise, returns null.
+     */
+    TypeMirror getBuilderType();
+
+    /**
+     * @return whether accessor is associated with a builder class vs the target class.
+     */
+    boolean isBuilder();
+
 }

@@ -18,15 +18,14 @@
  */
 package org.mapstruct.ap.internal.util;
 
-import static javax.lang.model.util.ElementFilter.fieldsIn;
-import static javax.lang.model.util.ElementFilter.methodsIn;
-import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import org.mapstruct.ap.internal.prism.AfterMappingPrism;
+import org.mapstruct.ap.internal.prism.BeforeMappingPrism;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.VariableElementAccessor;
+import org.mapstruct.ap.spi.AccessorNamingStrategy;
+import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
+import org.mapstruct.ap.spi.MethodType;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -38,15 +37,16 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Objects;
 
-import org.mapstruct.ap.internal.prism.AfterMappingPrism;
-import org.mapstruct.ap.internal.prism.BeforeMappingPrism;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
-import org.mapstruct.ap.internal.util.accessor.VariableElementAccessor;
-import org.mapstruct.ap.spi.AccessorNamingStrategy;
-import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
-import org.mapstruct.ap.spi.MethodType;
+import static javax.lang.model.util.ElementFilter.fieldsIn;
+import static javax.lang.model.util.ElementFilter.methodsIn;
+import static org.mapstruct.ap.internal.util.workarounds.SpecificCompilerWorkarounds.replaceTypeElementIfNecessary;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.
@@ -111,9 +111,13 @@ public class Executables {
     public static boolean isSetterMethod(Accessor method) {
         ExecutableElement executable = method.getExecutable();
         return executable != null
-            && isPublic( method )
-            && executable.getParameters().size() == 1
-            && ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.SETTER;
+                && isPublic(method)
+                && executable.getParameters().size() == 1
+                && (ACCESSOR_NAMING_STRATEGY.getMethodType(executable) == MethodType.SETTER || isBuilderSetterMethod(method));
+    }
+
+    private static boolean isBuilderSetterMethod(Accessor method) {
+        return method.isBuilder() && Objects.equals(method.getExecutable().getReturnType(), method.getBuilderType());
     }
 
     public static boolean isAdderMethod(Accessor method) {
@@ -138,8 +142,8 @@ public class Executables {
 
     public static String getPropertyName(Accessor accessor) {
         ExecutableElement executable = accessor.getExecutable();
-        return executable != null ? ACCESSOR_NAMING_STRATEGY.getPropertyName( executable ) :
-            accessor.getSimpleName().toString();
+        return (executable != null && !accessor.isBuilder()) ? ACCESSOR_NAMING_STRATEGY.getPropertyName(executable) :
+                accessor.getSimpleName().toString();
     }
 
     public static boolean isDefaultMethod(ExecutableElement method) {
