@@ -235,7 +235,9 @@ public abstract class GeneratedType extends ModelElement {
         }
 
         if ( typeToAdd.getPackageName() != null ) {
-            if ( typeToAdd.getPackageName().startsWith( JAVA_LANG_PACKAGE ) ) {
+            if ( typeToAdd.getPackageName().equals( JAVA_LANG_PACKAGE ) ) {
+                // only the types in the java.lang package are implicitly imported, the packages under java.lang
+                // like java.lang.management are not.
                 return false;
             }
 
