@@ -16,33 +16,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.nestedprop;
+package org.mapstruct.ap.test.builder.abstractBuilder;
 
-public class ImmutableTargetContainer {
-    private final String foo;
+public class ThingTwo {
+    private String foo;
+    private Integer bar;
 
-    ImmutableTargetContainer(ImmutableTargetContainer.Builder builder) {
-        this.foo = builder.foo;
+    public ThingTwo() {
     }
 
-    public static ImmutableTargetContainer.Builder builder() {
-        return new ImmutableTargetContainer.Builder();
+    public ThingTwo(String foo, Integer bar) {
+        this.foo = foo;
+        this.bar = bar;
     }
 
     public String getFoo() {
         return foo;
     }
 
-    public static class Builder {
-        private String foo;
+    public void setFoo(String foo) {
+        this.foo = foo;
+    }
 
-        public ImmutableTargetContainer build() {
-            return new ImmutableTargetContainer( this );
-        }
+    public Integer getBar() {
+        return bar;
+    }
 
-        public ImmutableTargetContainer.Builder foo(String foo) {
-            this.foo = foo;
-            return this;
-        }
+    public void setBar(Integer bar) {
+        this.bar = bar;
     }
 }

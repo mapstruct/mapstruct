@@ -16,33 +16,46 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.nestedprop;
+package org.mapstruct.ap.test.builder.abstractBuilder;
 
-public class ImmutableTargetContainer {
+import org.mapstruct.MappedByBuilder;
+
+@MappedByBuilder( ThingOne.ThingOneBuilder.class )
+public class ThingOne implements AbstractThing {
+
     private final String foo;
+    private final Integer bar;
 
-    ImmutableTargetContainer(ImmutableTargetContainer.Builder builder) {
-        this.foo = builder.foo;
+    public ThingOne(ThingOneBuilder thingOneBuilder) {
+        this.foo = thingOneBuilder.foo;
+        this.bar = thingOneBuilder.bar;
     }
 
-    public static ImmutableTargetContainer.Builder builder() {
-        return new ImmutableTargetContainer.Builder();
+    public static ThingOneBuilder builder() {
+        return new ThingOneBuilder();
     }
 
+    @Override
     public String getFoo() {
         return foo;
     }
 
-    public static class Builder {
-        private String foo;
+    @Override
+    public Integer getBar() {
+        return bar;
+    }
 
-        public ImmutableTargetContainer build() {
-            return new ImmutableTargetContainer( this );
+    public static class ThingOneBuilder extends AbstractThingBuilder<ThingOne> {
+        private Integer bar;
+
+        public ThingOneBuilder bar(Integer bar) {
+            this.bar = bar;
+            return this;
         }
 
-        public ImmutableTargetContainer.Builder foo(String foo) {
-            this.foo = foo;
-            return this;
+        @Override
+        ThingOne build() {
+            return new ThingOne(this);
         }
     }
 }

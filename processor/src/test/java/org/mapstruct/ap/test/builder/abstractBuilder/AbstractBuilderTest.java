@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractGenericTarget;
+package org.mapstruct.ap.test.builder.abstractBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,29 +28,24 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.factory.Mappers;
 
-@WithClasses({AbstractChildTarget.class, AbstractParentTarget.class, ChildSource.class, ImmutableChildTargetImpl.class,
-    ImmutableParentTargetImpl.class, MutableChildTargetImpl.class, MutableParentTargetImpl.class,
-    ParentSource.class})
+/**
+ * This set of tests verifies that an abstract builder (where the builder itself is subclassed and/or uses type
+ * parameters) works properly.  It uses a mapped target that has two properties, and then an abstract builder
+ * where one of the properties is written in the abstract base builder, and the other is written in the
+ * concrete subclass.
+ */
+@WithClasses({AbstractThing.class, AbstractThingBuilder.class, ThingOne.class, ThingTwo.class})
 @RunWith(AnnotationProcessorTestRunner.class)
 @Category(BuilderTests.class)
-public class AbstractTargetBuilderTest {
+public class AbstractBuilderTest {
 
     @Test
-    @WithClasses({AbstractTargetMapper.class})
-    public void testAbstractTargetMapperHappyPath() {
-        final AbstractTargetMapper mapper = Mappers.getMapper( AbstractTargetMapper.class );
-        final ParentSource parent = new ParentSource();
-        parent.setCount( 4 );
-        parent.setNested( new ChildSource( "Phineas" ) );
+    @WithClasses( ThingOneMapper.class )
+    public void testAbstractBuilderHappyPath() {
+        final ThingOneMapper mapper = Mappers.getMapper( ThingOneMapper.class );
+        final ThingOne thingOne = mapper.fromThingTwo( new ThingTwo("foo", 31) );
 
-        // transform
-        final AbstractParentTarget immutableTarget = mapper.toImmutable( parent );
-        final AbstractParentTarget mutableTarget = mapper.toMutable( parent );
-
-        assertThat( mutableTarget.getCount() ).isEqualTo( 4 );
-        assertThat( mutableTarget.getNested().getBar() ).isEqualTo( "Phineas" );
-
-        assertThat( immutableTarget.getCount() ).isEqualTo( 4 );
-        assertThat( immutableTarget.getNested().getBar() ).isEqualTo( "Phineas" );
+        assertThat( thingOne.getBar() ).isEqualTo( 31 );
+        assertThat( thingOne.getFoo() ).isEqualTo( "foo" );
     }
 }

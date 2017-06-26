@@ -26,6 +26,8 @@ import net.java.dev.hickory.prism.GeneratePrisms;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
+import org.mapstruct.BuilderFor;
+import org.mapstruct.BuilderOptions;
 import org.mapstruct.Context;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.InheritConfiguration;
@@ -55,6 +57,8 @@ import org.mapstruct.ValueMappings;
     @GeneratePrism(value = Mapping.class, publicAccess = true),
     @GeneratePrism(value = Mappings.class, publicAccess = true),
     @GeneratePrism(value = MappedByBuilder.class, publicAccess = true),
+    @GeneratePrism(value = BuilderFor.class, publicAccess = true),
+    @GeneratePrism(value = BuilderOptions.class, publicAccess = true),
     @GeneratePrism(value = IterableMapping.class, publicAccess = true),
     @GeneratePrism(value = BeanMapping.class, publicAccess = true),
     @GeneratePrism(value = MapMapping.class, publicAccess = true),

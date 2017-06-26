@@ -33,8 +33,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
 
-
-@WithClasses({ SimpleMutableSource.class, SimpleImmutableTarget.class  })
+@WithClasses({SimpleMutableSource.class, SimpleImmutableTarget.class})
 @RunWith(AnnotationProcessorTestRunner.class)
 @Category(BuilderTests.class)
 public class SimpleImmutableBuilderTest {
@@ -43,25 +42,25 @@ public class SimpleImmutableBuilderTest {
     public final GeneratedSource generatedSource = new GeneratedSource();
 
     @Test
-    @WithClasses( {SimpleBuilderMapper.class} )
-    public void testSimpleImmutableBuilder_HappyPath() {
+    @WithClasses({SimpleBuilderMapper.class})
+    public void testSimpleImmutableBuilderHappyPath() {
         final SimpleBuilderMapper mapper = Mappers.getMapper( SimpleBuilderMapper.class );
         final SimpleMutableSource source = new SimpleMutableSource();
         source.setAge( 3 );
         source.setFullName( "Bob" );
         final SimpleImmutableTarget targetObject = mapper.toImmutable( source );
         assertThat( targetObject.getAge() ).isEqualTo( 3 );
-        assertThat( targetObject.getName() ).isEqualTo( "Bob");
+        assertThat( targetObject.getName() ).isEqualTo( "Bob" );
     }
 
     @Test
-    @WithClasses( {SimpleInvalidBuilderMapper.class} )
+    @WithClasses({SimpleInvalidBuilderMapper.class})
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-            diagnostics = @Diagnostic(
-                    kind = javax.tools.Diagnostic.Kind.ERROR,
-                    type = SimpleInvalidBuilderMapper.class,
-                    line = 27,
-                    messageRegExp = "Unmapped target property: \"name\"."))
-    public void testSimpleImmutableBuilder_MissingProperty_FailsToCompile() {
+        diagnostics = @Diagnostic(
+            kind = javax.tools.Diagnostic.Kind.ERROR,
+            type = SimpleInvalidBuilderMapper.class,
+            line = 27,
+            messageRegExp = "Unmapped target property: \"name\"."))
+    public void testSimpleImmutableBuilderMissingPropertyFailsToCompile() {
     }
 }

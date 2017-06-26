@@ -16,21 +16,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractGenericTarget;
+package org.mapstruct;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
-public abstract class AbstractTargetMapper {
+import org.mapstruct.util.Experimental;
 
-    abstract ImmutableParentTargetImpl toImmutable(ParentSource parentSource);
-
-    abstract MutableParentTargetImpl toMutable(ParentSource parentSource);
+/**
+ * This annotation should be added to a builder that is responsible for producing immutable instances.  When this
+ * builder exists as a subclass of the target, this annotation is not required.
+ * <pre>
+ *     ImmutablePerson.Builder builder = ImmutablePerson.builder();
+ *     builder.name( source.getName() );
+ *     builder.age( source.getAge() );
+ *     return builder.build();
+ * </pre>
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.CLASS)
+@Experimental
+public @interface BuilderFor {
 
     /**
-     * This method allows mapstruct to successfully write to {@link ImmutableParentTargetImpl#nonGenericizedNested}
-     * by providing a concrete class to convert to.
+     * @return The class that this builder produces.
      */
-    abstract ImmutableChildTargetImpl toChild(ChildSource child);
+    Class value();
+
 }

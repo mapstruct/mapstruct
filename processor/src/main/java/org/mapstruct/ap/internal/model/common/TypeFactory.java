@@ -57,6 +57,8 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.internal.prism.BuilderForPrism;
+import org.mapstruct.ap.internal.prism.BuilderOptionsPrism;
 import org.mapstruct.ap.internal.prism.MappedByBuilderPrism;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
@@ -178,8 +180,6 @@ public class TypeFactory {
         Type componentType;
         boolean isImported;
 
-        final BuilderOptions builderOptions;
-
         if ( mirror.getKind() == TypeKind.DECLARED ) {
             DeclaredType declaredType = (DeclaredType) mirror;
 
@@ -196,15 +196,6 @@ public class TypeFactory {
             else {
                 packageName = null;
                 qualifiedName = name;
-            }
-
-            MappedByBuilderPrism builderPrism = MappedByBuilderPrism.getInstanceOn( typeElement );
-            if (builderPrism != null) {
-                builderOptions = new BuilderOptions(getType( builderPrism.builderClass() ), builderPrism.buildMethod(),
-                        builderPrism.staticBuilderFactoryMethod());
-            }
-            else {
-                builderOptions = null;
             }
 
             componentType = null;
@@ -228,23 +219,12 @@ public class TypeFactory {
                 packageName = elementUtils.getPackageOf( componentTypeElement ).getQualifiedName().toString();
                 qualifiedName = componentTypeElement.getQualifiedName().toString() + arraySuffix;
                 isImported = isImported( name, qualifiedName );
-
-                MappedByBuilderPrism builderPrism = MappedByBuilderPrism.getInstanceOn( componentTypeElement );
-                if (builderPrism != null) {
-                    builderOptions = new BuilderOptions( getType( builderPrism.builderClass() ),
-                            builderPrism.buildMethod(), builderPrism.staticBuilderFactoryMethod() );
-                }
-                else {
-                    builderOptions = null;
-                }
-
             }
             else {
                 name = mirror.toString();
                 packageName = null;
                 qualifiedName = name;
                 isImported = false;
-                builderOptions = null;
             }
 
             isEnumType = false;
@@ -261,8 +241,11 @@ public class TypeFactory {
             typeElement = null;
             componentType = null;
             isImported = false;
-            builderOptions = null;
         }
+
+        final Type builderType = getBuilderType( typeElement );
+        final TypeMirror buildsType = getBuildsType( typeElement );
+        final BuilderOptions builderOptions = builderType != null ? builderType.getBuilderOptions() : null;
 
         return new Type(
             typeUtils, elementUtils, this,
@@ -270,6 +253,8 @@ public class TypeFactory {
             typeElement,
             getTypeParameters( mirror, false ),
             implementationType,
+            builderType,
+            buildsType,
             builderOptions,
             componentType,
             packageName,
@@ -283,6 +268,50 @@ public class TypeFactory {
             isStreamType,
             isImported
         );
+    }
+
+    private TypeMirror getBuildsType(TypeElement typeElement) {
+        if ( typeElement != null ) {
+            BuilderForPrism prism = BuilderForPrism.getInstanceOn( typeElement );
+            if ( prism != null ) {
+                return prism.value();
+            }
+        }
+        return null;
+    }
+
+    private Type getBuilderType(TypeElement typeElement) {
+        if ( typeElement != null ) {
+            MappedByBuilderPrism prism = MappedByBuilderPrism.getInstanceOn( typeElement );
+            if ( prism != null ) {
+                // Generate builder options for both types
+                final TypeMirror builderTypeMirror = prism.value();
+
+                final BuilderOptions builderOptions = getBuilderOptions( null, typeElement,
+                    (TypeElement) typeUtils.asElement( builderTypeMirror ) );
+
+                return getType( builderTypeMirror )
+                    .withBuildsType( typeElement.asType(), builderOptions );
+
+            }
+        }
+        return null;
+    }
+
+    private BuilderOptions getBuilderOptions(BuilderOptions builderOptions, TypeElement... typeElement) {
+        if ( builderOptions == null ) {
+            builderOptions = new BuilderOptions(  );
+        }
+        for ( TypeElement element : typeElement ) {
+            if ( element != null ) {
+                final BuilderOptionsPrism builderOptionsPrism = BuilderOptionsPrism.getInstanceOn( element );
+                if ( builderOptionsPrism != null ) {
+                    builderOptions = builderOptions.with( builderOptionsPrism.buildMethod(),
+                        builderOptionsPrism.staticBuilderFactoryMethod() );
+                }
+            }
+        }
+        return builderOptions;
     }
 
     /**
@@ -469,7 +498,9 @@ public class TypeFactory {
                 implementationType.getTypeElement(),
                 getTypeParameters( mirror, true ),
                 null,
-                null,
+                implementationType.getBuilderType(),
+                implementationType.getBuildsType(),
+                implementationType.getBuilderOptions(),
                 null,
                 implementationType.getPackageName(),
                 implementationType.getName(),

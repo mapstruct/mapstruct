@@ -41,18 +41,7 @@ import org.mapstruct.util.Experimental;
 public @interface MappedByBuilder {
 
     /**
-     * @return The class used to build immutable instances of the target class.
+     * @return The class used to build immutable instances of this class.
      */
-    Class builderClass();
-
-    /**
-     * @return The name of a zero-parameter instance method on the 'builderClass' that returns immutable instances
-     * of the target class (the one with this annotation)
-     */
-    String buildMethod() default "build";
-
-    /**
-     * @return The name of a zero-arg static method on the target class that produces a new instance of the builder.
-     */
-    String staticBuilderFactoryMethod() default "builder";
+    Class value();
 }

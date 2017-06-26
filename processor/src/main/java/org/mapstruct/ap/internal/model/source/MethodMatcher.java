@@ -183,8 +183,7 @@ public class MethodMatcher {
 
     private boolean matchResultType(Type resultType, Map<TypeVariable, TypeMirror> genericTypesMap) {
 
-        Type candidateResultType = candidateMethod.getResultType();
-        TypeMirror candidateTypeMirror = candidateResultType.getMappingType();
+        TypeMirror candidateTypeMirror = candidateMethod.getResultType().getMappingType();
 
         if ( !isJavaLangObject( candidateTypeMirror ) && candidateTypeMirror.getKind() != TypeKind.VOID ) {
 

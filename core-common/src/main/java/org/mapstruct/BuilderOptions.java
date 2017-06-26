@@ -16,33 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.nestedprop;
+package org.mapstruct;
 
-public class ImmutableTargetContainer {
-    private final String foo;
+public @interface BuilderOptions {
 
-    ImmutableTargetContainer(ImmutableTargetContainer.Builder builder) {
-        this.foo = builder.foo;
-    }
+    /**
+     * @return The name of a zero-parameter instance method on the 'builderClass' that returns immutable instances
+     * of the target class (the one with this annotation)
+     */
+    String buildMethod() default "build";
 
-    public static ImmutableTargetContainer.Builder builder() {
-        return new ImmutableTargetContainer.Builder();
-    }
+    /**
+     * @return Whether or not the builder can be instantiated via public constructor.
+     */
+    boolean builderCanBeInstantiated() default false;
 
-    public String getFoo() {
-        return foo;
-    }
-
-    public static class Builder {
-        private String foo;
-
-        public ImmutableTargetContainer build() {
-            return new ImmutableTargetContainer( this );
-        }
-
-        public ImmutableTargetContainer.Builder foo(String foo) {
-            this.foo = foo;
-            return this;
-        }
-    }
+    /**
+     * @return The name of a zero-arg static method on the target class that produces a new instance of the builder.
+     */
+    String staticBuilderFactoryMethod() default "builder";
 }

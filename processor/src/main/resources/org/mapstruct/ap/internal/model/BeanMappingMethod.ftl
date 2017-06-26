@@ -34,7 +34,7 @@
     </#if>
 
     <#if !existingInstanceMapping>
-        <#if resultType.mappedByBuilder><@includeModel object=resultType.builderOptions.builderType/><#else><@includeModel object=resultType/></#if> ${resultName} = <#if resultType.mappedByBuilder><@includeModel object=resultType/>.${resultType.builderOptions.staticBuilderFactoryMethod}()<#elseif factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else>new <@includeModel object=resultType/>()</#if>;
+        <#if resultType.mappedByBuilder><@includeModel object=resultType.builderType/><#else><@includeModel object=resultType/></#if> ${resultName} = <#if resultType.mappedByBuilder><@includeModel object=resultType/>.${resultType.builderOptions.staticBuilderFactoryMethod}()<#elseif factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else>new <@includeModel object=resultType/>()</#if>;
 
     </#if>
     <#list beforeMappingReferencesWithMappingTarget as callback>

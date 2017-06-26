@@ -44,7 +44,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.MappedByBuilderPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.Nouns;
@@ -70,20 +69,29 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final TypeMirror typeMirror;
     private final TypeElement typeElement;
 
+    private final List<Type> typeParameters;
+
     /**
-     * If this type is responsible for building immutable instances of another Type, this TypeElement represents the
-     * immutable Type that's being produced by 'this' Type.
+     * If this Type is created by a builder, this points at the class used to build immutable instances.
+     *
+     * @see #builderOptions - Stored on the builder Type, contains options for how to construct builders.
+     */
+    private final Type builderType;
+
+    /**
+     * If this type is responsible for building immutable instances of another Type, this Type represents the
+     * immutable Type that's being built.
      *
      * @see #builderOptions - Stored on the immutable type, points back at the builder Type (this)
      */
-    private final TypeMirror builderTargetTypeElement;
-    private final List<Type> typeParameters;
+    private final TypeMirror buildsType;
+
 
     /**
      * If this Type is created by a builder, this variable stores information about how to
      * construct the builder and how to invoke the final "build"
      *
-     * @see #builderTargetTypeElement - Stored on the builder type, points back at the type being built (this)
+     * @see #buildsType - Stored on the builder type, points back at the type being built (this)
      */
     private final BuilderOptions builderOptions;
 
@@ -119,11 +127,11 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
-                TypeMirror typeMirror, TypeElement typeElement,
-                List<Type> typeParameters, ImplementationType implementationType, BuilderOptions builderOptions,
-                Type componentType, String packageName, String name, String qualifiedName,
-                boolean isInterface, boolean isEnumType, boolean isIterableType,
-                boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported) {
+                TypeMirror typeMirror, TypeElement typeElement, List<Type> typeParameters,
+                ImplementationType implementationType, Type builderType, TypeMirror buildsType, BuilderOptions builderOptions,
+                Type componentType, String packageName, String name, String qualifiedName, boolean isInterface,
+                boolean isEnumType, boolean isIterableType, boolean isCollectionType, boolean isMapType,
+                boolean isStreamType, boolean isImported) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
@@ -135,6 +143,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.componentType = componentType;
         this.implementationType = implementationType;
 
+        this.builderType = builderType;
+        this.buildsType = buildsType;
         this.builderOptions = builderOptions;
 
         this.packageName = packageName;
@@ -149,12 +159,6 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isStream = isStreamType;
         this.isImported = isImported;
         this.isVoid = typeMirror.getKind() == TypeKind.VOID;
-
-        if ( typeElement != null && MappedByBuilderPrism.getInstanceOn( typeElement.getEnclosingElement() ) != null ) {
-            this.builderTargetTypeElement = typeElement.getEnclosingElement().asType();
-        } else {
-            this.builderTargetTypeElement = null;
-        }
 
         if ( isEnumType ) {
             enumConstants = new ArrayList<String>();
@@ -179,21 +183,59 @@ public class Type extends ModelElement implements Comparable<Type> {
      * this should return the TypeElement that's being built.  Otherwise, it's the Type itself.
      */
     public TypeMirror getMappingType() {
-        return isBuilderClass() ? this.builderTargetTypeElement : this.typeMirror;
+        return isBuilderClass() ? this.buildsType : this.typeMirror;
+    }
+
+    /**
+     * @return the DeclaredType that is used to to "write" values when this Type is a mapping target.  In the case
+     * of an immutable builder, the "write" type can be different than the Type itself.
+     */
+    public DeclaredType getWriteType() {
+        return (DeclaredType) (builderType != null ? builderType.getTypeMirror() : typeMirror);
+    }
+
+    /**
+     * @return If this Type represents a builder, this returns the TypeMirror associated with the
+     * class being produced by the builder.
+     */
+    public TypeMirror getBuildsType() {
+        return buildsType;
+    }
+
+    /**
+     * @return If this Type must be created by a builder, this Type represents the builder class.
+     */
+    public Type getBuilderType() {
+        return builderType;
+    }
+
+    /**
+     * Method that returns the current Type, but with a different buildsType.  This is primarily used to
+     * avoid weird recursion when loading builders/buildees.
+     *
+     * @param buildsTypeMirror New value for this.buildsType
+     * @param builderOptions New value of this.builderOptions
+     * @return A new immutable copy of this type, with the new values.
+     */
+    public Type withBuildsType(TypeMirror buildsTypeMirror, BuilderOptions builderOptions) {
+        return new Type( typeUtils, elementUtils, typeFactory, typeMirror, typeElement,
+            typeParameters, implementationType, builderType, buildsTypeMirror, builderOptions,
+            componentType, packageName, name, qualifiedName, isInterface, isEnumType, isIterableType,
+            isCollectionType, isMapType, isStream, isImported );
     }
 
     /**
      * Whether or not this class is a builder.
      */
     public boolean isBuilderClass() {
-        return builderTargetTypeElement != null;
+        return buildsType != null;
     }
 
     /**
      * Whether or not this class is created using a builder.
      */
     public boolean isMappedByBuilder() {
-        return builderOptions != null;
+        return builderType != null;
     }
 
     public TypeMirror getTypeMirror() {
@@ -354,7 +396,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         // If this Type is created using a builder, we need to import the builder class
         if ( builderOptions != null ) {
-            result.add( builderOptions.getBuilderType() );
+            result.add( builderType );
         }
 
         if ( componentType != null ) {
@@ -410,6 +452,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             typeElement,
             typeParameters,
             implementationType,
+            builderType,
+            buildsType,
             builderOptions,
             componentType,
             packageName,
@@ -594,8 +638,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         if ( allAccessors == null ) {
             allAccessors = Executables.getAllEnclosedAccessors( elementUtils, typeElement );
             if (builderOptions != null) {
-                allAccessors.addAll( Executables.getAllEnclosedAccessors( elementUtils,
-                        builderOptions.getBuilderType().getTypeElement() ) );
+                allAccessors.addAll( Executables.getAllEnclosedAccessorsForBuilder( elementUtils,
+                        builderType.getTypeElement() ) );
             }
         }
 
@@ -900,14 +944,6 @@ public class Type extends ModelElement implements Comparable<Type> {
         else {
             return getTypeBound().getName();
         }
-    }
-
-    /**
-     * @return the DeclaredType that is used to to "write" values when this Type is a mapping target.  In the case
-     * of an immutable builder, the "write" type can be different than the Type itself.
-     */
-    public DeclaredType getWriteType() {
-        return (DeclaredType) (builderOptions != null ? builderOptions.getBuilderType().getTypeMirror() : typeMirror);
     }
 
     /**

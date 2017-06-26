@@ -924,7 +924,8 @@ public class PropertyMapping extends ModelElement {
     /**
      *
      * @return If this property is written using a builder, this method returns the builder's type.  {@link #targetType}
-     * will always represent the type that's being built.  If this property is not written using a builder, this value will be null.
+     * will always represent the type that's being built.  If this property is not written using a builder, this value
+     * will be null.
      */
     public Type getTargetWriteType() {
         return targetWriteType;

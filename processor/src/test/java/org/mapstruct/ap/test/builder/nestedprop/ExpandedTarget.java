@@ -21,7 +21,7 @@ package org.mapstruct.ap.test.builder.nestedprop;
 import org.mapstruct.MappedByBuilder;
 import org.mapstruct.ap.test.builder.simple.SimpleImmutableTarget;
 
-@MappedByBuilder(builderClass = ExpandedTarget.Builder.class)
+@MappedByBuilder( ExpandedTarget.Builder.class)
 public class ExpandedTarget {
     private final int count;
     private final SimpleImmutableTarget first;

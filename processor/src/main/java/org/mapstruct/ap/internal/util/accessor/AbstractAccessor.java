@@ -24,8 +24,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 
-import org.mapstruct.ap.internal.prism.MappedByBuilderPrism;
-
 /**
  * This is an abstract implementation of an {@link Accessor} that provides the common implementation.
  *
@@ -36,9 +34,13 @@ abstract class AbstractAccessor<T extends Element> implements Accessor {
     protected final T element;
     protected final boolean isBuilder;
 
-    AbstractAccessor(T element) {
+    AbstractAccessor(T element, boolean isBuilder) {
         this.element = element;
-        this.isBuilder = MappedByBuilderPrism.getInstanceOn( element.getEnclosingElement().getEnclosingElement() ) != null;
+        this.isBuilder = isBuilder;
+    }
+
+    AbstractAccessor(T element ) {
+        this( element, false );
     }
 
     @Override
