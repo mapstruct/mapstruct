@@ -54,11 +54,11 @@ public class SimpleImmutableBuilderTest {
     }
 
     @Test
-    @WithClasses({SimpleInvalidBuilderMapper.class})
+    @WithClasses({InvalidSimpleBuilderMapper.class})
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = @Diagnostic(
             kind = javax.tools.Diagnostic.Kind.ERROR,
-            type = SimpleInvalidBuilderMapper.class,
+            type = InvalidSimpleBuilderMapper.class,
             line = 27,
             messageRegExp = "Unmapped target property: \"name\"."))
     public void testSimpleImmutableBuilderMissingPropertyFailsToCompile() {
