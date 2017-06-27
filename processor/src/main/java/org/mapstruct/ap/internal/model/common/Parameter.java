@@ -18,16 +18,16 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import org.mapstruct.ap.internal.prism.ContextPrism;
+import org.mapstruct.ap.internal.prism.MappingTargetPrism;
+import org.mapstruct.ap.internal.prism.NamedPrism;
+import org.mapstruct.ap.internal.prism.TargetTypePrism;
+import org.mapstruct.ap.internal.util.Collections;
+
+import javax.lang.model.element.VariableElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import javax.lang.model.element.VariableElement;
-
-import org.mapstruct.ap.internal.prism.ContextPrism;
-import org.mapstruct.ap.internal.prism.MappingTargetPrism;
-import org.mapstruct.ap.internal.prism.TargetTypePrism;
-import org.mapstruct.ap.internal.util.Collections;
 
 /**
  * A parameter of a mapping method.
@@ -120,8 +120,11 @@ public class Parameter extends ModelElement {
     }
 
     public static Parameter forElementAndType(VariableElement element, Type parameterType) {
+
+        NamedPrism paramName = NamedPrism.getInstanceOn( element );
+
         return new Parameter(
-            element.getSimpleName().toString(),
+            paramName != null ? paramName.value() : element.getSimpleName().toString(),
             parameterType,
             MappingTargetPrism.getInstanceOn( element ) != null,
             TargetTypePrism.getInstanceOn( element ) != null,
