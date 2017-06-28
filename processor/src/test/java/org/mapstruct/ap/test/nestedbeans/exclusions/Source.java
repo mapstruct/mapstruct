@@ -47,8 +47,6 @@ class Source {
     public MyType date;
     public MyType calendar;
     public List<MyType> types;
-    //TODO Nested error messages do not work yet. I think that this should be solved as part of #1150
-    // (or we solve that one first :))
-    //public NestedMyType nestedMyType;
+    public NestedMyType nestedMyType;
     //CHECKSTYLE:ON
 }

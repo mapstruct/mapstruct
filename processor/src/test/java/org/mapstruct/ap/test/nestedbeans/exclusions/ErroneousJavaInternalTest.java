@@ -57,7 +57,13 @@ public class ErroneousJavaInternalTest {
                 line = 29,
                 messageRegExp = "Can't map property \".*List<.*MyType> types\" to \".*List<.*String> types\"\\" +
                     ". Consider to declare/implement a mapping method: \".*List<.*String> map\\(.*List<.*MyType> " +
-                    "value\\)\"\\.")
+                    "value\\)\"\\."),
+            @Diagnostic(type = ErroneousJavaInternalMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 29,
+                messageRegExp = "Can't map property \".*List<.*MyType> nestedMyType\\.deepNestedType\\.types\" to \"" +
+                    ".*List<.*String> nestedMyType\\.deepNestedType\\.types\"\\. Consider to declare/implement a " +
+                    "mapping method: \".*List<.*String> map\\(.*List<.*MyType> value\\)\"\\.")
         })
     @Test
     public void shouldNotNestIntoJavaPackageObjects() throws Exception {
