@@ -57,7 +57,8 @@ public class ErroneousMappingsTest {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 31,
-                messageRegExp = "Unknown property \"bar\" in return type. Did you mean \"foo\"?"),
+                messageRegExp = "Unknown property \"bar\" in result type " +
+                    "org.mapstruct.ap.test.erroneous.attributereference.Target. Did you mean \"foo\"?"),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
                 line = 33,

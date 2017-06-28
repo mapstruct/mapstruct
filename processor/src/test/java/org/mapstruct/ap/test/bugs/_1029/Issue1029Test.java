@@ -46,7 +46,8 @@ public class Issue1029Test {
         @Diagnostic(kind = Kind.WARNING, line = 50, type = ErroneousIssue1029Mapper.class,
             messageRegExp = "Unmapped target property: \"lastUpdated\"\\."),
         @Diagnostic(kind = Kind.ERROR, line = 55, type = ErroneousIssue1029Mapper.class,
-            messageRegExp = "Unknown property \"unknownProp\" in return type\\. Did you mean \"knownProp\"?")
+            messageRegExp = "Unknown property \"unknownProp\" in result type " +
+                "org.mapstruct.ap.test.bugs._1029.ErroneousIssue1029Mapper.Deck\\. Did you mean \"knownProp\"?")
     })
     public void reportsProperWarningsAndError() {
     }
