@@ -5,6 +5,7 @@ Andreas Gudian - https://github.com/agudian
 Christian Schuster - https://github.com/chschu
 Christophe Labouisse - https://github.com/ggtools
 Ciaran Liedeman - https://github.com/cliedeman
+Cornelius Dirmeier - https://github.com/cornzy
 Dilip Krishnan - https://github.com/dilipkrish
 Dmytro Polovinkin - https://github.com/navpil
 Ewald Volkert - https://github.com/eforest
