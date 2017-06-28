@@ -375,14 +375,16 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return {@code true} if and only if this type is assignable to the given other type.
      */
-    // TODO This doesn't yet take wild card types into account; e.g. ? extends Integer wouldn't be assignable to Number
-    // atm.
+    // TODO This doesn't yet take super wild card types into account;
+    // e.g. Number wouldn't be assignable to ? super Number atm. (is there any practical use case)
     public boolean isAssignableTo(Type other) {
         if ( equals( other ) ) {
             return true;
         }
 
-        return typeUtils.isAssignable( typeMirror, other.typeMirror );
+        TypeMirror typeMirrorToMatch = isWildCardExtendsBound() ? getTypeBound().typeMirror : typeMirror;
+
+        return typeUtils.isAssignable( typeMirrorToMatch, other.typeMirror );
     }
 
     /**
@@ -560,7 +562,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             // this is a collection, so this can be done always
             if ( !collectionProperty.getTypeParameters().isEmpty() ) {
                 // there's only one type arg to a collection
-                TypeMirror typeArg = collectionProperty.getTypeParameters().get( 0 ).getTypeMirror();
+                TypeMirror typeArg = collectionProperty.getTypeParameters().get( 0 ).getTypeBound().getTypeMirror();
                 // now, look for a method that
                 // 1) starts with add,
                 // 2) and has typeArg as one and only arg

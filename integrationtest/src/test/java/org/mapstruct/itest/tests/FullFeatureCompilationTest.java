@@ -69,6 +69,7 @@ public class FullFeatureCompilationTest {
             switch ( processorType ) {
                 case ORACLE_JAVA_6:
                     additionalExcludes.add( "org/mapstruct/ap/test/abstractclass/generics/*.java" );
+                    additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1170/*.java" );
                 case ECLIPSE_JDT_JAVA_6:
                 case ORACLE_JAVA_7:
                 case ECLIPSE_JDT_JAVA_7:
