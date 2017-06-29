@@ -825,6 +825,12 @@ When generating the implementation of a mapping method, MapStruct will apply the
 In order to stop MapStruct from generating automatic sub-mapping methods, one can use `@Mapper( disableSubMappingMethodsGeneration = true )`.
 ====
 
+[NOTE]
+====
+During the generation of automatic sub-mapping methods <<shared-configurations>> will not be taken into consideration, yet.
+Follow issue https://github.com/mapstruct/mapstruct/issues/1086[#1086] for more information.
+====
+
 include::controlling-nested-bean-mappings.asciidoc[]
 
 [[invoking-other-mappers]]
