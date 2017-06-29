@@ -19,9 +19,11 @@
 package org.mapstruct.ap.internal.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.junit.Test;
 
@@ -29,6 +31,9 @@ import org.junit.Test;
  * @author Filip Hrisafov
  */
 public class StringsTest {
+
+    private static Locale TURKEY_LOCALE = getTurkeyLocale();
+
     @Test
     public void testCapitalize() throws Exception {
         assertThat( Strings.capitalize( null ) ).isNull();
@@ -109,6 +114,43 @@ public class StringsTest {
             Arrays.asList( "fullAge", "fullName", "address", "status" )
         );
         assertThat( mostSimilarWord ).isEqualTo( "fullName" );
+    }
+    @Test
+    public void capitalizeEnglish() {
+        Locale.setDefault(Locale.ENGLISH);
+        String international = Strings.capitalize("international");
+        assertEquals("International", international);
+    }
+
+    @Test
+    public void decapitalizeEnglish() {
+        Locale.setDefault(Locale.ENGLISH);
+        String international = Strings.decapitalize("International");
+        assertEquals("international", international);
+    }
+
+    @Test
+    public void capitalizeTurkish() {
+        Locale.setDefault(TURKEY_LOCALE);
+        String international = Strings.capitalize("international");
+        assertEquals("International", international);
+    }
+
+    @Test
+    public void decapitalizeTurkish() {
+        Locale.setDefault(TURKEY_LOCALE);
+        String international = Strings.decapitalize("International");
+        assertEquals("international", international);
+    }
+
+    private static Locale getTurkeyLocale() {
+        Locale[] availableLocales = Locale.getAvailableLocales();
+        for (Locale locale : availableLocales) {
+            if (locale.getLanguage().equals("tr")) {
+                return locale;
+            }
+        }
+        throw new IllegalStateException("Can't find Turkey locale.");
     }
 
 }
