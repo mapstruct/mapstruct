@@ -324,7 +324,9 @@ public class PropertyMapping extends ModelElement {
          */
         private void reportCannotCreateMapping() {
             if ( method instanceof ForgedMethod && ( (ForgedMethod) method ).getHistory() != null ) {
-                ForgedMethodHistory history =  ( (ForgedMethod) method ).getHistory();
+                // The history that is part of the ForgedMethod misses the information from the current right hand
+                // side. Therefore we need to extract the most relevant history and use that in the error reporting.
+                ForgedMethodHistory history = getForgedMethodHistory( rightHandSide );
                 reportCannotCreateMapping(
                     method,
                     history.createSourcePropertyErrorMessage(),

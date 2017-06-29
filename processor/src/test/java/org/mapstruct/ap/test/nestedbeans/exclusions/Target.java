@@ -43,6 +43,6 @@ class Target {
     public Date date;
     public GregorianCalendar calendar;
     public List<String> types;
-    //public TargetNested nestedMyType;
+    public TargetNested nestedMyType;
     //CHECKSTYLE:ON
 }
