@@ -367,9 +367,10 @@ public class TargetReference {
         abstract void report();
 
         protected void printErrorMessage(Message message, Object... args) {
-            Object[] errorArgs = new Object[args.length + 1];
+            Object[] errorArgs = new Object[args.length + 2];
             errorArgs[0] = mapping.getTargetName();
-            System.arraycopy( args, 0, errorArgs, 1, args.length );
+            errorArgs[1] = method.getResultType();
+            System.arraycopy( args, 0, errorArgs, 2, args.length );
             messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
                 message, errorArgs
             );
