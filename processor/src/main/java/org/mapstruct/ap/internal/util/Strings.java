@@ -20,7 +20,11 @@ package org.mapstruct.ap.internal.util;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * Helper class for dealing with strings.
@@ -86,11 +90,11 @@ public class Strings {
     }
 
     public static String capitalize(String string) {
-        return string == null ? null : string.substring( 0, 1 ).toUpperCase( Locale.ENGLISH ) + string.substring( 1 );
+        return string == null ? null : string.substring( 0, 1 ).toUpperCase( Locale.ROOT ) + string.substring( 1 );
     }
 
     public static String decapitalize(String string) {
-        return string == null ? null : string.substring( 0, 1 ).toLowerCase( Locale.ENGLISH ) + string.substring( 1 );
+        return string == null ? null : string.substring( 0, 1 ).toLowerCase( Locale.ROOT ) + string.substring( 1 );
     }
 
     public static String join(Iterable<?> iterable, String separator) {
