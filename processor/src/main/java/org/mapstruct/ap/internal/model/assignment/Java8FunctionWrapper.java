@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model.assignment;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
@@ -53,7 +54,7 @@ public class Java8FunctionWrapper extends AssignmentWrapper {
     /**
      *
      * @return {@code true} if the wrapped assignment is
-     * {@link org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType#DIRECT}, {@code false} otherwise
+     * {@link Assignment.AssignmentType#DIRECT}, {@code false} otherwise
      */
     public boolean isDirectAssignment() {
         return getAssignment().getType() == AssignmentType.DIRECT;

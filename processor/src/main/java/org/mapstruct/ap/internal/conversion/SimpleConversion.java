@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.TypeConversion;
-import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.Type;

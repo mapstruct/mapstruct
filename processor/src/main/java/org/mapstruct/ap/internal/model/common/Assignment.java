@@ -16,12 +16,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model.assignment;
+package org.mapstruct.ap.internal.model.common;
 
 import java.util.List;
 import java.util.Set;
-
-import org.mapstruct.ap.internal.model.common.Type;
 
 /**
  * Assignment represents all kind of manners a source can be assigned to a target.

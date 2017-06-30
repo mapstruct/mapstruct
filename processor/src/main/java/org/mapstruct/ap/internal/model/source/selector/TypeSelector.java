@@ -23,6 +23,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -59,7 +60,11 @@ public class TypeSelector implements MethodSelector {
         List<ParameterBinding> availableBindings;
         if ( sourceTypes.isEmpty() ) {
             // if no source types are given, we have a factory or lifecycle method
-            availableBindings = getAvailableParameterBindingsFromMethod( mappingMethod, targetType );
+            availableBindings = getAvailableParameterBindingsFromMethod(
+                mappingMethod,
+                targetType,
+                criteria.getAssignment()
+            );
         }
         else {
             availableBindings = getAvailableParameterBindingsFromSourceTypes( sourceTypes, targetType, mappingMethod );
@@ -81,11 +86,15 @@ public class TypeSelector implements MethodSelector {
         return result;
     }
 
-    private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType) {
-        List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( method.getParameters().size() + 2 );
+    private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType,
+        Assignment assignment) {
+        List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( method.getParameters().size() + 3 );
 
         availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
         addMappingTargetAndTargetTypeBindings( availableParams, targetType );
+        if ( assignment != null ) {
+            availableParams.add( ParameterBinding.fromAssignment( assignment ) );
+        }
 
         return availableParams;
     }

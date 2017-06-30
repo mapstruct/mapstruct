@@ -23,7 +23,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 import java.util.Collection;
 import java.util.List;
 
-import org.mapstruct.ap.internal.model.assignment.Assignment;
+import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.common.Type;

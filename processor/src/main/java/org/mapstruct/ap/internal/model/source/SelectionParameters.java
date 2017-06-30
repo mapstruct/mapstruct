@@ -18,9 +18,12 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import java.util.Collections;
 import java.util.List;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
+
+import org.mapstruct.ap.internal.model.common.Assignment;
 
 /**
  * Holding parameters common to the selection process, common to IterableMapping, BeanMapping, PropertyMapping and
@@ -34,13 +37,20 @@ public class SelectionParameters {
     private final List<String> qualifyingNames;
     private final TypeMirror resultType;
     private final Types typeUtils;
+    private final Assignment assignment;
 
     public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
         Types typeUtils) {
+        this( qualifiers, qualifyingNames, resultType, typeUtils, null );
+    }
+
+    private SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
+        Types typeUtils, Assignment assignment) {
         this.qualifiers = qualifiers;
         this.qualifyingNames = qualifyingNames;
         this.resultType = resultType;
         this.typeUtils = typeUtils;
+        this.assignment = assignment;
     }
 
     /**
@@ -66,6 +76,13 @@ public class SelectionParameters {
      */
     public TypeMirror getResultType() {
         return resultType;
+    }
+
+    /**
+     * @return assignment used for further selection of an appropriate factory method
+     */
+    public Assignment getAssignment() {
+        return assignment;
     }
 
     @Override
@@ -94,6 +111,10 @@ public class SelectionParameters {
         }
 
         if ( !equals( this.qualifyingNames, other.qualifyingNames ) ) {
+            return false;
+        }
+
+        if ( !equals( this.assignment, other.assignment ) ) {
             return false;
         }
 
@@ -132,5 +153,15 @@ public class SelectionParameters {
         else {
             return mirror2 != null && typeUtils.isSameType( mirror1, mirror2 );
         }
+    }
+
+    public static SelectionParameters forAssignment(Assignment assignment) {
+        return new SelectionParameters(
+            Collections.<TypeMirror>emptyList(),
+            Collections.<String>emptyList(),
+            null,
+            null,
+            assignment
+        );
     }
 }

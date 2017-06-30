@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model.assignment;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 

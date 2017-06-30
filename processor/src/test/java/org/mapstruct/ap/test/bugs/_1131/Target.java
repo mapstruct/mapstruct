@@ -16,37 +16,41 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model.assignment;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import org.mapstruct.ap.internal.model.common.Assignment;
-import org.mapstruct.ap.internal.model.common.Type;
+package org.mapstruct.ap.test.bugs._1131;
 
 /**
- *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-public class EnumConstantWrapper extends AssignmentWrapper {
+public class Target {
 
-    private final Type enumType;
+    public static class Nested {
+        private final String internal;
+        private String property;
 
-    public EnumConstantWrapper(Assignment decoratedAssignment, Type enumType ) {
-        super( decoratedAssignment, false );
-        this.enumType = enumType;
+        public Nested(String internal) {
+            this.internal = internal;
+        }
+
+        public String getInternal() {
+            return internal;
+        }
+
+        public String getProperty() {
+            return property;
+        }
+
+        public void setProperty(String property) {
+            this.property = property;
+        }
     }
 
-    @Override
-    public Set<Type> getImportTypes() {
-        Set<Type> imported = new HashSet<Type>( getAssignment().getImportTypes() );
-        imported.add( enumType );
-        return imported;
+    private Nested nested;
+
+    public Nested getNested() {
+        return nested;
     }
 
-    @Override
-    public String toString() {
-        return enumType.getName() + "." + getAssignment();
+    public void setNested(Nested nested) {
+        this.nested = nested;
     }
-
 }

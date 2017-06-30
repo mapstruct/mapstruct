@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
 import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
@@ -34,11 +34,11 @@ import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
-import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
+import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -393,7 +393,8 @@ public class PropertyMapping extends ModelElement {
                         targetPropertyName
                     );
                 }
-                Assignment factory = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
+                Assignment factory = ctx.getMappingResolver()
+                    .getFactoryMethod( method, targetType, SelectionParameters.forAssignment( rightHandSide ) );
                 return new UpdateWrapper( rhs, method.getThrownTypes(), factory, isFieldAssignment(),  targetType,
                     !rhs.isSourceReferenceParameter() );
             }
