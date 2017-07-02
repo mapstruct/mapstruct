@@ -111,7 +111,7 @@ public class Decorator extends GeneratedType {
 
         public Decorator build() {
             String implementationName = implName.replace( Mapper.CLASS_NAME_PLACEHOLDER,
-                                                          mapperElement.getSimpleName() );
+                                                          Mapper.getFlatName( mapperElement ) );
 
             Type decoratorType = typeFactory.getType( decoratorPrism.value() );
             DecoratorConstructor decoratorConstructor = new DecoratorConstructor(

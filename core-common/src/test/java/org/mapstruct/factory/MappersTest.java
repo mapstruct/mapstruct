@@ -19,9 +19,11 @@
 package org.mapstruct.factory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.mapstruct.test.model.Foo;
+import org.mapstruct.test.model.SomeClass;
 
 /**
  * Unit test for {@link Mappers}.
@@ -35,5 +37,15 @@ public class MappersTest {
 
         Foo mapper = Mappers.getMapper( Foo.class );
         assertThat( mapper ).isNotNull();
+    }
+
+    /**
+     * Checks if an implementation of a nested mapper can be found. This is a special case since
+     * it is named
+     */
+    @Test
+    public void findsNestedMapperImpl() throws Exception {
+        assertNotNull( Mappers.getMapper( SomeClass.Foo.class ) );
+        assertNotNull( Mappers.getMapper( SomeClass.NestedClass.Foo.class ) );
     }
 }
