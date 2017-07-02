@@ -309,8 +309,8 @@ public class Type extends ModelElement implements Comparable<Type> {
             result.addAll( parameter.getImportTypes() );
         }
 
-        if ( boundingBase != null ) {
-            result.addAll( boundingBase.getImportTypes() );
+        if ( ( isWildCardExtendsBound() || isWildCardSuperBound() ) && getTypeBound() != null ) {
+            result.addAll( getTypeBound().getImportTypes() );
         }
 
         return result;

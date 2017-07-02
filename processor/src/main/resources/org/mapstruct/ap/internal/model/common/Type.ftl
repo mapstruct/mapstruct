@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.common.Type" -->
 
 <#--
 
