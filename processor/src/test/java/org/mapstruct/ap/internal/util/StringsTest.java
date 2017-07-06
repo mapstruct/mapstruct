@@ -22,13 +22,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Filip Hrisafov
  */
 public class StringsTest {
+
+    private static final Locale TURKEY_LOCALE = getTurkeyLocale();
+    private Locale defaultLocale;
+
+    @Before
+    public void before() {
+        defaultLocale = Locale.getDefault();
+    }
+
+    @After
+    public void after() {
+        Locale.setDefault( defaultLocale );
+    }
+
     @Test
     public void testCapitalize() throws Exception {
         assertThat( Strings.capitalize( null ) ).isNull();
@@ -109,6 +126,44 @@ public class StringsTest {
             Arrays.asList( "fullAge", "fullName", "address", "status" )
         );
         assertThat( mostSimilarWord ).isEqualTo( "fullName" );
+    }
+
+    @Test
+    public void capitalizeEnglish() {
+        Locale.setDefault( Locale.ENGLISH );
+        String international = Strings.capitalize( "international" );
+        assertThat( international ).isEqualTo( "International" );
+    }
+
+    @Test
+    public void decapitalizeEnglish() {
+        Locale.setDefault( Locale.ENGLISH );
+        String international = Strings.decapitalize( "International" );
+        assertThat( international ).isEqualTo( "international" );
+    }
+
+    @Test
+    public void capitalizeTurkish() {
+        Locale.setDefault( TURKEY_LOCALE );
+        String international = Strings.capitalize( "international" );
+        assertThat( international ).isEqualTo( "International" );
+    }
+
+    @Test
+    public void decapitalizeTurkish() {
+        Locale.setDefault( TURKEY_LOCALE );
+        String international = Strings.decapitalize( "International" );
+        assertThat( international ).isEqualTo( "international" );
+    }
+
+    private static Locale getTurkeyLocale() {
+        Locale[] availableLocales = Locale.getAvailableLocales();
+        for ( Locale locale : availableLocales ) {
+            if ( locale.getLanguage().equals( "tr" ) ) {
+                return locale;
+            }
+        }
+        throw new IllegalStateException( "Can't find Turkey locale." );
     }
 
 }
