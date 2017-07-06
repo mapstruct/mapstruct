@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.bugs._543;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.bugs._543.dto.Source;
@@ -25,6 +26,7 @@ import org.mapstruct.ap.test.bugs._543.dto.Target;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 /**
  * @author Filip Hrisafov
@@ -39,7 +41,11 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 })
 public class Issue543Test {
 
+    @Rule
+    public GeneratedSource generatedSource = new GeneratedSource();
+
     @Test
     public void shouldCompile() {
+        generatedSource.forMapper( Issue543Mapper.class ).containsImportFor( Source.class );
     }
 }
