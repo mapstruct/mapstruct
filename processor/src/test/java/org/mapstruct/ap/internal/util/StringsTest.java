@@ -157,13 +157,12 @@ public class StringsTest {
     }
 
     private static Locale getTurkeyLocale() {
-        Locale[] availableLocales = Locale.getAvailableLocales();
-        for ( Locale locale : availableLocales ) {
-            if ( locale.getLanguage().equals( "tr" ) ) {
-                return locale;
-            }
-        }
-        throw new IllegalStateException( "Can't find Turkey locale." );
-    }
+        Locale turkeyLocale = Locale.forLanguageTag( "tr" );
 
+        if ( turkeyLocale == null ) {
+            throw new IllegalStateException( "Can't find Turkey locale." );
+        }
+
+        return turkeyLocale;
+    }
 }
