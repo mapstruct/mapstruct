@@ -1,6 +1,7 @@
 ﻿Contributors
 ============
 
+Alexandr Shalugin - https://github.com/shalugin
 Andreas Gudian - https://github.com/agudian
 Christian Schuster - https://github.com/chschu
 Christophe Labouisse - https://github.com/ggtools
