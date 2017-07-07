@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model;
 import java.util.List;
 import java.util.SortedSet;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -153,7 +154,7 @@ public class Mapper extends GeneratedType {
         }
 
         public Mapper build() {
-            String implementationName = implName.replace( CLASS_NAME_PLACEHOLDER, element.getSimpleName() ) +
+            String implementationName = implName.replace( CLASS_NAME_PLACEHOLDER, getFlatName( element ) ) +
                     ( decorator == null ? "" : "_" );
 
             String elementPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
@@ -198,5 +199,21 @@ public class Mapper extends GeneratedType {
     @Override
     protected String getTemplateName() {
         return getTemplateNameForClass( GeneratedType.class );
+    }
+
+    /**
+     * Returns the same as {@link Class#getName()} but without the package declaration.
+     */
+    public static String getFlatName(TypeElement element) {
+        if (!(element.getEnclosingElement() instanceof TypeElement)) {
+            return element.getSimpleName().toString();
+        }
+        StringBuilder nameBuilder = new StringBuilder( element.getSimpleName().toString() );
+        for (Element enclosing = element.getEnclosingElement(); enclosing instanceof TypeElement; enclosing =
+                enclosing.getEnclosingElement()) {
+            nameBuilder.insert( 0, '$' );
+            nameBuilder.insert( 0, enclosing.getSimpleName().toString() );
+        }
+        return nameBuilder.toString();
     }
 }

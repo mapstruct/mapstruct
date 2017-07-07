@@ -16,35 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.factory;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Test;
-import org.mapstruct.test.model.Foo;
-import org.mapstruct.test.model.SomeClass;
+package org.mapstruct.test.model;
 
 /**
- * Unit test for {@link Mappers}.
+ * The sole purpose of this class is to have a place to nest the Foo interface.
  *
- * @author Gunnar Morling
+ * @author Tillmann Gaida
  */
-public class MappersTest {
+public class SomeClass {
+    public interface Foo { }
 
-    @Test
-    public void shouldReturnImplementationInstance() {
-
-        Foo mapper = Mappers.getMapper( Foo.class );
-        assertThat( mapper ).isNotNull();
-    }
-
-    /**
-     * Checks if an implementation of a nested mapper can be found. This is a special case since
-     * it is named
-     */
-    @Test
-    public void findsNestedMapperImpl() throws Exception {
-        assertThat( Mappers.getMapper( SomeClass.Foo.class ) ).isNotNull();
-        assertThat( Mappers.getMapper( SomeClass.NestedClass.Foo.class ) ).isNotNull();
+    public static class NestedClass {
+        public interface Foo { }
     }
 }
