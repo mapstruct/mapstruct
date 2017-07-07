@@ -18,28 +18,30 @@
  */
 package org.mapstruct.ap.test.bugs._611;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author Tillmann Gaida
  */
 @IssueKey("611")
 @RunWith(AnnotationProcessorTestRunner.class)
+@WithClasses({
+    SomeClass.class,
+    SomeOtherClass.class
+})
 public class Issue611Test {
     /**
      * Checks if an implementation of a nested mapper can be loaded at all.
      */
     @Test
-    @WithClasses(SomeClass.class)
-    public void mapperIsFound() throws Exception {
-        assertNotNull( SomeClass.InnerMapper.INSTANCE );
+    public void mapperIsFound() {
+        assertThat( SomeClass.InnerMapper.INSTANCE ).isNotNull();
     }
 
     /**
@@ -47,9 +49,8 @@ public class Issue611Test {
      * nested class.
      */
     @Test
-    @WithClasses(SomeClass.class)
-    public void mapperNestedInsideNestedClassIsFound() throws Exception {
-        assertNotNull( SomeClass.SomeInnerClass.InnerMapper.INSTANCE );
+    public void mapperNestedInsideNestedClassIsFound() {
+        assertThat( SomeClass.SomeInnerClass.InnerMapper.INSTANCE ).isNotNull();
     }
 
     /**
@@ -57,15 +58,14 @@ public class Issue611Test {
      * in the same package.
      */
     @Test
-    @WithClasses({ SomeClass.class, SomeOtherClass.class })
-    public void rightMapperIsFound() throws Exception {
+    public void rightMapperIsFound() {
         SomeClass.InnerMapper.Source source1 = new SomeClass.InnerMapper.Source();
         SomeOtherClass.InnerMapper.Source source2 = new SomeOtherClass.InnerMapper.Source();
 
         SomeClass.InnerMapper.Target target1 = SomeClass.InnerMapper.INSTANCE.toTarget( source1 );
         SomeOtherClass.InnerMapper.Target target2 = SomeOtherClass.InnerMapper.INSTANCE.toTarget( source2 );
 
-        assertTrue( target1 instanceof SomeClass.InnerMapper.Target );
-        assertTrue( target2 instanceof SomeOtherClass.InnerMapper.Target );
+        assertThat( target1 ).isExactlyInstanceOf( SomeClass.InnerMapper.Target.class );
+        assertThat( target2 ).isExactlyInstanceOf( SomeOtherClass.InnerMapper.Target.class );
     }
 }

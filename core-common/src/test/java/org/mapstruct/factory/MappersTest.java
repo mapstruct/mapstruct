@@ -19,7 +19,6 @@
 package org.mapstruct.factory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.mapstruct.test.model.Foo;
@@ -45,7 +44,7 @@ public class MappersTest {
      */
     @Test
     public void findsNestedMapperImpl() throws Exception {
-        assertNotNull( Mappers.getMapper( SomeClass.Foo.class ) );
-        assertNotNull( Mappers.getMapper( SomeClass.NestedClass.Foo.class ) );
+        assertThat( Mappers.getMapper( SomeClass.Foo.class ) ).isNotNull();
+        assertThat( Mappers.getMapper( SomeClass.NestedClass.Foo.class ) ).isNotNull();
     }
 }
