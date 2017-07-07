@@ -13,7 +13,6 @@ Ewald Volkert - https://github.com/eforest
 Filip Hrisafov - https://github.com/filiphr
 Gunnar Morling - https://github.com/gunnarmorling
 Ivo Smid - https://github.com/bedla
-Markus Heberling - https://github.com/tisoft
 Michael Pardo - https://github.com/pardom
 Mustafa Caylak - https://github.com/luxmeter
 Oliver Ehrenmüller - https://github.com/greuelpirat
@@ -28,6 +27,7 @@ Sebastian Hasait - https://github.com/shasait
 Sean Huang - https://github.com/seanjob
 Sjaak Derksen - https://github.com/sjaakd
 Stefan May - https://github.com/osthus-sm
+Tillmann Gaida - https://github.com/Tillerino
 Timo Eckhardt - https://github.com/timoe
 Tomek Gubala - https://github.com/vgtworld
 Vincent Alexander Beelte - https://github.com/grandmasterpixel
