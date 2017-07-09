@@ -35,6 +35,9 @@
 
     <properties>
         <prism.directory>${project.build.directory}/generated-sources/prims</prism.directory>
+        <!-- Netbeans has a problem when we use late binding with @ in the surefire arg line.
+            Therefore we set this empty property here-->
+        <jacocoArgLine />
     </properties>
 
     <dependencies>
@@ -149,7 +152,9 @@
                 <configuration>
                     <!-- to get jacoco report we need to set argLine in surefire,
                         without this snippet the jacoco argLine is lost -->
-                    <argLine>@{argLine} -Xms1024m -Xmx3072m</argLine>
+                    <!-- The property must be prefixed with @ and not $. The reason for this is the usage of late
+                    binding of variables by other plugins (jacoco in this case)-->
+                    <argLine>@{jacocoArgLine} -Xms1024m -Xmx3072m</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -308,6 +313,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <propertyName>jacocoArgLine</propertyName>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
