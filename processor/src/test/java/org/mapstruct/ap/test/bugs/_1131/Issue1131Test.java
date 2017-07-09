@@ -33,13 +33,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @IssueKey("1131")
 @WithClasses({
     Issue1131Mapper.class,
+    Issue1131MapperWithContext.class,
     Source.class,
     Target.class
 })
 public class Issue1131Test {
 
     @Test
-    public void shouldCompile() {
+    public void shouldUseCreateWithSourceNested() {
 
         Source source = new Source();
         source.setNested( new Source.Nested() );
@@ -52,5 +53,21 @@ public class Issue1131Test {
         assertThat( target.getNested() ).isNotNull();
         assertThat( target.getNested().getProperty() ).isEqualTo( "something" );
         assertThat( target.getNested().getInternal() ).isEqualTo( "from object factory" );
+    }
+
+    @Test
+    public void shouldUseContextObjectFactory() {
+
+        Source source = new Source();
+        source.setNested( new Source.Nested() );
+        source.getNested().setProperty( "something" );
+
+        Target target = new Target();
+
+        Issue1131MapperWithContext.INSTANCE.merge( source, target, new Issue1131MapperWithContext.MappingContext() );
+
+        assertThat( target.getNested() ).isNotNull();
+        assertThat( target.getNested().getProperty() ).isEqualTo( "something" );
+        assertThat( target.getNested().getInternal() ).isEqualTo( "from within @Context" );
     }
 }

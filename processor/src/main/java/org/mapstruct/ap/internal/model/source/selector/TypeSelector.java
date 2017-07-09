@@ -90,10 +90,13 @@ public class TypeSelector implements MethodSelector {
         Assignment assignment) {
         List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( method.getParameters().size() + 3 );
 
-        availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
         addMappingTargetAndTargetTypeBindings( availableParams, targetType );
         if ( assignment != null ) {
+            availableParams.addAll( ParameterBinding.fromParameters( method.getContextParameters() ) );
             availableParams.add( ParameterBinding.fromAssignment( assignment ) );
+        }
+        else {
+            availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
         }
 
         return availableParams;

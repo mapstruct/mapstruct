@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.bugs._1131;
 
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ObjectFactory;
@@ -27,18 +28,25 @@ import org.mapstruct.factory.Mappers;
  * @author Filip Hrisafov
  */
 @Mapper
-public abstract class Issue1131Mapper {
-    public static final Issue1131Mapper INSTANCE = Mappers.getMapper( Issue1131Mapper.class );
+public abstract class Issue1131MapperWithContext {
+    public static final Issue1131MapperWithContext INSTANCE = Mappers.getMapper( Issue1131MapperWithContext.class );
 
-    public abstract void merge(Source source, @MappingTarget Target target);
+    public static class MappingContext {
+        @ObjectFactory
+        public Target.Nested create(Source.Nested source) {
+            return new Target.Nested( "from within @Context" );
+        }
+    }
+
+    public abstract void merge(Source source, @MappingTarget Target target, @Context MappingContext context);
 
     @ObjectFactory
-    protected Target.Nested create(Source.Nested source) {
-        return new Target.Nested( "from object factory" );
+    protected Target.Nested create(Source.Nested source, @Context MappingContext context) {
+        return context.create( source );
     }
 
     @ObjectFactory
-    protected Target.Nested createWithSource(Source source) {
+    protected Target.Nested createWithSource(Source source, @Context MappingContext context) {
         throw new IllegalArgumentException( "Should not use create with source" );
     }
 }
