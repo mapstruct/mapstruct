@@ -45,24 +45,24 @@
     </#list>
     <#if (sourceParameters?size > 1)>
         <#list sourceParametersExcludingPrimitives as sourceParam>
-            <#if (propertyMappingsByParameter[sourceParam.name]?size > 0)>
+            <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
                 if ( ${sourceParam.name} != null ) {
-                    <#list propertyMappingsByParameter[sourceParam.name] as propertyMapping>
+                    <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
                         <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                     </#list>
                 }
             </#if>
         </#list>
         <#list sourcePrimitiveParameters as sourceParam>
-            <#if (propertyMappingsByParameter[sourceParam.name]?size > 0)>
-                <#list propertyMappingsByParameter[sourceParam.name] as propertyMapping>
+            <#if (propertyMappingsByParameter(sourceParam)?size > 0)>
+                <#list propertyMappingsByParameter(sourceParam) as propertyMapping>
                     <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
                 </#list>
             </#if>
         </#list>
     <#else>
         <#if mapNullToDefault>if ( ${sourceParameters[0].name} != null ) {</#if>
-        <#list propertyMappingsByParameter[sourceParameters[0].name] as propertyMapping>
+        <#list propertyMappingsByParameter(sourceParameters[0]) as propertyMapping>
             <@includeModel object=propertyMapping targetBeanName=resultName existingInstanceMapping=existingInstanceMapping defaultValueAssignment=propertyMapping.defaultValueAssignment/>
         </#list>
         <#if mapNullToDefault>}</#if>

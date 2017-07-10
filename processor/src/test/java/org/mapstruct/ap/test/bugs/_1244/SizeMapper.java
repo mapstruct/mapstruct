@@ -16,42 +16,43 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._909;
+package org.mapstruct.ap.test.bugs._1244;
 
 import org.mapstruct.Mapper;
 
 /**
- * @author Andreas Gudian
+ * @author Filip Hrisafov
  */
 @Mapper
-public interface ValuesMapper {
-    ValuesHolderDto convert(ValuesHolder values);
+public interface SizeMapper {
 
-    ValuesHolderDto convert(ValuesHolder values, int test);
+    SizeHolderDto convert(SizeHolder size);
 
-    ValuesHolderDto convertOther(ValuesHolder valuesHolder, int values);
+    SizeHolderDto convert(SizeHolder size, int test);
 
-    class ValuesHolder {
-        private String values;
+    SizeHolderDto convertOther(SizeHolder sizeHolder, int size);
 
-        public String getValues() {
-            return values;
+    class SizeHolder {
+        private String size;
+
+        public String getSize() {
+            return size;
         }
 
-        public void setValues(String values) {
-            this.values = values;
+        public void setSize(String size) {
+            this.size = size;
         }
     }
 
-    class ValuesHolderDto {
-        private String values;
+    class SizeHolderDto {
+        private String size;
 
-        public String getValues() {
-            return values;
+        public String getSize() {
+            return size;
         }
 
-        public void setValues(String values) {
-            this.values = values;
+        public void setSize(String size) {
+            this.size = size;
         }
     }
 }
