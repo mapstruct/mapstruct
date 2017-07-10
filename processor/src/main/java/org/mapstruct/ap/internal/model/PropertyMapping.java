@@ -42,6 +42,7 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
@@ -394,7 +395,7 @@ public class PropertyMapping extends ModelElement {
                     );
                 }
                 Assignment factory = ctx.getMappingResolver()
-                    .getFactoryMethod( method, targetType, SelectionParameters.forAssignment( rightHandSide ) );
+                    .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( rightHandSide ) );
                 return new UpdateWrapper( rhs, method.getThrownTypes(), factory, isFieldAssignment(),  targetType,
                     !rhs.isSourceReferenceParameter() );
             }
@@ -427,7 +428,8 @@ public class PropertyMapping extends ModelElement {
                 .targetType( targetType )
                 .targetPropertyName( targetPropertyName )
                 .targetAccessorType( targetAccessorType )
-                .rightHandSide( rhs )
+                .rightHandSide( rightHandSide )
+                .assignment( rhs )
                 .build();
         }
 

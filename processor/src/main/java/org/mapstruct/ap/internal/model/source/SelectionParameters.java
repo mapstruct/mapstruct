@@ -23,7 +23,7 @@ import java.util.List;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.SourceRHS;
 
 /**
  * Holding parameters common to the selection process, common to IterableMapping, BeanMapping, PropertyMapping and
@@ -37,7 +37,7 @@ public class SelectionParameters {
     private final List<String> qualifyingNames;
     private final TypeMirror resultType;
     private final Types typeUtils;
-    private final Assignment assignment;
+    private final SourceRHS sourceRHS;
 
     public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
         Types typeUtils) {
@@ -45,12 +45,12 @@ public class SelectionParameters {
     }
 
     private SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
-        Types typeUtils, Assignment assignment) {
+        Types typeUtils, SourceRHS sourceRHS) {
         this.qualifiers = qualifiers;
         this.qualifyingNames = qualifyingNames;
         this.resultType = resultType;
         this.typeUtils = typeUtils;
-        this.assignment = assignment;
+        this.sourceRHS = sourceRHS;
     }
 
     /**
@@ -79,10 +79,10 @@ public class SelectionParameters {
     }
 
     /**
-     * @return assignment used for further selection of an appropriate factory method
+     * @return sourceRHS used for further selection of an appropriate factory method
      */
-    public Assignment getAssignment() {
-        return assignment;
+    public SourceRHS getSourceRHS() {
+        return sourceRHS;
     }
 
     @Override
@@ -114,7 +114,7 @@ public class SelectionParameters {
             return false;
         }
 
-        if ( !equals( this.assignment, other.assignment ) ) {
+        if ( !equals( this.sourceRHS, other.sourceRHS ) ) {
             return false;
         }
 
@@ -155,13 +155,13 @@ public class SelectionParameters {
         }
     }
 
-    public static SelectionParameters forAssignment(Assignment assignment) {
+    public static SelectionParameters forSourceRHS(SourceRHS sourceRHS) {
         return new SelectionParameters(
             Collections.<TypeMirror>emptyList(),
             Collections.<String>emptyList(),
             null,
             null,
-            assignment
+            sourceRHS
         );
     }
 }

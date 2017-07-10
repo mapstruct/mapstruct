@@ -35,16 +35,16 @@ public class ParameterBinding {
     private final boolean targetType;
     private final boolean mappingTarget;
     private final boolean mappingContext;
-    private final Assignment assignment;
+    private final SourceRHS sourceRHS;
 
     private ParameterBinding(Type parameterType, String variableName, boolean mappingTarget, boolean targetType,
-        boolean mappingContext, Assignment assignment) {
+        boolean mappingContext, SourceRHS sourceRHS) {
         this.type = parameterType;
         this.variableName = variableName;
         this.targetType = targetType;
         this.mappingTarget = mappingTarget;
         this.mappingContext = mappingContext;
-        this.assignment = assignment;
+        this.sourceRHS = sourceRHS;
     }
 
     /**
@@ -83,10 +83,10 @@ public class ParameterBinding {
     }
 
     /**
-     * @return the assignment that this parameter is bound to
+     * @return the sourceRHS that this parameter is bound to
      */
-    public Assignment getAssignment() {
-        return assignment;
+    public SourceRHS getSourceRHS() {
+        return sourceRHS;
     }
 
     public Set<Type> getImportTypes() {
@@ -94,8 +94,8 @@ public class ParameterBinding {
             return type.getImportTypes();
         }
 
-        if ( assignment != null ) {
-            return assignment.getImportTypes();
+        if ( sourceRHS != null ) {
+            return sourceRHS.getImportTypes();
         }
 
         return Collections.emptySet();
@@ -148,7 +148,7 @@ public class ParameterBinding {
         return new ParameterBinding( sourceType, null, false, false, false, null );
     }
 
-    public static ParameterBinding fromAssignment(Assignment assignment) {
-        return new ParameterBinding( assignment.getSourceType(), null, false, false, false, assignment );
+    public static ParameterBinding fromSourceRHS(SourceRHS sourceRHS) {
+        return new ParameterBinding( sourceRHS.getSourceType(), null, false, false, false, sourceRHS );
     }
 }

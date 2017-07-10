@@ -16,15 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
+package org.mapstruct.ap.internal.model.common;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.common.Assignment;
-import org.mapstruct.ap.internal.model.common.ModelElement;
-import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**

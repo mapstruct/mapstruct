@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.bugs._1131;
 
+import java.util.List;
+
 /**
  * @author Filip Hrisafov
  */
@@ -45,6 +47,7 @@ public class Target {
     }
 
     private Nested nested;
+    private List<Nested> moreNested;
 
     public Nested getNested() {
         return nested;
@@ -52,5 +55,13 @@ public class Target {
 
     public void setNested(Nested nested) {
         this.nested = nested;
+    }
+
+    public List<Nested> getMoreNested() {
+        return moreNested;
+    }
+
+    public void setMoreNested(List<Nested> moreNested) {
+        this.moreNested = moreNested;
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
 
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
 /**
@@ -37,7 +37,7 @@ public class SelectionCriteria {
     private final List<String> qualifiedByNames = new ArrayList<String>();
     private final String targetPropertyName;
     private final TypeMirror qualifyingResultType;
-    private final Assignment assignment;
+    private final SourceRHS sourceRHS;
     private boolean preferUpdateMapping;
     private final boolean objectFactoryRequired;
     private final boolean lifecycleCallbackRequired;
@@ -49,11 +49,11 @@ public class SelectionCriteria {
             qualifiers.addAll( selectionParameters.getQualifiers() );
             qualifiedByNames.addAll( selectionParameters.getQualifyingNames() );
             qualifyingResultType = selectionParameters.getResultType();
-            assignment = selectionParameters.getAssignment();
+            sourceRHS = selectionParameters.getSourceRHS();
         }
         else {
             this.qualifyingResultType = null;
-            assignment = null;
+            sourceRHS = null;
         }
         this.targetPropertyName = targetPropertyName;
         this.preferUpdateMapping = preferUpdateMapping;
@@ -95,8 +95,8 @@ public class SelectionCriteria {
         return preferUpdateMapping;
     }
 
-    public Assignment getAssignment() {
-        return assignment;
+    public SourceRHS getSourceRHS() {
+        return sourceRHS;
     }
 
     public void setPreferUpdateMapping(boolean preferUpdateMapping) {

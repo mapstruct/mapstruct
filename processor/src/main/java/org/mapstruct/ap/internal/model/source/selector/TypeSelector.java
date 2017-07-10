@@ -23,9 +23,9 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
+import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -63,7 +63,7 @@ public class TypeSelector implements MethodSelector {
             availableBindings = getAvailableParameterBindingsFromMethod(
                 mappingMethod,
                 targetType,
-                criteria.getAssignment()
+                criteria.getSourceRHS()
             );
         }
         else {
@@ -87,13 +87,13 @@ public class TypeSelector implements MethodSelector {
     }
 
     private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType,
-        Assignment assignment) {
+        SourceRHS sourceRHS) {
         List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( method.getParameters().size() + 3 );
 
         addMappingTargetAndTargetTypeBindings( availableParams, targetType );
-        if ( assignment != null ) {
+        if ( sourceRHS != null ) {
             availableParams.addAll( ParameterBinding.fromParameters( method.getContextParameters() ) );
-            availableParams.add( ParameterBinding.fromAssignment( assignment ) );
+            availableParams.add( ParameterBinding.fromSourceRHS( sourceRHS ) );
         }
         else {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );

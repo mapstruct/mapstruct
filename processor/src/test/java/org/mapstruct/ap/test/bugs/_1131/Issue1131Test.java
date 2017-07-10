@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.bugs._1131;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -45,6 +47,7 @@ public class Issue1131Test {
         Source source = new Source();
         source.setNested( new Source.Nested() );
         source.getNested().setProperty( "something" );
+        source.setMoreNested( new ArrayList<Source.Nested>() );
 
         Target target = new Target();
 
@@ -53,6 +56,10 @@ public class Issue1131Test {
         assertThat( target.getNested() ).isNotNull();
         assertThat( target.getNested().getProperty() ).isEqualTo( "something" );
         assertThat( target.getNested().getInternal() ).isEqualTo( "from object factory" );
+        assertThat( Issue1131Mapper.CALLED_METHODS ).containsExactly(
+            "create(Source.Nested)",
+            "create(List<Source.Nested>)"
+        );
     }
 
     @Test
@@ -61,13 +68,19 @@ public class Issue1131Test {
         Source source = new Source();
         source.setNested( new Source.Nested() );
         source.getNested().setProperty( "something" );
+        source.setMoreNested( new ArrayList<Source.Nested>() );
 
         Target target = new Target();
 
-        Issue1131MapperWithContext.INSTANCE.merge( source, target, new Issue1131MapperWithContext.MappingContext() );
+        Issue1131MapperWithContext.MappingContext context = new Issue1131MapperWithContext.MappingContext();
+        Issue1131MapperWithContext.INSTANCE.merge( source, target, context );
 
         assertThat( target.getNested() ).isNotNull();
         assertThat( target.getNested().getProperty() ).isEqualTo( "something" );
         assertThat( target.getNested().getInternal() ).isEqualTo( "from within @Context" );
+        assertThat( context.getCalledMethods() ).containsExactly(
+            "create(Source.Nested)",
+            "create(List<Source.Nested>)"
+        );
     }
 }
