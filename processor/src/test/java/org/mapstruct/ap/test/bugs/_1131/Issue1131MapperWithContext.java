@@ -32,7 +32,6 @@ public abstract class Issue1131MapperWithContext {
     public static final Issue1131MapperWithContext INSTANCE = Mappers.getMapper( Issue1131MapperWithContext.class );
 
     public static class MappingContext {
-        @ObjectFactory
         public Target.Nested create(Source.Nested source) {
             return new Target.Nested( "from within @Context" );
         }
