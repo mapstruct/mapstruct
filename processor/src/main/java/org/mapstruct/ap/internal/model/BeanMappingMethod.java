@@ -760,8 +760,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         return constantMappings;
     }
 
-    public Map<String, List<PropertyMapping>> getPropertyMappingsByParameter() {
-        return mappingsByParameter;
+    public List<PropertyMapping> propertyMappingsByParameter(Parameter parameter) {
+        // issues: #909 and #1244. FreeMarker has problem getting values from a map when the search key is size or value
+        return mappingsByParameter.get( parameter.getName() );
     }
 
     @Override
