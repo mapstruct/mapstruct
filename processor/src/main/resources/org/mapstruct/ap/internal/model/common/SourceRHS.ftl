@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.SourceRHS" -->
+<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.common.SourceRHS" -->
 <#--
 
      Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)

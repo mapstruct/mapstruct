@@ -18,14 +18,16 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import org.mapstruct.ap.internal.model.assignment.Assignment;
 import org.mapstruct.ap.internal.model.assignment.ExistingInstanceSetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMapsWithNullCheck;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
+import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
@@ -65,7 +67,8 @@ public class CollectionAssignmentBuilder {
     private Type targetType;
     private String targetPropertyName;
     private PropertyMapping.TargetWriteAccessorType targetAccessorType;
-    private Assignment rhs;
+    private Assignment assignment;
+    private SourceRHS sourceRHS;
 
     public CollectionAssignmentBuilder mappingBuilderContext(MappingBuilderContext ctx) {
         this.ctx = ctx;
@@ -97,13 +100,28 @@ public class CollectionAssignmentBuilder {
         return this;
     }
 
-    public CollectionAssignmentBuilder rightHandSide(Assignment rhs) {
-        this.rhs = rhs;
+    /**
+     * @param assignment the assignment that needs to be invoked
+     *
+     * @return this builder for chaining
+     */
+    public CollectionAssignmentBuilder assignment(Assignment assignment) {
+        this.assignment = assignment;
+        return this;
+    }
+
+    /**
+     * @param sourceRHS the source right hand side for getting the property for mapping
+     *
+     * @return this builder for chaining
+     */
+    public CollectionAssignmentBuilder rightHandSide(SourceRHS sourceRHS) {
+        this.sourceRHS = sourceRHS;
         return this;
     }
 
     public Assignment build() {
-        Assignment result = rhs;
+        Assignment result = assignment;
 
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         boolean targetImmutable = cms == CollectionMappingStrategyPrism.TARGET_IMMUTABLE;
@@ -121,7 +139,8 @@ public class CollectionAssignmentBuilder {
                         targetPropertyName
                     );
                 }
-                Assignment factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
+                Assignment factoryMethod = ctx.getMappingResolver()
+                    .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( sourceRHS ) );
                 result = new UpdateWrapper(
                     result,
                     method.getThrownTypes(),

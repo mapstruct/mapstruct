@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model.assignment;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**

@@ -23,10 +23,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 
-import static org.mapstruct.ap.internal.model.assignment.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
 
 /**
  * This wrapper handles the situation where an assignment is done via the setter and a null check is needed.

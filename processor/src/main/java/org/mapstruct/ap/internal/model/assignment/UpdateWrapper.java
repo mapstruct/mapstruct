@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
@@ -51,17 +52,17 @@ public class UpdateWrapper extends AssignmentWrapper {
     }
 
     private static Type determineImplType(Assignment factoryMethod, Type targetType) {
+        if ( factoryMethod != null ) {
+            //If we have factory method then we won't use the targetType
+            return null;
+        }
         if ( targetType.getImplementationType() != null ) {
             // it's probably a collection or something
             return targetType.getImplementationType();
         }
 
-        if ( factoryMethod == null ) {
-            // no factory method means we create a new instance ourself and thus need to import the type
-            return targetType;
-        }
-
-        return null;
+        // no factory method means we create a new instance ourself and thus need to import the type
+        return targetType;
     }
 
     @Override
@@ -82,6 +83,9 @@ public class UpdateWrapper extends AssignmentWrapper {
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>();
         imported.addAll( super.getImportTypes() );
+        if ( factoryMethod != null ) {
+            imported.addAll( factoryMethod.getImportTypes() );
+        }
         if ( targetImplementationType != null ) {
             imported.add( targetImplementationType );
             imported.addAll( targetImplementationType.getTypeParameters() );

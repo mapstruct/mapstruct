@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
+import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -59,7 +60,11 @@ public class TypeSelector implements MethodSelector {
         List<ParameterBinding> availableBindings;
         if ( sourceTypes.isEmpty() ) {
             // if no source types are given, we have a factory or lifecycle method
-            availableBindings = getAvailableParameterBindingsFromMethod( mappingMethod, targetType );
+            availableBindings = getAvailableParameterBindingsFromMethod(
+                mappingMethod,
+                targetType,
+                criteria.getSourceRHS()
+            );
         }
         else {
             availableBindings = getAvailableParameterBindingsFromSourceTypes( sourceTypes, targetType, mappingMethod );
@@ -81,11 +86,18 @@ public class TypeSelector implements MethodSelector {
         return result;
     }
 
-    private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType) {
-        List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( method.getParameters().size() + 2 );
+    private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType,
+        SourceRHS sourceRHS) {
+        List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( method.getParameters().size() + 3 );
 
-        availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
         addMappingTargetAndTargetTypeBindings( availableParams, targetType );
+        if ( sourceRHS != null ) {
+            availableParams.addAll( ParameterBinding.fromParameters( method.getContextParameters() ) );
+            availableParams.add( ParameterBinding.fromSourceRHS( sourceRHS ) );
+        }
+        else {
+            availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
+        }
 
         return availableParams;
     }

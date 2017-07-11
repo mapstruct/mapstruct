@@ -53,8 +53,10 @@
             ${ext.targetBeanName}<#if ext.targetReadAccessorName??>.${ext.targetReadAccessorName}</#if><#t>
         <#elseif param.mappingContext>
             ${param.variableName}<#t>
+        <#elseif param.sourceRHS??>
+            <@_assignment assignmentToUse=param.sourceRHS/><#t>
         <#elseif assignment??>
-            <@_assignment/><#t>
+            <@_assignment assignmentToUse=assignment/><#t>
         <#else>
             ${param.variableName}<#t>
         </#if>
@@ -67,8 +69,8 @@
   macro:   assignment
   purpose: note: takes its targetyType from the singleSourceParameterType
 -->
-<#macro _assignment>
-   <@includeModel object=assignment
+<#macro _assignment assignmentToUse>
+   <@includeModel object=assignmentToUse
         targetBeanName=ext.targetBeanName
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=ext.targetReadAccessorName

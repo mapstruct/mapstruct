@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * return type that is assignable to the required object type is present, then the factory method is used instead.
  * <p>
  * Factory methods can be defined without parameters, with an {@code @}{@link TargetType} parameter, a {@code @}
- * {@link Context} parameter, or with a mapping methods source parameter. If any of those parameters are defined, then
+ * {@link Context} parameter, or with the mapping source parameter. If any of those parameters are defined, then
  * the mapping method that is supposed to use the factory method needs to be declared with an assignable result type,
  * assignable context parameter, and/or assignable source types.
  * <p>
