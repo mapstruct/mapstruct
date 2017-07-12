@@ -557,7 +557,6 @@ public class NestedTargetPropertyMappingHolder {
                     sourceParameter
                 );
 
-
             populateWithSingleTargetReferences(
                 mappingsKeyedByProperty,
                 singleTargetReferencesToUse,
@@ -589,7 +588,7 @@ public class NestedTargetPropertyMappingHolder {
 
         /**
          * Extracts all relevant single target references and populates the {@code sourceParameterMappings} if needed.
-         * A relevant single target reference mapping is a mapping that has a valid source reference and the is for
+         * A relevant single target reference mapping is a mapping that has a valid source reference and is for
          * the {@code sourceParameter}. If there are no mappings i.e. {@code hasNoMappings = true} and the source
          * reference in the mapping has no property entries then add that to the {@code sourceParameterMappings}
          * (mappings like this have found themselves here because there is a mapping method with multiple parameters
