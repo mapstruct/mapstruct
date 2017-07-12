@@ -39,4 +39,13 @@ public interface Issue1247Mapper {
     } )
     DtoOut map(DtoIn in, List<String> list);
 
+    @Mappings( {
+        @Mapping(target = "internal", source = "in"),
+        @Mapping(target = "internal.expression", expression = "java(\"testingExpression\")"),
+        @Mapping(target = "internal.internalData.list", source = "list"),
+        @Mapping(target = "internal.internalData.defaultValue", source = "in.data2", defaultValue = "missing"),
+        @Mapping(target = "constant", constant = "someConstant")
+    } )
+    OtherDtoOut mapWithConstantExpressionAndDefault(DtoIn in, List<String> list);
+
 }

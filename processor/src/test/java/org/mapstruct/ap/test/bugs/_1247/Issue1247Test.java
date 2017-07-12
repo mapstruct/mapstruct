@@ -39,7 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     DtoIn.class,
     DtoOut.class,
     InternalData.class,
-    InternalDto.class
+    InternalDto.class,
+    OtherDtoOut.class,
+    OtherInternalData.class,
+    OtherInternalDto.class
 })
 public class Issue1247Test {
 
@@ -56,5 +59,43 @@ public class Issue1247Test {
         assertThat( out.getInternal().getData2() ).isEqualTo( "data2" );
         assertThat( out.getInternal().getInternalData() ).isNotNull();
         assertThat( out.getInternal().getInternalData().getList() ).containsExactly( "first", "second" );
+    }
+
+    @Test
+    public void shouldCorrectlyUseMappingsWithConstantsExpressionsAndDefaults() {
+
+        DtoIn in = new DtoIn( "data", "data2" );
+        List<String> list = Arrays.asList( "first", "second" );
+        OtherDtoOut out = Issue1247Mapper.INSTANCE.mapWithConstantExpressionAndDefault( in, list );
+
+        assertThat( out ).isNotNull();
+        assertThat( out.getData() ).isEqualTo( "data" );
+        assertThat( out.getConstant() ).isEqualTo( "someConstant" );
+        assertThat( out.getInternal() ).isNotNull();
+        // This will not be mapped by the @Mapping(target = "internal", source = "in") because we have one more
+        // symmetric mapping @Mapping(target = "internal.expression", expression = "java(\"testingExpression\")")
+        assertThat( out.getInternal().getData2() ).isNull();
+        assertThat( out.getInternal().getExpression() ).isEqualTo( "testingExpression" );
+        assertThat( out.getInternal().getInternalData() ).isNotNull();
+        assertThat( out.getInternal().getInternalData().getList() ).containsExactly( "first", "second" );
+        assertThat( out.getInternal().getInternalData().getDefaultValue() ).isEqualTo( "data2" );
+    }
+
+    @Test
+    public void shouldCorrectlyUseMappingsWithConstantsExpressionsAndUseDefault() {
+
+        DtoIn in = new DtoIn( "data", null );
+        List<String> list = Arrays.asList( "first", "second" );
+        OtherDtoOut out = Issue1247Mapper.INSTANCE.mapWithConstantExpressionAndDefault( in, list );
+
+        assertThat( out ).isNotNull();
+        assertThat( out.getData() ).isEqualTo( "data" );
+        assertThat( out.getConstant() ).isEqualTo( "someConstant" );
+        assertThat( out.getInternal() ).isNotNull();
+        assertThat( out.getInternal().getData2() ).isNull();
+        assertThat( out.getInternal().getExpression() ).isEqualTo( "testingExpression" );
+        assertThat( out.getInternal().getInternalData() ).isNotNull();
+        assertThat( out.getInternal().getInternalData().getList() ).containsExactly( "first", "second" );
+        assertThat( out.getInternal().getInternalData().getDefaultValue() ).isEqualTo( "missing" );
     }
 }

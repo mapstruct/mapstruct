@@ -547,7 +547,10 @@ public class NestedTargetPropertyMappingHolder {
                 }
             }
 
-            boolean hasNoMappings = mappings.isEmpty();
+            // We consider that there were no mappings if there are no mappingsKeyedByProperty
+            // and no nonNested. appliesToAll Mappings are mappings that have no source reference and need to be
+            // applied to everything.
+            boolean hasNoMappings = mappingsKeyedByProperty.isEmpty() && nonNested.isEmpty();
             Parameter sourceParameter = entryByParam.getKey();
             List<Mapping> singleTargetReferencesToUse =
                 extractSingleTargetReferencesToUseAndPopulateSourceParameterMappings(
