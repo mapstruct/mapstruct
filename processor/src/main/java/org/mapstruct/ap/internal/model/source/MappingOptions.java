@@ -81,11 +81,25 @@ public class MappingOptions {
      */
     public static MappingOptions forMappingsOnly(Map<String, List<Mapping>> mappings,
         boolean restrictToDefinedMappings) {
+        return forMappingsOnly( mappings, restrictToDefinedMappings, restrictToDefinedMappings );
+
+    }
+
+    /**
+     * creates mapping options with only regular mappings
+     *
+     * @param mappings regular mappings to add
+     * @param restrictToDefinedMappings whether to restrict the mappings only to the defined mappings
+     * @param forForgedMethods whether the mappings are for forged methods
+     * @return MappingOptions with only regular mappings
+     */
+    public static MappingOptions forMappingsOnly(Map<String, List<Mapping>> mappings,
+        boolean restrictToDefinedMappings, boolean forForgedMethods) {
         return new MappingOptions(
             mappings,
             null,
             null,
-            restrictToDefinedMappings ? BeanMapping.forForgedMethods() : null,
+            forForgedMethods ? BeanMapping.forForgedMethods() : null,
             Collections.<ValueMapping>emptyList(),
             restrictToDefinedMappings
         );
