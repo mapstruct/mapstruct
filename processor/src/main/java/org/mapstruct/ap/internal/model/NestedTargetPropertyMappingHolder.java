@@ -19,8 +19,9 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +57,8 @@ public class NestedTargetPropertyMappingHolder {
         Extractor<SourceReference, PropertyEntry>() {
             @Override
             public PropertyEntry apply(SourceReference sourceReference) {
-                return first( sourceReference.getPropertyEntries() );
+                return sourceReference.getPropertyEntries().isEmpty() ? null :
+                    first( sourceReference.getPropertyEntries() );
             }
         };
 
@@ -117,6 +119,8 @@ public class NestedTargetPropertyMappingHolder {
         private Method method;
         private MappingBuilderContext mappingContext;
         private Set<String> existingVariableNames;
+        private List<PropertyMapping> propertyMappings;
+        private Set<String> handledTargets;
 
         public Builder method(Method method) {
             this.method = method;
@@ -135,8 +139,8 @@ public class NestedTargetPropertyMappingHolder {
 
         public NestedTargetPropertyMappingHolder build() {
             List<Parameter> processedSourceParameters = new ArrayList<Parameter>();
-            Set<String> handledTargets = new HashSet<String>();
-            List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
+            handledTargets = new HashSet<String>();
+            propertyMappings = new ArrayList<PropertyMapping>();
 
             // first we group by the first property in the target properties and for each of those
             // properties we get the new mappings as if the first property did not exist.
@@ -164,7 +168,7 @@ public class NestedTargetPropertyMappingHolder {
                     // Lastly we need to group by the source references. This will allow us to actually create
                     // the next mappings by popping source elements
                     GroupedSourceReferences groupedSourceReferences = groupByPoppedSourceReferences(
-                        entryByParam.getValue(),
+                        entryByParam,
                         groupedByTP.singleTargetReferences.get( targetProperty )
                     );
 
@@ -229,6 +233,13 @@ public class NestedTargetPropertyMappingHolder {
                         handledTargets.add( entryByTP.getKey().getName() );
                     }
 
+                    handleSourceParameterMappings(
+                        groupedSourceReferences.sourceParameterMappings,
+                        targetProperty,
+                        sourceParameter,
+                        forceUpdateMethod
+                    );
+
                     unprocessedDefinedTarget.put( targetProperty, groupedSourceReferences.notProcessedAppliesToAll );
                 }
             }
@@ -240,6 +251,43 @@ public class NestedTargetPropertyMappingHolder {
                 unprocessedDefinedTarget,
                 groupedByTP.errorOccurred
             );
+        }
+
+        /**
+         * Handle the {@link PropertyMapping} creation for source parameter mappings.
+         *
+         * @param sourceParameterMappings the source parameter mappings for which property mapping should be done
+         * @param targetProperty the target property that is being mapped
+         * @param sourceParameter the source parameter that is used
+         * @param forceUpdateMethod whether we need to force an update method
+         */
+        private void handleSourceParameterMappings(List<Mapping> sourceParameterMappings, PropertyEntry targetProperty,
+            Parameter sourceParameter, boolean forceUpdateMethod) {
+            if ( !sourceParameterMappings.isEmpty() ) {
+                // The source parameter mappings have no mappings, the source name is actually the parameter itself
+                MappingOptions nonNestedOptions = MappingOptions.forMappingsOnly(
+                    new HashMap<String, List<Mapping>>(),
+                    false,
+                    true
+                );
+                SourceReference reference = new SourceReference.BuilderFromProperty()
+                    .sourceParameter( sourceParameter )
+                    .name( targetProperty.getName() )
+                    .build();
+
+                PropertyMapping propertyMapping = createPropertyMappingForNestedTarget(
+                    nonNestedOptions,
+                    targetProperty,
+                    reference,
+                    forceUpdateMethod
+                );
+
+                if ( propertyMapping != null ) {
+                    propertyMappings.add( propertyMapping );
+                }
+
+                handledTargets.add( targetProperty.getName() );
+            }
         }
 
         /**
@@ -464,15 +512,18 @@ public class NestedTargetPropertyMappingHolder {
          *
          *
          *
-         * @param mappings the list of {@link Mapping} that needs to be used for grouping on popped source references
+         * @param entryByParam the entry of a {@link Parameter} and it's associated {@link Mapping}(s) that need to
+         * be used for grouping on popped source references
          * @param singleTargetReferences the single target references that match the source mappings
          *
          * @return the Grouped Source References
          */
-        private GroupedSourceReferences groupByPoppedSourceReferences(List<Mapping> mappings,
+        private GroupedSourceReferences groupByPoppedSourceReferences(Map.Entry<Parameter, List<Mapping>> entryByParam,
             List<Mapping> singleTargetReferences) {
+            List<Mapping> mappings = entryByParam.getValue();
             List<Mapping> nonNested = new ArrayList<Mapping>();
             List<Mapping> appliesToAll = new ArrayList<Mapping>();
+            List<Mapping> sourceParameterMappings = new ArrayList<Mapping>();
             // group all mappings based on the top level name before popping
             Map<PropertyEntry, List<Mapping>> mappingsKeyedByProperty
                 = new LinkedHashMap<PropertyEntry, List<Mapping>>();
@@ -496,7 +547,24 @@ public class NestedTargetPropertyMappingHolder {
                 }
             }
 
-            populateWithSingleTargetReferences( mappingsKeyedByProperty, singleTargetReferences, PROPERTY_EXTRACTOR );
+            // We consider that there were no mappings if there are no mappingsKeyedByProperty
+            // and no nonNested. appliesToAll Mappings are mappings that have no source reference and need to be
+            // applied to everything.
+            boolean hasNoMappings = mappingsKeyedByProperty.isEmpty() && nonNested.isEmpty();
+            Parameter sourceParameter = entryByParam.getKey();
+            List<Mapping> singleTargetReferencesToUse =
+                extractSingleTargetReferencesToUseAndPopulateSourceParameterMappings(
+                    singleTargetReferences,
+                    sourceParameterMappings,
+                    hasNoMappings,
+                    sourceParameter
+                );
+
+            populateWithSingleTargetReferences(
+                mappingsKeyedByProperty,
+                singleTargetReferencesToUse,
+                PROPERTY_EXTRACTOR
+            );
 
             for ( Map.Entry<PropertyEntry, List<Mapping>> entry : mappingsKeyedByProperty.entrySet() ) {
                 entry.getValue().addAll( appliesToAll );
@@ -516,8 +584,53 @@ public class NestedTargetPropertyMappingHolder {
             return new GroupedSourceReferences(
                 mappingsKeyedByProperty,
                 nonNested,
-                notProcessedAppliesToAll
+                notProcessedAppliesToAll,
+                sourceParameterMappings
             );
+        }
+
+        /**
+         * Extracts all relevant single target references and populates the {@code sourceParameterMappings} if needed.
+         * A relevant single target reference mapping is a mapping that has a valid source reference and is for
+         * the {@code sourceParameter}. If there are no mappings i.e. {@code hasNoMappings = true} and the source
+         * reference in the mapping has no property entries then add that to the {@code sourceParameterMappings}
+         * (mappings like this have found themselves here because there is a mapping method with multiple parameters
+         * and that are using the same sub-path in the target properties).
+         *
+         * @param singleTargetReferences All the single target references for a target property
+         * @param sourceParameterMappings a List that needs to be populated with valid mappings when {@code
+         * hasNoMappings = true} and there are no property entries in the source reference
+         * @param hasNoMappings parameter indicating whether there were any extracted mappings for this target property
+         * @param sourceParameter the source parameter for which the grouping is being done
+         *
+         * @return a list with valid single target references
+         */
+        private List<Mapping> extractSingleTargetReferencesToUseAndPopulateSourceParameterMappings(
+            List<Mapping> singleTargetReferences, List<Mapping> sourceParameterMappings, boolean hasNoMappings,
+            Parameter sourceParameter) {
+            List<Mapping> singleTargetReferencesToUse = null;
+            if ( singleTargetReferences != null ) {
+                singleTargetReferencesToUse = new ArrayList<Mapping>( singleTargetReferences.size() );
+                for ( Mapping mapping : singleTargetReferences ) {
+                    if ( mapping.getSourceReference() == null || !mapping.getSourceReference().isValid() ||
+                        !sourceParameter.equals( mapping.getSourceReference().getParameter() ) ) {
+                        // If the mapping has no sourceReference, it is not valid or it does not have the same source
+                        // parameter then we need to ignore it. When a mapping method has multiple parameters it can
+                        // happen that different parameters somehow have same path in the nesting
+                        continue;
+                    }
+                    if ( hasNoMappings && mapping.getSourceReference().getPropertyEntries().isEmpty() ) {
+                        // If there were no mappings for this source parameter and there are no property entries
+                        // that means that this could be for a mapping method with multiple parameters.
+                        // We have to consider and map this separately
+                        sourceParameterMappings.add( mapping );
+                    }
+                    else {
+                        singleTargetReferencesToUse.add( mapping );
+                    }
+                }
+            }
+            return singleTargetReferencesToUse;
         }
 
         private Map<String, List<Mapping>> groupByTargetName(List<Mapping> mappingList) {
@@ -563,11 +676,9 @@ public class NestedTargetPropertyMappingHolder {
                 //This are non nested target references only their property needs to be added as they most probably
                 // define it
                 for ( Mapping mapping : singleTargetReferences ) {
-                    if ( mapping.getSourceReference() != null && mapping.getSourceReference().isValid()
-                        && !mapping.getSourceReference().getPropertyEntries().isEmpty() ) {
-                        //TODO is this OK? Why there are no propertyEntries? For the Inverse LetterMapper for example
+                    if ( mapping.getSourceReference() != null && mapping.getSourceReference().isValid() ) {
                         K key = keyExtractor.apply( mapping.getSourceReference() );
-                        if ( !map.containsKey( key ) ) {
+                        if ( key != null && !map.containsKey( key ) ) {
                             map.put( key, new ArrayList<Mapping>() );
                         }
                     }
@@ -642,12 +753,15 @@ public class NestedTargetPropertyMappingHolder {
         private final Map<PropertyEntry, List<Mapping>> groupedBySourceReferences;
         private final List<Mapping> nonNested;
         private final List<Mapping> notProcessedAppliesToAll;
+        private final List<Mapping> sourceParameterMappings;
 
         private GroupedSourceReferences(Map<PropertyEntry, List<Mapping>> groupedBySourceReferences,
-            List<Mapping> nonNested, List<Mapping> notProcessedAppliesToAll) {
+            List<Mapping> nonNested, List<Mapping> notProcessedAppliesToAll,
+            List<Mapping> sourceParameterMappings) {
             this.groupedBySourceReferences = groupedBySourceReferences;
             this.nonNested = nonNested;
             this.notProcessedAppliesToAll = notProcessedAppliesToAll;
+            this.sourceParameterMappings = sourceParameterMappings;
 
         }
     }
