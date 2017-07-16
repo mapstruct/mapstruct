@@ -6,6 +6,13 @@ script: mvn clean install -DprocessorIntegrationTest.toolchainsFile=etc/toolchai
 after_success:
   - mvn jacoco:report && bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
 
+deploy:
+  provider: script
+  script: "test ${TRAVIS_TEST_RESULT} -eq 0 && mvn -s etc/travis-settings.xml -DskipTests=true deploy"
+  skip_cleanup: true
+  on:
+    branch: master
+
 sudo: false
 cache:
   directories:
