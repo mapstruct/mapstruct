@@ -169,6 +169,10 @@ public abstract class GeneratedType extends ModelElement {
         return accessibility;
     }
 
+    public void setConstructor(Constructor constructor) {
+        this.constructor = constructor;
+    }
+
     @Override
     public SortedSet<Type> getImportTypes() {
         SortedSet<Type> importedTypes = new TreeSet<Type>();

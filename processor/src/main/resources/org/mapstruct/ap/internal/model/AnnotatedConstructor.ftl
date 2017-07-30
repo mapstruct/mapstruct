@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.AnnotationMapperReference" -->
+<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.AnnotatedConstructor" -->
 <#--
 
      Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
@@ -19,4 +19,17 @@
      limitations under the License.
 
 -->
-private <@includeModel object=type/> ${variableName};
+
+<#if publicEmptyConstructor>
+public ${name}() {
+}
+</#if>
+
+<#list annotations as annotation>
+    <#nt><@includeModel object=annotation/>
+</#list>
+public ${name}(<#list mapperReferences as mapperReference><#list mapperReference.annotations as annotation><@includeModel object=annotation/> </#list><@includeModel object=mapperReference.type/> ${mapperReference.variableName}<#if mapperReference_has_next>, </#if></#list>) {
+    <#list mapperReferences as mapperReference>
+        this.${mapperReference.variableName} = ${mapperReference.variableName};
+    </#list>
+}
