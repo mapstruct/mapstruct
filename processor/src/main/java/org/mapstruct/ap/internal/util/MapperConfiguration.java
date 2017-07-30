@@ -29,6 +29,7 @@ import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperConfigPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
@@ -152,6 +153,15 @@ public class MapperConfiguration {
         }
         else {
             return NullValueCheckStrategyPrism.valueOf( mapperPrism.nullValueCheckStrategy() );
+        }
+    }
+
+    public InjectionStrategyPrism getInjectionStrategy() {
+        if ( mapperConfigPrism != null && mapperPrism.values.injectionStrategy() == null ) {
+            return InjectionStrategyPrism.valueOf( mapperConfigPrism.injectionStrategy() );
+        }
+        else {
+            return InjectionStrategyPrism.valueOf( mapperPrism.injectionStrategy() );
         }
     }
 

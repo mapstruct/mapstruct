@@ -16,21 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
+package org.mapstruct.ap.test.decorator.spring.field;
 
-import java.util.Set;
+import org.mapstruct.DecoratedWith;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ap.test.decorator.Address;
+import org.mapstruct.ap.test.decorator.AddressDto;
+import org.mapstruct.ap.test.decorator.Person;
+import org.mapstruct.ap.test.decorator.PersonDto;
 
-import org.mapstruct.ap.internal.model.common.Type;
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
+@DecoratedWith(PersonMapperDecorator.class)
+public interface PersonMapper {
 
-/**
- * Basic interface class that facilitates an empty constructor.
- *
- * @author Sjaak Derksen
- */
-public interface Constructor {
+    @Mapping( target = "name", ignore = true )
+    PersonDto personToPersonDto(Person person);
 
-    String getName();
-
-    Set<Type> getImportTypes();
-
+    AddressDto addressToAddressDto(Address address);
 }

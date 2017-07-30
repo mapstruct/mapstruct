@@ -16,21 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
-
-import java.util.Set;
-
-import org.mapstruct.ap.internal.model.common.Type;
+package org.mapstruct;
 
 /**
- * Basic interface class that facilitates an empty constructor.
+ * Strategy for handling injection. This is only used on annotated based component models such as CDI, Spring and
+ * JSR330.
  *
- * @author Sjaak Derksen
+ * @author Kevin Grüneberg
  */
-public interface Constructor {
+public enum InjectionStrategy {
 
-    String getName();
+    /** Annotations are written on the field **/
+    FIELD,
 
-    Set<Type> getImportTypes();
-
+    /** Annotations are written on the constructor **/
+    CONSTRUCTOR
 }

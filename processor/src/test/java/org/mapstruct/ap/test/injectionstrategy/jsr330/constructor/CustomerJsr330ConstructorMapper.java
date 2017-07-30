@@ -16,21 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
+package org.mapstruct.ap.test.injectionstrategy.jsr330.constructor;
 
-import java.util.Set;
-
-import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ap.test.injectionstrategy.shared.CustomerDto;
+import org.mapstruct.ap.test.injectionstrategy.shared.CustomerEntity;
 
 /**
- * Basic interface class that facilitates an empty constructor.
- *
- * @author Sjaak Derksen
+ * @author Kevin Grüneberg
  */
-public interface Constructor {
+@Mapper( componentModel = "jsr330",
+    uses = GenderJsr330ConstructorMapper.class,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR )
+public interface CustomerJsr330ConstructorMapper {
 
-    String getName();
-
-    Set<Type> getImportTypes();
+    @Mapping(source = "gender", target = "gender")
+    CustomerDto asTarget(CustomerEntity customerEntity);
 
 }

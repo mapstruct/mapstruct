@@ -16,22 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.decorator.spring;
+package org.mapstruct.ap.internal.prism;
 
-import org.mapstruct.DecoratedWith;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ap.test.decorator.Address;
-import org.mapstruct.ap.test.decorator.AddressDto;
-import org.mapstruct.ap.test.decorator.Person;
-import org.mapstruct.ap.test.decorator.PersonDto;
+/**
+ * Prism for the enum {@link org.mapstruct.InjectionStrategy}.
+ *
+ * @author Kevin Grüneberg
+ */
+public enum InjectionStrategyPrism {
 
-@Mapper(componentModel = "spring")
-@DecoratedWith(PersonMapperDecorator.class)
-public interface PersonMapper {
-
-    @Mapping( target = "name", ignore = true )
-    PersonDto personToPersonDto(Person person);
-
-    AddressDto addressToAddressDto(Address address);
+    FIELD,
+    CONSTRUCTOR;
 }

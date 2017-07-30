@@ -148,6 +148,18 @@ public @interface MapperConfig {
     NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
 
     /**
+     * Determines whether to use field or constructor injection. This is only used on annotated based component models
+     * such as CDI, Spring and JSR 330.
+     *
+     * Can be overridden by the one on {@link Mapper}.
+     *
+     * If no strategy is configured, {@link InjectionStrategy#FIELD} will be used as default.
+     *
+     * @return strategy how to inject
+     */
+    InjectionStrategy injectionStrategy() default InjectionStrategy.FIELD;
+
+    /**
      * If MapStruct could not find another mapping method or apply an automatic conversion it will try to generate a
      * sub-mapping method between the two beans. If this property is set to {@code true} MapStruct will not try to
      * automatically generate sub-mapping methods.

@@ -16,21 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
+package org.mapstruct.ap.test.injectionstrategy.spring.field;
 
-import java.util.Set;
-
-import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.Mapper;
+import org.mapstruct.ValueMapping;
+import org.mapstruct.ValueMappings;
+import org.mapstruct.ap.test.injectionstrategy.shared.Gender;
+import org.mapstruct.ap.test.injectionstrategy.shared.GenderDto;
 
 /**
- * Basic interface class that facilitates an empty constructor.
- *
- * @author Sjaak Derksen
+ * @author Kevin Grüneberg
  */
-public interface Constructor {
+@Mapper(config = FieldSpringConfig.class)
+public interface GenderSpringFieldMapper {
 
-    String getName();
-
-    Set<Type> getImportTypes();
-
+    @ValueMappings({
+        @ValueMapping(source = "MALE", target = "M"),
+        @ValueMapping(source = "FEMALE", target = "F")
+    })
+    GenderDto mapToDto(Gender gender);
 }

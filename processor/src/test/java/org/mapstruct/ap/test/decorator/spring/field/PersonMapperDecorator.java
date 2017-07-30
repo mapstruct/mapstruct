@@ -16,21 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
+package org.mapstruct.ap.test.decorator.spring.field;
 
-import java.util.Set;
+import org.mapstruct.ap.test.decorator.Person;
+import org.mapstruct.ap.test.decorator.PersonDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-import org.mapstruct.ap.internal.model.common.Type;
+public abstract class PersonMapperDecorator implements PersonMapper {
 
-/**
- * Basic interface class that facilitates an empty constructor.
- *
- * @author Sjaak Derksen
- */
-public interface Constructor {
+    @Autowired
+    @Qualifier("delegate")
+    private PersonMapper delegate;
 
-    String getName();
+    @Override
+    public PersonDto personToPersonDto(Person person) {
+        PersonDto dto = delegate.personToPersonDto( person );
+        dto.setName( person.getFirstName() + " " + person.getLastName() );
 
-    Set<Type> getImportTypes();
-
+        return dto;
+    }
 }

@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.decorator.spring;
+package org.mapstruct.ap.test.decorator.spring.constructor;
 
 import org.mapstruct.ap.test.decorator.Person;
 import org.mapstruct.ap.test.decorator.PersonDto;

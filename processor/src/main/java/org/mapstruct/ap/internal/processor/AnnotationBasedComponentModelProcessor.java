@@ -20,27 +20,32 @@ package org.mapstruct.ap.internal.processor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import javax.lang.model.element.TypeElement;
 
+import org.mapstruct.ap.internal.model.AnnotatedConstructor;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.AnnotationMapperReference;
 import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 
 /**
- * An {@link ModelElementProcessor} which converts the given {@link Mapper}
- * object into an annotation based component model in case a matching model is selected as
- * target component model for this mapper.
+ * An {@link ModelElementProcessor} which converts the given {@link Mapper} object into an annotation based component
+ * model in case a matching model is selected as target component model for this mapper.
  *
  * @author Gunnar Morling
  * @author Andreas Gudian
+ * @author Kevin Grüneberg
  */
 public abstract class AnnotationBasedComponentModelProcessor implements ModelElementProcessor<Mapper, Mapper> {
 
@@ -50,8 +55,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
         this.typeFactory = context.getTypeFactory();
 
-        String componentModel = MapperConfiguration.getInstanceOn( mapperTypeElement )
-                                                   .componentModel( context.getOptions() );
+        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( mapperTypeElement );
+
+        String componentModel = mapperConfiguration.componentModel( context.getOptions() );
+        InjectionStrategyPrism injectionStrategy = mapperConfiguration.getInjectionStrategy();
 
         if ( !getComponentModelIdentifier().equalsIgnoreCase( componentModel ) ) {
             return mapper;
@@ -65,21 +72,26 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             mapper.removeDecorator();
         }
         else if ( mapper.getDecorator() != null ) {
-            adjustDecorator( mapper );
+            adjustDecorator( mapper, injectionStrategy );
         }
 
         List<Annotation> annotations = getMapperReferenceAnnotations();
         ListIterator<MapperReference> iterator = mapper.getReferencedMappers().listIterator();
+
         while ( iterator.hasNext() ) {
             MapperReference reference = iterator.next();
             iterator.remove();
-            iterator.add( replacementMapperReference( reference, annotations ) );
+            iterator.add( replacementMapperReference( reference, annotations, injectionStrategy ) );
+        }
+
+        if ( injectionStrategy == InjectionStrategyPrism.CONSTRUCTOR ) {
+            buildConstructors( mapper );
         }
 
         return mapper;
     }
 
-    protected void adjustDecorator(Mapper mapper) {
+    protected void adjustDecorator(Mapper mapper, InjectionStrategyPrism injectionStrategy) {
         Decorator decorator = mapper.getDecorator();
 
         for ( Annotation typeAnnotation : getDecoratorAnnotations() ) {
@@ -88,15 +100,109 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
 
         decorator.removeConstructor();
 
-
         List<Annotation> annotations = getDelegatorReferenceAnnotations( mapper );
         List<Field> replacement = new ArrayList<Field>();
         if ( !decorator.getMethods().isEmpty() ) {
             for ( Field field : decorator.getFields() ) {
-                replacement.add( replacementMapperReference( field, annotations ) );
+                replacement.add( replacementMapperReference( field, annotations, injectionStrategy ) );
             }
         }
         decorator.setFields( replacement );
+    }
+
+    private void buildConstructors(Mapper mapper) {
+        if ( !mapper.getReferencedMappers().isEmpty() ) {
+            AnnotatedConstructor annotatedConstructor = buildAnnotatedConstructorForMapper( mapper );
+
+            if ( !annotatedConstructor.getMapperReferences().isEmpty() ) {
+                mapper.setConstructor( annotatedConstructor );
+            }
+        }
+
+        Decorator decorator = mapper.getDecorator();
+
+        if ( decorator != null ) {
+            AnnotatedConstructor decoratorConstructor = buildAnnotatedConstructorForDecorator( decorator );
+            if ( !decoratorConstructor.getMapperReferences().isEmpty() ) {
+                decorator.setConstructor( decoratorConstructor );
+            }
+        }
+    }
+
+    private AnnotatedConstructor buildAnnotatedConstructorForMapper(Mapper mapper) {
+        List<AnnotationMapperReference> mapperReferencesForConstructor =
+            new ArrayList<AnnotationMapperReference>( mapper.getReferencedMappers().size() );
+
+        for ( MapperReference mapperReference : mapper.getReferencedMappers() ) {
+            mapperReferencesForConstructor.add( (AnnotationMapperReference) mapperReference );
+        }
+
+        List<Annotation> mapperReferenceAnnotations = getMapperReferenceAnnotations();
+
+        removeDuplicateAnnotations( mapperReferencesForConstructor, mapperReferenceAnnotations );
+
+        return new AnnotatedConstructor(
+            mapper.getName(),
+            mapperReferencesForConstructor,
+            mapperReferenceAnnotations,
+            additionalPublicEmptyConstructor() );
+    }
+
+    private AnnotatedConstructor buildAnnotatedConstructorForDecorator(Decorator decorator) {
+        List<AnnotationMapperReference> mapperReferencesForConstructor =
+            new ArrayList<AnnotationMapperReference>( decorator.getFields().size() );
+
+        for ( Field field : decorator.getFields() ) {
+            if ( field instanceof AnnotationMapperReference ) {
+                mapperReferencesForConstructor.add( (AnnotationMapperReference) field );
+            }
+        }
+
+        List<Annotation> mapperReferenceAnnotations = getMapperReferenceAnnotations();
+
+        removeDuplicateAnnotations( mapperReferencesForConstructor, mapperReferenceAnnotations );
+
+        return new AnnotatedConstructor(
+            decorator.getName(),
+            mapperReferencesForConstructor,
+            mapperReferenceAnnotations,
+            additionalPublicEmptyConstructor() );
+    }
+
+    /**
+     * Removes duplicate constructor parameter annotations. If an annotation is already present on the constructor, it
+     * does not have be defined on the constructor parameter, too. For example, for CDI, the javax.inject.Inject
+     * annotation is on the constructor and does not need to be on the constructor parameters.
+     *
+     * @param annotationMapperReferences annotations to annotate the constructor parameter with
+     * @param mapperReferenceAnnotations annotations to annotate the constructor with
+     */
+    private void removeDuplicateAnnotations(List<AnnotationMapperReference> annotationMapperReferences,
+                                            List<Annotation> mapperReferenceAnnotations) {
+        ListIterator<AnnotationMapperReference> mapperReferenceIterator = annotationMapperReferences.listIterator();
+
+        Set<Type> mapperReferenceAnnotationsTypes = new HashSet<Type>();
+        for ( Annotation annotation : mapperReferenceAnnotations ) {
+            mapperReferenceAnnotationsTypes.add( annotation.getType() );
+        }
+
+        while ( mapperReferenceIterator.hasNext() ) {
+            AnnotationMapperReference annotationMapperReference = mapperReferenceIterator.next();
+            mapperReferenceIterator.remove();
+
+            List<Annotation> qualifiers = new ArrayList<Annotation>();
+            for ( Annotation annotation : annotationMapperReference.getAnnotations() ) {
+                if ( !mapperReferenceAnnotationsTypes.contains( annotation.getType() ) ) {
+                    qualifiers.add( annotation );
+                }
+            }
+
+            mapperReferenceIterator.add( annotationMapperReference.withNewAnnotations( qualifiers ) );
+        }
+    }
+
+    protected boolean additionalPublicEmptyConstructor() {
+        return false;
     }
 
     protected List<Annotation> getDelegatorReferenceAnnotations(Mapper mapper) {
@@ -106,16 +212,23 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     /**
      * @param originalReference the reference to be replaced
      * @param annotations the list of annotations
-     *
+     * @param injectionStrategyPrism strategy for injection
      * @return the mapper reference replacing the original one
      */
-    protected MapperReference replacementMapperReference(Field originalReference, List<Annotation> annotations) {
+    protected MapperReference replacementMapperReference(Field originalReference, List<Annotation> annotations,
+                                                         InjectionStrategyPrism injectionStrategyPrism) {
+        boolean finalField =
+            injectionStrategyPrism == InjectionStrategyPrism.CONSTRUCTOR && !additionalPublicEmptyConstructor();
+
+        boolean includeAnnotationsOnField = injectionStrategyPrism == InjectionStrategyPrism.FIELD;
+
         return new AnnotationMapperReference(
             originalReference.getType(),
             originalReference.getVariableName(),
             annotations,
-            originalReference.isUsed()
-        );
+            originalReference.isUsed(),
+            finalField,
+            includeAnnotationsOnField );
     }
 
     /**
@@ -125,7 +238,6 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
 
     /**
      * @param mapper the mapper
-     *
      * @return the annotation(s) to be added at the mapper type implementation
      */
     protected abstract List<Annotation> getTypeAnnotations(Mapper mapper);

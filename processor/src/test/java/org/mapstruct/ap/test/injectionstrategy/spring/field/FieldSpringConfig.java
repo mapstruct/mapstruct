@@ -16,21 +16,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
+package org.mapstruct.ap.test.injectionstrategy.spring.field;
 
-import java.util.Set;
-
-import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.MapperConfig;
 
 /**
- * Basic interface class that facilitates an empty constructor.
- *
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-public interface Constructor {
-
-    String getName();
-
-    Set<Type> getImportTypes();
-
+@MapperConfig(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
+public interface FieldSpringConfig {
 }
