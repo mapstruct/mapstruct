@@ -16,21 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
+package org.mapstruct.itest.injectionstrategy.constructor;
 
-import java.util.Set;
-
-import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.itest.injectionstrategy.CustomerDto;
+import org.mapstruct.itest.injectionstrategy.CustomerEntity;
 
 /**
- * Basic interface class that facilitates an empty constructor.
- *
- * @author Sjaak Derksen
+ * @author Kevin Grüneberg
  */
-public interface Constructor {
+@Mapper( componentModel = "cdi", uses = GenderConstructorMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR )
+public interface CustomerConstructorMapper {
 
-    String getName();
-
-    Set<Type> getImportTypes();
+    @Mapping( source = "gender", target = "gender" )
+    CustomerDto asTarget(CustomerEntity customerEntity);
 
 }

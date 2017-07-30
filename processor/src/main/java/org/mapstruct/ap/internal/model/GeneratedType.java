@@ -68,14 +68,9 @@ public abstract class GeneratedType extends ModelElement {
 
     // CHECKSTYLE:OFF
     protected GeneratedType(TypeFactory typeFactory, String packageName, String name, String superClassName,
-                            String interfacePackage, String interfaceName,
-                            List<MappingMethod> methods,
-                            List<? extends Field> fields,
-                            Options options,
-                            VersionInformation versionInformation,
-                            Accessibility accessibility,
-                            SortedSet<Type> extraImportedTypes,
-                            Constructor constructor ) {
+                            String interfacePackage, String interfaceName, List<MappingMethod> methods,
+                            List<? extends Field> fields, Options options, VersionInformation versionInformation,
+                            Accessibility accessibility, SortedSet<Type> extraImportedTypes, Constructor constructor) {
         this.packageName = packageName;
         this.name = name;
         this.superClassName = superClassName;
@@ -198,6 +193,12 @@ public abstract class GeneratedType extends ModelElement {
 
         for ( Type extraImport : extraImportedTypes ) {
             addIfImportRequired( importedTypes, extraImport );
+        }
+
+        if ( constructor != null ) {
+            for ( Type type : constructor.getImportTypes() ) {
+                addIfImportRequired( importedTypes, type );
+            }
         }
 
         return importedTypes;

@@ -19,4 +19,9 @@
      limitations under the License.
 
 -->
-private <@includeModel object=type/> ${variableName};
+<#if includeAnnotationsOnField>
+    <#list annotations as annotation>
+        <#nt><@includeModel object=annotation/>
+    </#list>
+</#if>
+private <#if fieldFinal>final </#if><@includeModel object=type/> ${variableName};

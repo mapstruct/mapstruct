@@ -147,6 +147,8 @@ public @interface MapperConfig {
      */
     NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
 
+    InjectionStrategy injectionStrategy() default InjectionStrategy.FIELD;
+
     /**
      * If MapStruct could not find another mapping method or apply an automatic conversion it will try to generate a
      * sub-mapping method between the two beans. If this property is set to {@code true} MapStruct will not try to

@@ -16,21 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
+package org.mapstruct.itest.tests;
 
-import java.util.Set;
-
-import org.mapstruct.ap.internal.model.common.Type;
+import org.junit.runner.RunWith;
+import org.mapstruct.itest.testutil.runner.ProcessorSuite;
+import org.mapstruct.itest.testutil.runner.ProcessorSuite.ProcessorType;
+import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner;
 
 /**
- * Basic interface class that facilitates an empty constructor.
+ * @author Kevin Grüneberg
  *
- * @author Sjaak Derksen
  */
-public interface Constructor {
-
-    String getName();
-
-    Set<Type> getImportTypes();
-
+@RunWith( ProcessorSuiteRunner.class )
+@ProcessorSuite( baseDir = "injectionStrategyTest", processorTypes = ProcessorType.ALL )
+public class InjectionStrategyTest {
 }

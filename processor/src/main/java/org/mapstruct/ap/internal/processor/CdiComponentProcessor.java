@@ -55,4 +55,9 @@ public class CdiComponentProcessor extends AnnotationBasedComponentModelProcesso
     protected boolean requiresGenerationOfDecoratorClass() {
         return false;
     }
+
+    @Override
+    protected boolean additionalPublicEmptyConstructor() {
+        return true;
+    }
 }

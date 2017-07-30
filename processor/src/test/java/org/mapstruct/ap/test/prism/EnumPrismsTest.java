@@ -25,11 +25,13 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mapstruct.CollectionMappingStrategy;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.MappingInheritanceStrategy;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
@@ -69,6 +71,12 @@ public class EnumPrismsTest {
     public void reportingPolicyPrismIsCorrect() {
         assertThat( namesOf( ReportingPolicy.values() ) ).isEqualTo(
             namesOf( ReportingPolicyPrism.values() ) );
+    }
+
+    @Test
+    public void injectionStrategyPrismIsCorrect() {
+        assertThat( namesOf( InjectionStrategy.values() ) ).isEqualTo(
+            namesOf( InjectionStrategyPrism.values() ) );
     }
 
     private static List<String> namesOf(Enum<?>[] values) {

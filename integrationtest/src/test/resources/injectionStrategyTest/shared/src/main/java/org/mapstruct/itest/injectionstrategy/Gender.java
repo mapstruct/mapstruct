@@ -16,21 +16,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model;
-
-import java.util.Set;
-
-import org.mapstruct.ap.internal.model.common.Type;
+package org.mapstruct.itest.injectionstrategy;
 
 /**
- * Basic interface class that facilitates an empty constructor.
- *
- * @author Sjaak Derksen
+ * @author Kevin Grüneberg
  */
-public interface Constructor {
+public enum Gender {
 
-    String getName();
-
-    Set<Type> getImportTypes();
+    MALE, FEMALE
 
 }
