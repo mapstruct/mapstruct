@@ -180,9 +180,15 @@ public class NestedTargetPropertyMappingHolder {
                         .groupedBySourceReferences
                         .entrySet() ) {
                         PropertyEntry sourceEntry = entryBySP.getKey();
+                        boolean forceUpdateMethodOrNonNestedReferencesPresent =
+                            forceUpdateMethod || !groupedSourceReferences.nonNested.isEmpty();
+                        // if an update method is forced or there are non nested source references then
+                        // we need to create mapping options for forged methods (i.e. Ignore unmapped target properties
+                        // because it the nonNested properties might contain the target properties)
                         MappingOptions sourceMappingOptions = MappingOptions.forMappingsOnly(
                             groupByTargetName( entryBySP.getValue() ),
-                            forceUpdateMethod
+                            forceUpdateMethod,
+                            forceUpdateMethodOrNonNestedReferencesPresent
                         );
                         SourceReference sourceRef = new SourceReference.BuilderFromProperty()
                             .sourceParameter( sourceParameter )
@@ -192,11 +198,13 @@ public class NestedTargetPropertyMappingHolder {
                             .name( targetProperty.getName() )
                             .build();
 
+                        // if an update method is forced or there are non nested source references then we must create
+                        // an update mapping method because the nonNested references can reference the same object
                         PropertyMapping propertyMapping = createPropertyMappingForNestedTarget(
                             sourceMappingOptions,
                             targetProperty,
                             sourceRef,
-                            forceUpdateMethod
+                            forceUpdateMethodOrNonNestedReferencesPresent
                         );
 
                         if ( propertyMapping != null ) {
@@ -219,11 +227,16 @@ public class NestedTargetPropertyMappingHolder {
                             .name( targetProperty.getName() )
                             .build();
 
+                        boolean forceUpdateMethodForNonNested =
+                            forceUpdateMethod || !groupedSourceReferences.groupedBySourceReferences.isEmpty();
+                        // If an update method is forced or there are groupedBySourceReferences then we must create
+                        // an update method. The reason is that they might be for the same reference and we should
+                        // use update for it
                         PropertyMapping propertyMapping = createPropertyMappingForNestedTarget(
                             nonNestedOptions,
                             targetProperty,
                             reference,
-                            forceUpdateMethod
+                            forceUpdateMethodForNonNested
                         );
 
                         if ( propertyMapping != null ) {

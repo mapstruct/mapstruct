@@ -85,3 +85,9 @@ Instead of configuring everything via the parent method we encourage users to ex
 This puts the configuration of the nested mapping into one place (method) where it can be reused from several methods in the upper level,
 instead of re-configuring the same things on all of those upper methods.
 ====
+
+[NOTE]
+====
+In some cases the `ReportingPolicy` that is going to be used for the generated nested method would be `IGNORE`.
+This means that it is possible for MapStruct not to report unmapped target properties in nested mappings.
+====
