@@ -164,8 +164,6 @@ public @interface Mapper {
      * Determines whether to use field or constructor injection. This is only used on annotated based component models
      * such as CDI, Spring and JSR330.
      *
-     * Can be overridden by the one on {@link MapperConfig}.
-     *
      * If no strategy is configured, {@link InjectionStrategy#FIELD} will be used as default.
      *
      * @return strategy how to inject
