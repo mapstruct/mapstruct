@@ -32,8 +32,10 @@ import org.mapstruct.InjectionStrategy;
 @Mapper( componentModel = "cdi", injectionStrategy = InjectionStrategy.FIELD )
 public interface GenderFieldMapper {
 
-    @ValueMappings( { @ValueMapping( source = "MALE", target = "M" ),
-        @ValueMapping( source = "FEMALE", target = "F" ) } )
+    @ValueMappings( {
+        @ValueMapping( source = "MALE", target = "M" ),
+        @ValueMapping( source = "FEMALE", target = "F" )
+    } )
     GenderDto mapToDto(Gender gender);
 
 }

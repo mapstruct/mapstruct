@@ -16,26 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest.injectionstrategy.constructor;
+package org.mapstruct.ap.test.decorator.spring.constructor;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ValueMapping;
-import org.mapstruct.ValueMappings;
-import org.mapstruct.itest.injectionstrategy.Gender;
-import org.mapstruct.itest.injectionstrategy.GenderDto;
-
+import org.mapstruct.DecoratedWith;
 import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ap.test.decorator.Address;
+import org.mapstruct.ap.test.decorator.AddressDto;
+import org.mapstruct.ap.test.decorator.Person;
+import org.mapstruct.ap.test.decorator.PersonDto;
 
-/**
- * @author Kevin Grüneberg
- */
-@Mapper( componentModel = "cdi", injectionStrategy = InjectionStrategy.CONSTRUCTOR )
-public interface GenderConstructorMapper {
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@DecoratedWith(PersonMapperDecorator.class)
+public interface PersonMapper {
 
-    @ValueMappings( {
-        @ValueMapping( source = "MALE", target = "M" ),
-        @ValueMapping( source = "FEMALE", target = "F" )
-    } )
-    GenderDto mapToDto(Gender gender);
+    @Mapping( target = "name", ignore = true )
+    PersonDto personToPersonDto(Person person);
 
+    AddressDto addressToAddressDto(Address address);
 }

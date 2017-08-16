@@ -30,7 +30,6 @@ import org.mapstruct.itest.injectionstrategy.CustomerEntity;
 @Mapper( componentModel = "cdi", uses = GenderConstructorMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR )
 public interface CustomerConstructorMapper {
 
-    @Mapping( source = "gender", target = "gender" )
     CustomerDto asTarget(CustomerEntity customerEntity);
 
 }

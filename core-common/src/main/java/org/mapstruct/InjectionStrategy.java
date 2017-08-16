@@ -19,7 +19,8 @@
 package org.mapstruct;
 
 /**
- * // TODO add class comment
+ * Strategy for handling injection. This is only used on annotated based component models such as CDI, Spring and
+ * JSR330.
  *
  * @author Kevin Grüneberg
  */

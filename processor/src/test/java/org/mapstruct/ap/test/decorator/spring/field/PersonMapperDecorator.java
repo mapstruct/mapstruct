@@ -16,26 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest.injectionstrategy.constructor;
+package org.mapstruct.ap.test.decorator.spring.field;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ValueMapping;
-import org.mapstruct.ValueMappings;
-import org.mapstruct.itest.injectionstrategy.Gender;
-import org.mapstruct.itest.injectionstrategy.GenderDto;
+import org.mapstruct.ap.test.decorator.Person;
+import org.mapstruct.ap.test.decorator.PersonDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-import org.mapstruct.InjectionStrategy;
+public abstract class PersonMapperDecorator implements PersonMapper {
 
-/**
- * @author Kevin Grüneberg
- */
-@Mapper( componentModel = "cdi", injectionStrategy = InjectionStrategy.CONSTRUCTOR )
-public interface GenderConstructorMapper {
+    @Autowired
+    @Qualifier("delegate")
+    private PersonMapper delegate;
 
-    @ValueMappings( {
-        @ValueMapping( source = "MALE", target = "M" ),
-        @ValueMapping( source = "FEMALE", target = "F" )
-    } )
-    GenderDto mapToDto(Gender gender);
+    @Override
+    public PersonDto personToPersonDto(Person person) {
+        PersonDto dto = delegate.personToPersonDto( person );
+        dto.setName( person.getFirstName() + " " + person.getLastName() );
 
+        return dto;
+    }
 }
