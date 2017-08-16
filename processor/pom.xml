@@ -341,6 +341,21 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.github.siom79.japicmp</groupId>
+                <artifactId>japicmp-maven-plugin</artifactId>
+                <configuration>
+                    <parameter>
+                        <includes>
+                            <include>org.mapstruct.ap</include>
+                        </includes>
+                        <excludes>
+                            <exclude>org.mapstruct.ap.internal</exclude>
+                            <exclude>org.mapstruct.ap.shaded</exclude>
+                        </excludes>
+                    </parameter>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

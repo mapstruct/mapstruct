@@ -516,6 +516,31 @@
                         </signaturesFiles>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>com.github.siom79.japicmp</groupId>
+                    <artifactId>japicmp-maven-plugin</artifactId>
+                    <version>0.10.0</version>
+                    <executions>
+                        <execution>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>cmp</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <newVersion>
+                            <file>
+                                <path>${project.build.directory}/${project.artifactId}-${project.version}.${project.packaging}</path>
+                            </file>
+                        </newVersion>
+                        <parameter>
+                            <oldVersionPattern>\d+\.\d+\.\d+\.Final</oldVersionPattern>
+                            <breakBuildBasedOnSemanticVersioning>true</breakBuildBasedOnSemanticVersioning>
+                        </parameter>
+                    </configuration>
+                </plugin>
+
             </plugins>
         </pluginManagement>
 
