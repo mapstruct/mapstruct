@@ -398,15 +398,9 @@ public class Mapping {
     public Mapping reverse(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
 
         // mapping can only be reversed if the source was not a constant nor an expression nor a nested property
-        if ( constant != null || javaExpression != null ) {
+        // and the mapping is not a 'target-source-ignore' mapping
+        if ( constant != null || javaExpression != null || ( isIgnored && sourceName == null ) ) {
             return null;
-        }
-
-        // should only ignore a property when 1) there is a sourceName defined or 2) there's a name match
-        if ( isIgnored ) {
-            if ( sourceName == null && !hasPropertyInReverseMethod( targetName, method ) ) {
-                return null;
-            }
         }
 
         Mapping reverse = new Mapping(

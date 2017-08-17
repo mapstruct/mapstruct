@@ -47,18 +47,6 @@ public class AnimalTest {
     }
 
     @Test
-    public void shouldNotPropagateIgnoredPropertyInReverseMappingWhenNameIsSame() {
-        AnimalDto animalDto = new AnimalDto( "Bruno", 100, 23, "black" );
-
-        Animal animal = AnimalMapper.INSTANCE.animalDtoToAnimal( animalDto );
-
-        assertThat( animal ).isNotNull();
-        assertThat( animalDto.getName() ).isEqualTo( "Bruno" );
-        assertThat( animalDto.getSize() ).isEqualTo( 100 );
-        assertThat( animal.getAge() ).isNull();
-    }
-
-    @Test
     public void shouldNotPropagateIgnoredPropertyInReverseMappingWhenSourceAndTargetAreSpecified() {
         AnimalDto animalDto = new AnimalDto( "Bruno", 100, 23, "black" );
 

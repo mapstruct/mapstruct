@@ -59,6 +59,7 @@ import org.mapstruct.ap.internal.prism.DecoratedWithPrism;
 import org.mapstruct.ap.internal.prism.InheritConfigurationPrism;
 import org.mapstruct.ap.internal.prism.InheritInverseConfigurationPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
+import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -67,7 +68,6 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
-import static org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism.AUTO_INHERIT_FROM_CONFIG;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.join;
 
@@ -446,41 +446,48 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 initializingMethods,
                 mapperConfig );
 
+        MappingInheritanceStrategyPrism inheritanceStrategy = mapperConfig.getMappingInheritanceStrategy();
+
         if ( templateMappingOptions != null ) {
             mappingOptions.applyInheritedOptions( templateMappingOptions, false, method, messager, typeFactory );
         }
         else if ( inverseMappingOptions != null ) {
             mappingOptions.applyInheritedOptions( inverseMappingOptions, true, method, messager, typeFactory );
         }
-        else if ( mapperConfig.getMappingInheritanceStrategy() == AUTO_INHERIT_FROM_CONFIG ) {
-            if ( applicablePrototypeMethods.size() == 1 ) {
-                mappingOptions.applyInheritedOptions(
-                    first( applicablePrototypeMethods ).getMappingOptions(),
-                    false,
-                    method,
-                    messager,
-                    typeFactory );
-            }
-            else if ( applicablePrototypeMethods.size() > 1 ) {
-                messager.printMessage(
-                    method.getExecutable(),
-                    Message.INHERITCONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH,
-                    Strings.join( applicablePrototypeMethods, ", " ) );
+        else if ( inheritanceStrategy.isAutoInherit() ) {
+
+            if ( inheritanceStrategy.isApplyForward() ) {
+                if ( applicablePrototypeMethods.size() == 1 ) {
+                    mappingOptions.applyInheritedOptions(
+                        first( applicablePrototypeMethods ).getMappingOptions(),
+                        false,
+                        method,
+                        messager,
+                        typeFactory );
+                }
+                else if ( applicablePrototypeMethods.size() > 1 ) {
+                    messager.printMessage(
+                        method.getExecutable(),
+                        Message.INHERITCONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH,
+                        Strings.join( applicablePrototypeMethods, ", " ) );
+                }
             }
 
-            if ( applicableReversePrototypeMethods.size() == 1 ) {
-                mappingOptions.applyInheritedOptions(
-                    first( applicableReversePrototypeMethods ).getMappingOptions(),
-                    true,
-                    method,
-                    messager,
-                    typeFactory );
-            }
-            else if ( applicableReversePrototypeMethods.size() > 1 ) {
-                messager.printMessage(
-                    method.getExecutable(),
-                    Message.INHERITINVERSECONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH,
-                    Strings.join( applicablePrototypeMethods, ", " ) );
+            if ( inheritanceStrategy.isApplyReverse() ) {
+                if ( applicableReversePrototypeMethods.size() == 1 ) {
+                    mappingOptions.applyInheritedOptions(
+                        first( applicableReversePrototypeMethods ).getMappingOptions(),
+                        true,
+                        method,
+                        messager,
+                        typeFactory );
+                }
+                else if ( applicableReversePrototypeMethods.size() > 1 ) {
+                    messager.printMessage(
+                        method.getExecutable(),
+                        Message.INHERITINVERSECONFIGURATION_MULTIPLE_PROTOTYPE_METHODS_MATCH,
+                        Strings.join( applicableReversePrototypeMethods, ", " ) );
+                }
             }
         }
 
