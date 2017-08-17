@@ -141,6 +141,35 @@ public class InheritFromConfigTest {
     }
 
     @Test
+    @IssueKey( "1255" )
+    @WithClasses({ CarMapperReverseWithAutoInheritance.class, AutoInheritedReverseConfig.class } )
+    public void autoInheritedMappingIsAppliedInReverseDirectlyFromConfig() {
+
+        CarEntity carEntity = new CarEntity();
+        carEntity.setColor( "red" );
+        carEntity.setPrimaryKey( 42L );
+
+        CarDto carDto = CarMapperReverseWithAutoInheritance.INSTANCE.toCarDto( carEntity );
+
+        assertThat( carDto.getColour() ).isEqualTo( "red" );
+        assertThat( carDto.getId() ).isEqualTo( 42L );
+    }
+
+    @Test
+    @IssueKey( "1255" )
+    @WithClasses({ CarMapperAllWithAutoInheritance.class, AutoInheritedAllConfig.class } )
+    public void autoInheritedMappingIsAppliedInForwardAndReverseDirectlyFromConfig() {
+
+        CarDto carDto = newTestDto();
+
+        CarEntity carEntity = CarMapperAllWithAutoInheritance.INSTANCE.toCarEntity( carDto );
+        CarDto carDto2 =  CarMapperAllWithAutoInheritance.INSTANCE.toCarDto( carEntity );
+
+        assertThat( carDto.getColour() ).isEqualTo( carDto2.getColour() );
+        assertThat( carDto.getId() ).isEqualTo( carDto2.getId() );
+    }
+
+    @Test
     public void explicitInheritedMappingWithTwoLevelsIsOverriddenAtMethodLevel() {
         CarDto carDto = newTestDto();
 
@@ -230,4 +259,52 @@ public class InheritFromConfigTest {
     public void erroneous2InheritanceCycle() {
 
     }
+
+    @Test
+    @IssueKey( "1255" )
+    @WithClasses({ ErroneousMapperAutoInheritance.class, AutoInheritedReverseConfig.class } )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapperAutoInheritance.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = "Unmapped target properties: \"primaryKey, auditTrail\"\\.")
+        }
+    )
+    public void erroneousWrongReverseConfigInherited() { }
+
+    @Test
+    @IssueKey( "1255" )
+    @WithClasses({ ErroneousMapperReverseWithAutoInheritance.class, AutoInheritedConfig.class } )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapperReverseWithAutoInheritance.class,
+                kind = Kind.ERROR,
+                line = 36,
+                messageRegExp = "Unmapped target property: \"id\"\\.")
+        }
+    )
+    public void erroneousWrongConfigInherited() { }
+
+    @Test
+    @IssueKey( "1255" )
+    @WithClasses({ Erroneous3Mapper.class, Erroneous3Config.class } )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = Erroneous3Mapper.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = "More than one configuration prototype method is applicable. "
+                    + "Use @InheritInverseConfiguration.*"),
+            @Diagnostic(type = Erroneous3Mapper.class,
+                kind = Kind.ERROR,
+                line = 35,
+                messageRegExp = "Unmapped target property: \"id\"\\.")
+        }
+    )
+    public void erroneousDuplicateReverse() { }
+
 }

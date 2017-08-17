@@ -47,6 +47,7 @@ public enum Message {
     PROPERTYMAPPING_DUPLICATE_TARGETS( "Target property \"%s\" must not be mapped more than once." ),
     PROPERTYMAPPING_EMPTY_TARGET( "Target must not be empty in @Mapping." ),
     PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED( "Source and constant are both defined in @Mapping, either define a source or a constant." ),
+    PROPERTYMAPPING_SOURCE_AND_IGNORE_BOTH_DEFINED( "Source and ignore are both defined in @Mapping, make explicit in reverse mapping when the intent is to ignore the reverse mapping." ),
     PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED( "Source and expression are both defined in @Mapping, either define a source or an expression." ),
     PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED( "Expression and constant are both defined in @Mapping, either define an expression or a constant." ),
     PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED( "Expression and default value are both defined in @Mapping, either define a defaultValue or an expression." ),
