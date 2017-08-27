@@ -155,7 +155,8 @@ public class NestedTargetPropertyMappingHolder {
                     entryByTP.getValue(),
                     groupedByTP.singleTargetReferences.get( targetProperty )
                 );
-                boolean forceUpdateMethod = groupedBySourceParam.groupedBySourceParameter.keySet().size() > 1;
+                boolean multipleSourceParametersForTP =
+                    groupedBySourceParam.groupedBySourceParameter.keySet().size() > 1;
 
                 // All not processed mappings that should have been applied to all are part of the unprocessed
                 // defined targets
@@ -181,13 +182,19 @@ public class NestedTargetPropertyMappingHolder {
                         .entrySet() ) {
                         PropertyEntry sourceEntry = entryBySP.getKey();
                         boolean forceUpdateMethodOrNonNestedReferencesPresent =
-                            forceUpdateMethod || !groupedSourceReferences.nonNested.isEmpty();
-                        // if an update method is forced or there are non nested source references then
-                        // we need to create mapping options for forged methods (i.e. Ignore unmapped target properties
-                        // because it the nonNested properties might contain the target properties)
+                            multipleSourceParametersForTP || !groupedSourceReferences.nonNested.isEmpty();
+                        // If there are multiple source parameters that are mapped to the target reference
+                        // then we restrict the mapping only to the defined mappings. And we create MappingOptions
+                        // for forged methods (which means that any unmapped target properties are ignored)
+                        // MappingOptions for forged methods is also created if we have something like this:
+                        //@Mappings({
+                        //    @Mapping(target = "vehicleInfo", source = "vehicleTypeInfo"),
+                        //    @Mapping(target = "vehicleInfo.images", source = "images")
+                        //})
+                        // See Issue1269Test, Issue1247Test, AutomappingAndNestedTest for more info as well
                         MappingOptions sourceMappingOptions = MappingOptions.forMappingsOnly(
                             groupByTargetName( entryBySP.getValue() ),
-                            forceUpdateMethod,
+                            multipleSourceParametersForTP,
                             forceUpdateMethodOrNonNestedReferencesPresent
                         );
                         SourceReference sourceRef = new SourceReference.BuilderFromProperty()
@@ -198,8 +205,9 @@ public class NestedTargetPropertyMappingHolder {
                             .name( targetProperty.getName() )
                             .build();
 
-                        // if an update method is forced or there are non nested source references then we must create
-                        // an update mapping method because the nonNested references can reference the same object
+                        // If we have multiple source parameters that are mapped to the target reference, or
+                        // parts of the nested properties are mapped to different sources (see comment above as well)
+                        // we would force an update method
                         PropertyMapping propertyMapping = createPropertyMappingForNestedTarget(
                             sourceMappingOptions,
                             targetProperty,
@@ -228,7 +236,8 @@ public class NestedTargetPropertyMappingHolder {
                             .build();
 
                         boolean forceUpdateMethodForNonNested =
-                            forceUpdateMethod || !groupedSourceReferences.groupedBySourceReferences.isEmpty();
+                            multipleSourceParametersForTP ||
+                                !groupedSourceReferences.groupedBySourceReferences.isEmpty();
                         // If an update method is forced or there are groupedBySourceReferences then we must create
                         // an update method. The reason is that they might be for the same reference and we should
                         // use update for it
@@ -250,7 +259,7 @@ public class NestedTargetPropertyMappingHolder {
                         groupedSourceReferences.sourceParameterMappings,
                         targetProperty,
                         sourceParameter,
-                        forceUpdateMethod
+                        multipleSourceParametersForTP
                     );
 
                     unprocessedDefinedTarget.put( targetProperty, groupedSourceReferences.notProcessedAppliesToAll );
