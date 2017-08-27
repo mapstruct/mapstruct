@@ -257,6 +257,18 @@ Supported values are:
 
 If a policy is given for a specific mapper via `@Mapper#unmappedTargetPolicy()`, the value from the annotation takes precedence.
 |`WARN`
+
+|`mapstruct.unmappedSourcePolicy`
+|The default reporting policy to be applied in case an attribute of the source object of a mapping method is not populating an attribute of the target object.
+
+Supported values are:
+
+* `ERROR`: any unmapped source property will cause the mapping code generation to fail
+* `WARN`: any unmapped source property will cause a warning at build time
+* `IGNORE`: unmapped source properties are ignored
+
+If a policy is given for a specific mapper via `@Mapper#unmappedSourcePolicy()`, the value from the annotation takes precedence.
+|`IGNORE`
 |===
 
 === Using MapStruct on Java 9

@@ -58,6 +58,14 @@ public @interface MapperConfig {
     Class<?>[] uses() default { };
 
     /**
+     * How unmapped properties of the source type of a mapping should be
+     * reported.
+     *
+     * @return The reporting policy for unmapped source properties.
+     */
+    ReportingPolicy unmappedSourcePolicy() default ReportingPolicy.IGNORE;
+
+    /**
      * How unmapped properties of the target type of a mapping should be
      * reported.
      *

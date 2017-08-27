@@ -30,15 +30,18 @@ public class Options {
     private final boolean suppressGeneratorTimestamp;
     private final boolean suppressGeneratorVersionComment;
     private final ReportingPolicyPrism unmappedTargetPolicy;
+    private final ReportingPolicyPrism unmappedSourcePolicy;
     private final boolean alwaysGenerateSpi;
     private final String defaultComponentModel;
 
     public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
                    ReportingPolicyPrism unmappedTargetPolicy,
+                   ReportingPolicyPrism unmappedSourcePolicy,
                    String defaultComponentModel, boolean alwaysGenerateSpi) {
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.suppressGeneratorVersionComment = suppressGeneratorVersionComment;
         this.unmappedTargetPolicy = unmappedTargetPolicy;
+        this.unmappedSourcePolicy = unmappedSourcePolicy;
         this.defaultComponentModel = defaultComponentModel;
         this.alwaysGenerateSpi = alwaysGenerateSpi;
     }
@@ -53,6 +56,10 @@ public class Options {
 
     public ReportingPolicyPrism getUnmappedTargetPolicy() {
         return unmappedTargetPolicy;
+    }
+
+    public ReportingPolicyPrism getUnmappedSourcePolicy() {
+        return unmappedSourcePolicy;
     }
 
     public String getDefaultComponentModel() {
