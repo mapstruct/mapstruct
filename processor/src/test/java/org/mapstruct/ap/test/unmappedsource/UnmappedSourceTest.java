@@ -112,4 +112,23 @@ public class UnmappedSourceTest {
     public void shouldRaiseErrorDueToUnsetSourcePropertyWithPolicySetViaProcessorOption() {
     }
 
+    @Test
+    @WithClasses({ Source.class, Target.class, UsesConfigFromAnnotationMapper.class, Config.class })
+    @ProcessorOption(name = "mapstruct.unmappedSourcePolicy", value = "ERROR")
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = UsesConfigFromAnnotationMapper.class,
+                kind = Kind.WARNING,
+                line = 33,
+                messageRegExp = "Unmapped source property: \"qux\""),
+            @Diagnostic(type = UsesConfigFromAnnotationMapper.class,
+                kind = Kind.WARNING,
+                line = 35,
+                messageRegExp = "Unmapped source property: \"bar\"")
+        }
+    )
+    public void shouldRaiseErrorBecauseConfiguredByAnnotation() {
+    }
+
 }
