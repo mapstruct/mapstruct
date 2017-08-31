@@ -74,7 +74,7 @@ public interface FishTankMapperWithDocument {
 
 Note what happens in `@Mapping(target="quality.document", source="quality.report")`.
 `DocumentDto` does not exist as such on the target side. It is mapped from `Report`.
-MapStruct continues to generate mapping code here. That mapping it self can be guided towards another name.
+MapStruct continues to generate mapping code here. That mapping itself can be guided towards another name.
 This even works for constants and expression. Which is shown in the final example: `@Mapping(target="quality.document.organisation.name", constant="NoIdeaInc")`.
 
 MapStruct will perform a null check on each nested property in the source.
