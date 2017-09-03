@@ -31,7 +31,9 @@ Compared to dynamic mapping frameworks, MapStruct offers the following advantage
 
 * Fast execution by using plain method invocations instead of reflection
 * Compile-time type safety: Only objects and attributes mapping to each other can be mapped, no accidental mapping of an order entity into a customer DTO etc.
-* Clear error-reports at build time, if entities or attributes can't be mapped
+* Clear error-reports at build time, if
+	** mappings are incomplete (not all target properties are mapped)
+  ** mappings are incorrect (cannot find a proper mapping method or type conversion)
 
 [[setup]]
 == Set up
@@ -261,7 +263,7 @@ If a policy is given for a specific mapper via `@Mapper#unmappedTargetPolicy()`,
 
 MapStruct can be used with Java 9, but as that Java version has not been finalized yet, support for it is experimental.
 
-A core theme of Java 9 is the modularization of the JDK. One effect of this that a specific module need to be enabled for a project in order to use the `javax.annotation.Generated` annotation. `@Generated` is added by MapStruct to generated mapper classes to tag them as generated code, stating the date of generation, the generator version etc.
+A core theme of Java 9 is the modularization of the JDK. One effect of this is that a specific module needs	to be enabled for a project in order to use the `javax.annotation.Generated` annotation. `@Generated` is added by MapStruct to generated mapper classes to tag them as generated code, stating the date of generation, the generator version etc.
 
 To allow usage of the `@Generated` annotation the module _java.annotations.common_ must be enabled. When using Maven, this can be done like this:
 
@@ -526,7 +528,7 @@ considered as a write accessor.
 
 Small example:
 
-.Examples classes for mapping
+.Example classes for mapping
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
@@ -815,9 +817,9 @@ That way it is possible to map arbitrary deep object graphs. When mapping from e
 When generating the implementation of a mapping method, MapStruct will apply the following routine for each attribute pair in the source and target object:
 
 * If source and target attribute have the same type, the value will be simply copied from source to target. If the attribute is a collection (e.g. a `List`) a copy of the collection will be set into the target attribute.
-* If source and target attribute type differ, check whether there is a another mapping method which has the type of the source attribute as parameter type and the type of the target attribute as return type. If such a method exists it will be invoked in the generated mapping implementation.
+* If source and target attribute type differ, check whether there is another mapping method which has the type of the source attribute as parameter type and the type of the target attribute as return type. If such a method exists it will be invoked in the generated mapping implementation.
 * If no such method exists MapStruct will look whether a built-in conversion for the source and target type of the attribute exists. If this is the case, the generated mapping code will apply this conversion.
-* If no such method was found MapStruct will try to generate an automatic sub-mapping method that will do the mapping between the source and target attributes
+* If no such method was found MapStruct will try to generate an automatic sub-mapping method that will do the mapping between the source and target attributes.
 * If MapStruct could not create a name based mapping method an error will be raised at build time, indicating the non-mappable attribute and its path.
 
 [NOTE]
@@ -1013,13 +1015,13 @@ When working with JAXB, e.g. when converting a `String` to a corresponding `JAXB
 [[selection-based-on-qualifiers]]
 === Mapping method selection based on qualifiers
 
-In many occasions one requires mapping methods with the same method signature (appart from the name) that have different behavior.
+In many occasions one requires mapping methods with the same method signature (apart from the name) that have different behavior.
 MapStruct has a handy mechanism to deal with such situations: `@Qualifier` (`org.mapstruct.Qualifier`).
 A ‘qualifier’ is a custom annotation that the user can write, ‘stick onto’ a mapping method which is included as used mapper
 and can be referred to in a bean property mapping, iterable mapping or map mapping.
 Multiple qualifiers can be ‘stuck onto’ a method and mapping.
 
-So, lets say there is a hand-written method to map titles with a `String` return type and `String` argument amongst many other referenced mappers with the same `String` return type  - `String` argument signature:
+So, let's say there is a hand-written method to map titles with a `String` return type and `String` argument amongst many other referenced mappers with the same `String` return type  - `String` argument signature:
 
 .Several mapping methods with identical source and target types
 ====
@@ -1354,7 +1356,7 @@ public Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source) 
 
 MapStruct has a `CollectionMappingStrategy`, with the possible values: `ACCESSOR_ONLY`, `SETTER_PREFERRED`, `ADDER_PREFERRED` and `TARGET_IMMUTABLE`.
 
-In the table below, the dash `-` indicates a property name. Next, the trailing `s` indicates the plural form. The table explains the options and how they are apply to the presence/absense of a `set-s`, `add-` and / or `get-s` method on the target object:
+In the table below, the dash `-` indicates a property name. Next, the trailing `s` indicates the plural form. The table explains the options and how they are applied to the presence/absense of a `set-s`, `add-` and / or `get-s` method on the target object:
 
 .Collection mapping strategy options
 |===
@@ -1391,11 +1393,11 @@ In the table below, the dash `-` indicates a property name. Next, the trailing `
 
 Some background: An `adder` method is typically used in case of http://www.eclipse.org/webtools/dali/[generated (JPA) entities], to add a single element (entity) to an underlying collection. Invoking the adder establishes a parent-child relation between parent - the bean (entity) on which the adder is invoked - and its child(ren), the elements (entities) in the collection. To find the appropriate `adder`, MapStruct will try to make a match between the generic parameter type of the underlying collection and the single argument of a candidate `adder`. When there are more candidates, the plural `setter` / `getter` name is converted to singular and will be used in addition to make a match.
 
-The option `DEFAULT` should not be used explicitely. It is used to distinguish between an explicit user desire to override the default in a `@MapperConfig` from the implicit Mapstruct choice in a `@Mapper`. The option `DEFAULT` is synonymous to `ACCESSOR_ONLY`.
+The option `DEFAULT` should not be used explicitly. It is used to distinguish between an explicit user desire to override the default in a `@MapperConfig` from the implicit Mapstruct choice in a `@Mapper`. The option `DEFAULT` is synonymous to `ACCESSOR_ONLY`.
 
 [TIP]
 ====
-When working with an `adder` method and JPA entities, Mapstruct assumes that the target collections are initialized with a collection implementation (e.g. an `ArrayList`). You can use factories to create a new target entity with intialized collections in stead of Mapstruct creating the target entity by its constructor.
+When working with an `adder` method and JPA entities, Mapstruct assumes that the target collections are initialized with a collection implementation (e.g. an `ArrayList`). You can use factories to create a new target entity with intialized collections instead of Mapstruct creating the target entity by its constructor.
 ====
 
 [[implementation-types-for-collection-mappings]]
@@ -1756,7 +1758,7 @@ This chapter describes several advanced options which allow to fine-tune the beh
 
 Default values can be specified to set a predefined value to a target property if the corresponding source property is `null`. Constants can be specified to set such a predefined value in any case. Default values and constants are specified as String values and are subject to type conversion either via built-in conversions or the invocation of other mapping methods in order to match the type required by the target property.
 
-A mapping with a constant must not include a reference to a source property. The following examples shows some mappings using default values and constants:
+A mapping with a constant must not include a reference to a source property. The following example shows some mappings using default values and constants:
 
 .Mapping method with default values and constants
 ====
@@ -1811,7 +1813,7 @@ public interface SourceTargetMapper {
 ----
 ====
 
-The example demonstrates how the source properties `time` and `format` are composed into one target property `TimeAndFormat`. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `TimeAndFormat` class (unless its used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining `imports` on the `@Mapper` annotation.
+The example demonstrates how the source properties `time` and `format` are composed into one target property `TimeAndFormat`. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `TimeAndFormat` class (unless it's used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining `imports` on the `@Mapper` annotation.
 
 .Declaring an import
 ====
@@ -1835,7 +1837,7 @@ public interface SourceTargetMapper {
 [[determining-result-type]]
 === Determining the result type
 
-When result types have an inheritance relation, selecting either mapping method (`@Mapping`) or a factory method (`@BeanMapping`) can becomes ambigious. Suppose an Apple and a Banana, which is are both specializations of Fruit.
+When result types have an inheritance relation, selecting either mapping method (`@Mapping`) or a factory method (`@BeanMapping`) can become ambiguous. Suppose an Apple and a Banana, which are both specializations of Fruit.
 
 .Specifying the result type of a bean mapping method
 ====
@@ -1898,7 +1900,7 @@ The strategy works in a hierarchical fashion. Setting `nullValueMappingStrategy`
 
 MapStruct offers control over when to generate a `null` check. By default (`nullValueCheckStrategy = NullValueCheckStrategy.ON_IMPLICIT_CONVERSION`) a `null` check will be generated for:
 
-* direct setting of source value to target value when target is primitive and is source not.
+* direct setting of source value to target value when target is primitive and source is not.
 * applying type conversion and then:
 .. calling the setter on the target.
 .. calling another type conversion and subsequently calling the setter on the target.
@@ -2542,7 +2544,7 @@ The `CustomAccessorNamingStrategy` makes use of the `DefaultAccessorNamingStrate
 To use a custom SPI implementation, it must be located in a separate JAR file together with the file `META-INF/services/org.mapstruct.ap.spi.AccessorNamingStrategy` with the fully qualified name of your custom implementation as content (e.g. `org.mapstruct.example.CustomAccessorNamingStrategy`). This JAR file needs to be added to the annotation processor classpath (i.e. add it next to the place where you added the mapstruct-processor jar).
 
 [TIP]
-Fore more details: There's the above example is present in our our examples repository (https://github.com/mapstruct/mapstruct-examples).
+Fore more details: The example above is present in our examples repository (https://github.com/mapstruct/mapstruct-examples).
 
 [mapping-exclusion-provider]
 === Mapping Exclusion Provider
