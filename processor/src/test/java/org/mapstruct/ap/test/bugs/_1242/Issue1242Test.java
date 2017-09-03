@@ -76,7 +76,11 @@ public class Issue1242Test {
                     + " .*TargetB .*TargetFactories\\.createTargetB\\(.*SourceB source,"
                     + " @TargetType .*Class<.*TargetB> clazz\\),"
                     + " .*TargetB .*TargetFactories\\.createTargetB\\(@TargetType java.lang.Class<.*TargetB> clazz\\),"
-                    + " .*TargetB .*TargetFactories\\.createTargetB\\(\\).")
+                    + " .*TargetB .*TargetFactories\\.createTargetB\\(\\)."),
+            @Diagnostic(type = ErroneousIssue1242MapperMultipleSources.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 33,
+                messageRegExp = ".*TargetB does not have a suitable empty constructor\\.")
         })
     public void ambiguousMethodErrorForTwoFactoryMethodsWithSourceParam() {
     }

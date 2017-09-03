@@ -177,7 +177,13 @@ public class ConversionTest {
                 messageRegExp = "Can't map property \".*NoProperties "
                     + "foo\\.wrapped\" to"
                     + " \"org.mapstruct.ap.test.selection.generics.TypeA " +
-                    "foo\\.wrapped\"")
+                    "foo\\.wrapped\""),
+            @Diagnostic(type = ErroneousSourceTargetMapper6.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 29,
+                messageRegExp = ".*\\.generics\\.WildCardSuperWrapper<.*\\.generics\\.TypeA> does not have a suitable" +
+                    " empty constructor\\.")
+
         })
     public void shouldFailOnNonMatchingWildCards() {
     }

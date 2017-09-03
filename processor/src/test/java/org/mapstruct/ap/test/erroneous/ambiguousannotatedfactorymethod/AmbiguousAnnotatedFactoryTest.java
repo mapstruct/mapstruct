@@ -49,7 +49,13 @@ public class AmbiguousAnnotatedFactoryTest {
                         + "createBar\\(org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod.Foo foo\\), "
                         + "org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod.Bar "
                         + ".*AmbiguousBarFactory.createBar\\(org.mapstruct.ap.test.erroneous."
-                        + "ambiguousannotatedfactorymethod.Foo foo\\)." )
+                    + "ambiguousannotatedfactorymethod.Foo foo\\)."),
+            @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 35,
+                messageRegExp = ".*\\.ambiguousannotatedfactorymethod.Bar does not have a suitable empty " +
+                    "constructor\\.")
+
         }
     )
     public void shouldUseTwoFactoryMethods() {

@@ -16,11 +16,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.erroneous.ambiguousfactorymethod;
+package org.mapstruct.ap.test.bugs._1283;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.a.BarFactory;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -29,35 +28,43 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 /**
- * @author Sjaak Derksen
+ * @author Filip Hrisafov
  */
-@IssueKey("81")
+@IssueKey("1283")
+@RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
-    Bar.class, Foo.class, BarFactory.class, Source.class, SourceTargetMapperAndBarFactory.class,
+    Source.class,
     Target.class
 })
-@RunWith(AnnotationProcessorTestRunner.class)
-public class FactoryTest {
+public class Issue1283Test {
 
     @Test
-    @IssueKey("81")
+    @WithClasses(ErroneousInverseTargetHasNoSuitableConstructorMapper.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
+            @Diagnostic(type = ErroneousInverseTargetHasNoSuitableConstructorMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
-                messageRegExp = "Ambiguous factory methods found for creating "
-                        + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar: "
-                        + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar createBar\\(\\), "
-                        + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar .*BarFactory.createBar\\(\\)."),
-            @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
-                messageRegExp = ".*\\.ambiguousfactorymethod\\.Bar does not have a suitable empty constructor\\.")
-
+                line = 35L,
+                messageRegExp = ".*\\._1283\\.Source does not have a suitable empty constructor"
+            )
         }
     )
-    public void shouldUseTwoFactoryMethods() {
+    public void inheritInverseConfigurationReturnTypeHasNoSuitableConstructor() {
+    }
+
+    @Test
+    @WithClasses(ErroneousTargetHasNoSuitableConstructorMapper.class)
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousTargetHasNoSuitableConstructorMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 31L,
+                messageRegExp = ".*\\._1283\\.Source does not have a suitable empty constructor"
+            )
+        }
+    )
+    public void returnTypeHasNoSuitableConstructor() {
     }
 }

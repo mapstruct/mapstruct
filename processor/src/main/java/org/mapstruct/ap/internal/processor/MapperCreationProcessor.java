@@ -517,15 +517,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         if ( reversePrism != null ) {
 
-            // is there a suitable constructor
-            if ( method.isBeanMapping()
-                && !method.isUpdateMethod()
-                && !method.getReturnType().isCollectionOrMapType()
-                && !method.getReturnType().hasEmptyAccessibleContructor() ) {
-                reportErrorWhenNoSuitableConstrutor( method, reversePrism );
-                return null;
-            }
-
             // method is configured as being reverse method, collect candidates
             List<SourceMethod> candidates = new ArrayList<SourceMethod>();
             for ( SourceMethod oneMethod : rawMethods ) {
@@ -687,17 +678,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
             );
         }
-    }
-
-    private void reportErrorWhenNoSuitableConstrutor( SourceMethod method,
-                                                     InheritInverseConfigurationPrism reversePrism ) {
-
-        messager.printMessage( method.getExecutable(),
-            reversePrism.mirror,
-            Message.INHERITINVERSECONFIGURATION_NO_SUITABLE_CONSTRUCTOR,
-            reversePrism.name()
-
-        );
     }
 
     private void reportErrorWhenSeveralNamesMatch(List<SourceMethod> candidates, SourceMethod method,
