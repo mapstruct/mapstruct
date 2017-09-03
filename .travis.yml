@@ -13,7 +13,7 @@ deploy:
   on:
     branch: master
 
-sudo: false
+sudo: required
 cache:
   directories:
   - $HOME/.m2
