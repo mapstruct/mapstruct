@@ -181,8 +181,8 @@ public class ConversionTest {
             @Diagnostic(type = ErroneousSourceTargetMapper6.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
-                messageRegExp = ".*\\.generics\\.WildCardSuperWrapper<.*\\.generics\\.TypeA> does not have a suitable" +
-                    " empty constructor\\.")
+                messageRegExp = ".*\\.generics\\.WildCardSuperWrapper<.*\\.generics\\.TypeA> does not have an " +
+                    "accessible empty constructor\\.")
 
         })
     public void shouldFailOnNonMatchingWildCards() {

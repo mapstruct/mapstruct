@@ -80,7 +80,7 @@ public class Issue1242Test {
             @Diagnostic(type = ErroneousIssue1242MapperMultipleSources.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 33,
-                messageRegExp = ".*TargetB does not have a suitable empty constructor\\.")
+                messageRegExp = ".*TargetB does not have an accessible empty constructor\\.")
         })
     public void ambiguousMethodErrorForTwoFactoryMethodsWithSourceParam() {
     }

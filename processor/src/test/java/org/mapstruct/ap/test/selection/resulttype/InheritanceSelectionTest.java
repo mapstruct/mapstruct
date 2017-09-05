@@ -64,7 +64,7 @@ public class InheritanceSelectionTest {
             @Diagnostic(type = ErroneousFruitMapper.class,
                 kind = Kind.ERROR,
                 line = 36,
-                messageRegExp = ".*Fruit does not have a suitable empty constructor\\.")
+                messageRegExp = ".*Fruit does not have an accessible empty constructor\\.")
         }
     )
     public void testForkedInheritanceHierarchyShouldResultInAmbigousMappingMethod() {
@@ -79,7 +79,7 @@ public class InheritanceSelectionTest {
             @Diagnostic(type = ErroneousResultTypeNoEmptyConstructorMapper.class,
                 kind = Kind.ERROR,
                 line = 31,
-                messageRegExp = ".*\\.resulttype\\.Banana does not have a suitable empty constructor\\.")
+                messageRegExp = ".*\\.resulttype\\.Banana does not have an accessible empty constructor\\.")
         }
     )
     public void testResultTypeHasNoSuitableEmptyConstructor() {

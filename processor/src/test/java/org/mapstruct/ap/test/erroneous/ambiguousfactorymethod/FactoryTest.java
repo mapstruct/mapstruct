@@ -54,7 +54,7 @@ public class FactoryTest {
             @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 35,
-                messageRegExp = ".*\\.ambiguousfactorymethod\\.Bar does not have a suitable empty constructor\\.")
+                messageRegExp = ".*\\.ambiguousfactorymethod\\.Bar does not have an accessible empty constructor\\.")
 
         }
     )

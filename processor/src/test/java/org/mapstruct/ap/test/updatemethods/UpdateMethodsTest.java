@@ -188,7 +188,8 @@ public class UpdateMethodsTest {
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 48,
-                messageRegExp = ".*\\.updatemethods\\.DepartmentEntity does not have a suitable empty constructor\\.")
+                messageRegExp = ".*\\.updatemethods\\.DepartmentEntity does not have an accessible empty " +
+                    "constructor\\.")
 
         })
     public void testShouldFailOnConstantMappingNoPropertyGetter() { }

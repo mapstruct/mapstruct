@@ -53,7 +53,7 @@ public class AmbiguousAnnotatedFactoryTest {
             @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 35,
-                messageRegExp = ".*\\.ambiguousannotatedfactorymethod.Bar does not have a suitable empty " +
+                messageRegExp = ".*\\.ambiguousannotatedfactorymethod.Bar does not have an accessible empty " +
                     "constructor\\.")
 
         }
