@@ -60,10 +60,29 @@ public class InheritanceSelectionTest {
                 line = 36,
                 messageRegExp = "Ambiguous factory methods found for creating .*Fruit: "
                     + ".*Apple .*ConflictingFruitFactory\\.createApple\\(\\), "
-                    + ".*Banana .*ConflictingFruitFactory\\.createBanana\\(\\)\\.")
+                    + ".*Banana .*ConflictingFruitFactory\\.createBanana\\(\\)\\."),
+            @Diagnostic(type = ErroneousFruitMapper.class,
+                kind = Kind.ERROR,
+                line = 36,
+                messageRegExp = ".*Fruit does not have an accessible empty constructor\\.")
         }
     )
     public void testForkedInheritanceHierarchyShouldResultInAmbigousMappingMethod() {
+    }
+
+    @IssueKey("1283")
+    @Test
+    @WithClasses( { ErroneousResultTypeNoEmptyConstructorMapper.class, Banana.class } )
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousResultTypeNoEmptyConstructorMapper.class,
+                kind = Kind.ERROR,
+                line = 31,
+                messageRegExp = ".*\\.resulttype\\.Banana does not have an accessible empty constructor\\.")
+        }
+    )
+    public void testResultTypeHasNoSuitableEmptyConstructor() {
     }
 
     @Test

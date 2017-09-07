@@ -184,8 +184,14 @@ public class UpdateMethodsTest {
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 37,
-                messageRegExp = "No read accessor found for property \"type\" in target type.")
-    } )
+                messageRegExp = "No read accessor found for property \"type\" in target type."),
+            @Diagnostic(type = ErroneousOrganizationMapper2.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 48,
+                messageRegExp = ".*\\.updatemethods\\.DepartmentEntity does not have an accessible empty " +
+                    "constructor\\.")
+
+        })
     public void testShouldFailOnConstantMappingNoPropertyGetter() { }
 
     @Test

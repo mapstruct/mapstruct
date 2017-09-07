@@ -23,16 +23,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.DeclaredType;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.InheritInverseConfigurationPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
@@ -161,7 +162,7 @@ public class TargetReference {
 
             if ( !foundEntryMatch && errorMessage != null) {
                 // This is called only for reporting errors
-                errorMessage.report();
+                errorMessage.report( isReverse );
             }
 
             // foundEntryMatch = isValid, errors are handled here, and the BeanMapping uses that to ignore
@@ -364,14 +365,21 @@ public class TargetReference {
             this.messager = messager;
         }
 
-        abstract void report();
+        abstract void report(boolean isReverse);
 
-        protected void printErrorMessage(Message message, Object... args) {
+        protected void printErrorMessage(Message message, boolean isReverse, Object... args) {
             Object[] errorArgs = new Object[args.length + 2];
             errorArgs[0] = mapping.getTargetName();
             errorArgs[1] = method.getResultType();
             System.arraycopy( args, 0, errorArgs, 2, args.length );
-            messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
+            AnnotationMirror annotationMirror = mapping.getMirror();
+            if ( isReverse ) {
+                InheritInverseConfigurationPrism reversePrism = InheritInverseConfigurationPrism.getInstanceOn(
+                    method.getExecutable() );
+
+                annotationMirror = reversePrism == null ? annotationMirror : reversePrism.mirror;
+            }
+            messager.printMessage( method.getExecutable(), annotationMirror, mapping.getSourceAnnotationValue(),
                 message, errorArgs
             );
         }
@@ -384,8 +392,8 @@ public class TargetReference {
         }
 
         @Override
-        public void report() {
-            printErrorMessage( Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE );
+        public void report(boolean isReverse) {
+            printErrorMessage( Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE, isReverse );
         }
     }
 
@@ -404,7 +412,7 @@ public class TargetReference {
         }
 
         @Override
-        public void report() {
+        public void report(boolean isReverse) {
 
             Set<String> readAccessors = nextType.getPropertyReadAccessors().keySet();
             String mostSimilarProperty = Strings.getMostSimilarWord(
@@ -415,7 +423,11 @@ public class TargetReference {
             List<String> elements = new ArrayList<String>( Arrays.asList( entryNames ).subList( 0, index ) );
             elements.add( mostSimilarProperty );
 
-            printErrorMessage( Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE, Strings.join( elements, "." ) );
+            printErrorMessage(
+                Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE,
+                isReverse,
+                Strings.join( elements, "." )
+            );
         }
     }
 
