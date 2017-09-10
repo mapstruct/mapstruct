@@ -18,10 +18,29 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
+import org.mapstruct.ap.internal.util.AnnotationProcessingException;
+import org.mapstruct.ap.internal.util.Collections;
+import org.mapstruct.ap.internal.util.JavaStreamConstants;
+import org.mapstruct.ap.internal.util.RoundContext;
+import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,32 +60,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
-import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-
-import org.mapstruct.ap.internal.prism.BuilderForPrism;
-import org.mapstruct.ap.internal.prism.BuilderOptionsPrism;
-import org.mapstruct.ap.internal.prism.MappedByBuilderPrism;
-import org.mapstruct.ap.internal.util.AnnotationProcessingException;
-import org.mapstruct.ap.internal.util.Collections;
-import org.mapstruct.ap.internal.util.JavaStreamConstants;
-import org.mapstruct.ap.internal.util.RoundContext;
-import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
 
 /**
  * Factory creating {@link Type} instances.
@@ -243,19 +239,15 @@ public class TypeFactory {
             isImported = false;
         }
 
-        final Type builderType = getBuilderType( typeElement );
-        final TypeMirror buildsType = getBuildsType( typeElement );
-        final BuilderOptions builderOptions = builderType != null ? builderType.getBuilderOptions() : null;
-
         return new Type(
             typeUtils, elementUtils, this,
             mirror,
             typeElement,
             getTypeParameters( mirror, false ),
             implementationType,
-            builderType,
-            buildsType,
-            builderOptions,
+            null, // Null when constructed.  They are set by using with* methods (to avoid recursion)
+            null,
+            null,
             componentType,
             packageName,
             name,
@@ -268,50 +260,6 @@ public class TypeFactory {
             isStreamType,
             isImported
         );
-    }
-
-    private TypeMirror getBuildsType(TypeElement typeElement) {
-        if ( typeElement != null ) {
-            BuilderForPrism prism = BuilderForPrism.getInstanceOn( typeElement );
-            if ( prism != null ) {
-                return prism.value();
-            }
-        }
-        return null;
-    }
-
-    private Type getBuilderType(TypeElement typeElement) {
-        if ( typeElement != null ) {
-            MappedByBuilderPrism prism = MappedByBuilderPrism.getInstanceOn( typeElement );
-            if ( prism != null ) {
-                // Generate builder options for both types
-                final TypeMirror builderTypeMirror = prism.value();
-
-                final BuilderOptions builderOptions = getBuilderOptions( null, typeElement,
-                    (TypeElement) typeUtils.asElement( builderTypeMirror ) );
-
-                return getType( builderTypeMirror )
-                    .withBuildsType( typeElement.asType(), builderOptions );
-
-            }
-        }
-        return null;
-    }
-
-    private BuilderOptions getBuilderOptions(BuilderOptions builderOptions, TypeElement... typeElement) {
-        if ( builderOptions == null ) {
-            builderOptions = new BuilderOptions(  );
-        }
-        for ( TypeElement element : typeElement ) {
-            if ( element != null ) {
-                final BuilderOptionsPrism builderOptionsPrism = BuilderOptionsPrism.getInstanceOn( element );
-                if ( builderOptionsPrism != null ) {
-                    builderOptions = builderOptions.with( builderOptionsPrism.buildMethod(),
-                        builderOptionsPrism.staticBuilderFactoryMethod() );
-                }
-            }
-        }
-        return builderOptions;
     }
 
     /**

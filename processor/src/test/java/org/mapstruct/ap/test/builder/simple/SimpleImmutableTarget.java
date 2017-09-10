@@ -18,9 +18,6 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
-import org.mapstruct.MappedByBuilder;
-
-@MappedByBuilder( SimpleImmutableTarget.Builder.class)
 public class SimpleImmutableTarget {
     private final String name;
     private final int age;

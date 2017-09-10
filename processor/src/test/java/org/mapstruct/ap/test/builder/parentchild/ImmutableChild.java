@@ -18,9 +18,6 @@
  */
 package org.mapstruct.ap.test.builder.parentchild;
 
-import org.mapstruct.MappedByBuilder;
-
-@MappedByBuilder(value = ImmutableChild.Builder.class)
 public class ImmutableChild {
 
     private final String bar;

@@ -18,14 +18,18 @@
  */
 package org.mapstruct.ap.test.builder.parentchild;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface ParentChildMapper {
+
+    @BeanMapping( builderType = ImmutableParent.Builder.class )
     ImmutableParent toParent(MutableParent source);
 
     @Mapping( target = "bar", source = "foo")
+    @BeanMapping( builderType = ImmutableChild.Builder.class )
     ImmutableChild toChild(MutableChild source);
 }

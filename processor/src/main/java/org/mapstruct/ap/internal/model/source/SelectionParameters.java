@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
+import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 
@@ -36,11 +37,12 @@ public class SelectionParameters {
     private final List<TypeMirror> qualifiers;
     private final List<String> qualifyingNames;
     private final TypeMirror resultType;
+    private final TypeMirror builderType;
     private final Types typeUtils;
     private final SourceRHS sourceRHS;
 
     public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
-        Types typeUtils) {
+        TypeMirror builderType, Types typeUtils) {
         this( qualifiers, qualifyingNames, resultType, typeUtils, null );
     }
 
@@ -49,6 +51,7 @@ public class SelectionParameters {
         this.qualifiers = qualifiers;
         this.qualifyingNames = qualifyingNames;
         this.resultType = resultType;
+        this.builderType = builderType;
         this.typeUtils = typeUtils;
         this.sourceRHS = sourceRHS;
     }
@@ -76,6 +79,13 @@ public class SelectionParameters {
      */
     public TypeMirror getResultType() {
         return resultType;
+    }
+
+    /**
+     * todo:ericm Add docs
+     */
+    public TypeMirror getBuilderType() {
+        return builderType;
     }
 
     /**

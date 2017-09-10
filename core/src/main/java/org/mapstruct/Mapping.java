@@ -170,6 +170,13 @@ public @interface Mapping {
     Class<?> resultType() default void.class;
 
     /**
+     * If the result type needs a builder, this provides the class of the builder
+     *
+     * @return the builderType to select
+     */
+    Class<?> builderType() default void.class;
+
+    /**
      * One or more properties of the result type on which the mapped property depends. The generated method
      * implementation will invoke the setters of the result type ordered so that the given dependency relationship(s)
      * are satisfied. Useful in case one property setter depends on the state of another property of the result type.

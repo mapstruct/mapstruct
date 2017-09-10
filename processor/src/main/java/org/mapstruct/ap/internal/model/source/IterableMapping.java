@@ -68,6 +68,7 @@ public class IterableMapping {
             iterableMapping.qualifiedBy(),
             iterableMapping.qualifiedByName(),
             elementTargetTypeIsDefined ? iterableMapping.elementTargetType() : null,
+            null,
             typeUtils
         );
 

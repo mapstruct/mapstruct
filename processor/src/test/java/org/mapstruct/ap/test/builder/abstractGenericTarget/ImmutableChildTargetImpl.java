@@ -18,10 +18,6 @@
  */
 package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-import org.mapstruct.BuilderFor;
-import org.mapstruct.MappedByBuilder;
-
-@MappedByBuilder( ImmutableChildTargetImpl.Builder.class)
 public class ImmutableChildTargetImpl implements AbstractChildTarget  {
     private final String bar;
 
@@ -37,7 +33,6 @@ public class ImmutableChildTargetImpl implements AbstractChildTarget  {
         return bar;
     }
 
-    @BuilderFor( ImmutableChildTargetImpl.class )
     public static class Builder {
         private String bar;
 

@@ -18,12 +18,14 @@
  */
 package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public abstract class AbstractTargetMapper {
 
+    @BeanMapping(builderType = ImmutableParentTargetImpl.Builder.class)
     abstract ImmutableParentTargetImpl toImmutable(ParentSource parentSource);
 
     abstract MutableParentTargetImpl toMutable(ParentSource parentSource);
@@ -32,5 +34,7 @@ public abstract class AbstractTargetMapper {
      * This method allows mapstruct to successfully write to {@link ImmutableParentTargetImpl#nonGenericizedNested}
      * by providing a concrete class to convert to.
      */
+    @BeanMapping(builderType = ImmutableChildTargetImpl.Builder.class)
     abstract ImmutableChildTargetImpl toChild(ChildSource child);
+
 }

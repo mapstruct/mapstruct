@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -26,5 +27,6 @@ import org.mapstruct.ReportingPolicy;
 public interface SimpleBuilderMapper {
 
     @Mapping(target = "name", source = "fullName")
+    @BeanMapping( builderType = SimpleImmutableTarget.Builder.class )
     SimpleImmutableTarget toImmutable(SimpleMutableSource source);
 }

@@ -20,9 +20,6 @@ package org.mapstruct.ap.test.builder.parentchild;
 
 import java.util.List;
 
-import org.mapstruct.MappedByBuilder;
-
-@MappedByBuilder( ImmutableParent.Builder.class)
 public class ImmutableParent {
     private final int count;
     private final List<ImmutableChild> children;

@@ -18,22 +18,6 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
-
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -43,6 +27,22 @@ import org.mapstruct.ap.internal.prism.MappingsPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.
@@ -138,6 +138,7 @@ public class Mapping {
         String defaultValue = mappingPrism.values.defaultValue() == null ? null : mappingPrism.defaultValue();
 
         boolean resultTypeIsDefined = mappingPrism.values.resultType() != null;
+        boolean builderTypeIsDefined = mappingPrism.values.builderType() != null;
         List<String> dependsOn =
             mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
 
@@ -153,6 +154,7 @@ public class Mapping {
             mappingPrism.qualifiedBy(),
             mappingPrism.qualifiedByName(),
             resultTypeIsDefined ? mappingPrism.resultType() : null,
+            builderTypeIsDefined ? mappingPrism.builderType() : null,
             typeUtils
         );
 

@@ -18,19 +18,6 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.util.Types;
-
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -40,6 +27,19 @@ import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.util.Types;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Represents a mapping method with source and target type and the mappings between the properties of source and target
@@ -62,6 +62,8 @@ public class SourceMethod implements Method {
     private final Parameter targetTypeParameter;
     private final boolean isObjectFactory;
     private final Type returnType;
+    private final Type builderType;
+
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
     private final MapperConfiguration config;
@@ -92,6 +94,7 @@ public class SourceMethod implements Method {
         private ExecutableElement executable;
         private List<Parameter> parameters;
         private Type returnType = null;
+        private Type builderType;
         private List<Type> exceptionTypes;
         private Map<String, List<Mapping>> mappings;
         private IterableMapping iterableMapping = null;
@@ -191,6 +194,26 @@ public class SourceMethod implements Method {
         }
 
         public SourceMethod build() {
+            // If a builderType exists, attach it to the returnType.  What about parameter types???
+            if ( beanMapping != null && beanMapping.getBuilderTypeMirror() != null) {
+                this.builderType = typeFactory.getType( beanMapping.getBuilderTypeMirror() );
+                if ( this.returnType != null ) {
+                    this.builderType = this.builderType.withBuildsType( this.returnType.getTypeMirror() );
+                    this.returnType = this.returnType.withBuilderType( builderType );
+                }
+
+                // Update all parameters that are targetType or mappingTarget parameters
+                if ( this.parameters != null ) {
+                    ListIterator<Parameter> parameters = this.parameters.listIterator();
+                    while ( parameters.hasNext() ) {
+                        Parameter next = parameters.next();
+                        if ( next.isTargetType() || next.isMappingTarget() ) {
+                            parameters.set( next.withBuilderType( builderType ) );
+                        }
+                    }
+                }
+
+            }
 
             MappingOptions mappingOptions =
                     new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings, false );
@@ -213,6 +236,7 @@ public class SourceMethod implements Method {
         this.executable = builder.executable;
         this.parameters = builder.parameters;
         this.returnType = builder.returnType;
+        this.builderType = builder.builderType;
         this.exceptionTypes = builder.exceptionTypes;
         this.accessibility = Accessibility.fromModifiers( builder.executable.getModifiers() );
 
@@ -384,6 +408,14 @@ public class SourceMethod implements Method {
             isEnumMapping = MappingMethodUtils.isEnumMapping( this );
         }
         return isEnumMapping;
+    }
+
+    /**
+     * todo:ericm Add docs
+     * @return
+     */
+    public Type getBuilderType() {
+        return builderType;
     }
 
     /**

@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.builder.nestedprop;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -27,8 +28,11 @@ import org.mapstruct.ReportingPolicy;
 public interface FlattenedMapper {
 
     @Mappings({
-            @Mapping(target = "first.age", source = "count"),
+            @Mapping(target = "first.foo", source = "count", resultType = ImmutableTargetContainer.class,
+                builderType = ImmutableTargetContainer.Builder.class),
             @Mapping(target = "second", ignore = true)
     })
+    @BeanMapping(builderType = ExpandedTarget.Builder.class)
     ExpandedTarget writeToNestedProperty(FlattenedSource source);
+
 }

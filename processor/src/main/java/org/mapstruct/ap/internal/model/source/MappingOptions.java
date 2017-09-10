@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.util.FormattingMessager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,9 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Encapsulates all options specifiable on a mapping method
@@ -54,7 +54,8 @@ public class MappingOptions {
     private final boolean restrictToDefinedMappings;
 
     public MappingOptions(Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
-        BeanMapping beanMapping, List<ValueMapping> valueMappings, boolean restrictToDefinedMappings ) {
+                          BeanMapping beanMapping, List<ValueMapping> valueMappings,
+                          boolean restrictToDefinedMappings) {
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;

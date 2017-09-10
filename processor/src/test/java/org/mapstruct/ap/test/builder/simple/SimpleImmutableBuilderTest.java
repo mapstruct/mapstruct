@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -32,6 +30,8 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({SimpleMutableSource.class, SimpleImmutableTarget.class})
 @RunWith(AnnotationProcessorTestRunner.class)
@@ -59,7 +59,7 @@ public class SimpleImmutableBuilderTest {
         diagnostics = @Diagnostic(
             kind = javax.tools.Diagnostic.Kind.ERROR,
             type = InvalidSimpleBuilderMapper.class,
-            line = 27,
+            line = 29,
             messageRegExp = "Unmapped target property: \"name\"."))
     public void testSimpleImmutableBuilderMissingPropertyFailsToCompile() {
     }

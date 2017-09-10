@@ -18,11 +18,13 @@
  */
 package org.mapstruct.ap.test.builder.abstractBuilder;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public abstract class ThingOneMapper {
 
+    @BeanMapping(builderType = ThingOne.ThingOneBuilder.class)
     abstract ThingOne fromThingTwo(ThingTwo two);
 }

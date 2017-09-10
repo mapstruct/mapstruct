@@ -18,14 +18,10 @@
  */
 package org.mapstruct.ap.test.builder.nestedprop;
 
-import org.mapstruct.MappedByBuilder;
-import org.mapstruct.ap.test.builder.simple.SimpleImmutableTarget;
-
-@MappedByBuilder( ExpandedTarget.Builder.class)
 public class ExpandedTarget {
     private final int count;
-    private final SimpleImmutableTarget first;
-    private final SimpleImmutableTarget second;
+    private final ImmutableTargetContainer first;
+    private final ImmutableTargetContainer second;
 
     ExpandedTarget(Builder builder) {
         this.count = builder.count;
@@ -41,30 +37,30 @@ public class ExpandedTarget {
         return count;
     }
 
-    public SimpleImmutableTarget getFirst() {
+    public ImmutableTargetContainer getFirst() {
         return first;
     }
 
-    public SimpleImmutableTarget getSecond() {
+    public ImmutableTargetContainer getSecond() {
         return second;
     }
 
     public static class Builder {
         private int count;
-        private SimpleImmutableTarget first;
-        private SimpleImmutableTarget second;
+        private ImmutableTargetContainer first;
+        private ImmutableTargetContainer second;
 
         public Builder count(int age) {
             this.count = count;
             return this;
         }
 
-        public Builder first(SimpleImmutableTarget first) {
+        public Builder first(ImmutableTargetContainer first) {
             this.first = first;
             return this;
         }
 
-        public Builder second(SimpleImmutableTarget second) {
+        public Builder second(ImmutableTargetContainer second) {
             this.second = second;
             return this;
         }

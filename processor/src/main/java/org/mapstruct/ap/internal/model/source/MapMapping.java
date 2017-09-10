@@ -18,16 +18,16 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.util.Types;
-
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.prism.MapMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.util.Types;
 
 /**
  * Represents a map mapping as configured via {@code @MapMapping}.
@@ -76,6 +76,7 @@ public class MapMapping {
             mapMapping.keyQualifiedBy(),
             mapMapping.keyQualifiedByName(),
             keyTargetTypeIsDefined ? mapMapping.keyTargetType() : null,
+            null,
             typeUtils
         );
 
@@ -83,6 +84,7 @@ public class MapMapping {
             mapMapping.valueQualifiedBy(),
             mapMapping.valueQualifiedByName(),
             valueTargetTypeIsDefined ? mapMapping.valueTargetType() : null,
+            null,
             typeUtils
         );
 

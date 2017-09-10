@@ -18,11 +18,13 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface InvalidSimpleBuilderMapper {
 
+    @BeanMapping( builderType = SimpleImmutableTarget.Builder.class )
     SimpleImmutableTarget toImmutable(SimpleMutableSource source);
 }

@@ -20,15 +20,23 @@ package org.mapstruct.ap.test.builder.nestedprop;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.builder.BuilderTests;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
+import org.mapstruct.factory.Mappers;
 
-@WithClasses( {FlattenedSource.class, ExpandedTarget.class, ImmutableTargetContainer.class} )
+import static org.assertj.core.api.Assertions.assertThat;
+
+@WithClasses( {FlattenedSource.class, ExpandedTarget.class, ImmutableTargetContainer.class, FlattenedMapper.class})
 @Category(BuilderTests.class)
+@RunWith(AnnotationProcessorTestRunner.class)
 public class NestedPropTest {
-    @Test
-    @WithClasses( {FlattenedMapper.class} )
-    public void testNestedPropHappyPath() {
 
+    @Test
+    public void testNestedPropHappyPath() {
+        FlattenedMapper mapper = Mappers.getMapper( FlattenedMapper.class );
+        ExpandedTarget expandedTarget = mapper.writeToNestedProperty( new FlattenedSource( "Foo", "Bar", 33 ) );
+        assertThat( expandedTarget ).isNotNull();
     }
 }

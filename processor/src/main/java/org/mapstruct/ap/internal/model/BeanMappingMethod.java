@@ -18,25 +18,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.lang.model.type.DeclaredType;
-import javax.tools.Diagnostic;
-
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
@@ -64,6 +45,24 @@ import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
+import javax.lang.model.type.DeclaredType;
+import javax.tools.Diagnostic;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
  * configured by one or more {@link PropertyMapping}s.
@@ -76,6 +75,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
     private final Type resultType;
+    private final Type builderType;
 
     public static class Builder {
 
@@ -91,13 +91,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private Map<String, List<Mapping>> methodMappings;
         private SingleMappingByTargetPropertyNameFunction singleMapping;
         private final Map<String, List<Mapping>> unprocessedDefinedTargets = new HashMap<String, List<Mapping>>();
+        private Type builderType;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
             return this;
         }
 
-        public Builder souceMethod(SourceMethod sourceMethod) {
+        public Builder sourceMethod(SourceMethod sourceMethod) {
+            builderType = sourceMethod.getBuilderType();
             singleMapping = new SourceMethodSingleMapping( sourceMethod );
             return setupMethodWithMapping( sourceMethod );
         }
@@ -173,7 +175,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             Type resultType = null;
             if ( factoryMethod == null ) {
                 if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
-                    resultType = ctx.getTypeFactory().getType( selectionParameters.getResultType() );
+                    Type builderType = null;
+                    if ( selectionParameters.getBuilderType() != null ) {
+                        builderType = ctx.getTypeFactory().getType( selectionParameters.getBuilderType() )
+                            .withBuildsType( selectionParameters.getResultType() );
+                    }
+                    resultType = ctx.getTypeFactory().getType( selectionParameters.getResultType() )
+                        .withBuilderType( builderType );
+
                     if ( resultType.isAbstract() ) {
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
@@ -233,6 +242,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 factoryMethod,
                 mapNullToDefault,
                 resultType,
+                builderType,
                 beforeMappingMethods,
                 afterMappingMethods
             );
@@ -737,6 +747,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               MethodReference factoryMethod,
                               boolean mapNullToDefault,
                               Type resultType,
+                              Type builderType,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
                               List<LifecycleCallbackMethodReference> afterMappingReferences) {
         super(
@@ -749,6 +760,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         );
 
         this.propertyMappings = propertyMappings;
+        this.resultType = resultType;
+        this.builderType = builderType;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
@@ -764,7 +777,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
         }
-        this.resultType = resultType;
     }
 
     public List<PropertyMapping> getPropertyMappings() {

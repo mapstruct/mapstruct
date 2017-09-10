@@ -18,9 +18,6 @@
  */
 package org.mapstruct.ap.test.builder.abstractBuilder;
 
-import org.mapstruct.MappedByBuilder;
-
-@MappedByBuilder( ThingOne.ThingOneBuilder.class )
 public class ThingOne implements AbstractThing {
 
     private final String foo;

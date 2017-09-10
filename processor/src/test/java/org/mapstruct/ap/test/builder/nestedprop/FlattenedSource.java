@@ -18,10 +18,21 @@
  */
 package org.mapstruct.ap.test.builder.nestedprop;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class FlattenedSource {
     private String foo;
     private String bar;
     private int count;
+
+    public FlattenedSource() {
+    }
+
+    public FlattenedSource(String foo, String bar, int count) {
+        this.foo = checkNotNull( foo );
+        this.bar = checkNotNull( bar );
+        this.count = count;
+    }
 
     public String getFoo() {
         return foo;

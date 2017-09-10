@@ -18,9 +18,6 @@
  */
 package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-import org.mapstruct.MappedByBuilder;
-
-@MappedByBuilder( ImmutableParentTargetImpl.Builder.class)
 public class ImmutableParentTargetImpl implements AbstractParentTarget<ImmutableChildTargetImpl> {
     private final int count;
     private final ImmutableChildTargetImpl nested;

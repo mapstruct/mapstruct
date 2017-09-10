@@ -18,16 +18,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
-
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
@@ -38,6 +28,15 @@ import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.MappingConstantsPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link ValueMappingMethod} which maps one value type to another, optionally configured by one or more
@@ -192,7 +191,9 @@ public class ValueMappingMethod extends MappingMethod {
                 List<TypeMirror> qualifiers = beanMappingPrism.qualifiedBy();
                 List<String> qualifyingNames = beanMappingPrism.qualifiedByName();
                 TypeMirror resultType = beanMappingPrism.resultType();
-                return new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
+                TypeMirror builderType = beanMappingPrism.values.builderType() != null ? beanMappingPrism.builderType()
+                    : null;
+                return new SelectionParameters( qualifiers, qualifyingNames, resultType, builderType, typeUtils );
             }
             return null;
         }
