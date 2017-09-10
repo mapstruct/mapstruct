@@ -25,6 +25,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public abstract class ThingOneMapper {
 
-    @BeanMapping(builderType = ThingOne.ThingOneBuilder.class)
+    @BeanMapping(resultType = ThingOne.class, builderType = ThingOne.ThingOneBuilder.class)
     abstract ThingOne fromThingTwo(ThingTwo two);
 }

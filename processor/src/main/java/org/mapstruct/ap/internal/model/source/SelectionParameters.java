@@ -18,13 +18,12 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import java.util.Collections;
-import java.util.List;
+import org.mapstruct.ap.internal.model.common.SourceRHS;
+
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
+import java.util.Collections;
 import java.util.List;
-
-import org.mapstruct.ap.internal.model.common.SourceRHS;
 
 /**
  * Holding parameters common to the selection process, common to IterableMapping, BeanMapping, PropertyMapping and
@@ -43,16 +42,16 @@ public class SelectionParameters {
 
     public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
         TypeMirror builderType, Types typeUtils) {
-        this( qualifiers, qualifyingNames, resultType, typeUtils, null );
+        this( qualifiers, qualifyingNames, resultType, typeUtils, builderType, null );
     }
 
     private SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
-        Types typeUtils, SourceRHS sourceRHS) {
+        Types typeUtils, TypeMirror builderType, SourceRHS sourceRHS) {
         this.qualifiers = qualifiers;
         this.qualifyingNames = qualifyingNames;
         this.resultType = resultType;
-        this.builderType = builderType;
         this.typeUtils = typeUtils;
+        this.builderType = builderType;
         this.sourceRHS = sourceRHS;
     }
 
@@ -169,6 +168,7 @@ public class SelectionParameters {
         return new SelectionParameters(
             Collections.<TypeMirror>emptyList(),
             Collections.<String>emptyList(),
+            null,
             null,
             null,
             sourceRHS

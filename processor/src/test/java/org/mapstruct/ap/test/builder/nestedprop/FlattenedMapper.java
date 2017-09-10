@@ -28,11 +28,9 @@ import org.mapstruct.ReportingPolicy;
 public interface FlattenedMapper {
 
     @Mappings({
-            @Mapping(target = "first.foo", source = "count", resultType = ImmutableTargetContainer.class,
-                builderType = ImmutableTargetContainer.Builder.class),
+            @Mapping(target = "first.foo", source = "count"),
             @Mapping(target = "second", ignore = true)
     })
     @BeanMapping(builderType = ExpandedTarget.Builder.class)
     ExpandedTarget writeToNestedProperty(FlattenedSource source);
-
 }

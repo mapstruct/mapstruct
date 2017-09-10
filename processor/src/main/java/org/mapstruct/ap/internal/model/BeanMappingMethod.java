@@ -142,7 +142,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             if ( !method.getMappingOptions().isRestrictToDefinedMappings() ) {
-
                 // map properties without a mapping
                 applyPropertyNameBasedMapping();
 
@@ -199,7 +198,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             Message.BEANMAPPING_NOT_ASSIGNABLE, resultType, method.getResultType()
                         );
                     }
-                    else if ( !resultType.hasEmptyAccessibleContructor() ) {
+                    else if ( builderType == null && !resultType.hasEmptyAccessibleContructor() ) {
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
                             beanMappingPrism.mirror,
@@ -215,7 +214,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         method.getReturnType()
                     );
                 }
-                else if ( !method.isUpdateMethod() && !method.getReturnType().hasEmptyAccessibleContructor() ) {
+                else if ( (selectionParameters == null || selectionParameters.getBuilderType() == null) &&
+                    !method.isUpdateMethod() && !method.getReturnType().hasEmptyAccessibleContructor() ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
                         Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
