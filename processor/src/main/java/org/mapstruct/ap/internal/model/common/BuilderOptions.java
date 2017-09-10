@@ -63,7 +63,7 @@ public class BuilderOptions {
     }
 
     /**
-     * Because @BuilderOptions annotation can be applied to either side (building or target), this function allows
+     * Because BuilderOptions annotation can be applied to either side (building or target), this function allows
      * us to return an immutable copy of the current BuilderOptions with any modifications.  Also detects any
      * incompatible configuration (in the case that configuration exists on both the builder and target classes).
      *

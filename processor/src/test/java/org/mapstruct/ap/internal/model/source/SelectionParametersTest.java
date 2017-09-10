@@ -20,6 +20,12 @@ package org.mapstruct.ap.internal.model.source;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -34,11 +40,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Types;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import org.junit.Test;
 

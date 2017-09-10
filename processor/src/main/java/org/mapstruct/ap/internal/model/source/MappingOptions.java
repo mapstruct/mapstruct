@@ -54,8 +54,8 @@ public class MappingOptions {
     private final boolean restrictToDefinedMappings;
 
     public MappingOptions(Map<String, List<Mapping>> mappings, IterableMapping iterableMapping, MapMapping mapMapping,
-                          BeanMapping beanMapping, List<ValueMapping> valueMappings,
-                          boolean restrictToDefinedMappings) {
+        BeanMapping beanMapping, List<ValueMapping> valueMappings,
+        boolean restrictToDefinedMappings) {
         this.mappings = mappings;
         this.iterableMapping = iterableMapping;
         this.mapMapping = mapMapping;

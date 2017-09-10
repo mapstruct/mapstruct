@@ -20,6 +20,14 @@ package org.mapstruct.ap.internal.processor;
 
 import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutableElements;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -29,13 +37,6 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -384,7 +385,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         else {
             return null;
         }
-
     }
 
     private Type selectResultType(Type returnType, Parameter targetParameter) {

@@ -20,9 +20,6 @@ package org.mapstruct.ap.internal.model.source;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,6 +27,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -212,7 +213,6 @@ public class SourceMethod implements Method {
                         }
                     }
                 }
-
             }
 
             MappingOptions mappingOptions =

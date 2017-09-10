@@ -18,6 +18,15 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -33,14 +42,6 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
@@ -178,16 +179,17 @@ public class Type extends ModelElement implements Comparable<Type> {
     //CHECKSTYLE:ON
 
     /**
-     * @return the TypeElement that this Type "produces" during mappings.  If this type is a builder,
-     * this should return the TypeElement that's being built.  Otherwise, it's the Type itself.
+     * @return the TypeElement {@code this} {@link Type}  "produces" during mappings.  If {@code this} {@link Type}
+     * is a builder, this method will return TypeElement that's being built.  Otherwise, it's the Type itself.
      */
     public TypeMirror getMappingType() {
         return isBuilderClass() ? this.buildsType : this.typeMirror;
     }
 
     /**
-     * @return the DeclaredType that is used to to "write" values when this Type is a mapping target.  In the case
-     * of an immutable builder, the "write" type can be different than the Type itself.
+     * @return The type that is used to to "write" values for {@code this} {@link Type}.  In the case of an immutable
+     * builder, the builder instance is used as a surrogate for write operations during object construction.  Otherwise,
+     * the value returned by this method is simply the underlying type.
      */
     public DeclaredType getWriteType() {
         return (DeclaredType) (builderType != null ? builderType.getTypeMirror() : typeMirror);
@@ -202,18 +204,18 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * @return If this Type must be created by a builder, this Type represents the builder class.
+     * @return If {@code this} {@link Type} is created by a builder, return the builder's type.  Otherwise, null
      */
     public Type getBuilderType() {
         return builderType;
     }
 
     /**
-     * Method that returns the current Type, but with a different buildsType.  This is primarily used to
-     * avoid weird recursion when loading builders/buildees.
+     * Method that returns an immutable copy of {@code this}, but but with a different value for {@link #buildsType}.
+     * This is primarily used to maintain immutability while avoiding weird recursion when loading builders/buildees.
      *
-     * @param buildsTypeMirror New value for this.buildsType
-     * @return A new immutable copy of this type, with the new values.
+     * @param buildsTypeMirror New value for {@link #buildsType}
+     * @return A new immutable copy of {@code this}, with a new value for {@link #buildsType}
      */
     public Type withBuildsType(TypeMirror buildsTypeMirror ) {
         return new Type( typeUtils, elementUtils, typeFactory, typeMirror, typeElement, typeParameters,
@@ -223,11 +225,11 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * Method that returns the current Type, but with a different builderType.  This is primarily used to
-     * avoid weird recursion when loading builders/buildees.
+     * Method that returns an immutable copy of {@code this}, but but with a different value for {@link #builderType}.
+     * This is primarily used to avoid weird recursion when loading builders/buildees.
      *
-     * @param builderType New value for this.builderType
-     * @return A new immutable copy of this type, with the new values.
+     * @param builderType New value for {@link #builderType}
+     * @return A new immutable copy of {@code this}, with a new {@link #builderType}
      */
     public Type withBuilderType(Type builderType) {
         return new Type( typeUtils, elementUtils, typeFactory, typeMirror, typeElement, typeParameters,
@@ -246,14 +248,18 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     /**
-     * Whether or not this class is a builder.
+     * Whether this instance represents a builder.
+     *
+     * Related: {@link #isMappedByBuilder()} determines the inverse: whether this type is built by a builder
+     *
+     * return Whether or not {@code this} {@link Type} <em>is</em> a builder.
      */
     public boolean isBuilderClass() {
         return buildsType != null;
     }
 
     /**
-     * Whether or not this class is created using a builder.
+     * Whether or not {@code this} {@link Type} is created using a builder.
      */
     public boolean isMappedByBuilder() {
         return builderType != null;

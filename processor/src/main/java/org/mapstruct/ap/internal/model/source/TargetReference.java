@@ -131,13 +131,11 @@ public class TargetReference {
         }
 
         public TargetReference build() {
-
             String targetName = mapping.getTargetName();
 
             if ( targetName == null ) {
                 return null;
             }
-
 
             String[] segments = targetName.split( "\\." );
             Parameter parameter = method.getMappingTargetParameter();
@@ -171,7 +169,6 @@ public class TargetReference {
         }
 
         private List<PropertyEntry> getTargetEntries(Type type, String[] entryNames) {
-
             // initialize
             CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
             List<PropertyEntry> targetEntries = new ArrayList<PropertyEntry>();
@@ -232,7 +229,8 @@ public class TargetReference {
                 );
             }
             else {
-                // With builders, the includingType is different when you are writing.
+                // With builders, the {@code includingType} needs to be the builder type instead of the mapping
+                // output
                 nextType = typeFactory.getSingleParameter( initial.getWriteType(), toUse ).getType();
             }
             return nextType;

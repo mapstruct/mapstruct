@@ -71,8 +71,6 @@ public class BeanMapping {
             typeUtils
         );
 
-
-
         //TODO Do we want to add the reporting policy to the BeanMapping as well? To give more granular support?
         return new BeanMapping( cmp, nullValueMappingStrategy, null );
     }

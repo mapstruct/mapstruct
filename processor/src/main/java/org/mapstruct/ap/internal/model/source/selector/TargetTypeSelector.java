@@ -57,7 +57,7 @@ public class TargetTypeSelector implements MethodSelector {
                 new ArrayList<SelectedMethod<T>>( methods.size() );
 
             for ( SelectedMethod<T> method : methods ) {
-                // We need to use getMappingType to allow builder Types to show up as valid targets
+                // We need to use {@link #getMappingType()} to allow builders to show up as valid targets
                 // for the types they build.
                 final TypeMirror resultTypeMirror = method.getMethod().getResultType().getMappingType();
 

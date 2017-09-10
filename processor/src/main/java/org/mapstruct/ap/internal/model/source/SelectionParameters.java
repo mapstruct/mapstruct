@@ -18,10 +18,11 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
 import java.util.Collections;
 import java.util.List;
+
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 

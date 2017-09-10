@@ -18,8 +18,9 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import javax.lang.model.element.ExecutableElement;
 import java.util.List;
+
+import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
