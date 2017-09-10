@@ -18,13 +18,9 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import org.mapstruct.ap.internal.util.AnnotationProcessingException;
-import org.mapstruct.ap.internal.util.Collections;
-import org.mapstruct.ap.internal.util.JavaStreamConstants;
-import org.mapstruct.ap.internal.util.RoundContext;
-import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -60,9 +56,13 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
+import org.mapstruct.ap.internal.util.AnnotationProcessingException;
+import org.mapstruct.ap.internal.util.Collections;
+import org.mapstruct.ap.internal.util.JavaStreamConstants;
+import org.mapstruct.ap.internal.util.RoundContext;
+import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 
 /**
  * Factory creating {@link Type} instances.

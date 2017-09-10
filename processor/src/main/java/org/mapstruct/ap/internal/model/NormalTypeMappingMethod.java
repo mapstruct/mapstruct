@@ -18,12 +18,12 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.Method;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.Method;
 
 /**
  * A {@link MappingMethod} that is used by the main mapping methods ({@link BeanMappingMethod},

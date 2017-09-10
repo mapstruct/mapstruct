@@ -18,16 +18,6 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
-import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.MappingPrism;
-import org.mapstruct.ap.internal.prism.MappingsPrism;
-import org.mapstruct.ap.internal.util.FormattingMessager;
-import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.Strings;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
@@ -43,6 +33,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.MappingPrism;
+import org.mapstruct.ap.internal.prism.MappingsPrism;
+import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * Represents a property mapping as configured via {@code @Mapping}.

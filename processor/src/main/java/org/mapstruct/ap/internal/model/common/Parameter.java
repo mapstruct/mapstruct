@@ -18,15 +18,15 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import org.mapstruct.ap.internal.prism.ContextPrism;
-import org.mapstruct.ap.internal.prism.MappingTargetPrism;
-import org.mapstruct.ap.internal.prism.TargetTypePrism;
-import org.mapstruct.ap.internal.util.Collections;
-
 import javax.lang.model.element.VariableElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import org.mapstruct.ap.internal.prism.ContextPrism;
+import org.mapstruct.ap.internal.prism.MappingTargetPrism;
+import org.mapstruct.ap.internal.prism.TargetTypePrism;
+import org.mapstruct.ap.internal.util.Collections;
 
 /**
  * A parameter of a mapping method.

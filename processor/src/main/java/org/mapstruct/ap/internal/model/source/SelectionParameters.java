@@ -18,12 +18,12 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import org.mapstruct.ap.internal.model.common.SourceRHS;
-
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import java.util.Collections;
 import java.util.List;
+
+import org.mapstruct.ap.internal.model.common.SourceRHS;
 
 /**
  * Holding parameters common to the selection process, common to IterableMapping, BeanMapping, PropertyMapping and

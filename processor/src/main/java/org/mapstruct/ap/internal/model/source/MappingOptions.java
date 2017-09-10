@@ -18,9 +18,7 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.util.FormattingMessager;
 
 /**
  * Encapsulates all options specifiable on a mapping method

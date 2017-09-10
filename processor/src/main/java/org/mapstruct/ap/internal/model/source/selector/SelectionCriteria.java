@@ -18,12 +18,12 @@
  */
 package org.mapstruct.ap.internal.model.source.selector;
 
-import org.mapstruct.ap.internal.model.common.SourceRHS;
-import org.mapstruct.ap.internal.model.source.SelectionParameters;
-
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.mapstruct.ap.internal.model.common.SourceRHS;
+import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
 /**
  * This class groups the selection criteria in one class

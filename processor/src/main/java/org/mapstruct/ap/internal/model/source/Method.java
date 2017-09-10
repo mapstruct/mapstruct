@@ -18,14 +18,14 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
+import javax.lang.model.element.ExecutableElement;
+import java.util.List;
+
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
-
-import javax.lang.model.element.ExecutableElement;
-import java.util.List;
 
 /**
  * This interface makes available common method properties and a matching method There are 2 known implementors:

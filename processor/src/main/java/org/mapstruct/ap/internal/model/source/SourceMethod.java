@@ -18,15 +18,7 @@
  */
 package org.mapstruct.ap.internal.model.source;
 
-import org.mapstruct.ap.internal.model.common.Accessibility;
-import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.ObjectFactoryPrism;
-import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.FormattingMessager;
-import org.mapstruct.ap.internal.util.MapperConfiguration;
-import org.mapstruct.ap.internal.util.Strings;
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -39,7 +31,15 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
+import org.mapstruct.ap.internal.model.common.Accessibility;
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.ObjectFactoryPrism;
+import org.mapstruct.ap.internal.util.Executables;
+import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.MapperConfiguration;
+import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * Represents a mapping method with source and target type and the mappings between the properties of source and target
