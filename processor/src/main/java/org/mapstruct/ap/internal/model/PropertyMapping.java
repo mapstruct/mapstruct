@@ -53,6 +53,7 @@ import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -77,6 +78,7 @@ public class PropertyMapping extends ModelElement {
     private final Assignment assignment;
     private final List<String> dependsOn;
     private final Assignment defaultValueAssignment;
+    private final IterableCreation iterableCreation;
 
     public enum TargetWriteAccessorType {
         FIELD,
@@ -316,8 +318,21 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
-                getDefaultValueAssignment( assignment )
+                getDefaultValueAssignment( assignment ),
+                buildIterableCreation()
             );
+        }
+
+        private IterableCreation buildIterableCreation() {
+            NullValueMappingStrategyPrism nullValueMappingStrategy = method.getMapperConfiguration()
+                .getNullValueMappingStrategy();
+
+            if ( nullValueMappingStrategy == NullValueMappingStrategyPrism.RETURN_DEFAULT ) {
+                return IterableCreation.create( targetType, sourceReference.getParameter() );
+            }
+            else {
+                return null;
+            }
         }
 
         /**
@@ -369,7 +384,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment assignToPlain(Type targetType, TargetWriteAccessorType targetAccessorType,
-                                         Assignment rightHandSide) {
+            Assignment rightHandSide) {
 
             Assignment result;
 
@@ -867,14 +882,15 @@ public class PropertyMapping extends ModelElement {
                             Type targetType, Assignment propertyAssignment,
                             List<String> dependsOn, Assignment defaultValueAssignment ) {
         this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
-            targetType, propertyAssignment, dependsOn, defaultValueAssignment
+            targetType, propertyAssignment, dependsOn, defaultValueAssignment, null
         );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
-                            ValueProvider targetReadAccessorProvider, Type targetType,
-                            Assignment assignment,
-        List<String> dependsOn, Assignment defaultValueAssignment) {
+        ValueProvider targetReadAccessorProvider, Type targetType,
+        Assignment assignment,
+        List<String> dependsOn, Assignment defaultValueAssignment,
+        IterableCreation iterableCreation) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -884,6 +900,7 @@ public class PropertyMapping extends ModelElement {
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
         this.defaultValueAssignment = defaultValueAssignment;
+        this.iterableCreation = iterableCreation;
     }
 
     /**
@@ -915,6 +932,10 @@ public class PropertyMapping extends ModelElement {
 
     public Assignment getDefaultValueAssignment() {
         return defaultValueAssignment;
+    }
+
+    public IterableCreation getIterableCreation() {
+        return iterableCreation;
     }
 
     @Override

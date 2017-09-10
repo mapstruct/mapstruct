@@ -160,7 +160,7 @@ public class Issue913SetterMapperForCollectionsTest {
         Domain domain = DomainDtoWithNvmsDefaultMapper.INSTANCE.create( dto );
 
         doControlAsserts( domain );
-        assertThat( domain.getStrings() ).isNull();
+        assertThat( domain.getStrings() ).isNotNull();
         assertThat( domain.getLongs() ).isEmpty();
     }
 
