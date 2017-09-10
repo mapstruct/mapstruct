@@ -113,7 +113,20 @@ public class Executables {
         return executable != null
             && isPublic( method )
             && executable.getParameters().size() == 1
-            && ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.SETTER;
+            && ( ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.SETTER ||
+            isBuilderSetterMethod( method ) );
+    }
+
+    private static boolean isBuilderSetterMethod(Accessor method) {
+        if ( method.isBuilder() ) {
+            //todo:ericm Need to test with
+            //String methodReturnType = method.getExecutable().getReturnType().toString();
+            //String builderType = method.getBuilderType().toString();
+            return !method.getSimpleName().contentEquals( "build" );
+        }
+        else {
+            return false;
+        }
     }
 
     public static boolean isAdderMethod(Accessor method) {
@@ -138,8 +151,9 @@ public class Executables {
 
     public static String getPropertyName(Accessor accessor) {
         ExecutableElement executable = accessor.getExecutable();
-        return executable != null ? ACCESSOR_NAMING_STRATEGY.getPropertyName( executable ) :
-            accessor.getSimpleName().toString();
+        return ( executable != null && !accessor.isBuilder() )
+            ? ACCESSOR_NAMING_STRATEGY.getPropertyName( executable )
+            : accessor.getSimpleName().toString();
     }
 
     public static boolean isDefaultMethod(ExecutableElement method) {
@@ -203,16 +217,46 @@ public class Executables {
      *
      * @return the executable elements usable in the type
      */
-    public static List<Accessor> getAllEnclosedAccessors(Elements elementUtils, TypeElement element) {
+    public static List<Accessor> getAllEnclosedAccessors(Elements elementUtils, TypeElement element ) {
+        return getAllEnclosedAccessors( elementUtils, element, false );
+    }
+
+    /**
+     * Finds all executable elements/variable elements within the given type element, including executable/variable
+     * elements defined in super classes and implemented interfaces and including the fields in the . Methods defined
+     * in {@link java.lang.Object} are ignored, as well as implementations of {@link java.lang.Object#equals(Object)}.
+     *
+     * @param elementUtils element helper
+     * @param element the element to inspect
+     *
+     * @return the executable elements usable in the type
+     */
+    public static List<Accessor> getAllEnclosedAccessorsForBuilder(Elements elementUtils, TypeElement element ) {
+        return getAllEnclosedAccessors( elementUtils, element, true );
+    }
+
+    /**
+     * Finds all executable elements/variable elements within the given type element, including executable/variable
+     * elements defined in super classes and implemented interfaces and including the fields in the . Methods defined
+     * in {@link java.lang.Object} are ignored, as well as implementations of {@link java.lang.Object#equals(Object)}.
+     *
+     * @param elementUtils element helper
+     * @param element the element to inspect
+     * @param builder Whether or not the provided parentType is a builder
+     *
+     *
+     * @return the executable elements usable in the type
+     */
+    private static List<Accessor> getAllEnclosedAccessors(Elements elementUtils, TypeElement element, boolean builder) {
         List<Accessor> enclosedElements = new ArrayList<Accessor>();
         element = replaceTypeElementIfNecessary( elementUtils, element );
-        addEnclosedElementsInHierarchy( elementUtils, enclosedElements, element, element );
+        addEnclosedElementsInHierarchy( elementUtils, enclosedElements, element, element, builder );
 
         return enclosedElements;
     }
 
     private static void addEnclosedElementsInHierarchy(Elements elementUtils, List<Accessor> alreadyAdded,
-                                                       TypeElement element, TypeElement parentType) {
+                                                       TypeElement element, TypeElement parentType, boolean builder) {
         if ( element != parentType ) { // otherwise the element was already checked for replacement
             element = replaceTypeElementIfNecessary( elementUtils, element );
         }
@@ -221,7 +265,8 @@ public class Executables {
             throw new TypeHierarchyErroneousException( element );
         }
 
-        addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ), parentType );
+        addNotYetOverridden( elementUtils, alreadyAdded, methodsIn( element.getEnclosedElements() ), parentType,
+            builder );
         addFields( alreadyAdded, fieldsIn( element.getEnclosedElements() ) );
 
         if ( hasNonObjectSuperclass( element ) ) {
@@ -229,7 +274,8 @@ public class Executables {
                 elementUtils,
                 alreadyAdded,
                 asTypeElement( element.getSuperclass() ),
-                parentType
+                parentType,
+                builder
             );
         }
 
@@ -238,7 +284,8 @@ public class Executables {
                 elementUtils,
                 alreadyAdded,
                 asTypeElement( interfaceType ),
-                parentType
+                parentType,
+                builder
             );
         }
 
@@ -251,12 +298,13 @@ public class Executables {
      * @param parentType the type for with elements are collected
      */
     private static void addNotYetOverridden(Elements elementUtils, List<Accessor> alreadyCollected,
-                                            List<ExecutableElement> methodsToAdd, TypeElement parentType) {
+                                            List<ExecutableElement> methodsToAdd, TypeElement parentType,
+                                            boolean isBuilder) {
         List<Accessor> safeToAdd = new ArrayList<Accessor>( methodsToAdd.size() );
         for ( ExecutableElement toAdd : methodsToAdd ) {
             if ( isNotObjectEquals( toAdd )
                 && wasNotYetOverridden( elementUtils, alreadyCollected, toAdd, parentType ) ) {
-                safeToAdd.add( new ExecutableElementAccessor( toAdd ) );
+                safeToAdd.add( new ExecutableElementAccessor( toAdd, isBuilder ) );
             }
         }
 

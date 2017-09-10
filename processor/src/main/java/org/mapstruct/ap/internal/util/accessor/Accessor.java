@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.util.accessor;
 
 import java.util.Set;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -61,4 +62,6 @@ public interface Accessor {
      * @return the underlying {@link Element}
      */
     Element getElement();
+
+    boolean isBuilder();
 }

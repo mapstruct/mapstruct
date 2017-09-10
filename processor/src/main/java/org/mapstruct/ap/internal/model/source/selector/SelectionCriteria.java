@@ -48,7 +48,8 @@ public class SelectionCriteria {
         if ( selectionParameters != null ) {
             qualifiers.addAll( selectionParameters.getQualifiers() );
             qualifiedByNames.addAll( selectionParameters.getQualifyingNames() );
-            qualifyingResultType = selectionParameters.getResultType();
+            qualifyingResultType = selectionParameters.getBuilderType() != null ? selectionParameters.getBuilderType()
+                : selectionParameters.getResultType();
             sourceRHS = selectionParameters.getSourceRHS();
         }
         else {

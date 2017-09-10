@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
@@ -138,6 +139,7 @@ public class Mapping {
         String defaultValue = mappingPrism.values.defaultValue() == null ? null : mappingPrism.defaultValue();
 
         boolean resultTypeIsDefined = mappingPrism.values.resultType() != null;
+        boolean builderTypeIsDefined = mappingPrism.values.builderType() != null;
         List<String> dependsOn =
             mappingPrism.dependsOn() != null ? mappingPrism.dependsOn() : Collections.<String>emptyList();
 
@@ -153,6 +155,7 @@ public class Mapping {
             mappingPrism.qualifiedBy(),
             mappingPrism.qualifiedByName(),
             resultTypeIsDefined ? mappingPrism.resultType() : null,
+            builderTypeIsDefined ? mappingPrism.builderType() : null,
             typeUtils
         );
 

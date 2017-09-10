@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -220,6 +221,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             MapperConfiguration mapperConfig,
             List<SourceMethod> prototypeMethods,
             TypeElement mapperToImplement) {
+        Type builderType = extractBuilderType( method );
         Type returnType = typeFactory.getReturnType( methodType );
         List<Type> exceptionTypes = typeFactory.getThrownTypes( methodType );
         List<Parameter> sourceParameters = Parameter.getSourceParameters( parameters );
@@ -307,7 +309,6 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return null;
         }
 
-
         Type definingType = typeFactory.getType( method.getEnclosingElement().asType() );
 
         return new SourceMethod.Builder()
@@ -374,6 +375,16 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         return null;
+    }
+
+    private Type extractBuilderType(Element methodType) {
+        BeanMappingPrism beanMappingPrism = BeanMappingPrism.getInstanceOn( methodType );
+        if ( beanMappingPrism != null ) {
+            return typeFactory.getType( beanMappingPrism.builderType() );
+        }
+        else {
+            return null;
+        }
     }
 
     private Type selectResultType(Type returnType, Parameter targetParameter) {

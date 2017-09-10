@@ -20,6 +20,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
@@ -47,13 +48,16 @@ public class BeanMapping {
         }
 
         boolean resultTypeIsDefined = !TypeKind.VOID.equals( beanMapping.resultType().getKind() );
+        boolean builderTypeIsDefined = !TypeKind.VOID.equals( beanMapping.builderType().getKind() );
+        TypeMirror builderType = builderTypeIsDefined ? beanMapping.builderType() : null;
 
         NullValueMappingStrategyPrism nullValueMappingStrategy =
             null == beanMapping.values.nullValueMappingStrategy()
                             ? null
                             : NullValueMappingStrategyPrism.valueOf( beanMapping.nullValueMappingStrategy() );
 
-        if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() && beanMapping.qualifiedByName().isEmpty()
+        if ( !builderTypeIsDefined && !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() &&
+            beanMapping.qualifiedByName().isEmpty()
             && ( nullValueMappingStrategy == null ) ) {
 
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
@@ -63,6 +67,7 @@ public class BeanMapping {
             beanMapping.qualifiedBy(),
             beanMapping.qualifiedByName(),
             resultTypeIsDefined ? beanMapping.resultType() : null,
+            builderType,
             typeUtils
         );
 
@@ -81,7 +86,7 @@ public class BeanMapping {
     }
 
     private BeanMapping(SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms,
-        ReportingPolicyPrism reportingPolicy) {
+                        ReportingPolicyPrism reportingPolicy) {
         this.selectionParameters = selectionParameters;
         this.nullValueMappingStrategy = nvms;
         this.reportingPolicy = reportingPolicy;
@@ -97,5 +102,9 @@ public class BeanMapping {
 
     public ReportingPolicyPrism getReportingPolicy() {
         return reportingPolicy;
+    }
+
+    public TypeMirror getBuilderTypeMirror() {
+        return selectionParameters != null ? selectionParameters.getBuilderType() : null;
     }
 }

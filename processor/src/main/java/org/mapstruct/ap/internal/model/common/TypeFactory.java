@@ -18,6 +18,25 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,22 +56,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
-import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
@@ -60,10 +63,6 @@ import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
-
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
 
 /**
  * Factory creating {@link Type} instances.
@@ -246,6 +245,9 @@ public class TypeFactory {
             typeElement,
             getTypeParameters( mirror, false ),
             implementationType,
+            null, // Null when constructed.  They are set by using with* methods (to avoid recursion)
+            null,
+            null,
             componentType,
             packageName,
             name,
@@ -444,6 +446,9 @@ public class TypeFactory {
                 implementationType.getTypeElement(),
                 getTypeParameters( mirror, true ),
                 null,
+                implementationType.getBuilderType(),
+                implementationType.getBuildsType(),
+                implementationType.getBuilderOptions(),
                 null,
                 implementationType.getPackageName(),
                 implementationType.getName(),

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,6 +63,8 @@ public class SourceMethod implements Method {
     private final Parameter targetTypeParameter;
     private final boolean isObjectFactory;
     private final Type returnType;
+    private final Type builderType;
+
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
     private final MapperConfiguration config;
@@ -92,6 +95,7 @@ public class SourceMethod implements Method {
         private ExecutableElement executable;
         private List<Parameter> parameters;
         private Type returnType = null;
+        private Type builderType;
         private List<Type> exceptionTypes;
         private Map<String, List<Mapping>> mappings;
         private IterableMapping iterableMapping = null;
@@ -191,6 +195,25 @@ public class SourceMethod implements Method {
         }
 
         public SourceMethod build() {
+            // If a builderType exists, attach it to the returnType.  What about parameter types???
+            if ( beanMapping != null && beanMapping.getBuilderTypeMirror() != null) {
+                this.builderType = typeFactory.getType( beanMapping.getBuilderTypeMirror() );
+                if ( this.returnType != null ) {
+                    this.builderType = this.builderType.withBuildsType( this.returnType.getTypeMirror() );
+                    this.returnType = this.returnType.withBuilderType( builderType );
+                }
+
+                // Update all parameters that are targetType or mappingTarget parameters
+                if ( this.parameters != null ) {
+                    ListIterator<Parameter> parameters = this.parameters.listIterator();
+                    while ( parameters.hasNext() ) {
+                        Parameter next = parameters.next();
+                        if ( next.isTargetType() || next.isMappingTarget() ) {
+                            parameters.set( next.withBuilderType( builderType ) );
+                        }
+                    }
+                }
+            }
 
             MappingOptions mappingOptions =
                     new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings, false );
@@ -213,6 +236,7 @@ public class SourceMethod implements Method {
         this.executable = builder.executable;
         this.parameters = builder.parameters;
         this.returnType = builder.returnType;
+        this.builderType = builder.builderType;
         this.exceptionTypes = builder.exceptionTypes;
         this.accessibility = Accessibility.fromModifiers( builder.executable.getModifiers() );
 
@@ -384,6 +408,14 @@ public class SourceMethod implements Method {
             isEnumMapping = MappingMethodUtils.isEnumMapping( this );
         }
         return isEnumMapping;
+    }
+
+    /**
+     * todo:ericm Add docs
+     * @return
+     */
+    public Type getBuilderType() {
+        return builderType;
     }
 
     /**

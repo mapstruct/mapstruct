@@ -20,6 +20,8 @@ package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
+import javax.lang.model.type.DeclaredType;
+import javax.tools.Diagnostic;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,9 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import javax.lang.model.type.DeclaredType;
-import javax.tools.Diagnostic;
 
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
@@ -76,6 +75,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
     private final Type resultType;
+    private final Type builderType;
 
     public static class Builder {
 
@@ -91,13 +91,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private Map<String, List<Mapping>> methodMappings;
         private SingleMappingByTargetPropertyNameFunction singleMapping;
         private final Map<String, List<Mapping>> unprocessedDefinedTargets = new HashMap<String, List<Mapping>>();
+        private Type builderType;
 
         public Builder mappingContext(MappingBuilderContext mappingContext) {
             this.ctx = mappingContext;
             return this;
         }
 
-        public Builder souceMethod(SourceMethod sourceMethod) {
+        public Builder sourceMethod(SourceMethod sourceMethod) {
+            builderType = sourceMethod.getBuilderType();
             singleMapping = new SourceMethodSingleMapping( sourceMethod );
             return setupMethodWithMapping( sourceMethod );
         }
@@ -140,7 +142,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
 
             if ( !method.getMappingOptions().isRestrictToDefinedMappings() ) {
-
                 // map properties without a mapping
                 applyPropertyNameBasedMapping();
 
@@ -173,7 +174,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             Type resultType = null;
             if ( factoryMethod == null ) {
                 if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
-                    resultType = ctx.getTypeFactory().getType( selectionParameters.getResultType() );
+                    Type builderType = null;
+                    if ( selectionParameters.getBuilderType() != null ) {
+                        builderType = ctx.getTypeFactory().getType( selectionParameters.getBuilderType() )
+                            .withBuildsType( selectionParameters.getResultType() );
+                    }
+                    resultType = ctx.getTypeFactory().getType( selectionParameters.getResultType() )
+                        .withBuilderType( builderType );
+
                     if ( resultType.isAbstract() ) {
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
@@ -190,7 +198,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             Message.BEANMAPPING_NOT_ASSIGNABLE, resultType, method.getResultType()
                         );
                     }
-                    else if ( !resultType.hasEmptyAccessibleContructor() ) {
+                    else if ( builderType == null && !resultType.hasEmptyAccessibleContructor() ) {
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
                             beanMappingPrism.mirror,
@@ -206,7 +214,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         method.getReturnType()
                     );
                 }
-                else if ( !method.isUpdateMethod() && !method.getReturnType().hasEmptyAccessibleContructor() ) {
+                else if ( (selectionParameters == null || selectionParameters.getBuilderType() == null) &&
+                    !method.isUpdateMethod() && !method.getReturnType().hasEmptyAccessibleContructor() ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
                         Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
@@ -233,6 +242,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 factoryMethod,
                 mapNullToDefault,
                 resultType,
+                builderType,
                 beforeMappingMethods,
                 afterMappingMethods
             );
@@ -737,6 +747,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               MethodReference factoryMethod,
                               boolean mapNullToDefault,
                               Type resultType,
+                              Type builderType,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
                               List<LifecycleCallbackMethodReference> afterMappingReferences) {
         super(
@@ -749,6 +760,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         );
 
         this.propertyMappings = propertyMappings;
+        this.resultType = resultType;
+        this.builderType = builderType;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
@@ -764,7 +777,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
         }
-        this.resultType = resultType;
     }
 
     public List<PropertyMapping> getPropertyMappings() {

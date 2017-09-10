@@ -32,9 +32,15 @@ import javax.lang.model.element.Name;
 abstract class AbstractAccessor<T extends Element> implements Accessor {
 
     protected final T element;
+    protected final boolean isBuilder;
 
-    AbstractAccessor(T element) {
+    AbstractAccessor(T element, boolean isBuilder) {
         this.element = element;
+        this.isBuilder = isBuilder;
+    }
+
+    AbstractAccessor(T element ) {
+        this( element, false );
     }
 
     @Override
@@ -51,4 +57,10 @@ abstract class AbstractAccessor<T extends Element> implements Accessor {
     public T getElement() {
         return element;
     }
+
+    @Override
+    public boolean isBuilder() {
+        return isBuilder;
+    }
+
 }

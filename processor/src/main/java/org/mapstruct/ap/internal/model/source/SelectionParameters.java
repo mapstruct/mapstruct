@@ -20,6 +20,7 @@ package org.mapstruct.ap.internal.model.source;
 
 import java.util.Collections;
 import java.util.List;
+
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
@@ -36,20 +37,22 @@ public class SelectionParameters {
     private final List<TypeMirror> qualifiers;
     private final List<String> qualifyingNames;
     private final TypeMirror resultType;
+    private final TypeMirror builderType;
     private final Types typeUtils;
     private final SourceRHS sourceRHS;
 
     public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
-        Types typeUtils) {
-        this( qualifiers, qualifyingNames, resultType, typeUtils, null );
+        TypeMirror builderType, Types typeUtils) {
+        this( qualifiers, qualifyingNames, resultType, typeUtils, builderType, null );
     }
 
     private SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
-        Types typeUtils, SourceRHS sourceRHS) {
+        Types typeUtils, TypeMirror builderType, SourceRHS sourceRHS) {
         this.qualifiers = qualifiers;
         this.qualifyingNames = qualifyingNames;
         this.resultType = resultType;
         this.typeUtils = typeUtils;
+        this.builderType = builderType;
         this.sourceRHS = sourceRHS;
     }
 
@@ -76,6 +79,13 @@ public class SelectionParameters {
      */
     public TypeMirror getResultType() {
         return resultType;
+    }
+
+    /**
+     * todo:ericm Add docs
+     */
+    public TypeMirror getBuilderType() {
+        return builderType;
     }
 
     /**
@@ -159,6 +169,7 @@ public class SelectionParameters {
         return new SelectionParameters(
             Collections.<TypeMirror>emptyList(),
             Collections.<String>emptyList(),
+            null,
             null,
             null,
             sourceRHS

@@ -18,11 +18,10 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import javax.lang.model.element.VariableElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import javax.lang.model.element.VariableElement;
 
 import org.mapstruct.ap.internal.prism.ContextPrism;
 import org.mapstruct.ap.internal.prism.MappingTargetPrism;
@@ -91,6 +90,10 @@ public class Parameter extends ModelElement {
 
     public boolean isMappingContext() {
         return mappingContext;
+    }
+
+    public Parameter withBuilderType(Type builderType) {
+        return new Parameter( name, type.withBuilderType( builderType ), mappingTarget, targetType, mappingContext );
     }
 
     @Override

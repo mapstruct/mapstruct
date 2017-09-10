@@ -68,7 +68,32 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private final TypeMirror typeMirror;
     private final TypeElement typeElement;
+
     private final List<Type> typeParameters;
+
+    /**
+     * If this Type is created by a builder, this points at the class used to build immutable instances.
+     *
+     * @see #builderOptions - Stored on the builder Type, contains options for how to construct builders.
+     */
+    private final Type builderType;
+
+    /**
+     * If this type is responsible for building immutable instances of another Type, this Type represents the
+     * immutable Type that's being built.
+     *
+     * @see #builderOptions - Stored on the immutable type, points back at the builder Type (this)
+     */
+    private final TypeMirror buildsType;
+
+
+    /**
+     * If this Type is created by a builder, this variable stores information about how to
+     * construct the builder and how to invoke the final "build"
+     *
+     * @see #buildsType - Stored on the builder type, points back at the type being built (this)
+     */
+    private final BuilderOptions builderOptions;
 
     private final ImplementationType implementationType;
     private final Type componentType;
@@ -102,11 +127,11 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     //CHECKSTYLE:OFF
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
-                TypeMirror typeMirror, TypeElement typeElement,
-                List<Type> typeParameters, ImplementationType implementationType, Type componentType,
-                String packageName, String name, String qualifiedName,
-                boolean isInterface, boolean isEnumType, boolean isIterableType,
-                boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported) {
+                TypeMirror typeMirror, TypeElement typeElement, List<Type> typeParameters,
+                ImplementationType implementationType, Type builderType, TypeMirror buildsType, BuilderOptions builderOptions,
+                Type componentType, String packageName, String name, String qualifiedName, boolean isInterface,
+                boolean isEnumType, boolean isIterableType, boolean isCollectionType, boolean isMapType,
+                boolean isStreamType, boolean isImported) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
@@ -117,6 +142,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.typeParameters = typeParameters;
         this.componentType = componentType;
         this.implementationType = implementationType;
+
+        this.builderType = builderType;
+        this.buildsType = buildsType;
+        this.builderOptions = builderOptions;
 
         this.packageName = packageName;
         this.name = name;
@@ -148,6 +177,93 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
     }
     //CHECKSTYLE:ON
+
+    /**
+     * @return the TypeElement {@code this} {@link Type}  "produces" during mappings.  If {@code this} {@link Type}
+     * is a builder, this method will return TypeElement that's being built.  Otherwise, it's the Type itself.
+     */
+    public TypeMirror getMappingType() {
+        return isBuilderClass() ? this.buildsType : this.typeMirror;
+    }
+
+    /**
+     * @return The type that is used to to "write" values for {@code this} {@link Type}.  In the case of an immutable
+     * builder, the builder instance is used as a surrogate for write operations during object construction.  Otherwise,
+     * the value returned by this method is simply the underlying type.
+     */
+    public DeclaredType getWriteType() {
+        return (DeclaredType) (builderType != null ? builderType.getTypeMirror() : typeMirror);
+    }
+
+    /**
+     * @return If this Type represents a builder, this returns the TypeMirror associated with the
+     * class being produced by the builder.
+     */
+    public TypeMirror getBuildsType() {
+        return buildsType;
+    }
+
+    /**
+     * @return If {@code this} {@link Type} is created by a builder, return the builder's type.  Otherwise, null
+     */
+    public Type getBuilderType() {
+        return builderType;
+    }
+
+    /**
+     * Method that returns an immutable copy of {@code this}, but but with a different value for {@link #buildsType}.
+     * This is primarily used to maintain immutability while avoiding weird recursion when loading builders/buildees.
+     *
+     * @param buildsTypeMirror New value for {@link #buildsType}
+     * @return A new immutable copy of {@code this}, with a new value for {@link #buildsType}
+     */
+    public Type withBuildsType(TypeMirror buildsTypeMirror ) {
+        return new Type( typeUtils, elementUtils, typeFactory, typeMirror, typeElement, typeParameters,
+            implementationType, builderType, buildsTypeMirror, firstNonNull( builderOptions, new BuilderOptions() ),
+            componentType, packageName, name, qualifiedName, isInterface, isEnumType, isIterableType,
+            isCollectionType, isMapType, isStream, isImported );
+    }
+
+    /**
+     * Method that returns an immutable copy of {@code this}, but but with a different value for {@link #builderType}.
+     * This is primarily used to avoid weird recursion when loading builders/buildees.
+     *
+     * @param builderType New value for {@link #builderType}
+     * @return A new immutable copy of {@code this}, with a new {@link #builderType}
+     */
+    public Type withBuilderType(Type builderType) {
+        return new Type( typeUtils, elementUtils, typeFactory, typeMirror, typeElement, typeParameters,
+            implementationType, builderType, buildsType, firstNonNull( builderOptions, new BuilderOptions() ),
+            componentType, packageName, name, qualifiedName, isInterface, isEnumType, isIterableType,
+            isCollectionType, isMapType, isStream, isImported );
+    }
+
+    private static <X> X firstNonNull(X... xes) {
+        for ( X x : xes ) {
+            if ( x != null ) {
+                return x;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Whether this instance represents a builder.
+     *
+     * Related: {@link #isMappedByBuilder()} determines the inverse: whether this type is built by a builder
+     *
+     * return Whether or not {@code this} {@link Type} <em>is</em> a builder.
+     */
+    public boolean isBuilderClass() {
+        return buildsType != null;
+    }
+
+    /**
+     * Whether or not {@code this} {@link Type} is created using a builder.
+     */
+    public boolean isMappedByBuilder() {
+        return builderType != null;
+    }
 
     public TypeMirror getTypeMirror() {
         return typeMirror;
@@ -191,6 +307,10 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isAbstract() {
         return typeElement != null && typeElement.getModifiers().contains( Modifier.ABSTRACT );
+    }
+
+    public BuilderOptions getBuilderOptions() {
+        return builderOptions;
     }
 
     /**
@@ -301,6 +421,11 @@ public class Type extends ModelElement implements Comparable<Type> {
             result.add( this );
         }
 
+        // If this Type is created using a builder, we need to import the builder class
+        if ( builderOptions != null ) {
+            result.add( builderType );
+        }
+
         if ( componentType != null ) {
             result.addAll( componentType.getImportTypes() );
         }
@@ -354,6 +479,9 @@ public class Type extends ModelElement implements Comparable<Type> {
             typeElement,
             typeParameters,
             implementationType,
+            builderType,
+            buildsType,
+            builderOptions,
             componentType,
             packageName,
             name,
@@ -519,12 +647,16 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private Type determineTargetType(Accessor candidate) {
-        Parameter parameter = typeFactory.getSingleParameter( (DeclaredType) typeMirror, candidate );
+
+        // The accessor could come from a builder instead of the mapped type, so we need to use {@link #getWriteType}
+        // to make sure we are looking up accessor metadata using the correct enclding type.
+        final DeclaredType writeTypeMirror = getWriteType();
+        Parameter parameter = typeFactory.getSingleParameter( writeTypeMirror, candidate );
         if ( parameter != null ) {
             return parameter.getType();
         }
         else if ( Executables.isGetterMethod( candidate ) || Executables.isFieldAccessor( candidate ) ) {
-            return typeFactory.getReturnType( (DeclaredType) typeMirror, candidate );
+            return typeFactory.getReturnType( writeTypeMirror, candidate );
         }
         return null;
     }
@@ -532,6 +664,10 @@ public class Type extends ModelElement implements Comparable<Type> {
     private List<Accessor> getAllAccessors() {
         if ( allAccessors == null ) {
             allAccessors = Executables.getAllEnclosedAccessors( elementUtils, typeElement );
+            if (builderType != null) {
+                allAccessors.addAll( Executables.getAllEnclosedAccessorsForBuilder( elementUtils,
+                        builderType.getTypeElement() ) );
+            }
         }
 
         return allAccessors;

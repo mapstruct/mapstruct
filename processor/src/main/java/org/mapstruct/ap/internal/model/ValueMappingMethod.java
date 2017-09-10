@@ -20,13 +20,12 @@ package org.mapstruct.ap.internal.model;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
@@ -192,7 +191,9 @@ public class ValueMappingMethod extends MappingMethod {
                 List<TypeMirror> qualifiers = beanMappingPrism.qualifiedBy();
                 List<String> qualifyingNames = beanMappingPrism.qualifiedByName();
                 TypeMirror resultType = beanMappingPrism.resultType();
-                return new SelectionParameters( qualifiers, qualifyingNames, resultType, typeUtils );
+                TypeMirror builderType = beanMappingPrism.values.builderType() != null ? beanMappingPrism.builderType()
+                    : null;
+                return new SelectionParameters( qualifiers, qualifyingNames, resultType, builderType, typeUtils );
             }
             return null;
         }

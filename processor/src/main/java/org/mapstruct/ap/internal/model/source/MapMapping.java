@@ -76,6 +76,7 @@ public class MapMapping {
             mapMapping.keyQualifiedBy(),
             mapMapping.keyQualifiedByName(),
             keyTargetTypeIsDefined ? mapMapping.keyTargetType() : null,
+            null,
             typeUtils
         );
 
@@ -83,6 +84,7 @@ public class MapMapping {
             mapMapping.valueQualifiedBy(),
             mapMapping.valueQualifiedByName(),
             valueTargetTypeIsDefined ? mapMapping.valueTargetType() : null,
+            null,
             typeUtils
         );
 

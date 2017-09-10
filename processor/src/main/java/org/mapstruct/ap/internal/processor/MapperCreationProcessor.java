@@ -367,7 +367,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
-                    .souceMethod( method )
+                    .sourceMethod( method )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
                     .selectionParameters( selectionParameters )
                     .build();

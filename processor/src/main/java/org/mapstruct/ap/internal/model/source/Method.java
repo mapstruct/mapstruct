@@ -142,7 +142,6 @@ public interface Method {
      */
     Type getResultType();
 
-
     /**
      *
      * @return the names of the parameters of this mapping method
