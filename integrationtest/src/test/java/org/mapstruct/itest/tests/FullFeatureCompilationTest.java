@@ -66,6 +66,8 @@ public class FullFeatureCompilationTest {
         public Collection<String> getAdditionalCommandLineArguments(ProcessorType processorType) {
             List<String> additionalExcludes = new ArrayList<>();
 
+            additionalExcludes.add( "org/mapstruct/ap/test/builder/**/Invalid*.java" );
+
             switch ( processorType ) {
                 case ORACLE_JAVA_6:
                     additionalExcludes.add( "org/mapstruct/ap/test/abstractclass/generics/*.java" );

@@ -40,6 +40,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
+import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -254,8 +255,9 @@ public class Mapping {
             ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
     }
 
-    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
-        init( method, messager, typeFactory, false, null );
+    public void init(SourceMethod method, FormattingMessager messager, Executables executables,
+                     TypeFactory typeFactory) {
+        init( method, messager, executables, typeFactory, false, null );
     }
 
     /**
@@ -264,11 +266,12 @@ public class Mapping {
      * @param method the source method that the mapping belongs to
      * @param messager the messager that can be used for outputting messages
      * @param typeFactory the type factory
+     * @param executables Executable factory
      * @param isReverse whether the init is for a reverse mapping
      * @param reverseSourceParameter the source parameter from the revers mapping
      */
-    private void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory, boolean isReverse,
-        Parameter reverseSourceParameter) {
+    private void init(SourceMethod method, FormattingMessager messager, Executables executables,
+                      TypeFactory typeFactory, boolean isReverse, Parameter reverseSourceParameter) {
 
         if ( !method.isEnumMapping() ) {
             sourceReference = new SourceReference.BuilderFromMapping()
@@ -280,6 +283,7 @@ public class Mapping {
 
             targetReference = new TargetReference.BuilderFromTargetMapping()
                 .mapping( this )
+                .executables( executables )
                 .isReverse( isReverse )
                 .method( method )
                 .messager( messager )
@@ -395,7 +399,8 @@ public class Mapping {
         return method.getResultType().getPropertyWriteAccessors( cms ).containsKey( name );
     }
 
-    public Mapping reverse(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
+    public Mapping reverse(SourceMethod method, FormattingMessager messager, Executables executables,
+                           TypeFactory typeFactory) {
 
         // mapping can only be reversed if the source was not a constant nor an expression nor a nested property
         // and the mapping is not a 'target-source-ignore' mapping
@@ -422,6 +427,7 @@ public class Mapping {
         reverse.init(
             method,
             messager,
+            executables,
             typeFactory,
             true,
             sourceReference != null ? sourceReference.getParameter() : null

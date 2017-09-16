@@ -62,6 +62,7 @@ import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
+import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -80,6 +81,7 @@ import static org.mapstruct.ap.internal.util.Collections.join;
 public class MapperCreationProcessor implements ModelElementProcessor<List<SourceMethod>, Mapper> {
 
     private Elements elementUtils;
+    private Executables executables;
     private Types typeUtils;
     private FormattingMessager messager;
     private Options options;
@@ -91,6 +93,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
         this.elementUtils = context.getElementUtils();
         this.typeUtils = context.getTypeUtils();
+        this.executables = context.getExecutables();
         this.messager = context.getMessager();
         this.options = context.getOptions();
         this.versionInformation = context.getVersionInformation();
@@ -101,6 +104,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         MappingBuilderContext ctx = new MappingBuilderContext(
             typeFactory,
+            executables,
             elementUtils,
             typeUtils,
             messager,
@@ -109,6 +113,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 messager,
                 elementUtils,
                 typeUtils,
+                executables,
                 typeFactory,
                 new ArrayList<Method>( sourceModel ),
                 mapperReferences
@@ -367,7 +372,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 BeanMappingMethod.Builder builder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = builder
                     .mappingContext( mappingContext )
-                    .souceMethod( method )
+                    .sourceMethod( method )
                     .nullValueMappingStrategy( nullValueMappingStrategy )
                     .selectionParameters( selectionParameters )
                     .build();
@@ -449,10 +454,12 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         MappingInheritanceStrategyPrism inheritanceStrategy = mapperConfig.getMappingInheritanceStrategy();
 
         if ( templateMappingOptions != null ) {
-            mappingOptions.applyInheritedOptions( templateMappingOptions, false, method, messager, typeFactory );
+            mappingOptions.applyInheritedOptions( templateMappingOptions, false, method, messager, executables,
+                typeFactory );
         }
         else if ( inverseMappingOptions != null ) {
-            mappingOptions.applyInheritedOptions( inverseMappingOptions, true, method, messager, typeFactory );
+            mappingOptions.applyInheritedOptions( inverseMappingOptions, true, method, messager, executables,
+                typeFactory );
         }
         else if ( inheritanceStrategy.isAutoInherit() ) {
 
@@ -463,6 +470,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                         false,
                         method,
                         messager,
+                        executables,
                         typeFactory );
                 }
                 else if ( applicablePrototypeMethods.size() > 1 ) {
@@ -480,6 +488,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                         true,
                         method,
                         messager,
+                        executables,
                         typeFactory );
                 }
                 else if ( applicableReversePrototypeMethods.size() > 1 ) {

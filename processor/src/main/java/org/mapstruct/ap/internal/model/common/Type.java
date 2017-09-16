@@ -18,14 +18,12 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.Executables;
+import org.mapstruct.ap.internal.util.Filters;
+import org.mapstruct.ap.internal.util.Nouns;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -42,13 +40,16 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.Filters;
-import org.mapstruct.ap.internal.util.Nouns;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import static org.mapstruct.ap.internal.util.Filters.getFilters;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -65,17 +66,32 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final Types typeUtils;
     private final Elements elementUtils;
     private final TypeFactory typeFactory;
+    private final Executables executables;
+    private final Filters filters;
 
     private final TypeMirror typeMirror;
     private final TypeElement typeElement;
-    private final List<Type> typeParameters;
 
+    private final List<Type> typeParameters;
     private final ImplementationType implementationType;
     private final Type componentType;
 
     private final String packageName;
     private final String name;
     private final String qualifiedName;
+
+    /**
+     * How to initialize this type for mapping.  This may initialize an intermediate builder, or create a
+     * new instance of this type.
+     */
+    private TypeInitializer initializer;
+
+    /**
+     * Finalizes this type.  In the case of a builder, this may involve invoking a build or freeze method
+     */
+    private TypeFinalizer finalizer;
+    private boolean hasBuilder;
+    private boolean isBuilder;
 
     private final boolean isInterface;
     private final boolean isEnumType;
@@ -101,16 +117,32 @@ public class Type extends ModelElement implements Comparable<Type> {
     private Boolean hasEmptyAccessibleContructor;
 
     //CHECKSTYLE:OFF
-    public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
+    public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory, Executables executables,
                 TypeMirror typeMirror, TypeElement typeElement,
                 List<Type> typeParameters, ImplementationType implementationType, Type componentType,
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported) {
+        this( typeUtils, elementUtils, typeFactory,
+            executables,
+            typeMirror, typeElement, typeParameters, implementationType,
+            componentType, packageName, name, qualifiedName, null, null, false, false, isInterface, isEnumType,
+            isIterableType, isCollectionType, isMapType, isStreamType, isImported );
+    }
 
+    public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
+                Executables executables, TypeMirror typeMirror,
+                TypeElement typeElement, List<Type> typeParameters,
+                ImplementationType implementationType, Type componentType, String packageName, String name,
+                String qualifiedName, TypeInitializer initializer, TypeFinalizer finalizer,
+                boolean hasBuilder, boolean isBuilder, boolean isInterface, boolean isEnumType,
+                boolean isIterableType, boolean isCollectionType, boolean isMapType, boolean isStreamType,
+                boolean isImported) {
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
         this.typeFactory = typeFactory;
+        this.executables = executables;
+        this.filters = getFilters( executables );
 
         this.typeMirror = typeMirror;
         this.typeElement = typeElement;
@@ -121,6 +153,11 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.packageName = packageName;
         this.name = name;
         this.qualifiedName = qualifiedName;
+
+        this.initializer = initializer;
+        this.finalizer = finalizer;
+        this.hasBuilder = hasBuilder;
+        this.isBuilder = isBuilder;
 
         this.isInterface = isInterface;
         this.isEnumType = isEnumType;
@@ -148,6 +185,62 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
     }
     //CHECKSTYLE:ON
+
+    public void asBuilder(TypeInitializer initializer, TypeFinalizer finalizer) {
+        assert this.initializer == null : "Lifecycle issue: Only set initializer once";
+        assert this.finalizer == null : "Lifecycle issue: Only set finalizer once";
+        this.initializer = initializer;
+        this.finalizer = finalizer;
+        this.isBuilder = true;
+        this.hasBuilder = false;
+    }
+
+    public void withBuilder(TypeInitializer initializer, TypeFinalizer finalizer) {
+        assert this.initializer == null : "Lifecycle issue: Only set initializer once";
+        assert this.finalizer == null : "Lifecycle issue: Only set finalizer once";
+        this.initializer = initializer;
+        this.finalizer = finalizer;
+        this.isBuilder = false;
+        this.hasBuilder = true;
+    }
+
+    /**
+     * @return the TypeElement {@code this} {@link Type}  "produces" during mappings.  If {@code this} {@link Type}
+     * is a builder, this method will return TypeElement that's being built.  Otherwise, it's the Type itself.
+     */
+    public Type getFinalType() {
+        return finalizer != null ? finalizer.getFinalType() : this;
+    }
+
+    public Type getMapToType() {
+        return initializer != null ? initializer.getInitializedType() : this;
+    }
+
+    public TypeInitializer getInitializer() {
+        return initializer;
+    }
+
+    public TypeFinalizer getFinalizer() {
+        return finalizer;
+    }
+
+    /**
+     * Whether this instance represents a builder.
+     *
+     * Related: {@link #hasBuilder()} determines the inverse: whether this type is built by a builder
+     *
+     * return Whether or not {@code this} {@link Type} <em>is</em> a builder.
+     */
+    public boolean isBuilder() {
+        return isBuilder;
+    }
+
+    /**
+     * Whether or not {@code this} {@link Type} is created using a builder.
+     */
+    public boolean hasBuilder() {
+        return hasBuilder;
+    }
 
     public TypeMirror getTypeMirror() {
         return typeMirror;
@@ -301,6 +394,11 @@ public class Type extends ModelElement implements Comparable<Type> {
             result.add( this );
         }
 
+        // If this Type is created using a builder, we need to import the builder class
+        if ( hasBuilder ) {
+            result.add( initializer.getInitializedType() );
+        }
+
         if ( componentType != null ) {
             result.addAll( componentType.getImportTypes() );
         }
@@ -350,6 +448,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             typeUtils,
             elementUtils,
             typeFactory,
+            executables,
             typeUtils.erasure( typeMirror ),
             typeElement,
             typeParameters,
@@ -358,6 +457,10 @@ public class Type extends ModelElement implements Comparable<Type> {
             packageName,
             name,
             qualifiedName,
+            initializer,
+            finalizer,
+            hasBuilder,
+            isBuilder,
             isInterface,
             isEnumType,
             isIterableType,
@@ -383,8 +486,18 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
 
         TypeMirror typeMirrorToMatch = isWildCardExtendsBound() ? getTypeBound().typeMirror : typeMirror;
-
         return typeUtils.isAssignable( typeMirrorToMatch, other.typeMirror );
+    }
+
+    /**
+     * Whether this type's builder is assignable to the given other type.
+     *
+     * @param other The other type.
+     *
+     * @return {@code true} if this type requires a builder AND that builder type is assignable to {@code other}
+     */
+    public boolean isFinalTypeAssignableTo(Type other) {
+        return getFinalType() != null && getFinalType().isAssignableTo( other );
     }
 
     /**
@@ -394,26 +507,26 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     public Map<String, Accessor> getPropertyReadAccessors() {
         if ( readAccessors == null ) {
-            List<Accessor> getterList = Filters.getterMethodsIn( getAllAccessors() );
+            List<Accessor> getterList = filters.getterMethodsIn( getAllAccessors() );
             Map<String, Accessor> modifiableGetters = new LinkedHashMap<String, Accessor>();
             for ( Accessor getter : getterList ) {
-                String propertyName = Executables.getPropertyName( getter );
+                String propertyName = executables.getPropertyName( getter );
                 if ( modifiableGetters.containsKey( propertyName ) ) {
                     // In the DefaultAccessorNamingStrategy, this can only be the case for Booleans: isFoo() and
                     // getFoo(); The latter is preferred.
                     if ( !getter.getSimpleName().toString().startsWith( "is" ) ) {
-                        modifiableGetters.put( Executables.getPropertyName( getter ), getter );
+                        modifiableGetters.put( executables.getPropertyName( getter ), getter );
                     }
 
                 }
                 else {
-                    modifiableGetters.put( Executables.getPropertyName( getter ), getter );
+                    modifiableGetters.put( executables.getPropertyName( getter ), getter );
                 }
             }
 
-            List<Accessor> fieldsList = Filters.fieldsIn( getAllAccessors() );
+            List<Accessor> fieldsList = filters.fieldsIn( getAllAccessors() );
             for ( Accessor field : fieldsList ) {
-                String propertyName = Executables.getPropertyName( field );
+                String propertyName = executables.getPropertyName( field );
                 if ( !modifiableGetters.containsKey( propertyName ) ) {
                     // If there was no getter or is method for booleans, then resort to the field.
                     // If a field was already added do not add it again.
@@ -432,11 +545,11 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     public Map<String, ExecutableElementAccessor> getPropertyPresenceCheckers() {
         if ( presenceCheckers == null ) {
-            List<ExecutableElementAccessor> checkerList = Filters.presenceCheckMethodsIn( getAllAccessors() );
+            List<ExecutableElementAccessor> checkerList = filters.presenceCheckMethodsIn( getAllAccessors() );
             Map<String, ExecutableElementAccessor> modifiableCheckers = new LinkedHashMap<String,
                 ExecutableElementAccessor>();
             for ( ExecutableElementAccessor checker : checkerList ) {
-                modifiableCheckers.put( Executables.getPropertyName( checker ), checker );
+                modifiableCheckers.put( executables.getPropertyName( checker ), checker );
             }
             presenceCheckers = Collections.unmodifiableMap( modifiableCheckers );
         }
@@ -464,7 +577,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         Map<String, Accessor> result = new LinkedHashMap<String, Accessor>();
 
         for ( Accessor candidate : candidates ) {
-            String targetPropertyName = Executables.getPropertyName( candidate );
+            String targetPropertyName = executables.getPropertyName( candidate );
 
             Accessor readAccessor = getPropertyReadAccessors().get( targetPropertyName );
 
@@ -480,12 +593,12 @@ public class Type extends ModelElement implements Comparable<Type> {
 
                 // first check if there's a setter method.
                 Accessor adderMethod = null;
-                if ( Executables.isSetterMethod( candidate )
+                if ( executables.isSetterMethod( candidate )
                     // ok, the current accessor is a setter. So now the strategy determines what to use
                     && cmStrategy == CollectionMappingStrategyPrism.ADDER_PREFERRED ) {
                     adderMethod = getAdderForType( targetType, targetPropertyName );
                 }
-                else if ( Executables.isGetterMethod( candidate ) ) {
+                else if ( executables.isGetterMethod( candidate ) ) {
                     // the current accessor is a getter (no setter available). But still, an add method is according
                     // to the above strategy (SETTER_PREFERRED || ADDER_PREFERRED) preferred over the getter.
                     adderMethod = getAdderForType( targetType, targetPropertyName );
@@ -495,7 +608,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                     candidate = adderMethod;
                 }
             }
-            else if ( Executables.isFieldAccessor( candidate ) && ( Executables.isFinal( candidate ) ||
+            else if ( executables.isFieldAccessor( candidate ) && ( executables.isFinal( candidate ) ||
                 result.containsKey( targetPropertyName ) ) ) {
                 // if the candidate is a field and a mapping already exists, then use that one, skip it.
                 continue;
@@ -519,19 +632,26 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private Type determineTargetType(Accessor candidate) {
-        Parameter parameter = typeFactory.getSingleParameter( (DeclaredType) typeMirror, candidate );
+        // The accessor could come from a builder instead of the mapped type, so we need to use {@link #getWriteType}
+        // to make sure we are looking up accessor metadata using the correct enclding type.
+        final DeclaredType writeTypeMirror = (DeclaredType) getMapToType().getTypeMirror();
+        Parameter parameter = typeFactory.getSingleParameter( writeTypeMirror, candidate );
         if ( parameter != null ) {
             return parameter.getType();
         }
-        else if ( Executables.isGetterMethod( candidate ) || Executables.isFieldAccessor( candidate ) ) {
-            return typeFactory.getReturnType( (DeclaredType) typeMirror, candidate );
+        else if ( executables.isGetterMethod( candidate ) || executables.isFieldAccessor( candidate ) ) {
+            return typeFactory.getReturnType( writeTypeMirror, candidate );
         }
         return null;
     }
 
     private List<Accessor> getAllAccessors() {
         if ( allAccessors == null ) {
-            allAccessors = Executables.getAllEnclosedAccessors( elementUtils, typeElement );
+            allAccessors = executables.getAllEnclosedAccessors( typeElement );
+            if ( hasBuilder ) {
+                final TypeElement builderElement = initializer.getInitializedType().getTypeElement();
+                allAccessors.addAll( executables.getAllEnclosedAccessors( builderElement ) );
+            }
         }
 
         return allAccessors;
@@ -588,7 +708,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         else {
             for ( Accessor candidate : candidates ) {
-                String elementName = Executables.getElementNameForAdder( candidate );
+                String elementName = executables.getElementNameForAdder( candidate );
                 if ( elementName != null && elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
                     return candidate;
                 }
@@ -605,7 +725,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     private List<Accessor> getSetters() {
         if ( setters == null ) {
-            setters = Collections.unmodifiableList( Filters.setterMethodsIn( getAllAccessors() ) );
+            setters = Collections.unmodifiableList( filters.setterMethodsIn( getAllAccessors() ) );
         }
         return setters;
     }
@@ -620,7 +740,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     private List<Accessor> getAdders() {
         if ( adders == null ) {
-            adders = Collections.unmodifiableList( Filters.adderMethodsIn( getAllAccessors() ) );
+            adders = Collections.unmodifiableList( filters.adderMethodsIn( getAllAccessors() ) );
         }
         return adders;
     }
@@ -643,7 +763,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             List<Accessor> readAccessors =
                 new ArrayList<Accessor>( getPropertyReadAccessors().values() );
             // All the fields are also alternative accessors
-            readAccessors.addAll( Filters.fieldsIn( getAllAccessors() ) );
+            readAccessors.addAll( filters.fieldsIn( getAllAccessors() ) );
 
             // there could be a read accessor (field or  method) for a list/map that is not present as setter.
             // an accessor could substitute the setter in that case and act as setter.
@@ -653,7 +773,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                     !correspondingSetterMethodExists( readAccessor, setterMethods ) ) {
                     result.add( readAccessor );
                 }
-                else if ( Executables.isFieldAccessor( readAccessor ) &&
+                else if ( executables.isFieldAccessor( readAccessor ) &&
                     !correspondingSetterMethodExists( readAccessor, setterMethods ) ) {
                     result.add( readAccessor );
                 }
@@ -666,10 +786,10 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private boolean correspondingSetterMethodExists(Accessor getterMethod,
                                                     List<Accessor> setterMethods) {
-        String getterPropertyName = Executables.getPropertyName( getterMethod );
+        String getterPropertyName = executables.getPropertyName( getterMethod );
 
         for ( Accessor setterMethod : setterMethods ) {
-            String setterPropertyName = Executables.getPropertyName( setterMethod );
+            String setterPropertyName = executables.getPropertyName( setterMethod );
             if ( getterPropertyName.equals( setterPropertyName ) ) {
                 return true;
             }

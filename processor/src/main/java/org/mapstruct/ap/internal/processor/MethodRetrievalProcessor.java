@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.internal.processor;
 
-import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutableElements;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -74,6 +72,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private FormattingMessager messager;
     private TypeFactory typeFactory;
     private Types typeUtils;
+    private Executables executables;
     private Elements elementUtils;
 
     @Override
@@ -81,6 +80,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.messager = context.getMessager();
         this.typeFactory = context.getTypeFactory();
         this.typeUtils = context.getTypeUtils();
+        this.executables = context.getExecutables();
         this.elementUtils = context.getElementUtils();
 
         MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
@@ -109,7 +109,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         TypeElement typeElement = asTypeElement( mapperConfig.config() );
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
-        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, typeElement ) ) {
+        for ( ExecutableElement executable : executables.getAllEnclosedExecutableElements( typeElement ) ) {
 
             ExecutableType methodType = typeFactory.getMethodType( mapperConfig.config(), executable );
             List<Parameter> parameters = typeFactory.getParameters( methodType, executable );
@@ -150,7 +150,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                MapperConfiguration mapperConfig, List<SourceMethod> prototypeMethods) {
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
 
-        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper ) ) {
+        for ( ExecutableElement executable : executables.getAllEnclosedExecutableElements( usedMapper ) ) {
             SourceMethod method = getMethod(
                 usedMapper,
                 executable,
@@ -244,7 +244,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         ParameterProvidedMethods contextProvidedMethods =
             retrieveLifecycleMethodsFromContext( contextParameters, mapperToImplement, mapperConfig );
 
-        return new SourceMethod.Builder()
+        return new SourceMethod.Builder( executables )
             .setExecutable( method )
             .setParameters( parameters )
             .setReturnType( returnType )
@@ -307,10 +307,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return null;
         }
 
-
         Type definingType = typeFactory.getType( method.getEnclosingElement().asType() );
 
-        return new SourceMethod.Builder()
+        return new SourceMethod.Builder( executables )
             .setDeclaringMapper( usedMapper.equals( mapperToImplement ) ? null : usedMapperAsType )
             .setDefininingType( definingType )
             .setExecutable( method )
@@ -323,7 +322,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     }
 
     private boolean isValidLifecycleCallbackMethod(ExecutableElement method, Type returnType) {
-        return Executables.isLifecycleCallbackMethod( method );
+        return executables.isLifecycleCallbackMethod( method );
     }
 
     private boolean isValidReferencedMethod(List<Parameter> parameters) {
@@ -406,7 +405,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         if ( returnType.getTypeMirror().getKind() != TypeKind.VOID &&
-            !resultType.isAssignableTo( returnType ) ) {
+            !resultType.isAssignableTo( returnType ) &&
+            !resultType.isFinalTypeAssignableTo( returnType ) ) {
             messager.printMessage( method, Message.RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE );
             return false;
         }

@@ -33,14 +33,17 @@ import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
  */
 public class Filters {
 
-    private Filters() {
+    private final Executables executables;
+
+    private Filters(Executables executables) {
+        this.executables = executables;
     }
 
-    public static List<Accessor> getterMethodsIn(List<Accessor> elements) {
+    public List<Accessor> getterMethodsIn(List<Accessor> elements) {
         List<Accessor> getterMethods = new LinkedList<Accessor>();
 
         for ( Accessor method : elements ) {
-            if ( Executables.isGetterMethod( method ) ) {
+            if ( executables.isGetterMethod( method ) ) {
                 getterMethods.add( method );
             }
         }
@@ -48,11 +51,11 @@ public class Filters {
         return getterMethods;
     }
 
-    public static List<Accessor> fieldsIn(List<Accessor> accessors) {
+    public List<Accessor> fieldsIn(List<Accessor> accessors) {
         List<Accessor> fieldAccessors = new LinkedList<Accessor>();
 
         for ( Accessor accessor : accessors ) {
-            if ( Executables.isFieldAccessor( accessor ) ) {
+            if ( executables.isFieldAccessor( accessor ) ) {
                 fieldAccessors.add( accessor );
             }
         }
@@ -60,11 +63,11 @@ public class Filters {
         return fieldAccessors;
     }
 
-    public static List<ExecutableElementAccessor> presenceCheckMethodsIn(List<Accessor> elements) {
+    public List<ExecutableElementAccessor> presenceCheckMethodsIn(List<Accessor> elements) {
         List<ExecutableElementAccessor> presenceCheckMethods = new LinkedList<ExecutableElementAccessor>();
 
         for ( Accessor method : elements ) {
-            if ( Executables.isPresenceCheckMethod( method ) ) {
+            if ( executables.isPresenceCheckMethod( method ) ) {
                 presenceCheckMethods.add( (ExecutableElementAccessor) method );
             }
         }
@@ -72,26 +75,30 @@ public class Filters {
         return presenceCheckMethods;
     }
 
-    public static List<Accessor> setterMethodsIn(List<Accessor> elements) {
+    public List<Accessor> setterMethodsIn(List<Accessor> elements) {
         List<Accessor> setterMethods = new LinkedList<Accessor>();
 
         for ( Accessor method : elements ) {
-            if ( Executables.isSetterMethod( method ) ) {
+            if ( executables.isSetterMethod( method ) ) {
                 setterMethods.add( method );
             }
         }
         return setterMethods;
     }
 
-    public static List<Accessor> adderMethodsIn(List<Accessor> elements) {
+    public List<Accessor> adderMethodsIn(List<Accessor> elements) {
         List<Accessor> adderMethods = new LinkedList<Accessor>();
 
         for ( Accessor method : elements ) {
-            if ( Executables.isAdderMethod( method ) ) {
+            if ( executables.isAdderMethod( method ) ) {
                 adderMethods.add( method );
             }
         }
 
         return adderMethods;
+    }
+
+    public static Filters getFilters(Executables executables) {
+        return new Filters( executables );
     }
 }

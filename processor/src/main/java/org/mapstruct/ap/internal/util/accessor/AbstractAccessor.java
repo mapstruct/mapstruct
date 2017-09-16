@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
 
 /**
  * This is an abstract implementation of an {@link Accessor} that provides the common implementation.
@@ -32,9 +33,16 @@ import javax.lang.model.element.Name;
 abstract class AbstractAccessor<T extends Element> implements Accessor {
 
     protected final T element;
+    protected final TypeElement parentType;
 
-    AbstractAccessor(T element) {
+    AbstractAccessor(T element, TypeElement parentType) {
         this.element = element;
+        this.parentType = parentType;
+    }
+
+    @Override
+    public TypeElement getParentType() {
+        return parentType;
     }
 
     @Override

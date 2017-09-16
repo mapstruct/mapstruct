@@ -23,6 +23,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
@@ -31,6 +32,12 @@ import javax.lang.model.type.TypeMirror;
  * @author Filip Hrisafov
  */
 public interface Accessor {
+
+    /**
+     * Returns the type this accessor is "attached" to.  The same Accessor can show up in multiple subclasses, so this
+     * represents the subclass attached to {@code this} instance.
+     */
+    TypeElement getParentType();
 
     /**
      * This returns the type that this accessor gives as a return.

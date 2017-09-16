@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 
 /**
@@ -218,7 +219,7 @@ public class MappingOptions {
      * @param typeFactory the type factory
      */
     public void applyInheritedOptions(MappingOptions inherited, boolean isInverse, SourceMethod method,
-                                      FormattingMessager messager, TypeFactory typeFactory) {
+                                      FormattingMessager messager, Executables executables, TypeFactory typeFactory) {
         if ( null != inherited ) {
             if ( getIterableMapping() == null ) {
                 if ( inherited.getIterableMapping() != null ) {
@@ -266,7 +267,7 @@ public class MappingOptions {
             for ( List<Mapping> lmappings : inherited.getMappings().values() ) {
                 for ( Mapping mapping : lmappings ) {
                     if ( isInverse ) {
-                        mapping = mapping.reverse( method, messager, typeFactory );
+                        mapping = mapping.reverse( method, messager, executables, typeFactory );
                     }
 
                     if ( mapping != null ) {

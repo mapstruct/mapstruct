@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.internal.util.workarounds;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -109,7 +112,14 @@ public class SpecificCompilerWorkarounds {
      *         enclosed elements, whereas the resolved element does return enclosed elements.
      */
     public static TypeElement replaceTypeElementIfNecessary(Elements elementUtils, TypeElement element) {
-        if ( element.getEnclosedElements().isEmpty() ) {
+        List<? extends Element> enclosedElements;
+        try {
+            enclosedElements = element.getEnclosedElements();
+        }
+        catch ( NullPointerException e ) {
+            enclosedElements = Collections.emptyList();
+        }
+        if ( enclosedElements.isEmpty() ) {
             TypeElement resolvedByName = elementUtils.getTypeElement( element.getQualifiedName() );
             if ( resolvedByName != null && !resolvedByName.getEnclosedElements().isEmpty() ) {
                 return resolvedByName;

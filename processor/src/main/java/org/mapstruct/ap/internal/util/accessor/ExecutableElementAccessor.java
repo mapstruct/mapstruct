@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.util.accessor;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
@@ -28,8 +29,8 @@ import javax.lang.model.type.TypeMirror;
  */
 public class ExecutableElementAccessor extends AbstractAccessor<ExecutableElement> {
 
-    public ExecutableElementAccessor(ExecutableElement element) {
-        super( element );
+    public ExecutableElementAccessor(ExecutableElement element, TypeElement parentType) {
+        super( element, parentType );
     }
 
     @Override

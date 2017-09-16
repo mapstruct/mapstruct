@@ -75,6 +75,7 @@ public class TargetReference {
         private SourceMethod method;
         private FormattingMessager messager;
         private TypeFactory typeFactory;
+        private Executables executables;
         private boolean isReverse;
         /**
          * Needed when we are building from reverse mapping. It is needed, so we can remove the first level if it is
@@ -120,6 +121,11 @@ public class TargetReference {
             return this;
         }
 
+        public BuilderFromTargetMapping executables(Executables executables) {
+            this.executables = executables;
+            return this;
+        }
+
         public BuilderFromTargetMapping isReverse(boolean isReverse) {
             this.isReverse = isReverse;
             return this;
@@ -131,19 +137,17 @@ public class TargetReference {
         }
 
         public TargetReference build() {
-
             String targetName = mapping.getTargetName();
 
             if ( targetName == null ) {
                 return null;
             }
 
-
             String[] segments = targetName.split( "\\." );
             Parameter parameter = method.getMappingTargetParameter();
 
             boolean foundEntryMatch;
-            Type resultType = method.getResultType();
+            final Type resultType = method.getResultType();
 
             // there can be 4 situations
             // 1. Return type
@@ -194,8 +198,8 @@ public class TargetReference {
                     break;
                 }
 
-                if ( isLast || ( Executables.isSetterMethod( targetWriteAccessor )
-                    || Executables.isFieldAccessor( targetWriteAccessor ) ) ) {
+                if ( isLast || ( executables.isSetterMethod( targetWriteAccessor )
+                    || executables.isFieldAccessor( targetWriteAccessor ) ) ) {
                     // only intermediate nested properties when they are a true setter or field accessor
                     // the last may be other readAccessor (setter / getter / adder).
 
@@ -224,18 +228,18 @@ public class TargetReference {
         private Type findNextType(Type initial, Accessor targetWriteAccessor, Accessor targetReadAccessor) {
             Type nextType;
             Accessor toUse = targetWriteAccessor != null ? targetWriteAccessor : targetReadAccessor;
-            if ( Executables.isGetterMethod( toUse ) ||
-                Executables.isFieldAccessor( toUse ) ) {
+            if ( executables.isGetterMethod( toUse ) ||
+                executables.isFieldAccessor( toUse ) ) {
                 nextType = typeFactory.getReturnType(
                     (DeclaredType) initial.getTypeMirror(),
                     toUse
                 );
             }
             else {
-                nextType = typeFactory.getSingleParameter(
-                    (DeclaredType) initial.getTypeMirror(),
-                    toUse
-                ).getType();
+                // With builders, the {@code includingType} needs to be the builder type instead of the mapping
+                // output
+                nextType = typeFactory.getSingleParameter( (DeclaredType) initial.getMapToType().getTypeMirror(),
+                    toUse ).getType();
             }
             return nextType;
         }

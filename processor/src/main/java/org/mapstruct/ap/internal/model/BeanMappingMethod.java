@@ -41,7 +41,10 @@ import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.common.TypeFinalizer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
@@ -76,6 +79,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
     private final Type resultType;
+    private MethodReference finalizeMethod;
 
     public static class Builder {
 
@@ -97,7 +101,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return this;
         }
 
-        public Builder souceMethod(SourceMethod sourceMethod) {
+        public Builder sourceMethod(SourceMethod sourceMethod) {
             singleMapping = new SourceMethodSingleMapping( sourceMethod );
             return setupMethodWithMapping( sourceMethod );
         }
@@ -173,7 +177,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             Type resultType = null;
             if ( factoryMethod == null ) {
                 if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
-                    resultType = ctx.getTypeFactory().getType( selectionParameters.getResultType() );
+                    final TypeFactory typeFactory = ctx.getTypeFactory();
+                    resultType = typeFactory.getType( selectionParameters.getResultType() );
+
                     if ( resultType.isAbstract() ) {
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
@@ -190,7 +196,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             Message.BEANMAPPING_NOT_ASSIGNABLE, resultType, method.getResultType()
                         );
                     }
-                    else if ( !resultType.hasEmptyAccessibleContructor() ) {
+                    else if ( !resultType.isBuilder() && !resultType.hasEmptyAccessibleContructor() ) {
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
                             beanMappingPrism.mirror,
@@ -206,7 +212,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         method.getReturnType()
                     );
                 }
-                else if ( !method.isUpdateMethod() && !method.getReturnType().hasEmptyAccessibleContructor() ) {
+                else if ( !method.getReturnType().hasBuilder() && !method.isUpdateMethod() &&
+                    !method.getReturnType().hasEmptyAccessibleContructor() ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
                         Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
@@ -226,6 +233,34 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariableNames );
 
+            final MethodReference finalizeMethod;
+            final Type finalType = firstNonNull(
+                resultType,
+                method.getMappingTargetParameter() == null ? null : method.getMappingTargetParameter().getType(),
+                method.getReturnType()
+            );
+            if ( finalType != null && finalType.getFinalizer() != null ) {
+                final TypeFinalizer finalizer = finalType.getFinalizer();
+
+                final SourceMethod finalizeSourceMethod = new SourceMethod.Builder( ctx.getExecutables() )
+                    .setTypeUtils( ctx.getTypeUtils() )
+                    .setTypeFactory( ctx.getTypeFactory() )
+                    .setReturnType( finalizer.getFinalType() )
+                    .setParameters( java.util.Collections.<Parameter>emptyList() )
+                    .setExceptionTypes( java.util.Collections.<Type>emptyList() )
+                    .setDefininingType( finalType )
+                    .setExecutable( finalizer.getFinalizerMethod() )
+                    .build();
+
+                finalizeMethod = MethodReference.forForgedMethod(
+                    finalizeSourceMethod,
+                    Collections.<ParameterBinding>emptyList()
+                );
+            }
+            else {
+                finalizeMethod = null;
+            }
+
             return new BeanMappingMethod(
                 method,
                 existingVariableNames,
@@ -233,6 +268,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 factoryMethod,
                 mapNullToDefault,
                 resultType,
+                finalizeMethod,
                 beforeMappingMethods,
                 afterMappingMethods
             );
@@ -737,6 +773,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               MethodReference factoryMethod,
                               boolean mapNullToDefault,
                               Type resultType,
+                              MethodReference finalizeMethod,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
                               List<LifecycleCallbackMethodReference> afterMappingReferences) {
         super(
@@ -749,6 +786,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         );
 
         this.propertyMappings = propertyMappings;
+        this.resultType = resultType;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
@@ -764,7 +802,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
         }
-        this.resultType = resultType;
+
+        this.finalizeMethod = finalizeMethod;
+
     }
 
     public List<PropertyMapping> getPropertyMappings() {
@@ -778,6 +818,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     public List<PropertyMapping> propertyMappingsByParameter(Parameter parameter) {
         // issues: #909 and #1244. FreeMarker has problem getting values from a map when the search key is size or value
         return mappingsByParameter.get( parameter.getName() );
+    }
+
+    public MethodReference getFinalizeMethod() {
+        return finalizeMethod;
     }
 
     @Override
@@ -872,6 +916,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         public Mapping getSingleMappingByTargetPropertyName(String targetPropertyName) {
             return sourceMethod.getSingleMappingByTargetPropertyName( targetPropertyName );
         }
+    }
+
+    private static <X> X firstNonNull(X... items) {
+        for ( X x : items ) {
+            if ( x != null ) {
+                return x;
+            }
+        }
+        return null;
     }
 
 }
