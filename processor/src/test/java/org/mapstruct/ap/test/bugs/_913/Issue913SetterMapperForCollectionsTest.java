@@ -151,7 +151,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * conversion from string to long that return default in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
      *
-     * However, for plain mappings (strings to strings) the result will be also be an empty collection.
+     * However, for plain mappings (strings to strings) the result will also be an empty collection.
      */
     @Test
     public void shouldReturnDefaultForNvmsReturnDefaultForCreate() {
@@ -169,7 +169,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * string to long that return default in the entire mapper, so also for the forged mapper. Note the default NVMS is
      * RETURN_NULL.
      *
-     * However, for plain mappings (strings to strings) the result will be also be an empty collection.
+     * However, for plain mappings (strings to strings) the result will also be an empty collection.
      */
     @Test
     public void shouldReturnDefaultForNvmsReturnDefaultForUpdate() {
@@ -194,7 +194,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * mapper. Note the default NVMS is
      * RETURN_NULL.
      *
-     * However, for plain mappings (strings to strings) the result will be also be an empty collection.
+     * However, for plain mappings (strings to strings) the result will also be an empty collection.
      *
      */
     @Test
