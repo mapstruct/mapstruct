@@ -183,7 +183,7 @@ public class Issue913SetterMapperForCollectionsTest {
         DomainDtoWithNvmsDefaultMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
-        assertThat( domain.getStrings() ).isNull();
+        assertThat( domain.getStrings() ).isNotNull();
         assertThat( domain.getLongs() ).isEmpty();
         assertThat( domain.getLongs() ).isSameAs( longIn ); // make sure add all is used.
     }
@@ -212,9 +212,9 @@ public class Issue913SetterMapperForCollectionsTest {
         assertThat( domain2 ).isSameAs( domain1 );
         doControlAsserts( domain1, domain2 );
         assertThat( domain1.getLongs() ).isEqualTo( domain2.getLongs() );
-        assertThat( domain1.getStrings() ).isNull();
+        assertThat( domain1.getStrings() ).isNotNull();
         assertThat( domain1.getLongs() ).isEmpty();
-        assertThat( domain2.getStrings() ).isNull();
+        assertThat( domain2.getStrings() ).isNotNull();
         assertThat( domain2.getLongs() ).isEmpty();
         assertThat( domain1.getLongs() ).isSameAs( longIn ); // make sure that add all is used
         assertThat( domain2.getLongs() ).isSameAs( longIn ); // make sure that add all is used

@@ -18,14 +18,14 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+
 import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
-
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
 
 /**
  * This wrapper handles the situation where an assignment is done for an update method.
@@ -49,14 +49,16 @@ public class ExistingInstanceSetterWrapperForCollectionsAndMaps
         Type targetType,
         NullValueCheckStrategyPrism nvms,
         TypeFactory typeFactory,
-        boolean fieldAssignment) {
+        boolean fieldAssignment,
+        boolean mapNullToDefault) {
 
         super(
             decoratedAssignment,
             thrownTypesToExclude,
             targetType,
             typeFactory,
-            fieldAssignment
+            fieldAssignment,
+            mapNullToDefault
         );
         this.includeSourceNullCheck = ALWAYS == nvms;
     }

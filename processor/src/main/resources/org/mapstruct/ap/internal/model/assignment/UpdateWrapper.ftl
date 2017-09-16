@@ -27,7 +27,7 @@
       <@lib.handleAssignment/>;
     }
     else {
-      ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite>null</@lib.handleWrite>;
+      ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if mapNullToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
     }
   <#else>
     <@assignToExistingTarget/>

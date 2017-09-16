@@ -25,5 +25,4 @@
                targetReadAccessorName=targetReadAccessorName
                targetWriteAccessorName=targetWriteAccessorName
                targetType=targetType
-               defaultValueAssignment=defaultValueAssignment
-               iterableCreation=iterableCreation />
+               defaultValueAssignment=defaultValueAssignment />
