@@ -151,7 +151,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * conversion from string to long that return default in the entire mapper, so also for the forged
      * mapper. Note the default NVMS is RETURN_NULL.
      *
-     * However, for plain mappings (strings to strings) the result will be null.
+     * However, for plain mappings (strings to strings) the result will be also be an empty collection.
      */
     @Test
     public void shouldReturnDefaultForNvmsReturnDefaultForCreate() {
@@ -160,7 +160,7 @@ public class Issue913SetterMapperForCollectionsTest {
         Domain domain = DomainDtoWithNvmsDefaultMapper.INSTANCE.create( dto );
 
         doControlAsserts( domain );
-        assertThat( domain.getStrings() ).isNotNull();
+        assertThat( domain.getStrings() ).isEmpty();
         assertThat( domain.getLongs() ).isEmpty();
     }
 
@@ -169,7 +169,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * string to long that return default in the entire mapper, so also for the forged mapper. Note the default NVMS is
      * RETURN_NULL.
      *
-     * However, for plain mappings (strings to strings) the result will be null.
+     * However, for plain mappings (strings to strings) the result will be also be an empty collection.
      */
     @Test
     public void shouldReturnDefaultForNvmsReturnDefaultForUpdate() {
@@ -183,7 +183,7 @@ public class Issue913SetterMapperForCollectionsTest {
         DomainDtoWithNvmsDefaultMapper.INSTANCE.update( dto, domain );
 
         doControlAsserts( domain );
-        assertThat( domain.getStrings() ).isNotNull();
+        assertThat( domain.getStrings() ).isEmpty();
         assertThat( domain.getLongs() ).isEmpty();
         assertThat( domain.getLongs() ).isSameAs( longIn ); // make sure add all is used.
     }
@@ -194,7 +194,7 @@ public class Issue913SetterMapperForCollectionsTest {
      * mapper. Note the default NVMS is
      * RETURN_NULL.
      *
-     * However, for plain mappings (strings to strings) the result will be null.
+     * However, for plain mappings (strings to strings) the result will be also be an empty collection.
      *
      */
     @Test
@@ -212,9 +212,9 @@ public class Issue913SetterMapperForCollectionsTest {
         assertThat( domain2 ).isSameAs( domain1 );
         doControlAsserts( domain1, domain2 );
         assertThat( domain1.getLongs() ).isEqualTo( domain2.getLongs() );
-        assertThat( domain1.getStrings() ).isNotNull();
+        assertThat( domain1.getStrings() ).isEmpty();
         assertThat( domain1.getLongs() ).isEmpty();
-        assertThat( domain2.getStrings() ).isNotNull();
+        assertThat( domain2.getStrings() ).isEmpty();
         assertThat( domain2.getLongs() ).isEmpty();
         assertThat( domain1.getLongs() ).isSameAs( longIn ); // make sure that add all is used
         assertThat( domain2.getLongs() ).isSameAs( longIn ); // make sure that add all is used
