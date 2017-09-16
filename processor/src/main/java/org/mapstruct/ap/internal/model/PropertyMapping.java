@@ -370,7 +370,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment assignToPlain(Type targetType, TargetWriteAccessorType targetAccessorType,
-            Assignment rightHandSide) {
+                                         Assignment rightHandSide) {
 
             Assignment result;
 
@@ -425,7 +425,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment assignToCollection(Type targetType, TargetWriteAccessorType targetAccessorType,
-            Assignment rhs) {
+                                            Assignment rhs) {
             return new CollectionAssignmentBuilder()
                 .mappingBuilderContext( ctx )
                 .method( method )
@@ -458,9 +458,9 @@ public class PropertyMapping extends ModelElement {
             // parameter reference
             if ( propertyEntries.isEmpty() ) {
                 return new SourceRHS( sourceParam.getName(),
-                    sourceParam.getType(),
-                    existingVariableNames,
-                    sourceReference.toString()
+                                      sourceParam.getType(),
+                                      existingVariableNames,
+                                      sourceReference.toString()
                 );
             }
             // simple property
@@ -468,11 +468,11 @@ public class PropertyMapping extends ModelElement {
                 PropertyEntry propertyEntry = propertyEntries.get( 0 );
                 String sourceRef = sourceParam.getName() + "." + ValueProvider.of( propertyEntry.getReadAccessor() );
                 return new SourceRHS( sourceParam.getName(),
-                    sourceRef,
-                    getSourcePresenceCheckerRef( sourceReference ),
-                    propertyEntry.getType(),
-                    existingVariableNames,
-                    sourceReference.toString()
+                                      sourceRef,
+                                      getSourcePresenceCheckerRef( sourceReference ),
+                                      propertyEntry.getType(),
+                                      existingVariableNames,
+                                      sourceReference.toString()
                 );
             }
             // nested property given as dot path
@@ -515,11 +515,11 @@ public class PropertyMapping extends ModelElement {
                 }
                 String sourceRef = forgedName + "( " + sourceParam.getName() + " )";
                 SourceRHS sourceRhs = new SourceRHS( sourceParam.getName(),
-                    sourceRef,
-                    getSourcePresenceCheckerRef( sourceReference ),
-                    sourceType,
-                    existingVariableNames,
-                    sourceReference.toString()
+                                                     sourceRef,
+                                                     getSourcePresenceCheckerRef( sourceReference ),
+                                                     sourceType,
+                                                     existingVariableNames,
+                                                     sourceReference.toString()
                 );
 
                 // create a local variable to which forged method can be assigned.
@@ -547,14 +547,14 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment forgeStreamMapping(Type sourceType, Type targetType, SourceRHS source,
-            ExecutableElement element) {
+                                              ExecutableElement element) {
 
             StreamMappingMethod.Builder builder = new StreamMappingMethod.Builder();
             return forgeWithElementMapping( sourceType, targetType, source, element, builder );
         }
 
         private Assignment forgeIterableMapping(Type sourceType, Type targetType, SourceRHS source,
-            ExecutableElement element) {
+                                                ExecutableElement element) {
 
             IterableMappingMethod.Builder builder = new IterableMappingMethod.Builder();
             return forgeWithElementMapping( sourceType, targetType, source, element, builder );
@@ -576,7 +576,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source,
-            ExecutableElement element, String suffix) {
+                                                 ExecutableElement element, String suffix) {
             String name = getName( sourceType, targetType );
             name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
@@ -597,7 +597,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment forgeMapMapping(Type sourceType, Type targetType, SourceRHS source,
-            ExecutableElement element) {
+                                           ExecutableElement element) {
 
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element, "{}" );
 
@@ -777,10 +777,10 @@ public class PropertyMapping extends ModelElement {
 
                     // target accessor is getter, so getter map/ collection handling
                     assignment = new GetterWrapperForCollectionsAndMaps( assignment,
-                        method.getThrownTypes(),
-                        targetType,
-                        isFieldAssignment()
-                    );
+                                                                         method.getThrownTypes(),
+                                                                         targetType,
+                                                                         isFieldAssignment()
+                                                                       );
                 }
             }
             else {
@@ -852,10 +852,10 @@ public class PropertyMapping extends ModelElement {
             else {
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
                 assignment = new GetterWrapperForCollectionsAndMaps( assignment,
-                    method.getThrownTypes(),
-                    targetType,
-                    isFieldAssignment()
-                );
+                                                                     method.getThrownTypes(),
+                                                                     targetType,
+                                                                     isFieldAssignment()
+                                                                   );
             }
 
             return new PropertyMapping(
@@ -873,17 +873,17 @@ public class PropertyMapping extends ModelElement {
 
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name, String targetWriteAccessorName,
-        ValueProvider targetReadAccessorProvider,
-        Type targetType, Assignment propertyAssignment,
-        List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            ValueProvider targetReadAccessorProvider,
+                            Type targetType, Assignment propertyAssignment,
+                            List<String> dependsOn, Assignment defaultValueAssignment ) {
         this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
             targetType, propertyAssignment, dependsOn, defaultValueAssignment
         );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
-        ValueProvider targetReadAccessorProvider, Type targetType,
-        Assignment assignment,
+                            ValueProvider targetReadAccessorProvider, Type targetType,
+                            Assignment assignment,
         List<String> dependsOn, Assignment defaultValueAssignment) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
