@@ -80,9 +80,9 @@
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     </#list>
     <#if returnType.name != "void">
-        <#if finalizeMethod??>
+        <#if buildMethod??>
 
-            return ${resultName}.<@includeModel object=finalizeMethod />;
+            return ${resultName}.<@includeModel object=buildMethod />;
         <#else>
 
             return ${resultName};

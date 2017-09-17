@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 @WithClasses({SimpleMutableSource.class, SimpleImmutableTarget.class})
 @RunWith(AnnotationProcessorTestRunner.class)
 @Category(BuilderTests.class)
-public class BuilderMappingTargetTest {
+public class BuilderInfoTargetTest {
 
     @Rule
     public final GeneratedSource generatedSource = new GeneratedSource();

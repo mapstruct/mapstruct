@@ -28,7 +28,7 @@ import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.spi.BuilderNamingStrategy;
 import org.mapstruct.ap.spi.BuilderProvider;
-import org.mapstruct.ap.spi.BuilderMapping;
+import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.MethodType;
 
 
@@ -60,10 +60,10 @@ public class DefaultBuilderNamingStrategy implements BuilderNamingStrategy {
      * @param types
      */
     public MethodType getMethodType(TypeElement type, ExecutableElement method, Elements elements, Types types) {
-        final BuilderMapping builderMapping = getBuilderMapping( type, method, elements, types );
-        if ( builderMapping != null ) {
+        final BuilderInfo builderInfo = getBuilderMapping( type, method, elements, types );
+        if ( builderInfo != null ) {
             final String methodName = method.getSimpleName().toString();
-            if ( builderMapping.getFinalizeMethod().getSimpleName().contentEquals( method.getSimpleName() ) ) {
+            if ( builderInfo.getFinalizeMethod().getSimpleName().contentEquals( method.getSimpleName() ) ) {
                 return MethodType.OTHER;
             }
             else if ( methodName.startsWith( "add" ) ) {
@@ -125,8 +125,8 @@ public class DefaultBuilderNamingStrategy implements BuilderNamingStrategy {
     /**
      * Convenience method for looking up builder information.
      */
-    protected BuilderMapping getBuilderMapping(TypeElement forType, ExecutableElement element, Elements elements,
-                                               Types types) {
+    protected BuilderInfo getBuilderMapping(TypeElement forType, ExecutableElement element, Elements elements,
+                                            Types types) {
         if ( forType.getKind() == ElementKind.CLASS ) {
             return builderProvider.findBuildTarget( forType.asType(), elements, types );
         }

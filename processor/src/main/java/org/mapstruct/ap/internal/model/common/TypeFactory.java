@@ -62,7 +62,7 @@ import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderProvider;
-import org.mapstruct.ap.spi.BuilderMapping;
+import org.mapstruct.ap.spi.BuilderInfo;
 
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
@@ -169,7 +169,7 @@ public class TypeFactory {
         if ( type.getTypeElement() != null ) {
 
             // Check if {@code this} type is a builder
-            final BuilderMapping buildTarget = builderProvider.findBuildTarget( mirror, elementUtils, typeUtils );
+            final BuilderInfo buildTarget = builderProvider.findBuildTarget( mirror, elementUtils, typeUtils );
             if ( buildTarget != null ) {
                 final TypeInitializer typeInitializer;
                 final TypeFinalizer typeFinalizer;
@@ -186,7 +186,7 @@ public class TypeFactory {
             }
 
             // Check if {@code this} type is mapped by a builder
-            final BuilderMapping buildSource = builderProvider.findBuilder( mirror, elementUtils, typeUtils );
+            final BuilderInfo buildSource = builderProvider.findBuilder( mirror, elementUtils, typeUtils );
             if ( buildSource != null ) {
                 final Type builderType = internalCreateType( buildSource.getBuilderType() );
 
@@ -413,8 +413,6 @@ public class TypeFactory {
     public Type getReturnType(DeclaredType includingType, Accessor accessor) {
         Type type;
         TypeMirror accessorType = getMethodType( includingType, accessor.getElement() );
-//        TypeMirror accessorType = getMethodType( includingType, accessor.getElement() );
-//        final TypeMirror accessorType = accessor.getParentType().asType();
         if ( isExecutableType( accessorType ) ) {
             type = getType( ( (ExecutableType) accessorType ).getReturnType() );
         }

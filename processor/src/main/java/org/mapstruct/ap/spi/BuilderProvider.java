@@ -23,21 +23,26 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /**
- * A service provider interface that is used to detect types that require a builder for mapping, and also to detect
- * builder classes themselves.  This interface could support automatic detection for projects like Lombok, Immutables,
- * AutoValue, etc.
+ * A service provider interface that is used to detect types that require a builder for mapping.  This interface could
+ * support automatic detection of builders for projects like Lombok, Immutables, AutoValue, etc.
  */
 public interface BuilderProvider {
 
     /**
-     * Looks for a builder for the {@code typeMirror} type.  If found, information about the configuration is
-     * returned.  Otherwise, null.
-     * @param typeMirror The potentially immutable type we are
-     * @param elements
-     * @param types
-     * @return
+     * Given a {@code typeMirror}, looks for a builder that constructs instances of that type.
+     * @param typeMirror The type that would be built by the builder
+     * @param elements Elements
+     * @param types Types
+     * @return Information about the builder configuration
      */
-    BuilderMapping findBuilder(TypeMirror typeMirror, Elements elements, Types types);
+    BuilderInfo findBuilder(TypeMirror typeMirror, Elements elements, Types types);
 
-    BuilderMapping findBuildTarget(TypeMirror typeMirror, Elements elements, Types types);
+    /**
+     * Given a {@code typeMirror}, determines if it is responsible for building another type.
+     * @param typeMirror The builder type
+     * @param elements Elements
+     * @param types Types
+     * @return Information about the builder configuration
+     */
+    BuilderInfo findBuildTarget(TypeMirror typeMirror, Elements elements, Types types);
 }

@@ -55,4 +55,17 @@ public class AbstractBuilderTest {
         assertThat( sourceOne.getBar() ).isEqualTo( 31 );
         assertThat( sourceOne.getFoo() ).isEqualTo( "foo" );
     }
+
+    @Test
+    @WithClasses(ImmutableTargetMapper.class)
+    public void testThatAbstractBuilderReverseMapsAllProperties() {
+        final ImmutableTargetMapper mapper = Mappers.getMapper( ImmutableTargetMapper.class );
+        final Source sourceOne = mapper.fromImmutable( ImmutableTarget.builder()
+            .bar( 31 )
+            .foo( "foo" )
+            .build() );
+
+        assertThat( sourceOne.getBar() ).isEqualTo( 31 );
+        assertThat( sourceOne.getFoo() ).isEqualTo( "foo" );
+    }
 }

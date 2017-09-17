@@ -79,7 +79,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
     private final Type resultType;
-    private MethodReference finalizeMethod;
+    private MethodReference buildMethod;
 
     public static class Builder {
 
@@ -233,7 +233,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariableNames );
 
-            final MethodReference finalizeMethod;
+            final MethodReference buildMethod;
             final Type finalType = firstNonNull(
                 resultType,
                 method.getMappingTargetParameter() == null ? null : method.getMappingTargetParameter().getType(),
@@ -242,7 +242,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( finalType != null && finalType.getFinalizer() != null ) {
                 final TypeFinalizer finalizer = finalType.getFinalizer();
 
-                final SourceMethod finalizeSourceMethod = new SourceMethod.Builder( ctx.getExecutables() )
+                // Register a builder's build() method
+                final SourceMethod buildSourceMethod = new SourceMethod.Builder( ctx.getExecutables() )
                     .setTypeUtils( ctx.getTypeUtils() )
                     .setTypeFactory( ctx.getTypeFactory() )
                     .setReturnType( finalizer.getFinalType() )
@@ -252,13 +253,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     .setExecutable( finalizer.getFinalizerMethod() )
                     .build();
 
-                finalizeMethod = MethodReference.forForgedMethod(
-                    finalizeSourceMethod,
+                buildMethod = MethodReference.forForgedMethod(
+                    buildSourceMethod,
                     Collections.<ParameterBinding>emptyList()
                 );
             }
             else {
-                finalizeMethod = null;
+                buildMethod = null;
             }
 
             return new BeanMappingMethod(
@@ -268,7 +269,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 factoryMethod,
                 mapNullToDefault,
                 resultType,
-                finalizeMethod,
+                buildMethod,
                 beforeMappingMethods,
                 afterMappingMethods
             );
@@ -803,7 +804,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
-        this.finalizeMethod = finalizeMethod;
+        this.buildMethod = finalizeMethod;
 
     }
 
@@ -820,8 +821,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         return mappingsByParameter.get( parameter.getName() );
     }
 
-    public MethodReference getFinalizeMethod() {
-        return finalizeMethod;
+    public MethodReference getBuildMethod() {
+        return buildMethod;
     }
 
     @Override

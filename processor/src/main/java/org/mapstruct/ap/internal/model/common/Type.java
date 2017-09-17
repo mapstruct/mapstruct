@@ -18,12 +18,16 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.Filters;
-import org.mapstruct.ap.internal.util.Nouns;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import static org.mapstruct.ap.internal.util.Filters.getFilters;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -40,16 +44,13 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import static org.mapstruct.ap.internal.util.Filters.getFilters;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.Executables;
+import org.mapstruct.ap.internal.util.Filters;
+import org.mapstruct.ap.internal.util.Nouns;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -212,6 +213,10 @@ public class Type extends ModelElement implements Comparable<Type> {
         return finalizer != null ? finalizer.getFinalType() : this;
     }
 
+    /**
+     * @return the TypeElement {@code this} {@link Type} uses to write values during mapping.  In the case of a
+     * builder, this method would return the type of the builder, otherwise it's {@code this} type.
+     */
     public Type getMapToType() {
         return initializer != null ? initializer.getInitializedType() : this;
     }
@@ -632,8 +637,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private Type determineTargetType(Accessor candidate) {
-        // The accessor could come from a builder instead of the mapped type, so we need to use {@link #getWriteType}
-        // to make sure we are looking up accessor metadata using the correct enclding type.
+        // The accessor could come from a builder instead of the mapped type, so we need to use {@link #getMapToType}
+        // to make sure we are looking up accessor metadata using the correct including type.
         final DeclaredType writeTypeMirror = (DeclaredType) getMapToType().getTypeMirror();
         Parameter parameter = typeFactory.getSingleParameter( writeTypeMirror, candidate );
         if ( parameter != null ) {

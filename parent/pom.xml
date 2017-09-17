@@ -201,6 +201,13 @@
                 <version>2.9</version>
             </dependency>
 
+            <!-- Lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.16.18</version>
+            </dependency>
+
             <!-- Plexus Eclipse Compiler -->
             <dependency>
                 <groupId>org.eclipse.tycho</groupId>

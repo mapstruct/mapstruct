@@ -16,14 +16,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractBuilder;
+package org.mapstruct.itest.lombok;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import lombok.Builder;
+import lombok.Getter;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
-public abstract class ImmutableTargetMapper {
-    abstract ImmutableTarget fromThingTwo(Source two);
-
-    abstract Source fromImmutable(ImmutableTarget two);
+@Builder
+@Getter
+public class Person {
+    private final String name;
+    private final int age;
 }

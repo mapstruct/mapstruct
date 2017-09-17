@@ -16,14 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractBuilder;
+package org.mapstruct.itest.tests;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import org.junit.runner.RunWith;
+import org.mapstruct.itest.testutil.runner.ProcessorSuite;
+import org.mapstruct.itest.testutil.runner.ProcessorSuite.ProcessorType;
+import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
-public abstract class ImmutableTargetMapper {
-    abstract ImmutableTarget fromThingTwo(Source two);
-
-    abstract Source fromImmutable(ImmutableTarget two);
+/**
+ * @author Andreas Gudian
+ *
+ */
+@RunWith( ProcessorSuiteRunner.class )
+@ProcessorSuite( baseDir = "lombokBuilderTest", processorTypes = ProcessorType.ORACLE_JAVA_8 )
+public class LombokBuilderTest {
 }

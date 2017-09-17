@@ -21,20 +21,21 @@ package org.mapstruct.ap.internal.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import org.mapstruct.ap.spi.BuilderInfo;
+import org.mapstruct.ap.spi.BuilderInfo.BuilderInfoBuilder;
 import org.mapstruct.ap.spi.BuilderProvider;
-import org.mapstruct.ap.spi.BuilderMapping;
 
 /**
  * Default implementation of {@link BuilderProvider} which detect immutable types and their corresponding builders.
@@ -47,170 +48,237 @@ import org.mapstruct.ap.spi.BuilderMapping;
 public class DefaultBuilderProvider implements BuilderProvider {
 
     private static final String BUILD_METHOD_NAME = "build";
-    private static final String[] BLACKLISTED = new String[] { "java", "com.google", "org.joda" };
+    private static final String[] IGNORED = new String[] { "java", "com.google", "org.joda" };
 
-    // Internal cache of known builders
-    private static final ConcurrentHashMap<String, BuilderMapping> BUILDERS = newBuilderMappingCache();
+    /**
+     * Internal cache of known builders
+     */
+    private final ConcurrentHashMap<String, BuilderInfo> foundBuilders;
 
-    // Internal cache of types that are constructed using builders
-    private static final ConcurrentHashMap<String, BuilderMapping> BUILDEES = newBuilderMappingCache();
+    /**
+     * Internal cache of types that are constructed using builders
+     */
+    private final ConcurrentHashMap<String, BuilderInfo> foundBuildees;
+
+    /**
+     * Internal cache of types that have been processed and nothing was found.
+     */
+    private final CopyOnWriteArraySet<String> notFound;
+
+    public DefaultBuilderProvider() {
+        this.foundBuilders = new ConcurrentHashMap<String, BuilderInfo>();
+        this.foundBuildees = new ConcurrentHashMap<String, BuilderInfo>();
+        this.notFound = new CopyOnWriteArraySet<String>();
+    }
 
     @Override
-    public BuilderMapping findBuilder(TypeMirror toInspect, Elements elements, Types types) {
+    public BuilderInfo findBuilder(TypeMirror toInspect, Elements elements, Types types) {
         if ( toInspect.getKind() != TypeKind.DECLARED ) {
             return null;
         }
 
-        final TypeElement potentialImmutable = typeElement( toInspect );
+        final TypeElement potentialImmutable = (TypeElement) types.asElement( toInspect );
         final String immutableFQN = potentialImmutable.getQualifiedName().toString();
-        if ( BUILDEES.containsKey( immutableFQN ) ) {
-            return BUILDEES.get( immutableFQN );
+        if ( foundBuildees.containsKey( immutableFQN ) ) {
+            return foundBuildees.get( immutableFQN );
         }
 
-        for ( String blacklisted : BLACKLISTED ) {
+        if ( notFound.contains( immutableFQN ) ) {
+            return null;
+        }
+
+        for ( String blacklisted : IGNORED ) {
             if ( immutableFQN.startsWith( blacklisted ) ) {
                 return null;
             }
         }
 
-        if ( !isImmutable( potentialImmutable ) ) {
+        if ( !isImmutable( potentialImmutable, elements ) ) {
             return null;
         }
 
-        for ( BuilderMapping.Builder potentialBuilder : findPotentialBuilders( toInspect ) ) {
-            for ( BuilderMapping.Builder immutable : findPotentialBuildTarget( potentialBuilder.builderType() ) ) {
+        for ( BuilderInfoBuilder builder : potentialBuilders( toInspect, elements, types ) ) {
+            for ( BuilderInfoBuilder immutable : potentialBuildees( builder.builderType(), elements, types ) ) {
                 if ( types.isAssignable( immutable.targetType(), toInspect ) ) {
-                    final BuilderMapping foundMapping = BuilderMapping.builder()
-                        .merge( potentialBuilder )
+                    final BuilderInfo foundMapping = BuilderInfo.builder()
+                        .merge( builder )
                         .merge( immutable )
                         .targetType( potentialImmutable )
                         .build();
-                    BUILDEES.putIfAbsent( immutableFQN, foundMapping );
+                    foundBuildees.putIfAbsent( immutableFQN, foundMapping );
 
-                    final TypeElement builderType = typeElement( foundMapping.getBuilderType() );
-                    BUILDERS.putIfAbsent( builderType.getQualifiedName().toString(), foundMapping );
+                    final TypeElement builderType = typeElement( foundMapping.getBuilderType(), types );
+                    foundBuilders.putIfAbsent( builderType.getQualifiedName().toString(), foundMapping );
+                    return foundMapping;
                 }
             }
         }
 
+        notFound.add( immutableFQN );
         return null;
     }
 
     @Override
-    public BuilderMapping findBuildTarget(TypeMirror toInspect, Elements elements, Types types) {
+    public BuilderInfo findBuildTarget(TypeMirror toInspect, Elements elements, Types types) {
         if ( toInspect.getKind() != TypeKind.DECLARED ) {
             return null;
         }
 
-        TypeElement potentialBuilderType = typeElement( toInspect );
+        TypeElement potentialBuilderType = typeElement( toInspect, types );
         final String builderFQN = potentialBuilderType.getQualifiedName().toString();
-        if ( BUILDERS.containsKey( builderFQN ) ) {
-            return BUILDERS.get( builderFQN );
+        if ( foundBuilders.containsKey( builderFQN ) ) {
+            return foundBuilders.get( builderFQN );
         }
 
-        for ( String blacklisted : BLACKLISTED ) {
-            if ( potentialBuilderType.getQualifiedName().toString().startsWith( blacklisted ) ) {
+        if ( notFound.contains( builderFQN ) ) {
+            return null;
+        }
+
+        for ( String ignored : IGNORED ) {
+            if ( builderFQN.startsWith( ignored ) ) {
                 return null;
             }
         }
 
-        for ( BuilderMapping.Builder potentialBuildee : findPotentialBuildTarget( toInspect ) ) {
-            for ( BuilderMapping.Builder intermediate : findPotentialBuilders( potentialBuildee.targetType() ) ) {
+        for ( BuilderInfoBuilder immutable : potentialBuildees( toInspect, elements, types ) ) {
+            for ( BuilderInfoBuilder intermediate : potentialBuilders( immutable.targetType(), elements, types ) ) {
                 if ( types.isAssignable( intermediate.builderType(), toInspect ) ) {
 
-                    final BuilderMapping foundMapping = BuilderMapping.builder()
-                        .merge( potentialBuildee )
+                    final BuilderInfo foundMapping = BuilderInfo.builder()
+                        .merge( immutable )
                         .merge( intermediate )
                         .builderType( potentialBuilderType )
                         .build();
-                    BUILDERS.putIfAbsent( builderFQN, foundMapping );
+                    foundBuilders.putIfAbsent( builderFQN, foundMapping );
 
-                    final TypeElement immutableType = typeElement( foundMapping.getFinalType() );
-                    BUILDEES.putIfAbsent( immutableType.getQualifiedName().toString(), foundMapping );
+                    final TypeElement immutableType = typeElement( foundMapping.getFinalType(), types );
+                    foundBuildees.putIfAbsent( immutableType.getQualifiedName().toString(), foundMapping );
 
                     return foundMapping;
                 }
             }
         }
+
+        notFound.add( builderFQN );
         return null;
     }
 
     /**
-     * Given an immutable type, finds all potential builder classes by:
+     *Inspects a {@link TypeMirror} and produces a list of Types that <em>might</em> be builders.
+     * <br/>
+     * This method is naive - it returns the returnType of any method within {@code builder} thats:
+     * <ol>
+     *     <li>Accessible</li>
+     *     <li>Static</li>
+     *     <li>Returns something</li>
+     * </ol>
      *
-     * a) looking at public static no-args methods
-     * b) looking at inner classes
-     *
-     * These are compared with the results of {@link #findPotentialBuildTarget(TypeMirror)} to find matches.
+     * Therefore, any results of this method should be cross-referenced to see if the Type also considers itself
+     * to be a builder for {@code immutable}
      */
-    private static List<BuilderMapping.Builder> findPotentialBuilders(TypeMirror immutableType) {
-        final TypeElement immutableElement = typeElement( immutableType );
-        final List<BuilderMapping.Builder> potentials = new ArrayList<BuilderMapping.Builder>();
-        for ( Element child : immutableElement.getEnclosedElements() ) {
-            if ( child.getKind() == ElementKind.METHOD ) {
-                ExecutableElement method = (ExecutableElement) child;
-                if ( isStatic( method ) && !hasArgs( method ) && isPublic( method ) && returnsDeclaredType( method ) ) {
-                    potentials.add( BuilderMapping.builder()
-                        .builderType( typeElement( method.getReturnType() ) )
-                        .builderCreationMethod( method ) );
+    protected static List<BuilderInfoBuilder> potentialBuilders(TypeMirror immutable, Elements elements, Types types) {
+        final TypeElement immutableElement = typeElement( immutable, types );
+        final List<BuilderInfoBuilder> potentials = new ArrayList<BuilderInfoBuilder>();
+        for ( ExecutableElement method : getAllMethods( immutableElement, elements ) ) {
+            if ( isStatic( method ) && hasNoArgs( method ) && isAccessible( method ) && returnsType( method ) ) {
+                potentials.add( BuilderInfo.builder()
+                    .builderType( typeElement( method.getReturnType(), types ) )
+                    .builderCreationMethod( method ) );
+            }
+        }
+        return potentials;
+    }
+
+    /**
+     * Inspects a {@link TypeMirror} and produces a list of Types that <em>might</em> be built by it.
+     * <br/>
+     * This method is naive - it produces the return type of any method within {@code builder} thats:
+     * <ol>
+     *     <li>Accessible</li>
+     *     <li>Has no args</li>
+     *     <li>Is named 'build'</li>
+     *     <li>Returns something</li>
+     * </ol>
+     *
+     * Therefore, any results of this method should be cross-referenced by the return value of the "build" method
+     * to see if that type considers {@code builder} a potential builder.
+     *
+     * @param builder The type we are inspecting to determine if it's a builder
+     * @param elements Elements
+     * @param types Types
+     * @return A list of {@link BuilderInfoBuilder} for each potential build target.
+     */
+    protected static List<BuilderInfoBuilder> potentialBuildees(TypeMirror builder, Elements elements, Types types) {
+        final TypeElement builderElement = typeElement( builder, types );
+        final List<BuilderInfoBuilder> potentials = new ArrayList<BuilderInfoBuilder>();
+
+        for ( ExecutableElement method : getAllMethods( builderElement, elements ) ) {
+            if ( isAccessible( method ) && !isStatic( method ) && isNamedBuild( method ) && hasNoArgs( method )
+                && returnsType( method ) ) {
+
+                final TypeElement potentialImmutable = typeElement( method.getReturnType(), types );
+                if ( isImmutable( potentialImmutable, elements ) ) {
+                    potentials.add( BuilderInfo.builder()
+                        .buildMethod( method )
+                        .targetType( potentialImmutable ) );
                 }
             }
         }
         return potentials;
     }
 
-    private static List<BuilderMapping.Builder> findPotentialBuildTarget(TypeMirror builderType) {
-        final TypeElement builderElement = typeElement( builderType );
-        assert builderType != null : "Builder should not be null";
-        final List<BuilderMapping.Builder> potentials = new ArrayList<BuilderMapping.Builder>();
-
-        for ( Element builderChild : builderElement.getEnclosedElements() ) {
-            if ( builderChild.getKind() == ElementKind.METHOD ) {
-                ExecutableElement buildMethod = (ExecutableElement) builderChild;
-                if ( isPublic( buildMethod ) && !isStatic( buildMethod ) && isBuildMethod( buildMethod )
-                    && !hasArgs( buildMethod ) && returnsDeclaredType( buildMethod ) ) {
-
-                    final TypeElement potentialImmutable = typeElement( buildMethod.getReturnType() );
-                    if ( isImmutable( potentialImmutable ) ) {
-                        potentials.add( BuilderMapping.builder()
-                            .buildMethod( buildMethod )
-                            .targetType( potentialImmutable ) );
-                    }
-                }
-            }
-        }
-        return potentials;
-    }
-
-    private static boolean isImmutable(TypeElement immutableType) {
-        boolean hasConstructor = false;
-        boolean hasFinalFields = false;
-        for ( Element child : immutableType.getEnclosedElements() ) {
+    /**
+     * Determines if a given type if immutable.  For this implementation, a class is immutable if it does not contain
+     * an accessible zero-arg constructor.
+     * @param immutableType The type we are checking for immutability
+     * @param elements Elements
+     * @return True if the provided {@link TypeElement} is immutable
+     */
+    protected static boolean isImmutable(TypeElement immutableType, Elements elements) {
+        for ( Element child : elements.getAllMembers( immutableType ) ) {
             if ( child.getKind() == ElementKind.CONSTRUCTOR ) {
                 ExecutableElement constructor = (ExecutableElement) child;
-                hasConstructor = true;
-                if ( child.getModifiers().contains( Modifier.PUBLIC ) && constructor.getParameters().isEmpty() ) {
+                if ( isAccessible( constructor ) && hasNoArgs( constructor ) ) {
+                    // Not considered immutable if it has an accessible no-arg constructor
                     return false;
                 }
             }
-            else if ( child.getKind() == ElementKind.FIELD ) {
-                if ( child.getModifiers().contains( Modifier.FINAL ) ) {
-                    hasFinalFields = true;
-                }
+        }
+        return true;
+    }
+
+    protected static List<ExecutableElement> getAllMethods(TypeElement typeElement, Elements elements) {
+        List<ExecutableElement> methods = new ArrayList<ExecutableElement>();
+        for ( Element element : elements.getAllMembers( typeElement ) ) {
+            if ( element.getKind() == ElementKind.METHOD && notJavaLangObjectMethod( element ) ) {
+                methods.add( (ExecutableElement) element );
             }
         }
-        return hasConstructor && hasFinalFields;
+        return methods;
     }
 
-    private static boolean isPublic(ExecutableElement method) {
-        return method.getModifiers().contains( Modifier.PUBLIC );
+    private static boolean notJavaLangObjectMethod(Element element) {
+        if ( element.getEnclosingElement() == null ) {
+            return true;
+        }
+        else if ( element.getEnclosingElement().getKind() != ElementKind.CLASS ) {
+            return true;
+        }
+        else {
+            final TypeElement enclosingType = (TypeElement) element.getEnclosingElement();
+            return !enclosingType.getQualifiedName().contentEquals( "java.lang.Object" );
+        }
     }
 
-    private static boolean isBuildMethod(ExecutableElement method) {
+    private static boolean isAccessible(ExecutableElement method) {
+        return !method.getModifiers().contains( Modifier.PRIVATE );
+    }
+
+    private static boolean isNamedBuild(ExecutableElement method) {
         return method.getSimpleName().contentEquals( BUILD_METHOD_NAME );
     }
 
-    private static boolean returnsDeclaredType(ExecutableElement method) {
+    private static boolean returnsType(ExecutableElement method) {
         return method.getReturnType().getKind() == TypeKind.DECLARED;
     }
 
@@ -218,18 +286,12 @@ public class DefaultBuilderProvider implements BuilderProvider {
         return method.getModifiers().contains( Modifier.STATIC );
     }
 
-    private static boolean hasArgs(ExecutableElement method) {
-        return method.getParameters().size() > 0;
+    private static boolean hasNoArgs(ExecutableElement method) {
+        return method.getParameters().isEmpty();
     }
 
-    private static TypeElement typeElement(TypeMirror mirror) {
-        return (TypeElement) ( (DeclaredType) mirror ).asElement();
+    private static TypeElement typeElement(TypeMirror mirror, Types types) {
+        return (TypeElement) types.asElement( mirror );
     }
 
-    /**
-     * Mostly just to avoid ugly wrapping lines.
-     */
-    private static ConcurrentHashMap<String, BuilderMapping> newBuilderMappingCache() {
-        return new ConcurrentHashMap<String, BuilderMapping>();
-    }
 }
