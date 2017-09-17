@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model.assignment;
 
+import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
+
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -26,8 +28,6 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-
-import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
 
 /**
  * This wrapper handles the situation where an assignment is done via the setter and a null check is needed.
@@ -39,12 +39,14 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
 
     private final Type targetType;
     private final TypeFactory typeFactory;
+    private final boolean mapNullToDefault;
 
     public SetterWrapperForCollectionsAndMapsWithNullCheck(Assignment decoratedAssignment,
         List<Type> thrownTypesToExclude,
         Type targetType,
         TypeFactory typeFactory,
-        boolean fieldAssignment) {
+        boolean fieldAssignment,
+        boolean mapNullToDefault) {
         super(
             decoratedAssignment,
             thrownTypesToExclude,
@@ -53,6 +55,7 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
         );
         this.targetType = targetType;
         this.typeFactory = typeFactory;
+        this.mapNullToDefault = mapNullToDefault;
     }
 
     @Override
@@ -83,4 +86,9 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
     public boolean isEnumSet() {
         return "java.util.EnumSet".equals( targetType.getFullyQualifiedName() );
     }
+
+    public boolean isMapNullToDefault() {
+        return mapNullToDefault;
+    }
+
 }

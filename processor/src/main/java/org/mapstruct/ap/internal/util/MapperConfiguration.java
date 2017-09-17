@@ -155,6 +155,15 @@ public class MapperConfiguration {
         }
     }
 
+    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
+        if ( mapperConfigPrism != null && mapperPrism.values.nullValueMappingStrategy() == null ) {
+            return NullValueMappingStrategyPrism.valueOf( mapperConfigPrism.nullValueMappingStrategy() );
+        }
+        else {
+            return NullValueMappingStrategyPrism.valueOf( mapperPrism.nullValueMappingStrategy() );
+        }
+    }
+
     public boolean isMapToDefault(NullValueMappingStrategyPrism mapNullToDefault) {
 
         // check on method level

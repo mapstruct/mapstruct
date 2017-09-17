@@ -53,6 +53,7 @@ import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -394,10 +395,14 @@ public class PropertyMapping extends ModelElement {
                         targetPropertyName
                     );
                 }
+
+                boolean mapNullToDefault = method.getMapperConfiguration().
+                    getNullValueMappingStrategy() == NullValueMappingStrategyPrism.RETURN_DEFAULT;
+
                 Assignment factory = ctx.getMappingResolver()
                     .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( rightHandSide ) );
                 return new UpdateWrapper( rhs, method.getThrownTypes(), factory, isFieldAssignment(),  targetType,
-                    !rhs.isSourceReferenceParameter() );
+                    !rhs.isSourceReferenceParameter(), mapNullToDefault );
             }
             else {
                 NullValueCheckStrategyPrism nvcs = method.getMapperConfiguration().getNullValueCheckStrategy();
@@ -754,10 +759,15 @@ public class PropertyMapping extends ModelElement {
                                 targetPropertyName
                             );
                         }
+
+                        boolean mapNullToDefault = method.getMapperConfiguration().
+                            getNullValueMappingStrategy() == NullValueMappingStrategyPrism.RETURN_DEFAULT;
+
                         Assignment factoryMethod =
                             ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
+
                         assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod,
-                            isFieldAssignment(), targetType, false );
+                            isFieldAssignment(), targetType, false, mapNullToDefault );
                     }
                     else {
                         assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );

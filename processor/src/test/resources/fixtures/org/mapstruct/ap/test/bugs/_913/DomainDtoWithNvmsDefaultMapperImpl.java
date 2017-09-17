@@ -46,7 +46,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                 domain.setStrings( new HashSet<String>( list ) );
             }
             else {
-                domain.setStrings( null );
+                domain.setStrings( new HashSet<String>() );
             }
             List<String> list1 = source.getStringsWithDefault();
             if ( list1 != null ) {
@@ -60,7 +60,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                 domain.setStringsInitialized( new HashSet<String>( list2 ) );
             }
             else {
-                domain.setStringsInitialized( null );
+                domain.setStringsInitialized( new HashSet<String>() );
             }
         }
 
@@ -78,7 +78,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getLongs().addAll( set );
                 }
                 else {
-                    target.setLongs( null );
+                    target.setLongs( new HashSet<Long>() );
                 }
             }
             else {
@@ -94,7 +94,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getStrings().addAll( list );
                 }
                 else {
-                    target.setStrings( null );
+                    target.setStrings( new HashSet<String>() );
                 }
             }
             else {
@@ -110,7 +110,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getLongsInitialized().addAll( set1 );
                 }
                 else {
-                    target.setLongsInitialized( null );
+                    target.setLongsInitialized( new HashSet<Long>() );
                 }
             }
             else {
@@ -145,7 +145,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getStringsInitialized().addAll( list2 );
                 }
                 else {
-                    target.setStringsInitialized( null );
+                    target.setStringsInitialized( new HashSet<String>() );
                 }
             }
             else {
@@ -168,7 +168,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getLongs().addAll( set );
                 }
                 else {
-                    target.setLongs( null );
+                    target.setLongs( new HashSet<Long>() );
                 }
             }
             else {
@@ -184,7 +184,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getStrings().addAll( list );
                 }
                 else {
-                    target.setStrings( null );
+                    target.setStrings( new HashSet<String>() );
                 }
             }
             else {
@@ -200,7 +200,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getLongsInitialized().addAll( set1 );
                 }
                 else {
-                    target.setLongsInitialized( null );
+                    target.setLongsInitialized( new HashSet<Long>() );
                 }
             }
             else {
@@ -235,7 +235,7 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
                     target.getStringsInitialized().addAll( list2 );
                 }
                 else {
-                    target.setStringsInitialized( null );
+                    target.setStringsInitialized( new HashSet<String>() );
                 }
             }
             else {

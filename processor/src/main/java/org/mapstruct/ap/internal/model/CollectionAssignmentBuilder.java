@@ -30,6 +30,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
+import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
@@ -139,6 +140,7 @@ public class CollectionAssignmentBuilder {
                         targetPropertyName
                     );
                 }
+
                 Assignment factoryMethod = ctx.getMappingResolver()
                     .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( sourceRHS ) );
                 result = new UpdateWrapper(
@@ -147,31 +149,35 @@ public class CollectionAssignmentBuilder {
                     factoryMethod,
                     PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType ),
                     targetType,
-                    true
+                    true,
+                    mapNullToDefault()
                 );
             }
             else if ( method.isUpdateMethod() && !targetImmutable ) {
+
                 result = new ExistingInstanceSetterWrapperForCollectionsAndMaps(
                     result,
                     method.getThrownTypes(),
                     targetType,
                     method.getMapperConfiguration().getNullValueCheckStrategy(),
                     ctx.getTypeFactory(),
-                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType )
+                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType ),
+                    mapNullToDefault()
                 );
             }
             else if ( result.getType() == Assignment.AssignmentType.DIRECT ||
                 method.getMapperConfiguration().getNullValueCheckStrategy() == NullValueCheckStrategyPrism.ALWAYS ) {
+
                 result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
                     result,
                     method.getThrownTypes(),
                     targetType,
                     ctx.getTypeFactory(),
-                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType )
+                    PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType ),
+                    mapNullToDefault()
                 );
             }
             else {
-
                 // target accessor is setter, so wrap the setter in setter map/ collection handling
                 result = new SetterWrapperForCollectionsAndMaps(
                     result,
@@ -200,5 +206,10 @@ public class CollectionAssignmentBuilder {
         }
 
         return result;
+    }
+
+    private boolean mapNullToDefault() {
+        return method.getMapperConfiguration().getNullValueMappingStrategy()
+            == NullValueMappingStrategyPrism.RETURN_DEFAULT;
     }
 }
