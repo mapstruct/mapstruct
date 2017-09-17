@@ -13,6 +13,7 @@ Ewald Volkert - https://github.com/eforest
 Filip Hrisafov - https://github.com/filiphr
 Gunnar Morling - https://github.com/gunnarmorling
 Ivo Smid - https://github.com/bedla
+Kevin Grüneberg - https://github.com/kevcodez
 Michael Pardo - https://github.com/pardom
 Mustafa Caylak - https://github.com/luxmeter
 Oliver Ehrenmüller - https://github.com/greuelpirat
