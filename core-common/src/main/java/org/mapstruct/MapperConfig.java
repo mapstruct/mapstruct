@@ -164,4 +164,11 @@ public @interface MapperConfig {
      * @since 1.2
      */
     boolean disableSubMappingMethodsGeneration() default false;
+
+    /**
+     * Determines which builder providers should be used for this mapping.  A value of {@link BuilderProvider#DEFAULT}
+     * will load the Service Provider Interface, which can be used to provide a custom implementation.
+     * @return An array of builder providers to use to to locate builders for immutable types.
+     */
+    BuilderProvider[] builderProviders() default BuilderProvider.DEFAULT;
 }

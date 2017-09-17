@@ -243,7 +243,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 final TypeFinalizer finalizer = finalType.getFinalizer();
 
                 // Register a builder's build() method
-                final SourceMethod buildSourceMethod = new SourceMethod.Builder( ctx.getExecutables() )
+                final SourceMethod buildSourceMethod = new SourceMethod.Builder()
                     .setTypeUtils( ctx.getTypeUtils() )
                     .setTypeFactory( ctx.getTypeFactory() )
                     .setReturnType( finalizer.getFinalType() )

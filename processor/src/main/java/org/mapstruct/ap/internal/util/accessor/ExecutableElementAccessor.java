@@ -29,8 +29,8 @@ import javax.lang.model.type.TypeMirror;
  */
 public class ExecutableElementAccessor extends AbstractAccessor<ExecutableElement> {
 
-    public ExecutableElementAccessor(ExecutableElement element, TypeElement parentType) {
-        super( element, parentType );
+    public ExecutableElementAccessor(ExecutableElement element, TypeElement parentType, boolean isBuilder) {
+        super( element, parentType, isBuilder );
     }
 
     @Override

@@ -34,15 +34,22 @@ abstract class AbstractAccessor<T extends Element> implements Accessor {
 
     protected final T element;
     protected final TypeElement parentType;
+    protected final boolean isBuilder;
 
-    AbstractAccessor(T element, TypeElement parentType) {
+    AbstractAccessor(T element, TypeElement parentType, boolean isBuilder) {
         this.element = element;
         this.parentType = parentType;
+        this.isBuilder = isBuilder;
     }
 
     @Override
     public TypeElement getParentType() {
         return parentType;
+    }
+
+    @Override
+    public boolean isBuilder() {
+        return isBuilder;
     }
 
     @Override

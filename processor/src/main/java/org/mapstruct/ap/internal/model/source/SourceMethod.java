@@ -54,7 +54,6 @@ public class SourceMethod implements Method {
 
     private final Types typeUtils;
     private final TypeFactory typeFactory;
-    private final Executables executables;
 
     private final Type declaringMapper;
     private final ExecutableElement executable;
@@ -88,7 +87,6 @@ public class SourceMethod implements Method {
 
     public static class Builder {
 
-        private final Executables executables;
         private Type declaringMapper = null;
         private Type definingType = null;
         private ExecutableElement executable;
@@ -106,10 +104,6 @@ public class SourceMethod implements Method {
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
         private List<ValueMapping> valueMappings;
         private ParameterProvidedMethods contextProvidedMethods;
-
-        public Builder(Executables executables) {
-            this.executables = executables;
-        }
 
         public Builder setDeclaringMapper(Type declaringMapper) {
             this.declaringMapper = declaringMapper;
@@ -197,15 +191,16 @@ public class SourceMethod implements Method {
         }
 
         public SourceMethod build() {
+
             MappingOptions mappingOptions =
                     new MappingOptions( mappings, iterableMapping, mapMapping, beanMapping, valueMappings, false );
 
-            SourceMethod sourceMethod = new SourceMethod( executables, this, mappingOptions );
+            SourceMethod sourceMethod = new SourceMethod( this, mappingOptions );
 
             if ( mappings != null ) {
                 for ( Map.Entry<String, List<Mapping>> entry : mappings.entrySet() ) {
                     for ( Mapping mapping : entry.getValue() ) {
-                        mapping.init( sourceMethod, messager, executables, typeFactory );
+                        mapping.init( sourceMethod, messager, typeFactory );
                     }
                 }
             }
@@ -213,8 +208,7 @@ public class SourceMethod implements Method {
         }
     }
 
-    private SourceMethod(Executables executables, Builder builder, MappingOptions mappingOptions) {
-        this.executables = executables;
+    private SourceMethod(Builder builder, MappingOptions mappingOptions) {
         this.declaringMapper = builder.declaringMapper;
         this.executable = builder.executable;
         this.parameters = builder.parameters;
@@ -567,7 +561,7 @@ public class SourceMethod implements Method {
 
     @Override
     public boolean isDefault() {
-        return executables.isDefaultMethod( executable );
+        return Executables.isDefaultMethod( executable );
     }
 
     @Override
@@ -582,15 +576,15 @@ public class SourceMethod implements Method {
 
     @Override
     public boolean isLifecycleCallbackMethod() {
-        return executables.isLifecycleCallbackMethod( getExecutable() );
+        return Executables.isLifecycleCallbackMethod( getExecutable() );
     }
 
     public boolean isAfterMappingMethod() {
-        return executables.isAfterMappingMethod( getExecutable() );
+        return Executables.isAfterMappingMethod( getExecutable() );
     }
 
     public boolean isBeforeMappingMethod() {
-        return executables.isBeforeMappingMethod( getExecutable() );
+        return Executables.isBeforeMappingMethod( getExecutable() );
     }
 
     /**

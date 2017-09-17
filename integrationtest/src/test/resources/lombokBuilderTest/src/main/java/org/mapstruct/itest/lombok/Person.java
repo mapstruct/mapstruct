@@ -21,7 +21,7 @@ package org.mapstruct.itest.lombok;
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
+@Builder(builderMethodName = "foo", buildMethodName = "create", builderClassName = "Builder")
 @Getter
 public class Person {
     private final String name;

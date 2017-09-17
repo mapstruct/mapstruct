@@ -30,8 +30,8 @@ import javax.lang.model.type.TypeMirror;
  */
 public class VariableElementAccessor extends AbstractAccessor<VariableElement> {
 
-    public VariableElementAccessor(VariableElement element, TypeElement parentType) {
-        super( element, parentType );
+    public VariableElementAccessor(VariableElement element, TypeElement parentType, boolean isBuilder) {
+        super( element, parentType, isBuilder );
     }
 
     @Override

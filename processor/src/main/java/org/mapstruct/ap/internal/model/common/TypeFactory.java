@@ -18,6 +18,26 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,36 +57,15 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
-import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.RoundContext;
-import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
+import org.mapstruct.ap.shared.TypeHierarchyErroneousException;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
-import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.BuilderInfo;
-
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
+import org.mapstruct.ap.spi.BuilderProvider;
 
 /**
  * Factory creating {@link Type} instances.
@@ -78,7 +77,6 @@ public class TypeFactory {
     private final Elements elementUtils;
     private final Types typeUtils;
     private final BuilderProvider builderProvider;
-    private final Executables executables;
     private final RoundContext roundContext;
 
     private final TypeMirror iterableType;
@@ -90,10 +88,9 @@ public class TypeFactory {
     private final Map<String, String> importedQualifiedTypesBySimpleName = new HashMap<String, String>();
 
     public TypeFactory(Elements elementUtils, Types typeUtils, BuilderProvider builderProvider,
-                       Executables executables, RoundContext roundContext) {
+                       RoundContext roundContext) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
-        this.executables = executables;
         this.builderProvider = builderProvider;
         this.roundContext = roundContext;
 
@@ -293,7 +290,6 @@ public class TypeFactory {
 
         return new Type(
             typeUtils, elementUtils, this,
-            executables,
             mirror,
             typeElement,
             getTypeParameters( mirror, false ),
@@ -489,7 +485,6 @@ public class TypeFactory {
                 typeUtils,
                 elementUtils,
                 this,
-                executables,
                 typeUtils.getDeclaredType(
                     implementationType.getTypeElement(),
                     declaredType.getTypeArguments().toArray( new TypeMirror[] { } )

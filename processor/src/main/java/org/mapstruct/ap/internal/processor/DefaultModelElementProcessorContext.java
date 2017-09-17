@@ -31,19 +31,14 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
-import org.mapstruct.ap.internal.util.DefaultBuilderNamingStrategy;
-import org.mapstruct.ap.internal.util.DefaultBuilderProvider;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.spi.LombokBuilderProvider;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.internal.util.workarounds.TypesDecorator;
 import org.mapstruct.ap.internal.version.VersionInformation;
-import org.mapstruct.ap.spi.AccessorNamingStrategy;
-import org.mapstruct.ap.spi.BuilderNamingStrategy;
 import org.mapstruct.ap.spi.BuilderProvider;
-import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 
 /**
  * Default implementation of the processor context.
@@ -58,11 +53,6 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final TypeFactory typeFactory;
     private final VersionInformation versionInformation;
     private final Types delegatingTypes;
-    private final Elements elementUtils;
-    private final Executables executables;
-
-    private final AccessorNamingStrategy accessorNamingStrategy;
-    private final BuilderNamingStrategy builderNamingStrategy;
     private final BuilderProvider builderProvider;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options,
@@ -72,20 +62,13 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         this.messager = new DelegatingMessager( processingEnvironment.getMessager() );
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
         this.delegatingTypes = new TypesDecorator( processingEnvironment, versionInformation );
+        this.builderProvider = Services.get( BuilderProvider.class, new LombokBuilderProvider() );
 
-        accessorNamingStrategy = Services.get( AccessorNamingStrategy.class, new DefaultAccessorNamingStrategy() );
-        builderProvider = Services.get( BuilderProvider.class, new DefaultBuilderProvider() );
-        builderNamingStrategy = Services.get( BuilderNamingStrategy.class, new DefaultBuilderNamingStrategy() )
-            .withBuilderProvider( builderProvider );
-
-        this.elementUtils = processingEnvironment.getElementUtils();
-        this.executables = Executables.getExecutables( delegatingTypes, elementUtils, accessorNamingStrategy,
-                        builderNamingStrategy, builderProvider );
         this.typeFactory = new TypeFactory(
             processingEnvironment.getElementUtils(),
             delegatingTypes,
             builderProvider,
-            executables, roundContext
+            roundContext
         );
         this.options = options;
     }
@@ -102,17 +85,12 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
 
     @Override
     public Elements getElementUtils() {
-        return elementUtils;
+        return processingEnvironment.getElementUtils();
     }
 
     @Override
     public TypeFactory getTypeFactory() {
         return typeFactory;
-    }
-
-    @Override
-    public Executables getExecutables() {
-        return executables;
     }
 
     @Override

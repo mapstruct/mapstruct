@@ -38,7 +38,6 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.spi.MappingExclusionProvider;
@@ -123,7 +122,6 @@ public class MappingBuilderContext {
     }
 
     private final TypeFactory typeFactory;
-    private final Executables executables;
     private final Elements elementUtils;
     private final Types typeUtils;
     private final FormattingMessager messager;
@@ -137,7 +135,6 @@ public class MappingBuilderContext {
         new HashMap<ForgedMethod, ForgedMethod>(  );
 
     public MappingBuilderContext(TypeFactory typeFactory,
-                          Executables executables,
                           Elements elementUtils,
                           Types typeUtils,
                           FormattingMessager messager,
@@ -147,7 +144,6 @@ public class MappingBuilderContext {
                           List<SourceMethod> sourceModel,
                           List<MapperReference> mapperReferences) {
         this.typeFactory = typeFactory;
-        this.executables = executables;
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
@@ -193,10 +189,6 @@ public class MappingBuilderContext {
 
     public Types getTypeUtils() {
         return typeUtils;
-    }
-
-    public Executables getExecutables() {
-        return executables;
     }
 
     public FormattingMessager getMessager() {

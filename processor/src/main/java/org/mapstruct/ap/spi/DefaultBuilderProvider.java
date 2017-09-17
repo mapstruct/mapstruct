@@ -16,13 +16,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.spi;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -32,6 +29,13 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.BuilderInfo.BuilderInfoBuilder;
@@ -63,12 +67,14 @@ public class DefaultBuilderProvider implements BuilderProvider {
     /**
      * Internal cache of types that have been processed and nothing was found.
      */
-    private final CopyOnWriteArraySet<String> notFound;
+    private final Set<String> notBuilders;
+    private final Set<String> notBuildees;
 
     public DefaultBuilderProvider() {
         this.foundBuilders = new ConcurrentHashMap<String, BuilderInfo>();
         this.foundBuildees = new ConcurrentHashMap<String, BuilderInfo>();
-        this.notFound = new CopyOnWriteArraySet<String>();
+        this.notBuilders = new CopyOnWriteArraySet<String>();
+        this.notBuildees = new CopyOnWriteArraySet<String>();
     }
 
     @Override
@@ -83,17 +89,18 @@ public class DefaultBuilderProvider implements BuilderProvider {
             return foundBuildees.get( immutableFQN );
         }
 
-        if ( notFound.contains( immutableFQN ) ) {
+        if ( notBuildees.contains( immutableFQN ) ) {
             return null;
         }
 
-        for ( String blacklisted : IGNORED ) {
-            if ( immutableFQN.startsWith( blacklisted ) ) {
+        for ( String ignored : IGNORED ) {
+            if ( immutableFQN.startsWith( ignored ) ) {
                 return null;
             }
         }
 
         if ( !isImmutable( potentialImmutable, elements ) ) {
+            notBuildees.add( immutableFQN );
             return null;
         }
 
@@ -114,7 +121,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
             }
         }
 
-        notFound.add( immutableFQN );
+        notBuildees.add( immutableFQN );
         return null;
     }
 
@@ -130,7 +137,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
             return foundBuilders.get( builderFQN );
         }
 
-        if ( notFound.contains( builderFQN ) ) {
+        if ( notBuilders.contains( builderFQN ) ) {
             return null;
         }
 
@@ -159,13 +166,13 @@ public class DefaultBuilderProvider implements BuilderProvider {
             }
         }
 
-        notFound.add( builderFQN );
+        notBuilders.add( builderFQN );
         return null;
     }
 
     /**
      *Inspects a {@link TypeMirror} and produces a list of Types that <em>might</em> be builders.
-     * <br/>
+     *
      * This method is naive - it returns the returnType of any method within {@code builder} thats:
      * <ol>
      *     <li>Accessible</li>
@@ -175,8 +182,14 @@ public class DefaultBuilderProvider implements BuilderProvider {
      *
      * Therefore, any results of this method should be cross-referenced to see if the Type also considers itself
      * to be a builder for {@code immutable}
+     *
+     * @param immutable The type to inspect for possible builders
+     * @param elements Element utilities
+     * @param types Type utiltiies
+     *
+     * @return A list of possible builder configurations
      */
-    protected static List<BuilderInfoBuilder> potentialBuilders(TypeMirror immutable, Elements elements, Types types) {
+    protected List<BuilderInfoBuilder> potentialBuilders(TypeMirror immutable, Elements elements, Types types) {
         final TypeElement immutableElement = typeElement( immutable, types );
         final List<BuilderInfoBuilder> potentials = new ArrayList<BuilderInfoBuilder>();
         for ( ExecutableElement method : getAllMethods( immutableElement, elements ) ) {
@@ -191,7 +204,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
 
     /**
      * Inspects a {@link TypeMirror} and produces a list of Types that <em>might</em> be built by it.
-     * <br/>
+     *
      * This method is naive - it produces the return type of any method within {@code builder} thats:
      * <ol>
      *     <li>Accessible</li>

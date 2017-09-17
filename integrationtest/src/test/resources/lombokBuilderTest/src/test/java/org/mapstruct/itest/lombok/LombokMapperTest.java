@@ -32,19 +32,19 @@ public class LombokMapperTest {
 
     @Test
     public void testSimpleImmutableBuilderHappyPath() {
-        final org.mapstruct.itest.lombok.PersonMapper mapper = Mappers.getMapper( org.mapstruct.itest.lombok.PersonMapper.class );
-        final org.mapstruct.itest.lombok.PersonDto personDto = mapper.toDto( org.mapstruct.itest.lombok.Person.builder()
+        final PersonMapper mapper = Mappers.getMapper( PersonMapper.class );
+        final PersonDto personDto = mapper.toDto( Person.foo()
             .age( 33 )
             .name( "Bob" )
-            .build() );
+            .create() );
         assertThat( personDto.getAge() ).isEqualTo( 33 );
         assertThat( personDto.getName() ).isEqualTo( "Bob" );
     }
 
     @Test
     public void testLombokToImmutable() {
-        final org.mapstruct.itest.lombok.PersonMapper mapper = Mappers.getMapper( org.mapstruct.itest.lombok.PersonMapper.class );
-        final org.mapstruct.itest.lombok.Person person = mapper.fromDto( new org.mapstruct.itest.lombok.PersonDto( "Bob", 33) );
+        final PersonMapper mapper = Mappers.getMapper( PersonMapper.class );
+        final Person person = mapper.fromDto( new PersonDto( "Bob", 33) );
         assertThat( person.getAge() ).isEqualTo( 33 );
         assertThat( person.getName() ).isEqualTo( "Bob" );
     }

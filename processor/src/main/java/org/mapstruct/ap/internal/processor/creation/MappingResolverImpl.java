@@ -21,10 +21,6 @@ package org.mapstruct.ap.internal.processor.creation;
 import static java.util.Collections.singletonList;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -34,6 +30,11 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
@@ -62,7 +63,6 @@ import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Collections;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -78,7 +78,6 @@ public class MappingResolverImpl implements MappingResolver {
 
     private final FormattingMessager messager;
     private final Types typeUtils;
-    private final Executables executables;
     private final TypeFactory typeFactory;
 
     private final List<Method> sourceModel;
@@ -95,12 +94,11 @@ public class MappingResolverImpl implements MappingResolver {
     private final Set<VirtualMappingMethod> usedVirtualMappings = new HashSet<VirtualMappingMethod>();
 
     public MappingResolverImpl(FormattingMessager messager, Elements elementUtils, Types typeUtils,
-                               Executables executables, TypeFactory typeFactory, List<Method> sourceModel,
+                               TypeFactory typeFactory, List<Method> sourceModel,
                                List<MapperReference> mapperReferences) {
         this.messager = messager;
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
-        this.executables = executables;
 
         this.sourceModel = sourceModel;
         this.mapperReferences = mapperReferences;
@@ -140,7 +138,7 @@ public class MappingResolverImpl implements MappingResolver {
         if ( targetType.hasBuilder() ) {
             final TypeInitializer factoryMethod = targetType.getInitializer();
             return LifecycleCallbackMethodReference.forForgedMethod(
-                new SourceMethod.Builder( executables )
+                new SourceMethod.Builder()
                     .setTypeUtils( typeUtils )
                     .setTypeFactory( typeFactory )
                     .setReturnType( factoryMethod.getInitializedType() )

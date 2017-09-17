@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.shared;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;

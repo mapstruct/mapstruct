@@ -18,11 +18,6 @@
  */
 package org.mapstruct.ap.spi;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-
 /**
  * A service provider interface for the mapping between builder method names and properties.  It's common
  * to use a different accessor naming convention for builders than for POJOs.  Example:
@@ -39,47 +34,5 @@ import javax.lang.model.util.Types;
  * @author Eric Martineau
  * @author Gunnar Morling
  */
-public interface BuilderNamingStrategy {
-
-    /**
-     * Returns the {@link MethodType} for the provided method.
-     *
-     * @param forType The concrete type this method is being inspected for
-     * @param method to be analyzed.
-     *
-     * @return the method type.
-     */
-    MethodType getMethodType(TypeElement forType, ExecutableElement method, Elements elements, Types types);
-
-    /**
-     * Returns the name of the property represented by the given getter or setter method.
-     * <p>
-     * The default implementation will e.g. return "name" for {@code public String getName()} or {@code public void
-     * setName(String name)}.
-     *
-     * @param forType The concrete type this method is being inspected for
-     * @param method to be analyzed.
-     *
-     * @return property name derived from the method
-     */
-    String getPropertyName(TypeElement forType, ExecutableElement method, Elements elements, Types types);
-
-    /**
-     * Returns the element name of the given adder method.
-     * <p>
-     * The default implementation will e.g. return "item" for {@code public void addItem(String item)}.
-     *
-     * @param forType The concrete type this method is being inspected for
-     * @param adderMethod to be getterOrSetterMethod.
-     *
-     * @return getter name for collections
-     */
-    String getBuilderElementName(TypeElement forType, ExecutableElement adderMethod, Elements elements, Types types);
-
-    /**
-     * Uses the provided {@link BuilderProvider} for any necessary naming operations.
-     *
-     * @return Either {@code this} or a new instance.
-     */
-    BuilderNamingStrategy withBuilderProvider(BuilderProvider provider);
+public interface BuilderNamingStrategy extends AccessorNamingStrategy {
 }

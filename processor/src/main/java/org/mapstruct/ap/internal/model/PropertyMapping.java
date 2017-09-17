@@ -84,14 +84,14 @@ public class PropertyMapping extends ModelElement {
         SETTER,
         ADDER;
 
-        public static TargetWriteAccessorType of(Executables executables, Accessor accessor) {
-            if ( executables.isSetterMethod( accessor ) ) {
+        public static TargetWriteAccessorType of(Accessor accessor) {
+            if ( Executables.isSetterMethod( accessor ) ) {
                 return TargetWriteAccessorType.SETTER;
             }
-            else if ( executables.isAdderMethod( accessor ) ) {
+            else if ( Executables.isAdderMethod( accessor ) ) {
                 return TargetWriteAccessorType.ADDER;
             }
-            else if ( executables.isGetterMethod( accessor ) ) {
+            else if ( Executables.isGetterMethod( accessor ) ) {
                 return TargetWriteAccessorType.GETTER;
             }
             else {
@@ -128,7 +128,7 @@ public class PropertyMapping extends ModelElement {
             this.targetReadAccessor = targetProp.getReadAccessor();
             this.targetWriteAccessor = targetProp.getWriteAccessor();
             this.targetType = targetProp.getType();
-            this.targetWriteAccessorType = TargetWriteAccessorType.of( ctx.getExecutables(), targetWriteAccessor );
+            this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
             return (T) this;
         }
 
@@ -139,7 +139,7 @@ public class PropertyMapping extends ModelElement {
 
         public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
-            this.targetWriteAccessorType = TargetWriteAccessorType.of( ctx.getExecutables(), targetWriteAccessor );
+            this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
             this.targetType = determineTargetType();
 
             return (T) this;
@@ -420,7 +420,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment assignToCollection(Type targetType, TargetWriteAccessorType targetAccessorType,
-                                              Assignment rhs) {
+                                            Assignment rhs) {
             return new CollectionAssignmentBuilder()
                 .mappingBuilderContext( ctx )
                 .method( method )
@@ -742,8 +742,8 @@ public class PropertyMapping extends ModelElement {
 
             if ( assignment != null ) {
 
-                if ( ctx.getExecutables().isSetterMethod( targetWriteAccessor ) ||
-                    ctx.getExecutables().isFieldAccessor( targetWriteAccessor ) ) {
+                if ( Executables.isSetterMethod( targetWriteAccessor ) ||
+                    Executables.isFieldAccessor( targetWriteAccessor ) ) {
 
                     // target accessor is setter, so decorate assignment as setter
                     if ( assignment.isCallingUpdateMethod() ) {
@@ -834,8 +834,8 @@ public class PropertyMapping extends ModelElement {
         public PropertyMapping build() {
             Assignment assignment = new SourceRHS( javaExpression, null, existingVariableNames, "" );
 
-            if ( ctx.getExecutables().isSetterMethod( targetWriteAccessor ) ||
-                ctx.getExecutables().isFieldAccessor( targetWriteAccessor ) ) {
+            if ( Executables.isSetterMethod( targetWriteAccessor ) ||
+                Executables.isFieldAccessor( targetWriteAccessor ) ) {
                 // setter, so wrap in setter
                 assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );
             }
