@@ -16,9 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct;
+package org.mapstruct.ap.internal.prism;
 
-public enum BuilderProvider {
+/**
+ * Prism for the enum {@link org.mapstruct.BuilderStrategy}.
+ *
+ * @author Eric Martineau
+ */
+public enum BuilderStrategyPrism {
+
     /**
      * https://projectlombok.org/features/Builder
      */

@@ -19,7 +19,9 @@
 package org.mapstruct.ap.test.builder.abstractBuilder;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
+import org.mapstruct.ap.test.builder.abstractBuilder.ImmutableTarget.ImmutableTargetBuilder;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public abstract class ImmutableTargetMapper {

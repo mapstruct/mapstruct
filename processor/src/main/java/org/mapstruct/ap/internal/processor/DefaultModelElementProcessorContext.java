@@ -62,6 +62,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         this.messager = new DelegatingMessager( processingEnvironment.getMessager() );
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
         this.delegatingTypes = new TypesDecorator( processingEnvironment, versionInformation );
+
         this.builderProvider = Services.get( BuilderProvider.class, new LombokBuilderProvider() );
 
         this.typeFactory = new TypeFactory(
