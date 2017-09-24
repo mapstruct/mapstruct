@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.XmlConstants;
 
 /**
  * Factory for {@link DateFormatValidator}. <p> Based on the types of source / target type  a specific {@link
@@ -42,7 +43,6 @@ final class DateFormatValidatorFactory {
     private static final String ORG_JODA_TIME_FORMAT_DATE_TIME_FORMAT = "org.joda.time.format.DateTimeFormat";
 
     private static final String FOR_PATTERN = "forPattern";
-    private static final String JAVAX_XML_DATATYPE_XMLGREGORIAN_CALENDAR = "javax.xml.datatype.XMLGregorianCalendar";
 
     private DateFormatValidatorFactory() {
     }
@@ -85,7 +85,7 @@ final class DateFormatValidatorFactory {
 
     private static boolean isXmlGregorianCalendarSupposedToBeMapped(Type sourceType, Type targetType) {
         return typesEqualsOneOf(
-                        sourceType, targetType, JAVAX_XML_DATATYPE_XMLGREGORIAN_CALENDAR );
+                        sourceType, targetType, XmlConstants.JAVAX_XML_DATATYPE_XMLGREGORIAN_CALENDAR );
     }
 
     private static boolean isJodaDateTimeSupposed(Type sourceType, Type targetType) {
