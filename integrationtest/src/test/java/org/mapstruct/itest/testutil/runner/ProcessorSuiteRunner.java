@@ -214,7 +214,7 @@ public class ProcessorSuiteRunner extends ParentRunner<ProcessorTestCase> {
             verifier.addCliOption( "-Dcompiler-source-target-version=" + child.processor.getSourceTargetVersion() );
 
             if ( "1.8".equals( child.processor.getSourceTargetVersion() )
-                || "1.9".equals( child.processor.getSourceTargetVersion() ) ) {
+                || "9".equals( child.processor.getSourceTargetVersion() ) ) {
                 verifier.addCliOption( "-Dmapstruct-artifact-id=mapstruct-jdk8" );
             }
             else {
