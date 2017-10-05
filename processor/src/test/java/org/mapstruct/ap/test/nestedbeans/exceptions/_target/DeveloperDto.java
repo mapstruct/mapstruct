@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.nestedbeans.exceptions._target;
 
 /**
  * @author Filip Hrisafov
+ * @author Darren Rambaud
  */
 public class DeveloperDto {
 

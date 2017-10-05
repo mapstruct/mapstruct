@@ -24,6 +24,7 @@ import org.mapstruct.ap.test.nestedbeans.exceptions.source.Project;
 
 /**
  * @author Filip Hrisafov
+ * @author Darren Rambaud
  */
 @Mapper(uses = EntityFactory.class)
 public interface ProjectMapper {

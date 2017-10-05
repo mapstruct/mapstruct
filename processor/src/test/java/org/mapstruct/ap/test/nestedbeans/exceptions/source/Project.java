@@ -22,6 +22,7 @@ import java.util.List;
 
 /**
  * @author Filip Hrisafov
+ * @author Darren Rambaud
  */
 public class Project {
 

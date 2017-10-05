@@ -20,6 +20,7 @@ package org.mapstruct.ap.test.nestedbeans.exceptions.source;
 
 /**
  * @author Filip Hrisafov
+ * @author Darren Rambaud
  */
 public class Developer {
 

@@ -23,6 +23,7 @@ import org.mapstruct.TargetType;
 
 /**
  * @author Filip Hrisafov
+ * @author Darren Rambaud
  */
 public class EntityFactory {
 
