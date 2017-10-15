@@ -33,16 +33,5 @@
             <jdkHome>/usr/lib/jvm/java-8-oracle/</jdkHome>
         </configuration>
     </toolchain>
-    <toolchain>
-        <type>jdk</type>
-        <provides>
-            <version>9</version>
-            <vendor>oracle</vendor>
-            <id>jdk9</id>
-        </provides>
-        <configuration>
-            <jdkHome>/usr/lib/jvm/java-9-oracle/</jdkHome>
-        </configuration>
-    </toolchain>
-
+    
 </toolchains>

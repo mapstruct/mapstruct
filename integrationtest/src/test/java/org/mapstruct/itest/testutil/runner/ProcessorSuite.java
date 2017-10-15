@@ -70,7 +70,7 @@ public @interface ProcessorSuite {
         /**
          * Use an Oracle JDK 1.9 (or 1.9.x) via toolchain support to perform the processing
          */
-        ORACLE_JAVA_9( new Toolchain( "oracle", "9", "10" ), "javac", "9" ),
+        ORACLE_JAVA_9( new Toolchain( "oracle", "9", "10" ), "javac", "1.9" ),
 
         /**
          * Use the eclipse compiler with 1.6 source/target level from tycho-compiler-jdt to perform the build and
