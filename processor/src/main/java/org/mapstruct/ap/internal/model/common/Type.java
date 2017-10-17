@@ -18,15 +18,6 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -42,6 +33,15 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Executables;
@@ -68,14 +68,27 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private final TypeMirror typeMirror;
     private final TypeElement typeElement;
-    private final List<Type> typeParameters;
 
+    private final List<Type> typeParameters;
     private final ImplementationType implementationType;
     private final Type componentType;
 
     private final String packageName;
     private final String name;
     private final String qualifiedName;
+
+    /**
+     * How to initialize this type for mapping.  This may initialize an intermediate builder, or create a
+     * new instance of this type.
+     */
+    private TypeInitializer initializer;
+
+    /**
+     * Finalizes this type.  In the case of a builder, this may involve invoking a build or freeze method
+     */
+    private TypeFinalizer finalizer;
+    private boolean hasBuilder;
+    private boolean isBuilder;
 
     private final boolean isInterface;
     private final boolean isEnumType;
@@ -107,7 +120,19 @@ public class Type extends ModelElement implements Comparable<Type> {
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported) {
+        this( typeUtils, elementUtils, typeFactory,
+            typeMirror, typeElement, typeParameters, implementationType,
+            componentType, packageName, name, qualifiedName, null, null, false, false, isInterface, isEnumType,
+            isIterableType, isCollectionType, isMapType, isStreamType, isImported );
+    }
 
+    public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory, TypeMirror typeMirror,
+                TypeElement typeElement, List<Type> typeParameters,
+                ImplementationType implementationType, Type componentType, String packageName, String name,
+                String qualifiedName, TypeInitializer initializer, TypeFinalizer finalizer,
+                boolean hasBuilder, boolean isBuilder, boolean isInterface, boolean isEnumType,
+                boolean isIterableType, boolean isCollectionType, boolean isMapType, boolean isStreamType,
+                boolean isImported) {
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
         this.typeFactory = typeFactory;
@@ -121,6 +146,11 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.packageName = packageName;
         this.name = name;
         this.qualifiedName = qualifiedName;
+
+        this.initializer = initializer;
+        this.finalizer = finalizer;
+        this.hasBuilder = hasBuilder;
+        this.isBuilder = isBuilder;
 
         this.isInterface = isInterface;
         this.isEnumType = isEnumType;
@@ -148,6 +178,68 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
     }
     //CHECKSTYLE:ON
+
+    public void asBuilder(TypeInitializer initializer, TypeFinalizer finalizer) {
+        assert this.initializer == null : "Lifecycle issue: Only set initializer once";
+        assert this.finalizer == null : "Lifecycle issue: Only set finalizer once";
+        this.initializer = initializer;
+        this.finalizer = finalizer;
+        this.isBuilder = true;
+        this.hasBuilder = false;
+    }
+
+    public void withBuilder(TypeInitializer initializer, TypeFinalizer finalizer) {
+        assert this.initializer == null : "Lifecycle issue: Only set initializer once";
+        assert this.finalizer == null : "Lifecycle issue: Only set finalizer once";
+        this.initializer = initializer;
+        this.finalizer = finalizer;
+        this.isBuilder = false;
+        this.hasBuilder = true;
+    }
+
+    /**
+     * @return the TypeElement {@code this} {@link Type}  "produces" during mappings.  If {@code this} {@link Type}
+     * is a builder, this method will return TypeElement that's being built.  Otherwise, it's the Type itself.
+     */
+    public Type getFinalType() {
+        return finalizer != null ? finalizer.getFinalType() : this;
+    }
+
+    /**
+     * @return the TypeElement {@code this} {@link Type} uses to write values during mapping.  In the case of a
+     * builder, this method would return the type of the builder, otherwise it's {@code this} type.
+     */
+    public Type getMapToType() {
+        return initializer != null ? initializer.getInitializedType() : this;
+    }
+
+    public TypeInitializer getInitializer() {
+        return initializer;
+    }
+
+    public TypeFinalizer getFinalizer() {
+        return finalizer;
+    }
+
+    /**
+     * Whether this instance is a builder.
+     *
+     * {@link #hasBuilder()} determines the inverse: whether this type is built by a builder
+     *
+     * @return Whether or not {@code this} {@link Type} <em>is</em> a builder.
+     */
+    public boolean isBuilder() {
+        return isBuilder;
+    }
+
+    /**
+     * Whether this instance is mapped using a builder.
+     *
+     * @return Whether or not {@code this} {@link Type} is created using a builder.
+     */
+    public boolean hasBuilder() {
+        return hasBuilder;
+    }
 
     public TypeMirror getTypeMirror() {
         return typeMirror;
@@ -301,6 +393,11 @@ public class Type extends ModelElement implements Comparable<Type> {
             result.add( this );
         }
 
+        // If this Type is created using a builder, we need to import the builder class
+        if ( hasBuilder ) {
+            result.add( initializer.getInitializedType() );
+        }
+
         if ( componentType != null ) {
             result.addAll( componentType.getImportTypes() );
         }
@@ -358,6 +455,10 @@ public class Type extends ModelElement implements Comparable<Type> {
             packageName,
             name,
             qualifiedName,
+            initializer,
+            finalizer,
+            hasBuilder,
+            isBuilder,
             isInterface,
             isEnumType,
             isIterableType,
@@ -383,8 +484,18 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
 
         TypeMirror typeMirrorToMatch = isWildCardExtendsBound() ? getTypeBound().typeMirror : typeMirror;
-
         return typeUtils.isAssignable( typeMirrorToMatch, other.typeMirror );
+    }
+
+    /**
+     * Whether this type's builder is assignable to the given other type.
+     *
+     * @param other The other type.
+     *
+     * @return {@code true} if this type requires a builder AND that builder type is assignable to {@code other}
+     */
+    public boolean isFinalTypeAssignableTo(Type other) {
+        return getFinalType() != null && getFinalType().isAssignableTo( other );
     }
 
     /**
@@ -495,7 +606,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                     candidate = adderMethod;
                 }
             }
-            else if ( Executables.isFieldAccessor( candidate ) && ( Executables.isFinal( candidate ) ||
+            else if ( Executables.isFieldAccessor( candidate ) && (Executables.isFinal( candidate ) ||
                 result.containsKey( targetPropertyName ) ) ) {
                 // if the candidate is a field and a mapping already exists, then use that one, skip it.
                 continue;
@@ -519,19 +630,26 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private Type determineTargetType(Accessor candidate) {
-        Parameter parameter = typeFactory.getSingleParameter( (DeclaredType) typeMirror, candidate );
+        // The accessor could come from a builder instead of the mapped type, so we need to use {@link #getMapToType}
+        // to make sure we are looking up accessor metadata using the correct including type.
+        final DeclaredType writeTypeMirror = (DeclaredType) getMapToType().getTypeMirror();
+        Parameter parameter = typeFactory.getSingleParameter( writeTypeMirror, candidate );
         if ( parameter != null ) {
             return parameter.getType();
         }
         else if ( Executables.isGetterMethod( candidate ) || Executables.isFieldAccessor( candidate ) ) {
-            return typeFactory.getReturnType( (DeclaredType) typeMirror, candidate );
+            return typeFactory.getReturnType( writeTypeMirror, candidate );
         }
         return null;
     }
 
     private List<Accessor> getAllAccessors() {
         if ( allAccessors == null ) {
-            allAccessors = Executables.getAllEnclosedAccessors( elementUtils, typeElement );
+            allAccessors = Executables.getAllEnclosedAccessors( elementUtils, typeElement, isBuilder );
+            if ( hasBuilder ) {
+                final TypeElement builderElement = initializer.getInitializedType().getTypeElement();
+                allAccessors.addAll( Executables.getAllEnclosedAccessors( elementUtils, builderElement, true ) );
+            }
         }
 
         return allAccessors;

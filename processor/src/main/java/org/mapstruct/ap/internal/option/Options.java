@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.internal.option;
 
+import java.util.List;
+
+import org.mapstruct.ap.internal.prism.BuilderStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 
 /**
@@ -32,15 +35,19 @@ public class Options {
     private final ReportingPolicyPrism unmappedTargetPolicy;
     private final boolean alwaysGenerateSpi;
     private final String defaultComponentModel;
+    private final List<BuilderStrategyPrism> builderStrategies;
 
     public Options(boolean suppressGeneratorTimestamp, boolean suppressGeneratorVersionComment,
                    ReportingPolicyPrism unmappedTargetPolicy,
-                   String defaultComponentModel, boolean alwaysGenerateSpi) {
+                   String defaultComponentModel, boolean alwaysGenerateSpi,
+                   List<BuilderStrategyPrism> builderStrategies) {
+
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
         this.suppressGeneratorVersionComment = suppressGeneratorVersionComment;
         this.unmappedTargetPolicy = unmappedTargetPolicy;
         this.defaultComponentModel = defaultComponentModel;
         this.alwaysGenerateSpi = alwaysGenerateSpi;
+        this.builderStrategies = builderStrategies;
     }
 
     public boolean isSuppressGeneratorTimestamp() {
@@ -61,5 +68,9 @@ public class Options {
 
     public boolean isAlwaysGenerateSpi() {
         return alwaysGenerateSpi;
+    }
+
+    public List<BuilderStrategyPrism> BuilderStrategies() {
+        return builderStrategies;
     }
 }

@@ -44,6 +44,7 @@ import javax.tools.Diagnostic.Kind;
 
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.prism.BuilderStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 import org.mapstruct.ap.internal.processor.DefaultModelElementProcessorContext;
@@ -52,7 +53,7 @@ import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContex
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.AnnotationProcessorContext;
 import org.mapstruct.ap.internal.util.RoundContext;
-import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
+import org.mapstruct.ap.shared.TypeHierarchyErroneousException;
 
 /**
  * A JSR 269 annotation {@link Processor} which generates the implementations for mapper interfaces (interfaces
@@ -106,6 +107,7 @@ public class MappingProcessor extends AbstractProcessor {
     protected static final String UNMAPPED_TARGET_POLICY = "mapstruct.unmappedTargetPolicy";
     protected static final String DEFAULT_COMPONENT_MODEL = "mapstruct.defaultComponentModel";
     protected static final String ALWAYS_GENERATE_SERVICE_FILE = "mapstruct.alwaysGenerateServicesFile";
+    protected static final String BUILDER_STRATEGIES = "mapstruct.builderStrategies";
 
     private Options options;
 
@@ -138,8 +140,23 @@ public class MappingProcessor extends AbstractProcessor {
             Boolean.valueOf( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
             unmappedTargetPolicy != null ? ReportingPolicyPrism.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
             processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL ),
-            Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) )
+            Boolean.valueOf( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
+            getBuilderStrategies(processingEnv.getOptions().get( BUILDER_STRATEGIES ) )
         );
+    }
+
+    private List<BuilderStrategyPrism> getBuilderStrategies(String commaSeparatedOptions) {
+        List<BuilderStrategyPrism> builderStrategies = new ArrayList<BuilderStrategyPrism>();
+        if ( commaSeparatedOptions != null ) {
+            final String[] rawBuilderOptions = commaSeparatedOptions.split( "," );
+            for ( String rawBuilderOption : rawBuilderOptions ) {
+                builderStrategies.add( BuilderStrategyPrism.valueOf( rawBuilderOption.toUpperCase().trim() ) );
+            }
+        }
+        if ( builderStrategies.isEmpty() ) {
+            builderStrategies.add( BuilderStrategyPrism.DEFAULT );
+        }
+        return builderStrategies;
     }
 
     @Override

@@ -21,11 +21,6 @@ package org.mapstruct.ap.internal.processor.creation;
 import static java.util.Collections.singletonList;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -36,9 +31,15 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
 import org.mapstruct.ap.internal.model.HelperMethod;
+import org.mapstruct.ap.internal.model.LifecycleCallbackMethodReference;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
@@ -47,11 +48,15 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.common.TypeInitializer;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
@@ -130,7 +135,21 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     public MethodReference getFactoryMethod(final Method mappingMethod, Type targetType,
                                             SelectionParameters selectionParameters) {
-
+        if ( targetType.hasBuilder() ) {
+            final TypeInitializer factoryMethod = targetType.getInitializer();
+            return LifecycleCallbackMethodReference.forForgedMethod(
+                new SourceMethod.Builder()
+                    .setTypeUtils( typeUtils )
+                    .setTypeFactory( typeFactory )
+                    .setReturnType( factoryMethod.getInitializedType() )
+                    .setParameters( java.util.Collections.<Parameter>emptyList() )
+                    .setExceptionTypes( java.util.Collections.<Type>emptyList() )
+                    .setDefininingType( factoryMethod.getEnclosingType() )
+                    .setExecutable( factoryMethod.getInitializerMethod() )
+                    .build(),
+                java.util.Collections.<ParameterBinding>emptyList()
+            );
+        }
         List<SelectedMethod<Method>> matchingFactoryMethods =
             methodSelectors.getMatchingMethods(
                 mappingMethod,

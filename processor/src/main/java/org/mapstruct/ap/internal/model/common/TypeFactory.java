@@ -18,6 +18,26 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
+import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,33 +57,15 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
-import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.RoundContext;
-import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
+import org.mapstruct.ap.shared.TypeHierarchyErroneousException;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
-
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
-import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoadFactorAdjustment;
+import org.mapstruct.ap.spi.BuilderInfo;
+import org.mapstruct.ap.spi.BuilderProvider;
 
 /**
  * Factory creating {@link Type} instances.
@@ -74,6 +76,7 @@ public class TypeFactory {
 
     private final Elements elementUtils;
     private final Types typeUtils;
+    private final BuilderProvider builderProvider;
     private final RoundContext roundContext;
 
     private final TypeMirror iterableType;
@@ -84,9 +87,11 @@ public class TypeFactory {
     private final Map<String, ImplementationType> implementationTypes = new HashMap<String, ImplementationType>();
     private final Map<String, String> importedQualifiedTypesBySimpleName = new HashMap<String, String>();
 
-    public TypeFactory(Elements elementUtils, Types typeUtils, RoundContext roundContext) {
+    public TypeFactory(Elements elementUtils, Types typeUtils, BuilderProvider builderProvider,
+                       RoundContext roundContext) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
+        this.builderProvider = builderProvider;
         this.roundContext = roundContext;
 
         iterableType = typeUtils.erasure( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
@@ -157,6 +162,49 @@ public class TypeFactory {
     }
 
     public Type getType(TypeMirror mirror) {
+        final Type type = internalCreateType( mirror );
+        if ( type.getTypeElement() != null ) {
+
+            // Check if {@code this} type is a builder
+            final BuilderInfo buildTarget = builderProvider.findBuildTarget( mirror, elementUtils, typeUtils );
+            if ( buildTarget != null ) {
+                final TypeInitializer typeInitializer;
+                final TypeFinalizer typeFinalizer;
+
+                final TypeMirror enclosingType = buildTarget.getBuilderCreationMethod().getEnclosingElement().asType();
+                final Type initDeclarer = internalCreateType( enclosingType );
+                typeInitializer = new TypeInitializer( type, initDeclarer, buildTarget.getBuilderCreationMethod() );
+
+                final Type finalType = internalCreateType( buildTarget.getFinalType() );
+                typeFinalizer = new TypeFinalizer( finalType, buildTarget.getFinalizeMethod() );
+
+                type.asBuilder( typeInitializer, typeFinalizer );
+                finalType.withBuilder( typeInitializer, typeFinalizer );
+            }
+
+            // Check if {@code this} type is mapped by a builder
+            final BuilderInfo buildSource = builderProvider.findBuilder( mirror, elementUtils, typeUtils );
+            if ( buildSource != null ) {
+                final Type builderType = internalCreateType( buildSource.getBuilderType() );
+
+                final TypeInitializer initializer;
+                final TypeFinalizer typeFinalizer;
+
+                final TypeMirror enclosingType = buildSource.getBuilderCreationMethod().getEnclosingElement().asType();
+                final Type initEncloser = internalCreateType( enclosingType );
+
+                initializer = new TypeInitializer( builderType, initEncloser, buildSource.getBuilderCreationMethod() );
+                typeFinalizer = new TypeFinalizer( type, buildSource.getFinalizeMethod() );
+
+                type.withBuilder( initializer, typeFinalizer );
+                builderType.asBuilder( initializer, typeFinalizer );
+            }
+        }
+
+        return type;
+    }
+
+    private Type internalCreateType(TypeMirror mirror) {
         if ( !canBeProcessed( mirror ) ) {
             throw new TypeHierarchyErroneousException( mirror );
         }
@@ -448,6 +496,10 @@ public class TypeFactory {
                 implementationType.getPackageName(),
                 implementationType.getName(),
                 implementationType.getFullyQualifiedName(),
+                implementationType.getInitializer(),
+                implementationType.getFinalizer(),
+                implementationType.hasBuilder(),
+                implementationType.isBuilder(),
                 implementationType.isInterface(),
                 implementationType.isEnumType(),
                 implementationType.isIterableType(),

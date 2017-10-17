@@ -16,31 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.test.builder.mappingTarget.simple;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-/**
- * Indicates a type was visited whose hierarchy was erroneous, because it has a non-existing super-type.
- *
- * @author Gunnar Morling
- */
-public class TypeHierarchyErroneousException extends RuntimeException {
-
-    private static final long serialVersionUID = 1L;
-
-    private final TypeMirror type;
-
-    public TypeHierarchyErroneousException(TypeElement element) {
-        this( element.asType() );
-    }
-
-    public TypeHierarchyErroneousException(TypeMirror type) {
-        this.type = type;
-    }
-
-    public TypeMirror getType() {
-        return type;
-    }
+@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
+public interface InvalidSimpleBuilderMapper {
+    SimpleImmutableTarget toImmutable(SimpleMutableSource source);
 }

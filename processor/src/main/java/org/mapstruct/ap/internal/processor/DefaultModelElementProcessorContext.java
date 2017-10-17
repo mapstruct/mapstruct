@@ -32,10 +32,13 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
 import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.spi.LombokBuilderProvider;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.RoundContext;
+import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.internal.util.workarounds.TypesDecorator;
 import org.mapstruct.ap.internal.version.VersionInformation;
+import org.mapstruct.ap.spi.BuilderProvider;
 
 /**
  * Default implementation of the processor context.
@@ -50,6 +53,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     private final TypeFactory typeFactory;
     private final VersionInformation versionInformation;
     private final Types delegatingTypes;
+    private final BuilderProvider builderProvider;
 
     public DefaultModelElementProcessorContext(ProcessingEnvironment processingEnvironment, Options options,
             RoundContext roundContext) {
@@ -58,9 +62,13 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         this.messager = new DelegatingMessager( processingEnvironment.getMessager() );
         this.versionInformation = DefaultVersionInformation.fromProcessingEnvironment( processingEnvironment );
         this.delegatingTypes = new TypesDecorator( processingEnvironment, versionInformation );
+
+        this.builderProvider = Services.get( BuilderProvider.class, new LombokBuilderProvider() );
+
         this.typeFactory = new TypeFactory(
             processingEnvironment.getElementUtils(),
             delegatingTypes,
+            builderProvider,
             roundContext
         );
         this.options = options;

@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.util.accessor;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -29,8 +30,8 @@ import javax.lang.model.type.TypeMirror;
  */
 public class VariableElementAccessor extends AbstractAccessor<VariableElement> {
 
-    public VariableElementAccessor(VariableElement element) {
-        super( element );
+    public VariableElementAccessor(VariableElement element, TypeElement parentType, boolean isBuilder) {
+        super( element, parentType, isBuilder );
     }
 
     @Override

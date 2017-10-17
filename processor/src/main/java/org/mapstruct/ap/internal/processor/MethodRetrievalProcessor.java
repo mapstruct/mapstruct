@@ -109,7 +109,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         TypeElement typeElement = asTypeElement( mapperConfig.config() );
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
-        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, typeElement ) ) {
+        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, typeElement, false ) ) {
 
             ExecutableType methodType = typeFactory.getMethodType( mapperConfig.config(), executable );
             List<Parameter> parameters = typeFactory.getParameters( methodType, executable );
@@ -150,7 +150,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                MapperConfiguration mapperConfig, List<SourceMethod> prototypeMethods) {
         List<SourceMethod> methods = new ArrayList<SourceMethod>();
 
-        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper ) ) {
+        for ( ExecutableElement executable : getAllEnclosedExecutableElements( elementUtils, usedMapper, false ) ) {
             SourceMethod method = getMethod(
                 usedMapper,
                 executable,
@@ -406,7 +406,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         if ( returnType.getTypeMirror().getKind() != TypeKind.VOID &&
-            !resultType.isAssignableTo( returnType ) ) {
+            !resultType.isAssignableTo( returnType ) &&
+            !resultType.isFinalTypeAssignableTo( returnType ) ) {
             messager.printMessage( method, Message.RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE );
             return false;
         }
