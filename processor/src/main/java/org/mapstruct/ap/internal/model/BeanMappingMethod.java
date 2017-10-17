@@ -226,6 +226,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariableNames );
 
+            if (factoryMethod != null && method instanceof ForgedMethod ) {
+                ( (ForgedMethod) method ).addThrownTypes( factoryMethod.getThrownTypes() );
+            }
+
             return new BeanMappingMethod(
                 method,
                 existingVariableNames,

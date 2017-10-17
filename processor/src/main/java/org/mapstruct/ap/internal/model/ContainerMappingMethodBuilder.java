@@ -107,12 +107,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         if ( assignment == null ) {
             assignment = forgeMapping( sourceRHS, sourceElementType, targetElementType );
         }
-        else {
-            if ( method instanceof ForgedMethod ) {
-                ForgedMethod forgedMethod = (ForgedMethod) method;
-                forgedMethod.addThrownTypes( assignment.getThrownTypes() );
-            }
-        }
+
         if ( assignment == null ) {
             if ( method instanceof ForgedMethod ) {
                 // leave messaging to calling property mapping
@@ -127,6 +122,10 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                     ""
                 );
             }
+        }
+        else if ( method instanceof ForgedMethod ) {
+            ForgedMethod forgedMethod = (ForgedMethod) method;
+            forgedMethod.addThrownTypes( assignment.getThrownTypes() );
         }
 
         assignment = getWrapper( assignment, method );
