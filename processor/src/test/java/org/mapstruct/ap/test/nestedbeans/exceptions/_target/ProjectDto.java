@@ -25,74 +25,14 @@ import java.util.List;
  * @author Darren Rambaud
  */
 public class ProjectDto {
-    private Long id;
-
-    private String name;
-
-    private Integer priority;
 
     private List<DeveloperDto> assignedDevelopers;
-
-    private Double burnDownRate;
-
-    private Integer hoursWasted;
-
-    private Long potentialCashFlow;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getPriority() {
-        return priority;
-    }
-
-    public void setPriority(Integer priority) {
-        this.priority = priority;
-    }
 
     public List<DeveloperDto> getAssignedDevelopers() {
         return assignedDevelopers;
     }
 
-    public void setAssignedDevelopers(
-        List<DeveloperDto> assignedDevelopers) {
+    public void setAssignedDevelopers(List<DeveloperDto> assignedDevelopers) {
         this.assignedDevelopers = assignedDevelopers;
-    }
-
-    public Double getBurnDownRate() {
-        return burnDownRate;
-    }
-
-    public void setBurnDownRate(Double burnDownRate) {
-        this.burnDownRate = burnDownRate;
-    }
-
-    public Integer getHoursWasted() {
-        return hoursWasted;
-    }
-
-    public void setHoursWasted(Integer hoursWasted) {
-        this.hoursWasted = hoursWasted;
-    }
-
-    public Long getPotentialCashFlow() {
-        return potentialCashFlow;
-    }
-
-    public void setPotentialCashFlow(Long potentialCashFlow) {
-        this.potentialCashFlow = potentialCashFlow;
     }
 }
