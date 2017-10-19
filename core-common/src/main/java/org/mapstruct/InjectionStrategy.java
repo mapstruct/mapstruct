@@ -26,7 +26,9 @@ package org.mapstruct;
  */
 public enum InjectionStrategy {
 
+    /** Annotations are written on the field **/
     FIELD,
 
+    /** Annotations are written on the constructor **/
     CONSTRUCTOR
 }
