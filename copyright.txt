@@ -7,12 +7,14 @@ Christian Schuster - https://github.com/chschu
 Christophe Labouisse - https://github.com/ggtools
 Ciaran Liedeman - https://github.com/cliedeman
 Cornelius Dirmeier - https://github.com/cornzy
+Darren Rambaud - https://github.com/xyzst
 Dilip Krishnan - https://github.com/dilipkrish
 Dmytro Polovinkin - https://github.com/navpil
 Ewald Volkert - https://github.com/eforest
 Filip Hrisafov - https://github.com/filiphr
 Gunnar Morling - https://github.com/gunnarmorling
 Ivo Smid - https://github.com/bedla
+Kevin Grüneberg - https://github.com/kevcodez
 Michael Pardo - https://github.com/pardom
 Mustafa Caylak - https://github.com/luxmeter
 Oliver Ehrenmüller - https://github.com/greuelpirat

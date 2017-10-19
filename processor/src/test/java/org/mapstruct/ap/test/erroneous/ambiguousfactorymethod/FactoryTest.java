@@ -50,7 +50,12 @@ public class FactoryTest {
                 messageRegExp = "Ambiguous factory methods found for creating "
                         + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar: "
                         + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar createBar\\(\\), "
-                        + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar .*BarFactory.createBar\\(\\)." )
+                        + "org.mapstruct.ap.test.erroneous.ambiguousfactorymethod.Bar .*BarFactory.createBar\\(\\)."),
+            @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 35,
+                messageRegExp = ".*\\.ambiguousfactorymethod\\.Bar does not have an accessible empty constructor\\.")
+
         }
     )
     public void shouldUseTwoFactoryMethods() {

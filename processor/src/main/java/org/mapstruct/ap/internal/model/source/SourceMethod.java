@@ -386,17 +386,6 @@ public class SourceMethod implements Method {
         return isEnumMapping;
     }
 
-    public boolean isBeanMapping() {
-        if ( isBeanMapping == null ) {
-            isBeanMapping = !isIterableMapping()
-                && !isMapMapping()
-                && !isEnumMapping()
-                && !isValueMapping()
-                && !isStreamMapping();
-        }
-        return isBeanMapping;
-    }
-
     /**
      * The default enum mapping (no mappings specified) will from now on be handled as a value mapping. If there
      * are any @Mapping / @Mappings defined on the method, then the deprecated enum behavior should be executed.

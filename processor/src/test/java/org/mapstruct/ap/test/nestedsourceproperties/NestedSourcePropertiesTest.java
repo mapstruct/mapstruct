@@ -184,7 +184,7 @@ public class NestedSourcePropertiesTest {
                 @Diagnostic( type = ArtistToChartEntryErroneous.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 46,
-                        messageRegExp = "There is no suitable result type constructor for reversing this method\\." )
+                        messageRegExp = "Unknown property \"position\" in result type java\\.lang\\.Integer\\." )
             }
     )
     @WithClasses({ ArtistToChartEntryErroneous.class })

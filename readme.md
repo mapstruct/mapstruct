@@ -1,6 +1,6 @@
 # MapStruct - Java bean mappings, the easy way!
 
-[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.1.0.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
+[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.2.0.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
 [![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/master/LICENSE.txt)
 
@@ -45,8 +45,8 @@ Compared to mapping frameworks working at runtime MapStruct offers the following
 * Compile-time type safety: Only objects and attributes mapping to each other can be mapped, no accidental mapping of an order entity into a customer DTO etc.
 * Self-contained code, no runtime dependencies
 * Clear error-reports at build time if
- * mappings are incomplete (not all target properties are mapped)
- * mappings are incorrect (cannot find a proper mapping method or type conversion)
+  * mappings are incomplete (not all target properties are mapped)
+  * mappings are incorrect (cannot find a proper mapping method or type conversion)
 * Mapping code is easy to debug (or edited by hand e.g. in case of a bug in the generator)
 
 ## Requirements

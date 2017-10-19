@@ -27,6 +27,8 @@ import java.lang.annotation.Target;
  * Declares a parameter of a mapping method to be the target of the mapping.
  * <p>
  * Not more than one parameter can be declared as {@code MappingTarget}.
+ * <p>
+ * <b>NOTE:</b> The parameter passed as a mapping target <b>must</b> not be {@code null}.
  *
  * @author Andreas Gudian
  */

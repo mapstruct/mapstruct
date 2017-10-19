@@ -156,6 +156,15 @@ public class MapperConfiguration {
         }
     }
 
+    public NullValueMappingStrategyPrism getNullValueMappingStrategy() {
+        if ( mapperConfigPrism != null && mapperPrism.values.nullValueMappingStrategy() == null ) {
+            return NullValueMappingStrategyPrism.valueOf( mapperConfigPrism.nullValueMappingStrategy() );
+        }
+        else {
+            return NullValueMappingStrategyPrism.valueOf( mapperPrism.nullValueMappingStrategy() );
+        }
+    }
+
     public InjectionStrategyPrism getInjectionStrategy() {
         if ( mapperConfigPrism != null && mapperPrism.values.injectionStrategy() == null ) {
             return InjectionStrategyPrism.valueOf( mapperConfigPrism.injectionStrategy() );

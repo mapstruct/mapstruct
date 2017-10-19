@@ -47,6 +47,7 @@ public enum Message {
     PROPERTYMAPPING_DUPLICATE_TARGETS( "Target property \"%s\" must not be mapped more than once." ),
     PROPERTYMAPPING_EMPTY_TARGET( "Target must not be empty in @Mapping." ),
     PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED( "Source and constant are both defined in @Mapping, either define a source or a constant." ),
+    PROPERTYMAPPING_SOURCE_AND_IGNORE_BOTH_DEFINED( "Source and ignore are both defined in @Mapping, make explicit in reverse mapping when the intent is to ignore the reverse mapping." ),
     PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED( "Source and expression are both defined in @Mapping, either define a source or an expression." ),
     PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED( "Expression and constant are both defined in @Mapping, either define an expression or a constant." ),
     PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED( "Expression and default value are both defined in @Mapping, either define a defaultValue or an expression." ),
@@ -88,6 +89,7 @@ public enum Message {
     GENERAL_VALID_DATE( "Given date format \"%s\" is valid.", Diagnostic.Kind.NOTE ),
     GENERAL_INVALID_DATE( "Given date format \"%s\" is invalid. Message: \"%s\"." ),
     GENERAL_NOT_ALL_FORGED_CREATED( "Internal Error in creation of Forged Methods, it was expected all Forged Methods to finished with creation, but %s did not" ),
+    GENERAL_NO_SUITABLE_CONSTRUCTOR( "%s does not have an accessible empty constructor." ),
 
     RETRIEVAL_NO_INPUT_ARGS( "Can't generate mapping method with no input arguments." ),
     RETRIEVAL_DUPLICATE_MAPPING_TARGETS( "Can't generate mapping method with more than one @MappingTarget parameter." ),
@@ -110,7 +112,6 @@ public enum Message {
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),
     INHERITINVERSECONFIGURATION_INVALID_NAME( "None of the candidates %s() matches given name: \"%s\"." ),
     INHERITINVERSECONFIGURATION_DUPLICATE_MATCHES( "Given name \"%s\" matches several candidate methods: %s." ),
-    INHERITINVERSECONFIGURATION_NO_SUITABLE_CONSTRUCTOR( "There is no suitable result type constructor for reversing this method." ),
     INHERITINVERSECONFIGURATION_NO_NAME_MATCH( "Given name \"%s\" does not match the only candidate. Did you mean: \"%s\"." ),
     INHERITCONFIGURATION_DUPLICATES( "Several matching methods exist: %s(). Specify a name explicitly." ),
     INHERITCONFIGURATION_INVALIDNAME( "None of the candidates %s() matches given name: \"%s\"." ),

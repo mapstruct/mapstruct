@@ -190,11 +190,26 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             Message.BEANMAPPING_NOT_ASSIGNABLE, resultType, method.getResultType()
                         );
                     }
+                    else if ( !resultType.hasEmptyAccessibleContructor() ) {
+                        ctx.getMessager().printMessage(
+                            method.getExecutable(),
+                            beanMappingPrism.mirror,
+                            Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
+                            resultType
+                        );
+                    }
                 }
                 else if ( !method.isUpdateMethod() && method.getReturnType().isAbstract() ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
                         Message.GENERAL_ABSTRACT_RETURN_TYPE,
+                        method.getReturnType()
+                    );
+                }
+                else if ( !method.isUpdateMethod() && !method.getReturnType().hasEmptyAccessibleContructor() ) {
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
                         method.getReturnType()
                     );
                 }
@@ -210,6 +225,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariableNames );
+
+            if (factoryMethod != null && method instanceof ForgedMethod ) {
+                ( (ForgedMethod) method ).addThrownTypes( factoryMethod.getThrownTypes() );
+            }
 
             return new BeanMappingMethod(
                 method,

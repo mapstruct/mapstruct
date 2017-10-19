@@ -27,8 +27,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlElementRef;
 
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -37,9 +35,11 @@ import org.mapstruct.ap.internal.prism.XmlElementDeclPrism;
 import org.mapstruct.ap.internal.prism.XmlElementRefPrism;
 
 /**
- * Finds the {@link XmlElementRef} annotation on a field (of the mapping result type or its super types) matching the
+ * Finds the {@link javax.xml.bind.annotation.XmlElementRef} annotation on a field (of the mapping result type or its
+ * super types) matching the
  * target property name. Then selects those methods with matching {@code name} and {@code scope} attributes of the
- * {@link XmlElementDecl} annotation, if that is present. Matching happens in the following order:
+ * {@link javax.xml.bind.annotation.XmlElementDecl} annotation, if that is present. Matching happens in the following
+ * order:
  * <ol>
  * <li>Name and Scope matches</li>
  * <li>Scope matches</li>
