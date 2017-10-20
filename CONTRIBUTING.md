@@ -12,6 +12,8 @@ MapStruct follows the _Fork & Pull_ development approach. To get started just fo
 When doing changes, keep the following best practices in mind:
 
 * Provide test cases
+* Use the code formatter for your IDE
+  * [IntelliJ Formatter](https://github.com/mapstruct/mapstruct/blob/master/etc/mapstruct.xml)
 * Update the [reference documentation](mapstruct.org/documentation) on [mapstruct.org](mapstruct.org) where required
 * Discuss new features you'd like to implement at the [Google group](https://groups.google.com/forum/?fromgroups#!forum/mapstruct-users) before getting started
 * Create one pull request per feature
