@@ -174,6 +174,15 @@ public class MapperConfiguration {
         }
     }
 
+    public InjectionStrategyPrism getInjectionStrategy() {
+        if ( mapperConfigPrism != null && mapperPrism.values.injectionStrategy() == null ) {
+            return InjectionStrategyPrism.valueOf( mapperConfigPrism.injectionStrategy() );
+        }
+        else {
+            return InjectionStrategyPrism.valueOf( mapperPrism.injectionStrategy() );
+        }
+    }
+
     public boolean isMapToDefault(NullValueMappingStrategyPrism mapNullToDefault) {
 
         // check on method level
