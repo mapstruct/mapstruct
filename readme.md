@@ -66,7 +66,7 @@ For Maven-based projects add the following to your POM file in order to use MapS
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>1.1.0.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
@@ -111,9 +111,9 @@ plugins {
 }
 dependencies {
     ...
-    compile 'org.mapstruct:mapstruct:1.1.0.Final' // OR use this with Java 8 and beyond: org.mapstruct:mapstruct-jdk8:...
+    compile 'org.mapstruct:mapstruct:1.2.0.Final' // OR use this with Java 8 and beyond: org.mapstruct:mapstruct-jdk8:...
 
-    apt 'org.mapstruct:mapstruct-processor:1.1.0.Final'
+    apt 'org.mapstruct:mapstruct-processor:1.2.0.Final'
 }
 ...
 ```
