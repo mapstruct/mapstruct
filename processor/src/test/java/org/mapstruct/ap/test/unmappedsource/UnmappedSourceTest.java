@@ -28,7 +28,6 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.test.unmappedtarget.Source;
 import org.mapstruct.ap.test.unmappedtarget.Target;
@@ -84,51 +83,4 @@ public class UnmappedSourceTest {
     )
     public void shouldRaiseErrorDueToUnsetSourceProperty() {
     }
-
-    @Test
-    @WithClasses({ Source.class, Target.class, org.mapstruct.ap.test.unmappedtarget.SourceTargetMapper.class })
-    @ProcessorOption(name = "mapstruct.unmappedSourcePolicy", value = "ERROR")
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = org.mapstruct.ap.test.unmappedtarget.SourceTargetMapper.class,
-                kind = Kind.ERROR,
-                line = 29,
-                messageRegExp = "Unmapped source property: \"qux\""),
-            @Diagnostic(type = org.mapstruct.ap.test.unmappedtarget.SourceTargetMapper.class,
-                kind = Kind.WARNING,
-                line = 29,
-                messageRegExp = "Unmapped target property: \"bar\""),
-            @Diagnostic(type = org.mapstruct.ap.test.unmappedtarget.SourceTargetMapper.class,
-                kind = Kind.ERROR,
-                line = 31,
-                messageRegExp = "Unmapped source property: \"bar\""),
-            @Diagnostic(type = org.mapstruct.ap.test.unmappedtarget.SourceTargetMapper.class,
-                kind = Kind.WARNING,
-                line = 31,
-                messageRegExp = "Unmapped target property: \"qux\"")
-        }
-    )
-    public void shouldRaiseErrorDueToUnsetSourcePropertyWithPolicySetViaProcessorOption() {
-    }
-
-    @Test
-    @WithClasses({ Source.class, Target.class, UsesConfigFromAnnotationMapper.class, Config.class })
-    @ProcessorOption(name = "mapstruct.unmappedSourcePolicy", value = "ERROR")
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.SUCCEEDED,
-        diagnostics = {
-            @Diagnostic(type = UsesConfigFromAnnotationMapper.class,
-                kind = Kind.WARNING,
-                line = 33,
-                messageRegExp = "Unmapped source property: \"qux\""),
-            @Diagnostic(type = UsesConfigFromAnnotationMapper.class,
-                kind = Kind.WARNING,
-                line = 35,
-                messageRegExp = "Unmapped source property: \"bar\"")
-        }
-    )
-    public void shouldRaiseErrorBecauseConfiguredByAnnotation() {
-    }
-
 }

@@ -752,7 +752,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private ReportingPolicyPrism getUnmappedSourcePolicy() {
             MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
 
-            return mapperSettings.unmappedSourcePolicy( ctx.getOptions() );
+            return mapperSettings.unmappedSourcePolicy();
         }
 
         private void reportErrorForUnmappedSourcePropertiesIfRequired() {

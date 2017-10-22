@@ -129,17 +129,13 @@ public class MapperConfiguration {
         return ReportingPolicyPrism.valueOf( mapperPrism.unmappedTargetPolicy() );
     }
 
-    public ReportingPolicyPrism unmappedSourcePolicy(Options options) {
+    public ReportingPolicyPrism unmappedSourcePolicy() {
         if ( mapperPrism.values.unmappedSourcePolicy() != null ) {
             return ReportingPolicyPrism.valueOf( mapperPrism.unmappedSourcePolicy() );
         }
 
         if ( mapperConfigPrism != null && mapperConfigPrism.values.unmappedSourcePolicy() != null ) {
             return ReportingPolicyPrism.valueOf( mapperConfigPrism.unmappedSourcePolicy() );
-        }
-
-        if ( options.getUnmappedSourcePolicy() != null ) {
-            return options.getUnmappedSourcePolicy();
         }
 
         // fall back to default defined in the annotation
