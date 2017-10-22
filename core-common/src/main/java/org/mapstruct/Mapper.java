@@ -55,6 +55,15 @@ public @interface Mapper {
     Class<?>[] imports() default { };
 
     /**
+     * How unmapped properties of the source type of a mapping should be
+     * reported. The method overrides an unmappedSourcePolicy set in a central
+     * configuration set by {@link #config() }
+     *
+     * @return The reporting policy for unmapped source properties.
+     */
+    ReportingPolicy unmappedSourcePolicy() default ReportingPolicy.IGNORE;
+
+    /**
      * How unmapped properties of the target type of a mapping should be
      * reported. The method overrides an unmappedTargetPolicy set in a central
      * configuration set by {@link #config() }

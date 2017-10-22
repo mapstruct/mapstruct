@@ -129,6 +129,23 @@ public class MapperConfiguration {
         return ReportingPolicyPrism.valueOf( mapperPrism.unmappedTargetPolicy() );
     }
 
+    public ReportingPolicyPrism unmappedSourcePolicy(Options options) {
+        if ( mapperPrism.values.unmappedSourcePolicy() != null ) {
+            return ReportingPolicyPrism.valueOf( mapperPrism.unmappedSourcePolicy() );
+        }
+
+        if ( mapperConfigPrism != null && mapperConfigPrism.values.unmappedSourcePolicy() != null ) {
+            return ReportingPolicyPrism.valueOf( mapperConfigPrism.unmappedSourcePolicy() );
+        }
+
+        if ( options.getUnmappedSourcePolicy() != null ) {
+            return options.getUnmappedSourcePolicy();
+        }
+
+        // fall back to default defined in the annotation
+        return ReportingPolicyPrism.valueOf( mapperPrism.unmappedSourcePolicy() );
+    }
+
     public CollectionMappingStrategyPrism getCollectionMappingStrategy() {
         if ( mapperConfigPrism != null && mapperPrism.values.collectionMappingStrategy() == null ) {
             return CollectionMappingStrategyPrism.valueOf( mapperConfigPrism.collectionMappingStrategy() );

@@ -82,6 +82,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         private MappingBuilderContext ctx;
         private Method method;
         private Map<String, Accessor> unprocessedTargetProperties;
+        private Map<String, Accessor> unprocessedSourceProperties;
         private Set<String> targetProperties;
         private final List<PropertyMapping> propertyMappings = new ArrayList<PropertyMapping>();
         private final Set<Parameter> unprocessedSourceParameters = new HashSet<Parameter>();
@@ -115,8 +116,17 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             this.targetProperties = accessors.keySet();
 
             this.unprocessedTargetProperties = new LinkedHashMap<String, Accessor>( accessors );
+            this.unprocessedSourceProperties = new LinkedHashMap<String, Accessor>();
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
+
+                if ( sourceParameter.getType().isPrimitive() ) {
+                    continue;
+                }
+                Map<String, Accessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
+                for ( String key : readAccessors.keySet() ) {
+                    unprocessedSourceProperties.put( key, readAccessors.get( key ) );
+                }
             }
             existingVariableNames.addAll( method.getParameterNames() );
             return this;
@@ -153,6 +163,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             // report errors on unmapped properties
             reportErrorForUnmappedTargetPropertiesIfRequired();
+            reportErrorForUnmappedSourcePropertiesIfRequired();
 
             // mapNullToDefault
             boolean mapNullToDefault = method.getMapperConfiguration().isMapToDefault( nullValueMappingStrategy );
@@ -281,6 +292,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                     if ( propertyMapping != null ) {
                         unprocessedTargetProperties.remove( propertyName );
+                        unprocessedSourceProperties.remove( propertyName );
                         iterator.remove();
                         propertyMappings.add( propertyMapping );
                     }
@@ -365,6 +377,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 // target mappings
                 unprocessedTargetProperties.remove( handledTarget );
                 unprocessedDefinedTargets.remove( handledTarget );
+                unprocessedSourceProperties.remove( handledTarget );
             }
 
             return errorOccurred;
@@ -581,6 +594,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     propertyMappings.add( propertyMapping );
                     targetPropertyEntriesIterator.remove();
                     unprocessedDefinedTargets.remove( targetPropertyName );
+                    unprocessedSourceProperties.remove( targetPropertyName );
                 }
             }
         }
@@ -625,6 +639,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         targetPropertyEntriesIterator.remove();
                         sourceParameters.remove();
                         unprocessedDefinedTargets.remove( targetProperty.getKey() );
+                        unprocessedSourceProperties.remove( targetProperty.getKey() );
                     }
                 }
             }
@@ -725,6 +740,35 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         targetErrorMessage
                     };
                 }
+
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    msg,
+                    args
+                );
+            }
+        }
+
+        private ReportingPolicyPrism getUnmappedSourcePolicy() {
+            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
+
+            return mapperSettings.unmappedSourcePolicy( ctx.getOptions() );
+        }
+
+        private void reportErrorForUnmappedSourcePropertiesIfRequired() {
+            ReportingPolicyPrism unmappedSourcePolicy = getUnmappedSourcePolicy();
+
+            if ( !unprocessedSourceProperties.isEmpty() && unmappedSourcePolicy.requiresReport() ) {
+
+                Message msg = unmappedSourcePolicy.getDiagnosticKind() == Diagnostic.Kind.ERROR ?
+                    Message.BEANMAPPING_UNMAPPED_SOURCES_ERROR : Message.BEANMAPPING_UNMAPPED_SOURCES_WARNING;
+                Object[] args = new Object[] {
+                    MessageFormat.format(
+                        "{0,choice,1#property|1<properties}: \"{1}\"",
+                        unprocessedSourceProperties.size(),
+                        Strings.join( unprocessedSourceProperties.keySet(), ", " )
+                    )
+                };
 
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
