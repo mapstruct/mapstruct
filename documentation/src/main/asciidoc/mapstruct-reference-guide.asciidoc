@@ -693,7 +693,8 @@ A mapper which uses other mapper classes (see <<invoking-other-mappers>>) will o
 [[injection-strategy]]
 === Injection strategy
 
-When using <<using-dependency-injection,dependency injection>>, you can choose between field and constructor injection. This can be done by either providing the injection strategy via __Mapper__ or __MapperConfig__ annotation.
+When using <<using-dependency-injection,dependency injection>>, you can choose between field and constructor injection. 
+This can be done by either providing the injection strategy via `Mapper` or `MapperConfig` annotation.
 
 .Obtaining a mapper via dependency injection
 ====
@@ -707,9 +708,13 @@ public interface CarMapper {
 ----
 ====
 
-The generated mapper will inject all classes defined in the **uses** attribute. When **InjectionStrategy.CONSTRUCTOR** is used, the constructor will have the appropriate annotation and the fields won't. When **InjectionStrategy.FIELD** is used, the annotation is on the field itself. For now, the default injection strategy is field injection. It is recommended to use constructor injection to simplify testing.
+The generated mapper will inject all classes defined in the **uses** attribute. 
+When `InjectionStrategy#CONSTRUCTOR` is used, the constructor will have the appropriate annotation and the fields won't. 
+When `InjectionStrategy#FIELD` is used, the annotation is on the field itself. 
+For now, the default injection strategy is field injection. 
+It is recommended to use constructor injection to simplify testing.
 
-If you inject additional fields by hand, we recommend using setter injection.
+TIP: For abstract classes or decorators that setter injection should be used.
 
 [[datatype-conversions]]
 == Data type conversions
