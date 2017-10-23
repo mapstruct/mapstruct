@@ -714,7 +714,7 @@ When `InjectionStrategy#FIELD` is used, the annotation is on the field itself.
 For now, the default injection strategy is field injection. 
 It is recommended to use constructor injection to simplify testing.
 
-TIP: For abstract classes or decorators that setter injection should be used.
+TIP: For abstract classes or decorators setter injection should be used.
 
 [[datatype-conversions]]
 == Data type conversions
