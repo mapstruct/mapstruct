@@ -678,6 +678,32 @@ private CarMapper mapper;
 
 A mapper which uses other mapper classes (see <<invoking-other-mappers>>) will obtain these mappers using the configured component model. So if `CarMapper` from the previous example was using another mapper, this other mapper would have to be an injectable CDI bean as well.
 
+[[injection-strategy]]
+=== Injection strategy
+
+When using <<using-dependency-injection,dependency injection>>, you can choose between field and constructor injection. 
+This can be done by either providing the injection strategy via `Mapper` or `MapperConfig` annotation.
+
+.Obtaining a mapper via dependency injection
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(componentModel = "cdi", uses = EngineMapper.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface CarMapper {
+    CarDto carToCarDto(Car car);
+}
+----
+====
+
+The generated mapper will inject all classes defined in the **uses** attribute. 
+When `InjectionStrategy#CONSTRUCTOR` is used, the constructor will have the appropriate annotation and the fields won't. 
+When `InjectionStrategy#FIELD` is used, the annotation is on the field itself. 
+For now, the default injection strategy is field injection. 
+It is recommended to use constructor injection to simplify testing.
+
+TIP: For abstract classes or decorators setter injection should be used.
+
 [[datatype-conversions]]
 == Data type conversions
 
