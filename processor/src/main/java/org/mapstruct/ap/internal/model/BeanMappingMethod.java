@@ -650,10 +650,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             if ( unprocessedDefinedTargets.containsKey( targetProperty ) ) {
 
                 Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
-                mappings.put(
-                    targetProperty,
-                    unprocessedDefinedTargets.get( targetProperty )
-                );
+                for ( Mapping mapping : unprocessedDefinedTargets.get( targetProperty ) ) {
+                    mappings.put( mapping.getTargetName(), Collections.singletonList( mapping ) );
+                }
                 additionalOptions = MappingOptions.forMappingsOnly( mappings, restrictToDefinedMappings );
             }
             return additionalOptions;
