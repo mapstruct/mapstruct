@@ -14,9 +14,9 @@
  * [Maven](#maven)
  * [Gradle](#gradle)
 * [Documentation and getting help](#documentation-and-getting-help)
-* [Licensing](#licensing)
 * [Building from Source](#building-from-source)
 * [Links](#links)
+* [Licensing](#licensing)
 
 ## What is MapStruct?
 
