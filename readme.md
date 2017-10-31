@@ -20,7 +20,17 @@
 
 ## What is MapStruct?
 
-MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe and performant mappers for Java bean classes.
+MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe and performant mappers for Java bean classes. It saves you from writing mapping code by hand, which is a tedious and error-prone task. The generator comes with sensible defaults and many built-in type conversions, but it steps out of your way when it comes to configuring or implementing special behavior.
+
+Compared to mapping frameworks working at runtime, MapStruct offers the following advantages:
+
+* Fast execution by using plain method invocations instead of reflection
+* Compile-time type safety: Only objects and attributes mapping to each other can be mapped, so there's no accidental mapping of an order entity into a customer DTO, etc.
+* Self-contained code—no runtime dependencies
+* Clear error-reports at build time if:
+  * mappings are incomplete (not all target properties are mapped)
+  * mappings are incorrect (cannot find a proper mapping method or type conversion)
+* Mapping code is easy to debug (or edited by hand—e.g. in case of a bug in the generator)
 
 To create a mapping between two types, declare a mapper class like this:
 
@@ -35,19 +45,7 @@ public interface CarMapper {
 }
 ```
 
-At compile time MapStruct will generate an implementation of this interface. The generated implementation uses plain Java method invocations for mapping between source and target objects, i.e. there is no reflection involved. By default, properties are mapped if they have the same name in source and target, but this and many other aspects can be controlled using `@Mapping` and a handful of other annotations.
-
-MapStruct saves you from writing mapping code by hand which is a tedious and error-prone task. The generator comes with sensible defaults and many built-in type conversions, but it steps out of your way when it comes to configuring or implementing special behavior.
-
-Compared to mapping frameworks working at runtime MapStruct offers the following advantages:
-
-* Fast execution by using plain method invocations instead of reflection
-* Compile-time type safety: Only objects and attributes mapping to each other can be mapped, no accidental mapping of an order entity into a customer DTO etc.
-* Self-contained code, no runtime dependencies
-* Clear error-reports at build time if
-  * mappings are incomplete (not all target properties are mapped)
-  * mappings are incorrect (cannot find a proper mapping method or type conversion)
-* Mapping code is easy to debug (or edited by hand e.g. in case of a bug in the generator)
+At compile time MapStruct will generate an implementation of this interface. The generated implementation uses plain Java method invocations for mapping between source and target objects, i.e. no reflection is involved. By default, properties are mapped if they have the same name in source and target, but you can control this and many other aspects using `@Mapping` and a handful of other annotations.
 
 ## Requirements
 
@@ -57,11 +55,11 @@ MapStruct requires Java 1.6 or later.
 
 MapStruct works in command line builds (plain javac, via Maven, Gradle, Ant etc.) and IDEs.
 
-For Eclipse, there is a dedicated plug-in under development (see https://github.com/mapstruct/mapstruct-eclipse) which goes beyond what's possible with an annotation processor, providing content assist for annotation attributes, quick fixes and more.
+For Eclipse, a dedicated plug-in is in development (see https://github.com/mapstruct/mapstruct-eclipse). It goes beyond what's possible with an annotation processor, providing content assist for annotation attributes, quick fixes and more.
 
 ### Maven
 
-For Maven-based projects add the following to your POM file in order to use MapStruct (the dependencies can be obtained from Maven Central):
+For Maven-based projects, add the following to your POM file in order to use MapStruct (the dependencies are available at Maven Central):
 
 ```xml
 ...
@@ -118,19 +116,15 @@ dependencies {
 ...
 ```
 
-If you don't work with a dependency management tool you can obtain a distribution bundle from [SourceForge](https://sourceforge.net/projects/mapstruct/files/).
+If you don't work with a dependency management tool, you can obtain a distribution bundle from [SourceForge](https://sourceforge.net/projects/mapstruct/files/).
 
 ## Documentation and getting help
 
 To learn more about MapStruct, refer to the [project homepage](http://mapstruct.org). The [reference documentation](http://mapstruct.org/documentation/reference-guide/) covers all provided functionality in detail. If you need help, come and join the [mapstruct-users](https://groups.google.com/forum/?hl=en#!forum/mapstruct-users) group.
 
-## Licensing
-
-MapStruct is licensed under the Apache License, Version 2.0 (the "License"); you may not use it except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
-
 ## Building from Source
 
-MapStruct uses Maven for its build. Java 8 is required for building MapStruct from source. To build the complete project run
+MapStruct uses Maven for its build. Java 8 is required for building MapStruct from source. To build the complete project, run
 
     mvn clean install
 
@@ -150,3 +144,7 @@ from the root of the project directory. To skip the distribution module, run
 <div style="float: right">
     <a href="https://mapstruct.ci.cloudbees.com/"><img src="http://www.cloudbees.com/sites/default/files/Button-Built-on-CB-1.png"/></a>
 </div>
+
+## Licensing
+
+MapStruct is licensed under the Apache License, Version 2.0 (the "License"); you may not use this project except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
