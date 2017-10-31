@@ -24,13 +24,13 @@ MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/
 
 Compared to mapping frameworks working at runtime, MapStruct offers the following advantages:
 
-* Fast execution by using plain method invocations instead of reflection
-* Compile-time type safety: Only objects and attributes mapping to each other can be mapped, so there's no accidental mapping of an order entity into a customer DTO, etc.
-* Self-contained code—no runtime dependencies
-* Clear error-reports at build time if:
+* **Fast execution** by using plain method invocations instead of reflection
+* **Compile-time type safety**. Only objects and attributes mapping to each other can be mapped, so there's no accidental mapping of an order entity into a customer DTO, etc.
+* **Self-contained code**—no runtime dependencies
+* **Clear error reports** at build time if:
   * mappings are incomplete (not all target properties are mapped)
   * mappings are incorrect (cannot find a proper mapping method or type conversion)
-* Mapping code is easy to debug (or edited by hand—e.g. in case of a bug in the generator)
+* **Easily debuggable mapping code** (or editable by hand—e.g. in case of a bug in the generator)
 
 To create a mapping between two types, declare a mapper class like this:
 
