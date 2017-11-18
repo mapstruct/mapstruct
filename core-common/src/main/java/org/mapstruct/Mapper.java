@@ -60,6 +60,8 @@ public @interface Mapper {
      * configuration set by {@link #config() }
      *
      * @return The reporting policy for unmapped source properties.
+     *
+     * @since 1.3
      */
     ReportingPolicy unmappedSourcePolicy() default ReportingPolicy.IGNORE;
 
