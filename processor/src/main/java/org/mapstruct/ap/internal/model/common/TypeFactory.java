@@ -382,7 +382,24 @@ public class TypeFactory {
     public List<Type> getThrownTypes(ExecutableType method) {
         List<Type> thrownTypes = new ArrayList<Type>();
         for ( TypeMirror exceptionType : method.getThrownTypes() ) {
-            thrownTypes.add( getType( exceptionType ) );
+            Type t = getType( exceptionType );
+            if (!thrownTypes.contains( t )) {
+                thrownTypes.add( t );
+            }
+        }
+        return thrownTypes;
+    }
+
+    public List<Type> getThrownTypes(Accessor accessor) {
+        if (accessor.getExecutable() == null) {
+            return new ArrayList<Type>();
+        }
+        List<Type> thrownTypes = new ArrayList<Type>();
+        for (TypeMirror thrownType : accessor.getExecutable().getThrownTypes()) {
+            Type t = getType( thrownType );
+            if (!thrownTypes.contains( t )) {
+                thrownTypes.add( t );
+            }
         }
         return thrownTypes;
     }

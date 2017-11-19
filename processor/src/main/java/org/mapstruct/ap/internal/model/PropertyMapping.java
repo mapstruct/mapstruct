@@ -504,6 +504,7 @@ public class PropertyMapping extends ModelElement {
                 NestedPropertyMappingMethod nestedPropertyMapping = builder
                     .method( methodRef )
                     .propertyEntries( sourceReference.getPropertyEntries() )
+                    .mappingContext( ctx )
                     .build();
 
                 // add if not yet existing
