@@ -589,7 +589,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         else {
             for ( Accessor candidate : candidates ) {
                 String elementName = Executables.getElementNameForAdder( candidate );
-                if ( elementName != null && elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
+                if ( elementName != null && ( elementName.equals( pluralPropertyName ) || elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) ) {
                     return candidate;
                 }
             }
