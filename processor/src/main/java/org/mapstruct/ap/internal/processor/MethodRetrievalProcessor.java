@@ -276,6 +276,9 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         ParameterProvidedMethods.Builder builder = ParameterProvidedMethods.builder();
         for ( Parameter contextParam : contextParameters ) {
+            if ( contextParam.getType().isPrimitive() ) {
+                continue;
+            }
             List<SourceMethod> contextParamMethods = retrieveMethods(
                 contextParam.getType().getTypeElement(),
                 mapperToImplement,
