@@ -209,6 +209,6 @@ public class EnumMappingMethod extends MappingMethod {
     }
 
     public Parameter getSourceParameter() {
-        return first( getParameters() );
+        return first( getSourceParameters() );
     }
 }

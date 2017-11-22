@@ -284,7 +284,7 @@ public class ValueMappingMethod extends MappingMethod {
     }
 
     public Parameter getSourceParameter() {
-        return first( getParameters() );
+        return first( getSourceParameters() );
     }
 
     public boolean isOverridden() {
