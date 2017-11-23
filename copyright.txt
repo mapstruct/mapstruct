@@ -14,6 +14,7 @@ Ewald Volkert - https://github.com/eforest
 Filip Hrisafov - https://github.com/filiphr
 Gunnar Morling - https://github.com/gunnarmorling
 Ivo Smid - https://github.com/bedla
+Joshua Spoerri - https://github.com/spoerri
 Kevin Grüneberg - https://github.com/kevcodez
 Michael Pardo - https://github.com/pardom
 Mustafa Caylak - https://github.com/luxmeter
@@ -24,6 +25,7 @@ Pavel Makhov - https://github.com/streetturtle
 Peter Larson - https://github.com/pjlarson
 Remko Plantenga - https://github.com/sonata82
 Remo Meier - https://github.com/remmeier
+Richard Lea - https://github.com/chigix
 Samuel Wright - https://github.com/samwright
 Sebastian Hasait - https://github.com/shasait
 Sean Huang - https://github.com/seanjob
