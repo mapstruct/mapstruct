@@ -380,28 +380,24 @@ public class TypeFactory {
     }
 
     public List<Type> getThrownTypes(ExecutableType method) {
-        List<Type> thrownTypes = new ArrayList<Type>();
-        for ( TypeMirror exceptionType : method.getThrownTypes() ) {
-            Type t = getType( exceptionType );
-            if (!thrownTypes.contains( t )) {
-                thrownTypes.add( t );
-            }
-        }
-        return thrownTypes;
+        return extractTypes( method.getThrownTypes() );
     }
 
     public List<Type> getThrownTypes(Accessor accessor) {
         if (accessor.getExecutable() == null) {
             return new ArrayList<Type>();
         }
-        List<Type> thrownTypes = new ArrayList<Type>();
-        for (TypeMirror thrownType : accessor.getExecutable().getThrownTypes()) {
-            Type t = getType( thrownType );
-            if (!thrownTypes.contains( t )) {
-                thrownTypes.add( t );
-            }
+        return extractTypes( accessor.getExecutable().getThrownTypes() );
+    }
+
+    private List<Type> extractTypes(List<? extends TypeMirror> typeMirrors) {
+        Set<Type> types = new HashSet<Type>( typeMirrors.size() );
+
+        for ( TypeMirror typeMirror : typeMirrors ) {
+            types.add( getType( typeMirror ) );
         }
-        return thrownTypes;
+
+        return new ArrayList<Type>( types );
     }
 
     private List<Type> getTypeParameters(TypeMirror mirror, boolean isImplementationType) {

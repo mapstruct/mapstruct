@@ -20,18 +20,15 @@ package org.mapstruct.ap.test.nestedsource.exceptions;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 /**
  *
  * @author Richard Lea <chigix@zoho.com>
  */
-@Mapper()
+@Mapper
 public interface ResourceMapper {
 
-    @Mappings({
-        @Mapping(source = "bucket.user.uuid", target = "userId")
-    })
+    @Mapping(source = "bucket.user.uuid", target = "userId")
     ResourceDto map(Resource r) throws NoSuchUser;
 
 }

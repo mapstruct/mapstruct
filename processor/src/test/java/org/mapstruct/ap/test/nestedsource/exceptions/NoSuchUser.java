@@ -23,8 +23,4 @@ package org.mapstruct.ap.test.nestedsource.exceptions;
  * @author Richard Lea <chigix@zoho.com>
  */
 public class NoSuchUser extends Exception {
-
-    public NoSuchUser() {
-    }
-
 }
