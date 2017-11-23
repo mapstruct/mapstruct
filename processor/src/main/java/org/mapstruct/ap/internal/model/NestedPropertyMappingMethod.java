@@ -24,7 +24,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.PropertyEntry;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
@@ -44,10 +44,11 @@ public class NestedPropertyMappingMethod extends MappingMethod {
 
     public static class Builder {
 
-        private Method method;
+        private MappingBuilderContext ctx;
+        private ForgedMethod method;
         private List<PropertyEntry> propertyEntries;
 
-        public Builder method( Method sourceMethod ) {
+        public Builder method( ForgedMethod sourceMethod ) {
             this.method = sourceMethod;
             return this;
         }
@@ -57,22 +58,31 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             return this;
         }
 
+        public Builder mappingContext(MappingBuilderContext mappingContext) {
+            this.ctx = mappingContext;
+            return this;
+        }
+
         public NestedPropertyMappingMethod build() {
             List<String> existingVariableNames = new ArrayList<String>();
             for ( Parameter parameter : method.getSourceParameters() ) {
                 existingVariableNames.add( parameter.getName() );
             }
+            final List<Type> thrownTypes = new ArrayList<Type>();
             List<SafePropertyEntry> safePropertyEntries = new ArrayList<SafePropertyEntry>();
             for ( PropertyEntry propertyEntry : propertyEntries ) {
                 String safeName = Strings.getSaveVariableName( propertyEntry.getName(), existingVariableNames );
                 safePropertyEntries.add( new SafePropertyEntry( propertyEntry, safeName ) );
                 existingVariableNames.add( safeName );
+                thrownTypes.addAll( ctx.getTypeFactory().getThrownTypes(
+                        propertyEntry.getReadAccessor() ) );
             }
+            method.addThrownTypes( thrownTypes );
             return new NestedPropertyMappingMethod( method, safePropertyEntries );
         }
     }
 
-    private NestedPropertyMappingMethod( Method method, List<SafePropertyEntry> sourcePropertyEntries ) {
+    private NestedPropertyMappingMethod( ForgedMethod method, List<SafePropertyEntry> sourcePropertyEntries ) {
         super( method );
         this.safePropertyEntries = sourcePropertyEntries;
     }
