@@ -114,12 +114,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
             Map<String, Accessor> accessors = method.getResultType().getPropertyWriteAccessors( cms );
             this.targetProperties = accessors.keySet();
-
             this.unprocessedTargetProperties = new LinkedHashMap<String, Accessor>( accessors );
             this.unprocessedSourceProperties = new LinkedHashMap<String, Accessor>();
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
-
                 if ( sourceParameter.getType().isPrimitive() ) {
                     continue;
                 }
@@ -360,12 +358,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( Map.Entry<String, List<Mapping>> entry : methodMappings.entrySet() ) {
                 for ( Mapping mapping : entry.getValue() ) {
                     TargetReference targetReference = mapping.getTargetReference();
-                    if ( targetReference.isValid() ) {
+                    if ( targetReference != null && targetReference.isValid() ) {
                         if ( !handledTargets.contains( first( targetReference.getPropertyEntries() ).getFullName() ) ) {
                             if ( handleDefinedMapping( mapping, handledTargets ) ) {
                                 errorOccurred = true;
                             }
                         }
+                    }
+                    else if ( mapping.isIgnored() && mapping.getSourceName() != null ) {
+                        unprocessedSourceProperties.remove( mapping.getSourceName() );
                     }
                     else {
                         errorOccurred = true;

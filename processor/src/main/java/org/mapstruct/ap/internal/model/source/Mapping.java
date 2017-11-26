@@ -99,7 +99,7 @@ public class Mapping {
     public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element,
         FormattingMessager messager, Types typeUtils) {
 
-        if ( mappingPrism.target().isEmpty() ) {
+        if ( ( mappingPrism.target() == null || mappingPrism.target().isEmpty() ) && !mappingPrism.ignore() ) {
             messager.printMessage(
                 element,
                 mappingPrism.mirror,
@@ -131,6 +131,7 @@ public class Mapping {
         }
 
         String source = mappingPrism.source().isEmpty() ? null : mappingPrism.source();
+        String target = mappingPrism.target() == null || mappingPrism.target().isEmpty() ? null : mappingPrism.target();
         String constant = mappingPrism.values.constant() == null ? null : mappingPrism.constant();
         String expression = getExpression( mappingPrism, element, messager );
         String dateFormat = mappingPrism.values.dateFormat() == null ? null : mappingPrism.dateFormat();
@@ -160,7 +161,7 @@ public class Mapping {
             source,
             constant,
             expression,
-            mappingPrism.target(),
+            target,
             defaultValue,
             mappingPrism.ignore(),
             mappingPrism.mirror,
