@@ -19,6 +19,7 @@
 package org.mapstruct.ap.spi;
 
 import java.beans.Introspector;
+import java.util.regex.Pattern;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -35,6 +36,8 @@ import javax.lang.model.util.SimpleTypeVisitor6;
  * @author Christian Schuster, Sjaak Derken
  */
 public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
+
+    private static final Pattern JAVA_JAVAX_PACKAGE = Pattern.compile( "^javax?\\..*" );
 
     @Override
     public MethodType getMethodType(ExecutableElement method) {
@@ -93,7 +96,14 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     public boolean isSetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
-        return methodName.startsWith( "set" ) && methodName.length() > 3;
+        return methodName.startsWith( "set" ) && methodName.length() > 3 || isBuilderSetter( method );
+    }
+
+    protected boolean isBuilderSetter(ExecutableElement method) {
+        return method.getParameters().size() == 1 &&
+            !JAVA_JAVAX_PACKAGE.matcher( method.getEnclosingElement().asType().toString() ).matches() &&
+            //TODO The Types need to be compared with Types#isSameType(TypeMirror, TypeMirror)
+            method.getReturnType().toString().equals( method.getEnclosingElement().asType().toString() );
     }
 
     /**
@@ -145,6 +155,12 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     @Override
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         String methodName = getterOrSetterMethod.getSimpleName().toString();
+        if ( methodName.startsWith( "is" ) || methodName.startsWith( "get" ) || methodName.startsWith( "set" ) ) {
+            return Introspector.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
+        }
+        else if ( isBuilderSetter( getterOrSetterMethod ) ) {
+            return methodName;
+        }
         return Introspector.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
     }
 

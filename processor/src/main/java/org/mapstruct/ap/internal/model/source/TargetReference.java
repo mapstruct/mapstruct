@@ -153,6 +153,7 @@ public class TargetReference {
 
             boolean foundEntryMatch;
             Type resultType = method.getResultType();
+            resultType = resultType.getMappingType();
 
             // there can be 4 situations
             // 1. Return type
@@ -255,6 +256,10 @@ public class TargetReference {
             }
             else if ( targetWriteAccessor == null ) {
                 errorMessage = new NoWriteAccessorErrorMessage( mapping, method, messager );
+            }
+            else {
+                //TODO there is no read accessor. What should we do here?
+                errorMessage = new NoPropertyErrorMessage( mapping, method, messager, entryNames, index, nextType );
             }
         }
 
