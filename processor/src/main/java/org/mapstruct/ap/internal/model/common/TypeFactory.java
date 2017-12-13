@@ -57,9 +57,12 @@ import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.RoundContext;
+import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.internal.util.TypeHierarchyErroneousException;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
+import org.mapstruct.ap.spi.BuilderProvider;
+import org.mapstruct.ap.spi.DefaultBuilderProvider;
 
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
@@ -71,6 +74,11 @@ import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoad
  * @author Gunnar Morling
  */
 public class TypeFactory {
+
+    private static final BuilderProvider BUILDER_PROVIDER = Services.get(
+        BuilderProvider.class,
+        new DefaultBuilderProvider()
+    );
 
     private final Elements elementUtils;
     private final Types typeUtils;
@@ -162,6 +170,7 @@ public class TypeFactory {
         }
 
         ImplementationType implementationType = getImplementationType( mirror );
+        Type builderType = findBuilder( mirror );
 
         boolean isIterableType = typeUtils.isSubtype( mirror, iterableType );
         boolean isCollectionType = typeUtils.isSubtype( mirror, collectionType );
@@ -247,6 +256,7 @@ public class TypeFactory {
             getTypeParameters( mirror, false ),
             implementationType,
             componentType,
+            builderType,
             packageName,
             name,
             qualifiedName,
@@ -458,6 +468,7 @@ public class TypeFactory {
                 getTypeParameters( mirror, true ),
                 null,
                 null,
+                null,
                 implementationType.getPackageName(),
                 implementationType.getName(),
                 implementationType.getFullyQualifiedName(),
@@ -473,6 +484,11 @@ public class TypeFactory {
         }
 
         return null;
+    }
+
+    private Type findBuilder(TypeMirror type) {
+        TypeMirror builder = BUILDER_PROVIDER.findBuilder( type, elementUtils, typeUtils );
+        return builder == null ? null : getType( builder );
     }
 
     private TypeMirror getComponentType(TypeMirror mirror) {

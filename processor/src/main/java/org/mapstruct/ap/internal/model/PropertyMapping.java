@@ -148,7 +148,7 @@ public class PropertyMapping extends ModelElement {
 
         private Type determineTargetType() {
             // This is a bean mapping method, so we know the result is a declared type
-            DeclaredType resultType = (DeclaredType) method.getResultType().getTypeMirror();
+            DeclaredType resultType = (DeclaredType) method.getResultType().getMappingType().getTypeMirror();
 
             switch ( targetWriteAccessorType ) {
                 case ADDER:
