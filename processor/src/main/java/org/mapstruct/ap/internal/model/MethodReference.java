@@ -118,6 +118,21 @@ public class MethodReference extends ModelElement implements Assignment {
         this.name = method.getName();
     }
 
+    private MethodReference(String name, Type definingType) {
+        this.name = name;
+        this.definingType = definingType;
+        this.sourceParameters = Collections.emptyList();
+        this.returnType = null;
+        this.declaringMapper = null;
+        this.importTypes = Collections.emptySet();
+        this.thrownTypes = Collections.emptyList();
+        this.isUpdateMethod = false;
+        this.contextParam = null;
+        this.parameterBindings = Collections.emptyList();
+        this.providingParameter = null;
+        this.isStatic = true;
+    }
+
     public MapperReference getDeclaringMapper() {
         return declaringMapper;
     }
@@ -244,7 +259,6 @@ public class MethodReference extends ModelElement implements Assignment {
         }
     }
 
-    @Override
     public Type getReturnType() {
         return returnType;
     }
@@ -318,5 +332,9 @@ public class MethodReference extends ModelElement implements Assignment {
     public static MethodReference forMapperReference(Method method, MapperReference declaringMapper,
             List<ParameterBinding> parameterBindings) {
         return new MethodReference( method, declaringMapper, null, parameterBindings );
+    }
+
+    public static MethodReference forStaticBuilder(String builderCreationMethod, Type definingType) {
+        return new MethodReference( builderCreationMethod, definingType );
     }
 }

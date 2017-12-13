@@ -22,11 +22,13 @@ import static java.util.Collections.singletonList;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
@@ -58,6 +60,7 @@ import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Collections;
+import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -140,7 +143,7 @@ public class MappingResolverImpl implements MappingResolver {
                 SelectionCriteria.forFactoryMethods( selectionParameters ) );
 
         if (matchingFactoryMethods.isEmpty()) {
-            return null;
+            return findBuilderFactoryMethod( mappingMethod, targetType );
         }
 
         if ( matchingFactoryMethods.size() > 1 ) {
@@ -161,6 +164,39 @@ public class MappingResolverImpl implements MappingResolver {
             matchingFactoryMethod.getMethod(),
             ref,
             matchingFactoryMethod.getParameterBindings() );
+    }
+
+    private MethodReference findBuilderFactoryMethod(Method mappingMethod, Type targetType) {
+        if ( targetType.getBuilderType() == null ) {
+            return null;
+        }
+        Type builderType = targetType.getBuilderType();
+
+        Type returnType = mappingMethod.getReturnType();
+        List<ExecutableElement> builderCreators = new ArrayList<ExecutableElement>();
+        for ( ExecutableElement executableElement : Executables.getAllEnclosedExecutableElements(
+            elementsUtils,
+            returnType.getTypeElement()
+        ) ) {
+            if ( !executableElement.getModifiers().containsAll( Arrays.asList( Modifier.PUBLIC, Modifier.STATIC ) )
+                || !executableElement.getParameters().isEmpty()
+                || !typeUtils.isSameType( executableElement.getReturnType(), builderType.getTypeMirror() )) {
+                continue;
+            }
+            builderCreators.add( executableElement );
+        }
+
+        if ( builderCreators.size() == 1 ) {
+            return MethodReference.forStaticBuilder( first( builderCreators ).getSimpleName().toString(), targetType );
+        }
+        else if ( builderCreators.size() > 1 ) {
+            //error
+            return null;
+        }
+
+        // Find the default constructor, if it exists, and construct the FactoryMethod
+        // We could also live with assuming it exists
+        return null;
     }
 
     private MapperReference findMapperReference(Method method) {

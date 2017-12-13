@@ -409,7 +409,8 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         if ( returnType.getTypeMirror().getKind() != TypeKind.VOID &&
-            !resultType.isAssignableTo( returnType ) ) {
+            !resultType.isAssignableTo( returnType ) &&
+            !resultType.isAssignableTo( returnType.getMappingType() )) {
             messager.printMessage( method, Message.RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE );
             return false;
         }

@@ -72,6 +72,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private final ImplementationType implementationType;
     private final Type componentType;
+    private final Type builderType;
 
     private final String packageName;
     private final String name;
@@ -104,6 +105,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
                 TypeMirror typeMirror, TypeElement typeElement,
                 List<Type> typeParameters, ImplementationType implementationType, Type componentType,
+                Type builderType,
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported) {
@@ -117,6 +119,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.typeParameters = typeParameters;
         this.componentType = componentType;
         this.implementationType = implementationType;
+        this.builderType = builderType;
 
         this.packageName = packageName;
         this.name = name;
@@ -171,6 +174,14 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public Type getComponentType() {
         return componentType;
+    }
+
+    public Type getBuilderType() {
+        return builderType;
+    }
+
+    public Type getMappingType() {
+        return builderType != null ? builderType : this;
     }
 
     public boolean isPrimitive() {
@@ -355,6 +366,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             typeParameters,
             implementationType,
             componentType,
+            builderType,
             packageName,
             name,
             qualifiedName,
