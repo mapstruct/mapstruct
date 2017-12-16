@@ -199,6 +199,11 @@
                 <artifactId>lombok</artifactId>
                 <version>1.16.18</version>
             </dependency>
+            <dependency>
+                <groupId>org.immutables</groupId>
+                <artifactId>value</artifactId>
+                <version>2.5.6</version>
+            </dependency>
 
             <!-- Joda-Time -->
             <dependency>
