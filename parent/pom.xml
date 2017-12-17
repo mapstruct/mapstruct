@@ -209,6 +209,11 @@
                 <artifactId>auto-value</artifactId>
                 <version>1.5</version>
             </dependency>
+            <dependency>
+                <groupId>org.inferred</groupId>
+                <artifactId>freebuilder</artifactId>
+                <version>1.14.6</version>
+            </dependency>
 
             <!-- Joda-Time -->
             <dependency>
