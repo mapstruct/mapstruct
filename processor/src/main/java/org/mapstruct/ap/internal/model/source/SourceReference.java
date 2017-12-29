@@ -110,8 +110,13 @@ public class SourceReference {
 
             String sourceNameTrimmed = sourceName.trim();
             if ( !sourceName.equals( sourceNameTrimmed ) ) {
-                messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
-                                       Message.PROPERTYMAPPING_WHITESPACE_TRIMMED, mapping.getSourceName()
+                messager.printMessage(
+                    method.getExecutable(),
+                    mapping.getMirror(),
+                    mapping.getSourceAnnotationValue(),
+                    Message.PROPERTYMAPPING_WHITESPACE_TRIMMED,
+                    sourceName,
+                    sourceNameTrimmed
                 );
             }
             String[] sourcePropertyNames = new String[0];

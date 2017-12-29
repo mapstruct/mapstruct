@@ -48,12 +48,14 @@ public class Issue1353Test {
             @Diagnostic (type = Issue1353Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 35,
-                messageRegExp = "The property name \" source.string1\" has whitespace that was trimmed."
+                messageRegExp = "The property named \" source.string1\" has whitespaces,"
+                                + " using trimmed property \"source.string1\" instead."
             ),
             @Diagnostic (type = Issue1353Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 35,
-                messageRegExp = "The property name \"string2 \" has whitespace that was trimmed."
+                messageRegExp = "The property named \"string2 \" has whitespaces,"
+                                + " using trimmed property \"string2\" instead."
             )
         }
     )

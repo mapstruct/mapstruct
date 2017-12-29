@@ -140,8 +140,13 @@ public class TargetReference {
 
             String targetNameTrimmed = targetName.trim();
             if ( !targetName.equals( targetNameTrimmed ) ) {
-                messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
-                                       Message.PROPERTYMAPPING_WHITESPACE_TRIMMED, mapping.getTargetName()
+                messager.printMessage(
+                    method.getExecutable(),
+                    mapping.getMirror(),
+                    mapping.getTargetAnnotationValue(),
+                    Message.PROPERTYMAPPING_WHITESPACE_TRIMMED,
+                    targetName,
+                    targetNameTrimmed
                 );
             }
             String[] segments = targetNameTrimmed.split( "\\." );

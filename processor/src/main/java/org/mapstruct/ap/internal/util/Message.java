@@ -61,7 +61,7 @@ public enum Message {
     PROPERTYMAPPING_NO_PRESENCE_CHECKER_FOR_SOURCE_TYPE( "Using custom source value presence checking strategy, but no presence checker found for %s in source type." ),
     PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE( "No read accessor found for property \"%s\" in target type." ),
     PROPERTYMAPPING_NO_WRITE_ACCESSOR_FOR_TARGET_TYPE( "No write accessor found for property \"%s\" in target type." ),
-    PROPERTYMAPPING_WHITESPACE_TRIMMED( "The property name \"%s\" has whitespace that was trimmed.", Diagnostic.Kind.WARNING ),
+    PROPERTYMAPPING_WHITESPACE_TRIMMED( "The property named \"%s\" has whitespaces, using trimmed property \"%s\" instead.", Diagnostic.Kind.WARNING ),
 
     CONSTANTMAPPING_MAPPING_NOT_FOUND( "Can't map \"%s %s\" to \"%s %s\"." ),
     CONSTANTMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE( "No read accessor found for property \"%s\" in target type." ),
