@@ -138,8 +138,13 @@ public class TargetReference {
                 return null;
             }
 
-
-            String[] segments = targetName.split( "\\." );
+            String targetNameTrimmed = targetName.trim();
+            if ( !targetName.equals( targetNameTrimmed ) ) {
+                messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
+                                       Message.PROPERTYMAPPING_WHITESPACE_TRIMMED, mapping.getTargetName()
+                );
+            }
+            String[] segments = targetNameTrimmed.split( "\\." );
             Parameter parameter = method.getMappingTargetParameter();
 
             boolean foundEntryMatch;

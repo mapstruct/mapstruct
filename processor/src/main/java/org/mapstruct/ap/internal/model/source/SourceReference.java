@@ -108,8 +108,14 @@ public class SourceReference {
             boolean isValid = true;
             boolean foundEntryMatch;
 
+            String sourceNameTrimmed = sourceName.trim();
+            if ( !sourceName.equals( sourceNameTrimmed ) ) {
+                messager.printMessage( method.getExecutable(), mapping.getMirror(), mapping.getSourceAnnotationValue(),
+                                       Message.PROPERTYMAPPING_WHITESPACE_TRIMMED, mapping.getSourceName()
+                );
+            }
             String[] sourcePropertyNames = new String[0];
-            String[] segments = sourceName.split( "\\." );
+            String[] segments = sourceNameTrimmed.split( "\\." );
             Parameter parameter = null;
 
             List<PropertyEntry> entries = new ArrayList<PropertyEntry>();
