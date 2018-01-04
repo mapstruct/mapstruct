@@ -1,4 +1,4 @@
-/**
+/*
  *  Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
  *  and/or other contributors as indicated by the @authors tag. See the
  *  copyright.txt file in the distribution for a full listing of all
@@ -18,6 +18,8 @@
  */
 package org.mapstruct.factory;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -77,11 +79,13 @@ public class Mappers {
         }
         catch ( ClassNotFoundException e ) {
             throw new RuntimeException( e );
+        } catch ( NoSuchMethodException e) {
+            throw new RuntimeException( e );
         }
     }
 
     private static <T> T getMapper(
-            Class<T> mapperType, Iterable<ClassLoader> classLoaders) throws ClassNotFoundException {
+            Class<T> mapperType, Iterable<ClassLoader> classLoaders) throws ClassNotFoundException, NoSuchMethodException {
 
         for ( ClassLoader classLoader : classLoaders ) {
             T mapper = doGetMapper( mapperType, classLoader );
@@ -93,11 +97,13 @@ public class Mappers {
         throw new ClassNotFoundException("Cannot find implementation for " + mapperType.getName() );
     }
 
-    private static <T> T doGetMapper(Class<T> clazz, ClassLoader classLoader) {
+    private static <T> T doGetMapper(Class<T> clazz, ClassLoader classLoader) throws NoSuchMethodException {
         try {
             @SuppressWarnings("unchecked")
-            T mapper = (T) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX ).newInstance();
-            return mapper;
+            Class<T> implementation = (Class<T>) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX );
+            Constructor<T> constructor = implementation.getDeclaredConstructor((Class<?>[]) null);
+            constructor.setAccessible(true);
+            return constructor.newInstance((Object[]) null);
         }
         catch (ClassNotFoundException e) {
             ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
@@ -116,6 +122,8 @@ public class Mappers {
             throw new RuntimeException( e );
         }
         catch (IllegalAccessException e) {
+            throw new RuntimeException( e );
+        } catch (InvocationTargetException e) {
             throw new RuntimeException( e );
         }
     }
