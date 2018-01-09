@@ -23,5 +23,5 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 interface PackagePrivateMapper {
-    PackagePrivateMapper INSTANCE = Mappers.getMapper(PackagePrivateMapper.class);
+    PackagePrivateMapper INSTANCE = Mappers.getMapper( PackagePrivateMapper.class );
 }

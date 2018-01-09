@@ -79,13 +79,14 @@ public class Mappers {
         }
         catch ( ClassNotFoundException e ) {
             throw new RuntimeException( e );
-        } catch ( NoSuchMethodException e) {
+        }
+        catch ( NoSuchMethodException e) {
             throw new RuntimeException( e );
         }
     }
 
-    private static <T> T getMapper(
-            Class<T> mapperType, Iterable<ClassLoader> classLoaders) throws ClassNotFoundException, NoSuchMethodException {
+    private static <T> T getMapper(Class<T> mapperType, Iterable<ClassLoader> classLoaders)
+            throws ClassNotFoundException, NoSuchMethodException {
 
         for ( ClassLoader classLoader : classLoaders ) {
             T mapper = doGetMapper( mapperType, classLoader );
@@ -99,11 +100,11 @@ public class Mappers {
 
     private static <T> T doGetMapper(Class<T> clazz, ClassLoader classLoader) throws NoSuchMethodException {
         try {
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings( "unchecked" )
             Class<T> implementation = (Class<T>) classLoader.loadClass( clazz.getName() + IMPLEMENTATION_SUFFIX );
-            Constructor<T> constructor = implementation.getDeclaredConstructor((Class<?>[]) null);
-            constructor.setAccessible(true);
-            return constructor.newInstance((Object[]) null);
+            Constructor<T> constructor = implementation.getDeclaredConstructor();
+            constructor.setAccessible( true );
+            return constructor.newInstance();
         }
         catch (ClassNotFoundException e) {
             ServiceLoader<T> loader = ServiceLoader.load( clazz, classLoader );
@@ -123,7 +124,8 @@ public class Mappers {
         }
         catch (IllegalAccessException e) {
             throw new RuntimeException( e );
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e) {
             throw new RuntimeException( e );
         }
     }
