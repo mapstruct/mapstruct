@@ -170,7 +170,7 @@ public class TargetReference {
                 foundEntryMatch = (entries.size() == targetPropertyNames.length);
             }
 
-            if ( !foundEntryMatch && errorMessage != null) {
+            if ( !foundEntryMatch && errorMessage != null && !isReverse ) {
                 // This is called only for reporting errors
                 errorMessage.report( isReverse );
             }

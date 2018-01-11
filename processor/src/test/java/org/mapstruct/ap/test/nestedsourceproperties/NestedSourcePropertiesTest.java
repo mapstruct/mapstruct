@@ -183,8 +183,8 @@ public class NestedSourcePropertiesTest {
             diagnostics = {
                 @Diagnostic( type = ArtistToChartEntryErroneous.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 46,
-                        messageRegExp = "Unknown property \"position\" in result type java\\.lang\\.Integer\\." )
+                        line = 47,
+                        messageRegExp = "java.lang.Integer does not have an accessible empty constructor." )
             }
     )
     @WithClasses({ ArtistToChartEntryErroneous.class })
