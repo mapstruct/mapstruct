@@ -281,7 +281,7 @@ In this section you'll learn how to define a bean mapper with MapStruct and whic
 
 To create a mapper simply define a Java interface with the required mapping method(s) and annotate it with the `org.mapstruct.Mapper` annotation:
 
-.Maven configuration
+.Java interface to define a mapper
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
