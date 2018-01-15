@@ -47,4 +47,9 @@ public class MappersTest {
         assertThat( Mappers.getMapper( SomeClass.Foo.class ) ).isNotNull();
         assertThat( Mappers.getMapper( SomeClass.NestedClass.Foo.class ) ).isNotNull();
     }
+
+    @Test
+    public void shouldReturnPackagePrivateImplementationInstance() {
+        assertThat( Mappers.getMapper( PackagePrivateMapper.class ) ).isNotNull();
+    }
 }

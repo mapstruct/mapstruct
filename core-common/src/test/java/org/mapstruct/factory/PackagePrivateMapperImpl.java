@@ -16,16 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.test;
+package org.mapstruct.factory;
 
-import org.junit.Test;
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class PackagePrivateMapperTest {
-
-    @Test
-    public void shouldReturnPackagePrivateImplementationInstance() {
-        assertThat( PackagePrivateMapper.INSTANCE ).isNotNull();
-    }
-
+class PackagePrivateMapperImpl implements PackagePrivateMapper {
 }
