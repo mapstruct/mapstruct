@@ -30,7 +30,6 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
-import org.mapstruct.ap.internal.prism.InheritInverseConfigurationPrism;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
@@ -172,7 +171,7 @@ public class TargetReference {
 
             if ( !foundEntryMatch && errorMessage != null && !isReverse ) {
                 // This is called only for reporting errors
-                errorMessage.report( isReverse );
+                errorMessage.report( );
             }
 
             // foundEntryMatch = isValid, errors are handled here, and the BeanMapping uses that to ignore
@@ -375,20 +374,14 @@ public class TargetReference {
             this.messager = messager;
         }
 
-        abstract void report(boolean isReverse);
+        abstract void report();
 
-        protected void printErrorMessage(Message message, boolean isReverse, Object... args) {
+        protected void printErrorMessage(Message message, Object... args) {
             Object[] errorArgs = new Object[args.length + 2];
             errorArgs[0] = mapping.getTargetName();
             errorArgs[1] = method.getResultType();
             System.arraycopy( args, 0, errorArgs, 2, args.length );
             AnnotationMirror annotationMirror = mapping.getMirror();
-            if ( isReverse ) {
-                InheritInverseConfigurationPrism reversePrism = InheritInverseConfigurationPrism.getInstanceOn(
-                    method.getExecutable() );
-
-                annotationMirror = reversePrism == null ? annotationMirror : reversePrism.mirror;
-            }
             messager.printMessage( method.getExecutable(), annotationMirror, mapping.getSourceAnnotationValue(),
                 message, errorArgs
             );
@@ -402,8 +395,8 @@ public class TargetReference {
         }
 
         @Override
-        public void report(boolean isReverse) {
-            printErrorMessage( Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE, isReverse );
+        public void report() {
+            printErrorMessage( Message.BEANMAPPING_PROPERTY_HAS_NO_WRITE_ACCESSOR_IN_RESULTTYPE );
         }
     }
 
@@ -422,22 +415,15 @@ public class TargetReference {
         }
 
         @Override
-        public void report(boolean isReverse) {
+        public void report() {
 
             Set<String> readAccessors = nextType.getPropertyReadAccessors().keySet();
-            String mostSimilarProperty = Strings.getMostSimilarWord(
-                entryNames[index],
-                readAccessors
-            );
+            String mostSimilarProperty = Strings.getMostSimilarWord( entryNames[index], readAccessors );
 
             List<String> elements = new ArrayList<String>( Arrays.asList( entryNames ).subList( 0, index ) );
             elements.add( mostSimilarProperty );
 
-            printErrorMessage(
-                Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE,
-                isReverse,
-                Strings.join( elements, "." )
-            );
+            printErrorMessage( Message.BEANMAPPING_UNKNOWN_PROPERTY_IN_RESULTTYPE, Strings.join( elements, "." ) );
         }
     }
 
