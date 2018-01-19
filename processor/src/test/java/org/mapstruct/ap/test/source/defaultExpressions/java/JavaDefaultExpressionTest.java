@@ -2,7 +2,15 @@ package org.mapstruct.ap.test.source.defaultExpressions.java;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.ap.test.source.defaultExpressions.java.mapper.DefaultExpressionConstantMapper;
+import org.mapstruct.ap.test.source.defaultExpressions.java.mapper.DefaultExpressionDefaultValueMapper;
+import org.mapstruct.ap.test.source.defaultExpressions.java.mapper.DefaultExpressionExpressionMapper;
+import org.mapstruct.ap.test.source.defaultExpressions.java.mapper.InvalidDefaultExpressionMapper;
+import org.mapstruct.ap.test.source.defaultExpressions.java.mapper.SourceTargetMapper;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
 import java.util.Date;
@@ -41,85 +49,81 @@ public class JavaDefaultExpressionTest {
         assertThat( target.getSourceDate() ).isNotNull();
     }
 
-//    @IssueKey ( "255" )
-//    @Test
-//    @WithClasses ( {
-//        Source.class, Source2.class, Target.class, TimeAndFormat.class, SourceTargetMapperSeveralSources.class
-//    } )
-//    public void testJavaExpressionInsertionWithSeveralSources() throws ParseException {
-//        Source source1 = new Source();
-//        String format = "dd-MM-yyyy,hh:mm:ss";
-//        Date time = getTime( format, "09-01-2014,01:35:03" );
-//
-//        source1.setFormat( format );
-//        source1.setTime( time );
-//
-//        Source2 source2 = new Source2();
-//        source2.setAnotherProp( "test" );
-//
-//        Target target = SourceTargetMapperSeveralSources.INSTANCE.sourceToTarget( source1, source2 );
-//
-//        assertThat( target ).isNotNull();
-//        assertThat( target.getTimeAndFormat().getTime() ).isEqualTo( time );
-//        assertThat( target.getTimeAndFormat().getFormat() ).isEqualTo( format );
-//        assertThat( target.getAnotherProp() ).isEqualTo( "test" );
-//    }
-//
-//    private Date getTime( String format, String date ) throws ParseException {
-//        SimpleDateFormat dateFormat = new SimpleDateFormat( format );
-//        Date result = dateFormat.parse( date );
-//        return result;
-//    }
-//
-//    @Test
-//    @WithClasses ( {Source.class, Target.class, TimeAndFormat.class, SourceTargetMapper.class} )
-//    public void testJavaExpressionInsertionWithExistingTarget() throws ParseException {
-//        Source source = new Source();
-//        String format = "dd-MM-yyyy,hh:mm:ss";
-//        Date time = getTime( format, "09-01-2014,01:35:03" );
-//
-//        source.setFormat( format );
-//        source.setTime( time );
-//        Target target = new Target();
-//
-//        Target target2 = SourceTargetMapper.INSTANCE.sourceToTargetWithMappingTarget( source, target );
-//
-//        assertThat( target ).isNotNull();
-//        assertThat( target.getTimeAndFormat().getTime() ).isEqualTo( time );
-//        assertThat( target.getTimeAndFormat().getFormat() ).isEqualTo( format );
-//        assertThat( target.getAnotherProp() ).isNull();
-//        assertThat( target ).isEqualTo( target2 );
-//    }
-//
-//    @IssueKey ( "278" )
-//    @Test
-//    @WithClasses ( {
-//        SourceBooleanWorkAround.class, TargetBooleanWorkAround.class, BooleanWorkAroundMapper.class
-//    } )
-//    public void testBooleanGetterWorkAround() throws ParseException {
-//        SourceBooleanWorkAround source = new SourceBooleanWorkAround();
-//        source.setVal( Boolean.TRUE );
-//
-//        TargetBooleanWorkAround target = BooleanWorkAroundMapper.INSTANCE.mapST( source );
-//        assertThat( target ).isNotNull();
-//        assertThat( target.isVal() ).isTrue();
-//
-//        SourceBooleanWorkAround source2 = BooleanWorkAroundMapper.INSTANCE.mapTS( target );
-//        assertThat( source2 ).isNotNull();
-//        assertThat( source2.isVal() ).isTrue();
-//    }
-//
-//    @IssueKey ( "305" )
-//    @Test
-//    @WithClasses ( {
-//        SourceList.class, TargetList.class, SourceTargetListMapper.class
-//    } )
-//    public void testGetterOnly() throws ParseException {
-//        SourceList source = new SourceList();
-//        source.setList( Arrays.asList( "test1" ) );
-//
-//        TargetList target = SourceTargetListMapper.INSTANCE.map( source );
-//        assertThat( target ).isNotNull();
-//        assertThat( target.getList() ).isEqualTo( Arrays.asList( "test2" ) );
-//    }
+    @Test
+    @ExpectedCompilationOutcome (
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic (type = DefaultExpressionExpressionMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 25,
+                messageRegExp = "Expression and default expression are both defined in @Mapping,"
+                    + " either define an expression or a default expression."
+            ),
+            @Diagnostic (type = DefaultExpressionExpressionMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 25,
+                messageRegExp = "Unmapped target property: \"sourceId\""
+            )
+        }
+    )
+    @WithClasses ( {Source.class, Target.class, DefaultExpressionExpressionMapper.class} )
+    public void testJavaDefaultExpressionExpression() {
+    }
+
+    @Test
+    @ExpectedCompilationOutcome (
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic (type = DefaultExpressionConstantMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 25,
+                messageRegExp = "Constant and default expression are both defined in @Mapping,"
+                                + " either define a constant or a default expression."
+            ),
+            @Diagnostic (type = DefaultExpressionConstantMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 25,
+                messageRegExp = "Unmapped target property: \"sourceId\""
+            )
+        }
+    )
+    @WithClasses ( {Source.class, Target.class, DefaultExpressionConstantMapper.class} )
+    public void testJavaDefaultExpressionConstant() {
+    }
+
+    @Test
+    @ExpectedCompilationOutcome (
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic (type = DefaultExpressionDefaultValueMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 25,
+                messageRegExp = "Default value and default expression are both defined in @Mapping,"
+                                + " either define a default value or a default expression."
+            ),
+            @Diagnostic (type = DefaultExpressionDefaultValueMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 25,
+                messageRegExp = "Unmapped target property: \"sourceId\""
+            )
+        }
+    )
+    @WithClasses ( {Source.class, Target.class, DefaultExpressionDefaultValueMapper.class} )
+    public void testJavaDefaultExpressionDefaultValue() {
+    }
+
+    @Test
+    @ExpectedCompilationOutcome (
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic (type = InvalidDefaultExpressionMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 22,
+                messageRegExp = "Value for default expression must be given in the form \"java\\(<EXPRESSION>\\)\""
+            )
+        }
+    )
+    @WithClasses ( {Source.class, Target.class, InvalidDefaultExpressionMapper.class} )
+    public void testJavaDefaultExpressionInvalidExpression() {
+    }
 }

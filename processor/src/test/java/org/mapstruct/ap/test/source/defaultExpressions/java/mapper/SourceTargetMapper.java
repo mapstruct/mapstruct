@@ -16,11 +16,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.source.defaultExpressions.java;
+package org.mapstruct.ap.test.source.defaultExpressions.java.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ap.test.source.defaultExpressions.java.Source;
+import org.mapstruct.ap.test.source.defaultExpressions.java.Target;
 import org.mapstruct.factory.Mappers;
 
 import java.util.Date;
