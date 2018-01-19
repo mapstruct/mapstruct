@@ -128,6 +128,15 @@ public @interface Mapping {
     String expression() default "";
 
     /**
+     * A defaultExpression {@link String} based on which the specified target property is to be set
+     * if and only if the specified source property is null.
+     *
+     * @return An expression specifying a defaultValue for the designated target property if the designated source
+     * property is null
+     */
+    String defaultExpression() default "";
+
+    /**
      * Whether the property specified via {@link #target()} should be ignored by the generated mapping method or not.
      * This can be useful when certain attributes should not be propagated from source or target or when properties in
      * the target object are populated using a decorator and thus would be reported as unmapped target property by
