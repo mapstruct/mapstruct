@@ -18,29 +18,25 @@
  */
 package org.mapstruct.ap.test.source.defaultExpressions.java;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
+
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * @author Jeffrey Smyth
  */
-public class Source {
+@Mapper ( imports = {UUID.class, Date.class } )
+public interface DefaultExpressionConstantMapper {
 
-    private String id;
-    private Date date;
+    DefaultExpressionConstantMapper INSTANCE = Mappers.getMapper( DefaultExpressionConstantMapper.class );
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId( String id ) {
-        this.id = id;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate( Date date ) {
-        this.date = date;
-    }
+    @Mappings ( {
+        @Mapping ( target = "sourceId", constant = "3", defaultExpression = "java( UUID.randomUUID().toString() )" ),
+        @Mapping( target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
+    } )
+    Target sourceToTarget( Source s );
 }

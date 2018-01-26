@@ -1,12 +1,25 @@
+/**
+ *  Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  and/or other contributors as indicated by the @authors tag. See the
+ *  copyright.txt file in the distribution for a full listing of all
+ *  contributors.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.mapstruct.ap.test.source.defaultExpressions.java;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.ap.test.source.defaultExpressions.java.mapper.DefaultExpressionConstantMapper;
-import org.mapstruct.ap.test.source.defaultExpressions.java.mapper.DefaultExpressionDefaultValueMapper;
-import org.mapstruct.ap.test.source.defaultExpressions.java.mapper.DefaultExpressionExpressionMapper;
-import org.mapstruct.ap.test.source.defaultExpressions.java.mapper.InvalidDefaultExpressionMapper;
-import org.mapstruct.ap.test.source.defaultExpressions.java.mapper.SourceTargetMapper;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
@@ -55,13 +68,13 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic (type = DefaultExpressionExpressionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 25,
+                line = 42,
                 messageRegExp = "Expression and default expression are both defined in @Mapping,"
                     + " either define an expression or a default expression."
             ),
             @Diagnostic (type = DefaultExpressionExpressionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 25,
+                line = 42,
                 messageRegExp = "Unmapped target property: \"sourceId\""
             )
         }
@@ -76,13 +89,13 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic (type = DefaultExpressionConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 25,
+                line = 41,
                 messageRegExp = "Constant and default expression are both defined in @Mapping,"
                                 + " either define a constant or a default expression."
             ),
             @Diagnostic (type = DefaultExpressionConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 25,
+                line = 41,
                 messageRegExp = "Unmapped target property: \"sourceId\""
             )
         }
@@ -97,13 +110,13 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic (type = DefaultExpressionDefaultValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 25,
+                line = 42,
                 messageRegExp = "Default value and default expression are both defined in @Mapping,"
                                 + " either define a default value or a default expression."
             ),
             @Diagnostic (type = DefaultExpressionDefaultValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 25,
+                line = 42,
                 messageRegExp = "Unmapped target property: \"sourceId\""
             )
         }
@@ -118,7 +131,7 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic (type = InvalidDefaultExpressionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 22,
+                line = 38,
                 messageRegExp = "Value for default expression must be given in the form \"java\\(<EXPRESSION>\\)\""
             )
         }
