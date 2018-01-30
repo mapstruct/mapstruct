@@ -184,7 +184,7 @@ public class NestedSourcePropertiesTest {
                 @Diagnostic( type = ArtistToChartEntryErroneous.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
                         line = 47,
-                        messageRegExp = "java.lang.Integer does not have an accessible empty constructor." )
+                        messageRegExp = "java.lang.Integer does not have an accessible parameterless constructor." )
             }
     )
     @WithClasses({ ArtistToChartEntryErroneous.class })

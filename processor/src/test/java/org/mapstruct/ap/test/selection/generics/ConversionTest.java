@@ -182,7 +182,7 @@ public class ConversionTest {
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 29,
                 messageRegExp = ".*\\.generics\\.WildCardSuperWrapper<.*\\.generics\\.TypeA> does not have an " +
-                    "accessible empty constructor\\.")
+                    "accessible parameterless constructor\\.")
 
         })
     public void shouldFailOnNonMatchingWildCards() {
