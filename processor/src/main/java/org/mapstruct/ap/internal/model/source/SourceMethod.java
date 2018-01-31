@@ -435,7 +435,7 @@ public class SourceMethod implements Method {
                         mappingsOfSourceProperty.add( mapping );
                     }
                 }
-                else {
+                else if ( mapping.getSourceReference() != null ) {
                     List<PropertyEntry> sourceEntries = mapping.getSourceReference().getPropertyEntries();
 
                     // there can only be a mapping if there's only one entry for a source property, so: param.property.

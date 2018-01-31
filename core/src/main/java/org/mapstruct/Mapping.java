@@ -56,7 +56,7 @@ public @interface Mapping {
      *
      * @return The target name of the configured property or enum constant
      */
-    String target();
+    String target() default "";
 
     /**
      * The source to use for this mapping. This can either be:

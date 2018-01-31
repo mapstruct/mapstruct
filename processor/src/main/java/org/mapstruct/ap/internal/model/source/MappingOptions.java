@@ -123,6 +123,9 @@ public class MappingOptions {
         for ( List<Mapping> mappingList : mappings.values() ) {
             for ( Mapping mapping : mappingList ) {
                 TargetReference targetReference = mapping.getTargetReference();
+                if ( targetReference == null ) {
+                    continue;
+                }
                 if ( targetReference.isValid() && targetReference.getPropertyEntries().size() > 1 ) {
                     return true;
                 }
