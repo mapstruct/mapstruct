@@ -188,7 +188,7 @@ public class UpdateMethodsTest {
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 48,
-                messageRegExp = ".*\\.updatemethods\\.DepartmentEntity does not have an accessible empty " +
+                messageRegExp = ".*\\.updatemethods\\.DepartmentEntity does not have an accessible parameterless " +
                     "constructor\\.")
 
         })

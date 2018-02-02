@@ -46,7 +46,7 @@ public class Issue1283Test {
             @Diagnostic(type = ErroneousInverseTargetHasNoSuitableConstructorMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 35L,
-                messageRegExp = ".*\\._1283\\.Source does not have an accessible empty constructor"
+                messageRegExp = ".*\\._1283\\.Source does not have an accessible parameterless constructor"
             )
         }
     )
@@ -61,7 +61,7 @@ public class Issue1283Test {
             @Diagnostic(type = ErroneousTargetHasNoSuitableConstructorMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 line = 31L,
-                messageRegExp = ".*\\._1283\\.Source does not have an accessible empty constructor"
+                messageRegExp = ".*\\._1283\\.Source does not have an accessible parameterless constructor"
             )
         }
     )

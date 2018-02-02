@@ -37,7 +37,6 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -431,11 +430,6 @@ public class Mapping {
         return dependsOn;
     }
 
-    private boolean hasPropertyInReverseMethod(String name, SourceMethod method) {
-        CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
-        return method.getResultType().getPropertyWriteAccessors( cms ).containsKey( name );
-    }
-
     public Mapping reverse(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
 
         // mapping can only be reversed if the source was not a constant nor an expression nor a nested property
@@ -468,6 +462,12 @@ public class Mapping {
             true,
             sourceReference != null ? sourceReference.getParameter() : null
         );
+
+        // check if the reverse mapping has indeed a write accessor, otherwise the mapping cannot be reversed
+        if ( !reverse.targetReference.isValid() ) {
+            return null;
+        }
+
         return reverse;
     }
 
