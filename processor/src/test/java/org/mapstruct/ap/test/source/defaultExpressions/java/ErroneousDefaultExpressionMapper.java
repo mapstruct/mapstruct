@@ -30,12 +30,12 @@ import java.util.UUID;
  * @author Jeffrey Smyth
  */
 @Mapper ( imports = {UUID.class, Date.class } )
-public interface DefaultExpressionConstantMapper {
+public interface ErroneousDefaultExpressionMapper {
 
-    DefaultExpressionConstantMapper INSTANCE = Mappers.getMapper( DefaultExpressionConstantMapper.class );
+    ErroneousDefaultExpressionMapper INSTANCE = Mappers.getMapper( ErroneousDefaultExpressionMapper.class );
 
     @Mappings ( {
-        @Mapping ( target = "sourceId", constant = "3", defaultExpression = "java( UUID.randomUUID().toString() )" ),
+        @Mapping ( target = "sourceId", source = "id", defaultExpression = "UUID.randomUUID().toString()" ),
         @Mapping( target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
     } )
     Target sourceToTarget( Source s );

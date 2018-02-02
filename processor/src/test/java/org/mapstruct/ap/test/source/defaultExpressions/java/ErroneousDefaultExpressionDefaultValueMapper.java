@@ -30,9 +30,9 @@ import java.util.UUID;
  * @author Jeffrey Smyth
  */
 @Mapper ( imports = {UUID.class, Date.class } )
-public interface DefaultExpressionDefaultValueMapper {
+public interface ErroneousDefaultExpressionDefaultValueMapper {
 
-    DefaultExpressionDefaultValueMapper INSTANCE = Mappers.getMapper( DefaultExpressionDefaultValueMapper.class );
+    ErroneousDefaultExpressionDefaultValueMapper INSTANCE = Mappers.getMapper( ErroneousDefaultExpressionDefaultValueMapper.class );
 
     @Mappings ( {
         @Mapping ( target = "sourceId", defaultValue = "3",

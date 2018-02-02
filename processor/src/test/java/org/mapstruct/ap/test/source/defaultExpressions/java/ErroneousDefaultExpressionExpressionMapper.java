@@ -30,9 +30,9 @@ import java.util.UUID;
  * @author Jeffrey Smyth
  */
 @Mapper( imports = {UUID.class, Date.class } )
-public interface DefaultExpressionExpressionMapper {
+public interface ErroneousDefaultExpressionExpressionMapper {
 
-    DefaultExpressionExpressionMapper INSTANCE = Mappers.getMapper( DefaultExpressionExpressionMapper.class );
+    ErroneousDefaultExpressionExpressionMapper INSTANCE = Mappers.getMapper( ErroneousDefaultExpressionExpressionMapper.class );
 
     @Mappings ( {
         @Mapping ( target = "sourceId", expression = "java( UUID.randomUUID().toString() )",
