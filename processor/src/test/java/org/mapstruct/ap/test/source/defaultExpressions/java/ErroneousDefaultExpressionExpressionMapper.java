@@ -32,7 +32,8 @@ import java.util.UUID;
 @Mapper( imports = {UUID.class, Date.class } )
 public interface ErroneousDefaultExpressionExpressionMapper {
 
-    ErroneousDefaultExpressionExpressionMapper INSTANCE = Mappers.getMapper( ErroneousDefaultExpressionExpressionMapper.class );
+    ErroneousDefaultExpressionExpressionMapper INSTANCE =
+        Mappers.getMapper( ErroneousDefaultExpressionExpressionMapper.class );
 
     @Mappings ( {
         @Mapping ( target = "sourceId", expression = "java( UUID.randomUUID().toString() )",
