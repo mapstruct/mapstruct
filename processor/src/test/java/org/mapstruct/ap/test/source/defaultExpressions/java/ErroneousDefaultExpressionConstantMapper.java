@@ -29,15 +29,15 @@ import java.util.UUID;
 /**
  * @author Jeffrey Smyth
  */
-@Mapper ( imports = {UUID.class, Date.class } )
+@Mapper(imports = { UUID.class, Date.class })
 public interface ErroneousDefaultExpressionConstantMapper {
 
     ErroneousDefaultExpressionConstantMapper INSTANCE =
         Mappers.getMapper( ErroneousDefaultExpressionConstantMapper.class );
 
-    @Mappings ( {
-        @Mapping ( target = "sourceId", constant = "3", defaultExpression = "java( UUID.randomUUID().toString() )" ),
-        @Mapping( target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
-    } )
-    Target sourceToTarget( Source s );
+    @Mappings({
+        @Mapping(target = "sourceId", constant = "3", defaultExpression = "java( UUID.randomUUID().toString() )"),
+        @Mapping(target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
+    })
+    Target sourceToTarget(Source s);
 }

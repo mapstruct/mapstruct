@@ -32,7 +32,7 @@ public class Source {
         return id;
     }
 
-    public void setId( String id ) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -40,7 +40,7 @@ public class Source {
         return date;
     }
 
-    public void setDate( Date date ) {
+    public void setDate(Date date) {
         this.date = date;
     }
 }

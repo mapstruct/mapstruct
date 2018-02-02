@@ -32,7 +32,7 @@ public class Target {
         return sourceId;
     }
 
-    public void setSourceId( String sourceId ) {
+    public void setSourceId(String sourceId) {
         this.sourceId = sourceId;
     }
 
@@ -40,7 +40,7 @@ public class Target {
         return sourceDate;
     }
 
-    public void setSourceDate( Date sourceDate ) {
+    public void setSourceDate(Date sourceDate) {
         this.sourceDate = sourceDate;
     }
 }

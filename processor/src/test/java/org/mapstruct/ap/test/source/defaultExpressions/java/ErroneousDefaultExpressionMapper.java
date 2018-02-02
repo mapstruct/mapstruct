@@ -29,14 +29,14 @@ import java.util.UUID;
 /**
  * @author Jeffrey Smyth
  */
-@Mapper ( imports = {UUID.class, Date.class } )
+@Mapper(imports = { UUID.class, Date.class })
 public interface ErroneousDefaultExpressionMapper {
 
     ErroneousDefaultExpressionMapper INSTANCE = Mappers.getMapper( ErroneousDefaultExpressionMapper.class );
 
-    @Mappings ( {
-        @Mapping ( target = "sourceId", source = "id", defaultExpression = "UUID.randomUUID().toString()" ),
-        @Mapping( target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
-    } )
-    Target sourceToTarget( Source s );
+    @Mappings({
+        @Mapping(target = "sourceId", source = "id", defaultExpression = "UUID.randomUUID().toString()"),
+        @Mapping(target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
+    })
+    Target sourceToTarget(Source s);
 }
