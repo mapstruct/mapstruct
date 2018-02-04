@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -38,7 +39,10 @@ import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
  *
  * @author Gunnar Morling
  */
-public class MethodReference extends MappingMethod implements Assignment {
+public class MethodReference extends ModelElement implements Assignment {
+    private final String name;
+    private final List<Parameter> sourceParameters;
+    private final Type returnType;
     private final MapperReference declaringMapper;
     private final Set<Type> importTypes;
     private final List<Type> thrownTypes;
@@ -62,6 +66,7 @@ public class MethodReference extends MappingMethod implements Assignment {
     private final Type definingType;
     private final List<ParameterBinding> parameterBindings;
     private final Parameter providingParameter;
+    private final boolean isStatic;
 
     /**
      * Creates a new reference to the given method.
@@ -74,8 +79,9 @@ public class MethodReference extends MappingMethod implements Assignment {
      */
     protected MethodReference(Method method, MapperReference declaringMapper, Parameter providingParameter,
                               List<ParameterBinding> parameterBindings) {
-        super( method );
         this.declaringMapper = declaringMapper;
+        this.sourceParameters = Parameter.getSourceParameters( method.getParameters() );
+        this.returnType = method.getReturnType();
         this.providingParameter = providingParameter;
         this.parameterBindings = parameterBindings;
         this.contextParam = null;
@@ -93,10 +99,13 @@ public class MethodReference extends MappingMethod implements Assignment {
         this.thrownTypes = method.getThrownTypes();
         this.isUpdateMethod = method.getMappingTargetParameter() != null;
         this.definingType = method.getDefiningType();
+        this.isStatic = method.isStatic();
+        this.name = method.getName();
    }
 
     private MethodReference(BuiltInMethod method, ConversionContext contextParam) {
-        super( method );
+        this.sourceParameters = Parameter.getSourceParameters( method.getParameters() );
+        this.returnType = method.getReturnType();
         this.declaringMapper = null;
         this.providingParameter = null;
         this.contextParam = method.getContextParameter( contextParam );
@@ -105,6 +114,8 @@ public class MethodReference extends MappingMethod implements Assignment {
         this.definingType = null;
         this.isUpdateMethod = method.getMappingTargetParameter() != null;
         this.parameterBindings = ParameterBinding.fromParameters( method.getParameters() );
+        this.isStatic = method.isStatic();
+        this.name = method.getName();
     }
 
     public MapperReference getDeclaringMapper() {
@@ -125,6 +136,14 @@ public class MethodReference extends MappingMethod implements Assignment {
 
     public Assignment getAssignment() {
         return assignment;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Parameter> getSourceParameters() {
+        return sourceParameters;
     }
 
     @Override
@@ -226,8 +245,17 @@ public class MethodReference extends MappingMethod implements Assignment {
     }
 
     @Override
+    public Type getReturnType() {
+        return returnType;
+    }
+
+    @Override
     public boolean isCallingUpdateMethod() {
         return isUpdateMethod;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
     }
 
     public List<ParameterBinding> getParameterBindings() {
