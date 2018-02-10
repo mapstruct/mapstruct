@@ -118,7 +118,7 @@ public class MethodReference extends ModelElement implements Assignment {
         this.name = method.getName();
     }
 
-    private MethodReference(String name, Type definingType) {
+    private MethodReference(String name, Type definingType, boolean isStatic) {
         this.name = name;
         this.definingType = definingType;
         this.sourceParameters = Collections.emptyList();
@@ -130,7 +130,7 @@ public class MethodReference extends ModelElement implements Assignment {
         this.contextParam = null;
         this.parameterBindings = Collections.emptyList();
         this.providingParameter = null;
-        this.isStatic = true;
+        this.isStatic = isStatic;
     }
 
     public MapperReference getDeclaringMapper() {
@@ -335,6 +335,10 @@ public class MethodReference extends ModelElement implements Assignment {
     }
 
     public static MethodReference forStaticBuilder(String builderCreationMethod, Type definingType) {
-        return new MethodReference( builderCreationMethod, definingType );
+        return new MethodReference( builderCreationMethod, definingType, true );
+    }
+
+    public static MethodReference forMethodCall(String methodName) {
+        return new MethodReference( methodName, null, false );
     }
 }

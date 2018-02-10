@@ -22,13 +22,12 @@ import static java.util.Collections.singletonList;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
@@ -46,6 +45,7 @@ import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
 import org.mapstruct.ap.internal.model.VirtualMappingMethod;
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -60,7 +60,6 @@ import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Collections;
-import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -143,7 +142,7 @@ public class MappingResolverImpl implements MappingResolver {
                 SelectionCriteria.forFactoryMethods( selectionParameters ) );
 
         if (matchingFactoryMethods.isEmpty()) {
-            return findBuilderFactoryMethod( mappingMethod, targetType );
+            return findBuilderFactoryMethod( targetType );
         }
 
         if ( matchingFactoryMethods.size() > 1 ) {
@@ -166,37 +165,24 @@ public class MappingResolverImpl implements MappingResolver {
             matchingFactoryMethod.getParameterBindings() );
     }
 
-    private MethodReference findBuilderFactoryMethod(Method mappingMethod, Type targetType) {
-        if ( targetType.getBuilderType() == null ) {
-            return null;
-        }
-        Type builderType = targetType.getBuilderType();
-
-        Type returnType = mappingMethod.getReturnType();
-        List<ExecutableElement> builderCreators = new ArrayList<ExecutableElement>();
-        for ( ExecutableElement executableElement : Executables.getAllEnclosedExecutableElements(
-            elementsUtils,
-            returnType.getTypeElement()
-        ) ) {
-            if ( !executableElement.getModifiers().containsAll( Arrays.asList( Modifier.PUBLIC, Modifier.STATIC ) )
-                || !executableElement.getParameters().isEmpty()
-                || !typeUtils.isSameType( executableElement.getReturnType(), builderType.getTypeMirror() )) {
-                continue;
-            }
-            builderCreators.add( executableElement );
-        }
-
-        if ( builderCreators.size() == 1 ) {
-            return MethodReference.forStaticBuilder( first( builderCreators ).getSimpleName().toString(), targetType );
-        }
-        else if ( builderCreators.size() > 1 ) {
-            //error
+    private MethodReference findBuilderFactoryMethod(Type targetType) {
+        BuilderType builder = targetType.getBuilderType();
+        if ( builder == null ) {
             return null;
         }
 
-        // Find the default constructor, if it exists, and construct the FactoryMethod
-        // We could also live with assuming it exists
-        return null;
+        ExecutableElement builderCreationMethod = builder.getBuilderCreationMethod();
+        if ( builderCreationMethod.getKind() == ElementKind.CONSTRUCTOR ) {
+            // If the builder creation method is a constructor it would be handled properly down the line
+            return null;
+        }
+
+        if ( !builder.getBuildingType().isAssignableTo( targetType ) ) {
+            //TODO print error message
+            return null;
+        }
+
+        return MethodReference.forStaticBuilder( builderCreationMethod.getSimpleName().toString(), builder.getOwner() );
     }
 
     private MapperReference findMapperReference(Method method) {
