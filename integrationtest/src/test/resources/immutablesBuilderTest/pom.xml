@@ -30,13 +30,10 @@
     </parent>
 
     <artifactId>immutablesIntegrationTest</artifactId>
-    <packaging>jar</packaging>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.immutables</groupId>
-            <artifactId>value</artifactId>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>extras</module>
+        <module>mapper</module>
+    </modules>
 </project>
