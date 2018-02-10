@@ -78,9 +78,7 @@
     </#list>
     <#if returnType.name != "void">
 
-    <#if resultType.builderType??>
-        return ${resultName}.build();
-    <#elseif finalizeMethod??>
+    <#if finalizeMethod??>
         return ${resultName}.<@includeModel object=finalizeMethod />;
     <#else>
         return ${resultName};

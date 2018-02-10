@@ -29,5 +29,5 @@ import javax.lang.model.util.Types;
  */
 public interface BuilderProvider {
 
-    TypeMirror findBuilder(TypeMirror type, Elements elements, Types types);
+    BuilderInfo findBuilderInfo(TypeMirror type, Elements elements, Types types);
 }

@@ -40,8 +40,8 @@ import javax.tools.Diagnostic;
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
+import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
@@ -244,33 +244,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ( (ForgedMethod) method ).addThrownTypes( factoryMethod.getThrownTypes() );
             }
 
-            MethodReference finalizeMethod = null;
-            if (
-                !method.getReturnType().isVoid() &&
-                    ( resultType != null
-                        && !ctx.getTypeUtils().isAssignable(
-                        resultType.getMappingType().getTypeMirror(),
-                        resultType.getTypeMirror()
-                    ) ||
-                        !ctx.getTypeUtils().isSameType(
-                            method.getReturnType().getMappingType().getTypeMirror(),
-                            method.getReturnType().getTypeMirror()
-                        )
-                    )
-                ) {
-                finalizeMethod = MethodReference.forForgedMethod(
-                    new ForgedMethod(
-                        "build",
-                        method.getReturnType(),
-                        method.getReturnType(),
-                        null,
-                        null,
-                        Collections.<Parameter>emptyList(),
-                        null
-                    ),
-                    Collections.<ParameterBinding>emptyList()
-                );
-            }
+            MethodReference finalizeMethod = getFinalizeMethod(
+                resultType == null ? method.getReturnType() : resultType );
 
             return new BeanMappingMethod(
                 method,
@@ -283,6 +258,20 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 afterMappingMethods,
                 finalizeMethod
             );
+        }
+
+        private MethodReference getFinalizeMethod(Type resultType) {
+            if ( method.getReturnType().isVoid() ||
+                resultType.getMappingType().isAssignableTo( resultType ) ) {
+                return null;
+            }
+            BuilderType builderType = resultType.getBuilderType();
+            if ( builderType == null ) {
+                // If the mapping type is assignable to the result type this should never happen
+                return null;
+            }
+
+            return MethodReference.forMethodCall( builderType.getBuildMethod() );
         }
 
         /**
