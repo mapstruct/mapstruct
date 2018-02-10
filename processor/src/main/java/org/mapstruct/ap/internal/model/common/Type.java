@@ -49,6 +49,7 @@ import org.mapstruct.ap.internal.util.Filters;
 import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import org.mapstruct.ap.spi.BuilderInfo;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -72,7 +73,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private final ImplementationType implementationType;
     private final Type componentType;
-    private final Type builderType;
+    private final BuilderType builderType;
 
     private final String packageName;
     private final String name;
@@ -105,7 +106,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     public Type(Types typeUtils, Elements elementUtils, TypeFactory typeFactory,
                 TypeMirror typeMirror, TypeElement typeElement,
                 List<Type> typeParameters, ImplementationType implementationType, Type componentType,
-                Type builderType,
+                BuilderInfo builderInfo,
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported) {
@@ -119,7 +120,6 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.typeParameters = typeParameters;
         this.componentType = componentType;
         this.implementationType = implementationType;
-        this.builderType = builderType;
 
         this.packageName = packageName;
         this.name = name;
@@ -149,6 +149,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         else {
             enumConstants = Collections.emptyList();
         }
+
+        this.builderType = BuilderType.create( builderInfo, this, this.typeFactory, this.typeUtils );
     }
     //CHECKSTYLE:ON
 
@@ -176,12 +178,12 @@ public class Type extends ModelElement implements Comparable<Type> {
         return componentType;
     }
 
-    public Type getBuilderType() {
+    public BuilderType getBuilderType() {
         return builderType;
     }
 
     public Type getMappingType() {
-        return builderType != null ? builderType : this;
+        return builderType != null ? builderType.getBuilder() : this;
     }
 
     public boolean isPrimitive() {
@@ -366,7 +368,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             typeParameters,
             implementationType,
             componentType,
-            builderType,
+            builderType == null ? null : builderType.asBuilderInfo(),
             packageName,
             name,
             qualifiedName,

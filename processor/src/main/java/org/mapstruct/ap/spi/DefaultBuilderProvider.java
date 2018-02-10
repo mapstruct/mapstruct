@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
@@ -42,7 +42,19 @@ public class DefaultBuilderProvider implements BuilderProvider {
     private static final Pattern JAVA_JAVAX_PACKAGE = Pattern.compile( "^javax?\\..*" );
 
     @Override
-    public TypeMirror findBuilder(TypeMirror type, Elements elements, Types types) {
+    public BuilderInfo findBuilderInfo(TypeMirror type, Elements elements, Types types) {
+        TypeElement typeElement = getTypeElement( type );
+        if ( typeElement == null ) {
+            return null;
+        }
+
+        return findBuilderInfo( typeElement, elements, types );
+    }
+
+    protected TypeElement getTypeElement(TypeMirror type) {
+        if ( type.getKind() == TypeKind.ERROR ) {
+            throw new TypeHierarchyErroneousException( type );
+        }
         DeclaredType declaredType = type.accept(
             new SimpleTypeVisitor6<DeclaredType, Void>() {
                 @Override
@@ -57,7 +69,7 @@ public class DefaultBuilderProvider implements BuilderProvider {
             return null;
         }
 
-        TypeElement typeElement = declaredType.asElement().accept(
+        return declaredType.asElement().accept(
             new SimpleElementVisitor6<TypeElement, Void>() {
                 @Override
                 public TypeElement visitType(TypeElement e, Void p) {
@@ -66,30 +78,63 @@ public class DefaultBuilderProvider implements BuilderProvider {
             },
             null
         );
-
-        return findBuilder( typeElement, elements, types );
     }
 
-    protected TypeMirror findBuilder(TypeElement typeElement, Elements elements, Types types) {
-        Name name = typeElement.getQualifiedName();
-        if ( name.length() == 0 || JAVA_JAVAX_PACKAGE.matcher( name ).matches() ) {
+    protected BuilderInfo findBuilderInfo(TypeElement typeElement, Elements elements, Types types) {
+        if ( shouldIgnore( typeElement ) ) {
             return null;
         }
-        List<ExecutableElement> methods = ElementFilter.methodsIn( typeElement.getEnclosedElements() );
 
+        List<ExecutableElement> methods = ElementFilter.methodsIn( typeElement.getEnclosedElements() );
         for ( ExecutableElement method : methods ) {
-            if ( isBuilderMethod( method ) ) {
-                return method.getReturnType();
+            if ( isPossibleBuilderCreationMethod( method, typeElement, types ) ) {
+                TypeElement builderElement = getTypeElement( method.getReturnType() );
+                ExecutableElement buildMethod = findBuildMethod( builderElement, typeElement, types );
+                if ( buildMethod != null ) {
+                    return new BuilderInfo.Builder()
+                        .builderCreationMethod( method )
+                        .buildMethod( buildMethod )
+                        .build();
+                }
+            }
+        }
+        return findBuilderInfo( typeElement.getSuperclass(), elements, types );
+    }
+
+    protected boolean isPossibleBuilderCreationMethod(ExecutableElement method, TypeElement typeElement, Types types) {
+        return method.getParameters().isEmpty()
+            && method.getModifiers().contains( Modifier.PUBLIC )
+            && method.getModifiers().contains( Modifier.STATIC )
+            && !types.isSameType( method.getReturnType(), typeElement.asType() );
+    }
+
+    protected ExecutableElement findBuildMethod(TypeElement builderElement, TypeElement typeElement, Types types) {
+        if ( shouldIgnore( builderElement ) ) {
+            return null;
+        }
+
+        List<ExecutableElement> builderMethods = ElementFilter.methodsIn( builderElement.getEnclosedElements() );
+        for ( ExecutableElement buildMethod : builderMethods ) {
+            if ( isBuildMethod( buildMethod, typeElement, types ) ) {
+                return buildMethod;
             }
         }
 
-        return findBuilder( typeElement.getSuperclass(), elements, types );
+        return findBuildMethod(
+            getTypeElement( builderElement.getSuperclass() ),
+            typeElement,
+            types
+        );
     }
 
-    protected boolean isBuilderMethod(ExecutableElement method) {
-        return method.getParameters().isEmpty()
-            && method.getSimpleName().toString().equals( "builder" )
-            && method.getModifiers().contains( Modifier.PUBLIC )
-            && method.getModifiers().contains( Modifier.STATIC );
+    protected boolean isBuildMethod(ExecutableElement buildMethod, TypeElement typeElement,
+        Types types) {
+        return buildMethod.getParameters().isEmpty() &&
+            buildMethod.getModifiers().contains( Modifier.PUBLIC )
+            && types.isAssignable( buildMethod.getReturnType(), typeElement.asType() );
+    }
+
+    protected boolean shouldIgnore(TypeElement typeElement) {
+        return typeElement == null || JAVA_JAVAX_PACKAGE.matcher( typeElement.getQualifiedName() ).matches();
     }
 }
