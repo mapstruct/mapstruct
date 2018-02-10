@@ -195,8 +195,7 @@ public class TargetReference {
                 boolean isLast = i == entryNames.length - 1;
                 boolean isNotLast = i < entryNames.length - 1;
                 if ( isWriteAccessorNotValidWhenNotLast( targetWriteAccessor, isNotLast )
-                    || isWriteAccessorNotValidWhenLast( targetWriteAccessor, targetReadAccessor, mapping, isLast )
-                    || ( isNotLast && targetReadAccessor == null ) ) {
+                    || isWriteAccessorNotValidWhenLast( targetWriteAccessor, targetReadAccessor, mapping, isLast ) ) {
                     // there should always be a write accessor (except for the last when the mapping is ignored and
                     // there is a read accessor) and there should be read accessor mandatory for all but the last
                     setErrorMessage( targetWriteAccessor, targetReadAccessor, entryNames, i, nextType );
