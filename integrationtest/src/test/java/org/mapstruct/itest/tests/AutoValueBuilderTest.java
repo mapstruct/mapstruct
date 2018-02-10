@@ -26,6 +26,7 @@ import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner;
  * @author Filip Hrisafov
  */
 @RunWith( ProcessorSuiteRunner.class )
-@ProcessorSuite( baseDir = "autoValueBuilderTest" )
+@ProcessorSuite(baseDir = "autoValueBuilderTest",
+    processorTypes = ProcessorSuite.ProcessorType.ALL_WITHOUT_PROCESSOR_PLUGIN)
 public class AutoValueBuilderTest {
 }

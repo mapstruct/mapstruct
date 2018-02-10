@@ -97,6 +97,12 @@ public @interface ProcessorSuite {
         PROCESSOR_PLUGIN_JAVA_8( null, null, "1.8" ),
 
         /**
+         * Use all processing variants, but without the maven-procesor-plugin
+         */
+        ALL_WITHOUT_PROCESSOR_PLUGIN(ORACLE_JAVA_6, ORACLE_JAVA_7, ORACLE_JAVA_8, ORACLE_JAVA_9, ECLIPSE_JDT_JAVA_6,
+            ECLIPSE_JDT_JAVA_7, ECLIPSE_JDT_JAVA_8),
+
+        /**
          * Use all available processing variants
          */
         ALL( ORACLE_JAVA_6, ORACLE_JAVA_7, ORACLE_JAVA_8, ORACLE_JAVA_9, ECLIPSE_JDT_JAVA_6, ECLIPSE_JDT_JAVA_7,

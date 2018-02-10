@@ -26,6 +26,7 @@ import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner;
  * @author Eric Martineau
  */
 @RunWith( ProcessorSuiteRunner.class )
-@ProcessorSuite( baseDir = "lombokBuilderTest" )
+@ProcessorSuite( baseDir = "lombokBuilderTest",
+    processorTypes = ProcessorSuite.ProcessorType.ALL_WITHOUT_PROCESSOR_PLUGIN)
 public class LombokBuilderTest {
 }
