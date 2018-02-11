@@ -50,7 +50,7 @@ public class ExpandedTarget {
         private ImmutableTargetContainer first;
         private ImmutableTargetContainer second;
 
-        public Builder count(int age) {
+        public Builder count(int count) {
             this.count = count;
             return this;
         }
