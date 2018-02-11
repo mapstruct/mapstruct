@@ -191,8 +191,9 @@ public class TargetReference {
             // last entry
             for ( int i = 0; i < entryNames.length; i++ ) {
 
-                Accessor targetReadAccessor = nextType.getPropertyReadAccessors().get( entryNames[i] );
-                Accessor targetWriteAccessor = nextType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
+                Type mappingType = nextType.getMappingType();
+                Accessor targetReadAccessor = mappingType.getPropertyReadAccessors().get( entryNames[i] );
+                Accessor targetWriteAccessor = mappingType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
                 boolean isLast = i == entryNames.length - 1;
                 boolean isNotLast = i < entryNames.length - 1;
                 if ( isWriteAccessorNotValidWhenNotLast( targetWriteAccessor, isNotLast )
@@ -236,13 +237,13 @@ public class TargetReference {
             if ( Executables.isGetterMethod( toUse ) ||
                 Executables.isFieldAccessor( toUse ) ) {
                 nextType = typeFactory.getReturnType(
-                    (DeclaredType) initial.getTypeMirror(),
+                    (DeclaredType) initial.getMappingType().getTypeMirror(),
                     toUse
                 );
             }
             else {
                 nextType = typeFactory.getSingleParameter(
-                    (DeclaredType) initial.getTypeMirror(),
+                    (DeclaredType) initial.getMappingType().getTypeMirror(),
                     toUse
                 ).getType();
             }
