@@ -25,7 +25,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Type;
@@ -53,11 +52,9 @@ import org.mapstruct.ap.internal.prism.XmlElementRefPrism;
 public class XmlElementDeclSelector implements MethodSelector {
 
     private final Types typeUtils;
-    private final Elements elementUtils;
 
-    public XmlElementDeclSelector( Types typeUtils, Elements elementUtils) {
+    public XmlElementDeclSelector(Types typeUtils) {
         this.typeUtils = typeUtils;
-        this.elementUtils = elementUtils;
     }
 
     @Override
@@ -163,7 +160,7 @@ public class XmlElementDeclSelector implements MethodSelector {
                 }
             }
             currentMirror = currentElement.getSuperclass();
-            currentElement = elementUtils.getTypeElement( currentMirror.toString() );
+            currentElement = (TypeElement) typeUtils.asElement( currentMirror );
         }
         return defaultInfo;
     }
