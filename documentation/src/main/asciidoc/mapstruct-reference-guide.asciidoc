@@ -817,7 +817,8 @@ public interface CarMapper {
 
 * When converting from a `String`, omitting `Mapping#dateFormat`, it leads to usage of the default pattern and date format symbols for the default locale. An exception to this rule is `XmlGregorianCalendar` which results in parsing the `String` according to http://www.w3.org/TR/xmlschema-2/#dateTime[XML Schema 1.0 Part 2, Section 3.2.7-14.1, Lexical Representation].
 
-* Between `java.util.Currency` and `String`
+* Between `java.util.Currency` and `String`.
+** When converting from a `String`, the value needs to be a valid https://en.wikipedia.org/wiki/ISO_4217[ISO-4217] alphabetic code otherwise an `IllegalArgumentException` is thrown
 
 [[mapping-object-references]]
 === Mapping object references
