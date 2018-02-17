@@ -192,6 +192,7 @@ public class Conversions {
         register( Date.class, java.sql.Date.class, new DateToSqlDateConversion() );
         register( Date.class, Timestamp.class, new DateToSqlTimestampConversion() );
 
+        // java.util.Currency <~> String
         register( Currency.class, String.class, new CurrencyToStringConversion() );
     }
 
