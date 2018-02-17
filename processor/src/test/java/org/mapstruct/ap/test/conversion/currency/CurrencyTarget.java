@@ -18,45 +18,56 @@
  */
 package org.mapstruct.ap.test.conversion.currency;
 
+import java.util.Set;
+
 /**
  * @author Darren Rambaud (2/16/18)
  */
 public class CurrencyTarget {
 
-    private String a;
-    private String b;
-    private String c;
-    private String d;
+    private String currencyA;
+    private String currencyB;
+    private String currencyC;
+    private String currencyD;
+    private Set<String> uniqueCurrencies;
 
-    public String getA() {
-        return this.a;
+    public String getCurrencyA() {
+        return this.currencyA;
     }
 
-    public void setA(final String a) {
-        this.a = a;
+    public void setCurrencyA(final String currencyA) {
+        this.currencyA = currencyA;
     }
 
-    public String getB() {
-        return this.b;
+    public String getCurrencyB() {
+        return this.currencyB;
     }
 
-    public void setB(final String b) {
-        this.b = b;
+    public void setCurrencyB(final String currencyB) {
+        this.currencyB = currencyB;
     }
 
-    public String getC() {
-        return this.c;
+    public String getCurrencyC() {
+        return this.currencyC;
     }
 
-    public void setC(final String c) {
-        this.c = c;
+    public void setCurrencyC(final String currencyC) {
+        this.currencyC = currencyC;
     }
 
-    public String getD() {
-        return this.d;
+    public String getCurrencyD() {
+        return this.currencyD;
     }
 
-    public void setD(final String d) {
-        this.d = d;
+    public void setCurrencyD(final String currencyD) {
+        this.currencyD = currencyD;
+    }
+
+    public Set<String> getUniqueCurrencies() {
+        return this.uniqueCurrencies;
+    }
+
+    public void setUniqueCurrencies(final Set<String> uniqueCurrencies) {
+        this.uniqueCurrencies = uniqueCurrencies;
     }
 }
