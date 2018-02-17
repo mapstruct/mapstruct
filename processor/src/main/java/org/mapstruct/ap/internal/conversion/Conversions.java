@@ -24,10 +24,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.lang.model.util.Elements;
 
@@ -194,6 +191,8 @@ public class Conversions {
         register( Date.class, Time.class, new DateToSqlTimeConversion() );
         register( Date.class, java.sql.Date.class, new DateToSqlDateConversion() );
         register( Date.class, Timestamp.class, new DateToSqlTimestampConversion() );
+
+        register( Currency.class, String.class, new CurrencyToStringConversion() );
     }
 
     private void registerJodaConversions() {
