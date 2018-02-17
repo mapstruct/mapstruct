@@ -1,20 +1,20 @@
 /**
- *  Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
- *  and/or other contributors as indicated by the @authors tag. See the
- *  copyright.txt file in the distribution for a full listing of all
- *  contributors.
+ * Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
+ * and/or other contributors as indicated by the @authors tag. See the
+ * copyright.txt file in the distribution for a full listing of all
+ * contributors.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.mapstruct.ap.test.conversion.currency;
 
@@ -72,10 +72,14 @@ public class CurrencyConversionTest {
         final CurrencySource source = CurrencyMapper.INSTANCE.currencyTargetToCurrencySource( target );
 
         assertThat( source ).isNotNull();
-        assertThat( source.getCurrencyA().getCurrencyCode() ).isEqualTo( Currency.getInstance( "USD" ).getCurrencyCode() );
-        assertThat( source.getCurrencyB().getCurrencyCode() ).isEqualTo( Currency.getInstance( "GBP" ).getCurrencyCode() );
-        assertThat( source.getCurrencyC().getCurrencyCode() ).isEqualTo( Currency.getInstance( "EUR" ).getCurrencyCode() );
-        assertThat( source.getCurrencyD().getCurrencyCode() ).isEqualTo( Currency.getInstance( "PHP" ).getCurrencyCode() );
+        assertThat( source.getCurrencyA().getCurrencyCode() ).isEqualTo( Currency.getInstance( "USD" )
+            .getCurrencyCode() );
+        assertThat( source.getCurrencyB().getCurrencyCode() ).isEqualTo( Currency.getInstance( "GBP" )
+            .getCurrencyCode() );
+        assertThat( source.getCurrencyC().getCurrencyCode() ).isEqualTo( Currency.getInstance( "EUR" )
+            .getCurrencyCode() );
+        assertThat( source.getCurrencyD().getCurrencyCode() ).isEqualTo( Currency.getInstance( "PHP" )
+            .getCurrencyCode() );
         assertThat( source.getUniqueCurrencies().isEmpty() ).isFalse();
     }
 }
