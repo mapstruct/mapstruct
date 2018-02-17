@@ -25,6 +25,6 @@ public class CurrencyToStringConversion extends SimpleConversion {
 
     @Override
     protected Set<Type> getFromConversionImportTypes(final ConversionContext conversionContext) {
-        return Collections.asSet(conversionContext.getTypeFactory().getType( Currency.class ) );
+        return Collections.asSet( conversionContext.getTypeFactory().getType( Currency.class ) );
     }
 }
