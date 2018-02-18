@@ -26,7 +26,7 @@ import java.util.Currency;
 import java.util.Set;
 
 /**
- * @author Darren Rambaud (2/16/18)
+ * @author Darren Rambaud
  */
 public class CurrencyToStringConversion extends SimpleConversion {
     @Override

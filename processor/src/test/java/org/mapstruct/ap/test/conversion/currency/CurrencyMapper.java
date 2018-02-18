@@ -22,7 +22,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 /**
- * @author Darren Rambaud (2/16/18)
+ * @author Darren Rambaud
  */
 @Mapper
 public interface CurrencyMapper {

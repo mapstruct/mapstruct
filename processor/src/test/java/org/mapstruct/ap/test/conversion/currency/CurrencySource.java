@@ -22,14 +22,11 @@ import java.util.Currency;
 import java.util.Set;
 
 /**
- * @author Darren Rambaud (2/16/18)
+ * @author Darren Rambaud
  */
 public class CurrencySource {
 
     private Currency currencyA;
-    private Currency currencyB;
-    private Currency currencyC;
-    private Currency currencyD;
     private Set<Currency> uniqueCurrencies;
 
     public Currency getCurrencyA() {
@@ -38,30 +35,6 @@ public class CurrencySource {
 
     public void setCurrencyA(final Currency currencyA) {
         this.currencyA = currencyA;
-    }
-
-    public Currency getCurrencyB() {
-        return this.currencyB;
-    }
-
-    public void setCurrencyB(final Currency currencyB) {
-        this.currencyB = currencyB;
-    }
-
-    public Currency getCurrencyC() {
-        return this.currencyC;
-    }
-
-    public void setCurrencyC(final Currency currencyC) {
-        this.currencyC = currencyC;
-    }
-
-    public Currency getCurrencyD() {
-        return this.currencyD;
-    }
-
-    public void setCurrencyD(final Currency currencyD) {
-        this.currencyD = currencyD;
     }
 
     public Set<Currency> getUniqueCurrencies() {

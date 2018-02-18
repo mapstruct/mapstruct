@@ -18,6 +18,10 @@
  */
 package org.mapstruct.ap.test.conversion.currency;
 
+import java.util.Currency;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.internal.util.Collections;
@@ -25,61 +29,45 @@ import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
-import java.util.Currency;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * @author Darren Rambaud (2/16/18)
+ * @author Darren Rambaud
  */
+@WithClasses({ CurrencyMapper.class, CurrencySource.class, CurrencyTarget.class })
 @IssueKey("1355")
 @RunWith(AnnotationProcessorTestRunner.class)
 public class CurrencyConversionTest {
 
     @Test
-    @IssueKey("1355")
-    @WithClasses({ CurrencyMapper.class, CurrencySource.class, CurrencyTarget.class })
     public void shouldApplyCurrencyConversions() {
         final CurrencySource source = new CurrencySource();
         source.setCurrencyA( Currency.getInstance( "USD" ) );
-        source.setCurrencyB( Currency.getInstance( "GBP" ) );
-        source.setCurrencyC( Currency.getInstance( "EUR" ) );
-        source.setCurrencyD( Currency.getInstance( "PHP" ) );
-        source.setUniqueCurrencies( Currency.getAvailableCurrencies() );
+        Set<Currency> currencies = new HashSet<Currency>();
+        currencies.add( Currency.getInstance( "EUR" ) );
+        currencies.add( Currency.getInstance( "CHF" ) );
+        source.setUniqueCurrencies( currencies );
 
-        final CurrencyTarget target = CurrencyMapper.INSTANCE.currencySourceToCurrencyTarget( source );
+        CurrencyTarget target = CurrencyMapper.INSTANCE.currencySourceToCurrencyTarget( source );
 
         assertThat( target ).isNotNull();
         assertThat( target.getCurrencyA() ).isEqualTo( "USD" );
-        assertThat( target.getCurrencyB() ).isEqualTo( "GBP" );
-        assertThat( target.getCurrencyC() ).isEqualTo( "EUR" );
-        assertThat( target.getCurrencyD() ).isEqualTo( "PHP" );
-        assertThat( target.getUniqueCurrencies().isEmpty() ).isFalse();
-        assertThat( target.getUniqueCurrencies().size() ).isEqualTo( Currency.getAvailableCurrencies().size() );
+        assertThat( target.getUniqueCurrencies() )
+            .isNotEmpty()
+            .containsExactlyInAnyOrder( "EUR", "CHF" );
     }
 
     @Test
-    @IssueKey("1355")
-    @WithClasses({ CurrencyMapper.class, CurrencySource.class, CurrencyTarget.class })
     public void shouldApplyReverseConversions() {
         final CurrencyTarget target = new CurrencyTarget();
         target.setCurrencyA( "USD" );
-        target.setCurrencyB( "GBP" );
-        target.setCurrencyC( "EUR" );
-        target.setCurrencyD( "PHP" );
         target.setUniqueCurrencies( Collections.asSet( "JPY" ) );
 
-        final CurrencySource source = CurrencyMapper.INSTANCE.currencyTargetToCurrencySource( target );
+        CurrencySource source = CurrencyMapper.INSTANCE.currencyTargetToCurrencySource( target );
 
         assertThat( source ).isNotNull();
         assertThat( source.getCurrencyA().getCurrencyCode() ).isEqualTo( Currency.getInstance( "USD" )
             .getCurrencyCode() );
-        assertThat( source.getCurrencyB().getCurrencyCode() ).isEqualTo( Currency.getInstance( "GBP" )
-            .getCurrencyCode() );
-        assertThat( source.getCurrencyC().getCurrencyCode() ).isEqualTo( Currency.getInstance( "EUR" )
-            .getCurrencyCode() );
-        assertThat( source.getCurrencyD().getCurrencyCode() ).isEqualTo( Currency.getInstance( "PHP" )
-            .getCurrencyCode() );
-        assertThat( source.getUniqueCurrencies().isEmpty() ).isFalse();
+        assertThat( source.getUniqueCurrencies() ).containsExactlyInAnyOrder( Currency.getInstance( "JPY" ) );
     }
 }

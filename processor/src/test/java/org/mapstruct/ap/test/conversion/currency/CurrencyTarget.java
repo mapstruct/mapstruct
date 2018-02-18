@@ -21,14 +21,11 @@ package org.mapstruct.ap.test.conversion.currency;
 import java.util.Set;
 
 /**
- * @author Darren Rambaud (2/16/18)
+ * @author Darren Rambaud
  */
 public class CurrencyTarget {
 
     private String currencyA;
-    private String currencyB;
-    private String currencyC;
-    private String currencyD;
     private Set<String> uniqueCurrencies;
 
     public String getCurrencyA() {
@@ -37,30 +34,6 @@ public class CurrencyTarget {
 
     public void setCurrencyA(final String currencyA) {
         this.currencyA = currencyA;
-    }
-
-    public String getCurrencyB() {
-        return this.currencyB;
-    }
-
-    public void setCurrencyB(final String currencyB) {
-        this.currencyB = currencyB;
-    }
-
-    public String getCurrencyC() {
-        return this.currencyC;
-    }
-
-    public void setCurrencyC(final String currencyC) {
-        this.currencyC = currencyC;
-    }
-
-    public String getCurrencyD() {
-        return this.currencyD;
-    }
-
-    public void setCurrencyD(final String currencyD) {
-        this.currencyD = currencyD;
     }
 
     public Set<String> getUniqueCurrencies() {
