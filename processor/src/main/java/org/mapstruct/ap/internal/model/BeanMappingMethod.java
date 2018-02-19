@@ -455,6 +455,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         .existingVariableNames( existingVariableNames )
                         .dependsOn( mapping.getDependsOn() )
                         .defaultValue( mapping.getDefaultValue() )
+                        .defaultJavaExpression( mapping.getDefaultJavaExpression() )
                         .build();
                     handledTargets.add( propertyName );
                     unprocessedSourceParameters.remove( sourceRef.getParameter() );

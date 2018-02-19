@@ -1824,7 +1824,7 @@ The String `"Constant Value"` is set as is to the target property `stringConstan
 
 By means of Expressions it will be possible to include constructs from a number of languages.
 
-Currently only Java is supported as language. This feature is e.g. useful to invoke constructors. The entire source object is available for usage in the expression. Care should be taken to insert only valid Java code: MapStruct will not validate the expression at generation-time, but errors will show up in the generated classes during compilation.
+Currently only Java is supported as a language. This feature is e.g. useful to invoke constructors. The entire source object is available for usage in the expression. Care should be taken to insert only valid Java code: MapStruct will not validate the expression at generation-time, but errors will show up in the generated classes during compilation.
 
 The example below demonstrates how two source properties can be mapped to one target:
 
@@ -1865,6 +1865,35 @@ public interface SourceTargetMapper {
 }
 ----
 ====
+
+[[default-expressions]]
+=== Default Expressions
+
+Default expressions are a combination of default values and expressions. They will only be used when the source attribute is `null`.
+
+The same warnings and restrictions apply to default expressions that apply to expressions. Only Java is supported, and MapStruct will not validate the expression at generation-time.
+
+The example below demonstrates how two source properties can be mapped to one target:
+
+.Mapping method using a default expression
+===
+[source, java, linenums]
+[subs="verbatim,attributes"]
+---
+imports java.util.UUID;
+
+@Mapper( imports = UUID.class )
+public interface SourceTargetMapper {
+
+    SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
+
+    @Mapping(target="id", source="sourceId", defaultExpression = "java( UUID.randomUUID().toString() )")
+    Target sourceToTarget(Source s);
+}
+---
+===
+
+The example demonstrates how to use defaultExpression to set an `ID` field if the source field is null, this could be used to take the existing `sourceId` from the source object if it is set, or create a new `Id` if it isn't. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `UUID` class (unless it’s used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining imports on the @Mapper annotation ((see <<expressions>>).
 
 [[determining-result-type]]
 === Determining the result type

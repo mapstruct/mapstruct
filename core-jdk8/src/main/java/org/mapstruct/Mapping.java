@@ -98,7 +98,8 @@ public @interface Mapping {
      * property is not of type {@code String}, the value will be converted by applying a matching conversion method or
      * built-in conversion.
      * <p>
-     * This attribute can not be used together with {@link #source()}, {@link #defaultValue()} or {@link #expression()}.
+     * This attribute can not be used together with {@link #source()}, {@link #defaultValue()},
+     * {@link #defaultExpression()} or {@link #expression()}.
      *
      * @return A constant {@code String} constant specifying the value for the designated target property
      */
@@ -123,11 +124,40 @@ public @interface Mapping {
      * Any types referenced in expressions must be given via their fully-qualified name. Alternatively, types can be
      * imported via {@link Mapper#imports()}.
      * <p>
-     * This attribute can not be used together with {@link #source()}, {@link #defaultValue()} or {@link #constant()}.
+     * This attribute can not be used together with {@link #source()}, {@link #defaultValue()},
+     * {@link #defaultExpression()} or {@link #constant()}.
      *
      * @return An expression specifying the value for the designated target property
      */
     String expression() default "";
+
+    /**
+     * A defaultExpression {@link String} based on which the specified target property is to be set
+     * if and only if the specified source property is null.
+     * <p>
+     * Currently, Java is the only supported "expression language" and expressions must be given in form of Java
+     * expressions using the following format: {@code java(<EXPRESSION>)}. For instance the mapping:
+     * <pre><code>
+     * &#64;Mapping(
+     *     target = "someProp",
+     *     defaultExpression = "java(new TimeAndFormat( s.getTime(), s.getFormat() ))"
+     * )
+     * </code></pre>
+     * <p>
+     * will cause the following target property assignment to be generated:
+     * <p>
+     * {@code targetBean.setSomeProp( new TimeAndFormat( s.getTime(), s.getFormat() ) )}.
+     * <p>
+     * Any types referenced in expressions must be given via their fully-qualified name. Alternatively, types can be
+     * imported via {@link Mapper#imports()}.
+     * <p>
+     * This attribute can not be used together with {@link #expression()}, {@link #defaultValue()}
+     * or {@link #constant()}.
+     *
+     * @return An expression specifying a defaultValue for the designated target property if the designated source
+     * property is null
+     */
+    String defaultExpression() default "";
 
     /**
      * Whether the property specified via {@link #target()} should be ignored by the generated mapping method or not.
@@ -186,7 +216,8 @@ public @interface Mapping {
      * target property is not of type {@code String}, the value will be converted by applying a matching conversion
      * method or built-in conversion.
      * <p>
-     * This attribute can not be used together with {@link #constant()} or {@link #expression()}.
+     * This attribute can not be used together with {@link #constant()}, {@link #expression()}
+     * or {@link #defaultExpression()}.
      *
      * @return Default value to set in case the source property is {@code null}.
      */

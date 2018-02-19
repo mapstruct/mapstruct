@@ -55,6 +55,7 @@ public class Mapping {
     private final String sourceName;
     private final String constant;
     private final String javaExpression;
+    private final String defaultJavaExpression;
     private final String targetName;
     private final String defaultValue;
     private final FormattingParameters formattingParameters;
@@ -128,10 +129,23 @@ public class Mapping {
             messager.printMessage( element, Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED );
             return null;
         }
+        else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultExpression() != null) {
+            messager.printMessage( element, Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
+            return null;
+        }
+        else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultExpression() != null) {
+            messager.printMessage( element, Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
+            return null;
+        }
+        else if ( mappingPrism.values.defaultValue() != null && mappingPrism.values.defaultExpression() != null) {
+            messager.printMessage( element, Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
+            return null;
+        }
 
         String source = mappingPrism.source().isEmpty() ? null : mappingPrism.source();
         String constant = mappingPrism.values.constant() == null ? null : mappingPrism.constant();
         String expression = getExpression( mappingPrism, element, messager );
+        String defaultExpression = getDefaultExpression( mappingPrism, element, messager );
         String dateFormat = mappingPrism.values.dateFormat() == null ? null : mappingPrism.dateFormat();
         String numberFormat = mappingPrism.values.numberFormat() == null ? null : mappingPrism.numberFormat();
         String defaultValue = mappingPrism.values.defaultValue() == null ? null : mappingPrism.defaultValue();
@@ -159,6 +173,7 @@ public class Mapping {
             source,
             constant,
             expression,
+            defaultExpression,
             mappingPrism.target(),
             defaultValue,
             mappingPrism.ignore(),
@@ -173,14 +188,15 @@ public class Mapping {
     }
 
     @SuppressWarnings("checkstyle:parameternumber")
-    private Mapping( String sourceName, String constant, String javaExpression, String targetName,
-                     String defaultValue, boolean isIgnored, AnnotationMirror mirror,
+    private Mapping( String sourceName, String constant, String javaExpression, String defaultJavaExpression,
+                     String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
                      AnnotationValue sourceAnnotationValue,  AnnotationValue targetAnnotationValue,
                      FormattingParameters formattingParameters, SelectionParameters selectionParameters,
                      AnnotationValue dependsOnAnnotationValue, List<String> dependsOn ) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
+        this.defaultJavaExpression = defaultJavaExpression;
         this.targetName = targetName;
         this.defaultValue = defaultValue;
         this.isIgnored = isIgnored;
@@ -197,6 +213,7 @@ public class Mapping {
         this.sourceName = mapping.sourceName;
         this.constant = mapping.constant;
         this.javaExpression = mapping.javaExpression;
+        this.defaultJavaExpression = mapping.defaultJavaExpression;
         this.targetName = Strings.join( targetReference.getElementNames(), "." );
         this.defaultValue = mapping.defaultValue;
         this.isIgnored = mapping.isIgnored;
@@ -215,6 +232,7 @@ public class Mapping {
         this.sourceName = Strings.join( sourceReference.getElementNames(), "." );
         this.constant = mapping.constant;
         this.javaExpression = mapping.javaExpression;
+        this.defaultJavaExpression = mapping.defaultJavaExpression;
         this.targetName = mapping.targetName;
         this.defaultValue = mapping.defaultValue;
         this.isIgnored = mapping.isIgnored;
@@ -241,6 +259,25 @@ public class Mapping {
             messager.printMessage(
                 element, mappingPrism.mirror, mappingPrism.values.expression(),
                 Message.PROPERTYMAPPING_INVALID_EXPRESSION
+            );
+            return null;
+        }
+
+        return javaExpressionMatcher.group( 1 ).trim();
+    }
+
+    private static String getDefaultExpression(MappingPrism mappingPrism, ExecutableElement element,
+                                        FormattingMessager messager) {
+        if ( mappingPrism.defaultExpression().isEmpty() ) {
+            return null;
+        }
+
+        Matcher javaExpressionMatcher = JAVA_EXPRESSION.matcher( mappingPrism.defaultExpression() );
+
+        if ( !javaExpressionMatcher.matches() ) {
+            messager.printMessage(
+                element, mappingPrism.mirror, mappingPrism.values.defaultExpression(),
+                Message.PROPERTYMAPPING_INVALID_DEFAULT_EXPRESSION
             );
             return null;
         }
@@ -319,6 +356,10 @@ public class Mapping {
 
     public String getJavaExpression() {
         return javaExpression;
+    }
+
+    public String getDefaultJavaExpression() {
+        return defaultJavaExpression;
     }
 
     public String getTargetName() {
@@ -401,6 +442,7 @@ public class Mapping {
             sourceName != null ? targetName : null,
             null, // constant
             null, // expression
+            null, // defaultExpression
             sourceName != null ? sourceName : targetName,
             null,
             isIgnored,
@@ -440,6 +482,7 @@ public class Mapping {
             sourceName,
             constant,
             javaExpression,
+            defaultJavaExpression,
             targetName,
             defaultValue,
             isIgnored,

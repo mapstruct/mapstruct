@@ -188,6 +188,7 @@ public class PropertyMapping extends ModelElement {
 
         // initial properties
         private String defaultValue;
+        private String defaultJavaExpression;
         private SourceReference sourceReference;
         private SourceRHS rightHandSide;
         private FormattingParameters formattingParameters;
@@ -217,6 +218,11 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder defaultValue(String defaultValue) {
             this.defaultValue = defaultValue;
+            return this;
+        }
+
+        public PropertyMappingBuilder defaultJavaExpression(String defaultJavaExpression) {
+            this.defaultJavaExpression = defaultJavaExpression;
             return this;
         }
 
@@ -351,11 +357,26 @@ public class PropertyMapping extends ModelElement {
         private Assignment getDefaultValueAssignment( Assignment rhs ) {
             if ( defaultValue != null
                 &&  ( !rhs.getSourceType().isPrimitive() || rhs.getSourcePresenceCheckerReference() != null) ) {
-                // cannot check on null source if source is primitive unless it has a presenche checker
+                // cannot check on null source if source is primitive unless it has a presence checker
                 PropertyMapping build = new ConstantMappingBuilder()
                     .constantExpression( '"' + defaultValue + '"' )
                     .formattingParameters( formattingParameters )
                     .selectionParameters( selectionParameters )
+                    .dependsOn( dependsOn )
+                    .existingVariableNames( existingVariableNames )
+                    .mappingContext( ctx )
+                    .sourceMethod( method )
+                    .targetPropertyName( targetPropertyName )
+                    .targetReadAccessor( targetReadAccessor )
+                    .targetWriteAccessor( targetWriteAccessor )
+                    .build();
+                return build.getAssignment();
+            }
+            if ( defaultJavaExpression != null
+                && ( !rhs.getSourceType().isPrimitive() || rhs.getSourcePresenceCheckerReference() != null) ) {
+                // cannot check on null source if source is primitive unless it has a presence checker
+                PropertyMapping build = new JavaExpressionMappingBuilder()
+                    .javaExpression( defaultJavaExpression )
                     .dependsOn( dependsOn )
                     .existingVariableNames( existingVariableNames )
                     .mappingContext( ctx )
