@@ -40,13 +40,13 @@ public class JavaDefaultExpressionTest {
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })
     public void testJavaDefaultExpressionWithValues() {
         Source source = new Source();
-        source.setId( "TestId123" );
+        source.setId( 123 );
         source.setDate( new Date( 0L ) );
 
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getSourceId() ).isEqualTo( source.getId() );
+        assertThat( target.getSourceId() ).isEqualTo( "123" );
         assertThat( target.getSourceDate() ).isEqualTo( source.getDate() );
     }
 
@@ -58,8 +58,8 @@ public class JavaDefaultExpressionTest {
         Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getSourceId() ).isNotNull();
-        assertThat( target.getSourceDate() ).isNotNull();
+        assertThat( target.getSourceId() ).isEqualTo( "test" );
+        assertThat( target.getSourceDate() ).isEqualTo( new Date( 30L ) );
     }
 
     @Test
@@ -68,13 +68,13 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionExpressionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 43,
+                line = 39,
                 messageRegExp = "Expression and default expression are both defined in @Mapping,"
                     + " either define an expression or a default expression."
             ),
             @Diagnostic(type = ErroneousDefaultExpressionExpressionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 43,
+                line = 39,
                 messageRegExp = "Unmapped target property: \"sourceId\""
             )
         }
@@ -89,13 +89,13 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 42,
+                line = 38,
                 messageRegExp = "Constant and default expression are both defined in @Mapping,"
                     + " either define a constant or a default expression."
             ),
             @Diagnostic(type = ErroneousDefaultExpressionConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 42,
+                line = 38,
                 messageRegExp = "Unmapped target property: \"sourceId\""
             )
         }
@@ -110,13 +110,13 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionDefaultValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 43,
+                line = 38,
                 messageRegExp = "Default value and default expression are both defined in @Mapping,"
                     + " either define a default value or a default expression."
             ),
             @Diagnostic(type = ErroneousDefaultExpressionDefaultValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 43,
+                line = 38,
                 messageRegExp = "Unmapped target property: \"sourceId\""
             )
         }
@@ -131,7 +131,7 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 38,
+                line = 35,
                 messageRegExp = "Value for default expression must be given in the form \"java\\(<EXPRESSION>\\)\""
             )
         }

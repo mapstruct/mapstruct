@@ -21,7 +21,6 @@ package org.mapstruct.ap.test.source.defaultExpressions.java;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.factory.Mappers;
 
 import java.util.Date;
 import java.util.UUID;
@@ -31,8 +30,6 @@ import java.util.UUID;
  */
 @Mapper(imports = { UUID.class, Date.class })
 public interface ErroneousDefaultExpressionMapper {
-
-    ErroneousDefaultExpressionMapper INSTANCE = Mappers.getMapper( ErroneousDefaultExpressionMapper.class );
 
     @Mappings({
         @Mapping(target = "sourceId", source = "id", defaultExpression = "UUID.randomUUID().toString()"),

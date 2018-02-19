@@ -1880,12 +1880,14 @@ The example below demonstrates how two source properties can be mapped to one ta
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ---
-@Mapper
+imports java.util.UUID;
+
+@Mapper( imports = UUID.class )
 public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
-    @Mapping(target="Id", source="sourceId", defaultExpression = "java( java.util.UUID.randomUUID().toString() )")
+    @Mapping(target="id", source="sourceId", defaultExpression = "java( UUID.randomUUID().toString() )")
     Target sourceToTarget(Source s);
 }
 ---

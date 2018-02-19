@@ -18,22 +18,18 @@
  */
 package org.mapstruct.ap.test.source.defaultExpressions.java;
 
+import java.util.Date;
+import java.util.UUID;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.factory.Mappers;
-
-import java.util.Date;
-import java.util.UUID;
 
 /**
  * @author Jeffrey Smyth
  */
 @Mapper(imports = { UUID.class, Date.class })
 public interface ErroneousDefaultExpressionConstantMapper {
-
-    ErroneousDefaultExpressionConstantMapper INSTANCE =
-        Mappers.getMapper( ErroneousDefaultExpressionConstantMapper.class );
 
     @Mappings({
         @Mapping(target = "sourceId", constant = "3", defaultExpression = "java( UUID.randomUUID().toString() )"),

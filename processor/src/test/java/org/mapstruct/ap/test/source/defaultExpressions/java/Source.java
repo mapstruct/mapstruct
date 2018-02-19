@@ -25,15 +25,19 @@ import java.util.Date;
  */
 public class Source {
 
-    private String id;
+    private int id = -1;
     private Date date;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean hasId() {
+        return id != -1;
     }
 
     public Date getDate() {

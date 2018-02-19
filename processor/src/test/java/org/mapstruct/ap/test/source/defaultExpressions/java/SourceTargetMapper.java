@@ -24,19 +24,18 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * @author Jeffrey Smyth
  */
-@Mapper(imports = { UUID.class, Date.class })
+@Mapper(imports = { Date.class })
 public interface SourceTargetMapper {
 
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings({
-        @Mapping(target = "sourceId", source = "id", defaultExpression = "java( UUID.randomUUID().toString() )"),
-        @Mapping(target = "sourceDate", source = "date", defaultExpression = "java( new Date())")
+        @Mapping(target = "sourceId", source = "id", defaultExpression = "java( String.valueOf( \"test\" ) )"),
+        @Mapping(target = "sourceDate", source = "date", defaultExpression = "java( new Date( 30L ))")
     })
     Target sourceToTarget(Source s);
 }
