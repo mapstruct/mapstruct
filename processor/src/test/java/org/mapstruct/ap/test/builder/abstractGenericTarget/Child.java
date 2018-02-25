@@ -18,6 +18,6 @@
  */
 package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-public interface AbstractChildTarget {
-    String getBar();
+public interface Child {
+    String getName();
 }

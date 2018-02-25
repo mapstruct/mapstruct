@@ -18,8 +18,15 @@
  */
 package org.mapstruct.ap.test.builder.abstractBuilder;
 
-public interface Target {
-    String getFoo();
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-    Integer getBar();
+@Mapper
+public interface ProductMapper {
+
+    ProductMapper INSTANCE = Mappers.getMapper( ProductMapper.class );
+
+    ImmutableProduct fromMutable(ProductDto source);
+
+    ProductDto fromImmutable(ImmutableProduct source);
 }

@@ -16,20 +16,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractBuilder;
+package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-/**
- * @author Filip Hrisafov
- */
-public abstract class AbstractImmutableTarget implements Target {
+public interface Parent<T extends Child> {
+    int getCount();
 
-    private final String foo;
+    T getChild();
 
-    public AbstractImmutableTarget(AbstractTargetBuilder<?> builder) {
-        this.foo = builder.foo;
-    }
-
-    public String getFoo() {
-        return foo;
-    }
+    Child getNonGenericChild();
 }

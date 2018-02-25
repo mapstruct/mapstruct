@@ -30,12 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * builder class, and some of the properties are written by the concrete builder implementation.
  */
 @WithClasses({
-    Target.class,
-    AbstractTargetBuilder.class,
-    AbstractImmutableTarget.class,
-    ImmutableTarget.class,
-    Source.class,
-    ImmutableTargetMapper.class
+    Product.class,
+    AbstractProductBuilder.class,
+    AbstractImmutableProduct.class,
+    ImmutableProduct.class,
+    ProductDto.class,
+    ProductMapper.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class AbstractBuilderTest {
@@ -51,20 +51,20 @@ public class AbstractBuilderTest {
      */
     @Test
     public void testThatAbstractBuilderMapsAllProperties() {
-        ImmutableTarget sourceOne = ImmutableTargetMapper.INSTANCE.fromMutable( new Source( "foo", 31 ) );
+        ImmutableProduct product = ProductMapper.INSTANCE.fromMutable( new ProductDto( "router", 31 ) );
 
-        assertThat( sourceOne.getBar() ).isEqualTo( 31 );
-        assertThat( sourceOne.getFoo() ).isEqualTo( "foo" );
+        assertThat( product.getPrice() ).isEqualTo( 31 );
+        assertThat( product.getName() ).isEqualTo( "router" );
     }
 
     @Test
     public void testThatAbstractBuilderReverseMapsAllProperties() {
-        Source sourceOne = ImmutableTargetMapper.INSTANCE.fromImmutable( ImmutableTarget.builder()
-            .bar( 31 )
-            .foo( "foo" )
+        ProductDto product = ProductMapper.INSTANCE.fromImmutable( ImmutableProduct.builder()
+            .price( 31000 )
+            .name( "car" )
             .build() );
 
-        assertThat( sourceOne.getBar() ).isEqualTo( 31 );
-        assertThat( sourceOne.getFoo() ).isEqualTo( "foo" );
+        assertThat( product.getPrice() ).isEqualTo( 31000 );
+        assertThat( product.getName() ).isEqualTo( "car" );
     }
 }

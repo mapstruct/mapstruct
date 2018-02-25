@@ -18,15 +18,15 @@
  */
 package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-public class ImmutableParentTargetImpl implements AbstractParentTarget<ImmutableChildTargetImpl> {
+public class ImmutableParent implements Parent<ImmutableChild> {
     private final int count;
-    private final ImmutableChildTargetImpl nested;
-    private final AbstractChildTarget nonGenericizedNested;
+    private final ImmutableChild child;
+    private final Child nonGenericChild;
 
-    public ImmutableParentTargetImpl(Builder builder) {
+    public ImmutableParent(Builder builder) {
         this.count = builder.count;
-        this.nested = builder.nested;
-        this.nonGenericizedNested = builder.nonGenericizedNested;
+        this.child = builder.child;
+        this.nonGenericChild = builder.nonGenericChild;
     }
 
     public static Builder builder() {
@@ -34,8 +34,8 @@ public class ImmutableParentTargetImpl implements AbstractParentTarget<Immutable
     }
 
     @Override
-    public AbstractChildTarget getNonGenericizedNested() {
-        return nonGenericizedNested;
+    public Child getNonGenericChild() {
+        return nonGenericChild;
     }
 
     @Override
@@ -44,32 +44,32 @@ public class ImmutableParentTargetImpl implements AbstractParentTarget<Immutable
     }
 
     @Override
-    public ImmutableChildTargetImpl getNested() {
-        return nested;
+    public ImmutableChild getChild() {
+        return child;
     }
 
     public static class Builder {
         private int count;
-        private ImmutableChildTargetImpl nested;
-        private AbstractChildTarget nonGenericizedNested;
+        private ImmutableChild child;
+        private Child nonGenericChild;
 
         public Builder count(int count) {
             this.count = count;
             return this;
         }
 
-        public Builder nonGenericizedNested(AbstractChildTarget nonGenericizedNested) {
-            this.nonGenericizedNested = nonGenericizedNested;
+        public Builder nonGenericChild(Child nonGenericChild) {
+            this.nonGenericChild = nonGenericChild;
             return this;
         }
 
-        public Builder nested(ImmutableChildTargetImpl nested) {
-            this.nested = nested;
+        public Builder child(ImmutableChild child) {
+            this.child = child;
             return this;
         }
 
-        public ImmutableParentTargetImpl build() {
-            return new ImmutableParentTargetImpl( this );
+        public ImmutableParent build() {
+            return new ImmutableParent( this );
         }
 
     }
