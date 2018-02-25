@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithClasses({
     Target.class,
     AbstractTargetBuilder.class,
+    AbstractImmutableTarget.class,
     ImmutableTarget.class,
     Source.class,
     ImmutableTargetMapper.class

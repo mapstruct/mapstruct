@@ -18,35 +18,18 @@
  */
 package org.mapstruct.ap.test.builder.abstractBuilder;
 
-public class ImmutableTarget extends AbstractImmutableTarget {
+/**
+ * @author Filip Hrisafov
+ */
+public abstract class AbstractImmutableTarget implements Target {
 
-    private final Integer bar;
+    private final String foo;
 
-    public ImmutableTarget(ImmutableTargetBuilder builder) {
-        super( builder );
-        this.bar = builder.bar;
+    public AbstractImmutableTarget(AbstractTargetBuilder<?> builder) {
+        this.foo = builder.foo;
     }
 
-    public static ImmutableTargetBuilder builder() {
-        return new ImmutableTargetBuilder();
-    }
-
-    @Override
-    public Integer getBar() {
-        return bar;
-    }
-
-    public static class ImmutableTargetBuilder extends AbstractTargetBuilder<ImmutableTarget> {
-        private Integer bar;
-
-        public ImmutableTargetBuilder bar(Integer bar) {
-            this.bar = bar;
-            return this;
-        }
-
-        @Override
-        public ImmutableTarget build() {
-            return new ImmutableTarget( this );
-        }
+    public String getFoo() {
+        return foo;
     }
 }
