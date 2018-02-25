@@ -30,41 +30,67 @@ import org.mapstruct.ap.spi.BuilderInfo;
 public class BuilderType {
 
     private final Type builder;
-    private final Type owner;
+    private final Type owningType;
     private final Type buildingType;
     private final ExecutableElement builderCreationMethod;
     private final ExecutableElement buildMethod;
 
     private BuilderType(
         Type builder,
-        Type owner,
+        Type owningType,
         Type buildingType,
         ExecutableElement builderCreationMethod,
         ExecutableElement buildMethod
     ) {
         this.builder = builder;
-        this.owner = owner;
+        this.owningType = owningType;
         this.buildingType = buildingType;
         this.builderCreationMethod = builderCreationMethod;
         this.buildMethod = buildMethod;
     }
 
+    /**
+     * The type of the builder itself.
+     *
+     * @return the type for the builder
+     */
     public Type getBuilder() {
         return builder;
     }
 
-    public Type getOwner() {
-        return owner;
+    /**
+     * The owning type of the builder, this can be the builder itself, the type that is build by the builder or some
+     * other type.
+     *
+     * @return the owning type
+     */
+    public Type getOwningType() {
+        return owningType;
     }
 
+    /**
+     * The type that is being built by the builder.
+     *
+     * @return the type that is being built
+     */
     public Type getBuildingType() {
         return buildingType;
     }
 
+    /**
+     * The creation method for the builder.
+     *
+     * @return the creation method for the builder
+     */
     public ExecutableElement getBuilderCreationMethod() {
         return builderCreationMethod;
     }
 
+    /**
+     * The name of the method that needs to be invoked on the builder to create the type being built.
+     *
+     * @return the name of the method that needs to be invoked on the type that is being built
+     */
     public String getBuildMethod() {
         return buildMethod.getSimpleName().toString();
     }

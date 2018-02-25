@@ -153,7 +153,7 @@ public class TargetReference {
 
             boolean foundEntryMatch;
             Type resultType = method.getResultType();
-            resultType = resultType.getMappingType();
+            resultType = resultType.getEffectiveType();
 
             // there can be 4 situations
             // 1. Return type
@@ -191,7 +191,7 @@ public class TargetReference {
             // last entry
             for ( int i = 0; i < entryNames.length; i++ ) {
 
-                Type mappingType = nextType.getMappingType();
+                Type mappingType = nextType.getEffectiveType();
                 Accessor targetReadAccessor = mappingType.getPropertyReadAccessors().get( entryNames[i] );
                 Accessor targetWriteAccessor = mappingType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
                 boolean isLast = i == entryNames.length - 1;
@@ -237,13 +237,13 @@ public class TargetReference {
             if ( Executables.isGetterMethod( toUse ) ||
                 Executables.isFieldAccessor( toUse ) ) {
                 nextType = typeFactory.getReturnType(
-                    (DeclaredType) initial.getMappingType().getTypeMirror(),
+                    (DeclaredType) initial.getEffectiveType().getTypeMirror(),
                     toUse
                 );
             }
             else {
                 nextType = typeFactory.getSingleParameter(
-                    (DeclaredType) initial.getMappingType().getTypeMirror(),
+                    (DeclaredType) initial.getEffectiveType().getTypeMirror(),
                     toUse
                 ).getType();
             }
