@@ -21,6 +21,8 @@ package org.mapstruct.ap.spi;
 import javax.lang.model.element.ExecutableElement;
 
 /**
+ * Holder for the builder information.
+ *
  * @author Filip Hrisafov
  */
 public class BuilderInfo {
@@ -33,10 +35,26 @@ public class BuilderInfo {
         this.buildMethod = buildMethod;
     }
 
+    /**
+     * The method that can be used for instantiating a builder. This can be:
+     * <ul>
+     * <li>A {@code public static} method in the type being build</li>
+     * <li>A {@code public static} method in the builder itself</li>
+     * <li>The default constructor of the builder</li>
+     * </ul>
+     *
+     * @return the creation method for the builder
+     */
     public ExecutableElement getBuilderCreationMethod() {
         return builderCreationMethod;
     }
 
+    /**
+     * The method that can be used to build the type being built.
+     * This should be a {@code public} method within the builder itself
+     *
+     * @return the build method for the type
+     */
     public ExecutableElement getBuildMethod() {
         return buildMethod;
     }
@@ -45,16 +63,26 @@ public class BuilderInfo {
         private ExecutableElement builderCreationMethod;
         private ExecutableElement buildMethod;
 
+        /**
+         * @see BuilderInfo#getBuilderCreationMethod()
+         */
         public Builder builderCreationMethod(ExecutableElement method) {
             this.builderCreationMethod = method;
             return this;
         }
 
+        /**
+         * @see BuilderInfo#getBuildMethod()
+         */
         public Builder buildMethod(ExecutableElement method) {
             this.buildMethod = method;
             return this;
         }
 
+        /**
+         * Create the {@link BuilderInfo}.
+         * @throws IllegalArgumentException if the builder creation or build methods are {@code null}
+         */
         public BuilderInfo build() {
             if ( builderCreationMethod == null ) {
                 throw new IllegalArgumentException( "Builder creation method is mandatory" );
