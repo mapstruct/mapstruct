@@ -18,10 +18,22 @@
  */
 package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-public interface AbstractParentTarget<T extends AbstractChildTarget> {
-    int getCount();
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-    T getNested();
+@Mapper
+public interface ParentMapper {
 
-    AbstractChildTarget getNonGenericizedNested();
+    ParentMapper INSTANCE = Mappers.getMapper( ParentMapper.class );
+
+    ImmutableParent toImmutable(ParentSource parentSource);
+
+    MutableParent toMutable(ParentSource parentSource);
+
+    /**
+     * This method allows mapstruct to successfully write to {@link ImmutableParent#nonGenericChild}
+     * by providing a concrete class to convert to.
+     */
+    ImmutableChild toChild(ChildSource child);
+
 }

@@ -39,7 +39,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({CupboardDto.class, CupboardEntity.class, CupboardMapper.class})
 @IssueKey( "1126" )
-public class ImmutableTargetTest {
+public class ImmutableProductTest {
 
     @Test
     public void shouldHandleImmutableTarget() {

@@ -19,20 +19,20 @@
 package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
 public class ChildSource {
-    private String bar;
+    private String name;
 
     public ChildSource() {
     }
 
-    public ChildSource(String bar) {
-        this.bar = bar;
+    public ChildSource(String name) {
+        this.name = name;
     }
 
-    public String getBar() {
-        return bar;
+    public String getName() {
+        return name;
     }
 
-    public void setBar(String bar) {
-        this.bar = bar;
+    public void setName(String name) {
+        this.name = name;
     }
 }

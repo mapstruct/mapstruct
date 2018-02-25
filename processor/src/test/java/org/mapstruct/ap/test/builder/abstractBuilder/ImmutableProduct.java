@@ -16,37 +16,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractGenericTarget;
+package org.mapstruct.ap.test.builder.abstractBuilder;
 
-public class MutableParentTargetImpl implements AbstractParentTarget<ImmutableChildTargetImpl> {
-    private int count;
-    private ImmutableChildTargetImpl nested;
-    private AbstractChildTarget nonGenericizedNested;
+public class ImmutableProduct extends AbstractImmutableProduct {
 
-    @Override
-    public int getCount() {
-        return count;
+    private final Integer price;
+
+    public ImmutableProduct(ImmutableProductBuilder builder) {
+        super( builder );
+        this.price = builder.price;
     }
 
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    @Override
-    public ImmutableChildTargetImpl getNested() {
-        return nested;
-    }
-
-    public void setNested(ImmutableChildTargetImpl nested) {
-        this.nested = nested;
+    public static ImmutableProductBuilder builder() {
+        return new ImmutableProductBuilder();
     }
 
     @Override
-    public AbstractChildTarget getNonGenericizedNested() {
-        return nonGenericizedNested;
+    public Integer getPrice() {
+        return price;
     }
 
-    public void setNonGenericizedNested(AbstractChildTarget nonGenericizedNested) {
-        this.nonGenericizedNested = nonGenericizedNested;
+    public static class ImmutableProductBuilder extends AbstractProductBuilder<ImmutableProduct> {
+        private Integer price;
+
+        public ImmutableProductBuilder price(Integer price) {
+            this.price = price;
+            return this;
+        }
+
+        @Override
+        public ImmutableProduct build() {
+            return new ImmutableProduct( this );
+        }
     }
 }

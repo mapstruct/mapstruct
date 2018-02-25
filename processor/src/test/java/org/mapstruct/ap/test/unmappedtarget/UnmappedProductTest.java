@@ -39,7 +39,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
  */
 @IssueKey("35")
 @RunWith(AnnotationProcessorTestRunner.class)
-public class UnmappedTargetTest {
+public class UnmappedProductTest {
 
     @Test
     @WithClasses({ Source.class, Target.class, SourceTargetMapper.class })

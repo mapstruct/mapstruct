@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 } )
 @IssueKey("389")
 @RunWith(AnnotationProcessorTestRunner.class)
-public class NestedTargetPropertiesTest {
+public class NestedProductPropertiesTest {
 
     @Rule
     public GeneratedSource generatedSource = new GeneratedSource().addComparisonToFixtureFor(

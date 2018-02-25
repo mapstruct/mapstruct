@@ -16,33 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractGenericTarget;
+package org.mapstruct.ap.test.builder.abstractBuilder;
 
-public class ImmutableChildTargetImpl implements AbstractChildTarget  {
-    private final String bar;
+/**
+ * @author Filip Hrisafov
+ */
+public abstract class AbstractImmutableProduct implements Product {
 
-    private ImmutableChildTargetImpl(ImmutableChildTargetImpl.Builder builder) {
-        this.bar = builder.bar;
+    private final String name;
+
+    public AbstractImmutableProduct(AbstractProductBuilder<?> builder) {
+        this.name = builder.name;
     }
 
-    public static ImmutableChildTargetImpl.Builder builder() {
-        return new ImmutableChildTargetImpl.Builder();
-    }
-
-    public String getBar() {
-        return bar;
-    }
-
-    public static class Builder {
-        private String bar;
-
-        public ImmutableChildTargetImpl.Builder bar(String bar) {
-            this.bar = bar;
-            return this;
-        }
-
-        public ImmutableChildTargetImpl build() {
-            return new ImmutableChildTargetImpl( this );
-        }
+    public String getName() {
+        return name;
     }
 }

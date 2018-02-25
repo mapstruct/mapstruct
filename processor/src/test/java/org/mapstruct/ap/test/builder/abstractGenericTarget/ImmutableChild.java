@@ -16,33 +16,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractBuilder;
+package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-public class Source {
-    private String foo;
-    private Integer bar;
+public class ImmutableChild implements Child {
+    private final String name;
 
-    public Source() {
+    private ImmutableChild(ImmutableChild.Builder builder) {
+        this.name = builder.name;
     }
 
-    public Source(String foo, Integer bar) {
-        this.foo = foo;
-        this.bar = bar;
+    public static ImmutableChild.Builder builder() {
+        return new ImmutableChild.Builder();
     }
 
-    public String getFoo() {
-        return foo;
+    public String getName() {
+        return name;
     }
 
-    public void setFoo(String foo) {
-        this.foo = foo;
-    }
+    public static class Builder {
+        private String name;
 
-    public Integer getBar() {
-        return bar;
-    }
+        public ImmutableChild.Builder name(String name) {
+            this.name = name;
+            return this;
+        }
 
-    public void setBar(Integer bar) {
-        this.bar = bar;
+        public ImmutableChild build() {
+            return new ImmutableChild( this );
+        }
     }
 }
