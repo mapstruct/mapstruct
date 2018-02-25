@@ -182,7 +182,11 @@ public class Type extends ModelElement implements Comparable<Type> {
         return builderType;
     }
 
-    public Type getMappingType() {
+    /**
+     * The effective type that should be used when searching for getters / setters, creating new types etc
+     * @return the effective type for mappings
+     */
+    public Type getEffectiveType() {
         return builderType != null ? builderType.getBuilder() : this;
     }
 

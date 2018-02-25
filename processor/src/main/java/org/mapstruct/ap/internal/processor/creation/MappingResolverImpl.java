@@ -182,7 +182,10 @@ public class MappingResolverImpl implements MappingResolver {
             return null;
         }
 
-        return MethodReference.forStaticBuilder( builderCreationMethod.getSimpleName().toString(), builder.getOwner() );
+        return MethodReference.forStaticBuilder(
+            builderCreationMethod.getSimpleName().toString(),
+            builder.getOwningType()
+        );
     }
 
     private MapperReference findMapperReference(Method method) {
