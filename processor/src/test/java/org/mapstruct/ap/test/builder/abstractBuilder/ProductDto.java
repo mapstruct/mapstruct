@@ -16,17 +16,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractGenericTarget;
+package org.mapstruct.ap.test.builder.abstractBuilder;
 
-public class MutableChildTargetImpl implements AbstractChildTarget {
-    private String bar;
+public class ProductDto {
+    private String name;
+    private Integer price;
 
-    @Override
-    public String getBar() {
-        return null;
+    public ProductDto() {
     }
 
-    public void setBar(String bar) {
-        this.bar = bar;
+    public ProductDto(String name, Integer price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 }

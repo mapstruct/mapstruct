@@ -16,16 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractBuilder;
+package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-public abstract class AbstractTargetBuilder<T extends Target> {
+public class MutableChild implements Child {
+    private String name;
 
-    protected String foo;
-
-    public AbstractTargetBuilder<T> foo(String foo) {
-        this.foo = foo;
-        return this;
+    @Override
+    public String getName() {
+        return name;
     }
 
-    abstract T build();
+    public void setName(String name) {
+        this.name = name;
+    }
 }

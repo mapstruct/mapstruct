@@ -18,44 +18,54 @@
  */
 package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Verifies that abstract builders work when mapping to an abstract property type.
  */
 @WithClasses({
-    AbstractChildTarget.class,
-    AbstractParentTarget.class,
+    Child.class,
+    Parent.class,
     ChildSource.class,
-    ImmutableChildTargetImpl.class,
-    ImmutableParentTargetImpl.class,
-    MutableChildTargetImpl.class,
-    MutableParentTargetImpl.class,
+    ImmutableChild.class,
+    ImmutableParent.class,
+    MutableChild.class,
+    MutableParent.class,
     ParentSource.class,
-    AbstractTargetMapper.class
+    ParentMapper.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
-public class AbstractTargetBuilderTest {
+public class AbstractGenericTargetBuilderTest {
 
     @Test
     public void testAbstractTargetMapper() {
         ParentSource parent = new ParentSource();
         parent.setCount( 4 );
-        parent.setNested( new ChildSource( "Phineas" ) );
+        parent.setChild( new ChildSource( "Phineas" ) );
+        parent.setNonGenericChild( new ChildSource( "Ferb" ) );
 
         // transform
-        AbstractParentTarget immutableTarget = AbstractTargetMapper.INSTANCE.toImmutable( parent );
-        AbstractParentTarget mutableTarget = AbstractTargetMapper.INSTANCE.toMutable( parent );
+        Parent immutableParent = ParentMapper.INSTANCE.toImmutable( parent );
+        assertThat( immutableParent.getCount() ).isEqualTo( 4 );
+        assertThat( immutableParent.getChild().getName() ).isEqualTo( "Phineas" );
+        assertThat( immutableParent.getNonGenericChild() )
+            .isNotNull()
+            .isInstanceOf( ImmutableChild.class );
+        assertThat( immutableParent.getNonGenericChild().getName() ).isEqualTo( "Ferb" );
 
-        assertThat( mutableTarget.getCount() ).isEqualTo( 4 );
-        assertThat( mutableTarget.getNested().getBar() ).isEqualTo( "Phineas" );
+        Parent mutableParent = ParentMapper.INSTANCE.toMutable( parent );
 
-        assertThat( immutableTarget.getCount() ).isEqualTo( 4 );
-        assertThat( immutableTarget.getNested().getBar() ).isEqualTo( "Phineas" );
+        assertThat( mutableParent.getCount() ).isEqualTo( 4 );
+        assertThat( mutableParent.getChild().getName() ).isEqualTo( "Phineas" );
+        assertThat( mutableParent.getNonGenericChild() )
+            .isNotNull()
+            .isInstanceOf( ImmutableChild.class );
+        assertThat( mutableParent.getNonGenericChild().getName() ).isEqualTo( "Ferb" );
+
     }
 }

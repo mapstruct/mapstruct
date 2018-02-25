@@ -16,17 +16,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractBuilder;
+package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+public class MutableParent implements Parent<ImmutableChild> {
+    private int count;
+    private ImmutableChild child;
+    private Child nonGenericChild;
 
-@Mapper
-public interface ImmutableTargetMapper {
+    @Override
+    public int getCount() {
+        return count;
+    }
 
-    ImmutableTargetMapper INSTANCE = Mappers.getMapper( ImmutableTargetMapper.class );
+    public void setCount(int count) {
+        this.count = count;
+    }
 
-    ImmutableTarget fromMutable(Source source);
+    @Override
+    public ImmutableChild getChild() {
+        return child;
+    }
 
-    Source fromImmutable(ImmutableTarget source);
+    public void setChild(ImmutableChild child) {
+        this.child = child;
+    }
+
+    @Override
+    public Child getNonGenericChild() {
+        return nonGenericChild;
+    }
+
+    public void setNonGenericChild(Child nonGenericChild) {
+        this.nonGenericChild = nonGenericChild;
+    }
 }

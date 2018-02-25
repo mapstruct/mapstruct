@@ -20,15 +20,15 @@ package org.mapstruct.ap.test.builder.abstractGenericTarget;
 
 public class ParentSource {
     private int count;
-    private ChildSource nested;
-    private ChildSource nonGenericizedNested;
+    private ChildSource child;
+    private ChildSource nonGenericChild;
 
-    public ChildSource getNonGenericizedNested() {
-        return nonGenericizedNested;
+    public ChildSource getNonGenericChild() {
+        return nonGenericChild;
     }
 
-    public void setNonGenericizedNested(ChildSource nonGenericizedNested) {
-        this.nonGenericizedNested = nonGenericizedNested;
+    public void setNonGenericChild(ChildSource nonGenericChild) {
+        this.nonGenericChild = nonGenericChild;
     }
 
     public int getCount() {
@@ -39,11 +39,11 @@ public class ParentSource {
         this.count = count;
     }
 
-    public ChildSource getNested() {
-        return nested;
+    public ChildSource getChild() {
+        return child;
     }
 
-    public void setNested(ChildSource nested) {
-        this.nested = nested;
+    public void setChild(ChildSource child) {
+        this.child = child;
     }
 }

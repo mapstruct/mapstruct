@@ -18,35 +18,14 @@
  */
 package org.mapstruct.ap.test.builder.abstractBuilder;
 
-public class ImmutableTarget extends AbstractImmutableTarget {
+public abstract class AbstractProductBuilder<T extends Product> {
 
-    private final Integer bar;
+    protected String name;
 
-    public ImmutableTarget(ImmutableTargetBuilder builder) {
-        super( builder );
-        this.bar = builder.bar;
+    public AbstractProductBuilder<T> name(String name) {
+        this.name = name;
+        return this;
     }
 
-    public static ImmutableTargetBuilder builder() {
-        return new ImmutableTargetBuilder();
-    }
-
-    @Override
-    public Integer getBar() {
-        return bar;
-    }
-
-    public static class ImmutableTargetBuilder extends AbstractTargetBuilder<ImmutableTarget> {
-        private Integer bar;
-
-        public ImmutableTargetBuilder bar(Integer bar) {
-            this.bar = bar;
-            return this;
-        }
-
-        @Override
-        public ImmutableTarget build() {
-            return new ImmutableTarget( this );
-        }
-    }
+    abstract T build();
 }

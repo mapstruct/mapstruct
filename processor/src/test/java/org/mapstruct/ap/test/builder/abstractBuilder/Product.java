@@ -16,24 +16,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.abstractGenericTarget;
+package org.mapstruct.ap.test.builder.abstractBuilder;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+public interface Product {
+    String getName();
 
-@Mapper
-public interface AbstractTargetMapper {
-
-    AbstractTargetMapper INSTANCE = Mappers.getMapper( AbstractTargetMapper.class );
-
-    ImmutableParentTargetImpl toImmutable(ParentSource parentSource);
-
-    MutableParentTargetImpl toMutable(ParentSource parentSource);
-
-    /**
-     * This method allows mapstruct to successfully write to {@link ImmutableParentTargetImpl#nonGenericizedNested}
-     * by providing a concrete class to convert to.
-     */
-    ImmutableChildTargetImpl toChild(ChildSource child);
-
+    Integer getPrice();
 }
