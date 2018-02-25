@@ -115,7 +115,6 @@ public enum Message {
     RETRIEVAL_WILDCARD_EXTENDS_BOUND_RESULT( "Can't generate mapping method for a wildcard extends bound result." ),
     RETRIEVAL_CONTEXT_PARAMS_WITH_SAME_TYPE( "The types of @Context parameters must be unique." ),
 
-    INHERITCONFIGURATION_BOTH( "Method cannot be annotated with both a @InheritConfiguration and @InheritInverseConfiguration." ),
     INHERITINVERSECONFIGURATION_DUPLICATES( "Several matching inverse methods exist: %s(). Specify a name explicitly." ),
     INHERITINVERSECONFIGURATION_INVALID_NAME( "None of the candidates %s() matches given name: \"%s\"." ),
     INHERITINVERSECONFIGURATION_DUPLICATE_MATCHES( "Given name \"%s\" matches several candidate methods: %s." ),

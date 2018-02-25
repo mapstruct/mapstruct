@@ -681,7 +681,7 @@ A mapper which uses other mapper classes (see <<invoking-other-mappers>>) will o
 [[injection-strategy]]
 === Injection strategy
 
-When using <<using-dependency-injection,dependency injection>>, you can choose between field and constructor injection. 
+When using <<using-dependency-injection,dependency injection>>, you can choose between field and constructor injection.
 This can be done by either providing the injection strategy via `@Mapper` or `@MapperConfig` annotation.
 
 .Using constructor injection
@@ -696,10 +696,10 @@ public interface CarMapper {
 ----
 ====
 
-The generated mapper will inject all classes defined in the **uses** attribute. 
-When `InjectionStrategy#CONSTRUCTOR` is used, the constructor will have the appropriate annotation and the fields won't. 
-When `InjectionStrategy#FIELD` is used, the annotation is on the field itself. 
-For now, the default injection strategy is field injection. 
+The generated mapper will inject all classes defined in the **uses** attribute.
+When `InjectionStrategy#CONSTRUCTOR` is used, the constructor will have the appropriate annotation and the fields won't.
+When `InjectionStrategy#FIELD` is used, the annotation is on the field itself.
+For now, the default injection strategy is field injection.
 It is recommended to use constructor injection to simplify testing.
 
 [TIP]
@@ -2129,11 +2129,17 @@ Methods that are considered for inverse inheritance need to be defined in the cu
 
 If multiple methods qualify, the method from which to inherit the configuration needs to be specified using the `name` property like this: `@InheritInverseConfiguration(name = "carToDto")`.
 
-Expressions and constants are excluded (silently ignored). Reverse mapping of nested source properties is experimental as of the 1.1.0.Beta2 release. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
+`@InheritConfiguration` takes, in case of conflict precedence over `@InheritInverseConfiguration`.
+
+Configurations are inherited transitively. So if method `C` defines a mapping `@Mapping( target = "x", ignore = true)`, `B` defines a mapping `@Mapping( target = "y", ignore = true)`, then if `A` inherits from `B` inherits from `C`, `A` will inherit mappings for both property `x` and `y`.
+
+Expressions and constants are excluded (silently ignored) in `@InheritInverseConfiguration`.
+
+Reverse mapping of nested source properties is experimental as of the 1.1.0.Beta2 release. Reverse mapping will take place automatically when the source property name and target property name are identical. Otherwise, `@Mapping` should specify both the target name and source name. In all cases, a suitable mapping method needs to be in place for the reverse mapping.
 
 [NOTE]
 ====
-`@InheritInverseConfiguration` cannot refer to methods in a used mapper.
+`@InheritConfiguration` or `@InheritInverseConfiguration` cannot refer to methods in a used mapper.
 ====
 
 [[shared-configurations]]
@@ -2207,7 +2213,9 @@ public interface SourceTargetMapper {
 The attributes `@Mapper#mappingInheritanceStrategy()` / `@MapperConfig#mappingInheritanceStrategy()` configure when the method-level mapping configuration annotations are inherited from prototype methods in the interface to methods in the mapper:
 
 * `EXPLICIT` (default): the configuration will only be inherited, if the target mapping method is annotated with `@InheritConfiguration` and the source and target types are assignable to the corresponding types of the prototype method, all as described in <<mapping-configuration-inheritance>>.
-* `AUTO_INHERIT_FROM_CONFIG`: the configuration will be inherited automatically, if the source and target types of the target mapping method are assignable to the corresponding types of the prototype method. If multiple prototype methods match, the ambiguity must be resolved using `@InheritConfiguration(name = ...)`.
+* `AUTO_INHERIT_FROM_CONFIG`: the configuration will be inherited automatically, if the source and target types of the target mapping method are assignable to the corresponding types of the prototype method. If multiple prototype methods match, the ambiguity must be resolved using `@InheritConfiguration(name = ...)` which will cause `AUTO_INHERIT_FROM_CONFIG` to be ignored.
+* `AUTO_INHERIT_REVERSE_FROM_CONFIG`: the inverse configuration will be inherited automatically, if the source and target types of the target mapping method are assignable to the corresponding types of the prototype method. If multiple prototype methods match, the ambiguity must be resolved using `@InheritInverseConfiguration(name = ...)` which will cause ``AUTO_INHERIT_REVERSE_FROM_CONFIG` to be ignored.
+* `AUTO_INHERIT_ALL_FROM_CONFIG`: both the configuration and the inverse configuration will be inherited automatically. The same rules apply as for `AUTO_INHERIT_FROM_CONFIG` or `AUTO_INHERIT_REVERSE_FROM_CONFIG`.
 
 == Customizing mappings
 

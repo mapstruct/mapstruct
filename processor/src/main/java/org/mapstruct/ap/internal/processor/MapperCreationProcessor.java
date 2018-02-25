@@ -439,24 +439,27 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         List<SourceMethod> applicablePrototypeMethods = method.getApplicablePrototypeMethods();
 
-        MappingOptions templateMappingOptions =
+        MappingOptions forwardMappingOptions =
             getTemplateMappingOptions(
                 join( availableMethods, applicablePrototypeMethods ),
                 method,
                 initializingMethods,
                 mapperConfig );
 
-        MappingInheritanceStrategyPrism inheritanceStrategy = mapperConfig.getMappingInheritanceStrategy();
-
-        if ( templateMappingOptions != null ) {
-            mappingOptions.applyInheritedOptions( templateMappingOptions, false, method, messager, typeFactory );
+        // apply defined (@InheritConfiguration, @InheritInverseConfiguration) mappings
+        if ( forwardMappingOptions != null ) {
+            mappingOptions.applyInheritedOptions( forwardMappingOptions, false, method, messager, typeFactory );
         }
-        else if ( inverseMappingOptions != null ) {
+        if ( inverseMappingOptions != null ) {
             mappingOptions.applyInheritedOptions( inverseMappingOptions, true, method, messager, typeFactory );
         }
-        else if ( inheritanceStrategy.isAutoInherit() ) {
 
-            if ( inheritanceStrategy.isApplyForward() ) {
+        // apply auto inherited options
+        MappingInheritanceStrategyPrism inheritanceStrategy = mapperConfig.getMappingInheritanceStrategy();
+        if ( inheritanceStrategy.isAutoInherit() ) {
+
+            // but.. there should not be an @InheritedConfiguration
+            if ( forwardMappingOptions == null && inheritanceStrategy.isApplyForward() ) {
                 if ( applicablePrototypeMethods.size() == 1 ) {
                     mappingOptions.applyInheritedOptions(
                         first( applicablePrototypeMethods ).getMappingOptions(),
@@ -473,7 +476,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 }
             }
 
-            if ( inheritanceStrategy.isApplyReverse() ) {
+            // or no @InheritInverseConfiguration
+            if ( inverseMappingOptions == null && inheritanceStrategy.isApplyReverse() ) {
                 if ( applicableReversePrototypeMethods.size() == 1 ) {
                     mappingOptions.applyInheritedOptions(
                         first( applicableReversePrototypeMethods ).getMappingOptions(),
@@ -593,7 +597,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
 
         if ( forwardPrism != null ) {
-            reportErrorWhenInheritForwardAlsoHasInheritReverseMapping( method );
 
             List<SourceMethod> candidates = new ArrayList<SourceMethod>();
             for ( SourceMethod oneMethod : rawMethods ) {
@@ -640,16 +643,6 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         return extractInitializedOptions( resultMethod, rawMethods, mapperConfig, initializingMethods );
-    }
-
-    private void reportErrorWhenInheritForwardAlsoHasInheritReverseMapping(SourceMethod method) {
-        InheritInverseConfigurationPrism reversePrism = InheritInverseConfigurationPrism.getInstanceOn(
-            method.getExecutable()
-        );
-        if ( reversePrism != null ) {
-            messager.printMessage( method.getExecutable(), reversePrism.mirror, Message.INHERITCONFIGURATION_BOTH );
-        }
-
     }
 
     private void reportErrorWhenAmbigousReverseMapping(List<SourceMethod> candidates, SourceMethod method,
