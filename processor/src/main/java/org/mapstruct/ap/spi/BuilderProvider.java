@@ -29,5 +29,17 @@ import javax.lang.model.util.Types;
  */
 public interface BuilderProvider {
 
+    /**
+     * Find the builder information, if any, for the {@code type}.
+     *
+     * @param type the type for which a builder should be found
+     * @param elements the util elements that can be used for operations on program elements
+     * @param types the util types that can be used for operations on {@link TypeMirror}(s)
+     *
+     * @return the builder info for the {@code type} if it exists, or {@code null} if there is no builder
+     *
+     * @throws TypeHierarchyErroneousException if the type that needs to be visited is not ready yet, this signals the
+     * MapStruct processor to postpone the generation of the mappers to the next round
+     */
     BuilderInfo findBuilderInfo(TypeMirror type, Elements elements, Types types);
 }
