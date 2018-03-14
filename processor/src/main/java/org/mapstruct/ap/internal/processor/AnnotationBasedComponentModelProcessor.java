@@ -134,7 +134,9 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
             new ArrayList<AnnotationMapperReference>( mapper.getReferencedMappers().size() );
 
         for ( MapperReference mapperReference : mapper.getReferencedMappers() ) {
-            mapperReferencesForConstructor.add( (AnnotationMapperReference) mapperReference );
+            if ( mapperReference.isUsed() ) {
+                mapperReferencesForConstructor.add( (AnnotationMapperReference) mapperReference );
+            }
         }
 
         List<Annotation> mapperReferenceAnnotations = getMapperReferenceAnnotations();
