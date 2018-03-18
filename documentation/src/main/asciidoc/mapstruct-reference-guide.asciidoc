@@ -1041,7 +1041,7 @@ The algorithm for finding a mapping or factory method resembles Java's method re
 
 [TIP]
 ====
-When working with JAXB, e.g. when converting a `String` to a corresponding `JAXBElement<String>`, MapStruct will take the `scope` and `name` attributes of `@XmlElementDecl` annotations into account when looking for a mapping method. This makes sure that the created `JAXBElement` instances will have the right QNAME value. You can find a test which maps JAXB objects https://github.com/mapstruct/mapstruct/blob/{mapstructVersion}/integrationtest/src/test/java/org/mapstruct/itest/jaxb/JaxbBasedMapperTest.java[here].
+When working with JAXB, e.g. when converting a `String` to a corresponding `JAXBElement<String>`, MapStruct will take the `scope` and `name` attributes of `@XmlElementDecl` annotations into account when looking for a mapping method. This makes sure that the created `JAXBElement` instances will have the right QNAME value. You can find a test which maps JAXB objects https://github.com/mapstruct/mapstruct/blob/{mapstructVersion}/integrationtest/src/test/resources/jaxbTest/src/test/java/org/mapstruct/itest/jaxb/JaxbBasedMapperTest.java[here].
 ====
 
 [[selection-based-on-qualifiers]]
