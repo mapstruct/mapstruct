@@ -16,32 +16,32 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.nestedprop;
+package org.mapstruct.ap.test.builder.nestedprop.expanding;
 
-public class ImmutableTargetContainer {
-    private final String foo;
+public class ImmutableArticle {
+    private final String description;
 
-    ImmutableTargetContainer(ImmutableTargetContainer.Builder builder) {
-        this.foo = builder.foo;
+    ImmutableArticle(ImmutableArticle.Builder builder) {
+        this.description = builder.description;
     }
 
-    public static ImmutableTargetContainer.Builder builder() {
-        return new ImmutableTargetContainer.Builder();
+    public static ImmutableArticle.Builder builder() {
+        return new ImmutableArticle.Builder();
     }
 
-    public String getFoo() {
-        return foo;
+    public String getDescription() {
+        return description;
     }
 
     public static class Builder {
-        private String foo;
+        private String description;
 
-        public ImmutableTargetContainer build() {
-            return new ImmutableTargetContainer( this );
+        public ImmutableArticle build() {
+            return new ImmutableArticle( this );
         }
 
-        public ImmutableTargetContainer.Builder foo(String foo) {
-            this.foo = foo;
+        public ImmutableArticle.Builder description(String description) {
+            this.description = description;
             return this;
         }
     }

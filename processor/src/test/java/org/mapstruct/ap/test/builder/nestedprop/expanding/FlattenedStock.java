@@ -16,38 +16,38 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.nestedprop;
+package org.mapstruct.ap.test.builder.nestedprop.expanding;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class FlattenedSource {
-    private String foo;
-    private String bar;
+public class FlattenedStock {
+    private String article1;
+    private String article2;
     private int count;
 
-    public FlattenedSource() {
+    public FlattenedStock() {
     }
 
-    public FlattenedSource(String foo, String bar, int count) {
-        this.foo = checkNotNull( foo );
-        this.bar = checkNotNull( bar );
+    public FlattenedStock(String article1, String article2, int count) {
+        this.article1 = checkNotNull( article1 );
+        this.article2 = checkNotNull( article2 );
         this.count = count;
     }
 
-    public String getFoo() {
-        return foo;
+    public String getArticle1() {
+        return article1;
     }
 
-    public void setFoo(String foo) {
-        this.foo = foo;
+    public void setArticle1(String article1) {
+        this.article1 = article1;
     }
 
-    public String getBar() {
-        return bar;
+    public String getArticle2() {
+        return article2;
     }
 
-    public void setBar(String bar) {
-        this.bar = bar;
+    public void setArticle2(String article2) {
+        this.article2 = article2;
     }
 
     public int getCount() {
