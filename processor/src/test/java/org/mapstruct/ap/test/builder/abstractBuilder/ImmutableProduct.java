@@ -31,7 +31,6 @@ public class ImmutableProduct extends AbstractImmutableProduct {
         return new ImmutableProductBuilder();
     }
 
-    @Override
     public Integer getPrice() {
         return price;
     }

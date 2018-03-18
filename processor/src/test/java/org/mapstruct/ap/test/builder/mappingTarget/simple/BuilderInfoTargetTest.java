@@ -26,6 +26,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 @WithClasses({
     SimpleMutableSource.class,
@@ -49,5 +52,19 @@ public class BuilderInfoTargetTest {
         );
         assertThat( targetObject.getAge() ).isEqualTo( 3 );
         assertThat( targetObject.getName() ).isEqualTo( "Bob" );
+    }
+
+    @WithClasses(ErroneousSimpleBuilderMapper.class)
+    @Test
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousSimpleBuilderMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 26,
+                messageRegExp = "^Can't generate mapping method when @MappingTarget is supposed to be immutable "
+                + "\\(has a builder\\)\\.$")
+        })
+    public void shouldFailCannotModifyImmutable() {
+
     }
 }
