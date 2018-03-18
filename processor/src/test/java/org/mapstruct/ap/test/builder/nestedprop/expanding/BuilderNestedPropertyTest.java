@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.nestedprop;
+package org.mapstruct.ap.test.builder.nestedprop.expanding;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,25 +29,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Verifies that nested property mapping works with an immutable intermediate type.
  */
 @WithClasses({
-    FlattenedSource.class,
-    ExpandedTarget.class,
-    ImmutableTargetContainer.class,
-    FlattenedMapper.class
+    FlattenedStock.class,
+    ImmutableExpandedStock.class,
+    ImmutableArticle.class,
+    ExpandingMapper.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class BuilderNestedPropertyTest {
 
     @Test
     public void testNestedImmutablePropertyMapper() {
-        ExpandedTarget expandedTarget = FlattenedMapper.INSTANCE.writeToNestedProperty( new FlattenedSource(
-            "Foo",
-            "Bar",
-            33
-        ) );
+        FlattenedStock stock = new FlattenedStock( "Sock", "Tie", 33 );
+        ImmutableExpandedStock expandedTarget = ExpandingMapper.INSTANCE.writeToNestedProperty( stock );
         assertThat( expandedTarget ).isNotNull();
         assertThat( expandedTarget.getCount() ).isEqualTo( 33 );
         assertThat( expandedTarget.getSecond() ).isNull();
         assertThat( expandedTarget.getFirst() ).isNotNull();
-        assertThat( expandedTarget.getFirst().getFoo() ).isEqualTo( "33" );
+        assertThat( expandedTarget.getFirst().getDescription() ).isEqualTo( "Sock" );
     }
 }

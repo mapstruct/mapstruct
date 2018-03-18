@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.nestedprop;
+package org.mapstruct.ap.test.builder.nestedprop.expanding;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,13 +24,14 @@ import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface FlattenedMapper {
+public interface ExpandingMapper {
 
-    FlattenedMapper INSTANCE = Mappers.getMapper( FlattenedMapper.class );
+    ExpandingMapper INSTANCE = Mappers.getMapper( ExpandingMapper.class );
 
     @Mappings({
-        @Mapping(target = "first.foo", source = "count"),
+        @Mapping(target = "articleCount", source = "count"),
+        @Mapping(target = "first.description", source = "article1"),
         @Mapping(target = "second", ignore = true)
     })
-    ExpandedTarget writeToNestedProperty(FlattenedSource source);
+    ImmutableExpandedStock writeToNestedProperty(FlattenedStock source);
 }

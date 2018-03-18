@@ -16,15 +16,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.builder.nestedprop;
+package org.mapstruct.ap.test.builder.nestedprop.expanding;
 
-public class ExpandedTarget {
+public class ImmutableExpandedStock {
     private final int count;
-    private final ImmutableTargetContainer first;
-    private final ImmutableTargetContainer second;
+    private final ImmutableArticle first;
+    private final ImmutableArticle second;
 
-    ExpandedTarget(Builder builder) {
-        this.count = builder.count;
+    ImmutableExpandedStock(Builder builder) {
+        this.count = builder.articleCount;
         this.first = builder.first;
         this.second = builder.second;
     }
@@ -37,36 +37,36 @@ public class ExpandedTarget {
         return count;
     }
 
-    public ImmutableTargetContainer getFirst() {
+    public ImmutableArticle getFirst() {
         return first;
     }
 
-    public ImmutableTargetContainer getSecond() {
+    public ImmutableArticle getSecond() {
         return second;
     }
 
     public static class Builder {
-        private int count;
-        private ImmutableTargetContainer first;
-        private ImmutableTargetContainer second;
+        private int articleCount;
+        private ImmutableArticle first;
+        private ImmutableArticle second;
 
-        public Builder count(int count) {
-            this.count = count;
+        public Builder articleCount(int articleCount) {
+            this.articleCount = articleCount;
             return this;
         }
 
-        public Builder first(ImmutableTargetContainer first) {
+        public Builder first(ImmutableArticle first) {
             this.first = first;
             return this;
         }
 
-        public Builder second(ImmutableTargetContainer second) {
+        public Builder second(ImmutableArticle second) {
             this.second = second;
             return this;
         }
 
-        public ExpandedTarget build() {
-            return new ExpandedTarget( this );
+        public ImmutableExpandedStock build() {
+            return new ImmutableExpandedStock( this );
         }
     }
 }
