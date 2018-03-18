@@ -20,10 +20,15 @@ package org.mapstruct.ap.test.builder.simple;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper
 public interface SimpleBuilderMapper {
 
-    @Mapping(target = "name", source = "fullName")
-    SimpleImmutableTarget toImmutable(SimpleMutableSource source);
+    @Mappings({
+        @Mapping(target = "name", source = "fullName"),
+        @Mapping(target = "job", constant = "programmer"),
+        @Mapping(target = "city", expression = "java(\"Bengalore\")")
+    })
+    SimpleImmutablePerson toImmutable(SimpleMutablePerson source);
 }
