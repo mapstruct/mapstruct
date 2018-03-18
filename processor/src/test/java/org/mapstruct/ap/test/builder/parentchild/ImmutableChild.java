@@ -20,25 +20,25 @@ package org.mapstruct.ap.test.builder.parentchild;
 
 public class ImmutableChild {
 
-    private final String bar;
+    private final String name;
 
     private ImmutableChild(Builder builder) {
-        this.bar = builder.bar;
+        this.name = builder.name;
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public String getBar() {
-        return bar;
+    public String getName() {
+        return name;
     }
 
     public static class Builder {
-        private String bar;
+        private String name;
 
-        public ImmutableChild.Builder bar(String bar) {
-            this.bar = bar;
+        public ImmutableChild.Builder name(String name) {
+            this.name = name;
             return this;
         }
 

@@ -19,20 +19,21 @@
 package org.mapstruct.ap.test.builder.parentchild;
 
 public class MutableChild {
+
     public MutableChild() {
     }
 
-    public MutableChild(String foo) {
-        this.foo = foo;
+    public MutableChild(String childName) {
+        this.childName = childName;
     }
 
-    private String foo;
+    private String childName;
 
-    public String getFoo() {
-        return foo;
+    public String getChildName() {
+        return childName;
     }
 
-    public void setFoo(String foo) {
-        this.foo = foo;
+    public void setChildName(String childName) {
+        this.childName = childName;
     }
 }
