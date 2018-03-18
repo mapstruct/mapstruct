@@ -32,8 +32,8 @@ import org.mapstruct.factory.Mappers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses({
-    SimpleMutableSource.class,
-    SimpleImmutableTarget.class
+    SimpleMutablePerson.class,
+    SimpleImmutablePerson.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class SimpleImmutableBuilderTest {
@@ -45,14 +45,16 @@ public class SimpleImmutableBuilderTest {
     @WithClasses({ SimpleBuilderMapper.class })
     public void testSimpleImmutableBuilderHappyPath() {
         SimpleBuilderMapper mapper = Mappers.getMapper( SimpleBuilderMapper.class );
-        SimpleMutableSource source = new SimpleMutableSource();
+        SimpleMutablePerson source = new SimpleMutablePerson();
         source.setAge( 3 );
         source.setFullName( "Bob" );
 
-        SimpleImmutableTarget targetObject = mapper.toImmutable( source );
+        SimpleImmutablePerson targetObject = mapper.toImmutable( source );
 
         assertThat( targetObject.getAge() ).isEqualTo( 3 );
         assertThat( targetObject.getName() ).isEqualTo( "Bob" );
+        assertThat( targetObject.getJob() ).isEqualTo( "programmer" );
+        assertThat( targetObject.getCity() ).isEqualTo( "Bengalore" );
     }
 
     @Test
@@ -61,7 +63,7 @@ public class SimpleImmutableBuilderTest {
         diagnostics = @Diagnostic(
             kind = javax.tools.Diagnostic.Kind.ERROR,
             type = ErroneousSimpleBuilderMapper.class,
-            line = 27,
+            line = 33,
             messageRegExp = "Unmapped target property: \"name\"\\."))
     public void testSimpleImmutableBuilderMissingPropertyFailsToCompile() {
     }

@@ -18,13 +18,17 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
-public class SimpleImmutableTarget {
+public class SimpleImmutablePerson {
     private final String name;
     private final int age;
+    private final String job;
+    private final String city;
 
-    SimpleImmutableTarget(Builder builder) {
+    SimpleImmutablePerson(Builder builder) {
         this.name = builder.name;
         this.age = builder.age;
+        this.job = builder.job;
+        this.city = builder.city;
     }
 
     public static Builder builder() {
@@ -39,21 +43,41 @@ public class SimpleImmutableTarget {
         return name;
     }
 
+    public String getJob() {
+        return job;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
     public static class Builder {
         private String name;
         private int age;
+        private String job;
+        private String city;
 
         public Builder age(int age) {
             this.age = age;
             return this;
         }
 
-        public SimpleImmutableTarget build() {
-            return new SimpleImmutableTarget( this );
+        public SimpleImmutablePerson build() {
+            return new SimpleImmutablePerson( this );
         }
 
         public Builder name(String name) {
             this.name = name;
+            return this;
+        }
+
+        public Builder job(String job) {
+            this.job = job;
+            return this;
+        }
+
+        public Builder city(String city) {
+            this.city = city;
             return this;
         }
     }

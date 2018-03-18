@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
-public class SimpleMutableSource {
+public class SimpleMutablePerson {
     private String fullName;
     private int age;
 
