@@ -29,6 +29,6 @@ public interface ParentChildMapper {
 
     ImmutableParent toParent(MutableParent source);
 
-    @Mapping(target = "bar", source = "foo")
+    @Mapping(target = "name", source = "childName")
     ImmutableChild toChild(MutableChild source);
 }
