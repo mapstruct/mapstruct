@@ -61,7 +61,7 @@ public class ParentChildBuilderTest {
         return new Condition<ImmutableChild>( "Matching name" ) {
             @Override
             public boolean matches(ImmutableChild value) {
-                return name.equals( value.getBar() );
+                return name.equals( value.getName() );
             }
         };
     }
