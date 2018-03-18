@@ -403,13 +403,19 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             return false;
         }
 
+        if ( targetParameter != null && targetParameter.getType().getBuilderType() != null  ) {
+            messager.printMessage( method, Message.RETRIEVAL_IMMUTABLE_TARGET );
+            return false;
+        }
+
         if ( isVoid( resultType ) ) {
             messager.printMessage( method, Message.RETRIEVAL_VOID_MAPPING_METHOD );
             return false;
         }
 
         if ( returnType.getTypeMirror().getKind() != TypeKind.VOID &&
-            !resultType.isAssignableTo( returnType ) ) {
+            !resultType.isAssignableTo( returnType ) &&
+            !resultType.isAssignableTo( returnType.getEffectiveType() )) {
             messager.printMessage( method, Message.RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE );
             return false;
         }

@@ -16,31 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.test.builder.mappingTarget.simple;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
-/**
- * Indicates a type was visited whose hierarchy was erroneous, because it has a non-existing super-type.
- *
- * @author Gunnar Morling
- */
-public class TypeHierarchyErroneousException extends RuntimeException {
+@Mapper
+public interface SimpleBuilderMapper {
 
-    private static final long serialVersionUID = 1L;
+    SimpleBuilderMapper INSTANCE = Mappers.getMapper( SimpleBuilderMapper.class );
 
-    private final TypeMirror type;
+    @Mapping(target = "builder.name", source = "source.fullName")
+    SimpleImmutableTarget toImmutable(SimpleMutableSource source, @MappingTarget SimpleImmutableTarget.Builder builder);
 
-    public TypeHierarchyErroneousException(TypeElement element) {
-        this( element.asType() );
-    }
+    @Mapping(target = "builder.name", source = "source.fullName")
+    void updateImmutable(SimpleMutableSource source, @MappingTarget SimpleImmutableTarget.Builder builder);
 
-    public TypeHierarchyErroneousException(TypeMirror type) {
-        this.type = type;
-    }
-
-    public TypeMirror getType() {
-        return type;
-    }
+    @Mapping(target = "name", source = "fullName")
+    SimpleImmutableTarget toImmutable(SimpleMutableSource source);
 }

@@ -40,6 +40,7 @@ import javax.tools.Diagnostic;
 import org.mapstruct.ap.internal.model.PropertyMapping.ConstantMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.JavaExpressionMappingBuilder;
 import org.mapstruct.ap.internal.model.PropertyMapping.PropertyMappingBuilder;
+import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
@@ -76,6 +77,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
     private final Type resultType;
+    private final MethodReference finalizerMethod;
 
     public static class Builder {
 
@@ -112,7 +114,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             this.method = sourceMethod;
             this.methodMappings = sourceMethod.getMappingOptions().getMappings();
             CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
-            Map<String, Accessor> accessors = method.getResultType().getPropertyWriteAccessors( cms );
+            Map<String, Accessor> accessors = method.getResultType()
+                .getEffectiveType()
+                .getPropertyWriteAccessors( cms );
             this.targetProperties = accessors.keySet();
 
             this.unprocessedTargetProperties = new LinkedHashMap<String, Accessor>( accessors );
@@ -184,7 +188,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             Type resultType = null;
             if ( factoryMethod == null ) {
                 if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
-                    resultType = ctx.getTypeFactory().getType( selectionParameters.getResultType() );
+                    resultType = ctx.getTypeFactory().getType( selectionParameters.getResultType() ).getEffectiveType();
                     if ( resultType.isAbstract() ) {
                         ctx.getMessager().printMessage(
                             method.getExecutable(),
@@ -210,18 +214,19 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         );
                     }
                 }
-                else if ( !method.isUpdateMethod() && method.getReturnType().isAbstract() ) {
+                else if ( !method.isUpdateMethod() && method.getReturnType().getEffectiveType().isAbstract() ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
                         Message.GENERAL_ABSTRACT_RETURN_TYPE,
-                        method.getReturnType()
+                        method.getReturnType().getEffectiveType()
                     );
                 }
-                else if ( !method.isUpdateMethod() && !method.getReturnType().hasEmptyAccessibleContructor() ) {
+                else if ( !method.isUpdateMethod() &&
+                    !method.getReturnType().getEffectiveType().hasEmptyAccessibleContructor() ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
                         Message.GENERAL_NO_SUITABLE_CONSTRUCTOR,
-                        method.getReturnType()
+                        method.getReturnType().getEffectiveType()
                     );
                 }
             }
@@ -241,6 +246,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 ( (ForgedMethod) method ).addThrownTypes( factoryMethod.getThrownTypes() );
             }
 
+            MethodReference finalizeMethod = getFinalizerMethod(
+                resultType == null ? method.getReturnType() : resultType );
+
             return new BeanMappingMethod(
                 method,
                 existingVariableNames,
@@ -249,8 +257,23 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 mapNullToDefault,
                 resultType,
                 beforeMappingMethods,
-                afterMappingMethods
+                afterMappingMethods,
+                finalizeMethod
             );
+        }
+
+        private MethodReference getFinalizerMethod(Type resultType) {
+            if ( method.getReturnType().isVoid() ||
+                resultType.getEffectiveType().isAssignableTo( resultType ) ) {
+                return null;
+            }
+            BuilderType builderType = resultType.getBuilderType();
+            if ( builderType == null ) {
+                // If the mapping type is assignable to the result type this should never happen
+                return null;
+            }
+
+            return MethodReference.forMethodCall( builderType.getBuildMethod() );
         }
 
         /**
@@ -786,7 +809,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               boolean mapNullToDefault,
                               Type resultType,
                               List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                              List<LifecycleCallbackMethodReference> afterMappingReferences) {
+                              List<LifecycleCallbackMethodReference> afterMappingReferences,
+                              MethodReference finalizerMethod) {
         super(
             method,
             existingVariableNames,
@@ -797,6 +821,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         );
 
         this.propertyMappings = propertyMappings;
+        this.finalizerMethod = finalizerMethod;
 
         // intialize constant mappings as all mappings, but take out the ones that can be contributed to a
         // parameter mapping.
@@ -838,6 +863,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
     }
 
+    public MethodReference getFinalizerMethod() {
+        return finalizerMethod;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = super.getImportTypes();
@@ -845,6 +874,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         for ( PropertyMapping propertyMapping : propertyMappings ) {
             types.addAll( propertyMapping.getImportTypes() );
         }
+
+        types.add( getResultType().getEffectiveType() );
 
         return types;
     }

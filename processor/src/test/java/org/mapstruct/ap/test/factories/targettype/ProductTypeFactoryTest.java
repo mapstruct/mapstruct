@@ -31,7 +31,7 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 @WithClasses( { Foo9Base.class, Foo9Child.class, Bar9Base.class, Bar9Child.class, Bar9Factory.class,
     TargetTypeFactoryTestMapper.class } )
 @RunWith( AnnotationProcessorTestRunner.class )
-public class TargetTypeFactoryTest {
+public class ProductTypeFactoryTest {
 
     @Test
     public void shouldUseFactoryTwoCreateBaseClassDueToTargetType() {

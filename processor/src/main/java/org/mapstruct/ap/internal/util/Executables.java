@@ -47,6 +47,7 @@ import org.mapstruct.ap.internal.util.accessor.VariableElementAccessor;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.MethodType;
+import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 /**
  * Provides functionality around {@link ExecutableElement}s.

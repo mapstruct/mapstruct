@@ -153,6 +153,7 @@ public class TargetReference {
 
             boolean foundEntryMatch;
             Type resultType = method.getResultType();
+            resultType = resultType.getEffectiveType();
 
             // there can be 4 situations
             // 1. Return type
@@ -190,8 +191,9 @@ public class TargetReference {
             // last entry
             for ( int i = 0; i < entryNames.length; i++ ) {
 
-                Accessor targetReadAccessor = nextType.getPropertyReadAccessors().get( entryNames[i] );
-                Accessor targetWriteAccessor = nextType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
+                Type mappingType = nextType.getEffectiveType();
+                Accessor targetReadAccessor = mappingType.getPropertyReadAccessors().get( entryNames[i] );
+                Accessor targetWriteAccessor = mappingType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
                 boolean isLast = i == entryNames.length - 1;
                 boolean isNotLast = i < entryNames.length - 1;
                 if ( isWriteAccessorNotValidWhenNotLast( targetWriteAccessor, isNotLast )
@@ -235,13 +237,13 @@ public class TargetReference {
             if ( Executables.isGetterMethod( toUse ) ||
                 Executables.isFieldAccessor( toUse ) ) {
                 nextType = typeFactory.getReturnType(
-                    (DeclaredType) initial.getTypeMirror(),
+                    (DeclaredType) initial.getEffectiveType().getTypeMirror(),
                     toUse
                 );
             }
             else {
                 nextType = typeFactory.getSingleParameter(
-                    (DeclaredType) initial.getTypeMirror(),
+                    (DeclaredType) initial.getEffectiveType().getTypeMirror(),
                     toUse
                 ).getType();
             }
@@ -255,6 +257,10 @@ public class TargetReference {
             }
             else if ( targetWriteAccessor == null ) {
                 errorMessage = new NoWriteAccessorErrorMessage( mapping, method, messager );
+            }
+            else {
+                //TODO there is no read accessor. What should we do here?
+                errorMessage = new NoPropertyErrorMessage( mapping, method, messager, entryNames, index, nextType );
             }
         }
 
