@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * builder class, and some of the properties are written by the concrete builder implementation.
  */
 @WithClasses({
-    Product.class,
     AbstractProductBuilder.class,
     AbstractImmutableProduct.class,
     ImmutableProduct.class,

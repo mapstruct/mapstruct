@@ -19,8 +19,9 @@
 package org.mapstruct.ap.test.builder.mappingTarget.simple;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 @Mapper
-public interface InvalidSimpleBuilderMapper {
-    SimpleImmutableTarget toImmutable(SimpleMutableSource source);
+public interface ErroneousSimpleBuilderMapper {
+    void toImmutable(SimpleMutableSource source, @MappingTarget SimpleImmutableTarget target);
 }

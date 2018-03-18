@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.test.builder.abstractBuilder;
 
-public abstract class AbstractProductBuilder<T extends Product> {
+public abstract class AbstractProductBuilder<T extends AbstractImmutableProduct> {
 
     protected String name;
 

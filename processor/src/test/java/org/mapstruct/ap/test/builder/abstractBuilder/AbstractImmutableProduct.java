@@ -21,7 +21,7 @@ package org.mapstruct.ap.test.builder.abstractBuilder;
 /**
  * @author Filip Hrisafov
  */
-public abstract class AbstractImmutableProduct implements Product {
+public abstract class AbstractImmutableProduct {
 
     private final String name;
 
