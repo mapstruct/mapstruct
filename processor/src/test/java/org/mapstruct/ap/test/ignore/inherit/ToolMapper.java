@@ -16,31 +16,38 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.ignore;
+package org.mapstruct.ap.test.ignore.inherit;
 
 import org.mapstruct.BeanMapping;
-import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
+/**
+ *
+ * @author Sjaak Derksen
+ */
 @Mapper
-public interface AnimalMapper {
+public interface ToolMapper {
 
-    AnimalMapper INSTANCE = Mappers.getMapper( AnimalMapper.class );
+    ToolMapper INSTANCE = Mappers.getMapper( ToolMapper.class );
 
-    @Mappings({
-        @Mapping(target = "publicAge", ignore = true),
-        @Mapping(target = "age", ignore = true),
-        @Mapping(target = "publicColor", source = "publicColour", ignore = true),
-        @Mapping(target = "color", source = "colour", ignore = true)
-    })
-    AnimalDto animalToDto(Animal animal);
-
+    //
+    @InheritConfiguration( name = "mapTool" )
     @BeanMapping( ignoreByDefault = true )
-    AnimalDto animalToDtoIgnoreAll(Animal animal);
+    HammerEntity mapHammer(HammerDto source);
 
-    @InheritInverseConfiguration( name = "animalToDto" )
-    Animal animalDtoToAnimal(AnimalDto animalDto);
+    @Mapping( target = "type", source = "toolType" )
+    @InheritConfiguration( name = "mapBase" )
+    ToolEntity mapTool(ToolDto source);
+
+    // demonstrates that all the businss stuff is mapped (implicit-by-name and defined)
+    @InheritConfiguration( name = "mapBase" )
+    @Mapping(target = "description", source = "articleDescription")
+    WorkBenchEntity mapBench(WorkBenchDto source);
+
+    // ignore all the base properties by default
+    @BeanMapping( ignoreByDefault = true )
+    BaseEntity mapBase(Object o);
 }

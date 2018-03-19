@@ -211,6 +211,25 @@ public class Mapping {
         );
     }
 
+   public static Mapping forIgnore( String targetName) {
+        return new Mapping(
+            null,
+            null,
+            null,
+            null,
+            targetName,
+            null,
+            true,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            new ArrayList()
+        );
+    }
+
     @SuppressWarnings("checkstyle:parameternumber")
     private Mapping( String sourceName, String constant, String javaExpression, String defaultJavaExpression,
                      String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,

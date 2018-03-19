@@ -38,6 +38,17 @@ public class BeanMapping {
     private final SelectionParameters selectionParameters;
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
     private final ReportingPolicyPrism reportingPolicy;
+    private final boolean ignoreByDefault;
+
+    /**
+     * creates a mapping for inheritance. Will set ignoreByDefault to false.
+     *
+     * @param map
+     * @return
+     */
+    public static BeanMapping forInheritance( BeanMapping map ) {
+        return new BeanMapping( map.selectionParameters, map.nullValueMappingStrategy, map.reportingPolicy, false );
+    }
 
     public static BeanMapping fromPrism(BeanMappingPrism beanMapping, ExecutableElement method,
         FormattingMessager messager, Types typeUtils) {
@@ -53,8 +64,9 @@ public class BeanMapping {
                             ? null
                             : NullValueMappingStrategyPrism.valueOf( beanMapping.nullValueMappingStrategy() );
 
+        boolean ignoreByDefault = beanMapping.ignoreByDefault();
         if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() && beanMapping.qualifiedByName().isEmpty()
-            && ( nullValueMappingStrategy == null ) ) {
+            && ( nullValueMappingStrategy == null ) && !ignoreByDefault ) {
 
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
         }
@@ -67,7 +79,7 @@ public class BeanMapping {
         );
 
         //TODO Do we want to add the reporting policy to the BeanMapping as well? To give more granular support?
-        return new BeanMapping( cmp, nullValueMappingStrategy, null );
+        return new BeanMapping( cmp, nullValueMappingStrategy, null, ignoreByDefault );
     }
 
     /**
@@ -77,14 +89,15 @@ public class BeanMapping {
      * @return bean mapping that needs to be used for Mappings
      */
     public static BeanMapping forForgedMethods() {
-        return new BeanMapping( null, null, ReportingPolicyPrism.IGNORE );
+        return new BeanMapping( null, null, ReportingPolicyPrism.IGNORE, false );
     }
 
     private BeanMapping(SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms,
-        ReportingPolicyPrism reportingPolicy) {
+        ReportingPolicyPrism reportingPolicy, boolean ignoreByDefault) {
         this.selectionParameters = selectionParameters;
         this.nullValueMappingStrategy = nvms;
         this.reportingPolicy = reportingPolicy;
+        this.ignoreByDefault = ignoreByDefault;
     }
 
     public SelectionParameters getSelectionParameters() {
@@ -98,4 +111,9 @@ public class BeanMapping {
     public ReportingPolicyPrism getReportingPolicy() {
         return reportingPolicy;
     }
+
+    public boolean isignoreByDefault() {
+        return ignoreByDefault;
+    }
+
 }

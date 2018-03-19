@@ -16,31 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.ignore;
+package org.mapstruct.ap.test.ignore.expand;
 
 import org.mapstruct.BeanMapping;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
+/**
+ *
+ * @author Sjaak Derksen
+ */
 @Mapper
-public interface AnimalMapper {
+public interface ToolBoxMapper {
 
-    AnimalMapper INSTANCE = Mappers.getMapper( AnimalMapper.class );
+    ToolBoxMapper INSTANCE = Mappers.getMapper( ToolBoxMapper.class );
 
-    @Mappings({
-        @Mapping(target = "publicAge", ignore = true),
-        @Mapping(target = "age", ignore = true),
-        @Mapping(target = "publicColor", source = "publicColour", ignore = true),
-        @Mapping(target = "color", source = "colour", ignore = true)
-    })
-    AnimalDto animalToDto(Animal animal);
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping( target = "hammer.description", source = "hammerDescription" )
+    ExpandedToolbox expand( FlattenedToolBox toolbox );
 
-    @BeanMapping( ignoreByDefault = true )
-    AnimalDto animalToDtoIgnoreAll(Animal animal);
-
-    @InheritInverseConfiguration( name = "animalToDto" )
-    Animal animalDtoToAnimal(AnimalDto animalDto);
 }

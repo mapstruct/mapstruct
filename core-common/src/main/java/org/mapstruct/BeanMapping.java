@@ -73,4 +73,14 @@ public @interface BeanMapping {
      * @return The strategy to be applied when {@code null} is passed as source value to the methods of this mapping.
      */
     NullValueMappingStrategy nullValueMappingStrategy() default NullValueMappingStrategy.RETURN_NULL;
+
+    /**
+     * Default ignore all mappings. All mappings have to be defined manually. No automatic mapping will take place. No
+     * warning will be issued on missing target properties.
+     *
+     * @return The ignore strategy (default false).
+     *
+     * @since 1.3
+     */
+    boolean ignoreByDefault() default false;
 }

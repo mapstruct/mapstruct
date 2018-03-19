@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model.source;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +31,9 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
  * Encapsulates all options specifiable on a mapping method
@@ -234,7 +237,7 @@ public class MappingOptions {
 
             if ( getBeanMapping() == null ) {
                 if ( inherited.getBeanMapping() != null ) {
-                    setBeanMapping( inherited.getBeanMapping() );
+                    setBeanMapping( BeanMapping.forInheritance( inherited.getBeanMapping() ) );
                 }
             }
 
@@ -290,8 +293,23 @@ public class MappingOptions {
 
             setMappings( newMappings );
         }
+    }
 
-        markAsFullyInitialized();
+    public void applyIgnoreAll(MappingOptions inherited, SourceMethod method, FormattingMessager messager,
+                               TypeFactory typeFactory ) {
+        CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
+        Map<String, Accessor> writeAccessors = method.getResultType().getPropertyWriteAccessors( cms );
+        List<String> mappedPropertyNames = new ArrayList<String>();
+        for ( String targetMappingName : mappings.keySet() ) {
+            mappedPropertyNames.add( targetMappingName.split( "\\." )[0] );
+        }
+        for ( String targetPropertyName : writeAccessors.keySet() ) {
+            if ( !mappedPropertyNames.contains( targetPropertyName ) ) {
+                Mapping mapping = Mapping.forIgnore( targetPropertyName );
+                mapping.init( method, messager, typeFactory );
+                mappings.put( targetPropertyName, Arrays.asList( mapping ) );
+            }
+        }
     }
 
     private void filterNestedTargetIgnores( Map<String, List<Mapping>> mappings) {

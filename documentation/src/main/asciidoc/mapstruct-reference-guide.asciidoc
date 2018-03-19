@@ -305,13 +305,19 @@ public interface CarMapper {
 
 The `@Mapper` annotation causes the MapStruct code generator to create an implementation of the `CarMapper` interface during build-time.
 
-In the generated method implementations all readable properties from the source type (e.g. `Car`) will be copied into the corresponding property in the target type (e.g. `CarDto`). If a property has a different name in the target entity, its name can be specified via the `@Mapping` annotation.
+In the generated method implementations all readable properties from the source type (e.g. `Car`) will be copied into the corresponding property in the target type (e.g. `CarDto`):
+
+* When a property has the same name as its target entity counterpart, it will be mapped implicitly.
+* When a property has a different name in the target entity, its name can be specified via the `@Mapping` annotation.
 
 [TIP]
 ====
 The property name as defined in the http://www.oracle.com/technetwork/java/javase/documentation/spec-136004.html[JavaBeans specification] must be specified in the `@Mapping` annotation, e.g. _seatCount_ for a property with the accessor methods `getSeatCount()` and `setSeatCount()`.
 ====
-
+[TIP]
+====
+By means of the `@BeanMapping(ignoreByDefault = true)` the default behavior will be *explicit mapping*, meaning that all mappings have to be specified by means of the `@Mapping` and no warnings will be issued on missing target properties.
+====
 [TIP]
 ====
 Fluent setters are also supported.

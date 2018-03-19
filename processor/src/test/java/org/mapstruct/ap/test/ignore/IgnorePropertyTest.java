@@ -57,6 +57,22 @@ public class IgnorePropertyTest {
     }
 
     @Test
+    @IssueKey("1392")
+    public void shouldIgnoreAllTargetPropertiesWithNoUnmappedTargetWarnings() {
+        Animal animal = new Animal( "Bruno", 100, 23, "black" );
+
+        AnimalDto animalDto = AnimalMapper.INSTANCE.animalToDtoIgnoreAll( animal );
+
+        assertThat( animalDto ).isNotNull();
+        assertThat( animalDto.getName() ).isNull();
+        assertThat( animalDto.getSize() ).isNull();
+        assertThat( animalDto.getAge() ).isNull();
+        assertThat( animalDto.publicAge ).isNull();
+        assertThat( animalDto.getColor() ).isNull();
+        assertThat( animalDto.publicColor ).isNull();
+    }
+
+    @Test
     @IssueKey("337")
     public void propertyIsIgnoredInReverseMappingWhenSourceIsAlsoSpecifiedICWIgnore() {
         AnimalDto animalDto = new AnimalDto( "Bruno", 100, 23, "black" );
