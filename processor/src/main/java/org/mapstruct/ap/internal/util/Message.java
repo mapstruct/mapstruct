@@ -95,6 +95,7 @@ public enum Message {
     GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK( "No dateFormat check is supported for types %s, %s" ),
     GENERAL_VALID_DATE( "Given date format \"%s\" is valid.", Diagnostic.Kind.NOTE ),
     GENERAL_INVALID_DATE( "Given date format \"%s\" is invalid. Message: \"%s\"." ),
+    GENERAL_JODA_NOT_ON_CLASSPATH( "Cannot validate Joda dateformat, no Joda on classpath. Consider adding Joda to the annotation processorpath.", Diagnostic.Kind.WARNING ),
     GENERAL_NOT_ALL_FORGED_CREATED( "Internal Error in creation of Forged Methods, it was expected all Forged Methods to finished with creation, but %s did not" ),
     GENERAL_NO_SUITABLE_CONSTRUCTOR( "%s does not have an accessible parameterless constructor." ),
 

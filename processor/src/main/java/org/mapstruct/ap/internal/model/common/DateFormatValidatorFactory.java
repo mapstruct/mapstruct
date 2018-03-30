@@ -154,6 +154,9 @@ final class DateFormatValidatorFactory {
             catch ( InvocationTargetException e ) {
                 return invalidDateFormat( dateFormat, e.getCause() );
             }
+            catch ( ClassNotFoundException e ) {
+                return noJodaOnClassPath();
+            }
             catch ( Exception e ) {
                 return invalidDateFormat( dateFormat, e );
             }
@@ -184,5 +187,9 @@ final class DateFormatValidatorFactory {
 
     private static DateFormatValidationResult invalidDateFormat(String dateFormat, Throwable e) {
         return new DateFormatValidationResult( false, Message.GENERAL_INVALID_DATE, dateFormat, e.getMessage() );
+    }
+
+    private static DateFormatValidationResult noJodaOnClassPath() {
+        return new DateFormatValidationResult( false, Message.GENERAL_JODA_NOT_ON_CLASSPATH );
     }
 }
