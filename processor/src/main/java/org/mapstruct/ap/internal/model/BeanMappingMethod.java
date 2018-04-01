@@ -496,13 +496,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 propertyMapping = new ConstantMappingBuilder()
                     .mappingContext( ctx )
                     .sourceMethod( method )
-                    .constantExpression( "\"" + mapping.getConstant() + "\"" )
+                    .constantExpression( mapping.getConstant() )
                     .targetProperty( targetProperty )
                     .targetPropertyName( mapping.getTargetName() )
                     .formattingParameters( mapping.getFormattingParameters() )
                     .selectionParameters( mapping.getSelectionParameters() )
                     .existingVariableNames( existingVariableNames )
                     .dependsOn( mapping.getDependsOn() )
+                    .mirror( mapping.getMirror() )
                     .build();
                 handledTargets.add( mapping.getTargetName() );
             }

@@ -89,6 +89,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isImported;
     private final boolean isVoid;
     private final boolean isStream;
+    private final boolean isBoxed;
+    private final boolean isOriginatedFromConstant;
 
     private final List<String> enumConstants;
 
@@ -111,7 +113,8 @@ public class Type extends ModelElement implements Comparable<Type> {
                 BuilderInfo builderInfo,
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
-                boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported) {
+                boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported,
+                boolean isBoxed, boolean isOriginatedFromConstant ) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
@@ -135,6 +138,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isStream = isStreamType;
         this.isImported = isImported;
         this.isVoid = typeMirror.getKind() == TypeKind.VOID;
+        this.isBoxed = isBoxed;
+        this.isOriginatedFromConstant = isOriginatedFromConstant;
 
         if ( isEnumType ) {
             enumConstants = new ArrayList<String>();
@@ -384,7 +389,9 @@ public class Type extends ModelElement implements Comparable<Type> {
             isCollectionType,
             isMapType,
             isStream,
-            isImported
+            isImported,
+            isBoxed,
+            isOriginatedFromConstant
         );
     }
 
@@ -913,4 +920,13 @@ public class Type extends ModelElement implements Comparable<Type> {
 
         return null;
     }
+
+    public boolean isBoxed() {
+        return isBoxed;
+    }
+
+    public boolean hasOriginatedFromConstant() {
+        return isOriginatedFromConstant;
+    }
+
 }

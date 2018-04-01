@@ -1918,7 +1918,8 @@ This chapter describes several advanced options which allow to fine-tune the beh
 [[default-values-and-constants]]
 === Default values and constants
 
-Default values can be specified to set a predefined value to a target property if the corresponding source property is `null`. Constants can be specified to set such a predefined value in any case. Default values and constants are specified as String values and are subject to type conversion either via built-in conversions or the invocation of other mapping methods in order to match the type required by the target property.
+Default values can be specified to set a predefined value to a target property if the corresponding source property is `null`. Constants can be specified to set such a predefined value in any case. Default values and constants are specified as String values. When the target type is a primitive or a boxed type, the String value is taken literal. Bit / octal / decimal / hex patterns are allowed in such case as long as they are a valid literal.
+In all other cases, constant or default values are subject to type conversion either via built-in conversions or the invocation of other mapping methods in order to match the type required by the target property.
 
 A mapping with a constant must not include a reference to a source property. The following example shows some mappings using default values and constants:
 

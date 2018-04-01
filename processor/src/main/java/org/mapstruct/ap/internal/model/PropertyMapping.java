@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import javax.lang.model.element.AnnotationMirror;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
@@ -116,6 +117,7 @@ public class PropertyMapping extends ModelElement {
 
         protected List<String> dependsOn;
         protected Set<String> existingVariableNames;
+        protected AnnotationMirror mirror;
 
         MappingBuilderBase(Class<T> selfType) {
             super( selfType );
@@ -143,6 +145,11 @@ public class PropertyMapping extends ModelElement {
             this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
             this.targetType = determineTargetType();
 
+            return (T) this;
+        }
+
+        T mirror(AnnotationMirror mirror) {
+            this.mirror = mirror;
             return (T) this;
         }
 
@@ -359,7 +366,7 @@ public class PropertyMapping extends ModelElement {
                 &&  ( !rhs.getSourceType().isPrimitive() || rhs.getSourcePresenceCheckerReference() != null) ) {
                 // cannot check on null source if source is primitive unless it has a presence checker
                 PropertyMapping build = new ConstantMappingBuilder()
-                    .constantExpression( '"' + defaultValue + '"' )
+                    .constantExpression( defaultValue )
                     .formattingParameters( formattingParameters )
                     .selectionParameters( selectionParameters )
                     .dependsOn( dependsOn )
@@ -749,7 +756,12 @@ public class PropertyMapping extends ModelElement {
         public PropertyMapping build() {
             // source
             String sourceErrorMessagePart = "constant '" + constantExpression + "'";
-            Type sourceType = ctx.getTypeFactory().getType( String.class );
+
+            Type sourceType = ctx.getTypeFactory().getTypeForConstant( targetType, constantExpression );
+            if ( String.class.getCanonicalName().equals( sourceType.getFullyQualifiedName() ) ) {
+                // convert to string
+                constantExpression = "\"" + constantExpression + "\"";
+            }
 
             Assignment assignment = null;
             if ( !targetType.isEnumType() ) {
@@ -808,6 +820,7 @@ public class PropertyMapping extends ModelElement {
             else {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
+                    mirror,
                     Message.CONSTANTMAPPING_MAPPING_NOT_FOUND,
                     sourceType,
                     constantExpression,

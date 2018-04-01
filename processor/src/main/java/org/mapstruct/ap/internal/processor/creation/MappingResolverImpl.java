@@ -253,6 +253,18 @@ public class MappingResolverImpl implements MappingResolver {
                 return simpleAssignment;
             }
 
+            // At this point the SourceType will either
+            // 1. be a String
+            // 2. or when its a primitive / wrapped type and analysis successful equal to its TargetType. But in that
+            //    case it should have been direct assignable.
+            // In case of 1. and the target type is still a wrapped or primitive type we must assume that the check
+            // in NativeType is not successful. We don't want to go through type conversion, double mappings etc.
+            // with something that we already know to be wrong.
+            if ( sourceType.hasOriginatedFromConstant() && ( targetType.isPrimitive() || targetType.isBoxed() ) ) {
+                // TODO: convey some error message
+                return null;
+            }
+
             // then type conversion
             Assignment conversion = resolveViaConversion( sourceType, targetType );
             if ( conversion != null ) {

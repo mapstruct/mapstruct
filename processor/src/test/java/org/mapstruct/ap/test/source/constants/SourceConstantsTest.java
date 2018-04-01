@@ -209,12 +209,34 @@ public class SourceConstantsTest {
                     + "constants.CountryEnum for property \"country\".$"),
             @Diagnostic(type = ErroneousMapper5.class,
                 kind = Kind.ERROR,
-                line = 43,
+                line = 41,
                 messageRegExp = "^Can't map \"java.lang.String \"DENMARK\"\" to \"org.mapstruct.ap.test.source."
                     + "constants.CountryEnum country\".$")
         }
     )
     public void errorOnNonExistingEnumConstant() throws ParseException {
+    }
+
+   @Test
+    @IssueKey("1401")
+    @WithClasses({
+        Source.class,
+        Target.class,
+        CountryEnum.class,
+        ErroneousMapper6.class,
+        StringListMapper.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMapper6.class,
+                kind = Kind.ERROR,
+                line = 38,
+                messageRegExp = "^.*Can't map \"java.lang.String \"3001\"\" to \"java.lang.Long "
+                    + "longWrapperConstant\".*$")
+        }
+    )
+    public void cannotMapIntConstantToLong() throws ParseException {
     }
 
     private Date getDate(String format, String date) throws ParseException {

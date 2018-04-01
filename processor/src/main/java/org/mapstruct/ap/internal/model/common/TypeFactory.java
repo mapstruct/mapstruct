@@ -64,6 +64,7 @@ import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.DefaultBuilderProvider;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
+import org.mapstruct.ap.internal.util.NativeTypes;
 
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
@@ -131,6 +132,10 @@ public class TypeFactory {
     }
 
     public Type getType(String canonicalName) {
+        return getType( canonicalName, false );
+    }
+
+    private Type getType(String canonicalName, boolean isOriginatedFromConstant) {
         TypeElement typeElement = elementUtils.getTypeElement( canonicalName );
 
         if ( typeElement == null ) {
@@ -139,7 +144,31 @@ public class TypeFactory {
             );
         }
 
-        return getType( typeElement );
+        return getType( typeElement, isOriginatedFromConstant );
+    }
+
+    public Type getTypeForConstant(Type targetType, String literal) {
+        Type result = null;
+        if ( targetType.isPrimitive() ) {
+            TypeKind kind = targetType.getTypeMirror().getKind();
+            boolean assignable = NativeTypes.isStringAssignable( kind, true, literal );
+            if ( assignable ) {
+                result = getType( targetType.getTypeMirror(), true );
+            }
+        }
+        else {
+            TypeKind boxedTypeKind = NativeTypes.getWrapperKind( targetType.getFullyQualifiedName() );
+            if ( boxedTypeKind != null ) {
+                boolean assignable = NativeTypes.isStringAssignable( boxedTypeKind, false, literal );
+                if ( assignable ) {
+                    result = getType( targetType.getTypeMirror(), true );
+                }
+            }
+        }
+        if ( result == null ) {
+            result = getType( String.class.getCanonicalName(), true );
+        }
+        return result;
     }
 
     /**
@@ -165,7 +194,15 @@ public class TypeFactory {
         return getType( typeElement.asType() );
     }
 
+    private Type getType(TypeElement typeElement, boolean originatedFromConstant) {
+        return getType( typeElement.asType(), originatedFromConstant );
+    }
+
     public Type getType(TypeMirror mirror) {
+        return getType( mirror, false );
+    }
+
+    private Type getType(TypeMirror mirror, boolean originatedFromConstant) {
         if ( !canBeProcessed( mirror ) ) {
             throw new TypeHierarchyErroneousException( mirror );
         }
@@ -186,6 +223,7 @@ public class TypeFactory {
         TypeElement typeElement;
         Type componentType;
         boolean isImported;
+        boolean isBoxed = false;
 
         if ( mirror.getKind() == TypeKind.DECLARED ) {
             DeclaredType declaredType = (DeclaredType) mirror;
@@ -207,6 +245,7 @@ public class TypeFactory {
 
             componentType = null;
             isImported = isImported( name, qualifiedName );
+            isBoxed = NativeTypes.isWrapped( qualifiedName );
         }
         else if ( mirror.getKind() == TypeKind.ARRAY ) {
             TypeMirror componentTypeMirror = getComponentType( mirror );
@@ -267,7 +306,9 @@ public class TypeFactory {
             isCollectionType,
             isMapType,
             isStreamType,
-            isImported
+            isImported,
+            isBoxed,
+            originatedFromConstant
         );
     }
 
@@ -315,8 +356,8 @@ public class TypeFactory {
     }
 
     /**
-     * Get the Type for given method as part of usedMapper. Possibly parameterized types in method declaration
-     * will be evaluated to concrete types then.
+     * Get the Type for given method as part of usedMapper. Possibly parameterized types in method declaration will be
+     * evaluated to concrete types then.
      *
      * @param includingType the type on which's scope the method type shall be evaluated
      * @param method the method
@@ -479,7 +520,9 @@ public class TypeFactory {
                 implementationType.isCollectionType(),
                 implementationType.isMapType(),
                 implementationType.isStreamType(),
-                isImported( implementationType.getName(), implementationType.getFullyQualifiedName() )
+                isImported( implementationType.getName(), implementationType.getFullyQualifiedName() ),
+                implementationType.isBoxed(),
+                implementationType.hasOriginatedFromConstant()
             );
             return implementation.createNew( replacement );
         }
