@@ -125,7 +125,7 @@ public class CollectionAssignmentBuilder {
         Assignment result = assignment;
 
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
-        boolean targetImmutable = cms == CollectionMappingStrategyPrism.TARGET_IMMUTABLE;
+        boolean targetImmutable = cms == CollectionMappingStrategyPrism.TARGET_IMMUTABLE || targetReadAccessor == null;
 
         if ( targetAccessorType == PropertyMapping.TargetWriteAccessorType.SETTER ||
             targetAccessorType == PropertyMapping.TargetWriteAccessorType.FIELD ) {
