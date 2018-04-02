@@ -50,6 +50,8 @@ import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
  * Each type corresponds to a {@link TypeMirror}, i.e. there are different instances for e.g. {@code Set<String>} and
@@ -560,23 +562,21 @@ public class Type extends ModelElement implements Comparable<Type> {
         if ( collectionProperty.isCollectionType ) {
 
             // this is a collection, so this can be done always
-            if ( !collectionProperty.getTypeParameters().isEmpty() ) {
-                // there's only one type arg to a collection
-                TypeMirror typeArg = collectionProperty.getTypeParameters().get( 0 ).getTypeBound().getTypeMirror();
-                // now, look for a method that
-                // 1) starts with add,
-                // 2) and has typeArg as one and only arg
-                List<Accessor> adderList = getAdders();
-                for ( Accessor adder : adderList ) {
-                    ExecutableElement executable = adder.getExecutable();
-                    if ( executable == null ) {
-                        // it should not be null, but to be safe
-                        continue;
-                    }
-                    VariableElement arg = executable.getParameters().get( 0 );
-                    if ( typeUtils.isSameType( arg.asType(), typeArg ) ) {
-                        candidates.add( adder );
-                    }
+            TypeMirror typeArg = first( collectionProperty.determineTypeArguments( Iterable.class ) ).getTypeBound()
+                .getTypeMirror();
+            // now, look for a method that
+            // 1) starts with add,
+            // 2) and has typeArg as one and only arg
+            List<Accessor> adderList = getAdders();
+            for ( Accessor adder : adderList ) {
+                ExecutableElement executable = adder.getExecutable();
+                if ( executable == null ) {
+                    // it should not be null, but to be safe
+                    continue;
+                }
+                VariableElement arg = executable.getParameters().get( 0 );
+                if ( typeUtils.isSameType( arg.asType(), typeArg ) ) {
+                    candidates.add( adder );
                 }
             }
         }
