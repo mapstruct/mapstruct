@@ -18,6 +18,8 @@
  */
 package org.mapstruct.itest.immutables.extras;
 
+// tag::documentation[]
+
 import java.util.regex.Pattern;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -32,9 +34,12 @@ import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.DefaultBuilderProvider;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
+// end::documentation[]
+
 /**
  * @author Filip Hrisafov
  */
+// tag::documentation[]
 public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
 
     private static final Pattern JAVA_JAVAX_PACKAGE = Pattern.compile( "^javax?\\..*" );
@@ -70,6 +75,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
                     return super.findBuilderInfo( immutableElement, elements, types );
                 }
                 else {
+                    // Immutables processor has not run yet. Trigger a postpone to the next round for MapStruct
                     throw new TypeHierarchyErroneousException( typeElement );
                 }
             }
@@ -95,3 +101,4 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         return elements.getTypeElement( builderQualifiedName );
     }
 }
+// end::documentation[]

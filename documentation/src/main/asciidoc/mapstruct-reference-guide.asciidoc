@@ -5,6 +5,8 @@
 :Author: Gunnar Morling, Andreas Gudian, Sjaak Derksen, Filip Hrisafov and the MapStruct community
 :processor-dir: ../../../../processor
 :processor-ap-test: {processor-dir}/src/test/java/org/mapstruct/ap/test
+:integration-tests-dir: ../../../../integrationtest
+:immutables-builder-test: {integration-tests-dir}/src/test/resources/immutablesBuilderTest
 
 [[Preface]]
 == Preface
@@ -312,6 +314,21 @@ The property name as defined in the http://www.oracle.com/technetwork/java/javas
 
 [TIP]
 ====
+Fluent setters are also supported.
+Fluent setters are setters that return the same type as the type being modified.
+
+E.g.
+
+```
+public Builder seatCount(int seatCount) {
+    this.seatCount = seatCount;
+    return this;
+}
+```
+====
+
+[TIP]
+====
 When using Java 8 or later, you can omit the `@Mappings` wrapper annotation and directly specify several `@Mapping` annotations on one method.
 ====
 
@@ -593,6 +610,106 @@ public class CustomerMapperImpl implements CustomerMapper {
 You can find the complete example in the
 https://github.com/mapstruct/mapstruct-examples/tree/master/mapstruct-field-mapping[mapstruct-examples-field-mapping]
 project on GitHub.
+
+[[mapping-with-builders]]
+=== Using builders
+
+MapStruct also supports mapping of immutable types via builders.
+When performing a mapping MapStruct checks if there is a builder for the type being mapped.
+This is done via the `BuilderProvider` SPI.
+If a Builder exists for a certain type, than that builder will be used for the mappings.
+
+The default implementation of the `BuilderProvider` requires the following for a type to have a builder:
+
+* The type (`Person`) has a parameterless public static method (builder creation method) that returns a type (`PersonBuilder`) different than the one that needs building
+* The found builder type (`PersonBuilder`) has a parameterless public method (build method) that returns the type being build (`Person`)
+
+If such type is found then MapStruct will use that type to perform the mapping to (i.e. it will look for setters into that type).
+If no factory method exists for instantiating the builder type the builder creation method would be used.
+To finish the mapping MapStruct will invoke the build method of the builder.
+
+.Person with Builder example
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Person {
+
+    private final String name;
+
+    protected Person(Person.Builder builder) {
+        this.name = builder.name;
+    }
+
+    public static Person.Builder builder() {
+        return new Person.Builder();
+    }
+
+    public static class Builder {
+
+        private String name;
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Person create() {
+            return new Person( this );
+        }
+    }
+}
+----
+====
+
+.Person Mapper definition
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public interface PersonMapper {
+
+    Person map(PersonDto dto);
+}
+----
+====
+
+.Generated mapper with builder
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class PersonMapperImpl implements PersonMapper {
+
+    public Person map(PersonDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Person.Builder builder = Person.builder();
+
+        builder.name( dto.getName() );
+
+        return builder.create();
+    }
+}
+----
+====
+
+Supported builder frameworks:
+
+* https://projectlombok.org/[Lombok] - requires having the Lombok classes in a separate module. See for more information https://github.com/rzwitserloot/lombok/issues/1538[rzwitserloot/lombok#1538]
+* https://github.com/google/auto/blob/master/value/userguide/index.md[AutoValue]
+* https://immutables.github.io/[Immutables] - requires using a custom `AccessorNamingStrategy` and a custom `BuilderProvider` (see example in integration tests)
+* https://github.com/google/FreeBuilder[FreeBuilder]
+* It also works for custom builders (handwritten ones) if the implementation supports the defined rules for the default `BuilderProvider`.
+Otherwise, you would need to write a custom `BuilderProvider`
+
+[TIP]
+====
+In case you want to disable using builders then you can use the `NoOpBuilderProvider` by creating a `org.mapstruct.ap.spi.BuilderProvider` file in the `META-INF/services` directory with `org.mapstruct.ap.spi.NoOpBuilderProvider` as it's content.
+====
 
 [[retrieving-mapper]]
 == Retrieving a mapper
@@ -2671,3 +2788,19 @@ together with the file `META-INF/services/org.mapstruct.ap.spi.MappingExclusionP
 (e.g. `org.mapstruct.example.CustomMappingExclusionProvider`).
 This JAR file needs to be added to the annotation processor classpath
 (i.e. add it next to the place where you added the mapstruct-processor jar).
+
+
+[[custom-builder-provider]]
+=== Custom Builder Provider
+
+MapStruct offers the possibility to override the `DefaultProvider` via the Service Provider Interface (SPI).
+A nice example is to provide support for a custom builder strategy.
+
+.Custom Builder Provider for Immutables
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{immutables-builder-test}/extras/src/main/java/org/mapstruct/itest/immutables/extras/ImmutablesBuilderProvider.java[tag=documentation]
+----
+====
