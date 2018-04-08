@@ -39,24 +39,25 @@ public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, M
     @Override
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
         if ( !context.isErroneous() ) {
-            writeToSourceFile( context.getFiler(), mapper );
+            writeToSourceFile( context.getFiler(), mapper, mapperTypeElement );
             return mapper;
         }
 
         return null;
     }
 
-    private void writeToSourceFile(Filer filer, Mapper model) {
+    private void writeToSourceFile(Filer filer, Mapper model, TypeElement originatingElement) {
         ModelWriter modelWriter = new ModelWriter();
 
-        createSourceFile( model, modelWriter, filer );
+        createSourceFile( model, modelWriter, filer, originatingElement );
 
         if ( model.getDecorator() != null ) {
-            createSourceFile( model.getDecorator(), modelWriter, filer );
+            createSourceFile( model.getDecorator(), modelWriter, filer, originatingElement );
         }
     }
 
-    private void createSourceFile(GeneratedType model, ModelWriter modelWriter, Filer filer) {
+    private void createSourceFile(GeneratedType model, ModelWriter modelWriter, Filer filer,
+                                  TypeElement originatingElement) {
         String fileName = "";
         if ( model.hasPackageName() ) {
             fileName += model.getPackageName() + ".";
@@ -65,7 +66,7 @@ public class MapperRenderingProcessor implements ModelElementProcessor<Mapper, M
 
         JavaFileObject sourceFile;
         try {
-            sourceFile = filer.createSourceFile( fileName );
+            sourceFile = filer.createSourceFile( fileName, originatingElement );
         }
         catch ( IOException e ) {
             throw new RuntimeException( e );
