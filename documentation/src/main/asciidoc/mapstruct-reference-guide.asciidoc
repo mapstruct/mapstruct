@@ -619,14 +619,16 @@ When performing a mapping MapStruct checks if there is a builder for the type be
 This is done via the `BuilderProvider` SPI.
 If a Builder exists for a certain type, than that builder will be used for the mappings.
 
-The default implementation of the `BuilderProvider` requires the following for a type to have a builder:
+The default implementation of the `BuilderProvider` assumes the following:
 
-* The type (`Person`) has a parameterless public static method (builder creation method) that returns a type (`PersonBuilder`) different than the one that needs building
-* The found builder type (`PersonBuilder`) has a parameterless public method (build method) that returns the type being build (`Person`)
+* The type has a parameterless public static builder creation method that returns a builder.
+So for example `Person` has a public static method that returns `PersonBuilder`.
+* The builder type has a parameterless public method (build method) that returns the type being build
+In our example `PersonBuilder` has a method returning `Person`.
 
 If such type is found then MapStruct will use that type to perform the mapping to (i.e. it will look for setters into that type).
 If no factory method exists for instantiating the builder type the builder creation method would be used.
-To finish the mapping MapStruct will invoke the build method of the builder.
+To finish the mapping MapStruct generates code that will invoke the build method of the builder.
 
 .Person with Builder example
 ====
