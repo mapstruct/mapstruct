@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(AnnotationProcessorTestRunner.class)
 @WithClasses({
     BuilderFactoryMapper.class,
+    BuilderImplicitFactoryMapper.class,
     Person.class,
     PersonDto.class
 })
@@ -41,7 +42,14 @@ public class BuilderFactoryMapperTest {
         Person person = BuilderFactoryMapper.INSTANCE.map( new PersonDto( "Filip" ) );
 
         assertThat( person.getName() ).isEqualTo( "Filip" );
-        assertThat( person.getSource() ).isEqualTo( "Factory" );
+        assertThat( person.getSource() ).isEqualTo( "Factory with @ObjectFactory" );
+    }
 
+    @Test
+    public void shouldUseImplicitBuilderFactory() {
+        Person person = BuilderImplicitFactoryMapper.INSTANCE.map( new PersonDto( "Filip" ) );
+
+        assertThat( person.getName() ).isEqualTo( "Filip" );
+        assertThat( person.getSource() ).isEqualTo( "Implicit Factory" );
     }
 }
