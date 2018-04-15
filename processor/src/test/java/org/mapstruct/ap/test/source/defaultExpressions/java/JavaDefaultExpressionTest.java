@@ -68,7 +68,7 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionExpressionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 39,
+                line = 35,
                 messageRegExp = "Expression and default expression are both defined in @Mapping,"
                     + " either define an expression or a default expression."
             ),
@@ -89,7 +89,7 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 38,
+                line = 35,
                 messageRegExp = "Constant and default expression are both defined in @Mapping,"
                     + " either define a constant or a default expression."
             ),
@@ -110,7 +110,7 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionDefaultValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 38,
+                line = 35,
                 messageRegExp = "Default value and default expression are both defined in @Mapping,"
                     + " either define a default value or a default expression."
             ),
