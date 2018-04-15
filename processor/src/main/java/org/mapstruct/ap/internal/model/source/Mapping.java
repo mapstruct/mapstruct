@@ -110,35 +110,59 @@ public class Mapping {
         }
 
         if ( !mappingPrism.source().isEmpty() && mappingPrism.values.constant() != null ) {
-            messager.printMessage( element, Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED );
+            messager.printMessage(
+                    element,
+                    mappingPrism.mirror,
+                    Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED );
             return null;
         }
         else if ( !mappingPrism.source().isEmpty() && mappingPrism.values.expression() != null ) {
-            messager.printMessage( element, Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED );
+            messager.printMessage(
+                    element,
+                    mappingPrism.mirror,
+                    Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED );
             return null;
         }
         else if ( mappingPrism.values.expression() != null && mappingPrism.values.constant() != null ) {
-            messager.printMessage( element, Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED );
+            messager.printMessage(
+                    element,
+                    mappingPrism.mirror,
+                    Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED );
             return null;
         }
         else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultValue() != null ) {
-            messager.printMessage( element, Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED );
+            messager.printMessage(
+                    element,
+                    mappingPrism.mirror,
+                    Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_VALUE_BOTH_DEFINED );
             return null;
         }
         else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultValue() != null ) {
-            messager.printMessage( element, Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED );
+            messager.printMessage(
+                    element,
+                    mappingPrism.mirror,
+                    Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_VALUE_BOTH_DEFINED );
             return null;
         }
         else if ( mappingPrism.values.expression() != null && mappingPrism.values.defaultExpression() != null) {
-            messager.printMessage( element, Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
+            messager.printMessage(
+                    element,
+                    mappingPrism.mirror,
+                    Message.PROPERTYMAPPING_EXPRESSION_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
             return null;
         }
         else if ( mappingPrism.values.constant() != null && mappingPrism.values.defaultExpression() != null) {
-            messager.printMessage( element, Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
+            messager.printMessage(
+                    element,
+                    mappingPrism.mirror,
+                    Message.PROPERTYMAPPING_CONSTANT_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
             return null;
         }
         else if ( mappingPrism.values.defaultValue() != null && mappingPrism.values.defaultExpression() != null) {
-            messager.printMessage( element, Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
+            messager.printMessage(
+                    element,
+                    mappingPrism.mirror,
+                    Message.PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED );
             return null;
         }
 
