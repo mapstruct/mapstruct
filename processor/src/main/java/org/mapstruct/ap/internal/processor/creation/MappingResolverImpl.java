@@ -138,7 +138,7 @@ public class MappingResolverImpl implements MappingResolver {
                 mappingMethod,
                 sourceModel,
                 java.util.Collections.<Type> emptyList(),
-                targetType,
+                targetType.getEffectiveType(),
                 SelectionCriteria.forFactoryMethods( selectionParameters ) );
 
         if (matchingFactoryMethods.isEmpty()) {
@@ -149,7 +149,7 @@ public class MappingResolverImpl implements MappingResolver {
             messager.printMessage(
                 mappingMethod.getExecutable(),
                 Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
-                targetType,
+                targetType.getEffectiveType(),
                 Strings.join( matchingFactoryMethods, ", " ) );
 
             return null;
