@@ -627,8 +627,13 @@ So for example `Person` has a public static method that returns `PersonBuilder`.
 In our example `PersonBuilder` has a method returning `Person`.
 
 If such type is found then MapStruct will use that type to perform the mapping to (i.e. it will look for setters into that type).
-If no factory method exists for instantiating the builder type the builder creation method would be used.
 To finish the mapping MapStruct generates code that will invoke the build method of the builder.
+
+[NOTE]
+======
+The <<object-factories>> lifecylce is also considered for the builder type. 
+E.g. If an object factory exists for our `PersonBuilder` than this factory would be used instead of the builder creation method.
+======
 
 .Person with Builder example
 ====
