@@ -631,7 +631,7 @@ To finish the mapping MapStruct generates code that will invoke the build method
 
 [NOTE]
 ======
-The <<object-factories>> lifecylce is also considered for the builder type. 
+The <<object-factories>> are also considered for the builder type.
 E.g. If an object factory exists for our `PersonBuilder` than this factory would be used instead of the builder creation method.
 ======
 
