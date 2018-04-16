@@ -6,14 +6,9 @@
 package org.mapstruct.ap.internal.conversion;
 
 import java.math.BigInteger;
-import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
-import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.NativeTypes;
-
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigInteger;
 
 /**
  * Conversion between {@link BigInteger} and wrappers of native number types.
@@ -25,10 +20,6 @@ public class BigIntegerToWrapperConversion extends SimpleConversion {
     private final Class<?> targetType;
 
     public BigIntegerToWrapperConversion(Class<?> targetType) {
-        if ( targetType.isPrimitive() ) {
-            throw new IllegalArgumentException( targetType + " is a primitive type." );
-        }
-
         this.targetType = NativeTypes.getPrimitiveType( targetType );
     }
 
@@ -39,16 +30,7 @@ public class BigIntegerToWrapperConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        String toLongValueStr = "";
-        if ( targetType == float.class || targetType == double.class ) {
-            toLongValueStr = ".longValue()";
-        }
-
-        return bigInteger( conversionContext ) + ".valueOf( <SOURCE>" + toLongValueStr + " )";
+       throw new IllegalStateException( "Not supported." );
     }
 
-    @Override
-    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
-        return asSet( conversionContext.getTypeFactory().getType( BigInteger.class ) );
-    }
 }

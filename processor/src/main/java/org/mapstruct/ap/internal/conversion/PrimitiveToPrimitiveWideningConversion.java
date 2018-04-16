@@ -12,17 +12,7 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
  *
  * @author Gunnar Morling
  */
-public class PrimitiveToPrimitiveConversion extends SimpleConversion {
-
-    private final Class<?> sourceType;
-
-    public PrimitiveToPrimitiveConversion(Class<?> sourceType) {
-        if ( !sourceType.isPrimitive() ) {
-            throw new IllegalArgumentException( sourceType + " is no primitive type." );
-        }
-
-        this.sourceType = sourceType;
-    }
+public class PrimitiveToPrimitiveWideningConversion extends SimpleConversion {
 
     @Override
     public String getToExpression(ConversionContext conversionContext) {
@@ -31,6 +21,6 @@ public class PrimitiveToPrimitiveConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        return "(" + sourceType + ") <SOURCE>";
+       throw new IllegalStateException( "Not supported." );
     }
 }

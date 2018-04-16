@@ -14,19 +14,12 @@ import org.mapstruct.ap.internal.util.NativeTypes;
  *
  * @author Gunnar Morling
  */
-public class PrimitiveToWrapperConversion extends SimpleConversion {
+public class PrimitiveToWrapperWideningConversion extends SimpleConversion {
 
     private final Class<?> sourceType;
     private final Class<?> targetType;
 
-    public PrimitiveToWrapperConversion(Class<?> sourceType, Class<?> targetType) {
-        if ( !sourceType.isPrimitive() ) {
-            throw new IllegalArgumentException( sourceType + " is no primitive type." );
-        }
-        if ( targetType.isPrimitive() ) {
-            throw new IllegalArgumentException( targetType + " is no wrapper type." );
-        }
-
+    public PrimitiveToWrapperWideningConversion(Class<?> sourceType, Class<?> targetType) {
         this.sourceType = sourceType;
         this.targetType = NativeTypes.getPrimitiveType( targetType );
     }
@@ -43,6 +36,6 @@ public class PrimitiveToWrapperConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        return "<SOURCE>." + sourceType.getName() + "Value()";
+       throw new IllegalStateException( "Not supported." );
     }
 }

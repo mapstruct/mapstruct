@@ -41,86 +41,11 @@ public class Conversions {
         this.enumType = typeFactory.getType( Enum.class );
         this.stringType = typeFactory.getType( String.class );
 
-        //native types <> native types, including wrappers
-        registerNativeTypeConversion( byte.class, Byte.class );
-        registerNativeTypeConversion( byte.class, short.class );
-        registerNativeTypeConversion( byte.class, Short.class );
-        registerNativeTypeConversion( byte.class, int.class );
-        registerNativeTypeConversion( byte.class, Integer.class );
-        registerNativeTypeConversion( byte.class, long.class );
-        registerNativeTypeConversion( byte.class, Long.class );
-        registerNativeTypeConversion( byte.class, float.class );
-        registerNativeTypeConversion( byte.class, Float.class );
-        registerNativeTypeConversion( byte.class, double.class );
-        registerNativeTypeConversion( byte.class, Double.class );
+        //native (number) types <> native types, including wrappers
+        registerNativeNumberConversions();
 
-        registerNativeTypeConversion( Byte.class, short.class );
-        registerNativeTypeConversion( Byte.class, Short.class );
-        registerNativeTypeConversion( Byte.class, int.class );
-        registerNativeTypeConversion( Byte.class, Integer.class );
-        registerNativeTypeConversion( Byte.class, long.class );
-        registerNativeTypeConversion( Byte.class, Long.class );
-        registerNativeTypeConversion( Byte.class, float.class );
-        registerNativeTypeConversion( Byte.class, Float.class );
-        registerNativeTypeConversion( Byte.class, double.class );
-        registerNativeTypeConversion( Byte.class, Double.class );
-
-        registerNativeTypeConversion( short.class, Short.class );
-        registerNativeTypeConversion( short.class, int.class );
-        registerNativeTypeConversion( short.class, Integer.class );
-        registerNativeTypeConversion( short.class, long.class );
-        registerNativeTypeConversion( short.class, Long.class );
-        registerNativeTypeConversion( short.class, float.class );
-        registerNativeTypeConversion( short.class, Float.class );
-        registerNativeTypeConversion( short.class, double.class );
-        registerNativeTypeConversion( short.class, Double.class );
-
-        registerNativeTypeConversion( Short.class, int.class );
-        registerNativeTypeConversion( Short.class, Integer.class );
-        registerNativeTypeConversion( Short.class, long.class );
-        registerNativeTypeConversion( Short.class, Long.class );
-        registerNativeTypeConversion( Short.class, float.class );
-        registerNativeTypeConversion( Short.class, Float.class );
-        registerNativeTypeConversion( Short.class, double.class );
-        registerNativeTypeConversion( Short.class, Double.class );
-
-        registerNativeTypeConversion( int.class, Integer.class );
-        registerNativeTypeConversion( int.class, long.class );
-        registerNativeTypeConversion( int.class, Long.class );
-        registerNativeTypeConversion( int.class, float.class );
-        registerNativeTypeConversion( int.class, Float.class );
-        registerNativeTypeConversion( int.class, double.class );
-        registerNativeTypeConversion( int.class, Double.class );
-
-        registerNativeTypeConversion( Integer.class, long.class );
-        registerNativeTypeConversion( Integer.class, Long.class );
-        registerNativeTypeConversion( Integer.class, float.class );
-        registerNativeTypeConversion( Integer.class, Float.class );
-        registerNativeTypeConversion( Integer.class, double.class );
-        registerNativeTypeConversion( Integer.class, Double.class );
-
-        registerNativeTypeConversion( long.class, Long.class );
-        registerNativeTypeConversion( long.class, float.class );
-        registerNativeTypeConversion( long.class, Float.class );
-        registerNativeTypeConversion( long.class, double.class );
-        registerNativeTypeConversion( long.class, Double.class );
-
-        registerNativeTypeConversion( Long.class, float.class );
-        registerNativeTypeConversion( Long.class, Float.class );
-        registerNativeTypeConversion( Long.class, double.class );
-        registerNativeTypeConversion( Long.class, Double.class );
-
-        registerNativeTypeConversion( float.class, Float.class );
-        registerNativeTypeConversion( float.class, double.class );
-        registerNativeTypeConversion( float.class, Double.class );
-
-        registerNativeTypeConversion( Float.class, double.class );
-        registerNativeTypeConversion( Float.class, Double.class );
-
-        registerNativeTypeConversion( double.class, Double.class );
-
-        registerNativeTypeConversion( boolean.class, Boolean.class );
-        registerNativeTypeConversion( char.class, Character.class );
+        registerWideningOrSameConversion( boolean.class, Boolean.class, false );
+        registerWideningOrSameConversion( Boolean.class, boolean.class, false );
 
         //BigInteger <> native types
         registerBigIntegerConversion( byte.class );
@@ -186,6 +111,157 @@ public class Conversions {
         register( Currency.class, String.class, new CurrencyToStringConversion() );
     }
 
+    private void registerNativeNumberConversions() {
+
+        registerWideningOrSameConversion( byte.class, Byte.class, false );
+        registerWideningOrSameConversion( byte.class, short.class, false );
+        registerWideningOrSameConversion( byte.class, Short.class, false );
+        registerWideningOrSameConversion( byte.class, int.class, false );
+        registerWideningOrSameConversion( byte.class, Integer.class, false );
+        registerWideningOrSameConversion( byte.class, long.class, false );
+        registerWideningOrSameConversion( byte.class, Long.class, false );
+        registerWideningOrSameConversion( byte.class, float.class, false );
+        registerWideningOrSameConversion( byte.class, Float.class, false );
+        registerWideningOrSameConversion( byte.class, double.class, false );
+        registerWideningOrSameConversion( byte.class, Double.class, false );
+
+        registerWideningOrSameConversion( Byte.class, byte.class, false );
+        registerWideningOrSameConversion( Byte.class, short.class, false );
+        registerWideningOrSameConversion( Byte.class, Short.class, false );
+        registerWideningOrSameConversion( Byte.class, int.class, false );
+        registerWideningOrSameConversion( Byte.class, Integer.class, false );
+        registerWideningOrSameConversion( Byte.class, long.class, false );
+        registerWideningOrSameConversion( Byte.class, Long.class, false );
+        registerWideningOrSameConversion( Byte.class, float.class, false );
+        registerWideningOrSameConversion( Byte.class, Float.class, false );
+        registerWideningOrSameConversion( Byte.class, double.class, false );
+        registerWideningOrSameConversion( Byte.class, Double.class, false );
+
+        registerNarrowingConversion( short.class, byte.class, false );
+        registerNarrowingConversion( short.class, Byte.class, false );
+        registerWideningOrSameConversion( short.class, Short.class, false );
+        registerWideningOrSameConversion( short.class, int.class, false );
+        registerWideningOrSameConversion( short.class, Integer.class, false );
+        registerWideningOrSameConversion( short.class, long.class, false );
+        registerWideningOrSameConversion( short.class, Long.class, false );
+        registerWideningOrSameConversion( short.class, float.class, false );
+        registerWideningOrSameConversion( short.class, Float.class, false );
+        registerWideningOrSameConversion( short.class, double.class, false );
+        registerWideningOrSameConversion( short.class, Double.class, false );
+
+        registerNarrowingConversion( Short.class, byte.class, false );
+        registerNarrowingConversion( Short.class, Byte.class, false );
+        registerWideningOrSameConversion( Short.class, short.class, false );
+        registerWideningOrSameConversion( Short.class, int.class, false );
+        registerWideningOrSameConversion( Short.class, Integer.class, false );
+        registerWideningOrSameConversion( Short.class, long.class, false );
+        registerWideningOrSameConversion( Short.class, Long.class, false );
+        registerWideningOrSameConversion( Short.class, float.class, false );
+        registerWideningOrSameConversion( Short.class, Float.class, false );
+        registerWideningOrSameConversion( Short.class, double.class, false );
+        registerWideningOrSameConversion( Short.class, Double.class, false );
+
+        registerNarrowingConversion( int.class, byte.class, false );
+        registerNarrowingConversion( int.class, Byte.class, false );
+        registerNarrowingConversion( int.class, short.class, false );
+        registerNarrowingConversion( int.class, Short.class, false );
+        registerWideningOrSameConversion( int.class, Integer.class, false );
+        registerWideningOrSameConversion( int.class, long.class, false );
+        registerWideningOrSameConversion( int.class, Long.class, false );
+        registerWideningOrSameConversion( int.class, float.class, true );
+        registerWideningOrSameConversion( int.class, Float.class, true );
+        registerWideningOrSameConversion( int.class, double.class, false );
+        registerWideningOrSameConversion( int.class, Double.class, false );
+
+        registerNarrowingConversion( Integer.class, byte.class, false );
+        registerNarrowingConversion( Integer.class, Byte.class, false );
+        registerNarrowingConversion( Integer.class, short.class, false );
+        registerNarrowingConversion( Integer.class, Short.class, false );
+        registerWideningOrSameConversion( Integer.class, int.class, false );
+        registerWideningOrSameConversion( Integer.class, long.class, false );
+        registerWideningOrSameConversion( Integer.class, Long.class, false );
+        registerWideningOrSameConversion( Integer.class, float.class, true );
+        registerWideningOrSameConversion( Integer.class, Float.class, true );
+        registerWideningOrSameConversion( Integer.class, double.class, false );
+        registerWideningOrSameConversion( Integer.class, Double.class, false );
+
+        registerNarrowingConversion( long.class, byte.class, false );
+        registerNarrowingConversion( long.class, Byte.class, false );
+        registerNarrowingConversion( long.class, short.class, false );
+        registerNarrowingConversion( long.class, Short.class, false );
+        registerNarrowingConversion( long.class, int.class, false );
+        registerNarrowingConversion( long.class, Integer.class, false );
+        registerWideningOrSameConversion( long.class, Long.class, false );
+        registerWideningOrSameConversion( long.class, float.class, true );
+        registerWideningOrSameConversion( long.class, Float.class, true );
+        registerWideningOrSameConversion( long.class, double.class, true );
+        registerWideningOrSameConversion( long.class, Double.class, true );
+
+        registerNarrowingConversion( Long.class, byte.class, false );
+        registerNarrowingConversion( Long.class, Byte.class, false );
+        registerNarrowingConversion( Long.class, short.class, false );
+        registerNarrowingConversion( Long.class, Short.class, false );
+        registerNarrowingConversion( Long.class, int.class, false );
+        registerNarrowingConversion( Long.class, Integer.class, false );
+        registerWideningOrSameConversion( Long.class, long.class, false );
+        registerWideningOrSameConversion( Long.class, float.class, true );
+        registerWideningOrSameConversion( Long.class, Float.class, true );
+        registerWideningOrSameConversion( Long.class, double.class, true );
+        registerWideningOrSameConversion( Long.class, Double.class, true );
+
+        registerNarrowingConversion( float.class, byte.class, true );
+        registerNarrowingConversion( float.class, Byte.class, true );
+        registerNarrowingConversion( float.class, short.class, true );
+        registerNarrowingConversion( float.class, Short.class, true );
+        registerNarrowingConversion( float.class, int.class, true );
+        registerNarrowingConversion( float.class, Integer.class, true );
+        registerNarrowingConversion( float.class, long.class, true );
+        registerNarrowingConversion( float.class, Long.class, true );
+        registerWideningOrSameConversion( float.class, Float.class, false );
+        registerWideningOrSameConversion( float.class, double.class, false );
+        registerWideningOrSameConversion( float.class, Double.class, false );
+
+        registerNarrowingConversion( Float.class, byte.class, true );
+        registerNarrowingConversion( Float.class, Byte.class, true );
+        registerNarrowingConversion( Float.class, short.class, true );
+        registerNarrowingConversion( Float.class, Short.class, true );
+        registerNarrowingConversion( Float.class, int.class, true );
+        registerNarrowingConversion( Float.class, Integer.class, true );
+        registerNarrowingConversion( Float.class, long.class, true );
+        registerNarrowingConversion( Float.class, Long.class, true );
+        registerWideningOrSameConversion( Float.class, float.class, false );
+        registerWideningOrSameConversion( Float.class, double.class, false );
+        registerWideningOrSameConversion( Float.class, Double.class, false );
+
+        registerNarrowingConversion( double.class, byte.class, true );
+        registerNarrowingConversion( double.class, Byte.class, true );
+        registerNarrowingConversion( double.class, short.class, true );
+        registerNarrowingConversion( double.class, Short.class, true );
+        registerNarrowingConversion( double.class, int.class, true );
+        registerNarrowingConversion( double.class, Integer.class, true );
+        registerNarrowingConversion( double.class, long.class, true );
+        registerNarrowingConversion( double.class, Long.class, true );
+        registerNarrowingConversion( double.class, float.class, true );
+        registerNarrowingConversion( double.class, Float.class, true );
+        registerWideningOrSameConversion( double.class, Double.class, false );
+
+        registerNarrowingConversion( Double.class, byte.class, true );
+        registerNarrowingConversion( Double.class, Byte.class, true );
+        registerNarrowingConversion( Double.class, short.class, true );
+        registerNarrowingConversion( Double.class, Short.class, true );
+        registerNarrowingConversion( Double.class, int.class, true );
+        registerNarrowingConversion( Double.class, Integer.class, true );
+        registerNarrowingConversion( Double.class, long.class, true );
+        registerNarrowingConversion( Double.class, Long.class, true );
+        registerNarrowingConversion( Double.class, float.class, true );
+        registerNarrowingConversion( Double.class, Float.class, true );
+        registerWideningOrSameConversion( Double.class, double.class, false );
+
+        registerWideningOrSameConversion( Character.class, char.class, false );
+        registerWideningOrSameConversion( char.class, Character.class, false );
+
+    }
+
     private void registerJodaConversions() {
         if ( !isJodaTimeAvailable() ) {
             return;
@@ -234,19 +310,42 @@ public class Conversions {
         return typeFactory.isTypeAvailable( JavaTimeConstants.ZONED_DATE_TIME_FQN );
     }
 
-    private void registerNativeTypeConversion(Class<?> sourceType, Class<?> targetType) {
-        if ( sourceType.isPrimitive() && targetType.isPrimitive() ) {
-            register( sourceType, targetType, new PrimitiveToPrimitiveConversion( sourceType ) );
+    private void registerWideningOrSameConversion(Class<?> sourceClass, Class<?> targetClass, boolean precisionLoss) {
+        ConversionProvider conversion;
+        if ( sourceClass.isPrimitive() && targetClass.isPrimitive() ) {
+            conversion = new PrimitiveToPrimitiveWideningConversion();
         }
-        else if ( sourceType.isPrimitive() && !targetType.isPrimitive() ) {
-            register( sourceType, targetType, new PrimitiveToWrapperConversion( sourceType, targetType ) );
+        else if ( sourceClass.isPrimitive() && !targetClass.isPrimitive() ) {
+            conversion = new PrimitiveToWrapperWideningConversion( sourceClass, targetClass );
         }
-        else if ( !sourceType.isPrimitive() && targetType.isPrimitive() ) {
-            register( sourceType, targetType, reverse( new PrimitiveToWrapperConversion( targetType, sourceType ) ) );
+        else if ( !sourceClass.isPrimitive() && targetClass.isPrimitive() ) {
+            conversion = new WrapperToPrimitiveWideningConversion( targetClass );
         }
         else {
-            register( sourceType, targetType, new WrapperToWrapperConversion( sourceType, targetType ) );
+            conversion = new WrapperToWrapperWideningConversion( sourceClass, targetClass );
         }
+        Type sourceType = typeFactory.getType( sourceClass );
+        Type targetType = typeFactory.getType( targetClass );
+        conversions.put( new Key( sourceType, targetType ), conversion );
+    }
+
+    private void registerNarrowingConversion(Class<?> sourceClass, Class<?> targetClass, boolean precisionLoss ) {
+        ConversionProvider conversion;
+        if ( sourceClass.isPrimitive() && targetClass.isPrimitive() ) {
+            conversion = new PrimitiveToPrimitiveNarrowingConversion( targetClass );
+        }
+        else if ( sourceClass.isPrimitive() && !targetClass.isPrimitive() ) {
+            conversion = new PrimitiveToWrapperNarrowingConversion( targetClass );
+        }
+        else if ( !sourceClass.isPrimitive() && targetClass.isPrimitive() ) {
+            conversion = new WrapperToPrimitiveNarrowingConversion( targetClass );
+        }
+        else {
+            conversion = new WrapperToWrapperNarrowingConversion( targetClass );
+        }
+        Type sourceType = typeFactory.getType( sourceClass );
+        Type targetType = typeFactory.getType( targetClass );
+        conversions.put( new Key( sourceType, targetType ), conversion );
     }
 
     private void registerToStringConversion(Class<?> sourceType) {
@@ -258,22 +357,38 @@ public class Conversions {
         }
     }
 
-    private void registerBigIntegerConversion(Class<?> targetType) {
-        if ( targetType.isPrimitive() ) {
-            register( BigInteger.class, targetType, new BigIntegerToPrimitiveConversion( targetType ) );
+    private void registerBigIntegerConversion(Class<?> targetClass) {
+        ConversionProvider wideningConversion;
+        ConversionProvider narrowingConversion;
+        if ( targetClass.isPrimitive() ) {
+            wideningConversion = new BigIntegerToPrimitiveConversion( targetClass );
+            narrowingConversion = new PrimitiveToBigIntegerConversion( targetClass );
         }
         else {
-            register( BigInteger.class, targetType, new BigIntegerToWrapperConversion( targetType ) );
+            wideningConversion = new BigIntegerToWrapperConversion( targetClass );
+            narrowingConversion = new WrapperToBigIntegerConversion( targetClass );
         }
+        Type bitIntegerType = typeFactory.getType( BigInteger.class );
+        Type type = typeFactory.getType( targetClass );
+        conversions.put( new Key( bitIntegerType, type ), wideningConversion );
+        conversions.put( new Key( type, bitIntegerType ), narrowingConversion );
     }
 
-    private void registerBigDecimalConversion(Class<?> targetType) {
-        if ( targetType.isPrimitive() ) {
-            register( BigDecimal.class, targetType, new BigDecimalToPrimitiveConversion( targetType ) );
+    private void registerBigDecimalConversion(Class<?> targetClass) {
+        ConversionProvider wideningConversion;
+        ConversionProvider narrowingConversion;
+        if ( targetClass.isPrimitive() ) {
+            wideningConversion = new BigDecimalToPrimitiveConversion( targetClass );
+            narrowingConversion = new PrimitiveToBigDecimalConversion();
         }
         else {
-            register( BigDecimal.class, targetType, new BigDecimalToWrapperConversion( targetType ) );
+            wideningConversion = new BigDecimalToWrapperConversion( targetClass );
+            narrowingConversion = new WrapperToBigDecimalConversion();
         }
+        Type bitDecimalType = typeFactory.getType( BigDecimal.class );
+        Type type = typeFactory.getType( targetClass );
+        conversions.put( new Key( bitDecimalType, type ), wideningConversion );
+        conversions.put( new Key( type, bitDecimalType ), narrowingConversion );
     }
 
     private void register(Class<?> sourceClass, Class<?> targetClass, ConversionProvider conversion) {
