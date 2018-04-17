@@ -21,9 +21,12 @@ package org.mapstruct.ap.internal.processor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.prism.MapperJsr330ConfigPrism;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -32,8 +35,15 @@ import org.mapstruct.ap.internal.model.Mapper;
  *
  * @author Gunnar Morling
  * @author Andreas Gudian
+ * @author Christian Bandowski
  */
 public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProcessor {
+
+    private static final String CANONICAL_NAME_NAMED = "javax.inject.Named";
+    private static final String CANONICAL_NAME_INJECT = "javax.inject.Inject";
+    private static final String CANONICAL_NAME_SINGLETON = "javax.inject.Singleton";
+    private static final String CANONICAL_NAME_MAPPERJSR330CONFIG = "org.mapstruct.MapperJsr330Config";
+
     @Override
     protected String getComponentModelIdentifier() {
         return "jsr330";
@@ -41,8 +51,10 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
 
     @Override
     protected List<Annotation> getTypeAnnotations(Mapper mapper) {
+        MapperJsr330ConfigPrism config = findConfig( mapper );
+
         if ( mapper.getDecorator() == null ) {
-            return Arrays.asList( singleton(), named() );
+            return Arrays.asList( singleton(), named( config == null ? null : config.value() ) );
         }
         else {
             return Arrays.asList( singleton(), namedDelegate( mapper ) );
@@ -50,13 +62,21 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
     }
 
     @Override
-    protected List<Annotation> getDecoratorAnnotations() {
-        return Arrays.asList( singleton(), named() );
+    protected List<Annotation> getDecoratorAnnotations(Mapper mapper) {
+        MapperJsr330ConfigPrism config = findConfig( mapper );
+
+        return Arrays.asList(
+            singleton(),
+            named( config == null ? null : config.value() )
+        );
     }
 
     @Override
     protected List<Annotation> getDelegatorReferenceAnnotations(Mapper mapper) {
-        return Arrays.asList( inject(), namedDelegate( mapper ) );
+        return Arrays.asList(
+            inject(),
+            namedDelegate( mapper )
+        );
     }
 
     @Override
@@ -70,21 +90,37 @@ public class Jsr330ComponentProcessor extends AnnotationBasedComponentModelProce
     }
 
     private Annotation singleton() {
-        return new Annotation( getTypeFactory().getType( "javax.inject.Singleton" ) );
+        return new Annotation( getTypeFactory().getType( CANONICAL_NAME_SINGLETON ) );
     }
 
-    private Annotation named() {
-        return new Annotation( getTypeFactory().getType( "javax.inject.Named" ) );
-    }
+    private Annotation named(String value) {
+        List<String> properties = Collections.emptyList();
+        if ( value != null && !value.isEmpty() ) {
+            properties = Collections.singletonList( '"' + value + '"' );
+        }
 
-    private Annotation namedDelegate(Mapper mapper) {
         return new Annotation(
-            getTypeFactory().getType( "javax.inject.Named" ),
-            Collections.singletonList( '"' + mapper.getPackageName() + "." + mapper.getName() + '"' )
+            getTypeFactory().getType( CANONICAL_NAME_NAMED ),
+            properties
         );
     }
 
+    private Annotation namedDelegate(Mapper mapper) {
+        return named( mapper.getPackageName() + "." + mapper.getName() );
+    }
+
     private Annotation inject() {
-        return new Annotation( getTypeFactory().getType( "javax.inject.Inject" ) );
+        return new Annotation( getTypeFactory().getType( CANONICAL_NAME_INJECT ) );
+    }
+
+    private MapperJsr330ConfigPrism findConfig(Mapper mapper) {
+        for ( AnnotationMirror am : mapper.getMapperAnnotations() ) {
+            CharSequence annTypeName = ( (TypeElement) am.getAnnotationType().asElement() ).getQualifiedName();
+            if ( CANONICAL_NAME_MAPPERJSR330CONFIG.contentEquals( annTypeName ) ) {
+                return MapperJsr330ConfigPrism.getInstance( am );
+            }
+        }
+
+        return null;
     }
 }
