@@ -139,11 +139,7 @@ from the root of the project directory. To skip the distribution module, run
 * [Downloads](https://sourceforge.net/projects/mapstruct/files/)
 * [Issue tracker](https://github.com/mapstruct/mapstruct/issues)
 * [User group](https://groups.google.com/forum/?hl=en#!forum/mapstruct-users)
-* [CI build](https://mapstruct.ci.cloudbees.com/)
-
-<div style="float: right">
-    <a href="https://mapstruct.ci.cloudbees.com/"><img src="http://www.cloudbees.com/sites/default/files/Button-Built-on-CB-1.png"/></a>
-</div>
+* [CI build](https://travis-ci.org/mapstruct/mapstruct/)
 
 ## Licensing
 
