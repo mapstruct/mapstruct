@@ -19,13 +19,13 @@
      limitations under the License.
 
 -->
-private XMLGregorianCalendar ${name}( DateTime dt ) {
+private static javax.xml.datatype.XMLGregorianCalendar ${name}( org.joda.time.DateTime dt ) {
     if ( dt == null ) {
         return null;
     }
 
     try {
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(
+        return javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(
             dt.getYear(),
             dt.getMonthOfYear(),
             dt.getDayOfMonth(),
@@ -35,7 +35,7 @@ private XMLGregorianCalendar ${name}( DateTime dt ) {
             dt.getMillisOfSecond(),
             dt.getZone().getOffset( null ) / 60000 );
     }
-    catch ( DatatypeConfigurationException ex ) {
+    catch ( javax.xml.datatype.DatatypeConfigurationException ex ) {
         throw new RuntimeException( ex );
     }
 }

@@ -18,11 +18,7 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.util.Date;
-import java.util.Set;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -36,12 +32,10 @@ public class XmlGregorianCalendarToDate extends BuiltInMethod {
 
     private final Parameter parameter;
     private final Type returnType;
-    private final Set<Type> importTypes;
 
     public XmlGregorianCalendarToDate(TypeFactory typeFactory) {
         this.parameter = new Parameter( "xcal", typeFactory.getType( XMLGregorianCalendar.class ) );
         this.returnType = typeFactory.getType( Date.class );
-        this.importTypes = asSet( returnType, parameter.getType() );
     }
 
     @Override
@@ -52,10 +46,5 @@ public class XmlGregorianCalendarToDate extends BuiltInMethod {
     @Override
     public Type getReturnType() {
         return returnType;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        return importTypes;
     }
 }

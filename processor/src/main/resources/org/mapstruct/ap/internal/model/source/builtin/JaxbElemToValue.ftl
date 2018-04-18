@@ -19,7 +19,7 @@
      limitations under the License.
 
 -->
-private <T> T ${name}( JAXBElement<T> element ) {
+private static <T> T ${name}( javax.xml.bind.JAXBElement<T> element ) {
     if ( element == null ) {
         return null;
     }

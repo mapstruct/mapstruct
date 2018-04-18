@@ -19,15 +19,15 @@
      limitations under the License.
 
 -->
-private static LocalDate ${name}( XMLGregorianCalendar xcal ) {
+private static org.joda.time.LocalDate ${name}( javax.xml.datatype.XMLGregorianCalendar xcal ) {
     if ( xcal == null ) {
         return null;
     }
 
-    if ( xcal.getYear() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getMonth() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getDay() != DatatypeConstants.FIELD_UNDEFINED )  {
-            return new LocalDate( xcal.getYear(), xcal.getMonth(), xcal.getDay() );
+    if ( xcal.getYear() != javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED
+        && xcal.getMonth() != javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED
+        && xcal.getDay() != javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED )  {
+            return new org.joda.time.LocalDate( xcal.getYear(), xcal.getMonth(), xcal.getDay() );
     }
 
     return null;

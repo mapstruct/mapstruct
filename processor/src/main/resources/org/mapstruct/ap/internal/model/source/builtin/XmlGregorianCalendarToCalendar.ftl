@@ -19,12 +19,12 @@
      limitations under the License.
 
 -->
-private Calendar ${name}( XMLGregorianCalendar xcal ) {
+private static java.util.Calendar ${name}( javax.xml.datatype.XMLGregorianCalendar xcal ) {
     if ( xcal == null ) {
         return null;
     }
 
-    Calendar cal = Calendar.getInstance();
+    java.util.Calendar cal = java.util.Calendar.getInstance();
     cal.setTimeInMillis( xcal.toGregorianCalendar().getTimeInMillis() );
     return cal;
 }

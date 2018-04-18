@@ -19,20 +19,20 @@
      limitations under the License.
 
 -->
-private static XMLGregorianCalendar ${name}( java.time.LocalDate localDate ) {
+private static javax.xml.datatype.XMLGregorianCalendar ${name}( java.time.LocalDate localDate ) {
     if ( localDate == null ) {
         return null;
     }
 
     try {
-        return DatatypeFactory.newInstance().newXMLGregorianCalendarDate(
+        return javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendarDate(
             localDate.getYear(),
             localDate.getMonthValue(),
             localDate.getDayOfMonth(),
-            DatatypeConstants.FIELD_UNDEFINED
+            javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED
         );
     }
-    catch ( DatatypeConfigurationException ex ) {
+    catch ( javax.xml.datatype.DatatypeConfigurationException ex ) {
         throw new RuntimeException( ex );
     }
 }
