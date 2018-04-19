@@ -19,26 +19,26 @@
      limitations under the License.
 
 -->
-private XMLGregorianCalendar ${name}( String date, String dateFormat ) {
+private static javax.xml.datatype.XMLGregorianCalendar ${name}( String date, String dateFormat ) {
     if ( date == null ) {
         return null;
     }
 
     try {
         if ( dateFormat != null ) {
-            DateFormat df = new SimpleDateFormat( dateFormat );
-            GregorianCalendar c = new GregorianCalendar();
+            java.text.DateFormat df = new java.text.SimpleDateFormat( dateFormat );
+            java.util.GregorianCalendar c = new java.util.GregorianCalendar();
             c.setTime( df.parse( date ) );
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar( c );
+            return javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar( c );
         }
         else {
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar( date );
+            return javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar( date );
         }
     }
-    catch ( DatatypeConfigurationException ex ) {
+    catch ( javax.xml.datatype.DatatypeConfigurationException ex ) {
         throw new RuntimeException( ex );
     }
-    catch ( ParseException ex ) {
+    catch ( java.text.ParseException ex ) {
         throw new RuntimeException( ex );
     }
 }

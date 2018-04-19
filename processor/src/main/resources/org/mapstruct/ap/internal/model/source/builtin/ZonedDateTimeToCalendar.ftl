@@ -19,12 +19,12 @@
      limitations under the License.
 
 -->
-private Calendar ${name}(ZonedDateTime dateTime) {
+private static java.util.Calendar ${name}(java.time.ZonedDateTime dateTime) {
     if ( dateTime == null ) {
        return null;
     }
 
-    Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( dateTime.getZone() ) );
+    java.util.Calendar instance = java.util.Calendar.getInstance( java.util.TimeZone.getTimeZone( dateTime.getZone() ) );
     instance.setTimeInMillis( dateTime.toInstant().toEpochMilli() );
     return instance;
 }

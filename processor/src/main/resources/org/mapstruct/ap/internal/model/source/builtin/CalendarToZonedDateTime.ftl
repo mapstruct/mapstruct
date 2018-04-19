@@ -19,10 +19,10 @@
      limitations under the License.
 
 -->
-private ZonedDateTime ${name}(Calendar cal) {
+private static java.time.ZonedDateTime ${name}(java.util.Calendar cal) {
     if ( cal == null ) {
         return null;
     }
 
-    return ZonedDateTime.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
+    return java.time.ZonedDateTime.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
 }

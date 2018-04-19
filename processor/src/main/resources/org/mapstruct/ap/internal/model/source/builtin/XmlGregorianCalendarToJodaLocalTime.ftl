@@ -19,30 +19,30 @@
      limitations under the License.
 
 -->
-private static LocalTime ${name}( XMLGregorianCalendar xcal ) {
+private static org.joda.time.LocalTime ${name}( javax.xml.datatype.XMLGregorianCalendar xcal ) {
     if ( xcal == null ) {
         return null;
     }
 
-    if ( xcal.getHour() != DatatypeConstants.FIELD_UNDEFINED
-         && xcal.getMinute() != DatatypeConstants.FIELD_UNDEFINED ) {
-            if ( xcal.getSecond() != DatatypeConstants.FIELD_UNDEFINED
-                && xcal.getMillisecond() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new LocalTime( xcal.getHour(),
+    if ( xcal.getHour() != javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED
+         && xcal.getMinute() != javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED ) {
+            if ( xcal.getSecond() != javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED
+                && xcal.getMillisecond() != javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED ) {
+                return new org.joda.time.LocalTime( xcal.getHour(),
                     xcal.getMinute(),
                     xcal.getSecond(),
                     xcal.getMillisecond()
                 );
             }
-            else if ( xcal.getSecond() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new LocalTime(
+            else if ( xcal.getSecond() != javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED ) {
+                return new org.joda.time.LocalTime(
                     xcal.getHour(),
                     xcal.getMinute(),
                     xcal.getSecond()
                 );
             }
             else {
-                return new LocalTime( xcal.getHour(),
+                return new org.joda.time.LocalTime( xcal.getHour(),
                     xcal.getMinute()
             );
             }

@@ -16,35 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.model.source.builtin;
+package org.mapstruct.ap.test.bugs._1425;
 
 import java.time.LocalDate;
-import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.mapstruct.ap.internal.model.common.Parameter;
-import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- * @author Gunnar Morling
+ * @author Christian Bandowski
  */
-public class XmlGregorianCalendarToLocalDate extends BuiltInMethod {
+@Mapper
+public abstract class Issue1425Mapper {
 
-    private final Parameter parameter;
-    private final Type returnType;
+    public static final Issue1425Mapper INSTANCE = Mappers.getMapper( Issue1425Mapper.class );
 
-    public XmlGregorianCalendarToLocalDate(TypeFactory typeFactory) {
-        this.parameter = new Parameter( "xcal", typeFactory.getType( XMLGregorianCalendar.class ) );
-        this.returnType = typeFactory.getType( LocalDate.class );
-    }
+    public abstract Target map(Source source);
 
-    @Override
-    public Parameter getParameter() {
-        return parameter;
-    }
-
-    @Override
-    public Type getReturnType() {
-        return returnType;
+    LocalDate now() {
+        return LocalDate.now();
     }
 }

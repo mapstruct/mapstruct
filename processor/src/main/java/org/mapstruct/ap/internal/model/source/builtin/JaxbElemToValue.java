@@ -18,10 +18,6 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
-import java.util.Set;
-
 import javax.xml.bind.JAXBElement;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -35,12 +31,10 @@ public class JaxbElemToValue extends BuiltInMethod {
 
     private final Parameter parameter;
     private final Type returnType;
-    private final Set<Type> importTypes;
 
     public JaxbElemToValue(TypeFactory typeFactory) {
         this.parameter = new Parameter( "element", typeFactory.getType( JAXBElement.class ) );
         this.returnType = typeFactory.getType( Object.class );
-        this.importTypes = asSet( parameter.getType() );
     }
 
     @Override
@@ -60,10 +54,5 @@ public class JaxbElemToValue extends BuiltInMethod {
     @Override
     public Type getReturnType() {
         return returnType;
-    }
-
-    @Override
-    public Set<Type> getImportTypes() {
-        return importTypes;
     }
 }

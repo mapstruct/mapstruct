@@ -19,17 +19,17 @@
      limitations under the License.
 
 -->
-private XMLGregorianCalendar ${name}( Date date ) {
+private static javax.xml.datatype.XMLGregorianCalendar ${name}( java.util.Date date ) {
     if ( date == null ) {
         return null;
     }
 
     try {
-        GregorianCalendar c = new GregorianCalendar();
+        java.util.GregorianCalendar c = new java.util.GregorianCalendar();
         c.setTime( date );
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar( c );
+        return javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar( c );
     }
-    catch ( DatatypeConfigurationException ex ) {
+    catch ( javax.xml.datatype.DatatypeConfigurationException ex ) {
         throw new RuntimeException( ex );
     }
 }

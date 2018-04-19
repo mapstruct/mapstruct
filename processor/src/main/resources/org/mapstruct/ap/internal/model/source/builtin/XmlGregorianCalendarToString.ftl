@@ -19,7 +19,7 @@
      limitations under the License.
 
 -->
-private String ${name}( XMLGregorianCalendar xcal, String dateFormat ) {
+private static String ${name}( javax.xml.datatype.XMLGregorianCalendar xcal, String dateFormat ) {
     if ( xcal == null ) {
         return null;
     }
@@ -28,8 +28,8 @@ private String ${name}( XMLGregorianCalendar xcal, String dateFormat ) {
         return xcal.toString();
     }
     else {
-        Date d = xcal.toGregorianCalendar().getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat( dateFormat );
+        java.util.Date d = xcal.toGregorianCalendar().getTime();
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat( dateFormat );
         return sdf.format( d );
     }
 }

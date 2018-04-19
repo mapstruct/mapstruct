@@ -19,7 +19,7 @@
      limitations under the License.
 
 -->
-private static Date ${name}( XMLGregorianCalendar xcal ) {
+private static java.util.Date ${name}( javax.xml.datatype.XMLGregorianCalendar xcal ) {
     if ( xcal == null ) {
         return null;
     }
