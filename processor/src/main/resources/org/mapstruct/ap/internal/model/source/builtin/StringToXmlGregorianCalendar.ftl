@@ -19,26 +19,26 @@
      limitations under the License.
 
 -->
-private XMLGregorianCalendar ${name}( String date, String dateFormat ) {
+private <@includeModel object=findType("XMLGregorianCalendar")/> ${name}( String date, String dateFormat ) {
     if ( date == null ) {
         return null;
     }
 
     try {
         if ( dateFormat != null ) {
-            DateFormat df = new SimpleDateFormat( dateFormat );
-            GregorianCalendar c = new GregorianCalendar();
+            <@includeModel object=findType("DateFormat")/> df = new <@includeModel object=findType("SimpleDateFormat")/>( dateFormat );
+            <@includeModel object=findType("GregorianCalendar")/> c = new <@includeModel object=findType("GregorianCalendar")/>();
             c.setTime( df.parse( date ) );
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar( c );
+            return <@includeModel object=findType("DatatypeFactory")/>.newInstance().newXMLGregorianCalendar( c );
         }
         else {
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar( date );
+            return <@includeModel object=findType("DatatypeFactory")/>.newInstance().newXMLGregorianCalendar( date );
         }
     }
-    catch ( DatatypeConfigurationException ex ) {
+    catch ( <@includeModel object=findType("DatatypeConfigurationException")/> ex ) {
         throw new RuntimeException( ex );
     }
-    catch ( ParseException ex ) {
+    catch ( <@includeModel object=findType("ParseException")/> ex ) {
         throw new RuntimeException( ex );
     }
 }

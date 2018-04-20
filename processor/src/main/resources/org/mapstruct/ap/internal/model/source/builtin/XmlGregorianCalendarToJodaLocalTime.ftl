@@ -19,30 +19,30 @@
      limitations under the License.
 
 -->
-private static LocalTime ${name}( XMLGregorianCalendar xcal ) {
+private static <@includeModel object=findType("LocalTime")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
     if ( xcal == null ) {
         return null;
     }
 
-    if ( xcal.getHour() != DatatypeConstants.FIELD_UNDEFINED
-         && xcal.getMinute() != DatatypeConstants.FIELD_UNDEFINED ) {
-            if ( xcal.getSecond() != DatatypeConstants.FIELD_UNDEFINED
-                && xcal.getMillisecond() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new LocalTime( xcal.getHour(),
+    if ( xcal.getHour() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+         && xcal.getMinute() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+            if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+                && xcal.getMillisecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return new <@includeModel object=findType("LocalTime")/>( xcal.getHour(),
                     xcal.getMinute(),
                     xcal.getSecond(),
                     xcal.getMillisecond()
                 );
             }
-            else if ( xcal.getSecond() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new LocalTime(
+            else if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return new <@includeModel object=findType("LocalTime")/>(
                     xcal.getHour(),
                     xcal.getMinute(),
                     xcal.getSecond()
                 );
             }
             else {
-                return new LocalTime( xcal.getHour(),
+                return new <@includeModel object=findType("LocalTime")/>( xcal.getHour(),
                     xcal.getMinute()
             );
             }

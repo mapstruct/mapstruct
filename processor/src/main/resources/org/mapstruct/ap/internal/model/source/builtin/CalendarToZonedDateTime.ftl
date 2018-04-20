@@ -19,10 +19,10 @@
      limitations under the License.
 
 -->
-private ZonedDateTime ${name}(Calendar cal) {
+private <@includeModel object=findType("ZonedDateTime")/> ${name}(<@includeModel object=findType("Calendar")/> cal) {
     if ( cal == null ) {
         return null;
     }
 
-    return ZonedDateTime.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
+    return <@includeModel object=findType("ZonedDateTime")/>.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
 }

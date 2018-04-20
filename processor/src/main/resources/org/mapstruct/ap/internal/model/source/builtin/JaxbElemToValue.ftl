@@ -19,7 +19,10 @@
      limitations under the License.
 
 -->
-private <T> T ${name}( JAXBElement<T> element ) {
+<#assign jaxbElement = findType("JAXBElement")>
+<#assign typeElement = jaxbElement.typeParameters.get(0)>
+
+private <<@includeModel object=typeElement/>> <@includeModel object=typeElement/> ${name}( <@includeModel object=jaxbElement/> element ) {
     if ( element == null ) {
         return null;
     }

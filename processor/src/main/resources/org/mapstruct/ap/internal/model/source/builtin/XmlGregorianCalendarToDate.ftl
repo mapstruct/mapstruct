@@ -19,7 +19,7 @@
      limitations under the License.
 
 -->
-private static Date ${name}( XMLGregorianCalendar xcal ) {
+private static <@includeModel object=findType("Date")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
     if ( xcal == null ) {
         return null;
     }

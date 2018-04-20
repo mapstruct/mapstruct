@@ -19,33 +19,33 @@
      limitations under the License.
 
 -->
-private static DateTime ${name}( XMLGregorianCalendar xcal ) {
+private static <@includeModel object=findType("DateTime")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
     if ( xcal == null ) {
         return null;
     }
 
-    if ( xcal.getYear() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getMonth() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getDay() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getHour() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getMinute() != DatatypeConstants.FIELD_UNDEFINED
+    if ( xcal.getYear() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getMonth() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getDay() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getHour() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getMinute() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
         ) {
-            if ( xcal.getSecond() != DatatypeConstants.FIELD_UNDEFINED
-                && xcal.getMillisecond() != DatatypeConstants.FIELD_UNDEFINED
-                && xcal.getTimezone() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new DateTime( xcal.getYear(),
+            if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+                && xcal.getMillisecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+                && xcal.getTimezone() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return new <@includeModel object=findType("DateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),
                     xcal.getMinute(),
                     xcal.getSecond(),
                     xcal.getMillisecond(),
-                    DateTimeZone.forOffsetMillis( xcal.getTimezone() * 60000 )
+                    <@includeModel object=findType("DateTimeZone")/>.forOffsetMillis( xcal.getTimezone() * 60000 )
                 );
             }
-            else if ( xcal.getSecond() != DatatypeConstants.FIELD_UNDEFINED
-                && xcal.getMillisecond() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new DateTime( xcal.getYear(),
+            else if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+                && xcal.getMillisecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return new <@includeModel object=findType("DateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),
@@ -54,19 +54,19 @@ private static DateTime ${name}( XMLGregorianCalendar xcal ) {
                     xcal.getMillisecond()
                 );
             }
-            else if ( xcal.getSecond() != DatatypeConstants.FIELD_UNDEFINED
-                && xcal.getTimezone() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new DateTime( xcal.getYear(),
+            else if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+                && xcal.getTimezone() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return new <@includeModel object=findType("DateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),
                     xcal.getMinute(),
                     xcal.getSecond(),
-                    DateTimeZone.forOffsetMillis( xcal.getTimezone() * 60000 )
+                    <@includeModel object=findType("DateTimeZone")/>.forOffsetMillis( xcal.getTimezone() * 60000 )
                 );
             }
-            else if ( xcal.getSecond() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new DateTime( xcal.getYear(),
+            else if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return new <@includeModel object=findType("DateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),
@@ -74,17 +74,17 @@ private static DateTime ${name}( XMLGregorianCalendar xcal ) {
                     xcal.getSecond()
                 );
             }
-            else if ( xcal.getTimezone() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new DateTime( xcal.getYear(),
+            else if ( xcal.getTimezone() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return new <@includeModel object=findType("DateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),
                     xcal.getMinute(),
-                    DateTimeZone.forOffsetMillis( xcal.getTimezone() * 60000 )
+                    <@includeModel object=findType("DateTimeZone")/>.forOffsetMillis( xcal.getTimezone() * 60000 )
             );
             }
             else {
-                return new DateTime( xcal.getYear(),
+                return new <@includeModel object=findType("DateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),

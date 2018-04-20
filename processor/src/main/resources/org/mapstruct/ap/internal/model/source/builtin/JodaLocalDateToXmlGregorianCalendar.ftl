@@ -19,19 +19,19 @@
      limitations under the License.
 
 -->
-private XMLGregorianCalendar ${name}( LocalDate dt ) {
+private <@includeModel object=findType("XMLGregorianCalendar")/> ${name}( <@includeModel object=findType("LocalDate")/> dt ) {
     if ( dt == null ) {
         return null;
     }
 
     try {
-        return DatatypeFactory.newInstance().newXMLGregorianCalendarDate(
+        return <@includeModel object=findType("DatatypeFactory")/>.newInstance().newXMLGregorianCalendarDate(
             dt.getYear(),
             dt.getMonthOfYear(),
             dt.getDayOfMonth(),
-            DatatypeConstants.FIELD_UNDEFINED );
+            <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED );
     }
-    catch ( DatatypeConfigurationException ex ) {
+    catch ( <@includeModel object=findType("DatatypeConfigurationException")/> ex ) {
         throw new RuntimeException( ex );
     }
 }

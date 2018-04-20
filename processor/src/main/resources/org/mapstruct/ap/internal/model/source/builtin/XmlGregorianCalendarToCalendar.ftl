@@ -19,12 +19,12 @@
      limitations under the License.
 
 -->
-private Calendar ${name}( XMLGregorianCalendar xcal ) {
+private <@includeModel object=findType("Calendar")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
     if ( xcal == null ) {
         return null;
     }
 
-    Calendar cal = Calendar.getInstance();
+    <@includeModel object=findType("Calendar")/> cal = <@includeModel object=findType("Calendar")/>.getInstance();
     cal.setTimeInMillis( xcal.toGregorianCalendar().getTimeInMillis() );
     return cal;
 }

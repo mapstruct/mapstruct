@@ -19,20 +19,20 @@
      limitations under the License.
 
 -->
-private static LocalDateTime ${name}( XMLGregorianCalendar xcal ) {
+private static <@includeModel object=findType("LocalDateTime")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
     if ( xcal == null ) {
         return null;
     }
 
-    if ( xcal.getYear() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getMonth() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getDay() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getHour() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getMinute() != DatatypeConstants.FIELD_UNDEFINED
+    if ( xcal.getYear() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getMonth() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getDay() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getHour() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getMinute() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
         ) {
-            if ( xcal.getSecond() != DatatypeConstants.FIELD_UNDEFINED
-                && xcal.getMillisecond() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new LocalDateTime( xcal.getYear(),
+            if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+                && xcal.getMillisecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return new <@includeModel object=findType("LocalDateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),
@@ -41,8 +41,8 @@ private static LocalDateTime ${name}( XMLGregorianCalendar xcal ) {
                     xcal.getMillisecond()
                 );
             }
-            else if ( xcal.getSecond() != DatatypeConstants.FIELD_UNDEFINED ) {
-                return new LocalDateTime( xcal.getYear(),
+            else if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
+                return new <@includeModel object=findType("LocalDateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),
@@ -51,7 +51,7 @@ private static LocalDateTime ${name}( XMLGregorianCalendar xcal ) {
                 );
             }
             else {
-                return new LocalDateTime( xcal.getYear(),
+                return new <@includeModel object=findType("LocalDateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),

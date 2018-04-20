@@ -19,7 +19,7 @@
      limitations under the License.
 
 -->
-private String ${name}( XMLGregorianCalendar xcal, String dateFormat ) {
+private String ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal, String dateFormat ) {
     if ( xcal == null ) {
         return null;
     }
@@ -28,8 +28,8 @@ private String ${name}( XMLGregorianCalendar xcal, String dateFormat ) {
         return xcal.toString();
     }
     else {
-        Date d = xcal.toGregorianCalendar().getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat( dateFormat );
+        <@includeModel object=findType("Date")/> d = xcal.toGregorianCalendar().getTime();
+        <@includeModel object=findType("SimpleDateFormat")/> sdf = new <@includeModel object=findType("SimpleDateFormat")/>( dateFormat );
         return sdf.format( d );
     }
 }

@@ -56,6 +56,29 @@ public class VirtualMappingMethod extends MappingMethod {
         return importTypes;
     }
 
+    /**
+     * Finds a {@link Type} by a given name. The {@code name} will be compared to the fully-qualified and also simple
+     * names of the {@code importTypes}.
+     *
+     * @param name Fully-qualified or simple name of the type.
+     *
+     * @return Found type, never <code>null</code>.
+     *
+     * @throws IllegalArgumentException In case no {@link Type} was found for given name.
+     */
+    public Type findType(String name) {
+        for ( Type type : importTypes ) {
+            if ( type.getFullyQualifiedName().contentEquals( name ) ) {
+                return type;
+            }
+            if ( type.getName().contentEquals( name ) ) {
+                return type;
+            }
+        }
+
+        throw new IllegalArgumentException( "No type for given name '" + name + "' found in 'importTypes'." );
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
