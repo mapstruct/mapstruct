@@ -19,7 +19,7 @@
      limitations under the License.
 
 -->
-private static <@includeModel object=findType("XMLGregorianCalendar")/> ${name}( <@includeModel object=findType("LocalDate")/> localDate ) {
+private static <@includeModel object=findType("XMLGregorianCalendar")/> ${name}( <@includeModel object=findType("java.time.LocalDate")/> localDate ) {
     if ( localDate == null ) {
         return null;
     }

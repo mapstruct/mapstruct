@@ -19,7 +19,7 @@
      limitations under the License.
 
 -->
-private static <@includeModel object=findType("LocalTime")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
+private static <@includeModel object=findType("org.joda.time.LocalTime")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
     if ( xcal == null ) {
         return null;
     }
@@ -28,21 +28,21 @@ private static <@includeModel object=findType("LocalTime")/> ${name}( <@includeM
          && xcal.getMinute() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
             if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
                 && xcal.getMillisecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
-                return new <@includeModel object=findType("LocalTime")/>( xcal.getHour(),
+                return new <@includeModel object=findType("org.joda.time.LocalTime")/>( xcal.getHour(),
                     xcal.getMinute(),
                     xcal.getSecond(),
                     xcal.getMillisecond()
                 );
             }
             else if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
-                return new <@includeModel object=findType("LocalTime")/>(
+                return new <@includeModel object=findType("org.joda.time.LocalTime")/>(
                     xcal.getHour(),
                     xcal.getMinute(),
                     xcal.getSecond()
                 );
             }
             else {
-                return new <@includeModel object=findType("LocalTime")/>( xcal.getHour(),
+                return new <@includeModel object=findType("org.joda.time.LocalTime")/>( xcal.getHour(),
                     xcal.getMinute()
             );
             }

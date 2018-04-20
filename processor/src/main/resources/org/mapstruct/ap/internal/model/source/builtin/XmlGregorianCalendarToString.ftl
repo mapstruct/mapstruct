@@ -28,7 +28,7 @@ private String ${name}( <@includeModel object=findType("XMLGregorianCalendar")/>
         return xcal.toString();
     }
     else {
-        <@includeModel object=findType("Date")/> d = xcal.toGregorianCalendar().getTime();
+        <@includeModel object=findType("java.util.Date")/> d = xcal.toGregorianCalendar().getTime();
         <@includeModel object=findType("SimpleDateFormat")/> sdf = new <@includeModel object=findType("SimpleDateFormat")/>( dateFormat );
         return sdf.format( d );
     }

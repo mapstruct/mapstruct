@@ -19,7 +19,7 @@
      limitations under the License.
 
 -->
-private static <@includeModel object=findType("LocalDateTime")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
+private static <@includeModel object=findType("org.joda.time.LocalDateTime")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
     if ( xcal == null ) {
         return null;
     }
@@ -32,7 +32,7 @@ private static <@includeModel object=findType("LocalDateTime")/> ${name}( <@incl
         ) {
             if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
                 && xcal.getMillisecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
-                return new <@includeModel object=findType("LocalDateTime")/>( xcal.getYear(),
+                return new <@includeModel object=findType("org.joda.time.LocalDateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),
@@ -42,7 +42,7 @@ private static <@includeModel object=findType("LocalDateTime")/> ${name}( <@incl
                 );
             }
             else if ( xcal.getSecond() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED ) {
-                return new <@includeModel object=findType("LocalDateTime")/>( xcal.getYear(),
+                return new <@includeModel object=findType("org.joda.time.LocalDateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),
@@ -51,7 +51,7 @@ private static <@includeModel object=findType("LocalDateTime")/> ${name}( <@incl
                 );
             }
             else {
-                return new <@includeModel object=findType("LocalDateTime")/>( xcal.getYear(),
+                return new <@includeModel object=findType("org.joda.time.LocalDateTime")/>( xcal.getYear(),
                     xcal.getMonth(),
                     xcal.getDay(),
                     xcal.getHour(),

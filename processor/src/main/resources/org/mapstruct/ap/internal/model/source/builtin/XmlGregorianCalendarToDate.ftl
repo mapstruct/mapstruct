@@ -19,7 +19,7 @@
      limitations under the License.
 
 -->
-private static <@includeModel object=findType("Date")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
+private static <@includeModel object=findType("java.util.Date")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
     if ( xcal == null ) {
         return null;
     }

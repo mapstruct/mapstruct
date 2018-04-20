@@ -19,7 +19,7 @@
      limitations under the License.
 
 -->
-private <@includeModel object=findType("XMLGregorianCalendar")/> ${name}( <@includeModel object=findType("LocalTime")/> dt ) {
+private <@includeModel object=findType("XMLGregorianCalendar")/> ${name}( <@includeModel object=findType("org.joda.time.LocalTime")/> dt ) {
     if ( dt == null ) {
         return null;
     }
