@@ -73,6 +73,7 @@ public class FullFeatureCompilationTest {
                 case ECLIPSE_JDT_JAVA_6:
                 case ORACLE_JAVA_7:
                 case ECLIPSE_JDT_JAVA_7:
+                    additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1425/*.java" );
                     additionalExcludes.add( "**/java8*/**/*.java" );
                     break;
                 case ORACLE_JAVA_9:

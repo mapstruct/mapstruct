@@ -19,17 +19,17 @@
      limitations under the License.
 
 -->
-private XMLGregorianCalendar ${name}( Date date ) {
+private <@includeModel object=findType("XMLGregorianCalendar")/> ${name}( <@includeModel object=findType("Date")/> date ) {
     if ( date == null ) {
         return null;
     }
 
     try {
-        GregorianCalendar c = new GregorianCalendar();
+        <@includeModel object=findType("GregorianCalendar")/> c = new <@includeModel object=findType("GregorianCalendar")/>();
         c.setTime( date );
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar( c );
+        return <@includeModel object=findType("DatatypeFactory")/>.newInstance().newXMLGregorianCalendar( c );
     }
-    catch ( DatatypeConfigurationException ex ) {
+    catch ( <@includeModel object=findType("DatatypeConfigurationException")/> ex ) {
         throw new RuntimeException( ex );
     }
 }

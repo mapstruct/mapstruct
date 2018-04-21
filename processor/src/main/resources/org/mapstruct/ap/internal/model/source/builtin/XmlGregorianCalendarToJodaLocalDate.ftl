@@ -19,15 +19,15 @@
      limitations under the License.
 
 -->
-private static LocalDate ${name}( XMLGregorianCalendar xcal ) {
+private static <@includeModel object=findType("org.joda.time.LocalDate")/> ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal ) {
     if ( xcal == null ) {
         return null;
     }
 
-    if ( xcal.getYear() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getMonth() != DatatypeConstants.FIELD_UNDEFINED
-        && xcal.getDay() != DatatypeConstants.FIELD_UNDEFINED )  {
-            return new LocalDate( xcal.getYear(), xcal.getMonth(), xcal.getDay() );
+    if ( xcal.getYear() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getMonth() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED
+        && xcal.getDay() != <@includeModel object=findType("DatatypeConstants")/>.FIELD_UNDEFINED )  {
+            return new <@includeModel object=findType("org.joda.time.LocalDate")/>( xcal.getYear(), xcal.getMonth(), xcal.getDay() );
     }
 
     return null;
