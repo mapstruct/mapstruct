@@ -114,8 +114,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             this.method = sourceMethod;
             this.methodMappings = sourceMethod.getMappingOptions().getMappings();
             CollectionMappingStrategyPrism cms = sourceMethod.getMapperConfiguration().getCollectionMappingStrategy();
-            Map<String, Accessor> accessors = method.getResultType()
-                .getEffectiveType()
+            Type mappingType = method.getResultType();
+            if ( !method.isUpdateMethod() ) {
+                mappingType = mappingType.getEffectiveType();
+            }
+
+            Map<String, Accessor> accessors = mappingType
                 .getPropertyWriteAccessors( cms );
             this.targetProperties = accessors.keySet();
 
@@ -875,7 +879,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             types.addAll( propertyMapping.getImportTypes() );
         }
 
-        types.add( getResultType().getEffectiveType() );
+        if ( !isExistingInstanceMapping() ) {
+            types.addAll( getResultType().getEffectiveType().getImportTypes() );
+        }
+
 
         return types;
     }

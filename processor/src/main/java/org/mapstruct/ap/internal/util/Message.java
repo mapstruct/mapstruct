@@ -101,7 +101,6 @@ public enum Message {
 
     RETRIEVAL_NO_INPUT_ARGS( "Can't generate mapping method with no input arguments." ),
     RETRIEVAL_DUPLICATE_MAPPING_TARGETS( "Can't generate mapping method with more than one @MappingTarget parameter." ),
-    RETRIEVAL_IMMUTABLE_TARGET( "Can't generate mapping method when @MappingTarget is supposed to be immutable (has a builder)." ),
     RETRIEVAL_VOID_MAPPING_METHOD( "Can't generate mapping method with return type void." ),
     RETRIEVAL_NON_ASSIGNABLE_RESULTTYPE( "The result type is not assignable to the the return type." ),
     RETRIEVAL_ITERABLE_TO_NON_ITERABLE( "Can't generate mapping method from iterable type to non-iterable type." ),
