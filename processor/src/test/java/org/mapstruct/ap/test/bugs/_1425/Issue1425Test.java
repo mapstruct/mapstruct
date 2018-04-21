@@ -40,11 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Issue1425Test {
 
     @Test
-    public void shouldGenerateValidCode() {
-
-    }
-
-    @Test
     public void shouldTestMappingLocalDates() {
         Source source = new Source();
         source.setValue( LocalDate.parse( "2018-04-18" ) );

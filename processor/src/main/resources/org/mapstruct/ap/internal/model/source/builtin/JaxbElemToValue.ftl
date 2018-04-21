@@ -19,7 +19,6 @@
      limitations under the License.
 
 -->
-
 private <T> T ${name}( <@includeModel object=findType("JAXBElement") raw=true/><T> element ) {
     if ( element == null ) {
         return null;
