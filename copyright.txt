@@ -3,6 +3,7 @@
 
 Alexandr Shalugin - https://github.com/shalugin
 Andreas Gudian - https://github.com/agudian
+Christian Bandowski - https://github.com/chris922
 Christian Schuster - https://github.com/chschu
 Christophe Labouisse - https://github.com/ggtools
 Ciaran Liedeman - https://github.com/cliedeman
