@@ -23,7 +23,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+
+import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
+import org.mapstruct.ap.spi.BuilderProvider;
+import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
+import org.mapstruct.ap.spi.DefaultBuilderProvider;
+import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
+import org.mapstruct.ap.spi.ImmutablesBuilderProvider;
 
 /**
  * Keeps contextual data in the scope of the entire annotation processor ("application scope").
@@ -33,12 +42,30 @@ import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 public class AnnotationProcessorContext {
 
     private List<AstModifyingAnnotationProcessor> astModifyingAnnotationProcessors;
+
+    private final BuilderProvider builderProvider;
+    private final AccessorNamingStrategy accessorNamingStrategy;
+
     private AccessorNamingUtils accessorNaming;
 
-    public AnnotationProcessorContext() {
+    public AnnotationProcessorContext(Elements elementUtils) {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
                 findAstModifyingAnnotationProcessors() );
-        this.accessorNaming = new AccessorNamingUtils();
+
+        AccessorNamingStrategy defaultAccessorNamingStrategy;
+        BuilderProvider defaultBuilderProvider;
+        TypeElement immutableElement = elementUtils.getTypeElement( ImmutablesConstants.IMMUTABLE_FQN );
+        if ( immutableElement == null ) {
+            defaultAccessorNamingStrategy = new DefaultAccessorNamingStrategy();
+            defaultBuilderProvider = new DefaultBuilderProvider();
+        }
+        else {
+            defaultAccessorNamingStrategy = new ImmutablesAccessorNamingStrategy();
+            defaultBuilderProvider = new ImmutablesBuilderProvider();
+        }
+        this.accessorNamingStrategy = Services.get( AccessorNamingStrategy.class, defaultAccessorNamingStrategy );
+        this.builderProvider = Services.get( BuilderProvider.class, defaultBuilderProvider );
+        this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
     }
 
     private static List<AstModifyingAnnotationProcessor> findAstModifyingAnnotationProcessors() {
@@ -61,5 +88,13 @@ public class AnnotationProcessorContext {
 
     public AccessorNamingUtils getAccessorNaming() {
         return accessorNaming;
+    }
+
+    public AccessorNamingStrategy getAccessorNamingStrategy() {
+        return accessorNamingStrategy;
+    }
+
+    public BuilderProvider getBuilderProvider() {
+        return builderProvider;
     }
 }

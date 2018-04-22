@@ -18,25 +18,19 @@
  */
 package org.mapstruct.ap.spi;
 
-// tag::documentation[]
-
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-
-// end::documentation[]
+import javax.lang.model.element.ExecutableElement;
 
 /**
- * A NoOp {@link BuilderProvider} which returns {@code null} when searching for a builder.
+ * Accesor naming strategy for Immutables.
+ * The generated Immutables also have a from that works as a copy. Our default strategy considers this method
+ * as a setter with a name {@code from}. Therefore we are ignoring it.
  *
  * @author Filip Hrisafov
  */
-// tag::documentation[]
-public class NoOpBuilderProvider implements BuilderProvider {
+public class ImmutablesAccessorNamingStrategy extends DefaultAccessorNamingStrategy {
 
     @Override
-    public BuilderInfo findBuilderInfo(TypeMirror type, Elements elements, Types types) {
-        return null;
+    protected boolean isBuilderSetter(ExecutableElement method) {
+        return super.isBuilderSetter( method ) && !method.getSimpleName().toString().equals( "from" );
     }
 }
-// end::documentation[]

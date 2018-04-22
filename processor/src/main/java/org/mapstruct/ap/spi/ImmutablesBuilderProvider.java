@@ -16,9 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest.immutables.extras;
-
-// tag::documentation[]
+package org.mapstruct.ap.spi;
 
 import java.util.regex.Pattern;
 import javax.lang.model.element.AnnotationMirror;
@@ -30,19 +28,18 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.mapstruct.ap.spi.BuilderInfo;
-import org.mapstruct.ap.spi.DefaultBuilderProvider;
-import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
-
-// end::documentation[]
-
 /**
+ * Builder provider for Immutables. A custom provider is needed because Immutables creates an implementation of an
+ * interface and that implementation has the builder. This implementation would try to find the type created by
+ * Immutables and would look for the builder in it. Only types annotated with the
+ * {@code org.immutables.value.Value.Immutable} are considered for this discovery.
+ *
  * @author Filip Hrisafov
  */
-// tag::documentation[]
 public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
 
     private static final Pattern JAVA_JAVAX_PACKAGE = Pattern.compile( "^javax?\\..*" );
+    private static final String IMMUTABLE_FQN = "org.immutables.value.Value.Immutable";
 
     @Override
     protected BuilderInfo findBuilderInfo(TypeElement typeElement, Elements elements, Types types) {
@@ -50,7 +47,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         if ( name.length() == 0 || JAVA_JAVAX_PACKAGE.matcher( name ).matches() ) {
             return null;
         }
-        TypeElement immutableAnnotation = elements.getTypeElement( "org.immutables.value.Value.Immutable" );
+        TypeElement immutableAnnotation = elements.getTypeElement( IMMUTABLE_FQN );
         if ( immutableAnnotation != null ) {
             BuilderInfo info = findBuilderInfoForImmutables(
                 typeElement,
@@ -83,7 +80,7 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         return null;
     }
 
-    private TypeElement asImmutableElement(TypeElement typeElement, Elements elements) {
+    protected TypeElement asImmutableElement(TypeElement typeElement, Elements elements) {
         Element enclosingElement = typeElement.getEnclosingElement();
         StringBuilder builderQualifiedName = new StringBuilder( typeElement.getQualifiedName().length() + 17 );
         if ( enclosingElement.getKind() == ElementKind.PACKAGE ) {
@@ -101,4 +98,3 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
         return elements.getTypeElement( builderQualifiedName );
     }
 }
-// end::documentation[]

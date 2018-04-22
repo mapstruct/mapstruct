@@ -57,12 +57,9 @@ import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.RoundContext;
-import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderInfo;
-import org.mapstruct.ap.spi.BuilderProvider;
-import org.mapstruct.ap.spi.DefaultBuilderProvider;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
@@ -75,11 +72,6 @@ import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoad
  * @author Gunnar Morling
  */
 public class TypeFactory {
-
-    private static final BuilderProvider BUILDER_PROVIDER = Services.get(
-        BuilderProvider.class,
-        new DefaultBuilderProvider()
-    );
 
     private final Elements elementUtils;
     private final Types typeUtils;
@@ -490,7 +482,9 @@ public class TypeFactory {
     }
 
     private BuilderInfo findBuilder(TypeMirror type) {
-        return BUILDER_PROVIDER.findBuilderInfo( type, elementUtils, typeUtils );
+        return roundContext.getAnnotationProcessorContext()
+            .getBuilderProvider()
+            .findBuilderInfo( type, elementUtils, typeUtils );
     }
 
     private TypeMirror getComponentType(TypeMirror mirror) {

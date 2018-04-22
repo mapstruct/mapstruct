@@ -16,19 +16,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.itest.immutables.extras;
-
-import javax.lang.model.element.ExecutableElement;
-
-import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
+package org.mapstruct.ap.internal.util;
 
 /**
+ * Helper for holding Immutables FQN.
+ *
  * @author Filip Hrisafov
  */
-public class ImmutablesAccessorNamingStrategy extends DefaultAccessorNamingStrategy {
+public class ImmutablesConstants {
 
-    @Override
-    protected boolean isBuilderSetter(ExecutableElement method) {
-        return super.isBuilderSetter( method ) && !method.getSimpleName().toString().equals( "from" );
+    public static final String IMMUTABLE_FQN = "org.immutables.value.Value.Immutable";
+
+    private ImmutablesConstants() {
+
     }
 }
