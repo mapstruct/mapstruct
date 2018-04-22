@@ -59,7 +59,7 @@ public enum Message {
     PROPERTYMAPPING_DEFAULT_VALUE_AND_DEFAULT_EXPRESSION_BOTH_DEFINED( "Default value and default expression are both defined in @Mapping, either define a default value or a default expression." ),
     PROPERTYMAPPING_INVALID_EXPRESSION( "Value for expression must be given in the form \"java(<EXPRESSION>)\"." ),
     PROPERTYMAPPING_INVALID_DEFAULT_EXPRESSION( "Value for default expression must be given in the form \"java(<EXPRESSION>)\"." ),
-    PROPERTYMAPPING_INVALID_PARAMETER_NAME( "Method has no parameter named \"%s\"." ),
+    PROPERTYMAPPING_INVALID_PARAMETER_NAME( "Method has no source parameter named \"%s\". Method source parameters are: \"%s\"." ),
     PROPERTYMAPPING_NO_PROPERTY_IN_PARAMETER( "The type of parameter \"%s\" has no property named \"%s\"." ),
     PROPERTYMAPPING_INVALID_PROPERTY_NAME( "No property named \"%s\" exists in source parameter(s). Did you mean \"%s\"?" ),
     PROPERTYMAPPING_NO_PRESENCE_CHECKER_FOR_SOURCE_TYPE( "Using custom source value presence checking strategy, but no presence checker found for %s in source type." ),

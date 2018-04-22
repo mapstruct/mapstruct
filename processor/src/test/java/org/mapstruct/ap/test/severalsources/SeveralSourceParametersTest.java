@@ -168,4 +168,26 @@ public class SeveralSourceParametersTest {
     })
     public void shouldFailToGenerateMappingsForAmbigiousSourceProperty() {
     }
+
+    @Test
+    @WithClasses({
+        ErroneousSourceTargetMapper2.class,
+        Address.class,
+        Person.class,
+        DeliveryAddress.class
+    })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(
+                type = ErroneousSourceTargetMapper2.class,
+                kind = Kind.ERROR,
+                line = 28,
+                messageRegExp = "Method has no source parameter named \"houseNo\"\\." +
+                    " Method source parameters are: \"address, person\"\\."
+            )
+        }
+    )
+    public void shouldFailWhenSourcePropertyDoesNotMatchAnyOfTheSourceParameters() {
+    }
 }
