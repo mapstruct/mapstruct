@@ -45,6 +45,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
+import org.mapstruct.ap.internal.model.source.BeanMapping;
 import org.mapstruct.ap.internal.model.source.ForgedMethod;
 import org.mapstruct.ap.internal.model.source.ForgedMethodHistory;
 import org.mapstruct.ap.internal.model.source.Mapping;
@@ -133,6 +134,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
             existingVariableNames.addAll( method.getParameterNames() );
+
+            BeanMapping beanMapping = method.getMappingOptions().getBeanMapping();
+            if ( beanMapping != null ) {
+                for ( String ignoreUnmapped : beanMapping.getIgnoreUnmappedSourceProperties() ) {
+                    unprocessedSourceProperties.remove( ignoreUnmapped );
+                }
+            }
+
             return this;
         }
 
