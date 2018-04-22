@@ -33,10 +33,12 @@ import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 public class AnnotationProcessorContext {
 
     private List<AstModifyingAnnotationProcessor> astModifyingAnnotationProcessors;
+    private AccessorNamingUtils accessorNaming;
 
     public AnnotationProcessorContext() {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
                 findAstModifyingAnnotationProcessors() );
+        this.accessorNaming = new AccessorNamingUtils();
     }
 
     private static List<AstModifyingAnnotationProcessor> findAstModifyingAnnotationProcessors() {
@@ -55,5 +57,9 @@ public class AnnotationProcessorContext {
 
     public List<AstModifyingAnnotationProcessor> getAstModifyingAnnotationProcessors() {
         return astModifyingAnnotationProcessors;
+    }
+
+    public AccessorNamingUtils getAccessorNaming() {
+        return accessorNaming;
     }
 }

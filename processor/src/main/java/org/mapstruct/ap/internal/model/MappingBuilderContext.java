@@ -38,6 +38,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.spi.MappingExclusionProvider;
@@ -125,6 +126,7 @@ public class MappingBuilderContext {
     private final Elements elementUtils;
     private final Types typeUtils;
     private final FormattingMessager messager;
+    private final AccessorNamingUtils accessorNaming;
     private final Options options;
     private final TypeElement mapperTypeElement;
     private final List<SourceMethod> sourceModel;
@@ -138,6 +140,7 @@ public class MappingBuilderContext {
                           Elements elementUtils,
                           Types typeUtils,
                           FormattingMessager messager,
+                          AccessorNamingUtils accessorNaming,
                           Options options,
                           MappingResolver mappingResolver,
                           TypeElement mapper,
@@ -147,6 +150,7 @@ public class MappingBuilderContext {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
+        this.accessorNaming = accessorNaming;
         this.options = options;
         this.mappingResolver = mappingResolver;
         this.mapperTypeElement = mapper;
@@ -193,6 +197,10 @@ public class MappingBuilderContext {
 
     public FormattingMessager getMessager() {
         return messager;
+    }
+
+    public AccessorNamingUtils getAccessorNaming() {
+        return accessorNaming;
     }
 
     public Options getOptions() {

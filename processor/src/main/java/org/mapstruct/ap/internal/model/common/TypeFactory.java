@@ -252,6 +252,7 @@ public class TypeFactory {
 
         return new Type(
             typeUtils, elementUtils, this,
+            roundContext.getAnnotationProcessorContext().getAccessorNaming(),
             mirror,
             typeElement,
             getTypeParameters( mirror, false ),
@@ -461,6 +462,7 @@ public class TypeFactory {
                 typeUtils,
                 elementUtils,
                 this,
+                roundContext.getAnnotationProcessorContext().getAccessorNaming(),
                 typeUtils.getDeclaredType(
                     implementationType.getTypeElement(),
                     declaredType.getTypeArguments().toArray( new TypeMirror[] { } )

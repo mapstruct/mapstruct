@@ -49,6 +49,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceReference;
 import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -85,14 +86,14 @@ public class PropertyMapping extends ModelElement {
         SETTER,
         ADDER;
 
-        public static TargetWriteAccessorType of(Accessor accessor) {
-            if ( Executables.isSetterMethod( accessor ) ) {
+        public static TargetWriteAccessorType of(AccessorNamingUtils accessorNaming, Accessor accessor) {
+            if ( accessorNaming.isSetterMethod( accessor ) ) {
                 return TargetWriteAccessorType.SETTER;
             }
-            else if ( Executables.isAdderMethod( accessor ) ) {
+            else if ( accessorNaming.isAdderMethod( accessor ) ) {
                 return TargetWriteAccessorType.ADDER;
             }
-            else if ( Executables.isGetterMethod( accessor ) ) {
+            else if ( accessorNaming.isGetterMethod( accessor ) ) {
                 return TargetWriteAccessorType.GETTER;
             }
             else {
@@ -129,7 +130,7 @@ public class PropertyMapping extends ModelElement {
             this.targetReadAccessor = targetProp.getReadAccessor();
             this.targetWriteAccessor = targetProp.getWriteAccessor();
             this.targetType = targetProp.getType();
-            this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
+            this.targetWriteAccessorType = TargetWriteAccessorType.of( ctx.getAccessorNaming(), targetWriteAccessor );
             return (T) this;
         }
 
@@ -140,7 +141,7 @@ public class PropertyMapping extends ModelElement {
 
         public T targetWriteAccessor(Accessor targetWriteAccessor) {
             this.targetWriteAccessor = targetWriteAccessor;
-            this.targetWriteAccessorType = TargetWriteAccessorType.of( targetWriteAccessor );
+            this.targetWriteAccessorType = TargetWriteAccessorType.of( ctx.getAccessorNaming(), targetWriteAccessor );
             this.targetType = determineTargetType();
 
             return (T) this;
@@ -769,7 +770,7 @@ public class PropertyMapping extends ModelElement {
 
             if ( assignment != null ) {
 
-                if ( Executables.isSetterMethod( targetWriteAccessor ) ||
+                if ( ctx.getAccessorNaming().isSetterMethod( targetWriteAccessor ) ||
                     Executables.isFieldAccessor( targetWriteAccessor ) ) {
 
                     // target accessor is setter, so decorate assignment as setter
@@ -866,7 +867,7 @@ public class PropertyMapping extends ModelElement {
         public PropertyMapping build() {
             Assignment assignment = new SourceRHS( javaExpression, null, existingVariableNames, "" );
 
-            if ( Executables.isSetterMethod( targetWriteAccessor ) ||
+            if ( ctx.getAccessorNaming().isSetterMethod( targetWriteAccessor ) ||
                 Executables.isFieldAccessor( targetWriteAccessor ) ) {
                 // setter, so wrap in setter
                 assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );

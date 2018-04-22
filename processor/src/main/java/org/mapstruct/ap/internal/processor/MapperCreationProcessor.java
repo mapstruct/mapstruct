@@ -62,6 +62,7 @@ import org.mapstruct.ap.internal.prism.MapperPrism;
 import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
+import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
@@ -85,6 +86,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private Options options;
     private VersionInformation versionInformation;
     private TypeFactory typeFactory;
+    private AccessorNamingUtils accessorNaming;
     private MappingBuilderContext mappingContext;
 
     @Override
@@ -95,6 +97,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.options = context.getOptions();
         this.versionInformation = context.getVersionInformation();
         this.typeFactory = context.getTypeFactory();
+        this.accessorNaming = context.getAccessorNaming();
 
         MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperConfig );
@@ -104,6 +107,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             elementUtils,
             typeUtils,
             messager,
+            accessorNaming,
             options,
             new MappingResolverImpl(
                 messager,
@@ -448,10 +452,24 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // apply defined (@InheritConfiguration, @InheritInverseConfiguration) mappings
         if ( forwardMappingOptions != null ) {
-            mappingOptions.applyInheritedOptions( forwardMappingOptions, false, method, messager, typeFactory );
+            mappingOptions.applyInheritedOptions(
+                forwardMappingOptions,
+                false,
+                method,
+                messager,
+                typeFactory,
+                accessorNaming
+            );
         }
         if ( inverseMappingOptions != null ) {
-            mappingOptions.applyInheritedOptions( inverseMappingOptions, true, method, messager, typeFactory );
+            mappingOptions.applyInheritedOptions(
+                inverseMappingOptions,
+                true,
+                method,
+                messager,
+                typeFactory,
+                accessorNaming
+            );
         }
 
         // apply auto inherited options
@@ -466,7 +484,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                         false,
                         method,
                         messager,
-                        typeFactory );
+                        typeFactory,
+                        accessorNaming
+                    );
                 }
                 else if ( applicablePrototypeMethods.size() > 1 ) {
                     messager.printMessage(
@@ -484,7 +504,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                         true,
                         method,
                         messager,
-                        typeFactory );
+                        typeFactory,
+                        accessorNaming
+                    );
                 }
                 else if ( applicableReversePrototypeMethods.size() > 1 ) {
                     messager.printMessage(
@@ -497,7 +519,13 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
         // @BeanMapping( ignoreByDefault = true )
         if ( mappingOptions.getBeanMapping() != null && mappingOptions.getBeanMapping().isignoreByDefault() ) {
-            mappingOptions.applyIgnoreAll( mappingOptions, method, messager, typeFactory );
+            mappingOptions.applyIgnoreAll(
+                mappingOptions,
+                method,
+                messager,
+                typeFactory,
+                accessorNaming
+            );
         }
 
         mappingOptions.markAsFullyInitialized();
