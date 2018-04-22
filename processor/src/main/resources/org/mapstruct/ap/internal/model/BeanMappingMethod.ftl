@@ -21,8 +21,12 @@
 -->
 <#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+    <#assign targetType = resultType />
+    <#if !existingInstanceMapping>
+        <#assign targetType = resultType.effectiveType />
+    </#if>
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
-    	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    	<@includeModel object=callback targetBeanName=resultName targetType=targetType/>
     	<#if !callback_has_next>
 
     	</#if>
@@ -38,7 +42,7 @@
 
     </#if>
     <#list beforeMappingReferencesWithMappingTarget as callback>
-    	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    	<@includeModel object=callback targetBeanName=resultName targetType=targetType/>
     	<#if !callback_has_next>
 
     	</#if>
@@ -74,7 +78,7 @@
     	<#if callback_index = 0>
 
     	</#if>
-    	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
+    	<@includeModel object=callback targetBeanName=resultName targetType=targetType/>
     </#list>
     <#if returnType.name != "void">
 
