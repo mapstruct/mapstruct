@@ -154,6 +154,8 @@ public @interface Mapping {
      *
      * @return An expression specifying a defaultValue for the designated target property if the designated source
      * property is null
+     *
+     * @since 1.3
      */
     String defaultExpression() default "";
 
