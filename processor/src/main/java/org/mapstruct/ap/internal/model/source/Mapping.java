@@ -39,6 +39,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
+import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -333,8 +334,9 @@ public class Mapping {
             ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
     }
 
-    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
-        init( method, messager, typeFactory, false, null );
+    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
+                     AccessorNamingUtils accessorNaming) {
+        init( method, messager, typeFactory, accessorNaming, false, null );
     }
 
     /**
@@ -343,11 +345,13 @@ public class Mapping {
      * @param method the source method that the mapping belongs to
      * @param messager the messager that can be used for outputting messages
      * @param typeFactory the type factory
+     * @param accessorNaming the accessor naming utils
      * @param isReverse whether the init is for a reverse mapping
      * @param reverseSourceParameter the source parameter from the revers mapping
      */
-    private void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory, boolean isReverse,
-        Parameter reverseSourceParameter) {
+    private void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
+                      AccessorNamingUtils accessorNaming, boolean isReverse,
+                      Parameter reverseSourceParameter) {
 
         if ( !method.isEnumMapping() ) {
             sourceReference = new SourceReference.BuilderFromMapping()
@@ -363,6 +367,7 @@ public class Mapping {
                 .method( method )
                 .messager( messager )
                 .typeFactory( typeFactory )
+                .accessorNaming( accessorNaming )
                 .reverseSourceParameter( reverseSourceParameter )
                 .build();
         }
@@ -473,7 +478,8 @@ public class Mapping {
         return dependsOn;
     }
 
-    public Mapping reverse(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory) {
+    public Mapping reverse(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
+                           AccessorNamingUtils accessorNaming) {
 
         // mapping can only be reversed if the source was not a constant nor an expression nor a nested property
         // and the mapping is not a 'target-source-ignore' mapping
@@ -502,6 +508,7 @@ public class Mapping {
             method,
             messager,
             typeFactory,
+            accessorNaming,
             true,
             sourceReference != null ? sourceReference.getParameter() : null
         );

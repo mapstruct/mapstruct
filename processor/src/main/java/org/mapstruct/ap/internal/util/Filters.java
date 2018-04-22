@@ -36,11 +36,11 @@ public class Filters {
     private Filters() {
     }
 
-    public static List<Accessor> getterMethodsIn(List<Accessor> elements) {
+    public static List<Accessor> getterMethodsIn(AccessorNamingUtils accessorNaming, List<Accessor> elements) {
         List<Accessor> getterMethods = new LinkedList<Accessor>();
 
         for ( Accessor method : elements ) {
-            if ( Executables.isGetterMethod( method ) ) {
+            if ( accessorNaming.isGetterMethod( method ) ) {
                 getterMethods.add( method );
             }
         }
@@ -60,11 +60,12 @@ public class Filters {
         return fieldAccessors;
     }
 
-    public static List<ExecutableElementAccessor> presenceCheckMethodsIn(List<Accessor> elements) {
+    public static List<ExecutableElementAccessor> presenceCheckMethodsIn(AccessorNamingUtils accessorNaming,
+                                                                         List<Accessor> elements) {
         List<ExecutableElementAccessor> presenceCheckMethods = new LinkedList<ExecutableElementAccessor>();
 
         for ( Accessor method : elements ) {
-            if ( Executables.isPresenceCheckMethod( method ) ) {
+            if ( accessorNaming.isPresenceCheckMethod( method ) ) {
                 presenceCheckMethods.add( (ExecutableElementAccessor) method );
             }
         }
@@ -72,22 +73,22 @@ public class Filters {
         return presenceCheckMethods;
     }
 
-    public static List<Accessor> setterMethodsIn(List<Accessor> elements) {
+    public static List<Accessor> setterMethodsIn(AccessorNamingUtils accessorNaming, List<Accessor> elements) {
         List<Accessor> setterMethods = new LinkedList<Accessor>();
 
         for ( Accessor method : elements ) {
-            if ( Executables.isSetterMethod( method ) ) {
+            if ( accessorNaming.isSetterMethod( method ) ) {
                 setterMethods.add( method );
             }
         }
         return setterMethods;
     }
 
-    public static List<Accessor> adderMethodsIn(List<Accessor> elements) {
+    public static List<Accessor> adderMethodsIn(AccessorNamingUtils accessorNaming, List<Accessor> elements) {
         List<Accessor> adderMethods = new LinkedList<Accessor>();
 
         for ( Accessor method : elements ) {
-            if ( Executables.isAdderMethod( method ) ) {
+            if ( accessorNaming.isAdderMethod( method ) ) {
                 adderMethods.add( method );
             }
         }

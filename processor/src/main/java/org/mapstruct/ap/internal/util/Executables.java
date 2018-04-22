@@ -36,17 +36,12 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleElementVisitor6;
-import javax.lang.model.util.SimpleTypeVisitor6;
 
 import org.mapstruct.ap.internal.prism.AfterMappingPrism;
 import org.mapstruct.ap.internal.prism.BeforeMappingPrism;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.VariableElementAccessor;
-import org.mapstruct.ap.spi.AccessorNamingStrategy;
-import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
-import org.mapstruct.ap.spi.MethodType;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 /**
@@ -69,18 +64,7 @@ public class Executables {
         DEFAULT_METHOD = method;
     }
 
-    private static final AccessorNamingStrategy ACCESSOR_NAMING_STRATEGY = Services.get(
-        AccessorNamingStrategy.class, new DefaultAccessorNamingStrategy()
-    );
-
     private Executables() {
-    }
-
-    public static boolean isGetterMethod(Accessor method) {
-        ExecutableElement executable = method.getExecutable();
-        return executable != null && isPublic( method ) &&
-            executable.getParameters().isEmpty() &&
-            ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.GETTER;
     }
 
     /**
@@ -96,36 +80,7 @@ public class Executables {
         return executable == null && isPublic( accessor ) && isNotStatic( accessor );
     }
 
-    public static boolean isPresenceCheckMethod(Accessor method) {
-        if ( !( method instanceof ExecutableElementAccessor ) ) {
-            return false;
-        }
-        ExecutableElement executable = method.getExecutable();
-        return executable != null
-            && isPublic( method )
-            && executable.getParameters().isEmpty()
-            && ( executable.getReturnType().getKind() == TypeKind.BOOLEAN ||
-            "java.lang.Boolean".equals( getQualifiedName( executable.getReturnType() ) ) )
-            && ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.PRESENCE_CHECKER;
-    }
-
-    public static boolean isSetterMethod(Accessor method) {
-        ExecutableElement executable = method.getExecutable();
-        return executable != null
-            && isPublic( method )
-            && executable.getParameters().size() == 1
-            && ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.SETTER;
-    }
-
-    public static boolean isAdderMethod(Accessor method) {
-        ExecutableElement executable = method.getExecutable();
-        return executable != null
-            && isPublic( method )
-            && executable.getParameters().size() == 1
-            && ACCESSOR_NAMING_STRATEGY.getMethodType( executable ) == MethodType.ADDER;
-    }
-
-    private static boolean isPublic(Accessor method) {
+    static boolean isPublic(Accessor method) {
         return method.getModifiers().contains( Modifier.PUBLIC );
     }
 
@@ -135,12 +90,6 @@ public class Executables {
 
     public static boolean isFinal(Accessor accessor) {
         return accessor != null && accessor.getModifiers().contains( Modifier.FINAL );
-    }
-
-    public static String getPropertyName(Accessor accessor) {
-        ExecutableElement executable = accessor.getExecutable();
-        return executable != null ? ACCESSOR_NAMING_STRATEGY.getPropertyName( executable ) :
-            accessor.getSimpleName().toString();
     }
 
     public static boolean isDefaultMethod(ExecutableElement method) {
@@ -153,16 +102,6 @@ public class Executables {
         catch ( InvocationTargetException e ) {
             return false;
         }
-    }
-
-    /**
-     * @param adderMethod the adder method
-     * @return the 'element name' to which an adder method applies. If. e.g. an adder method is named
-     *         {@code addChild(Child v)}, the element name would be 'Child'.
-     */
-    public static String getElementNameForAdder(Accessor adderMethod) {
-        ExecutableElement executable = adderMethod.getExecutable();
-        return executable != null ? ACCESSOR_NAMING_STRATEGY.getElementName( executable ) : null;
     }
 
     /**
@@ -356,33 +295,4 @@ public class Executables {
     public static boolean isBeforeMappingMethod(ExecutableElement executableElement) {
         return BeforeMappingPrism.getInstanceOn( executableElement ) != null;
     }
-
-    private static String getQualifiedName(TypeMirror type) {
-        DeclaredType declaredType = type.accept(
-            new SimpleTypeVisitor6<DeclaredType, Void>() {
-                @Override
-                public DeclaredType visitDeclared(DeclaredType t, Void p) {
-                    return t;
-                }
-            },
-            null
-        );
-
-        if ( declaredType == null ) {
-            return null;
-        }
-
-        TypeElement typeElement = declaredType.asElement().accept(
-            new SimpleElementVisitor6<TypeElement, Void>() {
-                @Override
-                public TypeElement visitType(TypeElement e, Void p) {
-                    return e;
-                }
-            },
-            null
-        );
-
-        return typeElement != null ? typeElement.getQualifiedName().toString() : null;
-    }
-
 }

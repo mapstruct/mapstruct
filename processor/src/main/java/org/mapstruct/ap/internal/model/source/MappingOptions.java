@@ -33,6 +33,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
@@ -220,9 +221,11 @@ public class MappingOptions {
      * @param method the source method
      * @param messager the messager
      * @param typeFactory the type factory
+     * @param accessorNaming the accessor naming utils
      */
     public void applyInheritedOptions(MappingOptions inherited, boolean isInverse, SourceMethod method,
-                                      FormattingMessager messager, TypeFactory typeFactory) {
+                                      FormattingMessager messager, TypeFactory typeFactory,
+                                      AccessorNamingUtils accessorNaming) {
         if ( null != inherited ) {
             if ( getIterableMapping() == null ) {
                 if ( inherited.getIterableMapping() != null ) {
@@ -270,7 +273,7 @@ public class MappingOptions {
             for ( List<Mapping> lmappings : inherited.getMappings().values() ) {
                 for ( Mapping mapping : lmappings ) {
                     if ( isInverse ) {
-                        mapping = mapping.reverse( method, messager, typeFactory );
+                        mapping = mapping.reverse( method, messager, typeFactory, accessorNaming );
                     }
 
                     if ( mapping != null ) {
@@ -297,7 +300,7 @@ public class MappingOptions {
     }
 
     public void applyIgnoreAll(MappingOptions inherited, SourceMethod method, FormattingMessager messager,
-                               TypeFactory typeFactory ) {
+                               TypeFactory typeFactory, AccessorNamingUtils accessorNaming) {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         Type writeType = method.getResultType();
         if ( !method.isUpdateMethod() ) {
@@ -311,7 +314,7 @@ public class MappingOptions {
         for ( String targetPropertyName : writeAccessors.keySet() ) {
             if ( !mappedPropertyNames.contains( targetPropertyName ) ) {
                 Mapping mapping = Mapping.forIgnore( targetPropertyName );
-                mapping.init( method, messager, typeFactory );
+                mapping.init( method, messager, typeFactory, accessorNaming );
                 mappings.put( targetPropertyName, Arrays.asList( mapping ) );
             }
         }

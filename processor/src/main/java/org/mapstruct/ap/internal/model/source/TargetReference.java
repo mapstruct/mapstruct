@@ -30,6 +30,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
@@ -74,6 +75,7 @@ public class TargetReference {
         private SourceMethod method;
         private FormattingMessager messager;
         private TypeFactory typeFactory;
+        private AccessorNamingUtils accessorNaming;
         private boolean isReverse;
         /**
          * Needed when we are building from reverse mapping. It is needed, so we can remove the first level if it is
@@ -116,6 +118,11 @@ public class TargetReference {
 
         public BuilderFromTargetMapping typeFactory(TypeFactory typeFactory) {
             this.typeFactory = typeFactory;
+            return this;
+        }
+
+        public BuilderFromTargetMapping accessorNaming(AccessorNamingUtils accessorNaming) {
+            this.accessorNaming = accessorNaming;
             return this;
         }
 
@@ -204,7 +211,7 @@ public class TargetReference {
                     break;
                 }
 
-                if ( isLast || ( Executables.isSetterMethod( targetWriteAccessor )
+                if ( isLast || ( accessorNaming.isSetterMethod( targetWriteAccessor )
                     || Executables.isFieldAccessor( targetWriteAccessor ) ) ) {
                     // only intermediate nested properties when they are a true setter or field accessor
                     // the last may be other readAccessor (setter / getter / adder).
@@ -234,7 +241,7 @@ public class TargetReference {
         private Type findNextType(Type initial, Accessor targetWriteAccessor, Accessor targetReadAccessor) {
             Type nextType;
             Accessor toUse = targetWriteAccessor != null ? targetWriteAccessor : targetReadAccessor;
-            if ( Executables.isGetterMethod( toUse ) ||
+            if ( accessorNaming.isGetterMethod( toUse ) ||
                 Executables.isFieldAccessor( toUse ) ) {
                 nextType = typeFactory.getReturnType(
                     (DeclaredType) typeBasedOnMethod( initial ).getTypeMirror(),
