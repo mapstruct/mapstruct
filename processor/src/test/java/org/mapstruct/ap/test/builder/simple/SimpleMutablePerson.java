@@ -18,9 +18,12 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
+import java.util.List;
+
 public class SimpleMutablePerson {
     private String fullName;
     private int age;
+    private List<String> children;
 
     public int getAge() {
         return age;
@@ -36,5 +39,13 @@ public class SimpleMutablePerson {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public List<String> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<String> children) {
+        this.children = children;
     }
 }
