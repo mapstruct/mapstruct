@@ -29,7 +29,6 @@ import javax.lang.model.util.SimpleTypeVisitor6;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
-import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.MethodType;
 
 import static org.mapstruct.ap.internal.util.Executables.isPublic;
@@ -43,10 +42,8 @@ public final class AccessorNamingUtils {
 
     private final AccessorNamingStrategy accessorNamingStrategy;
 
-    public AccessorNamingUtils() {
-        accessorNamingStrategy = Services.get(
-            AccessorNamingStrategy.class, new DefaultAccessorNamingStrategy()
-        );
+    public AccessorNamingUtils(AccessorNamingStrategy accessorNamingStrategy) {
+        this.accessorNamingStrategy = accessorNamingStrategy;
     }
 
     public boolean isGetterMethod(Accessor method) {

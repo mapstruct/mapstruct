@@ -5,8 +5,8 @@
 :Author: Gunnar Morling, Andreas Gudian, Sjaak Derksen, Filip Hrisafov and the MapStruct community
 :processor-dir: ../../../../processor
 :processor-ap-test: {processor-dir}/src/test/java/org/mapstruct/ap/test
+:processor-ap-main: {processor-dir}/src/main/java/org/mapstruct/ap
 :integration-tests-dir: ../../../../integrationtest
-:immutables-builder-test: {integration-tests-dir}/src/test/resources/immutablesBuilderTest
 
 [[Preface]]
 == Preface
@@ -714,7 +714,7 @@ Supported builder frameworks:
 
 * https://projectlombok.org/[Lombok] - requires having the Lombok classes in a separate module. See for more information https://github.com/rzwitserloot/lombok/issues/1538[rzwitserloot/lombok#1538]
 * https://github.com/google/auto/blob/master/value/userguide/index.md[AutoValue]
-* https://immutables.github.io/[Immutables] - requires using a custom `AccessorNamingStrategy` and a custom `BuilderProvider` (see example in integration tests)
+* https://immutables.github.io/[Immutables] - When Immutables are present on the annotation processor path then the `ImmutablesAccessorNamingStrategy` and `ImmutablesBuilderProvider` would be used by default
 * https://github.com/google/FreeBuilder[FreeBuilder]
 * It also works for custom builders (handwritten ones) if the implementation supports the defined rules for the default `BuilderProvider`.
 Otherwise, you would need to write a custom `BuilderProvider`
@@ -2810,11 +2810,11 @@ This JAR file needs to be added to the annotation processor classpath
 MapStruct offers the possibility to override the `DefaultProvider` via the Service Provider Interface (SPI).
 A nice example is to provide support for a custom builder strategy.
 
-.Custom Builder Provider for Immutables
+.Custom Builder Provider which disables Builder support
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-include::{immutables-builder-test}/extras/src/main/java/org/mapstruct/itest/immutables/extras/ImmutablesBuilderProvider.java[tag=documentation]
+include::{processor-ap-main}/spi/NoOpBuilderProvider.java[tag=documentation]
 ----
 ====
