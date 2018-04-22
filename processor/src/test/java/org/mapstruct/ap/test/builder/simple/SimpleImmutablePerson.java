@@ -18,17 +18,22 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SimpleImmutablePerson {
     private final String name;
     private final int age;
     private final String job;
     private final String city;
+    private final List<String> children;
 
     SimpleImmutablePerson(Builder builder) {
         this.name = builder.name;
         this.age = builder.age;
         this.job = builder.job;
         this.city = builder.city;
+        this.children = new ArrayList<String>( builder.children );
     }
 
     public static Builder builder() {
@@ -51,11 +56,16 @@ public class SimpleImmutablePerson {
         return city;
     }
 
+    public List<String> getChildren() {
+        return children;
+    }
+
     public static class Builder {
         private String name;
         private int age;
         private String job;
         private String city;
+        private List<String> children = new ArrayList<String>();
 
         public Builder age(int age) {
             this.age = age;
@@ -78,6 +88,15 @@ public class SimpleImmutablePerson {
 
         public Builder city(String city) {
             this.city = city;
+            return this;
+        }
+
+        public List<String> getChildren() {
+            throw new UnsupportedOperationException( "This is just a marker method" );
+        }
+
+        public Builder addChild(String child) {
+            this.children.add( child );
             return this;
         }
     }

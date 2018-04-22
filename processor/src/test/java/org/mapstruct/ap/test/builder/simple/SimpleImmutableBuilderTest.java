@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
+import java.util.Arrays;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +50,7 @@ public class SimpleImmutableBuilderTest {
         SimpleMutablePerson source = new SimpleMutablePerson();
         source.setAge( 3 );
         source.setFullName( "Bob" );
+        source.setChildren( Arrays.asList( "Alice", "Tom" ) );
 
         SimpleImmutablePerson targetObject = mapper.toImmutable( source );
 
@@ -55,6 +58,7 @@ public class SimpleImmutableBuilderTest {
         assertThat( targetObject.getName() ).isEqualTo( "Bob" );
         assertThat( targetObject.getJob() ).isEqualTo( "programmer" );
         assertThat( targetObject.getCity() ).isEqualTo( "Bengalore" );
+        assertThat( targetObject.getChildren() ).contains( "Alice", "Tom" );
     }
 
     @Test

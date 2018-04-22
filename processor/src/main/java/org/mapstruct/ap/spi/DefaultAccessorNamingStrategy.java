@@ -102,6 +102,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     protected boolean isBuilderSetter(ExecutableElement method) {
         return method.getParameters().size() == 1 &&
             !JAVA_JAVAX_PACKAGE.matcher( method.getEnclosingElement().asType().toString() ).matches() &&
+            !isAdderMethod( method ) &&
             //TODO The Types need to be compared with Types#isSameType(TypeMirror, TypeMirror)
             method.getReturnType().toString().equals( method.getEnclosingElement().asType().toString() );
     }

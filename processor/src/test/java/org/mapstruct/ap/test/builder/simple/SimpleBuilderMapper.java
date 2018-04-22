@@ -18,11 +18,12 @@
  */
 package org.mapstruct.ap.test.builder.simple;
 
+import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper
+@Mapper(collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
 public interface SimpleBuilderMapper {
 
     @Mappings({
