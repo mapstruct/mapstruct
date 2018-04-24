@@ -98,10 +98,14 @@ public class Strings {
     }
 
     public static String join(Iterable<?> iterable, String separator) {
+        return join( iterable, separator, null );
+    }
+
+    public static <T> String join(Iterable<T> iterable, String separator, Extractor<T, String> extractor) {
         StringBuilder sb = new StringBuilder();
         boolean isFirst = true;
 
-        for ( Object object : iterable ) {
+        for ( T object : iterable ) {
             if ( !isFirst ) {
                 sb.append( separator );
             }
@@ -109,7 +113,7 @@ public class Strings {
                 isFirst = false;
             }
 
-            sb.append( object );
+            sb.append( extractor == null ? object : extractor.apply( object ) );
         }
 
         return sb.toString();
