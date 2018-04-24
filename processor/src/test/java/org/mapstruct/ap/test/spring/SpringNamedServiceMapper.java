@@ -19,14 +19,14 @@
 package org.mapstruct.ap.test.spring;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.MapperSpringConfig;
+import org.mapstruct.SpringMapper;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Christian Bandowski
  */
 @Mapper(componentModel = "spring")
-@MapperSpringConfig(value = "springMapper", componentType = MapperSpringConfig.SpringComponentType.SERVICE)
+@SpringMapper(name = "springMapper", componentType = SpringMapper.SpringComponentType.SERVICE)
 public interface SpringNamedServiceMapper {
     SpringNamedServiceMapper INSTANCE = Mappers.getMapper( SpringNamedServiceMapper.class );
 

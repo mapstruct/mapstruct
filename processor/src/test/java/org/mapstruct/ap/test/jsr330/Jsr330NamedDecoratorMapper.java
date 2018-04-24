@@ -19,8 +19,8 @@
 package org.mapstruct.ap.test.jsr330;
 
 import org.mapstruct.DecoratedWith;
+import org.mapstruct.Jsr330Mapper;
 import org.mapstruct.Mapper;
-import org.mapstruct.MapperJsr330Config;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @author Christian Bandowski
  */
 @Mapper(componentModel = "jsr330")
-@MapperJsr330Config("jsr330Mapper")
+@Jsr330Mapper(name = "jsr330Mapper")
 @DecoratedWith(Jsr330NamedDecoratorMapper.Jsr330NamedDecoratorMapperDecorator.class)
 public interface Jsr330NamedDecoratorMapper {
     Jsr330NamedDecoratorMapper INSTANCE = Mappers.getMapper( Jsr330NamedDecoratorMapper.class );

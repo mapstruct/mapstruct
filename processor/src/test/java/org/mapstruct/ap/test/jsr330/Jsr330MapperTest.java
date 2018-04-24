@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     Jsr330NamedDecoratorMapper.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
-public class Jsr330MapperConfigTest {
+public class Jsr330MapperTest {
     @Test
     public void testWithoutConfiguration() {
         Named annotation = Jsr330UnconfiguredMapper.INSTANCE.getClass().getAnnotation( Named.class );

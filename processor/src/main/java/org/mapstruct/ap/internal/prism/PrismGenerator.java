@@ -26,22 +26,23 @@ import net.java.dev.hickory.prism.GeneratePrisms;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
+import org.mapstruct.CdiMapper;
 import org.mapstruct.Context;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
+import org.mapstruct.Jsr330Mapper;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
-import org.mapstruct.MapperJsr330Config;
-import org.mapstruct.MapperSpringConfig;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.Qualifier;
+import org.mapstruct.SpringMapper;
 import org.mapstruct.TargetType;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
@@ -74,8 +75,9 @@ import org.mapstruct.ValueMappings;
     @GeneratePrism(value = Context.class, publicAccess = true),
 
     // component model configs
-    @GeneratePrism(value = MapperSpringConfig.class, publicAccess = true),
-    @GeneratePrism(value = MapperJsr330Config.class, publicAccess = true),
+    @GeneratePrism(value = SpringMapper.class, publicAccess = true),
+    @GeneratePrism(value = Jsr330Mapper.class, publicAccess = true),
+    @GeneratePrism(value = CdiMapper.class, publicAccess = true),
 
     // external types
     @GeneratePrism(value = XmlElementDecl.class, publicAccess = true),

@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     SpringNamedDecoratorWithOwnQualifierMapper.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
-public class SpringMapperConfigTest {
+public class SpringMapperTest {
     @Test
     public void testWithoutSpringConfiguration() {
         Component annotation = SpringUnconfiguredMapper.INSTANCE.getClass().getAnnotation( Component.class );

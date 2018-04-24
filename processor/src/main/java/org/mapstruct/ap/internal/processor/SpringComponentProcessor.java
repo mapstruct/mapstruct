@@ -28,8 +28,8 @@ import javax.lang.model.element.TypeElement;
 import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.common.Type;
-import org.mapstruct.ap.internal.prism.MapperSpringConfigPrism;
 import org.mapstruct.ap.internal.prism.SpringComponentTypePrism;
+import org.mapstruct.ap.internal.prism.SpringMapperPrism;
 
 /**
  * A {@link ModelElementProcessor} which converts the given {@link Mapper}
@@ -45,7 +45,7 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
     private static final String CANONICAL_NAME_AUTOWIRED = "org.springframework.beans.factory.annotation.Autowired";
     private static final String CANONICAL_NAME_QUALIFIER = "org.springframework.beans.factory.annotation.Qualifier";
     private static final String CANONICAL_NAME_PRIMARY = "org.springframework.context.annotation.Primary";
-    private static final String CANONICAL_NAME_MAPPERSPRINGCONFIG = "org.mapstruct.MapperSpringConfig";
+    private static final String CANONICAL_NAME_SPRINGMAPPER = "org.mapstruct.SpringMapper";
 
     private static final String DEFAULT_VALUE_DELEGATE = "delegate";
 
@@ -57,7 +57,7 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
     @Override
     protected List<Annotation> getTypeAnnotations(Mapper mapper) {
         List<Annotation> typeAnnotations = new ArrayList<Annotation>();
-        MapperSpringConfigPrism config = findConfig( mapper );
+        SpringMapperPrism config = findConfig( mapper );
 
         // defaults to @Component annotation without any name
         SpringComponentTypePrism componentType = SpringComponentTypePrism.COMPONENT;
@@ -67,7 +67,7 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
             componentType = SpringComponentTypePrism.valueOf( config.componentType() );
             if ( mapper.getDecorator() == null ) {
                 // the name must be used for the decorator, thus only set this here in case there is no decorator
-                name = config.value();
+                name = config.name();
             }
         }
 
@@ -82,13 +82,13 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
 
     @Override
     protected List<Annotation> getDecoratorAnnotations(Mapper mapper) {
-        MapperSpringConfigPrism config = findConfig( mapper );
+        SpringMapperPrism config = findConfig( mapper );
 
         SpringComponentTypePrism componentType = SpringComponentTypePrism.COMPONENT;
         String name = null;
 
         if ( config != null ) {
-            name = config.value();
+            name = config.name();
             componentType = SpringComponentTypePrism.valueOf( config.componentType() );
         }
 
@@ -107,7 +107,7 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
 
     @Override
     protected List<Annotation> getDelegatorReferenceAnnotations(Mapper mapper) {
-        MapperSpringConfigPrism config = findConfig( mapper );
+        SpringMapperPrism config = findConfig( mapper );
 
         return Arrays.asList(
             autowired(),
@@ -156,11 +156,11 @@ public class SpringComponentProcessor extends AnnotationBasedComponentModelProce
         return getTypeFactory().getType( componentType.getCanonicalName() );
     }
 
-    private MapperSpringConfigPrism findConfig(Mapper mapper) {
+    private SpringMapperPrism findConfig(Mapper mapper) {
         for ( AnnotationMirror am : mapper.getMapperAnnotations() ) {
             CharSequence annTypeName = ( (TypeElement) am.getAnnotationType().asElement() ).getQualifiedName();
-            if ( CANONICAL_NAME_MAPPERSPRINGCONFIG.contentEquals( annTypeName ) ) {
-                return MapperSpringConfigPrism.getInstance( am );
+            if ( CANONICAL_NAME_SPRINGMAPPER.contentEquals( annTypeName ) ) {
+                return SpringMapperPrism.getInstance( am );
             }
         }
 

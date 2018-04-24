@@ -20,7 +20,7 @@ package org.mapstruct.ap.test.spring;
 
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
-import org.mapstruct.MapperSpringConfig;
+import org.mapstruct.SpringMapper;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @author Christian Bandowski
  */
 @Mapper(componentModel = "spring")
-@MapperSpringConfig(value = "springMapper", componentType = MapperSpringConfig.SpringComponentType.SERVICE)
+@SpringMapper(name = "springMapper", componentType = SpringMapper.SpringComponentType.SERVICE)
 @DecoratedWith(SpringNamedDecoratorServiceMapper.SpringNamedDecoratorServiceMapperDecorator.class)
 public interface SpringNamedDecoratorServiceMapper {
     SpringNamedDecoratorServiceMapper INSTANCE = Mappers.getMapper( SpringNamedDecoratorServiceMapper.class );

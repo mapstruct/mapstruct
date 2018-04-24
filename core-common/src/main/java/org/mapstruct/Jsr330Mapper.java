@@ -24,21 +24,32 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows extra configuration for the generated mapper or decorator in case the {@link Mapper#componentModel()} was
- * set to {@code jsr330}.
+ * Allows extra configuration for the generated mapper or decorator and sets the component model of the mapper to
+ * {@code jsr330}.<br>
+ * This annotation must be placed at a class that is annotated with {@link Mapper @Mapper}.<br>
+ *
+ * <p>
+ * The generated mapper will be annotated with {@code @javax.inject.Named} and can be retrieved via
+ * {@code @javax.inject.Inject}.<br>
+ *
+ * <p>
+ * If a component model is used at an inherited {@link MapperConfig @MapperConfig} this annotation takes
+ * precedence.<br>
  *
  * @author Christian Bandowski
+ * @see SpringMapper @SpringMapper
+ * @see CdiMapper @CdiMapper
  * @since 1.3
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
-public @interface MapperJsr330Config {
+public @interface Jsr330Mapper {
     /**
      * Defines the value of the {@code javax.inject.Named} annotation used at the generated mapper or decorator
      * implementation.
      *
      * @return {@code javax.inject.Named} annotation value for generated mapper or decorator implementation
      */
-    String value() default "";
+    String name() default "";
 
 }

@@ -16,19 +16,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.spring;
+package org.mapstruct;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.SpringMapper;
-import org.mapstruct.factory.Mappers;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Sets the component model of the mapper to CDI.<br>
+ * This annotation must be placed at a class that is annotated with {@link Mapper @Mapper}.<br>
+ *
+ * <p>
+ * The generated mapper will be an application-scoped CDI bean and can be retrived via
+ * {@code @javax.inject.Inject}.<br>
+ *
+ * <p>
+ * If a component model is used at an inherited {@link MapperConfig @MapperConfig} this annotation takes precedence.
+ *
  * @author Christian Bandowski
+ * @see SpringMapper @SpringMapper
+ * @see Jsr330Mapper @Jsr330Mapper
+ * @since 1.3
  */
-@Mapper(componentModel = "spring")
-@SpringMapper(name = "springMapper")
-public interface SpringNamedComponentMapper {
-    SpringNamedComponentMapper INSTANCE = Mappers.getMapper( SpringNamedComponentMapper.class );
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.CLASS)
+public @interface CdiMapper {
 
-    String noOpMapper(String source);
 }

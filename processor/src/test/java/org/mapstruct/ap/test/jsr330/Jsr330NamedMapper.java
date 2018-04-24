@@ -18,15 +18,15 @@
  */
 package org.mapstruct.ap.test.jsr330;
 
+import org.mapstruct.Jsr330Mapper;
 import org.mapstruct.Mapper;
-import org.mapstruct.MapperJsr330Config;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Christian Bandowski
  */
 @Mapper(componentModel = "jsr330")
-@MapperJsr330Config("jsr330Mapper")
+@Jsr330Mapper(name = "jsr330Mapper")
 public interface Jsr330NamedMapper {
     Jsr330NamedMapper INSTANCE = Mappers.getMapper( Jsr330NamedMapper.class );
 

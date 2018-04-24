@@ -24,21 +24,32 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows extra configuration for the generated mapper or decorator in case the {@link Mapper#componentModel()} was
- * set to {@code spring}.
+ * Allows extra configuration for the generated mapper or decorator and sets the component model of the mapper to
+ * {@code spring}.<br>
+ * This annotation must be placed at a class that is annotated with {@link Mapper @Mapper}.<br>
+ *
+ * <p>
+ * The generated mapper will be a singleton-scoped Spring bean and can be retrieved via
+ * {@code @org.springframework.beans.factory.annotation.Autowired}.<br>
+ *
+ * <p>
+ * If a component model is used at an inherited {@link MapperConfig @MapperConfig} this annotation takes
+ * precedence.<br>
  *
  * @author Christian Bandowski
+ * @see Jsr330Mapper @Jsr330Mapper
+ * @see CdiMapper @CdiMapper
  * @since 1.3
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
-public @interface MapperSpringConfig {
+public @interface SpringMapper {
     /**
      * Defines the name of the Spring bean for the generated mapper or decorator implementation.
      *
      * @return Spring bean name
      */
-    String value() default "";
+    String name() default "";
 
     /**
      * Defines the name for the decorator that will be used within the

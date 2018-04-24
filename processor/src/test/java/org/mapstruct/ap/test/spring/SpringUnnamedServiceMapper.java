@@ -19,14 +19,14 @@
 package org.mapstruct.ap.test.spring;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.MapperSpringConfig;
+import org.mapstruct.SpringMapper;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Christian Bandowski
  */
 @Mapper(componentModel = "spring")
-@MapperSpringConfig(componentType = MapperSpringConfig.SpringComponentType.SERVICE)
+@SpringMapper(componentType = SpringMapper.SpringComponentType.SERVICE)
 public interface SpringUnnamedServiceMapper {
     SpringUnnamedServiceMapper INSTANCE = Mappers.getMapper( SpringUnnamedServiceMapper.class );
 
