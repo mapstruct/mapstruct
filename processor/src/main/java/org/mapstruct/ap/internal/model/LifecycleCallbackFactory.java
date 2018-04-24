@@ -106,11 +106,17 @@ public final class LifecycleCallbackFactory {
         MethodSelectors selectors =
             new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory() );
 
+        Type targetType = method.getResultType();
+
+        if ( !method.isUpdateMethod() ) {
+            targetType = targetType.getEffectiveType();
+        }
+
         List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
             method,
             callbackMethods,
             Collections.<Type> emptyList(),
-            method.getResultType(),
+            targetType,
             SelectionCriteria.forLifecycleMethods( selectionParameters ) );
 
         return toLifecycleCallbackMethodRefs(
