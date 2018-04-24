@@ -16,34 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.jsr330;
+package org.mapstruct.ap.test.componentmodel.jsr330;
 
-import org.mapstruct.DecoratedWith;
-import org.mapstruct.Jsr330Mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * @author Christian Bandowski
  */
 @Mapper(componentModel = "jsr330")
-@Jsr330Mapper(name = "jsr330Mapper")
-@DecoratedWith(Jsr330NamedDecoratorMapper.Jsr330NamedDecoratorMapperDecorator.class)
-public interface Jsr330NamedDecoratorMapper {
-    Jsr330NamedDecoratorMapper INSTANCE = Mappers.getMapper( Jsr330NamedDecoratorMapper.class );
+public interface Jsr330MapperComponentModelMapper {
+    Jsr330MapperComponentModelMapper INSTANCE = Mappers.getMapper( Jsr330MapperComponentModelMapper.class );
 
-    String stringToString(String value);
-
-    abstract class Jsr330NamedDecoratorMapperDecorator implements Jsr330NamedDecoratorMapper {
-        @Autowired
-        @Qualifier("delegate")
-        private Jsr330NamedDecoratorMapper delegate;
-
-        @Override
-        public String stringToString(String value) {
-            return delegate.stringToString( value );
-        }
-    }
+    String noOpMapper(String source);
 }

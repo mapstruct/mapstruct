@@ -16,17 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.jsr330;
+package org.mapstruct.ap.test.componentmodel;
 
+import org.mapstruct.Jsr330Mapper;
 import org.mapstruct.Mapper;
+import org.mapstruct.SpringMapper;
 import org.mapstruct.factory.Mappers;
 
-/**
- * @author Christian Bandowski
- */
-@Mapper(componentModel = "jsr330")
-public interface Jsr330UnconfiguredMapper {
-    Jsr330UnconfiguredMapper INSTANCE = Mappers.getMapper( Jsr330UnconfiguredMapper.class );
+@Mapper
+@Jsr330Mapper
+@SpringMapper
+public interface ErroneousMultipleComponentModelAnnotationsMapper {
+    ErroneousMultipleComponentModelAnnotationsMapper INSTANCE =
+        Mappers.getMapper( ErroneousMultipleComponentModelAnnotationsMapper.class );
 
     String noOpMapper(String source);
 }

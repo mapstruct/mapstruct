@@ -23,6 +23,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.mapstruct.util.ComponentModelMapper;
+
 /**
  * Sets the component model of the mapper to CDI.<br>
  * This annotation must be placed at a class that is annotated with {@link Mapper @Mapper}.<br>
@@ -41,6 +43,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
+@ComponentModelMapper("cdi")
 public @interface CdiMapper {
 
 }

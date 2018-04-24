@@ -16,19 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.spring;
+package org.mapstruct.ap.test.componentmodel.cdi;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.SpringMapper;
 import org.mapstruct.factory.Mappers;
 
 /**
  * @author Christian Bandowski
  */
-@Mapper(componentModel = "spring")
-@SpringMapper(name = "springMapper")
-public interface SpringNamedComponentMapper {
-    SpringNamedComponentMapper INSTANCE = Mappers.getMapper( SpringNamedComponentMapper.class );
+@Mapper(componentModel = "cdi")
+public interface CdiMapperComponentModelMapper {
+    CdiMapperComponentModelMapper INSTANCE = Mappers.getMapper( CdiMapperComponentModelMapper.class );
 
     String noOpMapper(String source);
 }

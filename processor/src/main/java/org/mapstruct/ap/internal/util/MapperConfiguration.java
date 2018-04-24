@@ -20,8 +20,9 @@ package org.mapstruct.ap.internal.util;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
+import java.util.WeakHashMap;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
@@ -29,6 +30,7 @@ import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
+import org.mapstruct.ap.internal.prism.ComponentModelMapperPrism;
 import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperConfigPrism;
 import org.mapstruct.ap.internal.prism.MapperPrism;
@@ -49,16 +51,41 @@ import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
  */
 public class MapperConfiguration {
 
+    private static Map<Element, MapperConfiguration> configurations = new WeakHashMap<Element, MapperConfiguration>();
+
     private final MapperPrism mapperPrism;
+    private final AnnotationMirror componentModelAnnotation;
     private final MapperConfigPrism mapperConfigPrism;
     private final DeclaredType config;
 
-    public static MapperConfiguration getInstanceOn(Element e) {
-        return new MapperConfiguration( MapperPrism.getInstanceOn( e ) );
+    private final FormattingMessager messager;
+
+    public static MapperConfiguration getInstanceOn(Element e, FormattingMessager messager) {
+        // store configurations per Element instance in a cache map
+        // this prevents creating many instances of this configuration for the same Element
+        // it will be assumed that this method will never be called with different messagers for the same Element
+        // one reason to cache instances is that the the MapperConfiguration validates the Element and multiple
+        // instantiations would lead to multiple identical warnings/errors
+
+        MapperConfiguration config = configurations.get( e );
+        if ( config == null ) {
+            config = new MapperConfiguration( e, messager );
+            configurations.put( e, config );
+        }
+
+        return config;
     }
 
-    private MapperConfiguration(MapperPrism mapperPrism) {
-        this.mapperPrism = mapperPrism;
+    private static AnnotationMirror findComponentModelAnnotation(Element e, FormattingMessager messager) {
+        AnnotationMirror componentModelAnnotation = null;
+
+
+        return componentModelAnnotation;
+    }
+
+    private MapperConfiguration(Element e, FormattingMessager messager) {
+        this.mapperPrism = MapperPrism.getInstanceOn( e );
+        this.messager = messager;
 
         if ( mapperPrism.values.config() != null ) {
             // TODO #737 Only a declared type makes sense here; Validate and raise graceful error;
@@ -69,6 +96,36 @@ public class MapperConfiguration {
         else {
             this.config = null;
             this.mapperConfigPrism = null;
+        }
+
+        AnnotationMirror componentModelAnnotation = null;
+        for ( AnnotationMirror am : e.getAnnotationMirrors() ) {
+            ComponentModelMapperPrism cm = ComponentModelMapperPrism.getInstanceOn( am.getAnnotationType()
+                .asElement() );
+            if ( cm != null ) {
+                if ( componentModelAnnotation == null ) {
+                    componentModelAnnotation = am;
+                }
+                else {
+                    messager.printMessage( e, am, Message.COMPONENT_MODEL_MULTIPLE_MODELS );
+                }
+            }
+        }
+        this.componentModelAnnotation = componentModelAnnotation;
+
+        // warning if componentModel attribute and annotation have different model values
+        if ( mapperPrism.values.componentModel() != null && componentModelAnnotation != null ) {
+            String annotationValue = ComponentModelMapperPrism.getInstanceOn(
+                componentModelAnnotation.getAnnotationType().asElement()
+            ).value();
+            if ( !mapperPrism.componentModel().equalsIgnoreCase( annotationValue ) ) {
+                messager.printMessage(
+                    e,
+                    componentModelAnnotation,
+                    Message.COMPONENT_MODEL_PROPERTY_NOT_MATCHING_ANNOTATION,
+                    mapperPrism.componentModel()
+                );
+            }
         }
     }
 
@@ -217,6 +274,11 @@ public class MapperConfiguration {
 
         if ( mapperConfigPrism != null && mapperConfigPrism.values.componentModel() != null ) {
             return mapperConfigPrism.componentModel();
+        }
+
+        if ( componentModelAnnotation != null ) {
+            return ComponentModelMapperPrism.getInstanceOn( componentModelAnnotation.getAnnotationType()
+                .asElement() ).value();
         }
 
         if ( options.getDefaultComponentModel() != null ) {

@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.internal.processor;
 
-import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutableElements;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -61,6 +58,8 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 
+import static org.mapstruct.ap.internal.util.Executables.getAllEnclosedExecutableElements;
+
 /**
  * A {@link ModelElementProcessor} which retrieves a list of {@link SourceMethod}s
  * representing all the mapping methods of the given bean mapper type as well as
@@ -83,7 +82,10 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.typeUtils = context.getTypeUtils();
         this.elementUtils = context.getElementUtils();
 
-        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
+        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn(
+            mapperTypeElement,
+            context.getMessager()
+        );
 
         if ( !mapperConfig.isValid() ) {
             throw new AnnotationProcessingException(

@@ -46,6 +46,7 @@ import org.mapstruct.SpringMapper;
 import org.mapstruct.TargetType;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
+import org.mapstruct.util.ComponentModelMapper;
 
 /**
  * Triggers the generation of prism types using <a href="https://java.net/projects/hickory">Hickory</a>.
@@ -75,6 +76,7 @@ import org.mapstruct.ValueMappings;
     @GeneratePrism(value = Context.class, publicAccess = true),
 
     // component model configs
+    @GeneratePrism(value = ComponentModelMapper.class, publicAccess = true),
     @GeneratePrism(value = SpringMapper.class, publicAccess = true),
     @GeneratePrism(value = Jsr330Mapper.class, publicAccess = true),
     @GeneratePrism(value = CdiMapper.class, publicAccess = true),

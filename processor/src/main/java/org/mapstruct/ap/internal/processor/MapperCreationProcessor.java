@@ -47,9 +47,9 @@ import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
 import org.mapstruct.ap.internal.model.StreamMappingMethod;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -96,7 +96,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         this.versionInformation = context.getVersionInformation();
         this.typeFactory = context.getTypeFactory();
 
-        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn( mapperTypeElement );
+        MapperConfiguration mapperConfig = MapperConfiguration.getInstanceOn(
+            mapperTypeElement,
+            context.getMessager()
+        );
         List<MapperReference> mapperReferences = initReferencedMappers( mapperTypeElement, mapperConfig );
 
         MappingBuilderContext ctx = new MappingBuilderContext(
@@ -248,7 +251,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private SortedSet<Type> getExtraImports(TypeElement element) {
         SortedSet<Type> extraImports = new TreeSet<Type>();
 
-        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( element );
+        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( element, messager );
 
         for ( TypeMirror extraImport : mapperConfiguration.imports() ) {
             Type type = typeFactory.getType( extraImport );

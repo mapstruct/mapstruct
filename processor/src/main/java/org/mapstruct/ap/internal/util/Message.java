@@ -99,6 +99,9 @@ public enum Message {
     GENERAL_NOT_ALL_FORGED_CREATED( "Internal Error in creation of Forged Methods, it was expected all Forged Methods to finished with creation, but %s did not" ),
     GENERAL_NO_SUITABLE_CONSTRUCTOR( "%s does not have an accessible parameterless constructor." ),
 
+    COMPONENT_MODEL_MULTIPLE_MODELS( "Multiple component model annotations found. You should only specify one component model." ),
+    COMPONENT_MODEL_PROPERTY_NOT_MATCHING_ANNOTATION( "'componentModel' attribute in @Mapper specifies a different component model than the used annotation. Will ignore the annotation and use the component model '%s'.", Diagnostic.Kind.WARNING ),
+
     RETRIEVAL_NO_INPUT_ARGS( "Can't generate mapping method with no input arguments." ),
     RETRIEVAL_DUPLICATE_MAPPING_TARGETS( "Can't generate mapping method with more than one @MappingTarget parameter." ),
     RETRIEVAL_IMMUTABLE_TARGET( "Can't generate mapping method when @MappingTarget is supposed to be immutable (has a builder)." ),

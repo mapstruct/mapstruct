@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
-
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.AnnotatedConstructor;
@@ -55,7 +54,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
         this.typeFactory = context.getTypeFactory();
 
-        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( mapperTypeElement );
+        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn(
+            mapperTypeElement,
+            context.getMessager()
+        );
 
         String componentModel = mapperConfiguration.componentModel( context.getOptions() );
         InjectionStrategyPrism injectionStrategy = mapperConfiguration.getInjectionStrategy();

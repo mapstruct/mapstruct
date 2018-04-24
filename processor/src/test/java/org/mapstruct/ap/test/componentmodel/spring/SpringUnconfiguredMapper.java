@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.spring;
+package org.mapstruct.ap.test.componentmodel.spring;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.SpringMapper;
@@ -25,10 +25,10 @@ import org.mapstruct.factory.Mappers;
 /**
  * @author Christian Bandowski
  */
-@Mapper(componentModel = "spring")
-@SpringMapper(componentType = SpringMapper.SpringComponentType.SERVICE)
-public interface SpringUnnamedServiceMapper {
-    SpringUnnamedServiceMapper INSTANCE = Mappers.getMapper( SpringUnnamedServiceMapper.class );
+@Mapper
+@SpringMapper
+public interface SpringUnconfiguredMapper {
+    SpringUnconfiguredMapper INSTANCE = Mappers.getMapper( SpringUnconfiguredMapper.class );
 
     String noOpMapper(String source);
 }

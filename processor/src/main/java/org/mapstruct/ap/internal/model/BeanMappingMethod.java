@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.lang.model.type.DeclaredType;
 import javax.tools.Diagnostic;
 
@@ -64,6 +61,8 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -693,7 +692,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return mappingOptions.getBeanMapping().getReportingPolicy();
             }
 
-            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
+            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn(
+                ctx.getMapperTypeElement(),
+                ctx.getMessager()
+            );
 
             return mapperSettings.unmappedTargetPolicy( ctx.getOptions() );
         }
@@ -773,7 +775,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private ReportingPolicyPrism getUnmappedSourcePolicy() {
-            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn( ctx.getMapperTypeElement() );
+            MapperConfiguration mapperSettings = MapperConfiguration.getInstanceOn(
+                ctx.getMapperTypeElement(),
+                ctx.getMessager()
+            );
 
             return mapperSettings.unmappedSourcePolicy();
         }

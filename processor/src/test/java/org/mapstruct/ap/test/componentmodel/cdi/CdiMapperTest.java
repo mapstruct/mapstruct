@@ -16,9 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.jsr330;
+package org.mapstruct.ap.test.componentmodel.cdi;
 
-import javax.inject.Named;
+import javax.enterprise.context.ApplicationScoped;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,35 +30,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Christian Bandowski
  */
-@WithClasses({
-    Jsr330UnconfiguredMapper.class,
-    Jsr330NamedMapper.class,
-    Jsr330NamedDecoratorMapper.class
-})
 @RunWith(AnnotationProcessorTestRunner.class)
-public class Jsr330MapperTest {
+public class CdiMapperTest {
     @Test
+    @WithClasses( CdiUnconfiguredMapper.class )
     public void testWithoutConfiguration() {
-        Named annotation = Jsr330UnconfiguredMapper.INSTANCE.getClass().getAnnotation( Named.class );
-
-        assertThat( annotation ).isNotNull();
-        assertThat( annotation.value() ).isEqualTo( "" );
+        assertThatMapperIsApplicationScoped( CdiUnconfiguredMapper.INSTANCE );
     }
 
     @Test
-    public void testWithNameConfiguration() {
-        Named annotation = Jsr330NamedMapper.INSTANCE.getClass().getAnnotation( Named.class );
-
-        assertThat( annotation ).isNotNull();
-        assertThat( annotation.value() ).isEqualTo( "jsr330Mapper" );
+    @WithClasses( CdiMapperComponentModelMapper.class )
+    public void testWithDeprecatedMapperComponentTypeValue() {
+        assertThatMapperIsApplicationScoped( CdiMapperComponentModelMapper.INSTANCE );
     }
 
-    @Test
-    public void testDecoratedWithNameConfiguration() {
-        Named annotation = Jsr330NamedDecoratorMapper.INSTANCE.getClass().getAnnotation( Named.class );
-
-        assertThat( annotation ).isNotNull();
-        assertThat( annotation.value() ).isEqualTo( "jsr330Mapper" );
+    private void assertThatMapperIsApplicationScoped(Object mapper) {
+        assertThat( mapper ).isNotNull();
+        assertThat( mapper.getClass().getAnnotation( ApplicationScoped.class ) ).isNotNull();
     }
 
 }

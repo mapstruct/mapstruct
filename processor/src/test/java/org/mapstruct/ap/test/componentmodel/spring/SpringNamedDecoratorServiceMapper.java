@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.spring;
+package org.mapstruct.ap.test.componentmodel.spring;
 
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 /**
  * @author Christian Bandowski
  */
-@Mapper(componentModel = "spring")
+@Mapper
 @SpringMapper(name = "springMapper", componentType = SpringMapper.SpringComponentType.SERVICE)
 @DecoratedWith(SpringNamedDecoratorServiceMapper.SpringNamedDecoratorServiceMapperDecorator.class)
 public interface SpringNamedDecoratorServiceMapper {

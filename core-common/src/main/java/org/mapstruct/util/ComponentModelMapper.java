@@ -16,19 +16,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.jsr330;
+package org.mapstruct.util;
 
-import org.mapstruct.Jsr330Mapper;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Annotations that are marked with this annotation are used to set the component model like {@code spring}.<br>
+ *
+ * <p>It is never allowed to have more than one component model annotation at one
+ * {@link org.mapstruct.Mapper @Mapper}.<br>
+ * In case there is no annotation of this kind the {@code default} component model will be used.
+ *
  * @author Christian Bandowski
  */
-@Mapper(componentModel = "jsr330")
-@Jsr330Mapper(name = "jsr330Mapper")
-public interface Jsr330NamedMapper {
-    Jsr330NamedMapper INSTANCE = Mappers.getMapper( Jsr330NamedMapper.class );
-
-    String noOpMapper(String source);
+@Documented
+@Target(ElementType.ANNOTATION_TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ComponentModelMapper {
+    /**
+     * @return Identifier of the component model.
+     */
+    String value();
 }

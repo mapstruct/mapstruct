@@ -23,6 +23,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.mapstruct.util.ComponentModelMapper;
+
 /**
  * Allows extra configuration for the generated mapper or decorator and sets the component model of the mapper to
  * {@code spring}.<br>
@@ -43,6 +45,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
+@ComponentModelMapper("spring")
 public @interface SpringMapper {
     /**
      * Defines the name of the Spring bean for the generated mapper or decorator implementation.
