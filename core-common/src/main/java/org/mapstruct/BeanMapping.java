@@ -83,4 +83,18 @@ public @interface BeanMapping {
      * @since 1.3
      */
     boolean ignoreByDefault() default false;
+
+    /**
+     * Unmapped source properties to be ignored. This could be used when {@link ReportingPolicy#WARN}
+     * or {@link ReportingPolicy#ERROR} is used for {@link Mapper#unmappedSourcePolicy()} or
+     * {@link MapperConfig#unmappedSourcePolicy()}. Listed properties will be ignored when composing the unmapped
+     * source properties report.
+     * <p>
+     * <b>NOTE</b>: This does not support ignoring nested source properties
+     *
+     * @return The source properties that should be ignored when performing a report
+     *
+     * @since 1.3
+     */
+    String[] ignoreUnmappedSourceProperties() default {};
 }
