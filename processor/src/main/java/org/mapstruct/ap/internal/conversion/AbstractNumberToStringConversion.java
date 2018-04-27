@@ -78,4 +78,7 @@ public abstract class AbstractNumberToStringConversion extends SimpleConversion 
         }
     }
 
+    protected String decimalFormat(ConversionContext conversionContext) {
+        return conversionContext.getTypeFactory().getType( DecimalFormat.class ).getReferenceName();
+    }
 }

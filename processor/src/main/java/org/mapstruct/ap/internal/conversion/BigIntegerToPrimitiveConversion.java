@@ -54,11 +54,15 @@ public class BigIntegerToPrimitiveConversion extends SimpleConversion {
         if ( targetType == float.class || targetType == double.class ) {
             castString = "(long) ";
         }
-        return "BigInteger.valueOf( " + castString + "<SOURCE> )";
+        return bigInteger( conversionContext ) + ".valueOf( " + castString + "<SOURCE> )";
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return asSet( conversionContext.getTypeFactory().getType( BigInteger.class ) );
+    }
+
+    private String bigInteger(ConversionContext conversionContext) {
+        return conversionContext.getTypeFactory().getType( BigInteger.class ).getReferenceName();
     }
 }

@@ -34,7 +34,7 @@ public class DateToSqlTimestampConversion extends SimpleConversion {
 
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
-        return "new Timestamp( <SOURCE>.getTime() )";
+        return "new " + timestamp( conversionContext ) + "( <SOURCE>.getTime() )";
     }
 
     @Override
@@ -45,5 +45,9 @@ public class DateToSqlTimestampConversion extends SimpleConversion {
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
         return "<SOURCE>";
+    }
+
+    private String timestamp(ConversionContext conversionContext) {
+        return conversionContext.getTypeFactory().getType( Timestamp.class ).getReferenceName();
     }
 }

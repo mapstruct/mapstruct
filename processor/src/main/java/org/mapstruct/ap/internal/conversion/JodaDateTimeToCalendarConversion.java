@@ -18,14 +18,14 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@code DateTime} and {@link Calendar}.
@@ -36,7 +36,7 @@ public class JodaDateTimeToCalendarConversion extends SimpleConversion {
 
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
-        return "<SOURCE>.toCalendar( Locale.getDefault() )";
+        return "<SOURCE>.toCalendar( " + locale( conversionContext ) + ".getDefault() )";
     }
 
     @Override
@@ -46,11 +46,15 @@ public class JodaDateTimeToCalendarConversion extends SimpleConversion {
 
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
-        return "new " + conversionContext.getTargetType().getName() + "( <SOURCE> )";
+        return "new " + conversionContext.getTargetType().getReferenceName() + "( <SOURCE> )";
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return asSet( conversionContext.getTargetType() );
+    }
+
+    private String locale(ConversionContext conversionContext) {
+        return conversionContext.getTypeFactory().getType( Locale.class ).getReferenceName();
     }
 }

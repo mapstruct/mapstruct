@@ -50,11 +50,15 @@ public class BigDecimalToPrimitiveConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        return "BigDecimal.valueOf( <SOURCE> )";
+        return bigDecimal( conversionContext ) + ".valueOf( <SOURCE> )";
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return asSet( conversionContext.getTypeFactory().getType( BigDecimal.class ) );
+    }
+
+    private String bigDecimal(ConversionContext conversionContext) {
+        return conversionContext.getTypeFactory().getType( BigDecimal.class ).getReferenceName();
     }
 }

@@ -18,7 +18,15 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Date;
+import java.util.Set;
+
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.Collections;
 
 /**
  * SimpleConversion for mapping {@link java.time.LocalDateTime} to
@@ -28,11 +36,49 @@ public class JavaLocalDateTimeToDateConversion extends SimpleConversion {
 
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
-        return "java.util.Date.from( <SOURCE>.toInstant( java.time.ZoneOffset.UTC ) )";
+        return date( conversionContext )
+            + ".from( <SOURCE>.toInstant( "
+            + zoneOffset( conversionContext )
+            + ".UTC ) )";
+    }
+
+    @Override
+    protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
+        return Collections.asSet(
+            conversionContext.getTypeFactory().getType( Date.class ),
+            conversionContext.getTypeFactory().getType( ZoneOffset.class )
+        );
     }
 
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
-        return "java.time.LocalDateTime.ofInstant( <SOURCE>.toInstant(), java.time.ZoneId.of( \"UTC\" ) )";
+        return localDateTime( conversionContext )
+            + ".ofInstant( <SOURCE>.toInstant(), "
+            + zoneId( conversionContext )
+            + ".of( \"UTC\" ) )";
+    }
+
+    @Override
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        return Collections.asSet(
+            conversionContext.getTypeFactory().getType( LocalDateTime.class ),
+            conversionContext.getTypeFactory().getType( ZoneId.class )
+        );
+    }
+
+    private String date(ConversionContext conversionContext) {
+        return conversionContext.getTypeFactory().getType( Date.class ).getReferenceName();
+    }
+
+    private String zoneOffset(ConversionContext conversionContext) {
+        return conversionContext.getTypeFactory().getType( ZoneOffset.class ).getReferenceName();
+    }
+
+    private String zoneId(ConversionContext conversionContext) {
+        return conversionContext.getTypeFactory().getType( ZoneId.class ).getReferenceName();
+    }
+
+    private String localDateTime(ConversionContext conversionContext) {
+        return conversionContext.getTypeFactory().getType( LocalDateTime.class ).getReferenceName();
     }
 }

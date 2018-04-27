@@ -18,7 +18,12 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import java.sql.Date;
+import java.util.Collections;
+import java.util.Set;
+
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
 
 /**
  * Conversion between {@link java.util.Date} and {@link java.sql.Date}.
@@ -29,11 +34,20 @@ public class DateToSqlDateConversion extends SimpleConversion {
 
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
-        return "new java.sql.Date( <SOURCE>.getTime() )";
+        return "new " + date( conversionContext ) + "( <SOURCE>.getTime() )";
+    }
+
+    @Override
+    protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
+        return Collections.singleton( conversionContext.getTypeFactory().getType( Date.class ) );
     }
 
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
         return "<SOURCE>";
+    }
+
+    private String date(ConversionContext conversionContext) {
+        return conversionContext.getTypeFactory().getType( Date.class ).getReferenceName();
     }
 }
