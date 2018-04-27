@@ -21,16 +21,19 @@ package org.mapstruct.ap.internal.util;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 /**
  * Provides functionality around the Java primitive data types and their wrapper
- * types.
+ * types. They are considered native.
  *
  * @author Gunnar Morling
  */
@@ -58,11 +61,14 @@ public class NativeTypes {
     private static final Pattern PTRN_FAULTY_DEC_UNDERSCORE_FLOAT = Pattern.compile( "_e|_E|e_|E_" );
     private static final Pattern PTRN_FAULTY_HEX_UNDERSCORE_FLOAT = Pattern.compile( "_p|_P|p_|P_" );
 
-    private static final Map<TypeKind, NumberFormatValidator> VALIDATORS = initValidators();
+    private static final Map<TypeKind, LiteralAnalyzer> ANALYZERS = initAnalyzers();
 
-    private interface NumberFormatValidator {
+    private interface LiteralAnalyzer {
 
-        boolean validate(boolean isPrimitive, String s);
+        boolean validate( String s);
+
+        TypeMirror getLiteral( Types types );
+
     }
 
     private abstract static class NumberRepresentation {
@@ -72,13 +78,11 @@ public class NativeTypes {
         boolean isIntegralType;
         boolean isLong;
         boolean isFloat;
-        boolean isPrimitive;
 
-        NumberRepresentation(String in, boolean isIntegralType, boolean isLong, boolean isFloat, boolean isPrimitive) {
+        NumberRepresentation(String in, boolean isIntegralType, boolean isLong, boolean isFloat) {
             this.isLong = isLong;
             this.isFloat = isFloat;
             this.isIntegralType = isIntegralType;
-            this.isPrimitive = isPrimitive;
 
             String valWithoutSign;
             boolean isNegative = in.startsWith( "-" );
@@ -170,8 +174,8 @@ public class NativeTypes {
             if (endsWithLSuffix && !isLong) {
                 throw new NumberFormatException("L/l not allowed for non-long types");
             }
-            if (!isPrimitive && !endsWithLSuffix && isLong)  {
-                throw new NumberFormatException("L/l mandatory for boxed long");
+            if ( !endsWithLSuffix && isLong)  {
+                throw new NumberFormatException("L/l mandatory long");
             }
             // remove suffix
             if ( endsWithLSuffix ) {
@@ -319,29 +323,51 @@ public class NativeTypes {
         }
     }
 
-    public static boolean isStringAssignable(TypeKind kind, boolean isPrimitive, String in) {
-        NumberFormatValidator validator = VALIDATORS.get( kind );
-        return validator != null && validator.validate( isPrimitive, in );
+    /**
+     *
+     * @param kind typeKind
+     * @param literal literal
+     * @param utils type util for constructing literal type
+     * @return literal type when the literal is a proper literal for the provided kind.
+     */
+    public static TypeMirror getLiteral(TypeKind kind, String literal, Types utils ) {
+        LiteralAnalyzer analyzer = ANALYZERS.get( kind );
+        TypeMirror result = null;
+        if ( analyzer != null && analyzer.validate( literal ) ) {
+            result = analyzer.getLiteral( utils );
+        }
+        return result;
     }
 
-    private static Map<TypeKind, NumberFormatValidator> initValidators() {
-        Map<TypeKind, NumberFormatValidator> result = new HashMap<TypeKind, NumberFormatValidator>();
-        result.put( TypeKind.BOOLEAN, new NumberFormatValidator() {
+    @SuppressWarnings( "checkstyle:MethodLength" )
+    private static Map<TypeKind, LiteralAnalyzer> initAnalyzers() {
+        Map<TypeKind, LiteralAnalyzer> result = new EnumMap<TypeKind, LiteralAnalyzer>(TypeKind.class);
+        result.put( TypeKind.BOOLEAN, new LiteralAnalyzer() {
             @Override
-            public boolean validate(boolean isPrimitive, String s) {
+            public boolean validate( String s) {
                 return "true".equals( s ) || "false".equals( s );
             }
-        } );
-        result.put( TypeKind.CHAR, new NumberFormatValidator() {
+
             @Override
-            public boolean validate(boolean isPrimitive, String s) {
-                return s.length() == 3 && s.startsWith( "'" ) && s.endsWith( "'" );
+            public TypeMirror getLiteral(Types types) {
+                return types.getPrimitiveType( TypeKind.BOOLEAN );
             }
         } );
-        result.put( TypeKind.BYTE, new NumberFormatValidator() {
+        result.put( TypeKind.CHAR, new LiteralAnalyzer() {
             @Override
-            public boolean validate(boolean isPrimitive, String s) {
-                NumberRepresentation br = new NumberRepresentation( s, true, false, false, isPrimitive ) {
+            public boolean validate( String s) {
+                return s.length() == 3 && s.startsWith( "'" ) && s.endsWith( "'" );
+            }
+
+            @Override
+            public TypeMirror getLiteral(Types types) {
+                return types.getPrimitiveType( TypeKind.CHAR );
+            }
+        } );
+        result.put( TypeKind.BYTE, new LiteralAnalyzer() {
+            @Override
+            public boolean validate( String s) {
+                NumberRepresentation br = new NumberRepresentation( s, true, false, false ) {
 
                     @Override
                     boolean parse(String val, int radix) {
@@ -351,11 +377,16 @@ public class NativeTypes {
                 };
                 return br.validate();
             }
-        } );
-        result.put( TypeKind.DOUBLE, new NumberFormatValidator() {
+
             @Override
-            public boolean validate(boolean isPrimitive, String s) {
-                NumberRepresentation br = new NumberRepresentation( s, false, false, false, isPrimitive ) {
+            public TypeMirror getLiteral(Types types) {
+                return types.getPrimitiveType( TypeKind.INT );
+            }
+        } );
+        result.put( TypeKind.DOUBLE, new LiteralAnalyzer() {
+            @Override
+            public boolean validate( String s) {
+                NumberRepresentation br = new NumberRepresentation( s, false, false, false ) {
 
                     @Override
                     boolean parse(String val, int radix) {
@@ -365,12 +396,17 @@ public class NativeTypes {
                 };
                 return br.validate();
             }
-        } );
-        result.put( TypeKind.FLOAT, new NumberFormatValidator() {
-            @Override
-            public boolean validate(boolean isPrimitive, String s) {
 
-                NumberRepresentation br = new NumberRepresentation( s, false, false, true, isPrimitive ) {
+            @Override
+            public TypeMirror getLiteral(Types types) {
+                return types.getPrimitiveType( TypeKind.FLOAT );
+            }
+        } );
+        result.put( TypeKind.FLOAT, new LiteralAnalyzer() {
+            @Override
+            public boolean validate( String s) {
+
+                NumberRepresentation br = new NumberRepresentation( s, false, false, true ) {
                     @Override
                     boolean parse(String val, int radix) {
                         Float f = Float.parseFloat( radix == 16 ? "0x" + val : val );
@@ -379,11 +415,16 @@ public class NativeTypes {
                 };
                 return br.validate();
             }
-        } );
-        result.put( TypeKind.INT, new NumberFormatValidator() {
+
             @Override
-            public boolean validate(boolean isPrimitive, String s) {
-                NumberRepresentation br = new NumberRepresentation( s, true, false, false, isPrimitive ) {
+            public TypeMirror getLiteral(Types types) {
+                return types.getPrimitiveType( TypeKind.FLOAT );
+            }
+        } );
+        result.put( TypeKind.INT, new LiteralAnalyzer() {
+            @Override
+            public boolean validate( String s) {
+                NumberRepresentation br = new NumberRepresentation( s, true, false, false ) {
 
                     @Override
                     boolean parse(String val, int radix) {
@@ -400,11 +441,16 @@ public class NativeTypes {
                 };
                 return br.validate();
             }
-        } );
-        result.put( TypeKind.LONG, new NumberFormatValidator() {
+
             @Override
-            public boolean validate(boolean isPrimitive, String s) {
-                NumberRepresentation br = new NumberRepresentation( s, true, true, false, isPrimitive ) {
+            public TypeMirror getLiteral(Types types) {
+                return types.getPrimitiveType( TypeKind.INT );
+            }
+        } );
+        result.put( TypeKind.LONG, new LiteralAnalyzer() {
+            @Override
+            public boolean validate(String s) {
+                NumberRepresentation br = new NumberRepresentation( s, true, true, false ) {
 
                     @Override
                     boolean parse(String val, int radix) {
@@ -421,11 +467,16 @@ public class NativeTypes {
                 };
                 return br.validate();
             }
-        } );
-        result.put( TypeKind.SHORT, new NumberFormatValidator() {
+
             @Override
-            public boolean validate(boolean isPrimitive, String s) {
-                NumberRepresentation br = new NumberRepresentation( s, true, false, false, isPrimitive ) {
+            public TypeMirror getLiteral(Types types) {
+                return types.getPrimitiveType( TypeKind.INT );
+            }
+        } );
+        result.put( TypeKind.SHORT, new LiteralAnalyzer() {
+            @Override
+            public boolean validate( String s) {
+                NumberRepresentation br = new NumberRepresentation( s, true, false, false ) {
 
                     @Override
                     boolean parse(String val, int radix) {
@@ -434,6 +485,11 @@ public class NativeTypes {
                     }
                 };
                 return br.validate();
+            }
+
+            @Override
+            public TypeMirror getLiteral(Types types) {
+                return types.getPrimitiveType( TypeKind.INT );
             }
         } );
         return result;

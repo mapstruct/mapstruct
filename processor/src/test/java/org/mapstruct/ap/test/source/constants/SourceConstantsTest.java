@@ -217,7 +217,7 @@ public class SourceConstantsTest {
     public void errorOnNonExistingEnumConstant() throws ParseException {
     }
 
-   @Test
+    @Test
     @IssueKey("1401")
     @WithClasses({
         Source.class,

@@ -925,6 +925,14 @@ public class Type extends ModelElement implements Comparable<Type> {
         return isBoxed;
     }
 
+    /**
+     * All primitive types and their corresponding boxed types are considered native.
+     * @return true when native.
+     */
+    public boolean isNative() {
+        return isBoxed() || isPrimitive();
+    }
+
     public boolean hasOriginatedFromConstant() {
         return isOriginatedFromConstant;
     }

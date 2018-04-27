@@ -149,23 +149,21 @@ public class TypeFactory {
 
     public Type getTypeForConstant(Type targetType, String literal) {
         Type result = null;
-        if ( targetType.isPrimitive() ) {
-            TypeKind kind = targetType.getTypeMirror().getKind();
-            boolean assignable = NativeTypes.isStringAssignable( kind, true, literal );
-            if ( assignable ) {
-                result = getType( targetType.getTypeMirror(), true );
+        TypeMirror baseForLiteral = null;
+        if ( targetType.isNative() ) {
+            TypeKind kind;
+            if ( targetType.isBoxed() ) {
+                kind = NativeTypes.getWrapperKind( targetType.getFullyQualifiedName() );
             }
+            else {
+                kind = targetType.getTypeMirror().getKind();
+            }
+            baseForLiteral = NativeTypes.getLiteral( kind, literal, typeUtils );
+        }
+        if ( baseForLiteral != null ) {
+            result = getType( baseForLiteral, true );
         }
         else {
-            TypeKind boxedTypeKind = NativeTypes.getWrapperKind( targetType.getFullyQualifiedName() );
-            if ( boxedTypeKind != null ) {
-                boolean assignable = NativeTypes.isStringAssignable( boxedTypeKind, false, literal );
-                if ( assignable ) {
-                    result = getType( targetType.getTypeMirror(), true );
-                }
-            }
-        }
-        if ( result == null ) {
             result = getType( String.class.getCanonicalName(), true );
         }
         return result;
