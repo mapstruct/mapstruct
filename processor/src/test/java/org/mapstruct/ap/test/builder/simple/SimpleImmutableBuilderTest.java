@@ -51,6 +51,7 @@ public class SimpleImmutableBuilderTest {
         source.setAge( 3 );
         source.setFullName( "Bob" );
         source.setChildren( Arrays.asList( "Alice", "Tom" ) );
+        source.setAddress( "Plaza 1" );
 
         SimpleImmutablePerson targetObject = mapper.toImmutable( source );
 
@@ -58,6 +59,7 @@ public class SimpleImmutableBuilderTest {
         assertThat( targetObject.getName() ).isEqualTo( "Bob" );
         assertThat( targetObject.getJob() ).isEqualTo( "programmer" );
         assertThat( targetObject.getCity() ).isEqualTo( "Bengalore" );
+        assertThat( targetObject.getAddress() ).isEqualTo( "Plaza 1" );
         assertThat( targetObject.getChildren() ).contains( "Alice", "Tom" );
     }
 
@@ -67,7 +69,7 @@ public class SimpleImmutableBuilderTest {
         diagnostics = @Diagnostic(
             kind = javax.tools.Diagnostic.Kind.ERROR,
             type = ErroneousSimpleBuilderMapper.class,
-            line = 33,
+            line = 34,
             messageRegExp = "Unmapped target property: \"name\"\\."))
     public void testSimpleImmutableBuilderMissingPropertyFailsToCompile() {
     }
