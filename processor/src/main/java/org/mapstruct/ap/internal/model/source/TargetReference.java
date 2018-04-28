@@ -153,7 +153,7 @@ public class TargetReference {
 
             boolean foundEntryMatch;
             Type resultType = method.getResultType();
-            resultType = resultType.getEffectiveType();
+            resultType = typeBasedOnMethod( resultType );
 
             // there can be 4 situations
             // 1. Return type
@@ -191,7 +191,7 @@ public class TargetReference {
             // last entry
             for ( int i = 0; i < entryNames.length; i++ ) {
 
-                Type mappingType = nextType.getEffectiveType();
+                Type mappingType = typeBasedOnMethod( nextType );
                 Accessor targetReadAccessor = mappingType.getPropertyReadAccessors().get( entryNames[i] );
                 Accessor targetWriteAccessor = mappingType.getPropertyWriteAccessors( cms ).get( entryNames[i] );
                 boolean isLast = i == entryNames.length - 1;
@@ -237,13 +237,13 @@ public class TargetReference {
             if ( Executables.isGetterMethod( toUse ) ||
                 Executables.isFieldAccessor( toUse ) ) {
                 nextType = typeFactory.getReturnType(
-                    (DeclaredType) initial.getEffectiveType().getTypeMirror(),
+                    (DeclaredType) typeBasedOnMethod( initial ).getTypeMirror(),
                     toUse
                 );
             }
             else {
                 nextType = typeFactory.getSingleParameter(
-                    (DeclaredType) initial.getEffectiveType().getTypeMirror(),
+                    (DeclaredType) typeBasedOnMethod( initial ).getTypeMirror(),
                     toUse
                 ).getType();
             }
@@ -261,6 +261,20 @@ public class TargetReference {
             else {
                 //TODO there is no read accessor. What should we do here?
                 errorMessage = new NoPropertyErrorMessage( mapping, method, messager, entryNames, index, nextType );
+            }
+        }
+
+        /**
+         * When we are in an update method, i.e. source parameter with {@code @MappingTarget} then the type should
+         * be itself, otherwise, we always get the effective type. The reason is that when doing updates we always
+         * search for setters and getters within the updating type.
+         */
+        private Type typeBasedOnMethod(Type type) {
+            if ( method.isUpdateMethod() ) {
+                return type;
+            }
+            else {
+                return type.getEffectiveType();
             }
         }
 

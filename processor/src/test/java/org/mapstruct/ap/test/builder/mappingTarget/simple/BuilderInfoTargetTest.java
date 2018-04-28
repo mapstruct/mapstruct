@@ -26,11 +26,9 @@ import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
-import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
-import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 @WithClasses({
+    MutableTarget.class,
     SimpleMutableSource.class,
     SimpleImmutableTarget.class,
     SimpleBuilderMapper.class
@@ -54,17 +52,48 @@ public class BuilderInfoTargetTest {
         assertThat( targetObject.getName() ).isEqualTo( "Bob" );
     }
 
-    @WithClasses(ErroneousSimpleBuilderMapper.class)
     @Test
-    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
-        diagnostics = {
-            @Diagnostic(type = ErroneousSimpleBuilderMapper.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 26,
-                messageRegExp = "^Can't generate mapping method when @MappingTarget is supposed to be immutable "
-                + "\\(has a builder\\)\\.$")
-        })
-    public void shouldFailCannotModifyImmutable() {
+    public void testMutableTargetWithBuilder() {
+        SimpleMutableSource source = new SimpleMutableSource();
+        source.setAge( 20 );
+        source.setFullName( "Filip" );
+        MutableTarget target = SimpleBuilderMapper.INSTANCE.toMutableTarget( source );
+        assertThat( target.getAge() ).isEqualTo( 20 );
+        assertThat( target.getName() ).isEqualTo( "Filip" );
+        assertThat( target.getSource() ).isEqualTo( "Builder" );
+    }
 
+    @Test
+    public void testUpdateMutableWithBuilder() {
+        SimpleMutableSource source = new SimpleMutableSource();
+        source.setAge( 20 );
+        source.setFullName( "Filip" );
+        MutableTarget target = new MutableTarget();
+        target.setAge( 10 );
+        target.setName( "Fil" );
+
+        assertThat( target.getAge() ).isEqualTo( 10 );
+        assertThat( target.getName() ).isEqualTo( "Fil" );
+        assertThat( target.getSource() ).isEqualTo( "Empty constructor" );
+
+        SimpleBuilderMapper.INSTANCE.updateMutableTarget( source, target );
+        assertThat( target.getAge() ).isEqualTo( 20 );
+        assertThat( target.getName() ).isEqualTo( "Filip" );
+        assertThat( target.getSource() ).isEqualTo( "Empty constructor" );
+    }
+
+    @Test
+    public void updatingTargetWithNoSettersShouldNotFail() {
+
+        SimpleMutableSource source = new SimpleMutableSource();
+        source.setAge( 10 );
+
+        SimpleImmutableTarget target = SimpleImmutableTarget.builder()
+            .age( 20 )
+            .build();
+
+        assertThat( target.getAge() ).isEqualTo( 20 );
+        SimpleBuilderMapper.INSTANCE.toImmutable( source, target );
+        assertThat( target.getAge() ).isEqualTo( 20 );
     }
 }
