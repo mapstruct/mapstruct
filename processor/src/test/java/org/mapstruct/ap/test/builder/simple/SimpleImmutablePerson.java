@@ -26,6 +26,7 @@ public class SimpleImmutablePerson {
     private final int age;
     private final String job;
     private final String city;
+    private final String address;
     private final List<String> children;
 
     SimpleImmutablePerson(Builder builder) {
@@ -33,6 +34,7 @@ public class SimpleImmutablePerson {
         this.age = builder.age;
         this.job = builder.job;
         this.city = builder.city;
+        this.address = builder.address;
         this.children = new ArrayList<String>( builder.children );
     }
 
@@ -56,6 +58,10 @@ public class SimpleImmutablePerson {
         return city;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
     public List<String> getChildren() {
         return children;
     }
@@ -65,6 +71,7 @@ public class SimpleImmutablePerson {
         private int age;
         private String job;
         private String city;
+        private String address;
         private List<String> children = new ArrayList<String>();
 
         public Builder age(int age) {
@@ -88,6 +95,11 @@ public class SimpleImmutablePerson {
 
         public Builder city(String city) {
             this.city = city;
+            return this;
+        }
+
+        public Builder address(String address) {
+            this.address = address;
             return this;
         }
 

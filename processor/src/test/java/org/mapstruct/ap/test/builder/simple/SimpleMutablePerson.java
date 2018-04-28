@@ -23,6 +23,7 @@ import java.util.List;
 public class SimpleMutablePerson {
     private String fullName;
     private int age;
+    private String address;
     private List<String> children;
 
     public int getAge() {
@@ -39,6 +40,14 @@ public class SimpleMutablePerson {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public List<String> getChildren() {

@@ -27,6 +27,7 @@ import org.mapstruct.ReportingPolicy;
 public interface ErroneousSimpleBuilderMapper {
 
     @Mappings({
+        @Mapping(target = "address", ignore = true ),
         @Mapping(target = "job", ignore = true ),
         @Mapping(target = "city", ignore = true )
     })
