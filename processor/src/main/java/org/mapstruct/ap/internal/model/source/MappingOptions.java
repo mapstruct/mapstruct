@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -298,7 +299,11 @@ public class MappingOptions {
     public void applyIgnoreAll(MappingOptions inherited, SourceMethod method, FormattingMessager messager,
                                TypeFactory typeFactory ) {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
-        Map<String, Accessor> writeAccessors = method.getResultType().getPropertyWriteAccessors( cms );
+        Type writeType = method.getResultType();
+        if ( !method.isUpdateMethod() ) {
+            writeType = writeType.getEffectiveType();
+        }
+        Map<String, Accessor> writeAccessors = writeType.getPropertyWriteAccessors( cms );
         List<String> mappedPropertyNames = new ArrayList<String>();
         for ( String targetMappingName : mappings.keySet() ) {
             mappedPropertyNames.add( targetMappingName.split( "\\." )[0] );
