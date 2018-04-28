@@ -406,6 +406,47 @@ public class Type extends ModelElement implements Comparable<Type> {
         );
     }
 
+    public Type withoutBounds() {
+        if ( typeParameters.isEmpty() ) {
+            return this;
+        }
+
+        List<Type> bounds = new ArrayList<Type>( typeParameters.size() );
+        List<TypeMirror> mirrors = new ArrayList<TypeMirror>( typeParameters.size() );
+        for ( Type typeParameter : typeParameters ) {
+            bounds.add( typeParameter.getTypeBound() );
+            mirrors.add( typeParameter.getTypeBound().getTypeMirror() );
+        }
+
+        DeclaredType declaredType = typeUtils.getDeclaredType(
+            typeElement,
+            mirrors.toArray( new TypeMirror[] {} )
+        );
+        return new Type(
+            typeUtils,
+            elementUtils,
+            typeFactory,
+            accessorNaming,
+            declaredType,
+            (TypeElement) declaredType.asElement(),
+            bounds,
+            implementationType,
+            componentType,
+            builderType == null ? null : builderType.asBuilderInfo(),
+            packageName,
+            name,
+            qualifiedName,
+            isInterface,
+            isEnumType,
+            isIterableType,
+            isCollectionType,
+            isMapType,
+            isStream,
+            isImported,
+            isLiteral
+        );
+    }
+
     /**
      * Whether this type is assignable to the given other type.
      *

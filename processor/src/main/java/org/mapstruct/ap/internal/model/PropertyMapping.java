@@ -598,6 +598,7 @@ public class PropertyMapping extends ModelElement {
         private Assignment forgeWithElementMapping(Type sourceType, Type targetType, SourceRHS source,
             ExecutableElement element, ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder) {
 
+            targetType = targetType.withoutBounds();
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element, "[]" );
 
             ContainerMappingMethod iterableMappingMethod = builder
@@ -634,6 +635,7 @@ public class PropertyMapping extends ModelElement {
         private Assignment forgeMapMapping(Type sourceType, Type targetType, SourceRHS source,
                                            ExecutableElement element) {
 
+            targetType = targetType.withoutBounds();
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element, "{}" );
 
             MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
