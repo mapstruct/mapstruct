@@ -102,9 +102,22 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     protected boolean isBuilderSetter(ExecutableElement method) {
         return method.getParameters().size() == 1 &&
             !JAVA_JAVAX_PACKAGE.matcher( method.getEnclosingElement().asType().toString() ).matches() &&
-            !isAdderMethod( method ) &&
+            !isAdderWithUpperCase4thCharacter( method ) &&
             //TODO The Types need to be compared with Types#isSameType(TypeMirror, TypeMirror)
             method.getReturnType().toString().equals( method.getEnclosingElement().asType().toString() );
+    }
+
+    /**
+     * Checks that the method is an adder with an upper case 4th character. The reason for this is that methods such
+     * as {@code address(String address)} are considered as setter and {@code addName(String name)} too. We need to
+     * make sure that {@code addName} is considered as an adder and {@code address} is considered as a setter.
+     *
+     * @param method the method that needs to be checked
+     *
+     * @return {@code true} if the method is an adder with an upper case 4h character, {@code false} otherwise
+     */
+    private boolean isAdderWithUpperCase4thCharacter(ExecutableElement method) {
+        return isAdderMethod( method ) && Character.isUpperCase( method.getSimpleName().toString().charAt( 3 ) );
     }
 
     /**
