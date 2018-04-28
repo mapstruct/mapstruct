@@ -94,9 +94,31 @@ public @interface Mapping {
     String numberFormat() default "";
 
     /**
-     * A constant {@link String} based on which the specified target property is to be set. If the designated target
-     * property is not of type {@code String}, the value will be converted by applying a matching conversion method or
-     * built-in conversion.
+     * A constant {@link String} based on which the specified target property is to be set.
+     * <p>
+     * When the designated target property is of type:
+     * </p>
+     * <ol>
+     * <li>primitive or boxed (e.g. {@code java.lang.Long}).
+     * <p>
+     * MapStruct checks whether the primitive can be assigned as valid literal to the primitive or boxed type.
+     * </p>
+     * <ul>
+     * <li>
+     * If possible, MapStruct assigns as literal.
+     * </li>
+     * <li>
+     * If not possible, MapStruct will try to apply a user defined mapping method.
+     * </li>
+     * </ul>
+     * </li>
+     * <li>other
+     * <p>
+     * MapStruct handles the constant as {@code String}. The value will be converted by applying a matching method,
+     * type conversion method or built-in conversion.
+     * <p>
+     * </li>
+     * </ol>
      * <p>
      * This attribute can not be used together with {@link #source()}, {@link #defaultValue()},
      * {@link #defaultExpression()} or {@link #expression()}.
@@ -214,9 +236,31 @@ public @interface Mapping {
     String[] dependsOn() default { };
 
     /**
-     * In case the source property is {@code null}, the provided default {@link String} value is set. If the designated
-     * target property is not of type {@code String}, the value will be converted by applying a matching conversion
-     * method or built-in conversion.
+     * In case the source property is {@code null}, the provided default {@link String} value is set.
+     * <p>
+     * When the designated target property is of type:
+     * </p>
+     * <ol>
+     * <li>primitive or boxed (e.g. {@code java.lang.Long}).
+     * <p>
+     * MapStruct checks whether the primitive can be assigned as valid literal to the primitive or boxed type.
+     * </p>
+     * <ul>
+     * <li>
+     * If possible, MapStruct assigns as literal.
+     * </li>
+     * <li>
+     * If not possible, MapStruct will try to apply a user defined mapping method.
+     * </li>
+     * </ul>
+     * </li>
+     * <li>other
+     * <p>
+     * MapStruct handles the constant as {@code String}. The value will be converted by applying a matching method,
+     * type conversion method or built-in conversion.
+     * <p>
+     * </li>
+     * </ol>
      * <p>
      * This attribute can not be used together with {@link #constant()}, {@link #expression()}
      * or {@link #defaultExpression()}.
