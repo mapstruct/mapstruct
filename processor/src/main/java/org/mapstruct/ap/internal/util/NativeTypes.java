@@ -21,19 +21,14 @@ package org.mapstruct.ap.internal.util;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
 
 /**
- * Provides functionality around the Java primitive data types and their wrapper
- * types. They are considered native.
+ * Provides functionality around the Java primitive data types and their wrapper types. They are considered native.
  *
  * @author Gunnar Morling
  */
@@ -42,7 +37,7 @@ public class NativeTypes {
     private static final Map<Class<?>, Class<?>> WRAPPER_TO_PRIMITIVE_TYPES;
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER_TYPES;
     private static final Set<Class<?>> NUMBER_TYPES = new HashSet<Class<?>>();
-    private static final Map<String, TypeKind> WRAPPER_NAME_TO_PRIMITIVE_TYPES;
+    private static final Map<String, LiteralAnalyzer> ANALYZERS;
 
     private static final Pattern PTRN_HEX = Pattern.compile( "^0[x|X].*" );
     private static final Pattern PTRN_OCT = Pattern.compile( "^0_*[0-7].*" );
@@ -61,13 +56,11 @@ public class NativeTypes {
     private static final Pattern PTRN_FAULTY_DEC_UNDERSCORE_FLOAT = Pattern.compile( "_e|_E|e_|E_" );
     private static final Pattern PTRN_FAULTY_HEX_UNDERSCORE_FLOAT = Pattern.compile( "_p|_P|p_|P_" );
 
-    private static final Map<TypeKind, LiteralAnalyzer> ANALYZERS = initAnalyzers();
-
     private interface LiteralAnalyzer {
 
-        boolean validate( String s);
+        void validate(String s);
 
-        TypeMirror getLiteral( Types types );
+        Class<?> getLiteral();
 
     }
 
@@ -115,16 +108,11 @@ public class NativeTypes {
             }
         }
 
-        abstract boolean parse(String val, int radix);
+        abstract void parse(String val, int radix);
 
-        boolean validate() {
-            try {
-                strip();
-                return parse( val, radix );
-            }
-            catch ( NumberFormatException ex ) {
-                return false;
-            }
+        void validate() {
+            strip();
+            parse( val, radix );
         }
 
         void strip() {
@@ -143,7 +131,7 @@ public class NativeTypes {
          */
         void removeAndValidateIntegerLiteralUnderscore() {
             if ( PTRN_FAULTY_UNDERSCORE_INT.matcher( val ).find() ) {
-                throw new NumberFormatException("Improperly placed underscores");
+                throw new NumberFormatException( "improperly placed underscores" );
             }
             else {
                 val = val.replace( "_", "" );
@@ -158,7 +146,7 @@ public class NativeTypes {
             if ( PTRN_FAULTY_UNDERSCORE_FLOAT.matcher( val ).find()
                 || !isHex && PTRN_FAULTY_DEC_UNDERSCORE_FLOAT.matcher( val ).find()
                 || isHex && PTRN_FAULTY_HEX_UNDERSCORE_FLOAT.matcher( val ).find() ) {
-                throw new NumberFormatException("Improperly placed underscores");
+                throw new NumberFormatException( "improperly placed underscores" );
             }
             else {
                 val = val.replace( "_", "" );
@@ -171,11 +159,11 @@ public class NativeTypes {
         void removeAndValidateIntegerLiteralSuffix() {
             boolean endsWithLSuffix = PTRN_LONG.matcher( val ).find();
             // error handling
-            if (endsWithLSuffix && !isLong) {
-                throw new NumberFormatException("L/l not allowed for non-long types");
+            if ( endsWithLSuffix && !isLong ) {
+                throw new NumberFormatException( "L/l not allowed for non-long types" );
             }
-            if ( !endsWithLSuffix && isLong)  {
-                throw new NumberFormatException("L/l mandatory long");
+            if ( !endsWithLSuffix && isLong ) {
+                throw new NumberFormatException( "L/l mandatory for long types" );
             }
             // remove suffix
             if ( endsWithLSuffix ) {
@@ -195,7 +183,7 @@ public class NativeTypes {
             boolean endsWithDSuffix = PTRN_DOUBLE.matcher( val ).find();
             // error handling
             if ( isFloat && endsWithDSuffix ) {
-                throw new NumberFormatException("Assiging double to a float");
+                throw new NumberFormatException( "Assiging double to a float" );
             }
             // remove suffix
             if ( endsWithLSuffix || endsWithFSuffix || endsWithDSuffix ) {
@@ -230,6 +218,181 @@ public class NativeTypes {
                 // hex, should be at least some number before exponent (pP) unequal to 0.
                 return PTRN_FLOAT_HEX_ZERO.matcher( val ).matches();
             }
+        }
+    }
+
+   private static class BooleanAnalyzer implements LiteralAnalyzer {
+
+        @Override
+        public void validate(String s) {
+            if ( !( "true".equals( s ) || "false".equals( s ) ) ) {
+                throw new IllegalArgumentException("only 'true' or 'false' are supported");
+            }
+        }
+
+        @Override
+        public Class<?> getLiteral() {
+            return boolean.class;
+        }
+    }
+
+    private static class CharAnalyzer implements LiteralAnalyzer {
+
+        @Override
+        public void validate(String s) {
+            if ( !(s.length() == 3 && s.startsWith( "'" ) && s.endsWith( "'" )) ) {
+                throw new NumberFormatException( "invalid character literal" );
+            }
+        }
+
+        @Override
+        public Class<?> getLiteral() {
+            return char.class;
+        }
+    }
+
+    private static class ByteAnalyzer implements LiteralAnalyzer {
+
+        @Override
+        public void validate(String s) {
+            NumberRepresentation br = new NumberRepresentation( s, true, false, false ) {
+
+                @Override
+                void parse(String val, int radix) {
+                    Byte.parseByte( val, radix );
+                }
+            };
+            br.validate();
+        }
+
+        @Override
+        public Class<?> getLiteral() {
+            return int.class;
+        }
+    }
+
+    private static class DoubleAnalyzer implements LiteralAnalyzer {
+
+        @Override
+        public void validate(String s) {
+            NumberRepresentation br = new NumberRepresentation( s, false, false, false ) {
+
+                @Override
+                void parse(String val, int radix) {
+                    Double d = Double.parseDouble( radix == 16 ? "0x" + val : val );
+                    if ( doubleHasBecomeZero( d  ) ) {
+                        throw new NumberFormatException( "floating point number too small" );
+                    }
+                    if ( d.isInfinite() ) {
+                        throw new NumberFormatException( "infinitive is not allowed" );
+                    }
+                }
+            };
+            br.validate();
+        }
+
+        @Override
+        public Class<?> getLiteral() {
+            return float.class;
+        }
+
+    }
+
+    private static class FloatAnalyzer implements LiteralAnalyzer {
+
+        @Override
+        public void validate(String s) {
+
+            NumberRepresentation br = new NumberRepresentation( s, false, false, true ) {
+                @Override
+                void parse(String val, int radix) {
+                    Float f = Float.parseFloat( radix == 16 ? "0x" + val : val );
+                    if ( doubleHasBecomeZero( f  ) ) {
+                        throw new NumberFormatException( "floating point number too small" );
+                    }
+                    if ( f.isInfinite() ) {
+                        throw new NumberFormatException( "infinitive is not allowed" );
+                    }
+                }
+            };
+            br.validate();
+        }
+
+        @Override
+        public Class<?> getLiteral() {
+            return float.class;
+        }
+    }
+
+    private static class IntAnalyzer implements LiteralAnalyzer {
+
+        @Override
+        public void validate(String s) {
+            NumberRepresentation br = new NumberRepresentation( s, true, false, false ) {
+
+                @Override
+                void parse(String val, int radix) {
+                    if ( radix == 10 ) {
+                        // when decimal: treat like signed
+                        Integer.parseInt( val, radix );
+                    }
+                    else if ( new BigInteger( val, radix ).bitLength() > 32 ) {
+                        throw new NumberFormatException( "integer number too large" );
+                    }
+                }
+            };
+            br.validate();
+        }
+
+        @Override
+        public Class<?> getLiteral() {
+            return int.class;
+        }
+    }
+
+    private static class LongAnalyzer implements LiteralAnalyzer {
+
+        @Override
+        public void validate(String s) {
+            NumberRepresentation br = new NumberRepresentation( s, true, true, false ) {
+
+                @Override
+                void parse(String val, int radix) {
+                    if ( radix == 10 ) {
+                        // when decimal: treat like signed
+                        Long.parseLong( val, radix );
+                    }
+                    else if ( new BigInteger( val, radix ).bitLength() > 64 ) {
+                        throw new NumberFormatException( "integer number too large" );
+                    }
+                }
+            };
+            br.validate();
+        }
+
+        @Override
+        public Class<?> getLiteral() {
+            return int.class;
+        }
+    }
+
+    private static class ShortAnalyzer implements LiteralAnalyzer {
+
+        @Override
+        public void validate(String s) {
+            NumberRepresentation br = new NumberRepresentation( s, true, false, false ) {
+
+                @Override
+                void parse(String val, int radix) {
+                    Short.parseShort( val, radix );
+                }
+            };
+            br.validate();
+        }
+
+        @Override
+        public Class<?> getLiteral() {
+            return int.class;
         }
     }
 
@@ -276,17 +439,25 @@ public class NativeTypes {
         NUMBER_TYPES.add( BigInteger.class );
         NUMBER_TYPES.add( BigDecimal.class );
 
-        Map<String, TypeKind> tmp2 = new HashMap<String, TypeKind>();
-        tmp2.put( Boolean.class.getName(), TypeKind.BOOLEAN );
-        tmp2.put( Byte.class.getName(), TypeKind.BYTE );
-        tmp2.put( Character.class.getName(), TypeKind.CHAR );
-        tmp2.put( Double.class.getName(), TypeKind.DOUBLE );
-        tmp2.put( Float.class.getName(), TypeKind.FLOAT );
-        tmp2.put( Integer.class.getName(), TypeKind.INT );
-        tmp2.put( Long.class.getName(), TypeKind.LONG );
-        tmp2.put( Short.class.getName(), TypeKind.SHORT );
+        Map<String, LiteralAnalyzer> tmp2 = new HashMap<String, LiteralAnalyzer>();
+        tmp2.put( boolean.class.getCanonicalName(), new BooleanAnalyzer() );
+        tmp2.put( Boolean.class.getCanonicalName(), new BooleanAnalyzer() );
+        tmp2.put( char.class.getCanonicalName(), new CharAnalyzer() );
+        tmp2.put( Character.class.getCanonicalName(), new CharAnalyzer() );
+        tmp2.put( byte.class.getCanonicalName(), new ByteAnalyzer() );
+        tmp2.put( Byte.class.getCanonicalName(), new ByteAnalyzer() );
+        tmp2.put( double.class.getCanonicalName(), new DoubleAnalyzer() );
+        tmp2.put( Double.class.getCanonicalName(), new DoubleAnalyzer() );
+        tmp2.put( float.class.getCanonicalName(), new FloatAnalyzer() );
+        tmp2.put( Float.class.getCanonicalName(), new FloatAnalyzer() );
+        tmp2.put( int.class.getCanonicalName(), new IntAnalyzer() );
+        tmp2.put( Integer.class.getCanonicalName(), new IntAnalyzer() );
+        tmp2.put( long.class.getCanonicalName(), new LongAnalyzer() );
+        tmp2.put( Long.class.getCanonicalName(), new LongAnalyzer() );
+        tmp2.put( short.class.getCanonicalName(), new ShortAnalyzer() );
+        tmp2.put( Short.class.getCanonicalName(), new ShortAnalyzer() );
 
-        WRAPPER_NAME_TO_PRIMITIVE_TYPES = Collections.unmodifiableMap( tmp2 );
+        ANALYZERS = Collections.unmodifiableMap( tmp2 );
 
     }
 
@@ -306,12 +477,8 @@ public class NativeTypes {
         return WRAPPER_TO_PRIMITIVE_TYPES.get( clazz );
     }
 
-    public static boolean isWrapped(String fullyQualifiedName) {
-        return WRAPPER_NAME_TO_PRIMITIVE_TYPES.containsKey( fullyQualifiedName );
-    }
-
-    public static TypeKind getWrapperKind(String fullyQualifiedName) {
-        return WRAPPER_NAME_TO_PRIMITIVE_TYPES.get( fullyQualifiedName );
+    public static boolean isNative(String fullyQualifiedName) {
+        return ANALYZERS.containsKey( fullyQualifiedName );
     }
 
     public static boolean isNumber(Class<?> clazz) {
@@ -325,174 +492,18 @@ public class NativeTypes {
 
     /**
      *
-     * @param kind typeKind
-     * @param literal literal
-     * @param utils type util for constructing literal type
-     * @return literal type when the literal is a proper literal for the provided kind.
+     * @param className FQN of the literal native class
+     * @param literal literal to verify
+     * @return literal class when the literal is a proper literal for the provided kind.
+     * @throws IllegalArgumentException when the literal does not match to the provided native type className
      */
-    public static TypeMirror getLiteral(TypeKind kind, String literal, Types utils ) {
-        LiteralAnalyzer analyzer = ANALYZERS.get( kind );
-        TypeMirror result = null;
-        if ( analyzer != null && analyzer.validate( literal ) ) {
-            result = analyzer.getLiteral( utils );
+    public static Class<?> getLiteral(String className, String literal) {
+        LiteralAnalyzer analyzer = ANALYZERS.get( className );
+        Class result = null;
+        if ( analyzer != null ) {
+            analyzer.validate( literal );
+            result = analyzer.getLiteral();
         }
         return result;
     }
-
-    @SuppressWarnings( "checkstyle:MethodLength" )
-    private static Map<TypeKind, LiteralAnalyzer> initAnalyzers() {
-        Map<TypeKind, LiteralAnalyzer> result = new EnumMap<TypeKind, LiteralAnalyzer>(TypeKind.class);
-        result.put( TypeKind.BOOLEAN, new LiteralAnalyzer() {
-            @Override
-            public boolean validate( String s) {
-                return "true".equals( s ) || "false".equals( s );
-            }
-
-            @Override
-            public TypeMirror getLiteral(Types types) {
-                return types.getPrimitiveType( TypeKind.BOOLEAN );
-            }
-        } );
-        result.put( TypeKind.CHAR, new LiteralAnalyzer() {
-            @Override
-            public boolean validate( String s) {
-                return s.length() == 3 && s.startsWith( "'" ) && s.endsWith( "'" );
-            }
-
-            @Override
-            public TypeMirror getLiteral(Types types) {
-                return types.getPrimitiveType( TypeKind.CHAR );
-            }
-        } );
-        result.put( TypeKind.BYTE, new LiteralAnalyzer() {
-            @Override
-            public boolean validate( String s) {
-                NumberRepresentation br = new NumberRepresentation( s, true, false, false ) {
-
-                    @Override
-                    boolean parse(String val, int radix) {
-                        Byte.parseByte( val, radix );
-                        return true;
-                    }
-                };
-                return br.validate();
-            }
-
-            @Override
-            public TypeMirror getLiteral(Types types) {
-                return types.getPrimitiveType( TypeKind.INT );
-            }
-        } );
-        result.put( TypeKind.DOUBLE, new LiteralAnalyzer() {
-            @Override
-            public boolean validate( String s) {
-                NumberRepresentation br = new NumberRepresentation( s, false, false, false ) {
-
-                    @Override
-                    boolean parse(String val, int radix) {
-                        Double d = Double.parseDouble( radix == 16 ? "0x" + val : val );
-                        return !d.isInfinite() && !doubleHasBecomeZero( d );
-                    }
-                };
-                return br.validate();
-            }
-
-            @Override
-            public TypeMirror getLiteral(Types types) {
-                return types.getPrimitiveType( TypeKind.FLOAT );
-            }
-        } );
-        result.put( TypeKind.FLOAT, new LiteralAnalyzer() {
-            @Override
-            public boolean validate( String s) {
-
-                NumberRepresentation br = new NumberRepresentation( s, false, false, true ) {
-                    @Override
-                    boolean parse(String val, int radix) {
-                        Float f = Float.parseFloat( radix == 16 ? "0x" + val : val );
-                        return !f.isInfinite() && !floatHasBecomeZero( f );
-                    }
-                };
-                return br.validate();
-            }
-
-            @Override
-            public TypeMirror getLiteral(Types types) {
-                return types.getPrimitiveType( TypeKind.FLOAT );
-            }
-        } );
-        result.put( TypeKind.INT, new LiteralAnalyzer() {
-            @Override
-            public boolean validate( String s) {
-                NumberRepresentation br = new NumberRepresentation( s, true, false, false ) {
-
-                    @Override
-                    boolean parse(String val, int radix) {
-                        if ( radix == 10 ) {
-                            // when decimal: treat like signed
-                            Integer.parseInt( val, radix );
-                            return true;
-                        }
-                        else {
-                            // when binary, octal or hex: treat like unsigned
-                            return new BigInteger( val, radix ).bitLength() <= 32;
-                        }
-                    }
-                };
-                return br.validate();
-            }
-
-            @Override
-            public TypeMirror getLiteral(Types types) {
-                return types.getPrimitiveType( TypeKind.INT );
-            }
-        } );
-        result.put( TypeKind.LONG, new LiteralAnalyzer() {
-            @Override
-            public boolean validate(String s) {
-                NumberRepresentation br = new NumberRepresentation( s, true, true, false ) {
-
-                    @Override
-                    boolean parse(String val, int radix) {
-                        if ( radix == 10 ) {
-                            // when decimal: treat like signed
-                            Long.parseLong( val, radix );
-                            return true;
-                        }
-                        else {
-                            // when binary, octal or hex: treat like unsigned
-                            return new BigInteger( val, radix ).bitLength() <= 64;
-                        }
-                    }
-                };
-                return br.validate();
-            }
-
-            @Override
-            public TypeMirror getLiteral(Types types) {
-                return types.getPrimitiveType( TypeKind.INT );
-            }
-        } );
-        result.put( TypeKind.SHORT, new LiteralAnalyzer() {
-            @Override
-            public boolean validate( String s) {
-                NumberRepresentation br = new NumberRepresentation( s, true, false, false ) {
-
-                    @Override
-                    boolean parse(String val, int radix) {
-                        Short.parseShort( val, radix );
-                        return true;
-                    }
-                };
-                return br.validate();
-            }
-
-            @Override
-            public TypeMirror getLiteral(Types types) {
-                return types.getPrimitiveType( TypeKind.INT );
-            }
-        } );
-        return result;
-    }
-
 }

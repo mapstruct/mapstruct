@@ -62,6 +62,7 @@ import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.D
 import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
+import org.mapstruct.ap.internal.util.NativeTypes;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -761,12 +762,22 @@ public class PropertyMapping extends ModelElement {
         public PropertyMapping build() {
             // source
             String sourceErrorMessagePart = "constant '" + constantExpression + "'";
+            String errorMessageDetails = null;
 
-            Type sourceType = ctx.getTypeFactory().getTypeForConstant( targetType, constantExpression );
-            if ( String.class.getCanonicalName().equals( sourceType.getFullyQualifiedName() ) ) {
-                // convert to string
-                constantExpression = "\"" + constantExpression + "\"";
+            Class<?> baseForLiteral = null;
+            try {
+                baseForLiteral = NativeTypes.getLiteral( targetType.getFullyQualifiedName(), constantExpression );
             }
+            catch ( IllegalArgumentException ex ) {
+                errorMessageDetails = ex.getMessage();
+            }
+
+            //  the constant is not a primitive literal, assume it to be a String
+            if ( baseForLiteral == null ) {
+                constantExpression = "\"" + constantExpression + "\"";
+                baseForLiteral = String.class;
+            }
+            Type sourceType = ctx.getTypeFactory().getTypeForLiteral( baseForLiteral );
 
             Assignment assignment = null;
             if ( !targetType.isEnumType() ) {
@@ -822,7 +833,7 @@ public class PropertyMapping extends ModelElement {
                                                                        );
                 }
             }
-            else {
+            else if ( errorMessageDetails == null ) {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
                     mirror,
@@ -831,6 +842,18 @@ public class PropertyMapping extends ModelElement {
                     constantExpression,
                     targetType,
                     targetPropertyName
+                );
+            }
+            else {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    mirror,
+                    Message.CONSTANTMAPPING_MAPPING_NOT_FOUND_WITH_DETAILS,
+                    sourceType,
+                    constantExpression,
+                    targetType,
+                    targetPropertyName,
+                    errorMessageDetails
                 );
             }
 

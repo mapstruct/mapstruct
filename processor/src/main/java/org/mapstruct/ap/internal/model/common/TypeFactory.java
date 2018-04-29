@@ -61,7 +61,6 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderInfo;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
-import org.mapstruct.ap.internal.util.NativeTypes;
 
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withInitialCapacity;
@@ -119,6 +118,11 @@ public class TypeFactory {
         );
     }
 
+    public Type getTypeForLiteral(Class<?> type) {
+        return type.isPrimitive() ? getType( getPrimitiveType( type ), true )
+            : getType( type.getCanonicalName(), true );
+    }
+
     public Type getType(Class<?> type) {
         return type.isPrimitive() ? getType( getPrimitiveType( type ) ) : getType( type.getCanonicalName() );
     }
@@ -127,7 +131,7 @@ public class TypeFactory {
         return getType( canonicalName, false );
     }
 
-    private Type getType(String canonicalName, boolean isOriginatedFromConstant) {
+    private Type getType(String canonicalName, boolean isLiteral) {
         TypeElement typeElement = elementUtils.getTypeElement( canonicalName );
 
         if ( typeElement == null ) {
@@ -136,30 +140,9 @@ public class TypeFactory {
             );
         }
 
-        return getType( typeElement, isOriginatedFromConstant );
+        return getType( typeElement, isLiteral );
     }
 
-    public Type getTypeForConstant(Type targetType, String literal) {
-        Type result = null;
-        TypeMirror baseForLiteral = null;
-        if ( targetType.isNative() ) {
-            TypeKind kind;
-            if ( targetType.isBoxed() ) {
-                kind = NativeTypes.getWrapperKind( targetType.getFullyQualifiedName() );
-            }
-            else {
-                kind = targetType.getTypeMirror().getKind();
-            }
-            baseForLiteral = NativeTypes.getLiteral( kind, literal, typeUtils );
-        }
-        if ( baseForLiteral != null ) {
-            result = getType( baseForLiteral, true );
-        }
-        else {
-            result = getType( String.class.getCanonicalName(), true );
-        }
-        return result;
-    }
 
     /**
      * Determines if the type with the given full qualified name is part of the classpath
@@ -181,18 +164,18 @@ public class TypeFactory {
     }
 
     public Type getType(TypeElement typeElement) {
-        return getType( typeElement.asType() );
+        return getType( typeElement.asType(), false );
     }
 
-    private Type getType(TypeElement typeElement, boolean originatedFromConstant) {
-        return getType( typeElement.asType(), originatedFromConstant );
+    private Type getType(TypeElement typeElement, boolean isLiteral) {
+        return getType( typeElement.asType(), isLiteral );
     }
 
     public Type getType(TypeMirror mirror) {
         return getType( mirror, false );
     }
 
-    private Type getType(TypeMirror mirror, boolean originatedFromConstant) {
+    private Type getType(TypeMirror mirror, boolean isLiteral) {
         if ( !canBeProcessed( mirror ) ) {
             throw new TypeHierarchyErroneousException( mirror );
         }
@@ -213,7 +196,6 @@ public class TypeFactory {
         TypeElement typeElement;
         Type componentType;
         boolean isImported;
-        boolean isBoxed = false;
 
         if ( mirror.getKind() == TypeKind.DECLARED ) {
             DeclaredType declaredType = (DeclaredType) mirror;
@@ -235,7 +217,6 @@ public class TypeFactory {
 
             componentType = null;
             isImported = isImported( name, qualifiedName );
-            isBoxed = NativeTypes.isWrapped( qualifiedName );
         }
         else if ( mirror.getKind() == TypeKind.ARRAY ) {
             TypeMirror componentTypeMirror = getComponentType( mirror );
@@ -298,8 +279,7 @@ public class TypeFactory {
             isMapType,
             isStreamType,
             isImported,
-            isBoxed,
-            originatedFromConstant
+            isLiteral
         );
     }
 
@@ -513,8 +493,7 @@ public class TypeFactory {
                 implementationType.isMapType(),
                 implementationType.isStreamType(),
                 isImported( implementationType.getName(), implementationType.getFullyQualifiedName() ),
-                implementationType.isBoxed(),
-                implementationType.hasOriginatedFromConstant()
+                implementationType.isLiteral()
             );
             return implementation.createNew( replacement );
         }

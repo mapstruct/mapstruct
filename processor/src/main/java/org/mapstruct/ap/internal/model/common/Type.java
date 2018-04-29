@@ -52,6 +52,7 @@ import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
 import org.mapstruct.ap.spi.BuilderInfo;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
+import org.mapstruct.ap.internal.util.NativeTypes;
 
 /**
  * Represents (a reference to) the type of a bean property, parameter etc. Types are managed per generated source file.
@@ -90,8 +91,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isImported;
     private final boolean isVoid;
     private final boolean isStream;
-    private final boolean isBoxed;
-    private final boolean isOriginatedFromConstant;
+    private final boolean isLiteral;
 
     private final List<String> enumConstants;
 
@@ -116,7 +116,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported,
-                boolean isBoxed, boolean isOriginatedFromConstant ) {
+                boolean isLiteral ) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
@@ -141,8 +141,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isStream = isStreamType;
         this.isImported = isImported;
         this.isVoid = typeMirror.getKind() == TypeKind.VOID;
-        this.isBoxed = isBoxed;
-        this.isOriginatedFromConstant = isOriginatedFromConstant;
+        this.isLiteral = isLiteral;
 
         if ( isEnumType ) {
             enumConstants = new ArrayList<String>();
@@ -403,8 +402,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             isMapType,
             isStream,
             isImported,
-            isBoxed,
-            isOriginatedFromConstant
+            isLiteral
         );
     }
 
@@ -937,20 +935,16 @@ public class Type extends ModelElement implements Comparable<Type> {
         return null;
     }
 
-    public boolean isBoxed() {
-        return isBoxed;
-    }
-
     /**
      * All primitive types and their corresponding boxed types are considered native.
      * @return true when native.
      */
     public boolean isNative() {
-        return isBoxed() || isPrimitive();
+        return NativeTypes.isNative( qualifiedName );
     }
 
-    public boolean hasOriginatedFromConstant() {
-        return isOriginatedFromConstant;
+    public boolean isLiteral() {
+        return isLiteral;
     }
 
 }

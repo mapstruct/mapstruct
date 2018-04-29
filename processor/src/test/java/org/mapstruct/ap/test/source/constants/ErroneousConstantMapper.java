@@ -19,6 +19,7 @@
 
 package org.mapstruct.ap.test.source.constants;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -29,23 +30,19 @@ import org.mapstruct.factory.Mappers;
  * @author Sjaak Derksen
  */
 @Mapper
-public interface NumericMapper {
+public interface ErroneousConstantMapper {
 
-    NumericMapper INSTANCE = Mappers.getMapper( NumericMapper.class );
+    ErroneousConstantMapper INSTANCE = Mappers.getMapper( ErroneousConstantMapper.class );
 
+    @BeanMapping( ignoreByDefault = true )
     @Mappings({
-        @Mapping(target = "byteValue", constant = "20"),
-        @Mapping(target = "byteBoxed", constant = "-128"),
-        @Mapping(target = "shortValue", constant = "1996"),
-        @Mapping(target = "shortBoxed", constant = "-1996"),
-        @Mapping(target = "intValue", constant = "-03777777"),
-        @Mapping(target = "intBoxed", constant = "15"),
-        @Mapping(target = "longValue", constant = "0x7fffffffffffffffL"),
-        @Mapping(target = "longBoxed", constant = "0xCAFEBABEL"),
-        @Mapping(target = "floatValue", constant = "1.40e-45f"),
-        @Mapping(target = "floatBoxed", constant = "3.4028235e38f"),
-        @Mapping(target = "doubleValue", constant = "1e137"),
-        @Mapping(target = "doubleBoxed", constant = "0x0.001P-1062d"),
+        @Mapping(target = "booleanValue", constant = "zz"),
+        @Mapping(target = "charValue", constant = "'ba'"),
+        @Mapping(target = "byteValue", constant = "200"),
+        @Mapping(target = "intValue", constant = "0xFFFF_FFFF_FFFF"),
+        @Mapping(target = "longValue", constant = "1"),
+        @Mapping(target = "floatValue", constant = "1.40e-_45f"),
+        @Mapping(target = "doubleValue", constant = "1e-137000")
     })
-    NumericTarget mapFromConstants( String dummy );
+    ConstantsTarget mapFromConstants( String dummy );
 }

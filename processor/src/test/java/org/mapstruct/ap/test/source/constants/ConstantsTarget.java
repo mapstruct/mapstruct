@@ -23,8 +23,12 @@ package org.mapstruct.ap.test.source.constants;
  *
  * @author Sjaak Derksen
  */
-public class NumericTarget {
+public class ConstantsTarget {
 
+    private boolean booleanValue;
+    private Boolean booleanBoxed;
+    private char charValue;
+    private Character charBoxed;
     private byte byteValue;
     private Byte byteBoxed;
     private short shortValue;
@@ -37,6 +41,39 @@ public class NumericTarget {
     private Float floatBoxed;
     private double doubleValue;
     private Double doubleBoxed;
+    private Double doubleBoxedZero;
+
+    public boolean isBooleanValue() {
+        return booleanValue;
+    }
+
+    public void setBooleanValue(boolean booleanValue) {
+        this.booleanValue = booleanValue;
+    }
+
+    public Boolean getBooleanBoxed() {
+        return booleanBoxed;
+    }
+
+    public void setBooleanBoxed(Boolean booleanBoxed) {
+        this.booleanBoxed = booleanBoxed;
+    }
+
+    public char getCharValue() {
+        return charValue;
+    }
+
+    public void setCharValue(char charValue) {
+        this.charValue = charValue;
+    }
+
+    public Character getCharBoxed() {
+        return charBoxed;
+    }
+
+    public void setCharBoxed(Character charBoxed) {
+        this.charBoxed = charBoxed;
+    }
 
     public byte getByteValue() {
         return byteValue;
@@ -132,6 +169,14 @@ public class NumericTarget {
 
     public void setDoubleBoxed(Double doubleBoxed) {
         this.doubleBoxed = doubleBoxed;
+    }
+
+    public Double getDoubleBoxedZero() {
+        return doubleBoxedZero;
+    }
+
+    public void setDoubleBoxedZero(Double doubleBoxedZero) {
+        this.doubleBoxedZero = doubleBoxedZero;
     }
 
 }
