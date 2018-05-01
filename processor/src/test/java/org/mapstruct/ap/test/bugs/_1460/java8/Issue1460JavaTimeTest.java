@@ -16,12 +16,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._1460;
+package org.mapstruct.ap.test.bugs._1460.java8;
 
-import java.util.Date;
-import java.util.Locale;
+import java.time.LocalDate;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -34,34 +32,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Bandowski
  */
 @WithClasses({
-    Issue1460Mapper.class,
+    Issue1460JavaTimeMapper.class,
     Source.class,
     Target.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1460")
-public class Issue1460Test {
+public class Issue1460JavaTimeTest {
 
     @Test
     public void shouldTestMappingLocalDates() {
-        long dateInMs = 1524693600000L;
         String dateAsString = "2018-04-26";
-        String dateTimeAsString = dateAsString + "T00:00:00+00:00";
 
         Source source = new Source();
-        source.setStringToEnum( "OK" );
-        source.setDateToJodaDateTime( new Date( dateInMs ) );
-        source.setJodaDateTimeToCalendar( DateTime.parse( dateTimeAsString ) );
+        source.setStringToJavaLocalDate( dateAsString );
 
-        Target target = Issue1460Mapper.INSTANCE.map( source );
+        Target target = Issue1460JavaTimeMapper.INSTANCE.map( source );
 
         assertThat( target ).isNotNull();
-        assertThat( target.getStringToEnum() ).isEqualTo( Target.Issue1460Enum.OK );
-        assertThat( target.getDateToJodaDateTime() ).isEqualTo(
-            new DateTime( new Date( dateInMs ) )
-        );
-        assertThat( target.getJodaDateTimeToCalendar().getTimeInMillis() ).isEqualTo(
-            DateTime.parse( dateTimeAsString ).toCalendar( Locale.getDefault() ).getTimeInMillis()
-        );
+        assertThat( target.getStringToJavaLocalDate() ).isEqualTo( LocalDate.parse( dateAsString ) );
     }
 }

@@ -26,6 +26,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.NativeTypes;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigInteger;
 
 /**
  * Conversion between {@link BigInteger} and wrappers of native number types.
@@ -62,9 +63,5 @@ public class BigIntegerToWrapperConversion extends SimpleConversion {
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return asSet( conversionContext.getTypeFactory().getType( BigInteger.class ) );
-    }
-
-    private String bigInteger(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( BigInteger.class ).getReferenceName();
     }
 }

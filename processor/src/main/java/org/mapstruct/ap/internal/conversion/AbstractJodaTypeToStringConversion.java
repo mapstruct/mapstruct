@@ -27,6 +27,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.dateTimeFormat;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
 
 /**
  * Base class for conversions between Joda-Time types and String.
@@ -111,14 +113,6 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
             + ".patternForStyle( \"" + formatStyle() + "\", "
             + locale( conversionContext )
             + ".getDefault() )";
-    }
-
-    private String dateTimeFormat(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( JodaTimeConstants.DATE_TIME_FORMAT_FQN ).getReferenceName();
-    }
-
-    private String locale(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( Locale.class ).getReferenceName();
     }
 
     /**

@@ -18,13 +18,14 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.math.BigDecimal;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigDecimal;
 
 /**
  * Conversion between {@link BigDecimal} and native number types.
@@ -56,9 +57,5 @@ public class BigDecimalToPrimitiveConversion extends SimpleConversion {
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return asSet( conversionContext.getTypeFactory().getType( BigDecimal.class ) );
-    }
-
-    private String bigDecimal(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( BigDecimal.class ).getReferenceName();
     }
 }

@@ -25,6 +25,8 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
 
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.currency;
+
 /**
  * @author Darren Rambaud
  */
@@ -42,9 +44,5 @@ public class CurrencyToStringConversion extends SimpleConversion {
     @Override
     protected Set<Type> getFromConversionImportTypes(final ConversionContext conversionContext) {
         return Collections.asSet( conversionContext.getTypeFactory().getType( Currency.class ) );
-    }
-
-    private String currency(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( Currency.class ).getReferenceName();
     }
 }

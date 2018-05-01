@@ -18,7 +18,6 @@
  */
 package org.mapstruct.ap.test.bugs._1460;
 
-import java.time.LocalDate;
 import java.util.Calendar;
 
 import org.joda.time.DateTime;
@@ -30,7 +29,6 @@ public class Target {
 
     private Issue1460Enum stringToEnum;
     private Calendar jodaDateTimeToCalendar;
-    private LocalDate stringToJavaLocalDate;
     private DateTime dateToJodaDateTime;
 
     public Issue1460Enum getStringToEnum() {
@@ -47,14 +45,6 @@ public class Target {
 
     public void setJodaDateTimeToCalendar(Calendar jodaDateTimeToCalendar) {
         this.jodaDateTimeToCalendar = jodaDateTimeToCalendar;
-    }
-
-    public LocalDate getStringToJavaLocalDate() {
-        return stringToJavaLocalDate;
-    }
-
-    public void setStringToJavaLocalDate(LocalDate stringToJavaLocalDate) {
-        this.stringToJavaLocalDate = stringToJavaLocalDate;
     }
 
     public DateTime getDateToJodaDateTime() {

@@ -16,38 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._1460;
-
-import java.util.Date;
-
-import org.joda.time.DateTime;
+package org.mapstruct.ap.test.bugs._1460.java8;
 
 public class Source {
-    private String stringToEnum;
-    private DateTime jodaDateTimeToCalendar;
-    private Date dateToJodaDateTime;
+    private String stringToJavaLocalDate;
 
-    public String getStringToEnum() {
-        return stringToEnum;
+    public String getStringToJavaLocalDate() {
+        return stringToJavaLocalDate;
     }
 
-    public void setStringToEnum(String stringToEnum) {
-        this.stringToEnum = stringToEnum;
+    public void setStringToJavaLocalDate(String stringToJavaLocalDate) {
+        this.stringToJavaLocalDate = stringToJavaLocalDate;
     }
 
-    public DateTime getJodaDateTimeToCalendar() {
-        return jodaDateTimeToCalendar;
-    }
-
-    public void setJodaDateTimeToCalendar(DateTime jodaDateTimeToCalendar) {
-        this.jodaDateTimeToCalendar = jodaDateTimeToCalendar;
-    }
-
-    public Date getDateToJodaDateTime() {
-        return dateToJodaDateTime;
-    }
-
-    public void setDateToJodaDateTime(Date dateToJodaDateTime) {
-        this.dateToJodaDateTime = dateToJodaDateTime;
-    }
 }

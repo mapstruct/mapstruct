@@ -32,6 +32,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 
 import static java.util.Arrays.asList;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.simpleDateFormat;
 
 /**
  * Conversion between {@link String} and {@link Date}.
@@ -77,9 +78,5 @@ public class DateToStringConversion implements ConversionProvider {
         conversionString.append( "( <SOURCE> )" );
 
         return conversionString.toString();
-    }
-
-    private String simpleDateFormat(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( SimpleDateFormat.class ).getReferenceName();
     }
 }

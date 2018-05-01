@@ -29,6 +29,8 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigDecimal;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigInteger;
 
 /**
  * Conversion between {@link BigInteger} and {@link String}.
@@ -97,13 +99,5 @@ public class BigIntegerToStringConversion extends AbstractNumberToStringConversi
         }
 
         sb.append( " )" );
-    }
-
-    private String bigInteger(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( BigInteger.class ).getReferenceName();
-    }
-
-    private String bigDecimal(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( BigDecimal.class ).getReferenceName();
     }
 }

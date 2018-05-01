@@ -39,20 +39,14 @@ public class EnumStringConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        return enumType( conversionContext )
-            + ".valueOf( " + conversionContext.getTargetType().getReferenceName()
+        return "Enum.valueOf( " + conversionContext.getTargetType().getReferenceName()
             + ".class, <SOURCE> )";
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return asSet(
-            conversionContext.getTypeFactory().getType( Enum.class ),
             conversionContext.getTargetType()
         );
-    }
-
-    private String enumType(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( Enum.class ).getReferenceName();
     }
 }

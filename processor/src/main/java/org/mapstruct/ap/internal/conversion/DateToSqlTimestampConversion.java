@@ -25,6 +25,8 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
 
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.timestamp;
+
 /**
  * Conversion between {@link java.util.Date} and {@link java.sql.Timestamp}.
  *
@@ -45,9 +47,5 @@ public class DateToSqlTimestampConversion extends SimpleConversion {
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
         return "<SOURCE>";
-    }
-
-    private String timestamp(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( Timestamp.class ).getReferenceName();
     }
 }

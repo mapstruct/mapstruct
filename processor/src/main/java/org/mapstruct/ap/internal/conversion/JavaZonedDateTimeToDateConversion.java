@@ -18,14 +18,18 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
+
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.date;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.zoneId;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.zonedDateTime;
+import static org.mapstruct.ap.internal.util.JavaTimeConstants.ZONED_DATE_TIME_FQN;
+import static org.mapstruct.ap.internal.util.JavaTimeConstants.ZONE_ID_FQN;
 
 /**
  * SimpleConversion for mapping {@link java.time.ZonedDateTime} to
@@ -57,20 +61,8 @@ public class JavaZonedDateTimeToDateConversion extends SimpleConversion {
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return Collections.asSet(
-            conversionContext.getTypeFactory().getType( ZonedDateTime.class ),
-            conversionContext.getTypeFactory().getType( ZoneId.class )
+            conversionContext.getTypeFactory().getType( ZONED_DATE_TIME_FQN ),
+            conversionContext.getTypeFactory().getType( ZONE_ID_FQN )
         );
-    }
-
-    private String date(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( Date.class ).getReferenceName();
-    }
-
-    private String zonedDateTime(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( ZonedDateTime.class ).getReferenceName();
-    }
-
-    private String zoneId(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( ZoneId.class ).getReferenceName();
     }
 }

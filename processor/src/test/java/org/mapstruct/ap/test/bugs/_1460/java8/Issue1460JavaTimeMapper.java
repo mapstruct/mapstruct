@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.bugs._1460;
+package org.mapstruct.ap.test.bugs._1460.java8;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -25,29 +25,14 @@ import org.mapstruct.factory.Mappers;
  * @author Christian Bandowski
  */
 @Mapper
-public abstract class Issue1460Mapper {
+public abstract class Issue1460JavaTimeMapper {
 
-    public static final Issue1460Mapper INSTANCE = Mappers.getMapper( Issue1460Mapper.class );
+    public static final Issue1460JavaTimeMapper INSTANCE = Mappers.getMapper( Issue1460JavaTimeMapper.class );
 
     public abstract Target map(Source source);
 
-    public abstract String forceUsageOfIssue1460Enum(Issue1460Enum source);
-
-    public abstract String forceUsageOfLocale(Locale source);
-
     public abstract String forceUsageOfLocalDate(LocalDate source);
 
-    public abstract String forceUsageOfDateTime(DateTime source);
-
-    public static class Issue1460Enum {
-    }
-
-    public static class Locale {
-    }
-
     public static class LocalDate {
-    }
-
-    public static class DateTime {
     }
 }

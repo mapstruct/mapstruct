@@ -26,6 +26,7 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
 
 /**
  * Conversion between {@code DateTime} and {@link Calendar}.
@@ -52,9 +53,5 @@ public class JodaDateTimeToCalendarConversion extends SimpleConversion {
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return asSet( conversionContext.getTargetType() );
-    }
-
-    private String locale(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( Locale.class ).getReferenceName();
     }
 }

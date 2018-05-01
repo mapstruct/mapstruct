@@ -40,7 +40,6 @@ public abstract class AbstractNumberToStringConversion extends SimpleConversion 
     private final boolean sourceTypeNumberSubclass;
 
     public AbstractNumberToStringConversion(boolean sourceTypeNumberSubclass) {
-
         this.sourceTypeNumberSubclass = sourceTypeNumberSubclass;
     }
 
@@ -76,9 +75,5 @@ public abstract class AbstractNumberToStringConversion extends SimpleConversion 
         else {
             return super.getFromConversionExceptionTypes( conversionContext );
         }
-    }
-
-    protected String decimalFormat(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory().getType( DecimalFormat.class ).getReferenceName();
     }
 }

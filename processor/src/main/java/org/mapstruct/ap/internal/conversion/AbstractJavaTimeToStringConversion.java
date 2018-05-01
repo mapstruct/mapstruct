@@ -52,12 +52,12 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
 
     private String dateTimeFormatter(ConversionContext conversionContext) {
         if ( !Strings.isEmpty( conversionContext.getDateFormat() ) ) {
-            return dateTimeFormatterType( conversionContext )
+            return ConversionUtils.dateTimeFormatter( conversionContext )
                 + ".ofPattern( \"" + conversionContext.getDateFormat()
                 + "\" )";
         }
         else {
-            return dateTimeFormatterType( conversionContext ) + "." + defaultFormatterSuffix();
+            return ConversionUtils.dateTimeFormatter( conversionContext ) + "." + defaultFormatterSuffix();
         }
     }
 
@@ -101,9 +101,4 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
         return Collections.asSet( conversionContext.getTargetType() );
     }
 
-    protected String dateTimeFormatterType(ConversionContext conversionContext) {
-        return conversionContext.getTypeFactory()
-            .getType( JavaTimeConstants.DATE_TIME_FORMATTER_FQN )
-            .getReferenceName();
-    }
 }

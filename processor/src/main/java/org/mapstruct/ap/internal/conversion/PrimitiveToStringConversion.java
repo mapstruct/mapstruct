@@ -27,6 +27,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.decimalFormat;
+
 /**
  * Conversion between primitive types such as {@code byte} or {@code long} and
  * {@link String}.
