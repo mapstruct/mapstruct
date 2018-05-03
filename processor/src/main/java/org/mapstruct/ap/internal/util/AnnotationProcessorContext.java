@@ -43,14 +43,30 @@ public class AnnotationProcessorContext {
 
     private List<AstModifyingAnnotationProcessor> astModifyingAnnotationProcessors;
 
-    private final BuilderProvider builderProvider;
-    private final AccessorNamingStrategy accessorNamingStrategy;
+    private BuilderProvider builderProvider;
+    private AccessorNamingStrategy accessorNamingStrategy;
+    private boolean initialized;
 
     private AccessorNamingUtils accessorNaming;
+    private Elements elementUtils;
 
     public AnnotationProcessorContext(Elements elementUtils) {
         astModifyingAnnotationProcessors = java.util.Collections.unmodifiableList(
                 findAstModifyingAnnotationProcessors() );
+        this.elementUtils = elementUtils;
+    }
+
+    /**
+     * Method for initializing the context with the SPIs. The reason why we do this is due to the fact that
+     * when custom SPI implementations are done and users don't set {@code proc:none} then our processor
+     * would be triggered. And this context will always get initialized and the SPI won't be found. However,
+     * if this is lazily evaluated it won't be a problem, as in the SPI implementation module there won't be any
+     * processing done.
+     */
+    private void initialize() {
+        if ( initialized ) {
+            return;
+        }
 
         AccessorNamingStrategy defaultAccessorNamingStrategy;
         BuilderProvider defaultBuilderProvider;
@@ -66,6 +82,7 @@ public class AnnotationProcessorContext {
         this.accessorNamingStrategy = Services.get( AccessorNamingStrategy.class, defaultAccessorNamingStrategy );
         this.builderProvider = Services.get( BuilderProvider.class, defaultBuilderProvider );
         this.accessorNaming = new AccessorNamingUtils( this.accessorNamingStrategy );
+        this.initialized = true;
     }
 
     private static List<AstModifyingAnnotationProcessor> findAstModifyingAnnotationProcessors() {
@@ -87,14 +104,17 @@ public class AnnotationProcessorContext {
     }
 
     public AccessorNamingUtils getAccessorNaming() {
+        initialize();
         return accessorNaming;
     }
 
     public AccessorNamingStrategy getAccessorNamingStrategy() {
+        initialize();
         return accessorNamingStrategy;
     }
 
     public BuilderProvider getBuilderProvider() {
+        initialize();
         return builderProvider;
     }
 }
