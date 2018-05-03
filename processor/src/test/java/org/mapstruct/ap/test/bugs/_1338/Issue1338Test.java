@@ -43,11 +43,17 @@ public class Issue1338Test {
 
     @Test
     public void shouldCorrectlyUseAdder() {
-        Target target = Issue1338Mapper.INSTANCE.map( new Source( Arrays.asList( "first", "second" ) ) );
+        Source source = new Source();
+        source.setProperties( Arrays.asList( "first", "second" ) );
+        Target target = Issue1338Mapper.INSTANCE.map( source );
 
         assertThat( target )
             .extracting( "properties" )
             .contains( Arrays.asList( "first", "second" ), atIndex( 0 ) );
 
+        Source mapped = Issue1338Mapper.INSTANCE.map( target );
+
+        assertThat( mapped.getProperties() )
+            .containsExactly( "first", "second" );
     }
 }

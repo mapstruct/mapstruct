@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.test.bugs._1338;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,13 +26,20 @@ import java.util.List;
  */
 public class Source {
 
-    private final List<String> properties;
+    private List<String> properties;
 
-    public Source(List<String> properties) {
-        this.properties = properties;
+    public void addProperty(String property) {
+        if ( properties == null ) {
+            properties = new ArrayList<String>();
+        }
+        properties.add( property );
     }
 
     public List<String> getProperties() {
         return properties;
+    }
+
+    public void setProperties(List<String> properties) {
+        this.properties = properties;
     }
 }
