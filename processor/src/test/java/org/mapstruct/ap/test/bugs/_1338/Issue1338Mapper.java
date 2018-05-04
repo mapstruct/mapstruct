@@ -31,4 +31,6 @@ public interface Issue1338Mapper {
     Issue1338Mapper INSTANCE = Mappers.getMapper( Issue1338Mapper.class );
 
     Target map(Source source);
+
+    Source map(Target target);
 }

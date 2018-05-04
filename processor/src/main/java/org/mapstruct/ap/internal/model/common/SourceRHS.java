@@ -18,11 +18,14 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.util.Strings;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * SourceRHS Assignment. Right Hand Side (RHS), source part of the assignment.
@@ -135,7 +138,7 @@ public class SourceRHS extends ModelElement implements Assignment {
      */
     public Type getSourceTypeForMatching() {
         return useElementAsSourceTypeForMatching && sourceType.isCollectionType() ?
-            sourceType.getTypeParameters().get( 0 ) : sourceType;
+            first( sourceType.determineTypeArguments( Collection.class ) ) : sourceType;
     }
 
     /**

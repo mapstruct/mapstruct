@@ -35,6 +35,10 @@ public class Target {
         throw new IllegalStateException( "Setter is there just as a marker it should not be used" );
     }
 
+    public StringList getProperties() {
+        return properties;
+    }
+
     public static class StringList extends ArrayList<String> {
 
         private StringList() {

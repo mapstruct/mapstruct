@@ -19,6 +19,7 @@
 package org.mapstruct.ap.internal.model.assignment;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,8 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Nouns;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Wraps the assignment in a target setter.
@@ -35,6 +38,7 @@ import org.mapstruct.ap.internal.util.Nouns;
 public class AdderWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
+    private final Type adderType;
 
     public AdderWrapper( Assignment rhs,
                          List<Type> thrownTypesToExclude,
@@ -44,6 +48,7 @@ public class AdderWrapper extends AssignmentWrapper {
         this.thrownTypesToExclude = thrownTypesToExclude;
         String desiredName = Nouns.singularize( targetPropertyName );
         rhs.setSourceLocalVarName( rhs.createLocalVarName( desiredName ) );
+        adderType = first( getSourceType().determineTypeArguments( Collection.class ) );
     }
 
     @Override
@@ -60,11 +65,15 @@ public class AdderWrapper extends AssignmentWrapper {
         return result;
     }
 
+    public Type getAdderType() {
+        return adderType;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> imported = new HashSet<Type>();
         imported.addAll( super.getImportTypes() );
-        imported.add( getSourceType().getTypeParameters().get( 0 ).getTypeBound() );
+        imported.add( adderType.getTypeBound() );
         return imported;
     }
 
