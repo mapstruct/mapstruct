@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.tools.Diagnostic;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
@@ -149,5 +151,43 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             targetType,
             sourceType
         );
+    }
+
+    /**
+     * Report message
+     *
+     * @param method the method that should be mapped
+     * @param message message to report
+     *
+     * @return true when its an error
+     *
+     */
+    boolean checkForTypeConversionError(Method method, Assignment assignment) {
+        return checkForTypeConversionError( method, null, assignment );
+    }
+
+    /**
+     * Report message
+     *
+     * @param method the method that should be mapped
+     * @param posHint position hing
+     * @param message message to report
+     *
+     * @return true when its an error
+     *
+     */
+    boolean checkForTypeConversionError(Method method, AnnotationMirror posHint, Assignment assignment) {
+
+        Assignment.AssignmentMessage message = assignment.getErrorMessage();
+        if ( message != null ) {
+            ctx.getMessager().printMessage(
+                method.getExecutable(),
+                posHint,
+                message.getMessage(),
+                message.getArgs()
+            );
+            return message.getMessage().getDiagnosticKind() == Diagnostic.Kind.ERROR;
+        }
+        return false;
     }
 }

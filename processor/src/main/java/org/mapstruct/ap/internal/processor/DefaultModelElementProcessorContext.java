@@ -131,10 +131,15 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
 
         @Override
         public void printMessage(Element e, AnnotationMirror a, Message msg, Object... args) {
-            String message = String.format( msg.getDescription(), args );
-            delegate.printMessage( msg.getDiagnosticKind(), message, e, a );
-            if ( msg.getDiagnosticKind() == Kind.ERROR ) {
-                isErroneous = true;
+            if ( a == null ) {
+                printMessage( e, msg, args );
+            }
+            else {
+                String message = String.format( msg.getDescription(), args );
+                delegate.printMessage( msg.getDiagnosticKind(), message, e, a );
+                if ( msg.getDiagnosticKind() == Kind.ERROR ) {
+                    isErroneous = true;
+                }
             }
         }
 

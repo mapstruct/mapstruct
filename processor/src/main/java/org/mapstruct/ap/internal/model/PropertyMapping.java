@@ -347,6 +347,7 @@ public class PropertyMapping extends ModelElement {
                 else {
                     assignment = assignToPlain( targetType, targetWriteAccessorType, assignment );
                 }
+                checkForTypeConversionError( method, mirror, assignment );
             }
             else {
                 reportCannotCreateMapping();

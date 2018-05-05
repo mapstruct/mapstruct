@@ -16,35 +16,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.conversion;
+package org.mapstruct.ap.test.conversion.lossy;
 
-import org.mapstruct.ap.internal.model.common.ConversionContext;
+import java.math.BigInteger;
 
 /**
- * Conversion between primitive types such as {@code byte} or {@code long}.
  *
- * @author Gunnar Morling
+ * @author Sjaak Derksen
  */
-public class PrimitiveToPrimitiveNarrowingConversion extends SimpleConversion {
+public class VerySpecialNumberMapper {
 
-    private final Class<?> targetType;
-
-    public PrimitiveToPrimitiveNarrowingConversion(Class<?> targetType) {
-        this.targetType = targetType;
+    VerySpecialNumber fromFLoat( float f ) {
+        return new VerySpecialNumber();
     }
 
-    @Override
-    public String getToExpression(ConversionContext conversionContext) {
-        return "(" + targetType + ") <SOURCE>";
-    }
-
-    @Override
-    public String getFromExpression(ConversionContext conversionContext) {
-       throw new IllegalStateException( "Not supported." );
-    }
-
-    @Override
-    public boolean isNarrowing() {
-        return true;
+    BigInteger toBigInteger( VerySpecialNumber v ) {
+        return new BigInteger( "10" );
     }
 }

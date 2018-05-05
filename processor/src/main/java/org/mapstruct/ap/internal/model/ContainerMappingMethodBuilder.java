@@ -110,11 +110,13 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                 );
             }
         }
-        else if ( method instanceof ForgedMethod ) {
-            ForgedMethod forgedMethod = (ForgedMethod) method;
-            forgedMethod.addThrownTypes( assignment.getThrownTypes() );
+        else {
+            if ( method instanceof ForgedMethod ) {
+                ForgedMethod forgedMethod = (ForgedMethod) method;
+                forgedMethod.addThrownTypes( assignment.getThrownTypes() );
+            }
+            checkForTypeConversionError( method, assignment );
         }
-
         assignment = getWrapper( assignment, method );
 
         // mapNullToDefault

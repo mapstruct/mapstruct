@@ -48,4 +48,10 @@ public interface ConversionProvider {
      * @return any helper methods when required.
      */
     List<HelperMethod> getRequiredHelperMethods(ConversionContext conversionContext);
+
+    /**
+     *
+     * @return true when this conversion is a narrowing conversion (lossy)
+     */
+    boolean isNarrowing();
 }

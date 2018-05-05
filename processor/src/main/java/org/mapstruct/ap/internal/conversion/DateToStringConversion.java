@@ -32,7 +32,8 @@ public class DateToStringConversion implements ConversionProvider {
     public Assignment to(ConversionContext conversionContext) {
         return new TypeConversion( asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
             Collections.<Type>emptyList(),
-            getConversionExpression( conversionContext, "format" )
+            getConversionExpression( conversionContext, "format" ),
+            null
         );
     }
 
@@ -40,7 +41,8 @@ public class DateToStringConversion implements ConversionProvider {
     public Assignment from(ConversionContext conversionContext) {
         return new TypeConversion( asSet( conversionContext.getTypeFactory().getType( SimpleDateFormat.class ) ),
             asList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
-            getConversionExpression( conversionContext, "parse" )
+            getConversionExpression( conversionContext, "parse" ),
+            null
         );
     }
 
@@ -65,5 +67,10 @@ public class DateToStringConversion implements ConversionProvider {
         conversionString.append( "( <SOURCE> )" );
 
         return conversionString.toString();
+    }
+
+    @Override
+    public boolean isNarrowing() {
+        return false;
     }
 }

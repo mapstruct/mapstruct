@@ -119,6 +119,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                     );
                 }
             }
+            else {
+                checkForTypeConversionError( method, keyAssignment );
+            }
 
             // find mapping method or conversion for value
             Type valueSourceType = sourceTypeParams.get( 1 ).getTypeBound();
@@ -169,6 +172,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                     );
                 }
             }
+            else {
+                checkForTypeConversionError( method, valueAssignment );
+            }
 
             // mapNullToDefault
             boolean mapNullToDefault = false;
@@ -181,6 +187,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 factoryMethod = ObjectFactoryMethodResolver
                     .getFactoryMethod( method, method.getResultType(), null, ctx );
             }
+
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes(), valueTargetType, false );

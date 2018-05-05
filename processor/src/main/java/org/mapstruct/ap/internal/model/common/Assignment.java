@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.common;
 
 import java.util.List;
 import java.util.Set;
+import org.mapstruct.ap.internal.util.Message;
 
 /**
  * Assignment represents all kind of manners a source can be assigned to a target.
@@ -43,6 +44,26 @@ public interface Assignment {
 
         public boolean isConverted() {
             return converted;
+        }
+
+    }
+
+    class AssignmentMessage {
+
+        private final Message message;
+        private final String[] args;
+
+        public AssignmentMessage(Message message, String... args) {
+            this.message = message;
+            this.args = args;
+        }
+
+        public Message getMessage() {
+            return message;
+        }
+
+        public Object[] getArgs() {
+            return args;
         }
 
     }
@@ -139,4 +160,11 @@ public interface Assignment {
     AssignmentType getType();
 
     boolean isCallingUpdateMethod();
+
+    /**
+     *
+     * @return error message in during mapping resolving when, for instance, conversion is
+     * lossy, null otherwise.
+     */
+    AssignmentMessage getErrorMessage();
 }

@@ -44,8 +44,8 @@ public class Conversions {
         //native (number) types <> native types, including wrappers
         registerNativeNumberConversions();
 
-        registerWideningOrSameConversion( boolean.class, Boolean.class, false );
-        registerWideningOrSameConversion( Boolean.class, boolean.class, false );
+        registerWideningOrSameConversion( boolean.class, Boolean.class );
+        registerWideningOrSameConversion( Boolean.class, boolean.class );
 
         //BigInteger <> native types
         registerBigIntegerConversion( byte.class );
@@ -113,152 +113,152 @@ public class Conversions {
 
     private void registerNativeNumberConversions() {
 
-        registerWideningOrSameConversion( byte.class, Byte.class, false );
-        registerWideningOrSameConversion( byte.class, short.class, false );
-        registerWideningOrSameConversion( byte.class, Short.class, false );
-        registerWideningOrSameConversion( byte.class, int.class, false );
-        registerWideningOrSameConversion( byte.class, Integer.class, false );
-        registerWideningOrSameConversion( byte.class, long.class, false );
-        registerWideningOrSameConversion( byte.class, Long.class, false );
-        registerWideningOrSameConversion( byte.class, float.class, false );
-        registerWideningOrSameConversion( byte.class, Float.class, false );
-        registerWideningOrSameConversion( byte.class, double.class, false );
-        registerWideningOrSameConversion( byte.class, Double.class, false );
+        registerWideningOrSameConversion( byte.class, Byte.class );
+        registerWideningOrSameConversion( byte.class, short.class );
+        registerWideningOrSameConversion( byte.class, Short.class );
+        registerWideningOrSameConversion( byte.class, int.class );
+        registerWideningOrSameConversion( byte.class, Integer.class );
+        registerWideningOrSameConversion( byte.class, long.class );
+        registerWideningOrSameConversion( byte.class, Long.class );
+        registerWideningOrSameConversion( byte.class, float.class );
+        registerWideningOrSameConversion( byte.class, Float.class );
+        registerWideningOrSameConversion( byte.class, double.class );
+        registerWideningOrSameConversion( byte.class, Double.class );
 
-        registerWideningOrSameConversion( Byte.class, byte.class, false );
-        registerWideningOrSameConversion( Byte.class, short.class, false );
-        registerWideningOrSameConversion( Byte.class, Short.class, false );
-        registerWideningOrSameConversion( Byte.class, int.class, false );
-        registerWideningOrSameConversion( Byte.class, Integer.class, false );
-        registerWideningOrSameConversion( Byte.class, long.class, false );
-        registerWideningOrSameConversion( Byte.class, Long.class, false );
-        registerWideningOrSameConversion( Byte.class, float.class, false );
-        registerWideningOrSameConversion( Byte.class, Float.class, false );
-        registerWideningOrSameConversion( Byte.class, double.class, false );
-        registerWideningOrSameConversion( Byte.class, Double.class, false );
+        registerWideningOrSameConversion( Byte.class, byte.class );
+        registerWideningOrSameConversion( Byte.class, short.class );
+        registerWideningOrSameConversion( Byte.class, Short.class );
+        registerWideningOrSameConversion( Byte.class, int.class );
+        registerWideningOrSameConversion( Byte.class, Integer.class );
+        registerWideningOrSameConversion( Byte.class, long.class );
+        registerWideningOrSameConversion( Byte.class, Long.class );
+        registerWideningOrSameConversion( Byte.class, float.class );
+        registerWideningOrSameConversion( Byte.class, Float.class );
+        registerWideningOrSameConversion( Byte.class, double.class );
+        registerWideningOrSameConversion( Byte.class, Double.class );
 
-        registerNarrowingConversion( short.class, byte.class, false );
-        registerNarrowingConversion( short.class, Byte.class, false );
-        registerWideningOrSameConversion( short.class, Short.class, false );
-        registerWideningOrSameConversion( short.class, int.class, false );
-        registerWideningOrSameConversion( short.class, Integer.class, false );
-        registerWideningOrSameConversion( short.class, long.class, false );
-        registerWideningOrSameConversion( short.class, Long.class, false );
-        registerWideningOrSameConversion( short.class, float.class, false );
-        registerWideningOrSameConversion( short.class, Float.class, false );
-        registerWideningOrSameConversion( short.class, double.class, false );
-        registerWideningOrSameConversion( short.class, Double.class, false );
+        registerNarrowingConversion( short.class, byte.class );
+        registerNarrowingConversion( short.class, Byte.class );
+        registerWideningOrSameConversion( short.class, Short.class );
+        registerWideningOrSameConversion( short.class, int.class );
+        registerWideningOrSameConversion( short.class, Integer.class );
+        registerWideningOrSameConversion( short.class, long.class );
+        registerWideningOrSameConversion( short.class, Long.class );
+        registerWideningOrSameConversion( short.class, float.class );
+        registerWideningOrSameConversion( short.class, Float.class );
+        registerWideningOrSameConversion( short.class, double.class );
+        registerWideningOrSameConversion( short.class, Double.class );
 
-        registerNarrowingConversion( Short.class, byte.class, false );
-        registerNarrowingConversion( Short.class, Byte.class, false );
-        registerWideningOrSameConversion( Short.class, short.class, false );
-        registerWideningOrSameConversion( Short.class, int.class, false );
-        registerWideningOrSameConversion( Short.class, Integer.class, false );
-        registerWideningOrSameConversion( Short.class, long.class, false );
-        registerWideningOrSameConversion( Short.class, Long.class, false );
-        registerWideningOrSameConversion( Short.class, float.class, false );
-        registerWideningOrSameConversion( Short.class, Float.class, false );
-        registerWideningOrSameConversion( Short.class, double.class, false );
-        registerWideningOrSameConversion( Short.class, Double.class, false );
+        registerNarrowingConversion( Short.class, byte.class );
+        registerNarrowingConversion( Short.class, Byte.class );
+        registerWideningOrSameConversion( Short.class, short.class );
+        registerWideningOrSameConversion( Short.class, int.class );
+        registerWideningOrSameConversion( Short.class, Integer.class );
+        registerWideningOrSameConversion( Short.class, long.class );
+        registerWideningOrSameConversion( Short.class, Long.class );
+        registerWideningOrSameConversion( Short.class, float.class );
+        registerWideningOrSameConversion( Short.class, Float.class );
+        registerWideningOrSameConversion( Short.class, double.class );
+        registerWideningOrSameConversion( Short.class, Double.class );
 
-        registerNarrowingConversion( int.class, byte.class, false );
-        registerNarrowingConversion( int.class, Byte.class, false );
-        registerNarrowingConversion( int.class, short.class, false );
-        registerNarrowingConversion( int.class, Short.class, false );
-        registerWideningOrSameConversion( int.class, Integer.class, false );
-        registerWideningOrSameConversion( int.class, long.class, false );
-        registerWideningOrSameConversion( int.class, Long.class, false );
-        registerWideningOrSameConversion( int.class, float.class, true );
-        registerWideningOrSameConversion( int.class, Float.class, true );
-        registerWideningOrSameConversion( int.class, double.class, false );
-        registerWideningOrSameConversion( int.class, Double.class, false );
+        registerNarrowingConversion( int.class, byte.class );
+        registerNarrowingConversion( int.class, Byte.class );
+        registerNarrowingConversion( int.class, short.class );
+        registerNarrowingConversion( int.class, Short.class );
+        registerWideningOrSameConversion( int.class, Integer.class );
+        registerWideningOrSameConversion( int.class, long.class );
+        registerWideningOrSameConversion( int.class, Long.class );
+        registerWideningOrSameConversion( int.class, float.class );
+        registerWideningOrSameConversion( int.class, Float.class );
+        registerWideningOrSameConversion( int.class, double.class );
+        registerWideningOrSameConversion( int.class, Double.class );
 
-        registerNarrowingConversion( Integer.class, byte.class, false );
-        registerNarrowingConversion( Integer.class, Byte.class, false );
-        registerNarrowingConversion( Integer.class, short.class, false );
-        registerNarrowingConversion( Integer.class, Short.class, false );
-        registerWideningOrSameConversion( Integer.class, int.class, false );
-        registerWideningOrSameConversion( Integer.class, long.class, false );
-        registerWideningOrSameConversion( Integer.class, Long.class, false );
-        registerWideningOrSameConversion( Integer.class, float.class, true );
-        registerWideningOrSameConversion( Integer.class, Float.class, true );
-        registerWideningOrSameConversion( Integer.class, double.class, false );
-        registerWideningOrSameConversion( Integer.class, Double.class, false );
+        registerNarrowingConversion( Integer.class, byte.class );
+        registerNarrowingConversion( Integer.class, Byte.class );
+        registerNarrowingConversion( Integer.class, short.class );
+        registerNarrowingConversion( Integer.class, Short.class );
+        registerWideningOrSameConversion( Integer.class, int.class );
+        registerWideningOrSameConversion( Integer.class, long.class );
+        registerWideningOrSameConversion( Integer.class, Long.class );
+        registerWideningOrSameConversion( Integer.class, float.class );
+        registerWideningOrSameConversion( Integer.class, Float.class );
+        registerWideningOrSameConversion( Integer.class, double.class );
+        registerWideningOrSameConversion( Integer.class, Double.class );
 
-        registerNarrowingConversion( long.class, byte.class, false );
-        registerNarrowingConversion( long.class, Byte.class, false );
-        registerNarrowingConversion( long.class, short.class, false );
-        registerNarrowingConversion( long.class, Short.class, false );
-        registerNarrowingConversion( long.class, int.class, false );
-        registerNarrowingConversion( long.class, Integer.class, false );
-        registerWideningOrSameConversion( long.class, Long.class, false );
-        registerWideningOrSameConversion( long.class, float.class, true );
-        registerWideningOrSameConversion( long.class, Float.class, true );
-        registerWideningOrSameConversion( long.class, double.class, true );
-        registerWideningOrSameConversion( long.class, Double.class, true );
+        registerNarrowingConversion( long.class, byte.class );
+        registerNarrowingConversion( long.class, Byte.class );
+        registerNarrowingConversion( long.class, short.class );
+        registerNarrowingConversion( long.class, Short.class );
+        registerNarrowingConversion( long.class, int.class );
+        registerNarrowingConversion( long.class, Integer.class );
+        registerWideningOrSameConversion( long.class, Long.class );
+        registerWideningOrSameConversion( long.class, float.class );
+        registerWideningOrSameConversion( long.class, Float.class );
+        registerWideningOrSameConversion( long.class, double.class );
+        registerWideningOrSameConversion( long.class, Double.class );
 
-        registerNarrowingConversion( Long.class, byte.class, false );
-        registerNarrowingConversion( Long.class, Byte.class, false );
-        registerNarrowingConversion( Long.class, short.class, false );
-        registerNarrowingConversion( Long.class, Short.class, false );
-        registerNarrowingConversion( Long.class, int.class, false );
-        registerNarrowingConversion( Long.class, Integer.class, false );
-        registerWideningOrSameConversion( Long.class, long.class, false );
-        registerWideningOrSameConversion( Long.class, float.class, true );
-        registerWideningOrSameConversion( Long.class, Float.class, true );
-        registerWideningOrSameConversion( Long.class, double.class, true );
-        registerWideningOrSameConversion( Long.class, Double.class, true );
+        registerNarrowingConversion( Long.class, byte.class );
+        registerNarrowingConversion( Long.class, Byte.class );
+        registerNarrowingConversion( Long.class, short.class );
+        registerNarrowingConversion( Long.class, Short.class );
+        registerNarrowingConversion( Long.class, int.class );
+        registerNarrowingConversion( Long.class, Integer.class );
+        registerWideningOrSameConversion( Long.class, long.class );
+        registerWideningOrSameConversion( Long.class, float.class );
+        registerWideningOrSameConversion( Long.class, Float.class );
+        registerWideningOrSameConversion( Long.class, double.class );
+        registerWideningOrSameConversion( Long.class, Double.class );
 
-        registerNarrowingConversion( float.class, byte.class, true );
-        registerNarrowingConversion( float.class, Byte.class, true );
-        registerNarrowingConversion( float.class, short.class, true );
-        registerNarrowingConversion( float.class, Short.class, true );
-        registerNarrowingConversion( float.class, int.class, true );
-        registerNarrowingConversion( float.class, Integer.class, true );
-        registerNarrowingConversion( float.class, long.class, true );
-        registerNarrowingConversion( float.class, Long.class, true );
-        registerWideningOrSameConversion( float.class, Float.class, false );
-        registerWideningOrSameConversion( float.class, double.class, false );
-        registerWideningOrSameConversion( float.class, Double.class, false );
+        registerNarrowingConversion( float.class, byte.class );
+        registerNarrowingConversion( float.class, Byte.class );
+        registerNarrowingConversion( float.class, short.class );
+        registerNarrowingConversion( float.class, Short.class );
+        registerNarrowingConversion( float.class, int.class );
+        registerNarrowingConversion( float.class, Integer.class );
+        registerNarrowingConversion( float.class, long.class );
+        registerNarrowingConversion( float.class, Long.class );
+        registerWideningOrSameConversion( float.class, Float.class );
+        registerWideningOrSameConversion( float.class, double.class );
+        registerWideningOrSameConversion( float.class, Double.class );
 
-        registerNarrowingConversion( Float.class, byte.class, true );
-        registerNarrowingConversion( Float.class, Byte.class, true );
-        registerNarrowingConversion( Float.class, short.class, true );
-        registerNarrowingConversion( Float.class, Short.class, true );
-        registerNarrowingConversion( Float.class, int.class, true );
-        registerNarrowingConversion( Float.class, Integer.class, true );
-        registerNarrowingConversion( Float.class, long.class, true );
-        registerNarrowingConversion( Float.class, Long.class, true );
-        registerWideningOrSameConversion( Float.class, float.class, false );
-        registerWideningOrSameConversion( Float.class, double.class, false );
-        registerWideningOrSameConversion( Float.class, Double.class, false );
+        registerNarrowingConversion( Float.class, byte.class );
+        registerNarrowingConversion( Float.class, Byte.class );
+        registerNarrowingConversion( Float.class, short.class );
+        registerNarrowingConversion( Float.class, Short.class );
+        registerNarrowingConversion( Float.class, int.class );
+        registerNarrowingConversion( Float.class, Integer.class );
+        registerNarrowingConversion( Float.class, long.class );
+        registerNarrowingConversion( Float.class, Long.class );
+        registerWideningOrSameConversion( Float.class, float.class );
+        registerWideningOrSameConversion( Float.class, double.class );
+        registerWideningOrSameConversion( Float.class, Double.class );
 
-        registerNarrowingConversion( double.class, byte.class, true );
-        registerNarrowingConversion( double.class, Byte.class, true );
-        registerNarrowingConversion( double.class, short.class, true );
-        registerNarrowingConversion( double.class, Short.class, true );
-        registerNarrowingConversion( double.class, int.class, true );
-        registerNarrowingConversion( double.class, Integer.class, true );
-        registerNarrowingConversion( double.class, long.class, true );
-        registerNarrowingConversion( double.class, Long.class, true );
-        registerNarrowingConversion( double.class, float.class, true );
-        registerNarrowingConversion( double.class, Float.class, true );
-        registerWideningOrSameConversion( double.class, Double.class, false );
+        registerNarrowingConversion( double.class, byte.class );
+        registerNarrowingConversion( double.class, Byte.class );
+        registerNarrowingConversion( double.class, short.class );
+        registerNarrowingConversion( double.class, Short.class );
+        registerNarrowingConversion( double.class, int.class );
+        registerNarrowingConversion( double.class, Integer.class );
+        registerNarrowingConversion( double.class, long.class );
+        registerNarrowingConversion( double.class, Long.class );
+        registerNarrowingConversion( double.class, float.class );
+        registerNarrowingConversion( double.class, Float.class );
+        registerWideningOrSameConversion( double.class, Double.class );
 
-        registerNarrowingConversion( Double.class, byte.class, true );
-        registerNarrowingConversion( Double.class, Byte.class, true );
-        registerNarrowingConversion( Double.class, short.class, true );
-        registerNarrowingConversion( Double.class, Short.class, true );
-        registerNarrowingConversion( Double.class, int.class, true );
-        registerNarrowingConversion( Double.class, Integer.class, true );
-        registerNarrowingConversion( Double.class, long.class, true );
-        registerNarrowingConversion( Double.class, Long.class, true );
-        registerNarrowingConversion( Double.class, float.class, true );
-        registerNarrowingConversion( Double.class, Float.class, true );
-        registerWideningOrSameConversion( Double.class, double.class, false );
+        registerNarrowingConversion( Double.class, byte.class );
+        registerNarrowingConversion( Double.class, Byte.class );
+        registerNarrowingConversion( Double.class, short.class );
+        registerNarrowingConversion( Double.class, Short.class );
+        registerNarrowingConversion( Double.class, int.class );
+        registerNarrowingConversion( Double.class, Integer.class );
+        registerNarrowingConversion( Double.class, long.class );
+        registerNarrowingConversion( Double.class, Long.class );
+        registerNarrowingConversion( Double.class, float.class );
+        registerNarrowingConversion( Double.class, Float.class );
+        registerWideningOrSameConversion( Double.class, double.class );
 
-        registerWideningOrSameConversion( Character.class, char.class, false );
-        registerWideningOrSameConversion( char.class, Character.class, false );
+        registerWideningOrSameConversion( Character.class, char.class );
+        registerWideningOrSameConversion( char.class, Character.class );
 
     }
 
@@ -310,7 +310,7 @@ public class Conversions {
         return typeFactory.isTypeAvailable( JavaTimeConstants.ZONED_DATE_TIME_FQN );
     }
 
-    private void registerWideningOrSameConversion(Class<?> sourceClass, Class<?> targetClass, boolean precisionLoss) {
+    private void registerWideningOrSameConversion(Class<?> sourceClass, Class<?> targetClass) {
         ConversionProvider conversion;
         if ( sourceClass.isPrimitive() && targetClass.isPrimitive() ) {
             conversion = new PrimitiveToPrimitiveWideningConversion();
@@ -329,7 +329,7 @@ public class Conversions {
         conversions.put( new Key( sourceType, targetType ), conversion );
     }
 
-    private void registerNarrowingConversion(Class<?> sourceClass, Class<?> targetClass, boolean precisionLoss ) {
+    private void registerNarrowingConversion(Class<?> sourceClass, Class<?> targetClass) {
         ConversionProvider conversion;
         if ( sourceClass.isPrimitive() && targetClass.isPrimitive() ) {
             conversion = new PrimitiveToPrimitiveNarrowingConversion( targetClass );

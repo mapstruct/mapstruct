@@ -32,4 +32,9 @@ public class BigIntegerToPrimitiveConversion extends SimpleConversion {
        throw new IllegalStateException( "Not supported." );
     }
 
+    @Override
+    public boolean isNarrowing() {
+        return true;
+    }
+
 }

@@ -241,6 +241,7 @@ public class MappingResolverImpl implements MappingResolver {
         private Assignment resolveViaConversion(Type sourceType, Type targetType) {
             ConversionProvider conversionProvider = conversions.getConversion( sourceType, targetType );
 
+
             if ( conversionProvider == null ) {
                 return null;
             }
@@ -249,7 +250,9 @@ public class MappingResolverImpl implements MappingResolver {
                 messager,
                 sourceType,
                 targetType,
-                formattingParameters
+                formattingParameters,
+                mappingMethod.getMapperConfiguration().typeConversionPolicy(),
+                sourceRHS.getSourceErrorMessagePart()
             );
 
             // add helper methods required in conversion
@@ -295,7 +298,9 @@ public class MappingResolverImpl implements MappingResolver {
                     messager,
                     sourceType,
                     targetType,
-                    formattingParameters
+                    formattingParameters,
+                    mappingMethod.getMapperConfiguration().typeConversionPolicy(),
+                    sourceRHS.getSourceErrorMessagePart()
                 );
                 Assignment methodReference = MethodReference.forBuiltInMethod( matchingBuiltInMethod.getMethod(), ctx );
                 methodReference.setAssignment( sourceRHS );

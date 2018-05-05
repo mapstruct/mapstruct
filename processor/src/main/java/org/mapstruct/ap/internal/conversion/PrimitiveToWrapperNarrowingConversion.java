@@ -44,4 +44,9 @@ public class PrimitiveToWrapperNarrowingConversion extends SimpleConversion {
     public String getFromExpression(ConversionContext conversionContext) {
        throw new IllegalStateException( "Not supported." );
     }
+
+    @Override
+    public boolean isNarrowing() {
+        return true;
+    }
 }

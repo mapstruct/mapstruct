@@ -38,4 +38,9 @@ public class BigDecimalToBigIntegerConversion extends SimpleConversion {
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return asSet( conversionContext.getTypeFactory().getType( BigDecimal.class ) );
     }
+
+    @Override
+    public boolean isNarrowing() {
+        return true;
+    }
 }
