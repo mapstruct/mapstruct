@@ -25,6 +25,8 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
 
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.time;
+
 /**
  * Conversion between {@link java.util.Date} and {@link java.sql.Time}.
  *
@@ -34,7 +36,7 @@ public class DateToSqlTimeConversion extends SimpleConversion {
 
     @Override
     protected String getToExpression(ConversionContext conversionContext) {
-        return "new Time( <SOURCE>.getTime() )";
+        return "new " + time( conversionContext ) + "( <SOURCE>.getTime() )";
     }
 
     @Override

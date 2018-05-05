@@ -18,14 +18,15 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigDecimal;
 
 /**
  * Conversion between {@link BigDecimal} and {@link BigInteger}.
@@ -41,7 +42,9 @@ public class BigDecimalToBigIntegerConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        return "new BigDecimal( <SOURCE> )";
+        return "new "
+            + bigDecimal( conversionContext )
+            + "( <SOURCE> )";
     }
 
     @Override

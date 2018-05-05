@@ -18,12 +18,14 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import java.util.Currency;
+import java.util.Set;
+
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Collections;
 
-import java.util.Currency;
-import java.util.Set;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.currency;
 
 /**
  * @author Darren Rambaud
@@ -36,7 +38,7 @@ public class CurrencyToStringConversion extends SimpleConversion {
 
     @Override
     protected String getFromExpression(final ConversionContext conversionContext) {
-        return "Currency.getInstance( <SOURCE> )";
+        return currency( conversionContext ) + ".getInstance( <SOURCE> )";
     }
 
     @Override

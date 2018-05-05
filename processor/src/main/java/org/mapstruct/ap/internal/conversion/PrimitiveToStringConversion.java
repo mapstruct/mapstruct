@@ -18,9 +18,16 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
+import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.Set;
+
 import org.mapstruct.ap.internal.model.common.ConversionContext;
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.decimalFormat;
 
 /**
  * Conversion between primitive types such as {@code byte} or {@code long} and
@@ -57,6 +64,17 @@ public class PrimitiveToStringConversion extends AbstractNumberToStringConversio
     }
 
     @Override
+    public Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
+        if ( requiresDecimalFormat( conversionContext ) ) {
+            return Collections.singleton(
+                conversionContext.getTypeFactory().getType( DecimalFormat.class )
+            );
+        }
+
+        return Collections.emptySet();
+    }
+
+    @Override
     public String getFromExpression(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
             StringBuilder sb = new StringBuilder();
@@ -72,8 +90,22 @@ public class PrimitiveToStringConversion extends AbstractNumberToStringConversio
         }
     }
 
+    @Override
+    protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
+        if ( requiresDecimalFormat( conversionContext ) ) {
+            return Collections.singleton(
+                conversionContext.getTypeFactory().getType( DecimalFormat.class )
+            );
+        }
+
+        return Collections.emptySet();
+    }
+
     private void appendDecimalFormatter(StringBuilder sb, ConversionContext conversionContext) {
-        sb.append( "new DecimalFormat( " );
+        sb.append( "new " );
+        sb.append( decimalFormat( conversionContext ) );
+        sb.append( "( " );
+
         if ( conversionContext.getNumberFormat() != null ) {
             sb.append( "\"" );
             sb.append( conversionContext.getNumberFormat() );

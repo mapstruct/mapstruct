@@ -18,14 +18,15 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.math.BigDecimal;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.NativeTypes;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigDecimal;
 
 /**
  * Conversion between {@link BigDecimal} and wrappers of native number types.
@@ -51,7 +52,7 @@ public class BigDecimalToWrapperConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        return "BigDecimal.valueOf( <SOURCE> )";
+        return bigDecimal( conversionContext ) + ".valueOf( <SOURCE> )";
     }
 
     @Override

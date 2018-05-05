@@ -16,23 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.test.bugs._1460.java8;
 
-/**
- * Helper holding Java time full qualified class names for conversion registration
- */
-public final class JavaTimeConstants {
+import java.time.LocalDate;
 
-    public static final String ZONED_DATE_TIME_FQN = "java.time.ZonedDateTime";
-    public static final String ZONE_OFFSET_FQN = "java.time.ZoneOffset";
-    public static final String ZONE_ID_FQN = "java.time.ZoneId";
+public class Target {
+    private LocalDate stringToJavaLocalDate;
 
-    public static final String LOCAL_DATE_TIME_FQN = "java.time.LocalDateTime";
-    public static final String LOCAL_DATE_FQN = "java.time.LocalDate";
-    public static final String LOCAL_TIME_FQN = "java.time.LocalTime";
-
-    public static final String DATE_TIME_FORMATTER_FQN = "java.time.format.DateTimeFormatter";
-
-    private JavaTimeConstants() {
+    public LocalDate getStringToJavaLocalDate() {
+        return stringToJavaLocalDate;
     }
+
+    public void setStringToJavaLocalDate(LocalDate stringToJavaLocalDate) {
+        this.stringToJavaLocalDate = stringToJavaLocalDate;
+    }
+
 }

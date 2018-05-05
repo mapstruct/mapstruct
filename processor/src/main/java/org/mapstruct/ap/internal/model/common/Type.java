@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -179,6 +178,15 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public String getName() {
         return name;
+    }
+
+    /**
+     * String that could be used in generated code to reference to this {@link Type}.
+     *
+     * @return Just the name if this {@link Type} will be imported, otherwise the fully-qualified name.
+     */
+    public String getReferenceName() {
+        return isImported ? name : qualifiedName;
     }
 
     public List<Type> getTypeParameters() {

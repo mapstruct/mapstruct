@@ -18,8 +18,7 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,10 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigDecimal;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigInteger;
 
 /**
  * Conversion between {@link BigInteger} and {@link String}.
@@ -57,22 +60,21 @@ public class BigIntegerToStringConversion extends AbstractNumberToStringConversi
     public String getFromExpression(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
             StringBuilder sb = new StringBuilder();
-            sb.append( "( (BigDecimal) " );
+            sb.append( "( (" + bigDecimal( conversionContext ) + ") " );
             appendDecimalFormatter( sb, conversionContext );
             sb.append( ".parse( <SOURCE> )" );
             sb.append( " ).toBigInteger()" );
             return sb.toString();
         }
         else {
-            return "new BigInteger( <SOURCE> )";
+            return "new " + bigInteger( conversionContext ) + "( <SOURCE> )";
         }
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
-            // no imports are required when decimal format is used.
-            return super.getFromConversionImportTypes( conversionContext );
+            return asSet( conversionContext.getTypeFactory().getType( BigDecimal.class ) );
         }
         else {
             return asSet( conversionContext.getTypeFactory().getType( BigInteger.class ) );

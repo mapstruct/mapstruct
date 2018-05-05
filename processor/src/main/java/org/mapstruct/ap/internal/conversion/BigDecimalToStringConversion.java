@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +26,9 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigDecimal;
 
 /**
  * Conversion between {@link BigDecimal} and {@link String}.
@@ -57,13 +58,13 @@ public class BigDecimalToStringConversion extends AbstractNumberToStringConversi
     public String getFromExpression(ConversionContext conversionContext) {
         if ( requiresDecimalFormat( conversionContext ) ) {
             StringBuilder sb = new StringBuilder();
-            sb.append( "(BigDecimal) " );
+            sb.append( "(" + bigDecimal( conversionContext ) + ") " );
             appendDecimalFormatter( sb, conversionContext );
             sb.append( ".parse( <SOURCE> )" );
             return sb.toString();
         }
         else {
-           return "new BigDecimal( <SOURCE> )";
+            return "new " + bigDecimal( conversionContext ) + "( <SOURCE> )";
         }
     }
 
@@ -91,5 +92,4 @@ public class BigDecimalToStringConversion extends AbstractNumberToStringConversi
 
         sb.append( " )" );
     }
-
 }

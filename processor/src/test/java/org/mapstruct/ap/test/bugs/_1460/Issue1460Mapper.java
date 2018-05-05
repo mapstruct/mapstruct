@@ -16,23 +16,38 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.internal.util;
+package org.mapstruct.ap.test.bugs._1460;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
- * Helper holding Java time full qualified class names for conversion registration
+ * @author Christian Bandowski
  */
-public final class JavaTimeConstants {
+@Mapper
+public abstract class Issue1460Mapper {
 
-    public static final String ZONED_DATE_TIME_FQN = "java.time.ZonedDateTime";
-    public static final String ZONE_OFFSET_FQN = "java.time.ZoneOffset";
-    public static final String ZONE_ID_FQN = "java.time.ZoneId";
+    public static final Issue1460Mapper INSTANCE = Mappers.getMapper( Issue1460Mapper.class );
 
-    public static final String LOCAL_DATE_TIME_FQN = "java.time.LocalDateTime";
-    public static final String LOCAL_DATE_FQN = "java.time.LocalDate";
-    public static final String LOCAL_TIME_FQN = "java.time.LocalTime";
+    public abstract Target map(Source source);
 
-    public static final String DATE_TIME_FORMATTER_FQN = "java.time.format.DateTimeFormatter";
+    public abstract String forceUsageOfIssue1460Enum(Issue1460Enum source);
 
-    private JavaTimeConstants() {
+    public abstract String forceUsageOfLocale(Locale source);
+
+    public abstract String forceUsageOfLocalDate(LocalDate source);
+
+    public abstract String forceUsageOfDateTime(DateTime source);
+
+    public static class Issue1460Enum {
+    }
+
+    public static class Locale {
+    }
+
+    public static class LocalDate {
+    }
+
+    public static class DateTime {
     }
 }

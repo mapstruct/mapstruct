@@ -18,12 +18,12 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link String} and {@link Enum} types.
@@ -39,11 +39,14 @@ public class EnumStringConversion extends SimpleConversion {
 
     @Override
     public String getFromExpression(ConversionContext conversionContext) {
-        return "Enum.valueOf( " + conversionContext.getTargetType().getName() + ".class, <SOURCE> )";
+        return "Enum.valueOf( " + conversionContext.getTargetType().getReferenceName()
+            + ".class, <SOURCE> )";
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
-        return asSet( conversionContext.getTargetType() );
+        return asSet(
+            conversionContext.getTargetType()
+        );
     }
 }

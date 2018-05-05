@@ -52,10 +52,12 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
 
     private String dateTimeFormatter(ConversionContext conversionContext) {
         if ( !Strings.isEmpty( conversionContext.getDateFormat() ) ) {
-            return "DateTimeFormatter.ofPattern( \"" + conversionContext.getDateFormat() + "\" )";
+            return ConversionUtils.dateTimeFormatter( conversionContext )
+                + ".ofPattern( \"" + conversionContext.getDateFormat()
+                + "\" )";
         }
         else {
-            return "DateTimeFormatter." + defaultFormatterSuffix();
+            return ConversionUtils.dateTimeFormatter( conversionContext ) + "." + defaultFormatterSuffix();
         }
     }
 
@@ -64,7 +66,7 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
         // See http://docs.oracle.com/javase/tutorial/datetime/iso/format.html for how to parse Dates
-        return new StringBuilder().append( conversionContext.getTargetType().getFullyQualifiedName() )
+        return new StringBuilder().append( conversionContext.getTargetType().getReferenceName() )
                                   .append( ".parse( " )
                                   .append( parametersListForParsing( conversionContext ) )
                                   .append( " )" ).toString();
@@ -74,9 +76,8 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
         // See http://docs.oracle.com/javase/tutorial/datetime/iso/format.html for how to format Dates
         StringBuilder parameterBuilder = new StringBuilder( "<SOURCE>" );
         if ( !Strings.isEmpty( conversionContext.getDateFormat() ) ) {
-            parameterBuilder.append( ", DateTimeFormatter.ofPattern( \"" )
-                            .append( conversionContext.getDateFormat() )
-                            .append( "\" )" );
+            parameterBuilder.append( ", " );
+            parameterBuilder.append( dateTimeFormatter( conversionContext ) );
         }
         return parameterBuilder.toString();
     }
@@ -84,14 +85,20 @@ public abstract class AbstractJavaTimeToStringConversion extends SimpleConversio
     @Override
     protected Set<Type> getToConversionImportTypes(ConversionContext conversionContext) {
         return Collections.asSet(
-                        conversionContext.getTypeFactory().getType( JavaTimeConstants.DATE_TIME_FORMATTER_FQN )
+            conversionContext.getTypeFactory().getType( JavaTimeConstants.DATE_TIME_FORMATTER_FQN )
         );
     }
 
     @Override
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
-        return Collections.asSet(
-                        conversionContext.getTypeFactory().getType( JavaTimeConstants.DATE_TIME_FORMATTER_FQN )
-        );
+        if ( !Strings.isEmpty( conversionContext.getDateFormat() ) ) {
+            return Collections.asSet(
+                conversionContext.getTargetType(),
+                conversionContext.getTypeFactory().getType( JavaTimeConstants.DATE_TIME_FORMATTER_FQN )
+            );
+        }
+
+        return Collections.asSet( conversionContext.getTargetType() );
     }
+
 }

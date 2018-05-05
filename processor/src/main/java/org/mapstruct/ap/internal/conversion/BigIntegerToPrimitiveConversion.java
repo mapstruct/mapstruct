@@ -18,13 +18,14 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.math.BigInteger;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigInteger;
 
 /**
  * Conversion between {@link BigInteger} and native number types.
@@ -54,7 +55,7 @@ public class BigIntegerToPrimitiveConversion extends SimpleConversion {
         if ( targetType == float.class || targetType == double.class ) {
             castString = "(long) ";
         }
-        return "BigInteger.valueOf( " + castString + "<SOURCE> )";
+        return bigInteger( conversionContext ) + ".valueOf( " + castString + "<SOURCE> )";
     }
 
     @Override

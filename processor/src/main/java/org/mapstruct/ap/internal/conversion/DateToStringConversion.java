@@ -18,9 +18,6 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static java.util.Arrays.asList;
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -32,6 +29,10 @@ import org.mapstruct.ap.internal.model.TypeConversion;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
+
+import static java.util.Arrays.asList;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.simpleDateFormat;
 
 /**
  * Conversion between {@link String} and {@link Date}.
@@ -62,7 +63,9 @@ public class DateToStringConversion implements ConversionProvider {
     }
 
     private String getConversionExpression(ConversionContext conversionContext, String method) {
-        StringBuilder conversionString = new StringBuilder( "new SimpleDateFormat(" );
+        StringBuilder conversionString = new StringBuilder( "new " );
+        conversionString.append( simpleDateFormat( conversionContext ) );
+        conversionString.append( '(' );
 
         if ( conversionContext.getDateFormat() != null ) {
             conversionString.append( " \"" );

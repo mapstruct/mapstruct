@@ -18,8 +18,6 @@
  */
 package org.mapstruct.ap.internal.conversion;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
@@ -27,6 +25,10 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.dateTimeFormat;
+import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
 
 /**
  * Base class for conversions between Joda-Time types and String.
@@ -78,7 +80,7 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
     }
 
     private String conversionString(ConversionContext conversionContext, String method) {
-        StringBuilder conversionString = new StringBuilder( "DateTimeFormat" );
+        StringBuilder conversionString = new StringBuilder( dateTimeFormat( conversionContext ) );
         conversionString.append( dateFormatPattern( conversionContext ) );
         conversionString.append( "." );
         conversionString.append( method );
@@ -92,7 +94,7 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
 
         String dateFormat = conversionContext.getDateFormat();
         if ( dateFormat == null ) {
-            conversionString.append( defaultDateFormatPattern() );
+            conversionString.append( defaultDateFormatPattern( conversionContext ) );
 
         }
         else {
@@ -105,8 +107,12 @@ public abstract class AbstractJodaTypeToStringConversion extends SimpleConversio
         return conversionString.toString();
     }
 
-    private String defaultDateFormatPattern() {
-        return " DateTimeFormat.patternForStyle( \"" + formatStyle() + "\", Locale.getDefault() )";
+    private String defaultDateFormatPattern(ConversionContext conversionContext) {
+        return " "
+            + dateTimeFormat( conversionContext )
+            + ".patternForStyle( \"" + formatStyle() + "\", "
+            + locale( conversionContext )
+            + ".getDefault() )";
     }
 
     /**
