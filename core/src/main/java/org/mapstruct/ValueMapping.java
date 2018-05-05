@@ -67,9 +67,9 @@ import java.lang.annotation.Target;
  * <pre>
  * <code>
  * &#64;ValueMappings({
- *    &#64;ValueMapping( source = "&lt;NULL&gt;", target = "DEFAULT" ),
- *    &#64;ValueMapping( source = "STANDARD", target = "&lt;NULL&gt;" ),
- *    &#64;ValueMapping( source = "&lt;ANY_REMAINING&gt;", target = "SPECIAL" )
+ *    &#64;ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
+ *    &#64;ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
+ *    &#64;ValueMapping( source = MappingConstants.ANY_REMAINING, target = "SPECIAL" )
  * })
  * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
  * </code>
