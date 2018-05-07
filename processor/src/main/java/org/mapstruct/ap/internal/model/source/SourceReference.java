@@ -355,7 +355,7 @@ public class SourceReference {
     public SourceReference copyForInheritanceTo(SourceMethod method) {
         List<Parameter> replacementParamCandidates = new ArrayList<Parameter>();
         for ( Parameter sourceParam : method.getSourceParameters() ) {
-            if ( sourceParam.getType().isAssignableTo( parameter.getType() ) ) {
+            if ( parameter != null && sourceParam.getType().isAssignableTo( parameter.getType() ) ) {
                 replacementParamCandidates.add( sourceParam );
             }
         }
