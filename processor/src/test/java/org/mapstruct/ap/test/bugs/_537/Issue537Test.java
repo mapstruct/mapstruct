@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Issue537Test {
 
     @Test
-    public void shouldCompileWithoutIssues() {
+    public void testThatReferencedMapperWillBeUsed() {
         Target target = Issue537Mapper.INSTANCE.mapDto( new Source( "abc" ) );
 
         assertThat( target ).isNotNull();

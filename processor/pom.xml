@@ -154,7 +154,7 @@
                         without this snippet the jacoco argLine is lost -->
                     <!-- The property must be prefixed with @ and not $. The reason for this is the usage of late
                     binding of variables by other plugins (jacoco in this case)-->
-                    <argLine>-Xms1024m -Xmx3072m</argLine>
+                    <argLine>@{jacocoArgLine} -Xms1024m -Xmx3072m</argLine>
                 </configuration>
             </plugin>
             <plugin>

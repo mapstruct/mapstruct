@@ -18,14 +18,11 @@
  */
 package org.mapstruct.ap.test.bugs._537;
 
-import org.mapstruct.Mapper;
-
 /**
  * @author Christian Bandowski
  */
-@Mapper
-public abstract class ReferenceMapper {
-    Integer stringLength(String source) {
+public class ReferenceMapper {
+    public Integer stringLength(String source) {
         return source == null ? null : source.length();
     }
 }
