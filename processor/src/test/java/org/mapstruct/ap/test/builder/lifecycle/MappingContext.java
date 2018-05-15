@@ -34,6 +34,11 @@ public class MappingContext {
     private final List<String> invokedMethods = new ArrayList<String>();
 
     @BeforeMapping
+    public void beforeWithoutParameters() {
+        invokedMethods.add( "beforeWithoutParameters" );
+    }
+
+    @BeforeMapping
     public void beforeWithTargetType(OrderDto source, @TargetType Class<Order> orderClass) {
         invokedMethods.add( "beforeWithTargetType" );
     }
@@ -54,6 +59,11 @@ public class MappingContext {
     }
 
     @AfterMapping
+    public void afterWithoutParameters() {
+        invokedMethods.add( "afterWithoutParameters" );
+    }
+
+    @AfterMapping
     public void afterWithTargetType(OrderDto source, @TargetType Class<Order> orderClass) {
         invokedMethods.add( "afterWithTargetType" );
     }
@@ -71,6 +81,13 @@ public class MappingContext {
     @AfterMapping
     public void afterWithBuilderTarget(OrderDto source, @MappingTarget Order.Builder orderBuilder) {
         invokedMethods.add( "afterWithBuilderTarget" );
+    }
+
+    @AfterMapping
+    public Order afterWithBuilderTargetReturningTarget(@MappingTarget Order.Builder orderBuilder) {
+        invokedMethods.add( "afterWithBuilderTargetReturningTarget" );
+
+        return orderBuilder.create();
     }
 
     public List<String> getInvokedMethods() {
