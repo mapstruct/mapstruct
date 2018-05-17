@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
-
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.AnnotatedConstructor;
@@ -34,6 +33,7 @@ import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
+import org.mapstruct.ap.internal.model.PlainMapperReference;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
@@ -80,8 +80,12 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
 
         while ( iterator.hasNext() ) {
             MapperReference reference = iterator.next();
-            iterator.remove();
-            iterator.add( replacementMapperReference( reference, annotations, injectionStrategy ) );
+
+            // only replace not plain mappers
+            if ( !( reference instanceof PlainMapperReference ) ) {
+                iterator.remove();
+                iterator.add( replacementMapperReference( reference, annotations, injectionStrategy ) );
+            }
         }
 
         if ( injectionStrategy == InjectionStrategyPrism.CONSTRUCTOR ) {
@@ -104,7 +108,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         List<Field> replacement = new ArrayList<Field>();
         if ( !decorator.getMethods().isEmpty() ) {
             for ( Field field : decorator.getFields() ) {
-                replacement.add( replacementMapperReference( field, annotations, injectionStrategy ) );
+                // only replace not plain mappers
+                if ( !( field instanceof PlainMapperReference ) ) {
+                    replacement.add( replacementMapperReference( field, annotations, injectionStrategy ) );
+                }
             }
         }
         decorator.setFields( replacement );

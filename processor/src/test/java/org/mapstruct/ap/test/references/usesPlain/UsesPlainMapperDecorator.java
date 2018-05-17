@@ -16,46 +16,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.references;
+package org.mapstruct.ap.test.references.usesPlain;
 
 /**
- * @author Andreas Gudian
- *
+ * @author Christian Bandowski
  */
-public class Bar {
-    private String prop1;
+public abstract class UsesPlainMapperDecorator implements DecoratedUsesPlainMapper {
+    private final DecoratedUsesPlainMapper delegate;
 
-    public Bar() {
-    }
-
-    public Bar(String prop1) {
-        this.prop1 = prop1;
-    }
-
-    public String getProp1() {
-        return prop1;
-    }
-
-    public void setProp1(String prop1) {
-        this.prop1 = prop1;
+    protected UsesPlainMapperDecorator(DecoratedUsesPlainMapper delegate) {
+        this.delegate = delegate;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if ( this == o ) {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() ) {
-            return false;
-        }
-
-        Bar bar = (Bar) o;
-
-        return prop1 != null ? prop1.equals( bar.prop1 ) : bar.prop1 == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return prop1 != null ? prop1.hashCode() : 0;
+    public Target toTarget(Source source) {
+        return delegate.toTarget( source );
     }
 }

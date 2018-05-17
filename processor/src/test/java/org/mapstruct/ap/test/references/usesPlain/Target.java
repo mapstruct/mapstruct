@@ -16,28 +16,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.references;
+package org.mapstruct.ap.test.references.usesPlain;
+
+import org.mapstruct.ap.test.references.Bar;
 
 /**
- * @author Andreas Gudian
- *
+ * @author Christian Bandowski
  */
-public class Bar {
-    private String prop1;
+public class Target {
+    private boolean createdFromObjectFactory;
+    private Bar value;
 
-    public Bar() {
+    public Target() {
     }
 
-    public Bar(String prop1) {
-        this.prop1 = prop1;
+    public Target(boolean createdFromObjectFactory) {
+        this.createdFromObjectFactory = createdFromObjectFactory;
     }
 
-    public String getProp1() {
-        return prop1;
+    public Bar getValue() {
+        return value;
     }
 
-    public void setProp1(String prop1) {
-        this.prop1 = prop1;
+    public void setValue(Bar value) {
+        this.value = value;
     }
 
     @Override
@@ -49,13 +51,18 @@ public class Bar {
             return false;
         }
 
-        Bar bar = (Bar) o;
+        Target target = (Target) o;
 
-        return prop1 != null ? prop1.equals( bar.prop1 ) : bar.prop1 == null;
+        if ( createdFromObjectFactory != target.createdFromObjectFactory ) {
+            return false;
+        }
+        return value != null ? value.equals( target.value ) : target.value == null;
     }
 
     @Override
     public int hashCode() {
-        return prop1 != null ? prop1.hashCode() : 0;
+        int result = ( createdFromObjectFactory ? 1 : 0 );
+        result = 31 * result + ( value != null ? value.hashCode() : 0 );
+        return result;
     }
 }

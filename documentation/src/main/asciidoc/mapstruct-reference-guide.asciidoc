@@ -1036,7 +1036,7 @@ In the `@Mapper` annotation at the `CarMapper` interface reference the `DateMapp
 [source, java, linenums]
 [subs="verbatim,attributes"]
 ----
-@Mapper(uses=DateMapper.class)
+@Mapper(uses = DateMapper.class)
 public class CarMapper {
 
     CarDto carToCarDto(Car car);
@@ -1048,10 +1048,25 @@ When generating code for the implementation of the `carToCarDto()` method, MapSt
 
 Generated mappers retrieve referenced mappers using the component model configured for them. If e.g. CDI was used as component model for `CarMapper`, `DateMapper` would have to be a CDI bean as well. When using the default component model, any hand-written mapper classes to be referenced by MapStruct generated mappers must declare a public no-args constructor in order to be instantiable.
 
+In case a component model was specified, but the mapper must be instantiated using the default constructor the `usesPlain` attribute could be used like in the following example.
+
+.Referencing another mapper class without injecting it
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper(usesPlain = DateMapper.class, componentModel = "cdi")
+public class CarMapper {
+
+    CarDto carToCarDto(Car car);
+}
+----
+====
+
 [[passing-target-type]]
 === Passing the mapping target type to custom mappers
 
-When having a custom mapper hooked into the generated mapper with `@Mapper#uses()`, an additional parameter of type `Class` (or a super-type of it) can be defined in the custom mapping method in order to perform general mapping tasks for specific target object types. That attribute must be annotated with `@TargetType` for MapStruct to generate calls that pass the `Class` instance representing the corresponding property type of the target bean.
+When having a custom mapper hooked into the generated mapper with `@Mapper#uses()` or `@Mapper#usesPlain()`, an additional parameter of type `Class` (or a super-type of it) can be defined in the custom mapping method in order to perform general mapping tasks for specific target object types. That attribute must be annotated with `@TargetType` for MapStruct to generate calls that pass the `Class` instance representing the corresponding property type of the target bean.
 
 For instance, the `CarDto` could have a property `owner` of type `Reference` that contains the primary key of a `Person` entity. You could now create a generic custom mapper that resolves any `Reference` objects to their corresponding managed JPA entity instances.
 
@@ -1165,7 +1180,7 @@ public CarDto toCar(Car car, Locale translationLocale) {
 [[mapping-method-resolution]]
 === Mapping method resolution
 
-When mapping a property from one type to another, MapStruct looks for the most specific method which maps the source type into the target type. The method may either be declared on the same mapper interface or on another mapper which is registered via `@Mapper#uses()`. The same applies for factory methods (see <<object-factories>>).
+When mapping a property from one type to another, MapStruct looks for the most specific method which maps the source type into the target type. The method may either be declared on the same mapper interface or on another mapper which is registered via `@Mapper#uses()` or `@Mapper#usesPlain()`. The same applies for factory methods (see <<object-factories>>).
 
 The algorithm for finding a mapping or factory method resembles Java's method resolution algorithm as much as possible. In particular, methods with a more specific source type will take precedence (e.g. if there are two methods, one which maps the searched source type, and another one which maps a super-type of the same). In case more than one most-specific method is found, an error will be raised.
 
@@ -1747,7 +1762,7 @@ By default, the generated code for mapping one bean type into another or updatin
 
 Alternatively you can plug in custom object factories which will be invoked to obtain instances of the target type. One use case for this is JAXB which creates `ObjectFactory` classes for obtaining new instances of schema types.
 
-To make use of custom factories register them via `@Mapper#uses()` as described in <<invoking-other-mappers>>, or implement them directly in your mapper. When creating the target object of a bean mapping, MapStruct will look for a parameterless method, a method annotated with `@ObjectFactory`, or a method with only one `@TargetType` parameter that returns the required target type and invoke this method instead of calling the default constructor:
+To make use of custom factories register them via `@Mapper#uses()` or `@Mapper#usesPlain()` as described in <<invoking-other-mappers>>, or implement them directly in your mapper. When creating the target object of a bean mapping, MapStruct will look for a parameterless method, a method annotated with `@ObjectFactory`, or a method with only one `@TargetType` parameter that returns the required target type and invoke this method instead of calling the default constructor:
 
 .Custom object factories
 ====
@@ -2502,7 +2517,7 @@ private PersonMapper personMapper; // injects the decorator, with the injected o
 
 Decorators may not always fit the needs when it comes to customizing mappers. For example, if you need to perform the customization not only for a few selected methods, but for all methods that map specific super-types: in that case, you can use *callback methods* that are invoked before the mapping starts or after the mapping finished.
 
-Callback methods can be implemented in the abstract mapper itself, in a type reference in `Mapper#uses`, or in a type used as `@Context` parameter.
+Callback methods can be implemented in the abstract mapper itself, in a type reference in `@Mapper#uses()` or `@Mapper#usesPlain()`, or in a type used as `@Context` parameter.
 
 .Mapper with @BeforeMapping and @AfterMapping hooks
 ====
@@ -2613,7 +2628,8 @@ Within those groups, the method invocations are ordered by their location of def
 1. Methods declared on `@Context` parameters, ordered by the parameter order.
 2. Methods implemented in the mapper itself.
 3. Methods from types referenced in `Mapper#uses()`, in the order of the type declaration in the annotation.
-4. Methods declared in one type are used after methods declared in their super-type.
+4. Methods from types referenced in `Mapper#usesPlain()`, in the order of the type declaration in the annotation.
+5. Methods declared in one type are used after methods declared in their super-type.
 
 *Important:* the order of methods declared within one type can not be guaranteed, as it depends on the compiler and the processing environment implementation.
 

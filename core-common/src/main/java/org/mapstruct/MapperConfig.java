@@ -51,11 +51,21 @@ import org.mapstruct.factory.Mappers;
 public @interface MapperConfig {
 
     /**
-     * The mapper types used by this mapper.
+     * The mapper types used by this mapper. Given types are not allowed to be used for {@link #usesPlain()}.
      *
      * @return The mapper types used by this mapper.
      */
     Class<?>[] uses() default { };
+
+    /**
+     * The mapper types used by this mapper that should be retrieved by creating a new instance, therefore an
+     * accessible empty constructor is required. Given types are not allowed to be used for {@link #uses()}.
+     *
+     * @return The mapper types used by this mapper.
+     *
+     * @since 1.3
+     */
+    Class<?>[] usesPlain() default { };
 
     /**
      * How unmapped properties of the source type of a mapping should be
