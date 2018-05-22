@@ -245,7 +245,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         ParameterProvidedMethods contextProvidedMethods =
-            retrieveLifecycleMethodsFromContext( contextParameters, mapperToImplement, mapperConfig );
+            retrieveContextProvidedMethods( contextParameters, mapperToImplement, mapperConfig );
 
         return new SourceMethod.Builder()
             .setExecutable( method )
@@ -275,7 +275,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .build();
     }
 
-    private ParameterProvidedMethods retrieveLifecycleMethodsFromContext(
+    private ParameterProvidedMethods retrieveContextProvidedMethods(
             List<Parameter> contextParameters, TypeElement mapperToImplement, MapperConfiguration mapperConfig) {
 
         ParameterProvidedMethods.Builder builder = ParameterProvidedMethods.builder();
@@ -289,14 +289,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 mapperConfig,
                 Collections.<SourceMethod> emptyList() );
 
-            List<SourceMethod> lifecycleMethods = new ArrayList<SourceMethod>( contextParamMethods.size() );
+            List<SourceMethod> contextProvidedMethods = new ArrayList<SourceMethod>( contextParamMethods.size() );
             for ( SourceMethod sourceMethod : contextParamMethods ) {
-                if ( sourceMethod.isLifecycleCallbackMethod() ) {
-                    lifecycleMethods.add( sourceMethod );
+                if ( sourceMethod.isLifecycleCallbackMethod() || sourceMethod.isObjectFactory() ) {
+                    contextProvidedMethods.add( sourceMethod );
                 }
             }
 
-            builder.addMethodsForParameter( contextParam, lifecycleMethods );
+            builder.addMethodsForParameter( contextParam, contextProvidedMethods );
         }
 
         return builder.build();

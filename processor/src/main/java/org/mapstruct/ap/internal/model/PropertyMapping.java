@@ -18,13 +18,18 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import javax.lang.model.element.AnnotationMirror;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 
@@ -54,15 +59,10 @@ import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-
-import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.last;
-import org.mapstruct.ap.internal.util.NativeTypes;
 
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
@@ -433,8 +433,8 @@ public class PropertyMapping extends ModelElement {
                 boolean mapNullToDefault = method.getMapperConfiguration().
                     getNullValueMappingStrategy() == NullValueMappingStrategyPrism.RETURN_DEFAULT;
 
-                Assignment factory = ctx.getMappingResolver()
-                    .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( rightHandSide ) );
+                Assignment factory = ObjectFactoryMethodResolver
+                    .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( rightHandSide ), ctx );
                 return new UpdateWrapper( rhs, method.getThrownTypes(), factory, isFieldAssignment(),  targetType,
                     !rhs.isSourceReferenceParameter(), mapNullToDefault );
             }
@@ -816,7 +816,7 @@ public class PropertyMapping extends ModelElement {
                             getNullValueMappingStrategy() == NullValueMappingStrategyPrism.RETURN_DEFAULT;
 
                         Assignment factoryMethod =
-                            ctx.getMappingResolver().getFactoryMethod( method, targetType, null );
+                            ObjectFactoryMethodResolver.getFactoryMethod( method, targetType, null, ctx );
 
                         assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod,
                             isFieldAssignment(), targetType, false, mapNullToDefault );

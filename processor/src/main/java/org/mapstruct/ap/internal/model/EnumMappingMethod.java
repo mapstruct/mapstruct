@@ -104,9 +104,9 @@ public class EnumMappingMethod extends MappingMethod {
 
             Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
-                LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
+                LifecycleMethodResolver.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
+                LifecycleMethodResolver.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
 
             return new EnumMappingMethod( method, enumMappings, beforeMappingMethods, afterMappingMethods );
         }

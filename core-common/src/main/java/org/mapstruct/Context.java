@@ -32,8 +32,9 @@ import java.lang.annotation.Target;
  * {@code @}{@link BeforeMapping}/{@code @}{@link AfterMapping} methods, which are called on the provided context
  * parameter value if applicable.
  * <p>
- * <strong>Note:</strong> no {@code null} checks are performed before calling before/after mapping methods on context
- * parameters. The caller needs to make sure that no {@code null} are passed in that case.
+ * <strong>Note:</strong> no {@code null} checks are performed before calling before/after mapping methods or object
+ * factory methods on {@code @}{@link Context} annotated parameters. The caller needs to make sure that no {@code null}
+ * are passed in that case.
  * <p>
  * For generated code to call a method that is declared with {@code @Context} parameters, the declaration of the mapping
  * method being generated needs to contain at least those (or assignable) {@code @Context} parameters as well. MapStruct
@@ -135,7 +136,55 @@ import java.lang.annotation.Target;
  * }
  * </code>
  * </pre>
+ * <p>
+ * <strong>Example 3:</strong> Using {@code @Context} parameters for creating an entity object by calling an
+ * {@code @}{@link ObjectFactory} methods:
  *
+ * <pre>
+ * <code>
+ * // type of the context parameter
+ * public class ContextObjectFactory {
+ *     &#64;PersistenceContext(unitName = "my-unit")
+ *     private EntityManager em;
+ *
+ *     &#64;ObjectFactory
+ *     public Valve create( String id ) {
+ *        Query query = em.createNamedQuery("Valve.findById");
+ *        query.setParameter("id", id);
+ *        Valve result = query.getSingleResult();
+ *        if ( result != null ) {
+ *            result = new Valve( id );
+ *        }
+ *        return result;
+ *     }
+ *
+ * }
+ *
+ * &#64;Mapper
+ * public interface ContextWithObjectFactoryMapper {
+ *     Valve map(ValveDto dto, &#64;Context ContextObjectFactory factory);
+ * }
+ *
+ *
+ * // generates:
+ *
+ * public class ContextWithObjectFactoryMapperImpl implements ContextWithObjectFactoryMapper {
+ *
+ *   &#64;Override
+ *   public Valve map(ValveDto dto, ContextObjectFactory factory) {
+ *       if ( dto == null ) {
+ *           return null;
+ *       }
+ *
+ *       Valve valve = factory.create();
+ *
+ *       valve.setOneWay( dto.isOneWay() );
+ *
+ *       return valve;
+ *   }
+ * }
+ * </code>
+ * </pre>
  * @author Andreas Gudian
  * @since 1.2
  */

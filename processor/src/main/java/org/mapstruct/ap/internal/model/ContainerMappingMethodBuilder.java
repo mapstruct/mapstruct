@@ -138,19 +138,19 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
         MethodReference factoryMethod = null;
         if ( !method.isUpdateMethod() ) {
-            factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null );
+            factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod( method, method.getResultType(), null, ctx );
         }
 
         Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
         existingVariables.add( loopVariableName );
 
-        List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleCallbackFactory.beforeMappingMethods(
+        List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleMethodResolver.beforeMappingMethods(
             method,
             selectionParameters,
             ctx,
             existingVariables
         );
-        List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleCallbackFactory.afterMappingMethods(
+        List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleMethodResolver.afterMappingMethods(
             method,
             selectionParameters,
             ctx,

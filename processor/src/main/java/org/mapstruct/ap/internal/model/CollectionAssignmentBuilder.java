@@ -141,8 +141,8 @@ public class CollectionAssignmentBuilder {
                     );
                 }
 
-                Assignment factoryMethod = ctx.getMappingResolver()
-                    .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( sourceRHS ) );
+                Assignment factoryMethod = ObjectFactoryMethodResolver
+                    .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( sourceRHS ), ctx );
                 result = new UpdateWrapper(
                     result,
                     method.getThrownTypes(),

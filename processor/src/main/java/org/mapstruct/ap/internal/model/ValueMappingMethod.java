@@ -122,9 +122,9 @@ public class ValueMappingMethod extends MappingMethod {
             SelectionParameters selectionParameters = getSelectionParameters( method, ctx.getTypeUtils() );
             Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
-                LifecycleCallbackFactory.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
+                LifecycleMethodResolver.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
+                LifecycleMethodResolver.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
 
             // finally return a mapping
             return new ValueMappingMethod( method, mappingEntries, nullTarget, defaultTarget,

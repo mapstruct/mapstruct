@@ -1119,6 +1119,8 @@ public class CarMapperImpl implements CarMapper {
 
 Additional _context_ or _state_ information can be passed through generated mapping methods to custom methods with `@Context` parameters. Such parameters are passed to other mapping methods, `@ObjectFactory` methods (see <<object-factories>>) or `@BeforeMapping` / `@AfterMapping` methods (see <<customizing-mappings-with-before-and-after>>) when applicable and can thus be used in custom code.
 
+`@Context` parameters are searched for `@ObjectFactory` methods, which are called on the provided context parameter value if applicable.
+
 `@Context` parameters are also searched for `@BeforeMapping` / `@AfterMapping` methods, which are called on the provided context parameter value if applicable.
 
 *Note:* no `null` checks are performed before calling before/after mapping methods on context parameters. The caller needs to make sure that `null` is not passed in that case.

@@ -29,14 +29,15 @@ import java.lang.annotation.Target;
  * By default beans are created during the mapping process with the default constructor. If a factory method with a
  * return type that is assignable to the required object type is present, then the factory method is used instead.
  * <p>
- * Factory methods can be defined without parameters, with an {@code @}{@link TargetType} parameter, a {@code @}
- * {@link Context} parameter, or with the mapping source parameter. If any of those parameters are defined, then
- * the mapping method that is supposed to use the factory method needs to be declared with an assignable result type,
- * assignable context parameter, and/or assignable source types.
+ * Factory methods can be defined without parameters, with an {@code @}{@link TargetType} parameter, a
+ * {@code @}{@link Context} parameter, or with the mapping source parameter. If any of those parameters are defined,
+ * then the mapping method that is supposed to use the factory method needs to be declared with an assignable result
+ * type, assignable context parameter, and/or assignable source types.
  * <p>
- * <strong>Note:</strong> the usage of this annotation is <em>optional</em> if no source parameters are part of the
- * signature, i.e. it is declared without parameters or only with {@code @}{@link TargetType} and/or {@code @}
- * {@link Context}.
+ * <strong>Note:</strong> the usage of this annotation is <em>optional</em> when used in the {@link Mapper#uses()}
+ * if no source parameters are part of the signature, i.e. it is declared without parameters or only with
+ * {@code @}{@link TargetType} and/or {@code @}{@link Context}. It is however <em>mandatory</em> when used inside
+ * an {@code @}{@link Context} annotated class.
  * <p>
  * <strong>Example:</strong> Using a factory method for entities to check whether the entity already exists in the
  * EntityManager and then returns the managed instance:

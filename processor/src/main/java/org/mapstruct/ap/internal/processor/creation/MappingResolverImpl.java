@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -45,7 +44,6 @@ import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
 import org.mapstruct.ap.internal.model.VirtualMappingMethod;
 import org.mapstruct.ap.internal.model.common.Assignment;
-import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -127,65 +125,6 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     public Set<VirtualMappingMethod> getUsedVirtualMappings() {
         return usedVirtualMappings;
-    }
-
-    @Override
-    public MethodReference getFactoryMethod(final Method mappingMethod, Type targetType,
-                                            SelectionParameters selectionParameters) {
-
-        List<SelectedMethod<Method>> matchingFactoryMethods =
-            methodSelectors.getMatchingMethods(
-                mappingMethod,
-                sourceModel,
-                java.util.Collections.<Type> emptyList(),
-                targetType.getEffectiveType(),
-                SelectionCriteria.forFactoryMethods( selectionParameters ) );
-
-        if (matchingFactoryMethods.isEmpty()) {
-            return findBuilderFactoryMethod( targetType );
-        }
-
-        if ( matchingFactoryMethods.size() > 1 ) {
-            messager.printMessage(
-                mappingMethod.getExecutable(),
-                Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
-                targetType.getEffectiveType(),
-                Strings.join( matchingFactoryMethods, ", " ) );
-
-            return null;
-        }
-
-        SelectedMethod<Method> matchingFactoryMethod = first( matchingFactoryMethods );
-
-        MapperReference ref = findMapperReference( matchingFactoryMethod.getMethod() );
-
-        return MethodReference.forMapperReference(
-            matchingFactoryMethod.getMethod(),
-            ref,
-            matchingFactoryMethod.getParameterBindings() );
-    }
-
-    private MethodReference findBuilderFactoryMethod(Type targetType) {
-        BuilderType builder = targetType.getBuilderType();
-        if ( builder == null ) {
-            return null;
-        }
-
-        ExecutableElement builderCreationMethod = builder.getBuilderCreationMethod();
-        if ( builderCreationMethod.getKind() == ElementKind.CONSTRUCTOR ) {
-            // If the builder creation method is a constructor it would be handled properly down the line
-            return null;
-        }
-
-        if ( !builder.getBuildingType().isAssignableTo( targetType ) ) {
-            //TODO print error message
-            return null;
-        }
-
-        return MethodReference.forStaticBuilder(
-            builderCreationMethod.getSimpleName().toString(),
-            builder.getOwningType()
-        );
     }
 
     private MapperReference findMapperReference(Method method) {

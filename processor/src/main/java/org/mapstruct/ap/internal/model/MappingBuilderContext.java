@@ -107,18 +107,6 @@ public class MappingBuilderContext {
                                        SelectionParameters selectionParameters, SourceRHS sourceRHS,
                                        boolean preferUpdateMethods);
 
-        /**
-         * returns a no arg factory method
-         *
-         * @param mappingMethod target mapping method
-         * @param target return type to match
-         * @param selectionParameters parameters used in the selection process
-         *
-         * @return a method reference to the factory method, or null if no suitable, or ambiguous method found
-         *
-         */
-        MethodReference getFactoryMethod(Method mappingMethod, Type target, SelectionParameters selectionParameters);
-
         Set<VirtualMappingMethod> getUsedVirtualMappings();
     }
 

@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -35,8 +37,6 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.Strings;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one {@code Map} type to another. Keys and
@@ -191,7 +191,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
-                factoryMethod = ctx.getMappingResolver().getFactoryMethod( method, method.getResultType(), null );
+                factoryMethod = ObjectFactoryMethodResolver
+                    .getFactoryMethod( method, method.getResultType(), null, ctx );
             }
 
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );
@@ -199,9 +200,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
             Set<String> existingVariables = new HashSet<String>( method.getParameterNames() );
             List<LifecycleCallbackMethodReference> beforeMappingMethods =
-                LifecycleCallbackFactory.beforeMappingMethods( method, null, ctx, existingVariables );
+                LifecycleMethodResolver.beforeMappingMethods( method, null, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, null, ctx, existingVariables );
+                LifecycleMethodResolver.afterMappingMethods( method, null, ctx, existingVariables );
 
             return new MapMappingMethod(
                 method,

@@ -190,10 +190,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
-                factoryMethod = ctx.getMappingResolver().getFactoryMethod(
+                factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod(
                     method,
                     method.getResultType(),
-                    selectionParameters
+                    selectionParameters,
+                    ctx
                 );
             }
 
@@ -246,14 +247,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             sortPropertyMappingsByDependencies();
 
-            List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleCallbackFactory.beforeMappingMethods(
+            List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleMethodResolver.beforeMappingMethods(
                 method,
                 selectionParameters,
                 ctx,
                 existingVariableNames
             );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
-                LifecycleCallbackFactory.afterMappingMethods( method, selectionParameters, ctx, existingVariableNames );
+                LifecycleMethodResolver.afterMappingMethods( method, selectionParameters, ctx, existingVariableNames );
 
             if (factoryMethod != null && method instanceof ForgedMethod ) {
                 ( (ForgedMethod) method ).addThrownTypes( factoryMethod.getThrownTypes() );

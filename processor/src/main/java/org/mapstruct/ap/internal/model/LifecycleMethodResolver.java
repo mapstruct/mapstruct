@@ -38,9 +38,9 @@ import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
  *
  * @author Andreas Gudian
  */
-public final class LifecycleCallbackFactory {
+public final class LifecycleMethodResolver {
 
-    private LifecycleCallbackFactory() {
+    private LifecycleMethodResolver() {
     }
 
     /**
@@ -54,8 +54,7 @@ public final class LifecycleCallbackFactory {
                                                                               SelectionParameters selectionParameters,
                                                                               MappingBuilderContext ctx,
                                                                               Set<String> existingVariableNames) {
-        return collectLifecycleCallbackMethods(
-            method,
+        return collectLifecycleCallbackMethods( method,
             selectionParameters,
             filterBeforeMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
             ctx,
@@ -73,8 +72,7 @@ public final class LifecycleCallbackFactory {
                                                                              SelectionParameters selectionParameters,
                                                                              MappingBuilderContext ctx,
                                                                              Set<String> existingVariableNames) {
-        return collectLifecycleCallbackMethods(
-            method,
+        return collectLifecycleCallbackMethods( method,
             selectionParameters,
             filterAfterMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
             ctx,
@@ -93,7 +91,9 @@ public final class LifecycleCallbackFactory {
         List<SourceMethod> availableMethods =
             new ArrayList<SourceMethod>( methodsProvidedByParams.size() + sourceModelMethods.size() );
 
-        availableMethods.addAll( methodsProvidedByParams );
+        for ( SourceMethod methodProvidedByParams : methodsProvidedByParams ) {
+            availableMethods.add( methodProvidedByParams );
+        }
         availableMethods.addAll( sourceModelMethods );
 
         return availableMethods;
@@ -144,7 +144,7 @@ public final class LifecycleCallbackFactory {
                     existingVariableNames ) );
             }
             else {
-                MapperReference mapperReference = findMapperReference(
+                MapperReference mapperReference = MapperReference.findMapperReference(
                     ctx.getMapperReferences(),
                     candidate.getMethod() );
 
@@ -156,17 +156,6 @@ public final class LifecycleCallbackFactory {
             }
         }
         return result;
-    }
-
-    private static MapperReference findMapperReference(List<MapperReference> mapperReferences, SourceMethod method) {
-        for ( MapperReference ref : mapperReferences ) {
-            if ( ref.getType().equals( method.getDeclaringMapper() ) ) {
-                ref.setUsed( ref.isUsed() || !method.isStatic() );
-                ref.setTypeRequiresImport( true );
-                return ref;
-            }
-        }
-        return null;
     }
 
     private static List<SourceMethod> filterBeforeMappingMethods(List<SourceMethod> methods) {

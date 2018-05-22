@@ -79,12 +79,12 @@ public class SourceMethod implements Method {
     private List<SourceMethod> applicablePrototypeMethods;
     private List<SourceMethod> applicableReversePrototypeMethods;
 
-    private Boolean isBeanMapping;
     private Boolean isEnumMapping;
     private Boolean isValueMapping;
     private Boolean isIterableMapping;
     private Boolean isMapMapping;
     private Boolean isStreamMapping;
+    private final boolean hasObjectFactoryAnnotation;
 
     public static class Builder {
 
@@ -231,7 +231,8 @@ public class SourceMethod implements Method {
 
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
         this.targetTypeParameter = Parameter.getTargetTypeParameter( parameters );
-        this.isObjectFactory = determineIfIsObjectFactory( executable );
+        this.hasObjectFactoryAnnotation = ObjectFactoryPrism.getInstanceOn( executable ) != null;
+        this.isObjectFactory = determineIfIsObjectFactory();
 
         this.typeUtils = builder.typeUtils;
         this.typeFactory = builder.typeFactory;
@@ -240,13 +241,12 @@ public class SourceMethod implements Method {
         this.mapperToImplement = builder.definingType;
     }
 
-    private boolean determineIfIsObjectFactory(ExecutableElement executable) {
-        boolean hasFactoryAnnotation = ObjectFactoryPrism.getInstanceOn( executable ) != null;
+    private boolean determineIfIsObjectFactory() {
         boolean hasNoSourceParameters = getSourceParameters().isEmpty();
         boolean hasNoMappingTargetParam = getMappingTargetParameter() == null;
         return !isLifecycleCallbackMethod() && !returnType.isVoid()
             && hasNoMappingTargetParam
-            && ( hasFactoryAnnotation || hasNoSourceParameters );
+            && ( hasObjectFactoryAnnotation || hasNoSourceParameters );
     }
 
     @Override
@@ -605,5 +605,9 @@ public class SourceMethod implements Method {
     @Override
     public boolean isUpdateMethod() {
         return getMappingTargetParameter() != null;
+    }
+
+    public boolean hasObjectFactoryAnnotation() {
+        return hasObjectFactoryAnnotation;
     }
 }
