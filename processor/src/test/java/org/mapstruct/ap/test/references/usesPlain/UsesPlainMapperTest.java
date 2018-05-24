@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mapstruct.ap.test.references.Bar;
 import org.mapstruct.ap.test.references.Foo;
 import org.mapstruct.ap.test.references.FooMapper;
+import org.mapstruct.ap.test.references.ManualFooMapper;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
@@ -74,6 +75,28 @@ public class UsesPlainMapperTest {
     })
     public void testThatCodeForDecoratedMapperWorks() {
         Target mappedTarget = DecoratedUsesPlainMapper.INSTANCE.toTarget( this.source );
+
+        assertThat( mappedTarget ).isNotNull();
+        assertThat( mappedTarget ).isEqualTo( this.target );
+    }
+
+    @Test
+    @WithClasses({
+        UsesPlainMapperConfigMapper.class, UsesPlainMapperConfig.class
+    })
+    public void testThatCodeForMapperConfigMapperWorks() {
+        Target mappedTarget = UsesPlainMapperConfigMapper.INSTANCE.toTarget( this.source );
+
+        assertThat( mappedTarget ).isNotNull();
+        assertThat( mappedTarget ).isEqualTo( this.target );
+    }
+
+    @Test
+    @WithClasses({
+        UsesPlainMapperConfigMapper2.class, UsesPlainMapperConfig.class, ManualFooMapper.class
+    })
+    public void testThatCodeForMapperConfigMapper2Works() {
+        Target mappedTarget = UsesPlainMapperConfigMapper2.INSTANCE.toTarget( this.source );
 
         assertThat( mappedTarget ).isNotNull();
         assertThat( mappedTarget ).isEqualTo( this.target );
