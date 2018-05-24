@@ -102,6 +102,22 @@ public class UsesPlainMapperTest {
     }
 
     @Test
+    @WithClasses(UsesPlainSpringMapper.class)
+    public void testThatCodeForSpringMapperWorks() throws Exception {
+        UsesPlainSpringMapper mapper = UsesPlainSpringMapper.INSTANCE;
+
+        // value would be injected, we need to this manually
+        Field field = mapper.getClass().getDeclaredField( "fooMapper" );
+        field.setAccessible( true );
+        field.set( mapper, FooMapper.INSTANCE );
+
+        Target mappedTarget = mapper.toTarget( this.source );
+
+        assertThat( mappedTarget ).isNotNull();
+        assertThat( mappedTarget ).isEqualTo( this.target );
+    }
+
+    @Test
     @WithClasses(ErroneousDuplicateUsesMapper.class)
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
