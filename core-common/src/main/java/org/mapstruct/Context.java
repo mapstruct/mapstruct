@@ -162,21 +162,20 @@ import java.lang.annotation.Target;
  *
  * &#64;Mapper
  * public interface ContextWithObjectFactoryMapper {
- *     Valve map(ValveDto dto, &#64;Context ContextObjectFactory factory);
+ *     Valve map(ValveDto dto, &#64;Context ContextObjectFactory factory, String id);
  * }
  *
  *
  * // generates:
- *
  * public class ContextWithObjectFactoryMapperImpl implements ContextWithObjectFactoryMapper {
  *
  *   &#64;Override
- *   public Valve map(ValveDto dto, ContextObjectFactory factory) {
+ *   public Valve map(ValveDto dto, ContextObjectFactory factory, String id) {
  *       if ( dto == null ) {
  *           return null;
  *       }
  *
- *       Valve valve = factory.create();
+ *       Valve valve = factory.create( id );
  *
  *       valve.setOneWay( dto.isOneWay() );
  *
