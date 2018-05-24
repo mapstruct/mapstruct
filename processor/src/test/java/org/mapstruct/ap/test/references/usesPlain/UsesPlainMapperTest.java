@@ -47,17 +47,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 public class UsesPlainMapperTest {
+    private static final String VALUE = "prop1";
 
     private Source source;
-    private Target target;
 
     @Before
     public void setup() {
         this.source = new Source();
-        this.source.setValue( new Foo( "prop1" ) );
-
-        this.target = new Target( true );
-        this.target.setValue( new Bar( "prop1" ) );
+        this.source.setValue( new Foo( VALUE ) );
     }
 
     @Test
@@ -65,8 +62,7 @@ public class UsesPlainMapperTest {
     public void testThatCodeForDefaultMapperWorks() {
         Target mappedTarget = UsesPlainMapper.INSTANCE.toTarget( this.source );
 
-        assertThat( mappedTarget ).isNotNull();
-        assertThat( mappedTarget ).isEqualTo( this.target );
+        assertThatSourceWasMappedCorrectly( mappedTarget );
     }
 
     @Test
@@ -76,8 +72,7 @@ public class UsesPlainMapperTest {
     public void testThatCodeForDecoratedMapperWorks() {
         Target mappedTarget = DecoratedUsesPlainMapper.INSTANCE.toTarget( this.source );
 
-        assertThat( mappedTarget ).isNotNull();
-        assertThat( mappedTarget ).isEqualTo( this.target );
+        assertThatSourceWasMappedCorrectly( mappedTarget );
     }
 
     @Test
@@ -87,8 +82,7 @@ public class UsesPlainMapperTest {
     public void testThatCodeForMapperConfigMapperWorks() {
         Target mappedTarget = UsesPlainMapperConfigMapper.INSTANCE.toTarget( this.source );
 
-        assertThat( mappedTarget ).isNotNull();
-        assertThat( mappedTarget ).isEqualTo( this.target );
+        assertThatSourceWasMappedCorrectly( mappedTarget );
     }
 
     @Test
@@ -98,8 +92,7 @@ public class UsesPlainMapperTest {
     public void testThatCodeForMapperConfigMapper2Works() {
         Target mappedTarget = UsesPlainMapperConfigMapper2.INSTANCE.toTarget( this.source );
 
-        assertThat( mappedTarget ).isNotNull();
-        assertThat( mappedTarget ).isEqualTo( this.target );
+        assertThatSourceWasMappedCorrectly( mappedTarget );
     }
 
     @Test
@@ -136,8 +129,7 @@ public class UsesPlainMapperTest {
 
         Target mappedTarget = mapper.toTarget( this.source );
 
-        assertThat( mappedTarget ).isNotNull();
-        assertThat( mappedTarget ).isEqualTo( this.target );
+        assertThatSourceWasMappedCorrectly( mappedTarget );
     }
 
     @Test
@@ -149,7 +141,7 @@ public class UsesPlainMapperTest {
                 type = ErroneousDuplicateUsesMapper.class,
                 line = 28,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                messageRegExp = ".* is used in 'uses' and 'usesPlain'."
+                messageRegExp = "It is not allowed to use the same type in 'uses' and 'usesPlain' (.*)."
             ),
             @Diagnostic(
                 type = ErroneousDuplicateUsesMapper.class,
@@ -159,5 +151,12 @@ public class UsesPlainMapperTest {
             )
         })
     public void testThatCompiliationFailedForDuplicatedUsedMappers() {
+    }
+
+    private void assertThatSourceWasMappedCorrectly(Target target) {
+        assertThat( target ).isNotNull();
+        assertThat( target.isCreatedFromObjectFactory() ).isTrue();
+        assertThat( target.getValue() ).isNotNull();
+        assertThat( target.getValue().getProp1() ).isEqualTo( VALUE );
     }
 }

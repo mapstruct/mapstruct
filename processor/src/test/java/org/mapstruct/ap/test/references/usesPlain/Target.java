@@ -42,27 +42,7 @@ public class Target {
         this.value = value;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if ( this == o ) {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() ) {
-            return false;
-        }
-
-        Target target = (Target) o;
-
-        if ( createdFromObjectFactory != target.createdFromObjectFactory ) {
-            return false;
-        }
-        return value != null ? value.equals( target.value ) : target.value == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = ( createdFromObjectFactory ? 1 : 0 );
-        result = 31 * result + ( value != null ? value.hashCode() : 0 );
-        return result;
+    public boolean isCreatedFromObjectFactory() {
+        return createdFromObjectFactory;
     }
 }

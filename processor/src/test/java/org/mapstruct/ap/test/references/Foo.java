@@ -40,23 +40,4 @@ public class Foo {
     public void setProp1(String prop1) {
         this.prop1 = prop1;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if ( this == o ) {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() ) {
-            return false;
-        }
-
-        Foo foo = (Foo) o;
-
-        return prop1 != null ? prop1.equals( foo.prop1 ) : foo.prop1 == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return prop1 != null ? prop1.hashCode() : 0;
-    }
 }
