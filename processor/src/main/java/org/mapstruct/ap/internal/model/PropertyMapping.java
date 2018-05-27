@@ -452,6 +452,7 @@ public class PropertyMapping extends ModelElement {
                 if ( targetReadAccessor == null ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
+                        mirror,
                         Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                         targetPropertyName
                     );
@@ -857,6 +858,7 @@ public class PropertyMapping extends ModelElement {
                         if ( targetReadAccessor == null ) {
                             ctx.getMessager().printMessage(
                                 method.getExecutable(),
+                                mirror,
                                 Message.CONSTANTMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                                 targetPropertyName
                             );
@@ -935,6 +937,7 @@ public class PropertyMapping extends ModelElement {
             else {
                 ctx.getMessager().printMessage(
                     method.getExecutable(),
+                    mirror,
                     Message.CONSTANTMAPPING_NON_EXISTING_CONSTANT,
                     constantExpression,
                     targetType,
