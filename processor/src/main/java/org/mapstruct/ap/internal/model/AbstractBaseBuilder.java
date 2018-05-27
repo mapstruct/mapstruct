@@ -141,9 +141,34 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      * @param targetPropertyName the name of the target property
      */
     void reportCannotCreateMapping(Method method, String sourceErrorMessagePart, Type sourceType, Type targetType,
+                                   String targetPropertyName) {
+        ctx.getMessager().printMessage(
+            method.getExecutable(),
+            Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
+            sourceErrorMessagePart,
+            targetType,
+            targetPropertyName,
+            targetType,
+            sourceType
+        );
+    }
+
+    /**
+     * Reports that a mapping could not be created.
+     *
+     * @param method the method that should be mapped
+     * @param posHint hint which @Mapping is the culprit
+     * @param sourceErrorMessagePart the error message part for the source
+     * @param sourceType the source type of the mapping
+     * @param targetType the type of the target mapping
+     * @param targetPropertyName the name of the target property
+     */
+    void reportCannotCreateMapping(Method method, AnnotationMirror posHint, String sourceErrorMessagePart,
+                                   Type sourceType, Type targetType,
         String targetPropertyName) {
         ctx.getMessager().printMessage(
             method.getExecutable(),
+            posHint,
             Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
             sourceErrorMessagePart,
             targetType,
@@ -157,7 +182,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      * Report message
      *
      * @param method the method that should be mapped
-     * @param message message to report
+     * @param assignment assignment, potentially containing error information
      *
      * @return true when its an error
      *
@@ -171,7 +196,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      *
      * @param method the method that should be mapped
      * @param posHint position hing
-     * @param message message to report
+     * @param assignment assignment, potentially containing error information
      *
      * @return true when its an error
      *

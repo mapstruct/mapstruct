@@ -375,6 +375,7 @@ public class PropertyMapping extends ModelElement {
                 ForgedMethodHistory history = getForgedMethodHistory( rightHandSide );
                 reportCannotCreateMapping(
                     method,
+                    mirror,
                     history.createSourcePropertyErrorMessage(),
                     history.getSourceType(),
                     history.getTargetType(),
@@ -384,6 +385,7 @@ public class PropertyMapping extends ModelElement {
             else {
                 reportCannotCreateMapping(
                     method,
+                    mirror,
                     rightHandSide.getSourceErrorMessagePart(),
                     rightHandSide.getSourceType(),
                     targetType,

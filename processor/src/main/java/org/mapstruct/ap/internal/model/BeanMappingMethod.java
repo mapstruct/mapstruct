@@ -606,6 +606,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                 .nullValueCheckStrategy( mapping != null ? mapping.getNullValueCheckStrategy() : null )
                                 .nullValuePropertyMappingStrategy( mapping != null ?
                                     mapping.getNullValuePropertyMappingStrategy() : null )
+                                .mirror( mapping != null ? mapping.getMirror() : null )
                                 .build();
 
                             unprocessedSourceParameters.remove( sourceParameter );
@@ -672,6 +673,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                             .nullValueCheckStrategy( mapping != null ? mapping.getNullValueCheckStrategy() : null )
                             .nullValuePropertyMappingStrategy( mapping != null ?
                                 mapping.getNullValuePropertyMappingStrategy() : null )
+                            .mirror( mapping != null ? mapping.getMirror() : null )
                             .build();
 
                         propertyMappings.add( propertyMapping );
