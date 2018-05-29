@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.PropertyMapping" -->
+<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.AnonymousAnnotationMethod" -->
 <#--
 
      Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
@@ -19,13 +19,7 @@
      limitations under the License.
 
 -->
-<#list localVariableDefinitions as localVariableDefinition>
-    <@includeModel object=localVariableDefinition/>
-</#list>
-<@includeModel object=assignment
-               targetBeanName=ext.targetBeanName
-               existingInstanceMapping=ext.existingInstanceMapping
-               targetReadAccessorName=targetReadAccessorName
-               targetWriteAccessorName=targetWriteAccessorName
-               targetType=targetType
-               defaultValueAssignment=defaultValueAssignment />
+@Override
+public <@includeModel object=returnType/> ${name}() {
+      return <#if returnType.arrayType>new <@includeModel object=returnType/></#if> ${valueRepresentation};
+}

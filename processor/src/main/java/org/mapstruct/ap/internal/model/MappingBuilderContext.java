@@ -30,6 +30,7 @@ import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.LocalVariableDefinition;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -106,6 +107,31 @@ public class MappingBuilderContext {
                                        FormattingParameters formattingParameters,
                                        SelectionParameters selectionParameters, SourceRHS sourceRHS,
                                        boolean preferUpdateMethods);
+
+        /**
+         * returns a parameter assignment
+         *
+         * @param mappingMethod target mapping method
+         * @param targetType return type to match
+         * @param targetPropertyName name of the target property
+         * @param formattingParameters used for formatting dates and numbers
+         * @param selectionParameters parameters used in the selection process
+         * @param sourceRHS source information
+         * @param preferUpdateMethods selection should prefer update methods when present.
+         * @param localVariables contextAnnotations.
+         *
+         * @return an assignment to a method parameter, which can either be:
+         * <ol>
+         * <li>MethodReference</li>
+         * <li>TypeConversion</li>
+         * <li>SourceRHS Assignment (empty TargetAssignment)</li>
+         * <li>null, no assignment found</li>
+         * </ol>
+         */
+        Assignment getTargetAssignment(Method mappingMethod, Type targetType, String targetPropertyName,
+                                       FormattingParameters formattingParameters,
+                                       SelectionParameters selectionParameters, SourceRHS sourceRHS,
+                                       boolean preferUpdateMethods, List<LocalVariableDefinition> localVariables );
 
         Set<VirtualMappingMethod> getUsedVirtualMappings();
     }

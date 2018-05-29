@@ -18,11 +18,10 @@
  */
 package org.mapstruct.ap.internal.model.source.selector;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mapstruct.ap.internal.model.common.LocalVariableDefinition;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
@@ -30,6 +29,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.MethodMatcher;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Selects those methods from the given input set which match the given source and target types (via
@@ -67,7 +68,12 @@ public class TypeSelector implements MethodSelector {
             );
         }
         else {
-            availableBindings = getAvailableParameterBindingsFromSourceTypes( sourceTypes, targetType, mappingMethod );
+            availableBindings = getAvailableParameterBindingsFromSourceTypes(
+                sourceTypes,
+                targetType,
+                mappingMethod,
+                criteria
+            );
         }
 
         for ( SelectedMethod<T> method : methods ) {
@@ -80,10 +86,22 @@ public class TypeSelector implements MethodSelector {
 
                 if ( matchingMethod != null ) {
                     result.add( matchingMethod );
+                    markUsedLocalVariables( criteria.getLocalVariables(), matchingMethod.getParameterBindings() );
                 }
             }
         }
         return result;
+    }
+
+    private void markUsedLocalVariables(List<LocalVariableDefinition> localVariables, List<ParameterBinding> bindings) {
+        for ( LocalVariableDefinition localVariable : localVariables ) {
+            for ( ParameterBinding binding : bindings ) {
+                if ( localVariable.getName().equals( binding.getVariableName() )
+                    && localVariable.getType().equals( binding.getType() ) ) {
+                    localVariable.setUsed( true );
+                }
+            }
+        }
     }
 
     private List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType,
@@ -103,7 +121,7 @@ public class TypeSelector implements MethodSelector {
     }
 
     private List<ParameterBinding> getAvailableParameterBindingsFromSourceTypes(List<Type> sourceTypes,
-            Type targetType, Method mappingMethod) {
+            Type targetType, Method mappingMethod, SelectionCriteria criteria) {
 
         List<ParameterBinding> availableParams = new ArrayList<ParameterBinding>( sourceTypes.size() + 2 );
 
@@ -117,6 +135,10 @@ public class TypeSelector implements MethodSelector {
             if ( param.isMappingContext() ) {
                 availableParams.add( ParameterBinding.fromParameter( param ) );
             }
+        }
+
+        for ( LocalVariableDefinition localVariable : criteria.getLocalVariables() ) {
+                availableParams.add( ParameterBinding.fromLocalVariable( localVariable ) );
         }
 
         return availableParams;

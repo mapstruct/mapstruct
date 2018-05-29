@@ -18,17 +18,12 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
-import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
-import static org.mapstruct.ap.internal.util.Collections.first;
-import static org.mapstruct.ap.internal.util.Collections.last;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
@@ -41,6 +36,7 @@ import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.LocalVariableDefinition;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
@@ -64,6 +60,11 @@ import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.ValueProvider;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
+import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.DIRECT;
+import static org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism.ALWAYS;
+import static org.mapstruct.ap.internal.util.Collections.first;
+import static org.mapstruct.ap.internal.util.Collections.last;
+
 /**
  * Represents the mapping between a source and target property, e.g. from {@code String Source#foo} to
  * {@code int Target#bar}. Name and type of source and target property can differ. If they have different types, the
@@ -81,6 +82,7 @@ public class PropertyMapping extends ModelElement {
     private final Assignment assignment;
     private final List<String> dependsOn;
     private final Assignment defaultValueAssignment;
+    private final List<LocalVariableDefinition> localVariableDefinitions;
 
     public enum TargetWriteAccessorType {
         FIELD,
@@ -280,6 +282,25 @@ public class PropertyMapping extends ModelElement {
                 preferUpdateMethods = method.getMappingTargetParameter() != null;
             }
 
+            // move this
+            List<LocalVariableDefinition> localVariableDefinitions = new ArrayList<LocalVariableDefinition>();
+            if ( targetWriteAccessor.getExecutable() != null ) {
+                List<? extends AnnotationMirror> mirrors = targetWriteAccessor.getExecutable().getAnnotationMirrors();
+                for ( AnnotationMirror mirror : mirrors ) {
+                    AnonymousAnnotationInstance instance = new AnonymousAnnotationInstance.Builder()
+                        .ctx( ctx )
+                        .annotationMirror( mirror )
+                        .build();
+                    localVariableDefinitions.add( new LocalVariableDefinition(
+                        instance.getAnnotationType(),
+                        "test",
+                        instance
+                    ) );
+                }
+            }
+            // end move this
+
+
             // forge a method instead of resolving one when there are mapping options.
             Assignment assignment = null;
             if ( forgeMethodWithMappingOptions == null ) {
@@ -290,7 +311,8 @@ public class PropertyMapping extends ModelElement {
                     formattingParameters,
                     selectionParameters,
                     rightHandSide,
-                    preferUpdateMethods
+                    preferUpdateMethods,
+                    localVariableDefinitions
                 );
             }
 
@@ -328,6 +350,7 @@ public class PropertyMapping extends ModelElement {
                 reportCannotCreateMapping();
             }
 
+
             return new PropertyMapping(
                 targetPropertyName,
                 rightHandSide.getSourceParameterName(),
@@ -336,7 +359,8 @@ public class PropertyMapping extends ModelElement {
                 targetType,
                 assignment,
                 dependsOn,
-                getDefaultValueAssignment( assignment )
+                getDefaultValueAssignment( assignment ),
+                localVariableDefinitions
             );
         }
 
@@ -940,16 +964,24 @@ public class PropertyMapping extends ModelElement {
     private PropertyMapping(String name, String targetWriteAccessorName,
                             ValueProvider targetReadAccessorProvider,
                             Type targetType, Assignment propertyAssignment,
-                            List<String> dependsOn, Assignment defaultValueAssignment ) {
-        this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
-            targetType, propertyAssignment, dependsOn, defaultValueAssignment
+                            List<String> dependsOn, Assignment defaultValueAssignment) {
+        this( name,
+            null,
+            targetWriteAccessorName,
+            targetReadAccessorProvider,
+            targetType,
+            propertyAssignment,
+            dependsOn,
+            defaultValueAssignment,
+            new ArrayList<LocalVariableDefinition>()
         );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             ValueProvider targetReadAccessorProvider, Type targetType,
                             Assignment assignment,
-        List<String> dependsOn, Assignment defaultValueAssignment) {
+                            List<String> dependsOn, Assignment defaultValueAssignment,
+                            List<LocalVariableDefinition> localVariabeleDefinitions) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -959,6 +991,7 @@ public class PropertyMapping extends ModelElement {
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
         this.defaultValueAssignment = defaultValueAssignment;
+        this.localVariableDefinitions = localVariabeleDefinitions;
     }
 
     /**
@@ -992,17 +1025,25 @@ public class PropertyMapping extends ModelElement {
         return defaultValueAssignment;
     }
 
+    public List<LocalVariableDefinition> getLocalVariableDefinitions() {
+        return localVariableDefinitions;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public Set<Type> getImportTypes() {
-        if ( defaultValueAssignment == null ) {
-            return assignment.getImportTypes();
+
+        Set<Type> importedTypes = new HashSet<Type>( );
+        importedTypes.addAll( assignment.getImportTypes() );
+
+        for ( LocalVariableDefinition localVarDefininition : getLocalVariableDefinitions() ) {
+            importedTypes.addAll( localVarDefininition.getImportTypes() );
         }
 
-        return org.mapstruct.ap.internal.util.Collections.asSet(
-            assignment.getImportTypes(),
-            defaultValueAssignment.getImportTypes()
-        );
+        if ( defaultValueAssignment != null ) {
+            importedTypes.addAll( defaultValueAssignment.getImportTypes() );
+        }
+        return importedTypes;
     }
 
     public List<String> getDependsOn() {

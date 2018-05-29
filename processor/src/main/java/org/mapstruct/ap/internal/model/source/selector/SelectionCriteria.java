@@ -19,10 +19,11 @@
 package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
 import javax.lang.model.type.TypeMirror;
 
+import org.mapstruct.ap.internal.model.common.LocalVariableDefinition;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 
@@ -41,10 +42,11 @@ public class SelectionCriteria {
     private boolean preferUpdateMapping;
     private final boolean objectFactoryRequired;
     private final boolean lifecycleCallbackRequired;
+    private final List<LocalVariableDefinition> localVariables;
 
     public SelectionCriteria(SelectionParameters selectionParameters, String targetPropertyName,
                              boolean preferUpdateMapping, boolean objectFactoryRequired,
-                             boolean lifecycleCallbackRequired) {
+                             boolean lifecycleCallbackRequired, List<LocalVariableDefinition> otherParameters) {
         if ( selectionParameters != null ) {
             qualifiers.addAll( selectionParameters.getQualifiers() );
             qualifiedByNames.addAll( selectionParameters.getQualifyingNames() );
@@ -59,6 +61,7 @@ public class SelectionCriteria {
         this.preferUpdateMapping = preferUpdateMapping;
         this.objectFactoryRequired = objectFactoryRequired;
         this.lifecycleCallbackRequired = lifecycleCallbackRequired;
+        this.localVariables = otherParameters;
     }
 
     /**
@@ -103,17 +106,28 @@ public class SelectionCriteria {
         this.preferUpdateMapping = preferUpdateMapping;
     }
 
-    public static SelectionCriteria forMappingMethods(SelectionParameters selectionParameters,
-                                                      String targetPropertyName, boolean preferUpdateMapping) {
+    public List<LocalVariableDefinition> getLocalVariables() {
+        return localVariables;
+    }
 
-        return new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping, false, false );
+    public static SelectionCriteria forMappingMethods(SelectionParameters selectionParameters,
+                                                      String targetPropertyName, boolean preferUpdateMapping,
+                                                      List<LocalVariableDefinition> localVariables) {
+
+        return new SelectionCriteria( selectionParameters, targetPropertyName, preferUpdateMapping, false, false,
+            localVariables
+        );
     }
 
     public static SelectionCriteria forFactoryMethods(SelectionParameters selectionParameters) {
-        return new SelectionCriteria( selectionParameters, null, false, true, false );
+        return new SelectionCriteria( selectionParameters, null, false, true, false,
+            Collections.<LocalVariableDefinition>emptyList()
+        );
     }
 
     public static SelectionCriteria forLifecycleMethods(SelectionParameters selectionParameters) {
-        return new SelectionCriteria( selectionParameters, null, false, false, true );
+        return new SelectionCriteria( selectionParameters, null, false, false, true,
+            Collections.<LocalVariableDefinition>emptyList()
+        );
     }
 }

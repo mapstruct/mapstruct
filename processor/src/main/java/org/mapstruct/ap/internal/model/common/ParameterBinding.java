@@ -116,6 +116,21 @@ public class ParameterBinding {
         );
     }
 
+    /**
+     * @param parameter parameter
+     * @return a parameter binding reflecting the given parameter as being used as argument for a method call
+     */
+    public static ParameterBinding fromLocalVariable(LocalVariableDefinition parameter) {
+        return new ParameterBinding(
+            parameter.getType(),
+            parameter.getName(),
+            false,
+            false,
+            true, // TODO: @Info in stead of @Context
+            null
+        );
+    }
+
     public static List<ParameterBinding> fromParameters(List<Parameter> parameters) {
         List<ParameterBinding> result = new ArrayList<ParameterBinding>( parameters.size() );
         for ( Parameter param : parameters ) {

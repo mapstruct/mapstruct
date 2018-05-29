@@ -18,14 +18,10 @@
  */
 package org.mapstruct.ap.internal.processor.creation;
 
-import static java.util.Collections.singletonList;
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -47,6 +43,7 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.LocalVariableDefinition;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -61,6 +58,9 @@ import org.mapstruct.ap.internal.util.Collections;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+
+import static java.util.Collections.singletonList;
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * The one and only implementation of {@link MappingResolver}. The class has been split into an interface an
@@ -105,11 +105,31 @@ public class MappingResolverImpl implements MappingResolver {
 
     @Override
     public Assignment getTargetAssignment(Method mappingMethod, Type targetType, String targetPropertyName,
-        FormattingParameters formattingParameters, SelectionParameters selectionParameters, SourceRHS sourceRHS,
-        boolean preferUpdateMapping) {
+                                          FormattingParameters formattingParameters,
+                                          SelectionParameters selectionParameters, SourceRHS sourceRHS,
+                                          boolean preferUpdateMapping) {
+        return getTargetAssignment(
+            mappingMethod,
+            targetType,
+            targetPropertyName,
+            formattingParameters,
+            selectionParameters,
+            sourceRHS,
+            preferUpdateMapping,
+            new ArrayList<LocalVariableDefinition>()
+        );
+    }
+
+    @Override
+    public Assignment getTargetAssignment(Method mappingMethod, Type targetType, String targetPropertyName,
+                                          FormattingParameters formattingParameters,
+                                          SelectionParameters selectionParameters, SourceRHS sourceRHS,
+                                          boolean preferUpdateMapping, List<LocalVariableDefinition> localVariables) {
 
         SelectionCriteria criteria =
-            SelectionCriteria.forMappingMethods( selectionParameters, targetPropertyName, preferUpdateMapping );
+            SelectionCriteria.forMappingMethods( selectionParameters, targetPropertyName, preferUpdateMapping,
+                localVariables
+            );
 
         ResolvingAttempt attempt = new ResolvingAttempt(
             sourceModel,
