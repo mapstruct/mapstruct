@@ -123,13 +123,15 @@ Add the following to your Gradle build file in order to enable MapStruct:
 ...
 plugins {
     ...
-    id 'net.ltgt.apt' version '0.8'
+    id 'net.ltgt.apt' version '0.15'
 }
 dependencies {
     ...
     compile 'org.mapstruct:mapstruct-jdk8:{mapstructVersion}'
 
-    apt 'org.mapstruct:mapstruct-processor:{mapstructVersion}'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:{mapstructVersion}'
+    // If you are using mapstruct in test code
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:{mapstructVersion}'
 }
 ...
 ----

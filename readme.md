@@ -105,13 +105,14 @@ For Gradle, you need something along the following lines:
 ```groovy
 plugins {
     ...
-    id 'net.ltgt.apt' version '0.8'
+    id 'net.ltgt.apt' version '0.15'
 }
 dependencies {
     ...
     compile 'org.mapstruct:mapstruct:1.2.0.Final' // OR use this with Java 8 and beyond: org.mapstruct:mapstruct-jdk8:...
 
-    apt 'org.mapstruct:mapstruct-processor:1.2.0.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.2.0.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.2.0.Final' // if you are using mapstruct in test code
 }
 ...
 ```
