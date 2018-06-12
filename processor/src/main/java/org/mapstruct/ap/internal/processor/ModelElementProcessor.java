@@ -27,7 +27,7 @@ import javax.tools.Diagnostic.Kind;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
@@ -60,7 +60,7 @@ public interface ModelElementProcessor<P, R> {
 
         TypeFactory getTypeFactory();
 
-        FormattingMessager getMessager();
+        FormattingMessenger getMessenger();
 
         AccessorNamingUtils getAccessorNaming();
 

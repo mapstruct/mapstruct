@@ -32,7 +32,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.workarounds.TypesDecorator;
@@ -90,7 +90,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
     }
 
     @Override
-    public FormattingMessager getMessager() {
+    public FormattingMessenger getMessenger() {
         return messager;
     }
 
@@ -114,7 +114,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         return messager.isErroneous();
     }
 
-    private static final class DelegatingMessager implements FormattingMessager {
+    private static final class DelegatingMessager implements FormattingMessenger {
 
         private final Messager delegate;
         private boolean isErroneous = false;

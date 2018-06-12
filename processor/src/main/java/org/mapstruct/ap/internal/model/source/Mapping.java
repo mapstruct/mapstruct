@@ -40,7 +40,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -74,7 +74,7 @@ public class Mapping {
     private TargetReference targetReference;
 
     public static Map<String, List<Mapping>> fromMappingsPrism(MappingsPrism mappingsAnnotation,
-        ExecutableElement method, FormattingMessager messager, Types typeUtils) {
+                                                               ExecutableElement method, FormattingMessenger messager, Types typeUtils) {
         Map<String, List<Mapping>> mappings = new HashMap<String, List<Mapping>>();
 
         for ( MappingPrism mappingPrism : mappingsAnnotation.value() ) {
@@ -98,7 +98,7 @@ public class Mapping {
     }
 
     public static Mapping fromMappingPrism(MappingPrism mappingPrism, ExecutableElement element,
-        FormattingMessager messager, Types typeUtils) {
+                                           FormattingMessenger messager, Types typeUtils) {
 
         if ( mappingPrism.target().isEmpty() ) {
             messager.printMessage(
@@ -292,7 +292,7 @@ public class Mapping {
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
-                                        FormattingMessager messager) {
+                                        FormattingMessenger messager) {
         if ( mappingPrism.expression().isEmpty() ) {
             return null;
         }
@@ -311,7 +311,7 @@ public class Mapping {
     }
 
     private static String getDefaultExpression(MappingPrism mappingPrism, ExecutableElement element,
-                                        FormattingMessager messager) {
+                                        FormattingMessenger messager) {
         if ( mappingPrism.defaultExpression().isEmpty() ) {
             return null;
         }
@@ -334,7 +334,7 @@ public class Mapping {
             ( (DeclaredType) mirror ).asElement().getKind() == ElementKind.ENUM;
     }
 
-    public void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
+    public void init(SourceMethod method, FormattingMessenger messager, TypeFactory typeFactory,
                      AccessorNamingUtils accessorNaming) {
         init( method, messager, typeFactory, accessorNaming, false, null );
     }
@@ -349,7 +349,7 @@ public class Mapping {
      * @param isReverse whether the init is for a reverse mapping
      * @param reverseSourceParameter the source parameter from the revers mapping
      */
-    private void init(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
+    private void init(SourceMethod method, FormattingMessenger messager, TypeFactory typeFactory,
                       AccessorNamingUtils accessorNaming, boolean isReverse,
                       Parameter reverseSourceParameter) {
 
@@ -478,7 +478,7 @@ public class Mapping {
         return dependsOn;
     }
 
-    public Mapping reverse(SourceMethod method, FormattingMessager messager, TypeFactory typeFactory,
+    public Mapping reverse(SourceMethod method, FormattingMessenger messager, TypeFactory typeFactory,
                            AccessorNamingUtils accessorNaming) {
 
         // mapping can only be reversed if the source was not a constant nor an expression nor a nested property

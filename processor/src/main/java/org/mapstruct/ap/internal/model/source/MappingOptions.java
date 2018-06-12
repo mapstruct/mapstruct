@@ -34,7 +34,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 
 /**
@@ -224,7 +224,7 @@ public class MappingOptions {
      * @param accessorNaming the accessor naming utils
      */
     public void applyInheritedOptions(MappingOptions inherited, boolean isInverse, SourceMethod method,
-                                      FormattingMessager messager, TypeFactory typeFactory,
+                                      FormattingMessenger messager, TypeFactory typeFactory,
                                       AccessorNamingUtils accessorNaming) {
         if ( null != inherited ) {
             if ( getIterableMapping() == null ) {
@@ -299,7 +299,7 @@ public class MappingOptions {
         }
     }
 
-    public void applyIgnoreAll(MappingOptions inherited, SourceMethod method, FormattingMessager messager,
+    public void applyIgnoreAll(MappingOptions inherited, SourceMethod method, FormattingMessenger messager,
                                TypeFactory typeFactory, AccessorNamingUtils accessorNaming) {
         CollectionMappingStrategyPrism cms = method.getMapperConfiguration().getCollectionMappingStrategy();
         Type writeType = method.getResultType();

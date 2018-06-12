@@ -174,7 +174,7 @@ public class ValueMappingMethod extends MappingMethod {
                     }
                     // all sources should now be matched, there's no default to fall back to, so if sources remain,
                     // we have an issue.
-                    ctx.getMessager().printMessage( method.getExecutable(),
+                    ctx.getMessenger().printMessage( method.getExecutable(),
                         Message.VALUE_MAPPING_UNMAPPED_SOURCES,
                         sourceErrorMessage,
                         targetErrorMessage,
@@ -206,7 +206,7 @@ public class ValueMappingMethod extends MappingMethod {
             for ( ValueMapping mappedConstant : trueValueMappings ) {
 
                 if ( !sourceEnumConstants.contains( mappedConstant.getSource() ) ) {
-                    ctx.getMessager().printMessage( method.getExecutable(),
+                    ctx.getMessenger().printMessage( method.getExecutable(),
                         mappedConstant.getMirror(),
                         mappedConstant.getSourceAnnotationValue(),
                         Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
@@ -217,7 +217,7 @@ public class ValueMappingMethod extends MappingMethod {
                 }
                 if ( !MappingConstantsPrism.NULL.equals( mappedConstant.getTarget() )
                     && !targetEnumConstants.contains( mappedConstant.getTarget() ) ) {
-                    ctx.getMessager().printMessage( method.getExecutable(),
+                    ctx.getMessenger().printMessage( method.getExecutable(),
                         mappedConstant.getMirror(),
                         mappedConstant.getTargetAnnotationValue(),
                         Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
@@ -230,7 +230,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             if ( defaultTargetValue != null && !MappingConstantsPrism.NULL.equals( defaultTargetValue.getTarget() )
                 && !targetEnumConstants.contains( defaultTargetValue.getTarget() ) ) {
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessenger().printMessage( method.getExecutable(),
                     defaultTargetValue.getMirror(),
                     defaultTargetValue.getTargetAnnotationValue(),
                     Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
@@ -242,7 +242,7 @@ public class ValueMappingMethod extends MappingMethod {
 
             if ( nullTargetValue != null && MappingConstantsPrism.NULL.equals( nullTargetValue.getTarget() )
                 && !targetEnumConstants.contains( nullTargetValue.getTarget() ) ) {
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessenger().printMessage( method.getExecutable(),
                     nullTargetValue.getMirror(),
                     nullTargetValue.getTargetAnnotationValue(),
                     Message.VALUEMAPPING_NON_EXISTING_CONSTANT,

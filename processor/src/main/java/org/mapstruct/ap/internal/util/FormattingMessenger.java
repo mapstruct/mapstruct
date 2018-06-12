@@ -28,7 +28,7 @@ import javax.lang.model.element.Element;
  *
  * @author Sjaak Derksen
  */
-public interface FormattingMessager {
+public interface FormattingMessenger {
 
     /**
      * Prints a message of the specified kind.

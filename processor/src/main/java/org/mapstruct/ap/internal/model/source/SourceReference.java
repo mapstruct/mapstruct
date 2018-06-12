@@ -33,7 +33,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.Extractor;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
@@ -74,10 +74,10 @@ public class SourceReference {
 
         private Mapping mapping;
         private SourceMethod method;
-        private FormattingMessager messager;
+        private FormattingMessenger messager;
         private TypeFactory typeFactory;
 
-        public BuilderFromMapping messager(FormattingMessager messager) {
+        public BuilderFromMapping messager(FormattingMessenger messager) {
             this.messager = messager;
             return this;
         }

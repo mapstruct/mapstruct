@@ -22,7 +22,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
@@ -59,8 +59,8 @@ final class DateFormatValidationResult {
      * @param annotation the mirror of the annotation that had an error
      * @param value the value of the annotation that had an error
      */
-    public void printErrorMessage(FormattingMessager messager, Element element, AnnotationMirror annotation,
-        AnnotationValue value) {
+    public void printErrorMessage(FormattingMessenger messager, Element element, AnnotationMirror annotation,
+                                  AnnotationValue value) {
         messager.printMessage( element, annotation, value, validationInfo, validationInfoArgs );
     }
 

@@ -153,7 +153,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
      */
     void reportCannotCreateMapping(Method method, String sourceErrorMessagePart, Type sourceType, Type targetType,
         String targetPropertyName) {
-        ctx.getMessager().printMessage(
+        ctx.getMessenger().printMessage(
             method.getExecutable(),
             Message.PROPERTYMAPPING_MAPPING_NOT_FOUND,
             sourceErrorMessagePart,

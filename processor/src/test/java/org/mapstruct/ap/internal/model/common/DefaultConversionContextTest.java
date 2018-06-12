@@ -32,7 +32,7 @@ import javax.lang.model.type.TypeVisitor;
 import javax.tools.Diagnostic;
 
 import org.junit.Test;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.JavaTimeConstants;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -139,7 +139,7 @@ public class DefaultConversionContextTest {
                         false );
     }
 
-    private static class StatefulMessagerMock implements FormattingMessager {
+    private static class StatefulMessagerMock implements FormattingMessenger {
 
         private Diagnostic.Kind lastKindPrinted;
 

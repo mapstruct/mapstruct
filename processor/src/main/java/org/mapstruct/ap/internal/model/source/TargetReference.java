@@ -32,7 +32,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
@@ -73,7 +73,7 @@ public class TargetReference {
 
         private Mapping mapping;
         private SourceMethod method;
-        private FormattingMessager messager;
+        private FormattingMessenger messager;
         private TypeFactory typeFactory;
         private AccessorNamingUtils accessorNaming;
         private boolean isReverse;
@@ -101,7 +101,7 @@ public class TargetReference {
          */
         private MappingErrorMessage errorMessage;
 
-        public BuilderFromTargetMapping messager(FormattingMessager messager) {
+        public BuilderFromTargetMapping messager(FormattingMessenger messager) {
             this.messager = messager;
             return this;
         }
@@ -392,9 +392,9 @@ public class TargetReference {
     private abstract static class MappingErrorMessage {
         private final Mapping mapping;
         private final SourceMethod method;
-        private final FormattingMessager messager;
+        private final FormattingMessenger messager;
 
-        private MappingErrorMessage(Mapping mapping, SourceMethod method, FormattingMessager messager) {
+        private MappingErrorMessage(Mapping mapping, SourceMethod method, FormattingMessenger messager) {
             this.mapping = mapping;
             this.method = method;
             this.messager = messager;
@@ -416,7 +416,7 @@ public class TargetReference {
 
     private static class NoWriteAccessorErrorMessage extends MappingErrorMessage {
 
-        private NoWriteAccessorErrorMessage(Mapping mapping, SourceMethod method, FormattingMessager messager) {
+        private NoWriteAccessorErrorMessage(Mapping mapping, SourceMethod method, FormattingMessenger messager) {
             super( mapping, method, messager );
         }
 
@@ -432,7 +432,7 @@ public class TargetReference {
         private final int index;
         private final Type nextType;
 
-        private NoPropertyErrorMessage(Mapping mapping, SourceMethod method, FormattingMessager messager,
+        private NoPropertyErrorMessage(Mapping mapping, SourceMethod method, FormattingMessenger messager,
                                        String[] entryNames, int index, Type nextType) {
             super( mapping, method, messager );
             this.entryNames = entryNames;

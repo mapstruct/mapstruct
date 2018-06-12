@@ -58,7 +58,7 @@ import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Collections;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -71,7 +71,7 @@ import org.mapstruct.ap.internal.util.Strings;
  */
 public class MappingResolverImpl implements MappingResolver {
 
-    private final FormattingMessager messager;
+    private final FormattingMessenger messager;
     private final Types typeUtils;
     private final TypeFactory typeFactory;
 
@@ -88,7 +88,7 @@ public class MappingResolverImpl implements MappingResolver {
      */
     private final Set<VirtualMappingMethod> usedVirtualMappings = new HashSet<VirtualMappingMethod>();
 
-    public MappingResolverImpl(FormattingMessager messager, Elements elementUtils, Types typeUtils,
+    public MappingResolverImpl(FormattingMessenger messager, Elements elementUtils, Types typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
                                List<MapperReference> mapperReferences) {
         this.messager = messager;

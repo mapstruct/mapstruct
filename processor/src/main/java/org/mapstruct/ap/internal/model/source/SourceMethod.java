@@ -38,7 +38,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.ObjectFactoryPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -101,7 +101,7 @@ public class SourceMethod implements Method {
         private Types typeUtils;
         private TypeFactory typeFactory = null;
         private AccessorNamingUtils accessorNaming = null;
-        private FormattingMessager messager = null;
+        private FormattingMessenger messager = null;
         private MapperConfiguration mapperConfig = null;
         private List<SourceMethod> prototypeMethods = Collections.emptyList();
         private List<ValueMapping> valueMappings;
@@ -172,7 +172,7 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setMessager(FormattingMessager messager) {
+        public Builder setMessager(FormattingMessenger messager) {
             this.messager = messager;
             return this;
         }

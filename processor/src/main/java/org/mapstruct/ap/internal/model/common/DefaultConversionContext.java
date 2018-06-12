@@ -18,7 +18,7 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -28,7 +28,7 @@ import org.mapstruct.ap.internal.util.Strings;
  */
 public class DefaultConversionContext implements ConversionContext {
 
-    private final FormattingMessager messager;
+    private final FormattingMessenger messager;
     private final Type sourceType;
     private final Type targetType;
     private final FormattingParameters formattingParameters;
@@ -36,8 +36,8 @@ public class DefaultConversionContext implements ConversionContext {
     private final String numberFormat;
     private final TypeFactory typeFactory;
 
-    public DefaultConversionContext(TypeFactory typeFactory, FormattingMessager messager, Type sourceType,
-        Type targetType, FormattingParameters formattingParameters) {
+    public DefaultConversionContext(TypeFactory typeFactory, FormattingMessenger messager, Type sourceType,
+                                    Type targetType, FormattingParameters formattingParameters) {
         this.typeFactory = typeFactory;
         this.messager = messager;
         this.sourceType = sourceType;
@@ -87,7 +87,7 @@ public class DefaultConversionContext implements ConversionContext {
         return typeFactory;
     }
 
-    protected FormattingMessager getMessager() {
+    protected FormattingMessenger getMessager() {
         return messager;
     }
 }

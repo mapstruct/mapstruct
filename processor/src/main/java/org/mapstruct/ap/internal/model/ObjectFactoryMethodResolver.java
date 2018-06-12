@@ -80,7 +80,7 @@ public class ObjectFactoryMethodResolver {
         }
 
         if ( matchingFactoryMethods.size() > 1 ) {
-            ctx.getMessager().printMessage(
+            ctx.getMessenger().printMessage(
                 method.getExecutable(),
                 Message.GENERAL_AMBIGIOUS_FACTORY_METHOD,
                 targetType.getEffectiveType(),

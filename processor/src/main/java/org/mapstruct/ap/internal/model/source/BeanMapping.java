@@ -27,7 +27,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
@@ -60,7 +60,7 @@ public class BeanMapping {
     }
 
     public static BeanMapping fromPrism(BeanMappingPrism beanMapping, ExecutableElement method,
-        FormattingMessager messager, Types typeUtils) {
+                                        FormattingMessenger messager, Types typeUtils) {
 
         if ( beanMapping == null ) {
             return null;
