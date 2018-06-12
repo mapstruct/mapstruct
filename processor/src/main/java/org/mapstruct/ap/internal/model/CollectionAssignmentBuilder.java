@@ -134,7 +134,7 @@ public class CollectionAssignmentBuilder {
 
                 // call to an update method
                 if ( targetReadAccessor == null ) {
-                    ctx.getMessager().printMessage(
+                    ctx.getMessenger().printMessage(
                         method.getExecutable(),
                         Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                         targetPropertyName
@@ -189,7 +189,7 @@ public class CollectionAssignmentBuilder {
         }
         else {
             if ( targetImmutable ) {
-                ctx.getMessager().printMessage(
+                ctx.getMessenger().printMessage(
                     method.getExecutable(),
                     Message.PROPERTYMAPPING_NO_WRITE_ACCESSOR_FOR_TARGET_TYPE,
                     targetPropertyName

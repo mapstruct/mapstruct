@@ -26,7 +26,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.prism.IterableMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
@@ -42,7 +42,7 @@ public class IterableMapping {
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
     public static IterableMapping fromPrism(IterableMappingPrism iterableMapping, ExecutableElement method,
-        FormattingMessager messager, Types typeUtils) {
+                                            FormattingMessenger messager, Types typeUtils) {
         if ( iterableMapping == null ) {
             return null;
         }

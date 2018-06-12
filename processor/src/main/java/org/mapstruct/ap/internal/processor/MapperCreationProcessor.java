@@ -63,7 +63,7 @@ import org.mapstruct.ap.internal.prism.MappingInheritanceStrategyPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.processor.creation.MappingResolverImpl;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -82,7 +82,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
 
     private Elements elementUtils;
     private Types typeUtils;
-    private FormattingMessager messager;
+    private FormattingMessenger messager;
     private Options options;
     private VersionInformation versionInformation;
     private TypeFactory typeFactory;
@@ -93,7 +93,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, List<SourceMethod> sourceModel) {
         this.elementUtils = context.getElementUtils();
         this.typeUtils = context.getTypeUtils();
-        this.messager = context.getMessager();
+        this.messager = context.getMessenger();
         this.options = context.getOptions();
         this.versionInformation = context.getVersionInformation();
         this.typeFactory = context.getTypeFactory();

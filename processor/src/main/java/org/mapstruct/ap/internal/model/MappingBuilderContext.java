@@ -39,7 +39,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.spi.MappingExclusionProvider;
 
@@ -113,7 +113,7 @@ public class MappingBuilderContext {
     private final TypeFactory typeFactory;
     private final Elements elementUtils;
     private final Types typeUtils;
-    private final FormattingMessager messager;
+    private final FormattingMessenger messenger;
     private final AccessorNamingUtils accessorNaming;
     private final Options options;
     private final TypeElement mapperTypeElement;
@@ -127,7 +127,7 @@ public class MappingBuilderContext {
     public MappingBuilderContext(TypeFactory typeFactory,
                           Elements elementUtils,
                           Types typeUtils,
-                          FormattingMessager messager,
+                          FormattingMessenger messenger,
                           AccessorNamingUtils accessorNaming,
                           Options options,
                           MappingResolver mappingResolver,
@@ -137,7 +137,7 @@ public class MappingBuilderContext {
         this.typeFactory = typeFactory;
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
-        this.messager = messager;
+        this.messenger = messenger;
         this.accessorNaming = accessorNaming;
         this.options = options;
         this.mappingResolver = mappingResolver;
@@ -183,8 +183,8 @@ public class MappingBuilderContext {
         return typeUtils;
     }
 
-    public FormattingMessager getMessager() {
-        return messager;
+    public FormattingMessenger getMessenger() {
+        return messenger;
     }
 
     public AccessorNamingUtils getAccessorNaming() {

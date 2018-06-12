@@ -26,7 +26,7 @@ import javax.lang.model.util.Types;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.prism.MapMappingPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
@@ -44,7 +44,7 @@ public class MapMapping {
     private final NullValueMappingStrategyPrism nullValueMappingStrategy;
 
     public static MapMapping fromPrism(MapMappingPrism mapMapping, ExecutableElement method,
-        FormattingMessager messager, Types typeUtils) {
+                                       FormattingMessenger messager, Types typeUtils) {
         if ( mapMapping == null ) {
             return null;
         }

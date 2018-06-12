@@ -27,7 +27,7 @@ import javax.lang.model.element.ExecutableElement;
 import org.mapstruct.ap.internal.prism.MappingConstantsPrism;
 import org.mapstruct.ap.internal.prism.ValueMappingPrism;
 import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.Message;
 
 /**
@@ -44,7 +44,7 @@ public class ValueMapping {
     private final AnnotationValue targetAnnotationValue;
 
     public static void fromMappingsPrism(ValueMappingsPrism mappingsAnnotation, ExecutableElement method,
-        FormattingMessager messager, List<ValueMapping> mappings) {
+                                         FormattingMessenger messager, List<ValueMapping> mappings) {
 
         boolean anyFound = false;
         for ( ValueMappingPrism mappingPrism : mappingsAnnotation.value() ) {
@@ -81,7 +81,7 @@ public class ValueMapping {
     }
 
     public static ValueMapping fromMappingPrism(ValueMappingPrism mappingPrism, ExecutableElement element,
-                                           FormattingMessager messager) {
+                                           FormattingMessenger messager) {
 
         return new ValueMapping( mappingPrism.source(), mappingPrism.target(), mappingPrism.mirror,
             mappingPrism.values.source(), mappingPrism.values.target() );

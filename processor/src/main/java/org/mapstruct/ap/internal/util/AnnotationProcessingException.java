@@ -25,7 +25,7 @@ import javax.lang.model.element.Element;
 /**
  * Indicates an error during annotation processing. Should only be thrown in non-recoverable situations such as errors
  * due to incomplete compilations etc. Expected errors to be propagated to the user of the annotation processor should
- * be raised using the {@link FormattingMessager} API instead.
+ * be raised using the {@link FormattingMessenger} API instead.
  *
  * @author Gunnar Morling
  */

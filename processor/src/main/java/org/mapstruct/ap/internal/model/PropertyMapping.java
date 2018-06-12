@@ -423,7 +423,7 @@ public class PropertyMapping extends ModelElement {
 
             if ( rhs.isCallingUpdateMethod() ) {
                 if ( targetReadAccessor == null ) {
-                    ctx.getMessager().printMessage(
+                    ctx.getMessenger().printMessage(
                         method.getExecutable(),
                         Message.PROPERTYMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                         targetPropertyName
@@ -805,7 +805,7 @@ public class PropertyMapping extends ModelElement {
                     // target accessor is setter, so decorate assignment as setter
                     if ( assignment.isCallingUpdateMethod() ) {
                         if ( targetReadAccessor == null ) {
-                            ctx.getMessager().printMessage(
+                            ctx.getMessenger().printMessage(
                                 method.getExecutable(),
                                 Message.CONSTANTMAPPING_NO_READ_ACCESSOR_FOR_TARGET_TYPE,
                                 targetPropertyName
@@ -836,7 +836,7 @@ public class PropertyMapping extends ModelElement {
                 }
             }
             else if ( errorMessageDetails == null ) {
-                ctx.getMessager().printMessage(
+                ctx.getMessenger().printMessage(
                     method.getExecutable(),
                     mirror,
                     Message.CONSTANTMAPPING_MAPPING_NOT_FOUND,
@@ -847,7 +847,7 @@ public class PropertyMapping extends ModelElement {
                 );
             }
             else {
-                ctx.getMessager().printMessage(
+                ctx.getMessenger().printMessage(
                     method.getExecutable(),
                     mirror,
                     Message.CONSTANTMAPPING_MAPPING_NOT_FOUND_WITH_DETAILS,
@@ -880,7 +880,7 @@ public class PropertyMapping extends ModelElement {
                 assignment = new EnumConstantWrapper( assignment, targetType );
             }
             else {
-                ctx.getMessager().printMessage(
+                ctx.getMessenger().printMessage(
                     method.getExecutable(),
                     Message.CONSTANTMAPPING_NON_EXISTING_CONSTANT,
                     constantExpression,

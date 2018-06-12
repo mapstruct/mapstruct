@@ -58,7 +58,7 @@ import org.mapstruct.ap.internal.prism.ValueMappingsPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Executables;
-import org.mapstruct.ap.internal.util.FormattingMessager;
+import org.mapstruct.ap.internal.util.FormattingMessenger;
 import org.mapstruct.ap.internal.util.MapperConfiguration;
 import org.mapstruct.ap.internal.util.Message;
 
@@ -72,7 +72,7 @@ import org.mapstruct.ap.internal.util.Message;
  */
 public class MethodRetrievalProcessor implements ModelElementProcessor<Void, List<SourceMethod>> {
 
-    private FormattingMessager messager;
+    private FormattingMessenger messager;
     private TypeFactory typeFactory;
     private AccessorNamingUtils accessorNaming;
     private Types typeUtils;
@@ -80,7 +80,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
     @Override
     public List<SourceMethod> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
-        this.messager = context.getMessager();
+        this.messager = context.getMessenger();
         this.typeFactory = context.getTypeFactory();
         this.accessorNaming = context.getAccessorNaming();
         this.typeUtils = context.getTypeUtils();

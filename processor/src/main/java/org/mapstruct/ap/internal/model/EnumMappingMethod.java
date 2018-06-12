@@ -92,7 +92,7 @@ public class EnumMappingMethod extends MappingMethod {
                     for ( Mapping mapping : mappedConstants ) {
                         targetConstants.add( mapping.getTargetName() );
                     }
-                    ctx.getMessager().printMessage( method.getExecutable(),
+                    ctx.getMessenger().printMessage( method.getExecutable(),
                         Message.ENUMMAPPING_MULTIPLE_SOURCES,
                         enumConstant,
                         Strings.join( targetConstants, ", " )
@@ -132,14 +132,14 @@ public class EnumMappingMethod extends MappingMethod {
                 for ( Mapping mappedConstant : mappedConstants ) {
 
                     if ( mappedConstant.getSourceName() == null ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
+                        ctx.getMessenger().printMessage( method.getExecutable(),
                             mappedConstant.getMirror(),
                             Message.ENUMMAPPING_UNDEFINED_SOURCE
                         );
                         foundIncorrectMapping = true;
                     }
                     else if ( !sourceEnumConstants.contains( mappedConstant.getSourceName() ) ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
+                        ctx.getMessenger().printMessage( method.getExecutable(),
                             mappedConstant.getMirror(),
                             mappedConstant.getSourceAnnotationValue(),
                             Message.ENUMMAPPING_NON_EXISTING_CONSTANT,
@@ -149,14 +149,14 @@ public class EnumMappingMethod extends MappingMethod {
                         foundIncorrectMapping = true;
                     }
                     if ( mappedConstant.getTargetName() == null ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
+                        ctx.getMessenger().printMessage( method.getExecutable(),
                             mappedConstant.getMirror(),
                             Message.ENUMMAPPING_UNDEFINED_TARGET
                         );
                         foundIncorrectMapping = true;
                     }
                     else if ( !targetEnumConstants.contains( mappedConstant.getTargetName() ) ) {
-                        ctx.getMessager().printMessage( method.getExecutable(),
+                        ctx.getMessenger().printMessage( method.getExecutable(),
                             mappedConstant.getMirror(),
                             mappedConstant.getTargetAnnotationValue(),
                             Message.ENUMMAPPING_NON_EXISTING_CONSTANT,
@@ -186,7 +186,7 @@ public class EnumMappingMethod extends MappingMethod {
             }
 
             if ( !unmappedSourceEnumConstants.isEmpty() ) {
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessenger().printMessage( method.getExecutable(),
                     Message.ENUMMAPPING_UNMAPPED_SOURCES,
                     Strings.join( unmappedSourceEnumConstants, ", " )
                 );
