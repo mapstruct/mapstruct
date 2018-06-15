@@ -31,23 +31,4 @@ public abstract class Issue1523Mapper {
 
     public abstract Target map(Source source);
 
-    public abstract String forceUsageOfIssue1460Enum(Issue1460Enum source);
-
-    public abstract String forceUsageOfLocale(Locale source);
-
-    public abstract String forceUsageOfLocalDate(LocalDate source);
-
-    public abstract String forceUsageOfDateTime(DateTime source);
-
-    public static class Issue1460Enum {
-    }
-
-    public static class Locale {
-    }
-
-    public static class LocalDate {
-    }
-
-    public static class DateTime {
-    }
 }

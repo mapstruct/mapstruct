@@ -19,9 +19,6 @@
 package org.mapstruct.ap.test.bugs._1523.java8;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
-
-import org.joda.time.DateTime;
 
 public class Source {
     private ZonedDateTime value;
