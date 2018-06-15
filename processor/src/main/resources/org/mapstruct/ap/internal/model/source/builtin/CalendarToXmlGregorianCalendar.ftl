@@ -25,7 +25,7 @@ private <@includeModel object=findType("XMLGregorianCalendar")/> ${name}( <@incl
     }
 
     try {
-        <@includeModel object=findType("GregorianCalendar")/> gcal = new <@includeModel object=findType("GregorianCalendar")/>();
+        <@includeModel object=findType("GregorianCalendar")/> gcal = new <@includeModel object=findType("GregorianCalendar")/>( cal.getTimeZone() );
         gcal.setTimeInMillis( cal.getTimeInMillis() );
         return <@includeModel object=findType("DatatypeFactory")/>.newInstance().newXMLGregorianCalendar( gcal );
     }
