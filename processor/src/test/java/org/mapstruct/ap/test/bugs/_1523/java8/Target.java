@@ -22,6 +22,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 public class Target {
     private XMLGregorianCalendar value;
+    private XMLGregorianCalendar value2;
 
     public XMLGregorianCalendar getValue() {
         return value;
@@ -29,5 +30,13 @@ public class Target {
 
     public void setValue(XMLGregorianCalendar value) {
         this.value = value;
+    }
+
+    public XMLGregorianCalendar getValue2() {
+        return value2;
+    }
+
+    public void setValue2(XMLGregorianCalendar value2) {
+        this.value2 = value2;
     }
 }
