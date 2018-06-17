@@ -16,32 +16,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.context.annotations;
+package org.mapstruct.ap.test.info.annotations;
 
-public class Target {
-
-    public static class NestedTarget {
-
-        private String text;
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-    }
-
-    private NestedTarget nestedTarget;
-
-    public NestedTarget getNestedTarget() {
-        return nestedTarget;
-    }
-
-    @ExampleAnnotation( test = "whatsthis", anEnum = { Colour.BLACK, Colour.GREEN } )
-    public void setNestedTarget(NestedTarget nestedTarget) {
-        this.nestedTarget = nestedTarget;
-    }
-
+public enum Sign {
+    MELON,
+    CITRON,
+    GRAPES,
+    BELL,
+    CHERRIES,
+    ORANGE,
+    SEVEN,
+    BERRY,
+    BAR
 }
+

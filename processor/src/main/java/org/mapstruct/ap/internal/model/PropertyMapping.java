@@ -282,24 +282,21 @@ public class PropertyMapping extends ModelElement {
                 preferUpdateMethods = method.getMappingTargetParameter() != null;
             }
 
-            // move this
+            // obtain local variable definitions associated with source / target accessor annotations
             List<LocalVariableDefinition> localVariableDefinitions = new ArrayList<LocalVariableDefinition>();
-            if ( targetWriteAccessor.getExecutable() != null ) {
-                List<? extends AnnotationMirror> mirrors = targetWriteAccessor.getExecutable().getAnnotationMirrors();
-                for ( AnnotationMirror mirror : mirrors ) {
-                    AnonymousAnnotationInstance instance = new AnonymousAnnotationInstance.Builder()
-                        .ctx( ctx )
-                        .annotationMirror( mirror )
-                        .build();
-                    localVariableDefinitions.add( new LocalVariableDefinition(
-                        instance.getAnnotationType(),
-                        "test",
-                        instance
-                    ) );
-                }
+            if ( sourceReference.getPropertyEntries().size() > 0 ) {
+                Accessor sourceReadAccessor = first( sourceReference.getPropertyEntries() ).getReadAccessor();
+                addLocalVariablesBasedOnAnnotations(
+                    localVariableDefinitions,
+                    LocalVariableDefinition.AssociatedWith.SOURCE_ANNOTATION,
+                    sourceReadAccessor
+                );
             }
-            // end move this
-
+            addLocalVariablesBasedOnAnnotations(
+                localVariableDefinitions,
+                LocalVariableDefinition.AssociatedWith.TARGET_ANNOTATION,
+                targetWriteAccessor
+            );
 
             // forge a method instead of resolving one when there are mapping options.
             Assignment assignment = null;
@@ -388,6 +385,30 @@ public class PropertyMapping extends ModelElement {
                     targetType,
                     targetPropertyName
                 );
+            }
+        }
+
+        private void addLocalVariablesBasedOnAnnotations(List<LocalVariableDefinition> localVariableDefinitions,
+                                                         LocalVariableDefinition.AssociatedWith associatedWith,
+                                                         Accessor accessor) {
+
+            List<? extends AnnotationMirror> mirrors = accessor.getPropertyAnnotations();
+            for ( AnnotationMirror mirror : mirrors ) {
+                AnonymousAnnotationInstance instance = new AnonymousAnnotationInstance.Builder()
+                    .ctx( ctx )
+                    .annotationMirror( mirror )
+                    .build();
+
+                String proposedName = instance.getAnnotationType().getName();
+                String localVarName = Strings.getSaveVariableName( proposedName, existingVariableNames );
+                existingVariableNames.add( localVarName );
+                localVariableDefinitions.add( new LocalVariableDefinition(
+                    instance.getAnnotationType(),
+                    localVarName,
+                    instance,
+                    associatedWith
+                ) );
+
             }
         }
 

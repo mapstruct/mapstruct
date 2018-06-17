@@ -235,7 +235,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     public Parameter getSourceParameter() {
         for ( Parameter parameter : getParameters() ) {
-            if ( !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
+            if ( !parameter.isMappingTarget() && !parameter.isContextual() ) {
                 return parameter;
             }
         }

@@ -132,6 +132,8 @@ public class TypeSelector implements MethodSelector {
         }
 
         for ( Parameter param : mappingMethod.getParameters() ) {
+            // we might consider also passing other contextual parameters from mapping method to mapping method
+            // in the future
             if ( param.isMappingContext() ) {
                 availableParams.add( ParameterBinding.fromParameter( param ) );
             }
@@ -226,7 +228,9 @@ public class TypeSelector implements MethodSelector {
         for ( ParameterBinding candidate : candidateParameters ) {
             if ( parameter.isTargetType() == candidate.isTargetType()
                 && parameter.isMappingTarget() == candidate.isMappingTarget()
-                && parameter.isMappingContext() == candidate.isMappingContext() ) {
+                && parameter.isMappingContext() == candidate.isMappingContext()
+                && parameter.isSourceAnnotation() == candidate.isSourceAnnotation()
+                && parameter.isTargetAnnotation() == candidate.isTargetAnnotation()) {
                 result.add( candidate );
             }
         }

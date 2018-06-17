@@ -18,6 +18,8 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
+import java.util.List;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -41,5 +43,10 @@ public class VariableElementAccessor extends AbstractAccessor<VariableElement> {
     @Override
     public ExecutableElement getExecutable() {
         return null;
+    }
+
+    @Override
+    public List<? extends AnnotationMirror> getPropertyAnnotations() {
+        return element.getAnnotationMirrors();
     }
 }

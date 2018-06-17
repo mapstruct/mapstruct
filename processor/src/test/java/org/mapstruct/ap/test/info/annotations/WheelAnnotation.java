@@ -16,11 +16,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.mapstruct.ap.test.context.annotations;
+package org.mapstruct.ap.test.info.annotations;
 
-public enum Colour {
-    BLACK,
-    WHITE,
-    GREEN
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.METHOD)
+public @interface WheelAnnotation {
+
+    String message();
+
+    Sign[] winningSign();
 
 }

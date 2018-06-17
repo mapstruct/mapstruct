@@ -51,7 +51,7 @@
             <@includeModel object=ext.targetType raw=true/>.class<#t>
         <#elseif param.mappingTarget>
             ${ext.targetBeanName}<#if ext.targetReadAccessorName??>.${ext.targetReadAccessorName}</#if><#t>
-        <#elseif param.mappingContext>
+        <#elseif param.mappingContext || param.sourceAnnotation || param.targetAnnotation>
             ${param.variableName}<#t>
         <#elseif param.sourceRHS??>
             <@_assignment assignmentToUse=param.sourceRHS/><#t>

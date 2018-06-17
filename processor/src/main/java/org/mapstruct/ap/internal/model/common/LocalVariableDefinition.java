@@ -23,15 +23,23 @@ import java.util.Set;
 
 public class LocalVariableDefinition extends ModelElement {
 
+    public enum AssociatedWith {
+        SOURCE_ANNOTATION,
+        TARGET_ANNOTATION
+    }
+
     private final Type type;
     private final String name;
     private final ModelElement definition;
+    private final AssociatedWith associatedWith;
     private boolean isUsed = false;
 
-    public LocalVariableDefinition(Type type, String name, ModelElement modelToGenerate) {
+    public LocalVariableDefinition(Type type, String name, ModelElement modelToGenerate,
+                                   AssociatedWith associatedWith) {
         this.type = type;
         this.name = name;
         this.definition = modelToGenerate;
+        this.associatedWith = associatedWith;
     }
 
     public Type getType() {
@@ -44,6 +52,10 @@ public class LocalVariableDefinition extends ModelElement {
 
     public ModelElement getDefinition() {
         return definition;
+    }
+
+    public AssociatedWith getAssociatedWith() {
+        return associatedWith;
     }
 
     public boolean isUsed() {

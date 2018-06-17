@@ -18,7 +18,9 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
+import java.util.List;
 import java.util.Set;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -61,4 +63,9 @@ public interface Accessor {
      * @return the underlying {@link Element}
      */
     Element getElement();
+
+    /**
+     * @return  gets all annotations related to the accessor
+     */
+    List<? extends AnnotationMirror> getPropertyAnnotations();
 }

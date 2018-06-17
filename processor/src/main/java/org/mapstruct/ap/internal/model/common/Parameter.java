@@ -21,11 +21,12 @@ package org.mapstruct.ap.internal.model.common;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.VariableElement;
 
 import org.mapstruct.ap.internal.prism.ContextPrism;
 import org.mapstruct.ap.internal.prism.MappingTargetPrism;
+import org.mapstruct.ap.internal.prism.SourceAnnotationPrism;
+import org.mapstruct.ap.internal.prism.TargetAnnotationPrism;
 import org.mapstruct.ap.internal.prism.TargetTypePrism;
 import org.mapstruct.ap.internal.util.Collections;
 
@@ -42,18 +43,23 @@ public class Parameter extends ModelElement {
     private final boolean mappingTarget;
     private final boolean targetType;
     private final boolean mappingContext;
+    private final boolean sourceAnnotation;
+    private final boolean targetAnnotation;
 
-    private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext) {
+    private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext,
+                      boolean sourceAnnotation, boolean targetAnnotation) {
         this.name = name;
         this.originalName = name;
         this.type = type;
         this.mappingTarget = mappingTarget;
         this.targetType = targetType;
         this.mappingContext = mappingContext;
+        this.sourceAnnotation = sourceAnnotation;
+        this.targetAnnotation = targetAnnotation;
     }
 
     public Parameter(String name, Type type) {
-        this( name, type, false, false, false );
+        this( name, type, false, false, false, false, false );
     }
 
     public String getName() {
@@ -77,6 +83,8 @@ public class Parameter extends ModelElement {
         return ( mappingTarget ? "@MappingTarget " : "" )
             + ( targetType ? "@TargetType " : "" )
             + ( mappingContext ? "@Context " : "" )
+            + ( sourceAnnotation ? "@SourceAnnotation " : "" )
+            + ( targetAnnotation ? "@TargetAnnotation " : "" )
             + type.toString() + " " + name;
     }
 
@@ -91,6 +99,18 @@ public class Parameter extends ModelElement {
 
     public boolean isMappingContext() {
         return mappingContext;
+    }
+
+    public boolean isContextual() {
+        return mappingContext || sourceAnnotation || targetAnnotation;
+    }
+
+    public boolean isSourceAnnotation() {
+        return sourceAnnotation;
+    }
+
+    public boolean isTargetAnnotation() {
+        return targetAnnotation;
     }
 
     @Override
@@ -124,7 +144,10 @@ public class Parameter extends ModelElement {
             parameterType,
             MappingTargetPrism.getInstanceOn( element ) != null,
             TargetTypePrism.getInstanceOn( element ) != null,
-            ContextPrism.getInstanceOn( element ) != null );
+            ContextPrism.getInstanceOn( element ) != null,
+            SourceAnnotationPrism.getInstanceOn( element ) != null,
+            TargetAnnotationPrism.getInstanceOn( element ) != null
+        );
     }
 
     public static Parameter forForgedMappingTarget(Type parameterType) {
@@ -133,7 +156,10 @@ public class Parameter extends ModelElement {
             parameterType,
             true,
             false,
-            false);
+            false,
+            false,
+            false
+        );
     }
 
     /**
@@ -144,7 +170,7 @@ public class Parameter extends ModelElement {
         List<Parameter> sourceParameters = new ArrayList<Parameter>( parameters.size() );
 
         for ( Parameter parameter : parameters ) {
-            if ( !parameter.isMappingTarget() && !parameter.isTargetType() && !parameter.isMappingContext() ) {
+            if ( !parameter.isMappingTarget() && !parameter.isTargetType() && !parameter.isContextual() ) {
                 sourceParameters.add( parameter );
             }
         }
