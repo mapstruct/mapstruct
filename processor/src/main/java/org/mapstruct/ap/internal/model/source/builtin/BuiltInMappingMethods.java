@@ -55,6 +55,7 @@ public class BuiltInMappingMethods {
 
         if ( isJava8TimeAvailable( typeFactory ) ) {
             builtInMethods.add( new ZonedDateTimeToCalendar( typeFactory ) );
+            builtInMethods.add( new ZonedDateTimeToXmlGregorianCalendar( typeFactory ) );
             builtInMethods.add( new CalendarToZonedDateTime( typeFactory ) );
             if ( isXmlGregorianCalendarPresent ) {
                 builtInMethods.add( new XmlGregorianCalendarToLocalDate( typeFactory ) );
