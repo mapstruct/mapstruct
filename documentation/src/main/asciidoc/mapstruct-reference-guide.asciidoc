@@ -133,11 +133,11 @@ apply plugin: 'net.ltgt.apt-eclipse'
 
 dependencies {
     ...
-    compile 'org.mapstruct:mapstruct-jdk8:{mapstructVersion}'
+    compile "org.mapstruct:mapstruct-jdk8:${mapstructVersion}"
 
-    annotationProcessor 'org.mapstruct:mapstruct-processor:{mapstructVersion}'
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     // If you are using mapstruct in test code
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:{mapstructVersion}'
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 }
 ...
 ----
