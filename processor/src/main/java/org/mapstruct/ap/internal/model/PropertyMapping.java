@@ -1,20 +1,20 @@
 /**
- * Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
- * and/or other contributors as indicated by the @authors tag. See the
- * copyright.txt file in the distribution for a full listing of all
- * contributors.
+ *  Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
+ *  and/or other contributors as indicated by the @authors tag. See the
+ *  copyright.txt file in the distribution for a full listing of all
+ *  contributors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 package org.mapstruct.ap.internal.model;
 
@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
@@ -600,9 +599,13 @@ public class PropertyMapping extends ModelElement {
             return forgeWithElementMapping( sourceType, targetType, source, element, builder );
         }
 
-        private Assignment forgeWithElementMapping(Type sourceType, Type targetType, SourceRHS source,
-                                                   ExecutableElement element,
-                                                   ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder) {
+        private Assignment forgeWithElementMapping(
+            Type sourceType,
+             Type targetType,
+             SourceRHS source,
+             ExecutableElement element,
+             ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder
+        ) {
 
             targetType = targetType.withoutBounds();
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element, "[]" );
@@ -909,12 +912,22 @@ public class PropertyMapping extends ModelElement {
             super( JavaExpressionMappingBuilder.class );
         }
 
+        private void markFieldVariableUsedIfUsedInJavaExpression() {
+            for ( MapperReference mapperReference : ctx.getMapperReferences() ) {
+                if ( javaExpression.contains( mapperReference.getVariableName() ) ) {
+                    mapperReference.setUsed( true );
+                    existingVariableNames.add( mapperReference.getVariableName() );
+                }
+            }
+        }
+
         public JavaExpressionMappingBuilder javaExpression(String javaExpression) {
             this.javaExpression = javaExpression;
             return this;
         }
 
         public PropertyMapping build() {
+            markFieldVariableUsedIfUsedInJavaExpression();
             Assignment assignment = new SourceRHS( javaExpression, null, existingVariableNames, "" );
 
             if ( ctx.getAccessorNaming().isSetterMethod( targetWriteAccessor ) ||
