@@ -1,20 +1,20 @@
 /**
- *  Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
- *  and/or other contributors as indicated by the @authors tag. See the
- *  copyright.txt file in the distribution for a full listing of all
- *  contributors.
+ * Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
+ * and/or other contributors as indicated by the @authors tag. See the
+ * copyright.txt file in the distribution for a full listing of all
+ * contributors.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.mapstruct.ap.internal.model;
 
@@ -297,7 +297,7 @@ public class PropertyMapping extends ModelElement {
             Type sourceType = rightHandSide.getSourceType();
             // No mapping found. Try to forge a mapping
             if ( assignment == null ) {
-                if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
+                if ( ( sourceType.isCollectionType() || sourceType.isArrayType() ) && targetType.isIterableType() ) {
                     assignment = forgeIterableMapping( sourceType, targetType, rightHandSide, method.getExecutable() );
                 }
                 else if ( sourceType.isMapType() && targetType.isMapType() ) {
@@ -367,9 +367,9 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private Assignment getDefaultValueAssignment( Assignment rhs ) {
+        private Assignment getDefaultValueAssignment(Assignment rhs) {
             if ( defaultValue != null
-                &&  ( !rhs.getSourceType().isPrimitive() || rhs.getSourcePresenceCheckerReference() != null) ) {
+                && ( !rhs.getSourceType().isPrimitive() || rhs.getSourcePresenceCheckerReference() != null ) ) {
                 // cannot check on null source if source is primitive unless it has a presence checker
                 PropertyMapping build = new ConstantMappingBuilder()
                     .constantExpression( defaultValue )
@@ -386,7 +386,7 @@ public class PropertyMapping extends ModelElement {
                 return build.getAssignment();
             }
             if ( defaultJavaExpression != null
-                && ( !rhs.getSourceType().isPrimitive() || rhs.getSourcePresenceCheckerReference() != null) ) {
+                && ( !rhs.getSourceType().isPrimitive() || rhs.getSourcePresenceCheckerReference() != null ) ) {
                 // cannot check on null source if source is primitive unless it has a presence checker
                 PropertyMapping build = new JavaExpressionMappingBuilder()
                     .javaExpression( defaultJavaExpression )
@@ -435,8 +435,9 @@ public class PropertyMapping extends ModelElement {
 
                 Assignment factory = ObjectFactoryMethodResolver
                     .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( rightHandSide ), ctx );
-                return new UpdateWrapper( rhs, method.getThrownTypes(), factory, isFieldAssignment(),  targetType,
-                    !rhs.isSourceReferenceParameter(), mapNullToDefault );
+                return new UpdateWrapper( rhs, method.getThrownTypes(), factory, isFieldAssignment(), targetType,
+                    !rhs.isSourceReferenceParameter(), mapNullToDefault
+                );
             }
             else {
                 NullValueCheckStrategyPrism nvcs = method.getMapperConfiguration().getNullValueCheckStrategy();
@@ -444,7 +445,7 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private Assignment assignToPlainViaAdder( Assignment rightHandSide) {
+        private Assignment assignToPlainViaAdder(Assignment rightHandSide) {
 
             Assignment result = rightHandSide;
 
@@ -459,7 +460,7 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment assignToCollection(Type targetType, TargetWriteAccessorType targetAccessorType,
-                                            Assignment rhs) {
+                                              Assignment rhs) {
             return new CollectionAssignmentBuilder()
                 .mappingBuilderContext( ctx )
                 .method( method )
@@ -485,28 +486,30 @@ public class PropertyMapping extends ModelElement {
             return assignment;
         }
 
-        private SourceRHS getSourceRHS( SourceReference sourceReference ) {
+        private SourceRHS getSourceRHS(SourceReference sourceReference) {
             Parameter sourceParam = sourceReference.getParameter();
             List<PropertyEntry> propertyEntries = sourceReference.getPropertyEntries();
 
             // parameter reference
             if ( propertyEntries.isEmpty() ) {
-                return new SourceRHS( sourceParam.getName(),
-                                      sourceParam.getType(),
-                                      existingVariableNames,
-                                      sourceReference.toString()
+                return new SourceRHS(
+                    sourceParam.getName(),
+                    sourceParam.getType(),
+                    existingVariableNames,
+                    sourceReference.toString()
                 );
             }
             // simple property
             else if ( propertyEntries.size() == 1 ) {
                 PropertyEntry propertyEntry = propertyEntries.get( 0 );
                 String sourceRef = sourceParam.getName() + "." + ValueProvider.of( propertyEntry.getReadAccessor() );
-                return new SourceRHS( sourceParam.getName(),
-                                      sourceRef,
-                                      getSourcePresenceCheckerRef( sourceReference ),
-                                      propertyEntry.getType(),
-                                      existingVariableNames,
-                                      sourceReference.toString()
+                return new SourceRHS(
+                    sourceParam.getName(),
+                    sourceRef,
+                    getSourcePresenceCheckerRef( sourceReference ),
+                    propertyEntry.getType(),
+                    existingVariableNames,
+                    sourceReference.toString()
                 );
             }
             // nested property given as dot path
@@ -531,8 +534,9 @@ public class PropertyMapping extends ModelElement {
                     sourceType,
                     config,
                     method.getExecutable(),
-                    Collections.<Parameter> emptyList(),
-                    ParameterProvidedMethods.empty() );
+                    Collections.<Parameter>emptyList(),
+                    ParameterProvidedMethods.empty()
+                );
 
                 NestedPropertyMappingMethod.Builder builder = new NestedPropertyMappingMethod.Builder();
                 NestedPropertyMappingMethod nestedPropertyMapping = builder
@@ -549,12 +553,13 @@ public class PropertyMapping extends ModelElement {
                     forgedName = ctx.getExistingMappingMethod( nestedPropertyMapping ).getName();
                 }
                 String sourceRef = forgedName + "( " + sourceParam.getName() + " )";
-                SourceRHS sourceRhs = new SourceRHS( sourceParam.getName(),
-                                                     sourceRef,
-                                                     getSourcePresenceCheckerRef( sourceReference ),
-                                                     sourceType,
-                                                     existingVariableNames,
-                                                     sourceReference.toString()
+                SourceRHS sourceRhs = new SourceRHS(
+                    sourceParam.getName(),
+                    sourceRef,
+                    getSourcePresenceCheckerRef( sourceReference ),
+                    sourceType,
+                    existingVariableNames,
+                    sourceReference.toString()
                 );
 
                 // create a local variable to which forged method can be assigned.
@@ -566,7 +571,7 @@ public class PropertyMapping extends ModelElement {
             }
         }
 
-        private String getSourcePresenceCheckerRef( SourceReference sourceReference ) {
+        private String getSourcePresenceCheckerRef(SourceReference sourceReference) {
             String sourcePresenceChecker = null;
             if ( !sourceReference.getPropertyEntries().isEmpty() ) {
                 Parameter sourceParam = sourceReference.getParameter();
@@ -596,7 +601,8 @@ public class PropertyMapping extends ModelElement {
         }
 
         private Assignment forgeWithElementMapping(Type sourceType, Type targetType, SourceRHS source,
-            ExecutableElement element, ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder) {
+                                                   ExecutableElement element,
+                                                   ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder) {
 
             targetType = targetType.withoutBounds();
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, element, "[]" );
@@ -819,7 +825,8 @@ public class PropertyMapping extends ModelElement {
                             ObjectFactoryMethodResolver.getFactoryMethod( method, targetType, null, ctx );
 
                         assignment = new UpdateWrapper( assignment, method.getThrownTypes(), factoryMethod,
-                            isFieldAssignment(), targetType, false, mapNullToDefault );
+                            isFieldAssignment(), targetType, false, mapNullToDefault
+                        );
                     }
                     else {
                         assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );
@@ -828,11 +835,12 @@ public class PropertyMapping extends ModelElement {
                 else {
 
                     // target accessor is getter, so getter map/ collection handling
-                    assignment = new GetterWrapperForCollectionsAndMaps( assignment,
-                                                                         method.getThrownTypes(),
-                                                                         targetType,
-                                                                         isFieldAssignment()
-                                                                       );
+                    assignment = new GetterWrapperForCollectionsAndMaps(
+                        assignment,
+                        method.getThrownTypes(),
+                        targetType,
+                        isFieldAssignment()
+                    );
                 }
             }
             else if ( errorMessageDetails == null ) {
@@ -916,11 +924,12 @@ public class PropertyMapping extends ModelElement {
             }
             else {
                 // target accessor is getter, so wrap the setter in getter map/ collection handling
-                assignment = new GetterWrapperForCollectionsAndMaps( assignment,
-                                                                     method.getThrownTypes(),
-                                                                     targetType,
-                                                                     isFieldAssignment()
-                                                                   );
+                assignment = new GetterWrapperForCollectionsAndMaps(
+                    assignment,
+                    method.getThrownTypes(),
+                    targetType,
+                    isFieldAssignment()
+                );
             }
 
             return new PropertyMapping(
@@ -940,7 +949,7 @@ public class PropertyMapping extends ModelElement {
     private PropertyMapping(String name, String targetWriteAccessorName,
                             ValueProvider targetReadAccessorProvider,
                             Type targetType, Assignment propertyAssignment,
-                            List<String> dependsOn, Assignment defaultValueAssignment ) {
+                            List<String> dependsOn, Assignment defaultValueAssignment) {
         this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
             targetType, propertyAssignment, dependsOn, defaultValueAssignment
         );
@@ -949,7 +958,7 @@ public class PropertyMapping extends ModelElement {
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             ValueProvider targetReadAccessorProvider, Type targetType,
                             Assignment assignment,
-        List<String> dependsOn, Assignment defaultValueAssignment) {
+                            List<String> dependsOn, Assignment defaultValueAssignment) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -1012,8 +1021,8 @@ public class PropertyMapping extends ModelElement {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 67 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 67 * hash + (this.targetType != null ? this.targetType.hashCode() : 0);
+        hash = 67 * hash + ( this.name != null ? this.name.hashCode() : 0 );
+        hash = 67 * hash + ( this.targetType != null ? this.targetType.hashCode() : 0 );
         return hash;
     }
 
@@ -1029,11 +1038,11 @@ public class PropertyMapping extends ModelElement {
             return false;
         }
         final PropertyMapping other = (PropertyMapping) obj;
-        if ( (this.name == null) ? (other.name != null) : !this.name.equals( other.name ) ) {
+        if ( ( this.name == null ) ? ( other.name != null ) : !this.name.equals( other.name ) ) {
             return false;
         }
-        if ( this.targetType != other.targetType && (this.targetType == null ||
-            !this.targetType.equals( other.targetType )) ) {
+        if ( this.targetType != other.targetType && ( this.targetType == null ||
+            !this.targetType.equals( other.targetType ) ) ) {
             return false;
         }
         return true;
