@@ -1999,6 +1999,29 @@ public interface SourceTargetMapper {
 ----
 ====
 
+If you create mapper as a component Model, You can use injected field in java expression.
+What you need is at `@Mapper`:
+
+- declear `componentModel`
+- declear `use` which you can want to inject.
+
+And then, You can use injected field in java expression.
+
+.Using field in java expression with dependency injection
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper( componentModel="spring", uses = FooBarService.class )
+public interface SourceTargetMapper {
+
+    @Mapping(target = "value",
+         expression = "java( fooBarService.getTargetValue( s ) )")
+    Target sourceToTarget(Source s);
+}
+----
+====
+
 [[default-expressions]]
 === Default Expressions
 
