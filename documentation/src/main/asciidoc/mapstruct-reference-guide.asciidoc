@@ -2235,7 +2235,7 @@ In case of bi-directional mappings, e.g. from entity to DTO and from DTO to enti
 
 Use the annotation `@InheritInverseConfiguration` to indicate that a method shall inherit the inverse configuration of the corresponding reverse method.
 
-.Inverse mapping method inheriting its configuration
+.Inverse mapping method inheriting its configuration and ignoring some of them
 ====
 [source, java, linenums]
 [subs="verbatim,attributes"]
@@ -2247,6 +2247,7 @@ public interface CarMapper {
     CarDto carToDto(Car car);
 
     @InheritInverseConfiguration
+    @Mapping(target = "numberOfSeats", ignore = true)
     Car carDtoToCar(CarDto carDto);
 }
 ----
