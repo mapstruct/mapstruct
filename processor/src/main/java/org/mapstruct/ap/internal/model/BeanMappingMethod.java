@@ -101,7 +101,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             return this;
         }
 
-        public Builder souceMethod(SourceMethod sourceMethod) {
+        public Builder sourceMethod(SourceMethod sourceMethod) {
             singleMapping = new SourceMethodSingleMapping( sourceMethod );
             return setupMethodWithMapping( sourceMethod );
         }

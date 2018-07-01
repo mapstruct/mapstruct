@@ -58,7 +58,7 @@ public class EnumMappingMethod extends MappingMethod {
             return this;
         }
 
-        public Builder souceMethod(SourceMethod sourceMethod) {
+        public Builder sourceMethod(SourceMethod sourceMethod) {
             this.method = sourceMethod;
             return this;
         }
