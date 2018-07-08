@@ -28,6 +28,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.option.Options;
+import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.InjectionStrategyPrism;
 import org.mapstruct.ap.internal.prism.MapperConfigPrism;
@@ -236,6 +237,18 @@ public class MapperConfiguration {
         }
 
         return mapperPrism.disableSubMappingMethodsGeneration(); // fall back to default defined in the annotation
+    }
+
+    public BuilderPrism getBuilderPrism() {
+        if ( mapperPrism.values.builder() != null ) {
+            return mapperPrism.builder();
+        }
+        else if ( mapperConfigPrism != null && mapperConfigPrism.values.builder() != null ) {
+            return mapperConfigPrism.builder();
+        }
+        else {
+            return null;
+        }
     }
 
     public DeclaredType config() {

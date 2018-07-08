@@ -100,6 +100,10 @@ public enum Message {
     GENERAL_NOT_ALL_FORGED_CREATED( "Internal Error in creation of Forged Methods, it was expected all Forged Methods to finished with creation, but %s did not" ),
     GENERAL_NO_SUITABLE_CONSTRUCTOR( "%s does not have an accessible parameterless constructor." ),
 
+    BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD( "More than one builder creation method for \"%s\". Found methods: \"%s\". Builder will not be used. Consider implementing a custom BuilderProvider SPI.", Diagnostic.Kind.WARNING ),
+    BUILDER_NO_BUILD_METHOD_FOUND("No build method \"%s\" found in \"%s\" for \"%s\". Found methods: \"%s\".", Diagnostic.Kind.ERROR ),
+    BUILDER_NO_BUILD_METHOD_FOUND_DEFAULT("No build method \"%s\" found in \"%s\" for \"%s\". Found methods: \"%s\". Consider to add @Builder in order to select the correct build method.", Diagnostic.Kind.ERROR ),
+
     RETRIEVAL_NO_INPUT_ARGS( "Can't generate mapping method with no input arguments." ),
     RETRIEVAL_DUPLICATE_MAPPING_TARGETS( "Can't generate mapping method with more than one @MappingTarget parameter." ),
     RETRIEVAL_VOID_MAPPING_METHOD( "Can't generate mapping method with return type void." ),

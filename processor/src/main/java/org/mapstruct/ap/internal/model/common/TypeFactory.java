@@ -55,11 +55,16 @@ import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.Collections;
+import org.mapstruct.ap.internal.util.Extractor;
+import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
+import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.RoundContext;
+import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderInfo;
+import org.mapstruct.ap.spi.MoreThanOneBuilderCreationMethodException;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static org.mapstruct.ap.internal.model.common.ImplementationType.withDefaultConstructor;
@@ -73,8 +78,17 @@ import static org.mapstruct.ap.internal.model.common.ImplementationType.withLoad
  */
 public class TypeFactory {
 
+    private static final Extractor<BuilderInfo, String> BUILDER_INFO_CREATION_METHOD_EXTRACTOR =
+        new Extractor<BuilderInfo, String>() {
+            @Override
+            public String apply(BuilderInfo builderInfo) {
+                return builderInfo.getBuilderCreationMethod().toString();
+            }
+        };
+
     private final Elements elementUtils;
     private final Types typeUtils;
+    private final FormattingMessager messager;
     private final RoundContext roundContext;
 
     private final TypeMirror iterableType;
@@ -85,9 +99,10 @@ public class TypeFactory {
     private final Map<String, ImplementationType> implementationTypes = new HashMap<String, ImplementationType>();
     private final Map<String, String> importedQualifiedTypesBySimpleName = new HashMap<String, String>();
 
-    public TypeFactory(Elements elementUtils, Types typeUtils, RoundContext roundContext) {
+    public TypeFactory(Elements elementUtils, Types typeUtils, FormattingMessager messager, RoundContext roundContext) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
+        this.messager = messager;
         this.roundContext = roundContext;
 
         iterableType = typeUtils.erasure( elementUtils.getTypeElement( Iterable.class.getCanonicalName() ).asType() );
@@ -502,9 +517,21 @@ public class TypeFactory {
     }
 
     private BuilderInfo findBuilder(TypeMirror type) {
-        return roundContext.getAnnotationProcessorContext()
-            .getBuilderProvider()
-            .findBuilderInfo( type, elementUtils, typeUtils );
+        try {
+            return roundContext.getAnnotationProcessorContext()
+                .getBuilderProvider()
+                .findBuilderInfo( type, elementUtils, typeUtils );
+        }
+        catch ( MoreThanOneBuilderCreationMethodException ex ) {
+            messager.printMessage(
+                typeUtils.asElement( type ),
+                Message.BUILDER_MORE_THAN_ONE_BUILDER_CREATION_METHOD,
+                type,
+                Strings.join( ex.getBuilderInfo(), ", ", BUILDER_INFO_CREATION_METHOD_EXTRACTOR )
+            );
+        }
+
+        return null;
     }
 
     private TypeMirror getComponentType(TypeMirror mirror) {
