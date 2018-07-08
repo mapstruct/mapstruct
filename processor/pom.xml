@@ -116,6 +116,12 @@
             <artifactId>joda-time</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Integration with Lombok -->
+        <dependency>
+            <groupId>org.aptintegration.tools</groupId>
+            <artifactId>ast-modifying-spi</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

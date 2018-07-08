@@ -10,7 +10,8 @@ import java.util.Set;
 
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
+import org.aptintegration.tools.spi.AstModifyingAnnotationProcessor;
+
 
 /**
  * Keeps contextual data in the scope of one annotation processing round.

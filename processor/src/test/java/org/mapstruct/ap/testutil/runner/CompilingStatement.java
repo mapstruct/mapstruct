@@ -137,6 +137,7 @@ abstract class CompilingStatement extends Statement {
         String[] whitelist =
             new String[] {
                 "processor" + File.separator + "target",  // the processor itself,
+                "mapstruct" + File.separator + "astmodifying-spi",
                 "freemarker",
                 "javax.inject",
                 "spring-context",

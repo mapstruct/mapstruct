@@ -13,8 +13,8 @@ import java.util.ServiceLoader;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
+import org.aptintegration.tools.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
-import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderProvider;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultBuilderProvider;
@@ -75,11 +75,21 @@ public class AnnotationProcessorContext {
     private static List<AstModifyingAnnotationProcessor> findAstModifyingAnnotationProcessors() {
         List<AstModifyingAnnotationProcessor> processors = new ArrayList<AstModifyingAnnotationProcessor>();
 
-        ServiceLoader<AstModifyingAnnotationProcessor> loader = ServiceLoader.load(
-                AstModifyingAnnotationProcessor.class, AnnotationProcessorContext.class.getClassLoader()
+        ServiceLoader<AstModifyingAnnotationProcessor> newLoader = ServiceLoader.load(
+            AstModifyingAnnotationProcessor.class, AnnotationProcessorContext.class.getClassLoader()
         );
 
-        for ( Iterator<AstModifyingAnnotationProcessor> it = loader.iterator(); it.hasNext(); ) {
+        for ( Iterator<AstModifyingAnnotationProcessor> it = newLoader.iterator(); it.hasNext(); ) {
+            processors.add( it.next() );
+        }
+
+        ServiceLoader<org.mapstruct.ap.spi.AstModifyingAnnotationProcessor> deprecatedLoader = ServiceLoader.load(
+            org.mapstruct.ap.spi.AstModifyingAnnotationProcessor.class,
+            AnnotationProcessorContext.class.getClassLoader()
+        );
+
+        for ( Iterator<org.mapstruct.ap.spi.AstModifyingAnnotationProcessor> it = deprecatedLoader.iterator();
+              it.hasNext(); ) {
             processors.add( it.next() );
         }
 
