@@ -5,48 +5,38 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.util.Set;
-
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 /**
  * @author Sjaak Derksen
  */
-public class JodaLocalDateTimeToXmlGregorianCalendar extends BuiltInMethod {
+public class JodaLocalDateTimeToXmlGregorianCalendar extends AbstractToXmlGregorianCalendar {
 
     private final Parameter parameter;
-    private final Type returnType;
     private final Set<Type> importTypes;
 
     public JodaLocalDateTimeToXmlGregorianCalendar(TypeFactory typeFactory) {
-        this.parameter = new Parameter(
-            "dt",
-            typeFactory.getType( JodaTimeConstants.LOCAL_DATE_TIME_FQN )
-        );
-        this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
-
+        super( typeFactory );
+        this.parameter = new Parameter( "dt", typeFactory.getType( JodaTimeConstants.LOCAL_DATE_TIME_FQN ) );
         this.importTypes = asSet(
-            returnType,
             parameter.getType(),
-            typeFactory.getType( DatatypeConstants.class ),
-            typeFactory.getType( DatatypeFactory.class ),
-            typeFactory.getType( DatatypeConfigurationException.class )
+            typeFactory.getType( DatatypeConstants.class )
         );
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        return importTypes;
+        Set<Type> result = super.getImportTypes();
+        result.addAll( importTypes );
+        return result;
     }
 
     @Override
@@ -54,8 +44,4 @@ public class JodaLocalDateTimeToXmlGregorianCalendar extends BuiltInMethod {
         return parameter;
     }
 
-    @Override
-    public Type getReturnType() {
-        return returnType;
-    }
 }

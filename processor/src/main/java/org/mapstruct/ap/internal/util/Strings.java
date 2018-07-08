@@ -127,8 +127,8 @@ public class Strings {
         return string == null || string.isEmpty();
     }
 
-    public static String getSaveVariableName(String name, String... existingVariableNames) {
-        return getSaveVariableName( name, Arrays.asList( existingVariableNames ) );
+    public static String getSafeVariableName(String name, String... existingVariableNames) {
+        return getSafeVariableName( name, Arrays.asList( existingVariableNames ) );
     }
 
     /**
@@ -141,7 +141,7 @@ public class Strings {
      * @return a variable name based on the given original name, not conflicting with any of the given other names or
      * any Java keyword; starting with a lower-case letter
      */
-    public static String getSaveVariableName(String name, Collection<String> existingVariableNames) {
+    public static String getSafeVariableName(String name, Collection<String> existingVariableNames) {
         name = decapitalize( sanitizeIdentifierName( name ) );
         name = joinAndCamelize( extractParts( name ) );
 

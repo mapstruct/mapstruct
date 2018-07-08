@@ -5,6 +5,7 @@
     Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
 
 -->
+<#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.assignment.LocalVarWrapper" -->
 <#if (thrownTypes?size == 0) >
     <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/></#if> ${ext.targetWriteAccessorName} = <@_assignment/>;
 <#else>

@@ -266,21 +266,21 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
     }
 
     public String getKeyVariableName() {
-        return Strings.getSaveVariableName(
+        return Strings.getSafeVariableName(
             "key",
             getParameterNames()
         );
     }
 
     public String getValueVariableName() {
-        return Strings.getSaveVariableName(
+        return Strings.getSafeVariableName(
             "value",
             getParameterNames()
         );
     }
 
     public String getEntryVariableName() {
-        return Strings.getSaveVariableName(
+        return Strings.getSafeVariableName(
             "entry",
             getParameterNames()
         );

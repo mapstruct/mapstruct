@@ -5,7 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Strings.getSaveVariableName;
+import static org.mapstruct.ap.internal.util.Strings.getSafeVariableName;
 import static org.mapstruct.ap.internal.util.Strings.join;
 
 import java.util.ArrayList;
@@ -91,12 +91,12 @@ public abstract class MappingMethod extends ModelElement {
             return targetParameter.getName();
         }
         else if ( getResultType().isArrayType() ) {
-            String name = getSaveVariableName( getResultType().getComponentType().getName() + "Tmp", existingVarNames );
+            String name = getSafeVariableName( getResultType().getComponentType().getName() + "Tmp", existingVarNames );
             existingVarNames.add( name );
             return name;
         }
         else {
-            String name = getSaveVariableName( getResultType().getName(), existingVarNames );
+            String name = getSafeVariableName( getResultType().getName(), existingVarNames );
             existingVarNames.add( name );
             return name;
         }

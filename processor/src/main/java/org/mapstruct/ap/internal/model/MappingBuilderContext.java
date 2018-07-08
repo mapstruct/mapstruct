@@ -37,7 +37,7 @@ import org.mapstruct.ap.spi.MappingExclusionProvider;
  * <ul>
  * <li>Input for the building process, such as the source model (mapping methods found) and mapper references.</li>
  * <li>Required factory, utility, reporting methods for building the mappings.</li>
- * <li>Means to harbor results produced by the builders, such as forged- and virtual mapping methods that should be
+ * <li>Means to harbor results produced by the builders, such as forged- and supported mapping methods that should be
  * generated in a later stage.</li>
  * </ul>
  *
@@ -94,7 +94,7 @@ public class MappingBuilderContext {
                                        SelectionParameters selectionParameters, SourceRHS sourceRHS,
                                        boolean preferUpdateMethods);
 
-        Set<VirtualMappingMethod> getUsedVirtualMappings();
+        Set<SupportingMappingMethod> getUsedSupportedMappings();
     }
 
     private final TypeFactory typeFactory;
@@ -209,8 +209,8 @@ public class MappingBuilderContext {
         return existingMappingMethod;
     }
 
-    public Set<VirtualMappingMethod> getUsedVirtualMappings() {
-        return mappingResolver.getUsedVirtualMappings();
+    public Set<SupportingMappingMethod> getUsedSupportedMappings() {
+        return mappingResolver.getUsedSupportedMappings();
     }
 
     /**

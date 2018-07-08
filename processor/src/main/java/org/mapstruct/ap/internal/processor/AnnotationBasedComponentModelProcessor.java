@@ -63,12 +63,15 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         }
 
         List<Annotation> annotations = getMapperReferenceAnnotations();
-        ListIterator<MapperReference> iterator = mapper.getReferencedMappers().listIterator();
+        ListIterator<Field> iterator = mapper.getFields().listIterator();
 
         while ( iterator.hasNext() ) {
-            MapperReference reference = iterator.next();
-            iterator.remove();
-            iterator.add( replacementMapperReference( reference, annotations, injectionStrategy ) );
+
+            Field reference = iterator.next();
+            if ( reference instanceof  MapperReference ) {
+                iterator.remove();
+                iterator.add( replacementMapperReference( reference, annotations, injectionStrategy ) );
+            }
         }
 
         if ( injectionStrategy == InjectionStrategyPrism.CONSTRUCTOR ) {
@@ -97,8 +100,18 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
         decorator.setFields( replacement );
     }
 
+    private List<MapperReference> toMapperReferences(List<Field> fields) {
+        List<MapperReference> mapperReferences = new ArrayList<MapperReference>(  );
+        for ( Field field : fields ) {
+            if ( field instanceof  MapperReference ) {
+                mapperReferences.add( (MapperReference) field );
+            }
+        }
+        return mapperReferences;
+    }
+
     private void buildConstructors(Mapper mapper) {
-        if ( !mapper.getReferencedMappers().isEmpty() ) {
+        if ( !toMapperReferences( mapper.getFields() ).isEmpty() ) {
             AnnotatedConstructor annotatedConstructor = buildAnnotatedConstructorForMapper( mapper );
 
             if ( !annotatedConstructor.getMapperReferences().isEmpty() ) {
@@ -117,10 +130,11 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     }
 
     private AnnotatedConstructor buildAnnotatedConstructorForMapper(Mapper mapper) {
+        List<MapperReference> mapperReferences = toMapperReferences( mapper.getFields() );
         List<AnnotationMapperReference> mapperReferencesForConstructor =
-            new ArrayList<AnnotationMapperReference>( mapper.getReferencedMappers().size() );
+            new ArrayList<AnnotationMapperReference>( mapperReferences.size() );
 
-        for ( MapperReference mapperReference : mapper.getReferencedMappers() ) {
+        for ( MapperReference mapperReference : mapperReferences ) {
             if ( mapperReference.isUsed() ) {
                 mapperReferencesForConstructor.add( (AnnotationMapperReference) mapperReference );
             }
@@ -130,11 +144,13 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
 
         removeDuplicateAnnotations( mapperReferencesForConstructor, mapperReferenceAnnotations );
 
-        return new AnnotatedConstructor(
+        return AnnotatedConstructor.forComponentModels(
             mapper.getName(),
             mapperReferencesForConstructor,
             mapperReferenceAnnotations,
-            additionalPublicEmptyConstructor() );
+            mapper.getConstructor(),
+            additionalPublicEmptyConstructor()
+        );
     }
 
     private AnnotatedConstructor buildAnnotatedConstructorForDecorator(Decorator decorator) {
@@ -151,12 +167,15 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
 
         removeDuplicateAnnotations( mapperReferencesForConstructor, mapperReferenceAnnotations );
 
-        return new AnnotatedConstructor(
+        return AnnotatedConstructor.forComponentModels(
             decorator.getName(),
             mapperReferencesForConstructor,
             mapperReferenceAnnotations,
-            additionalPublicEmptyConstructor() );
+            decorator.getConstructor(),
+            additionalPublicEmptyConstructor()
+        );
     }
+
 
     /**
      * Removes duplicate constructor parameter annotations. If an annotation is already present on the constructor, it
@@ -204,7 +223,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
      * @param injectionStrategyPrism strategy for injection
      * @return the mapper reference replacing the original one
      */
-    protected MapperReference replacementMapperReference(Field originalReference, List<Annotation> annotations,
+    protected Field replacementMapperReference(Field originalReference, List<Annotation> annotations,
                                                          InjectionStrategyPrism injectionStrategyPrism) {
         boolean finalField =
             injectionStrategyPrism == InjectionStrategyPrism.CONSTRUCTOR && !additionalPublicEmptyConstructor();

@@ -133,7 +133,7 @@ public class Decorator extends GeneratedType {
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Decorator(TypeFactory typeFactory, String packageName, String name, Type decoratorType,
                       String interfacePackage, String interfaceName, List<MappingMethod> methods,
-                      List<? extends Field> fields, Options options, VersionInformation versionInformation,
+                      List<Field> fields, Options options, VersionInformation versionInformation,
                       Accessibility accessibility, SortedSet<Type> extraImports,
                       DecoratorConstructor decoratorConstructor) {
         super(

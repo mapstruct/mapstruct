@@ -5,59 +5,48 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Set;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 /**
  * @author Sjaak Derksen
  */
-public class StringToXmlGregorianCalendar extends BuiltInMethod {
+public class StringToXmlGregorianCalendar extends AbstractToXmlGregorianCalendar {
 
     private final Parameter parameter;
-    private final Type returnType;
     private final Set<Type> importTypes;
 
     public StringToXmlGregorianCalendar(TypeFactory typeFactory) {
+        super( typeFactory );
         this.parameter = new Parameter( "date", typeFactory.getType( String.class ) );
-        this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
         this.importTypes = asSet(
-            returnType,
             typeFactory.getType( GregorianCalendar.class ),
             typeFactory.getType( SimpleDateFormat.class ),
             typeFactory.getType( DateFormat.class ),
-            typeFactory.getType( ParseException.class ),
-            typeFactory.getType( DatatypeFactory.class ),
-            typeFactory.getType( DatatypeConfigurationException.class )
+            typeFactory.getType( ParseException.class )
         );
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        return importTypes;
+        Set<Type> result = super.getImportTypes();
+        result.addAll( importTypes );
+        return result;
     }
 
     @Override
     public Parameter getParameter() {
         return parameter;
-    }
-
-    @Override
-    public Type getReturnType() {
-        return returnType;
     }
 
     @Override

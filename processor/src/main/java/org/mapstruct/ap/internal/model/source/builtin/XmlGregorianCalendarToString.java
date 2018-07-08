@@ -5,18 +5,17 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * @author Sjaak Derksen

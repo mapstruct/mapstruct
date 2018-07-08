@@ -73,7 +73,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         Type targetElementType = getElementType( resultType );
 
         String loopVariableName =
-            Strings.getSaveVariableName( sourceElementType.getName(), method.getParameterNames() );
+            Strings.getSafeVariableName( sourceElementType.getName(), method.getParameterNames() );
 
         SourceRHS sourceRHS = new SourceRHS(
             loopVariableName,

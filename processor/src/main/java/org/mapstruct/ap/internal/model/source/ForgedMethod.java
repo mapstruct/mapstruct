@@ -87,7 +87,7 @@ public class ForgedMethod implements Method {
                         ParameterProvidedMethods parameterProvidedMethods, ForgedMethodHistory history,
                         MappingOptions mappingOptions, boolean forgedNameBased) {
         String sourceParamName = Strings.decapitalize( sourceType.getName() );
-        String sourceParamSafeName = Strings.getSaveVariableName( sourceParamName );
+        String sourceParamSafeName = Strings.getSafeVariableName( sourceParamName );
 
         this.parameters = new ArrayList<Parameter>( 1 + additionalParameters.size() );
         Parameter sourceParameter = new Parameter( sourceParamSafeName, sourceType );
