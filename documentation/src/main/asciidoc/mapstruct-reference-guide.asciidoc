@@ -2017,10 +2017,10 @@ The same warnings and restrictions apply to default expressions that apply to ex
 The example below demonstrates how two source properties can be mapped to one target:
 
 .Mapping method using a default expression
-===
+====
 [source, java, linenums]
 [subs="verbatim,attributes"]
----
+----
 imports java.util.UUID;
 
 @Mapper( imports = UUID.class )
@@ -2031,8 +2031,8 @@ public interface SourceTargetMapper {
     @Mapping(target="id", source="sourceId", defaultExpression = "java( UUID.randomUUID().toString() )")
     Target sourceToTarget(Source s);
 }
----
-===
+----
+====
 
 The example demonstrates how to use defaultExpression to set an `ID` field if the source field is null, this could be used to take the existing `sourceId` from the source object if it is set, or create a new `Id` if it isn't. Please note that the fully qualified package name is specified because MapStruct does not take care of the import of the `UUID` class (unless it’s used otherwise explicitly in the `SourceTargetMapper`). This can be resolved by defining imports on the @Mapper annotation ((see <<expressions>>).
 
