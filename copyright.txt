@@ -15,6 +15,7 @@ Dmytro Polovinkin - https://github.com/navpil
 Eric Martineau - https://github.com/ericmartineau
 Ewald Volkert - https://github.com/eforest
 Filip Hrisafov - https://github.com/filiphr
+Gervais Blaise - https://github.com/gervaisb
 Gunnar Morling - https://github.com/gunnarmorling
 Ivo Smid - https://github.com/bedla
 Jeff Smyth - https://github.com/smythie86
