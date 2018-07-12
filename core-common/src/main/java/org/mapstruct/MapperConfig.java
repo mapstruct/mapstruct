@@ -198,8 +198,8 @@ public @interface MapperConfig {
      * NOTE: In case no builder is defined here, in {@link BeanMapping} or {@link Mapper} and there is a single
      * build method, then that method would be used.
      * <p>
-     * If the builder is defined and there is a single method that does not match the name of the finisher than
-     * a compile error will occurs
+     * If the builder is defined and there is a single method that does not match the name of the build method then
+     * a compile error will occur
      *
      * @return the builder information
      *

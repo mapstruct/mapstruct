@@ -37,7 +37,7 @@ import org.mapstruct.util.Experimental;
 public @interface Builder {
 
     /**
-     * The name of the build method that needs to be invoked on the builder to create the type being build
+     * The name of the build method that needs to be invoked on the builder to create the type to be build
      *
      * @return the method that needs to tbe invoked on the builder
      */
