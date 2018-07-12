@@ -95,7 +95,9 @@ public @interface Mapper {
      * by {@link #config() }
      *
      * @return The component model for the generated mapper.
+     * @deprecated Use annotation to configure the used component model. Will be removed in version 2.0.
      */
+    @Deprecated
     String componentModel() default "default";
 
     /**

@@ -31,8 +31,11 @@ import org.mapstruct.ap.internal.model.Mapper;
  * target component model for this mapper.
  *
  * @author Gunnar Morling
+ * @author Christian Bandowski
  */
 public class CdiComponentProcessor extends AnnotationBasedComponentModelProcessor {
+
+    private static final String CANONICAL_NAME_CDIMAPPER = "org.mapstruct.CdiMapper";
 
     @Override
     protected String getComponentModelIdentifier() {

@@ -21,14 +21,18 @@ package org.mapstruct.ap.internal.prism;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlElementRef;
 
+import net.java.dev.hickory.prism.GeneratePrism;
+import net.java.dev.hickory.prism.GeneratePrisms;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
+import org.mapstruct.CdiMapper;
 import org.mapstruct.Context;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.IterableMapping;
+import org.mapstruct.Jsr330Mapper;
 import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
@@ -38,12 +42,11 @@ import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.Qualifier;
+import org.mapstruct.SpringMapper;
 import org.mapstruct.TargetType;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
-
-import net.java.dev.hickory.prism.GeneratePrism;
-import net.java.dev.hickory.prism.GeneratePrisms;
+import org.mapstruct.util.ComponentModelMapper;
 
 /**
  * Triggers the generation of prism types using <a href="https://java.net/projects/hickory">Hickory</a>.
@@ -71,6 +74,12 @@ import net.java.dev.hickory.prism.GeneratePrisms;
     @GeneratePrism(value = ValueMapping.class, publicAccess = true),
     @GeneratePrism(value = ValueMappings.class, publicAccess = true),
     @GeneratePrism(value = Context.class, publicAccess = true),
+
+    // component model configs
+    @GeneratePrism(value = ComponentModelMapper.class, publicAccess = true),
+    @GeneratePrism(value = SpringMapper.class, publicAccess = true),
+    @GeneratePrism(value = Jsr330Mapper.class, publicAccess = true),
+    @GeneratePrism(value = CdiMapper.class, publicAccess = true),
 
     // external types
     @GeneratePrism(value = XmlElementDecl.class, publicAccess = true),

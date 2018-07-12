@@ -50,7 +50,8 @@ public class MapperServiceProcessor  implements ModelElementProcessor<Mapper, Vo
         }
         else {
             String componentModel =
-                MapperConfiguration.getInstanceOn( mapperTypeElement ).componentModel( context.getOptions() );
+                MapperConfiguration.getInstanceOn( mapperTypeElement, context.getMessager() )
+                    .componentModel( context.getOptions() );
 
             spiGenerationNeeded = "default".equals( componentModel );
         }

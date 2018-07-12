@@ -21,6 +21,7 @@ package org.mapstruct.ap.internal.model;
 import java.util.List;
 import java.util.SortedSet;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -48,6 +49,7 @@ public class Mapper extends GeneratedType {
     private final boolean customPackage;
     private final boolean customImplName;
     private final List<MapperReference> referencedMappers;
+    private final List<? extends AnnotationMirror> mapperAnnotations;
     private Decorator decorator;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
@@ -55,7 +57,7 @@ public class Mapper extends GeneratedType {
                    String interfacePackage, String interfaceName, boolean customPackage, boolean customImplName,
                    List<MappingMethod> methods, Options options, VersionInformation versionInformation,
                    Accessibility accessibility, List<MapperReference> referencedMappers, Decorator decorator,
-                   SortedSet<Type> extraImportedTypes) {
+                   SortedSet<Type> extraImportedTypes, List<? extends AnnotationMirror> mapperAnnotations) {
 
         super(
             typeFactory,
@@ -76,6 +78,8 @@ public class Mapper extends GeneratedType {
         this.customImplName = customImplName;
 
         this.referencedMappers = referencedMappers;
+        this.mapperAnnotations = mapperAnnotations;
+
         this.decorator = decorator;
     }
 
@@ -160,6 +164,8 @@ public class Mapper extends GeneratedType {
             String elementPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
             String packageName = implPackage.replace( PACKAGE_NAME_PLACEHOLDER, elementPackage );
 
+            List<? extends AnnotationMirror> abc = element.getEnclosingElement().getAnnotationMirrors();
+
             return new Mapper(
                 typeFactory,
                 packageName,
@@ -175,13 +181,18 @@ public class Mapper extends GeneratedType {
                 Accessibility.fromModifiers( element.getModifiers() ),
                 mapperReferences,
                 decorator,
-                extraImportedTypes
+                extraImportedTypes,
+                element.getAnnotationMirrors()
             );
         }
     }
 
     public List<MapperReference> getReferencedMappers() {
         return referencedMappers;
+    }
+
+    public List<? extends AnnotationMirror> getMapperAnnotations() {
+        return mapperAnnotations;
     }
 
     public Decorator getDecorator() {

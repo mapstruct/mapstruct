@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
-
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.AnnotatedConstructor;
@@ -55,7 +54,10 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     public Mapper process(ProcessorContext context, TypeElement mapperTypeElement, Mapper mapper) {
         this.typeFactory = context.getTypeFactory();
 
-        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn( mapperTypeElement );
+        MapperConfiguration mapperConfiguration = MapperConfiguration.getInstanceOn(
+            mapperTypeElement,
+            context.getMessager()
+        );
 
         String componentModel = mapperConfiguration.componentModel( context.getOptions() );
         InjectionStrategyPrism injectionStrategy = mapperConfiguration.getInjectionStrategy();
@@ -94,7 +96,7 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     protected void adjustDecorator(Mapper mapper, InjectionStrategyPrism injectionStrategy) {
         Decorator decorator = mapper.getDecorator();
 
-        for ( Annotation typeAnnotation : getDecoratorAnnotations() ) {
+        for ( Annotation typeAnnotation : getDecoratorAnnotations( mapper ) ) {
             decorator.addAnnotation( typeAnnotation );
         }
 
@@ -245,9 +247,11 @@ public abstract class AnnotationBasedComponentModelProcessor implements ModelEle
     protected abstract List<Annotation> getTypeAnnotations(Mapper mapper);
 
     /**
+     * @param mapper the mapper
      * @return the annotation(s) to be added at the decorator of the mapper
+     * @since 1.3
      */
-    protected List<Annotation> getDecoratorAnnotations() {
+    protected List<Annotation> getDecoratorAnnotations(Mapper mapper) {
         return Collections.emptyList();
     }
 

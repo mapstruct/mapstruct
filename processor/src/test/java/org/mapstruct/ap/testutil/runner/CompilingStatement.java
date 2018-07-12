@@ -139,6 +139,7 @@ abstract class CompilingStatement extends Statement {
                 "org" + File.separator + "mapstruct" + File.separator + "mapstruct" + File.separator,
                 "guava",
                 "javax.inject",
+                "cdi-api",
                 "spring-beans",
                 "spring-context",
                 "joda-time" };
@@ -152,6 +153,7 @@ abstract class CompilingStatement extends Statement {
                 "processor" + File.separator + "target",  // the processor itself,
                 "freemarker",
                 "javax.inject",
+                "cdi-api",
                 "spring-context",
                 "joda-time" };
 
