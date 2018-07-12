@@ -64,6 +64,7 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
         this.typeFactory = new TypeFactory(
             processingEnvironment.getElementUtils(),
             delegatingTypes,
+            messager,
             roundContext
         );
         this.options = options;

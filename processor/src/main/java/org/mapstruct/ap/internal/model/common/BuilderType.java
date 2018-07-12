@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.util.Collection;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
@@ -33,20 +34,20 @@ public class BuilderType {
     private final Type owningType;
     private final Type buildingType;
     private final ExecutableElement builderCreationMethod;
-    private final ExecutableElement buildMethod;
+    private final Collection<ExecutableElement> buildMethods;
 
     private BuilderType(
         Type builder,
         Type owningType,
         Type buildingType,
         ExecutableElement builderCreationMethod,
-        ExecutableElement buildMethod
+        Collection<ExecutableElement> buildMethods
     ) {
         this.builder = builder;
         this.owningType = owningType;
         this.buildingType = buildingType;
         this.builderCreationMethod = builderCreationMethod;
-        this.buildMethod = buildMethod;
+        this.buildMethods = buildMethods;
     }
 
     /**
@@ -87,18 +88,17 @@ public class BuilderType {
     }
 
     /**
-     * The name of the method that needs to be invoked on the builder to create the type being built.
-     *
-     * @return the name of the method that needs to be invoked on the type that is being built
+     * The build methods that can be invoked to create the type being built.
+     * @return the build methods that can be invoked to create the type being built
      */
-    public String getBuildMethod() {
-        return buildMethod.getSimpleName().toString();
+    public Collection<ExecutableElement> getBuildMethods() {
+        return buildMethods;
     }
 
     public BuilderInfo asBuilderInfo() {
         return new BuilderInfo.Builder()
             .builderCreationMethod( this.builderCreationMethod )
-            .buildMethod( this.buildMethod )
+            .buildMethod( this.buildMethods )
             .build();
     }
 
@@ -106,11 +106,6 @@ public class BuilderType {
         Types typeUtils) {
         if ( builderInfo == null ) {
             return null;
-        }
-        ExecutableElement buildMethod = builderInfo.getBuildMethod();
-        if ( !typeUtils.isAssignable( buildMethod.getReturnType(), typeToBuild.getTypeMirror() ) ) {
-            //TODO throw error
-            throw new IllegalArgumentException( "Build return type is not assignable" );
         }
 
         Type builder = typeFactory.getType( builderInfo.getBuilderCreationMethod().getReturnType() );
@@ -133,7 +128,7 @@ public class BuilderType {
             owner,
             typeToBuild,
             builderCreationMethod,
-            buildMethod
+            builderInfo.getBuildMethods()
         );
     }
 }

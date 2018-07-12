@@ -18,6 +18,9 @@
  */
 package org.mapstruct.ap.spi;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.lang.model.element.ExecutableElement;
@@ -141,17 +144,22 @@ public class DefaultBuilderProvider implements BuilderProvider {
      * <p>
      * The default implementation iterates over all the methods in {@code typeElement} and uses
      * {@link DefaultBuilderProvider#isPossibleBuilderCreationMethod(ExecutableElement, TypeElement, Types)} and
-     * {@link DefaultBuilderProvider#findBuildMethod(TypeElement, TypeElement, Types)} to create the
+     * {@link DefaultBuilderProvider#findBuildMethods(TypeElement, TypeElement, Types)} to create the
      * {@link BuilderInfo}.
      * <p>
      * The default implementation uses {@link DefaultBuilderProvider#shouldIgnore(TypeElement)} to check if the
      * {@code typeElement} should be ignored.
+     * <p>
+     * In case there are multiple {@link BuilderInfo} then a {@link MoreThanOneBuilderCreationMethodException} is
+     * thrown.
      *
      * @param typeElement the type element for which a builder searched
      * @param elements the util elements that can be used for operating on the type element
      * @param types the util types that can be used for operation on {@link TypeMirror}(s)
      *
      * @return the {@link BuilderInfo} or {@code null} if no builder was found for the type
+     * {@link DefaultBuilderProvider#findBuildMethods(TypeElement, TypeElement, Types)}
+     * @throws MoreThanOneBuilderCreationMethodException if there are multiple builder creation methods
      */
     protected BuilderInfo findBuilderInfo(TypeElement typeElement, Elements elements, Types types) {
         if ( shouldIgnore( typeElement ) ) {
@@ -159,18 +167,28 @@ public class DefaultBuilderProvider implements BuilderProvider {
         }
 
         List<ExecutableElement> methods = ElementFilter.methodsIn( typeElement.getEnclosedElements() );
+        List<BuilderInfo> builderInfo = new ArrayList<BuilderInfo>();
         for ( ExecutableElement method : methods ) {
             if ( isPossibleBuilderCreationMethod( method, typeElement, types ) ) {
                 TypeElement builderElement = getTypeElement( method.getReturnType() );
-                ExecutableElement buildMethod = findBuildMethod( builderElement, typeElement, types );
-                if ( buildMethod != null ) {
-                    return new BuilderInfo.Builder()
+                Collection<ExecutableElement> buildMethods = findBuildMethods( builderElement, typeElement, types );
+                if ( !buildMethods.isEmpty() ) {
+                    builderInfo.add( new BuilderInfo.Builder()
                         .builderCreationMethod( method )
-                        .buildMethod( buildMethod )
-                        .build();
+                        .buildMethod( buildMethods )
+                        .build()
+                    );
                 }
             }
         }
+
+        if ( builderInfo.size() == 1 ) {
+            return builderInfo.get( 0 );
+        }
+        else if ( builderInfo.size() > 1 ) {
+            throw new MoreThanOneBuilderCreationMethodException( typeElement.asType(), builderInfo );
+        }
+
         return findBuilderInfo( typeElement.getSuperclass(), elements, types );
     }
 
@@ -207,30 +225,40 @@ public class DefaultBuilderProvider implements BuilderProvider {
      * <p>
      * The default implementation uses {@link DefaultBuilderProvider#shouldIgnore(TypeElement)} to check if the
      * {@code builderElement} should be ignored, i.e. not checked for build elements.
-     *
+     * <p>
+     * If there are multiple methods that satisfy
+     * {@link DefaultBuilderProvider#isBuildMethod(ExecutableElement, TypeElement, Types)} and one of those methods
+     * is names {@code build} that that method would be considered as a build method.
      * @param builderElement the element for the builder
      * @param typeElement the element for the type that is being built
      * @param types the util types tat can be used for operations on {@link TypeMirror}(s)
      *
      * @return the build method for the {@code typeElement} if it exists, or {@code null} if it does not
+     * {@code build}
      */
-    protected ExecutableElement findBuildMethod(TypeElement builderElement, TypeElement typeElement, Types types) {
+    protected Collection<ExecutableElement> findBuildMethods(TypeElement builderElement, TypeElement typeElement,
+        Types types) {
         if ( shouldIgnore( builderElement ) ) {
-            return null;
+            return Collections.emptyList();
         }
 
         List<ExecutableElement> builderMethods = ElementFilter.methodsIn( builderElement.getEnclosedElements() );
+        List<ExecutableElement> buildMethods = new ArrayList<ExecutableElement>();
         for ( ExecutableElement buildMethod : builderMethods ) {
             if ( isBuildMethod( buildMethod, typeElement, types ) ) {
-                return buildMethod;
+                buildMethods.add( buildMethod );
             }
         }
 
-        return findBuildMethod(
-            getTypeElement( builderElement.getSuperclass() ),
-            typeElement,
-            types
-        );
+        if ( buildMethods.isEmpty() ) {
+            return findBuildMethods(
+                getTypeElement( builderElement.getSuperclass() ),
+                typeElement,
+                types
+            );
+        }
+
+        return buildMethods;
     }
 
     /**

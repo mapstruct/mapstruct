@@ -40,6 +40,8 @@ public interface BuilderProvider {
      *
      * @throws TypeHierarchyErroneousException if the type that needs to be visited is not ready yet, this signals the
      * MapStruct processor to postpone the generation of the mappers to the next round
+     * @throws MoreThanOneBuilderCreationMethodException if {@code type} has more than one method that can create the
+     * builder
      */
     BuilderInfo findBuilderInfo(TypeMirror type, Elements elements, Types types);
 }

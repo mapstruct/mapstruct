@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.BeforeMapping;
+import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.InheritConfiguration;
@@ -71,6 +72,7 @@ import net.java.dev.hickory.prism.GeneratePrisms;
     @GeneratePrism(value = ValueMapping.class, publicAccess = true),
     @GeneratePrism(value = ValueMappings.class, publicAccess = true),
     @GeneratePrism(value = Context.class, publicAccess = true),
+    @GeneratePrism(value = Builder.class, publicAccess = true),
 
     // external types
     @GeneratePrism(value = XmlElementDecl.class, publicAccess = true),

@@ -18,14 +18,14 @@
  */
 package org.mapstruct;
 
-import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.mapstruct.factory.Mappers;
+
+import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 
 /**
  * Marks an interface or abstract class as a mapper and activates the generation of a implementation of that type via
@@ -200,4 +200,22 @@ public @interface Mapper {
      */
     boolean disableSubMappingMethodsGeneration() default false;
 
+    /**
+     * The information that should be used for the builder mappings. This can be used to define custom build methods
+     * for the builder strategy that one uses.
+     *
+     * If no builder is defined the builder given via {@link MapperConfig#builder()} will be applied.
+     *
+     * <p>
+     * NOTE: In case no builder is defined here, in {@link BeanMapping} or {@link MapperConfig} and there is a single
+     * build method, then that method would be used.
+     * <p>
+     * If the builder is defined and there is a single method that does not match the name of the finisher than
+     * a compile error will occurs
+     *
+     * @return the builder information
+     *
+     * @since 1.3
+     */
+    Builder builder() default @Builder;
 }

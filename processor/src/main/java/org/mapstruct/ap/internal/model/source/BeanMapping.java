@@ -25,6 +25,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.prism.BeanMappingPrism;
+import org.mapstruct.ap.internal.prism.BuilderPrism;
 import org.mapstruct.ap.internal.prism.NullValueMappingStrategyPrism;
 import org.mapstruct.ap.internal.prism.ReportingPolicyPrism;
 import org.mapstruct.ap.internal.util.FormattingMessager;
@@ -42,6 +43,7 @@ public class BeanMapping {
     private final ReportingPolicyPrism reportingPolicy;
     private final boolean ignoreByDefault;
     private final List<String> ignoreUnmappedSourceProperties;
+    private final BuilderPrism builder;
 
     /**
      * creates a mapping for inheritance. Will set ignoreByDefault to false.
@@ -55,7 +57,8 @@ public class BeanMapping {
             map.nullValueMappingStrategy,
             map.reportingPolicy,
             false,
-            map.ignoreUnmappedSourceProperties
+            map.ignoreUnmappedSourceProperties,
+            map.builder
         );
     }
 
@@ -74,9 +77,15 @@ public class BeanMapping {
                             : NullValueMappingStrategyPrism.valueOf( beanMapping.nullValueMappingStrategy() );
 
         boolean ignoreByDefault = beanMapping.ignoreByDefault();
+        BuilderPrism builderMapping = null;
+        if ( beanMapping.values.builder() != null ) {
+            builderMapping = beanMapping.builder();
+        }
+
         if ( !resultTypeIsDefined && beanMapping.qualifiedBy().isEmpty() && beanMapping.qualifiedByName().isEmpty()
             && beanMapping.ignoreUnmappedSourceProperties().isEmpty()
-            && ( nullValueMappingStrategy == null ) && !ignoreByDefault ) {
+            && ( nullValueMappingStrategy == null ) && !ignoreByDefault
+            && builderMapping == null ) {
 
             messager.printMessage( method, Message.BEANMAPPING_NO_ELEMENTS );
         }
@@ -94,7 +103,8 @@ public class BeanMapping {
             nullValueMappingStrategy,
             null,
             ignoreByDefault,
-            beanMapping.ignoreUnmappedSourceProperties()
+            beanMapping.ignoreUnmappedSourceProperties(),
+            builderMapping
         );
     }
 
@@ -105,17 +115,18 @@ public class BeanMapping {
      * @return bean mapping that needs to be used for Mappings
      */
     public static BeanMapping forForgedMethods() {
-        return new BeanMapping( null, null, ReportingPolicyPrism.IGNORE, false, Collections.<String>emptyList() );
+        return new BeanMapping( null, null, ReportingPolicyPrism.IGNORE, false, Collections.<String>emptyList(), null );
     }
 
     private BeanMapping(SelectionParameters selectionParameters, NullValueMappingStrategyPrism nvms,
                         ReportingPolicyPrism reportingPolicy, boolean ignoreByDefault,
-                        List<String> ignoreUnmappedSourceProperties) {
+        List<String> ignoreUnmappedSourceProperties, BuilderPrism builder) {
         this.selectionParameters = selectionParameters;
         this.nullValueMappingStrategy = nvms;
         this.reportingPolicy = reportingPolicy;
         this.ignoreByDefault = ignoreByDefault;
         this.ignoreUnmappedSourceProperties = ignoreUnmappedSourceProperties;
+        this.builder = builder;
     }
 
     public SelectionParameters getSelectionParameters() {
@@ -136,5 +147,9 @@ public class BeanMapping {
 
     public List<String> getIgnoreUnmappedSourceProperties() {
         return ignoreUnmappedSourceProperties;
+    }
+
+    public BuilderPrism getBuilder() {
+        return builder;
     }
 }

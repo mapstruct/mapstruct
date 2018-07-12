@@ -18,6 +18,7 @@
  */
 package org.mapstruct.ap.spi;
 
+import java.util.Collection;
 import javax.lang.model.element.ExecutableElement;
 
 /**
@@ -28,11 +29,11 @@ import javax.lang.model.element.ExecutableElement;
 public class BuilderInfo {
 
     private final ExecutableElement builderCreationMethod;
-    private final ExecutableElement buildMethod;
+    private final Collection<ExecutableElement> buildMethods;
 
-    private BuilderInfo(ExecutableElement builderCreationMethod, ExecutableElement buildMethod) {
+    private BuilderInfo(ExecutableElement builderCreationMethod, Collection<ExecutableElement> buildMethods) {
         this.builderCreationMethod = builderCreationMethod;
-        this.buildMethod = buildMethod;
+        this.buildMethods = buildMethods;
     }
 
     /**
@@ -50,18 +51,18 @@ public class BuilderInfo {
     }
 
     /**
-     * The method that can be used to build the type being built.
-     * This should be a {@code public} method within the builder itself
+     * The methods that can be used to build the type being built.
+     * This should be {@code public} methods within the builder itself
      *
      * @return the build method for the type
      */
-    public ExecutableElement getBuildMethod() {
-        return buildMethod;
+    public Collection<ExecutableElement> getBuildMethods() {
+        return buildMethods;
     }
 
     public static class Builder {
         private ExecutableElement builderCreationMethod;
-        private ExecutableElement buildMethod;
+        private Collection<ExecutableElement> buildMethods;
 
         /**
          * @see BuilderInfo#getBuilderCreationMethod()
@@ -72,10 +73,10 @@ public class BuilderInfo {
         }
 
         /**
-         * @see BuilderInfo#getBuildMethod()
+         * @see BuilderInfo#getBuildMethods()
          */
-        public Builder buildMethod(ExecutableElement method) {
-            this.buildMethod = method;
+        public Builder buildMethod(Collection<ExecutableElement> methods) {
+            this.buildMethods = methods;
             return this;
         }
 
@@ -87,10 +88,13 @@ public class BuilderInfo {
             if ( builderCreationMethod == null ) {
                 throw new IllegalArgumentException( "Builder creation method is mandatory" );
             }
-            else if ( buildMethod == null ) {
-                throw new IllegalArgumentException( "Build method is mandatory" );
+            else if ( buildMethods == null ) {
+                throw new IllegalArgumentException( "Build methods are mandatory" );
             }
-            return new BuilderInfo( builderCreationMethod, buildMethod );
+            else if ( buildMethods.isEmpty() ) {
+                throw new IllegalArgumentException( "Build methods must not be empty" );
+            }
+            return new BuilderInfo( builderCreationMethod, buildMethods );
         }
     }
 }

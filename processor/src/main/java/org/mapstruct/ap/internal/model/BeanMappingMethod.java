@@ -287,7 +287,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return null;
             }
 
-            return MethodReference.forMethodCall( builderType.getBuildMethod() );
+            return BuilderFinisherMethodResolver.getBuilderFinisherMethod( method, builderType, ctx );
         }
 
         /**
