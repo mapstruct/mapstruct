@@ -32,25 +32,25 @@ public class ErroneousMappingsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 27,
+                line = 14,
                 messageRegExp = "Can't map property \"boolean foo\" to \"int foo\". Consider to declare/implement a "
                         + "mapping method: \"int map\\(boolean value\\)\"."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Can't map property \"int foo\" to \"boolean foo\". Consider to declare/implement a "
                         + "mapping method: \"boolean map\\(int value\\)\"."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 31,
+                line = 18,
                 messageRegExp = "Can't generate mapping method with primitive return type\\."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 33,
+                line = 20,
                 messageRegExp = "Can't generate mapping method with primitive parameter type\\."),
             @Diagnostic(type = ErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp =
                     "Can't generate mapping method that has a parameter annotated with @TargetType\\.")
         }

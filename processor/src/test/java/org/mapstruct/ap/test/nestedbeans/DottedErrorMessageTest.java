@@ -99,7 +99,7 @@ public class DottedErrorMessageTest {
         diagnostics = {
             @Diagnostic(type = BaseDeepNestingMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"rgb\"\\. Mapping from " + PROPERTY +
                     " \".*Color house\\.roof\\.color\" to \".*ColorDto house\\.roof\\.color\"\\.")
         }
@@ -116,7 +116,7 @@ public class DottedErrorMessageTest {
         diagnostics = {
             @Diagnostic(type = BaseDeepListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"left\"\\. Mapping from " + COLLECTION_ELEMENT +
                     " \".*Wheel car\\.wheels\" to \".*WheelDto car\\.wheels\"\\.")
         }
@@ -133,7 +133,7 @@ public class DottedErrorMessageTest {
         diagnostics = {
             @Diagnostic(type = BaseDeepMapKeyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"pronunciation\"\\. Mapping from " + MAP_KEY +
                     " \".*Word dictionary\\.wordMap\\{:key\\}\" to \".*WordDto dictionary\\.wordMap\\{:key\\}\"\\.")
         }
@@ -150,7 +150,7 @@ public class DottedErrorMessageTest {
         diagnostics = {
             @Diagnostic(type = BaseDeepMapValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"pronunciation\"\\. Mapping from " + MAP_VALUE +
                     " \".*ForeignWord dictionary\\.wordMap\\{:value\\}\" " +
                     "to \".*ForeignWordDto dictionary\\.wordMap\\{:value\\}\"\\.")
@@ -168,7 +168,7 @@ public class DottedErrorMessageTest {
         diagnostics = {
             @Diagnostic(type = BaseCollectionElementPropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"color\"\\. Mapping from " + PROPERTY +
                     " \".*Info computers\\[\\].info\" to \".*InfoDto computers\\[\\].info\"\\.")
         }
@@ -185,7 +185,7 @@ public class DottedErrorMessageTest {
         diagnostics = {
             @Diagnostic(type = BaseValuePropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"color\"\\. Mapping from " + PROPERTY +
                     " \".*Info catNameMap\\{:value\\}.info\" to \".*InfoDto catNameMap\\{:value\\}.info\"\\.")
         }
@@ -202,7 +202,7 @@ public class DottedErrorMessageTest {
         diagnostics = {
             @Diagnostic(type = UnmappableEnumMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 38,
+                line = 25,
                 messageRegExp = "The following constants from the property \".*RoofType house\\.roof\\.type\" enum " +
                     "have no corresponding constant in the \".*ExternalRoofType house\\.roof\\.type\" enum and must " +
                     "be be mapped via adding additional mappings: NORMAL\\."
@@ -226,33 +226,33 @@ public class DottedErrorMessageTest {
         diagnostics = {
             @Diagnostic(type = BaseDeepNestingMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"rgb\"\\. Mapping from " + PROPERTY +
                     " \".*Color house\\.roof\\.color\" to \".*ColorDto house\\.roof\\.color\"\\."),
             @Diagnostic(type = BaseDeepListMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"left\"\\. Mapping from " + COLLECTION_ELEMENT +
                     " \".*Wheel car\\.wheels\" to \".*WheelDto car\\.wheels\"\\."),
             @Diagnostic(type = BaseDeepMapKeyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"pronunciation\"\\. Mapping from " + MAP_KEY +
                     " \".*Word dictionary\\.wordMap\\{:key\\}\" to \".*WordDto dictionary\\.wordMap\\{:key\\}\"\\."),
             @Diagnostic(type = BaseDeepMapValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"pronunciation\"\\. Mapping from " + MAP_VALUE +
                     " \".*ForeignWord dictionary\\.wordMap\\{:value\\}\" " +
                     "to \".*ForeignWordDto dictionary\\.wordMap\\{:value\\}\"\\."),
             @Diagnostic(type = BaseCollectionElementPropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"color\"\\. Mapping from " + PROPERTY +
                     " \".*Info computers\\[\\].info\" to \".*InfoDto computers\\[\\].info\"\\."),
             @Diagnostic(type = BaseValuePropertyMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 23,
+                line = 10,
                 messageRegExp = "Unmapped target property: \"color\"\\. Mapping from " + PROPERTY +
                     " \".*Info catNameMap\\{:value\\}.info\" to \".*InfoDto catNameMap\\{:value\\}.info\"\\.")
         }

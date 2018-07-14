@@ -29,7 +29,7 @@ public class AmbiguousAnnotatedFactoryTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Ambiguous factory methods found for creating "
                         + "org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod.Bar: "
                         + "org.mapstruct.ap.test.erroneous.ambiguousannotatedfactorymethod.Bar "
@@ -39,7 +39,7 @@ public class AmbiguousAnnotatedFactoryTest {
                     + "ambiguousannotatedfactorymethod.Foo foo\\)."),
             @Diagnostic(type = SourceTargetMapperAndBarFactory.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = ".*\\.ambiguousannotatedfactorymethod.Bar does not have an accessible parameterless " +
                     "constructor\\.")
 

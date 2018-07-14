@@ -34,11 +34,11 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionToNonCollectionMapper.class,
                 kind = Kind.ERROR,
-                line = 28,
+                line = 15,
                 messageRegExp = "Can't generate mapping method from iterable type to non-iterable type"),
             @Diagnostic(type = ErroneousCollectionToNonCollectionMapper.class,
                 kind = Kind.ERROR,
-                line = 30,
+                line = 17,
                 messageRegExp = "Can't generate mapping method from non-iterable type to iterable type")
         }
     )
@@ -53,7 +53,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionToPrimitivePropertyMapper.class,
                 kind = Kind.ERROR,
-                line = 26,
+                line = 13,
                 messageRegExp = "Can't map property \"java.util.List<java.lang.String> strings\" to \"int strings\". "
                     + "Consider to declare/implement a mapping method: \"int map\\(java.util.List<java.lang.String>"
                     + " value\\)\"")
@@ -70,7 +70,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = EmptyItererableMappingMapper.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are "
                     + "undefined in @IterableMapping, define at least one of them.")
         }
@@ -86,7 +86,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = EmptyMapMappingMapper.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "'nullValueMappingStrategy', 'keyDateFormat', 'keyQualifiedBy', 'keyTargetType', "
                     + "'valueDateFormat', 'valueQualfiedBy' and 'valueTargetType' are all undefined in @MapMapping, "
                     + "define at least one of them.")
@@ -103,7 +103,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 38,
+                line = 25,
                 messageRegExp = "Can't map Collection element \".*WithProperties withProperties\" to \".*NoProperties" +
                     " noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
                     ".*WithProperties value\\)")
@@ -120,7 +120,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoElementMappingFoundDisabledAuto.class,
                 kind = Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp =
                     "Can't map collection element \".*AttributedString\" to \".*String \". " +
                         "Consider to declare/implement a mapping method: \".*String map\\(.*AttributedString value\\)")
@@ -137,7 +137,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoKeyMappingFound.class,
                 kind = Kind.ERROR,
-                line = 38,
+                line = 25,
                 messageRegExp = "Can't map Map key \".*WithProperties withProperties\" to \".*NoProperties " +
                     "noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
                     ".*WithProperties value\\)")
@@ -154,7 +154,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoKeyMappingFoundDisabledAuto.class,
                 kind = Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp = "Can't map map key \".*AttributedString\" to \".*String \". " +
                     "Consider to declare/implement a mapping method: \".*String map\\(.*AttributedString value\\)")
         }
@@ -170,7 +170,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoValueMappingFound.class,
                 kind = Kind.ERROR,
-                line = 38,
+                line = 25,
                 messageRegExp = "Can't map Map value \".*WithProperties withProperties\" to \".*NoProperties " +
                     "noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
                     ".*WithProperties value\\)")
@@ -187,7 +187,7 @@ public class ErroneousCollectionMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCollectionNoValueMappingFoundDisabledAuto.class,
                 kind = Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp = "Can't map map value \".*AttributedString\" to \".*String \". " +
                     "Consider to declare/implement a mapping method: \".*String map(.*AttributedString value)")
         }

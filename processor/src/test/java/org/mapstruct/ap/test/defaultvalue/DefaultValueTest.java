@@ -125,12 +125,12 @@ public class DefaultValueTest {
             diagnostics = {
                     @Diagnostic( type = ErroneousMapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
-                            line = 31,
+                            line = 18,
                             messageRegExp = "Constant and default value are both defined in @Mapping,"
                                     + " either define a defaultValue or a constant." ),
                     @Diagnostic(type = ErroneousMapper.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
-                            line = 33,
+                            line = 20,
                             messageRegExp = "Can't map property \".*Region region\" to \".*String region\"\\. Consider")
             }
     )
@@ -147,12 +147,12 @@ public class DefaultValueTest {
             diagnostics = {
                     @Diagnostic( type = ErroneousMapper2.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
-                            line = 31,
+                            line = 18,
                             messageRegExp = "Expression and default value are both defined in @Mapping,"
                                     + " either define a defaultValue or an expression." ),
                     @Diagnostic(type = ErroneousMapper2.class,
                             kind = javax.tools.Diagnostic.Kind.ERROR,
-                            line = 33,
+                            line = 20,
                             messageRegExp = "Can't map property \".*Region region\" to \".*String region\"\\. Consider")
             }
     )

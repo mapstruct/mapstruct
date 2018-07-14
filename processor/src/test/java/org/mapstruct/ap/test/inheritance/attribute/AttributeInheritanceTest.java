@@ -43,7 +43,7 @@ public class AttributeInheritanceTest {
         diagnostics = @Diagnostic(
             type = ErroneousTargetSourceMapper.class,
             kind = Kind.ERROR,
-            line = 29,
+            line = 16,
             messageRegExp = "Can't map property \"java.lang.CharSequence foo\" to \"java.lang.String foo\""
         ))
     public void shouldReportErrorDueToUnmappableAttribute() {

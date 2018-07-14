@@ -81,7 +81,7 @@ public class IgnorePropertyTest {
         diagnostics = {
             @Diagnostic(type = ErroneousTargetHasNoWriteAccessorMapper.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Property \"hasClaws\" has no write accessor in " +
                     "org.mapstruct.ap.test.ignore.PreditorDto\\.")
         }

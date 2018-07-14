@@ -30,24 +30,24 @@ public class ErroneousJavaInternalTest {
         diagnostics = {
             @Diagnostic(type = ErroneousJavaInternalMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Can't map property \".*MyType date\" to \"java\\.util\\.Date date\"\\. Consider to " +
                     "declare/implement a mapping method: \"java\\.util\\.Date map\\(.*MyType value\\)\"\\."),
             @Diagnostic(type = ErroneousJavaInternalMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Can't map property \".*MyType calendar\" to \"java\\.util\\.GregorianCalendar " +
                     "calendar\"\\. Consider to declare/implement a mapping method: \"java\\.util\\.GregorianCalendar " +
                     "map\\(.*MyType value\\)\"\\."),
             @Diagnostic(type = ErroneousJavaInternalMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Can't map property \".*List<.*MyType> types\" to \".*List<.*String> types\"\\" +
                     ". Consider to declare/implement a mapping method: \".*List<.*String> map\\(.*List<.*MyType> " +
                     "value\\)\"\\."),
             @Diagnostic(type = ErroneousJavaInternalMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Can't map property \".*List<.*MyType> nestedMyType\\.deepNestedType\\.types\" to \"" +
                     ".*List<.*String> nestedMyType\\.deepNestedType\\.types\"\\. Consider to declare/implement a " +
                     "mapping method: \".*List<.*String> map\\(.*List<.*MyType> value\\)\"\\.")

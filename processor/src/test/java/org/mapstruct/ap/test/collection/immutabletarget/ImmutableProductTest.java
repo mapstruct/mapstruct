@@ -52,7 +52,7 @@ public class ImmutableProductTest {
         diagnostics = {
             @Diagnostic(type = ErroneousCupboardMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "No write accessor found for property \"content\" in target type.")
         }
     )

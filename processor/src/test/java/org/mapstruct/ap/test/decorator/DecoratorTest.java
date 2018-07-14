@@ -181,7 +181,7 @@ public class DecoratorTest {
         diagnostics = {
             @Diagnostic(type = ErroneousPersonMapper.class,
                 kind = Kind.ERROR,
-                line = 27,
+                line = 14,
                 messageRegExp = "Specified decorator type is no subtype of the annotated mapper type")
         }
     )

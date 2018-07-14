@@ -56,7 +56,7 @@ public class SimpleImmutableBuilderTest {
         diagnostics = @Diagnostic(
             kind = javax.tools.Diagnostic.Kind.ERROR,
             type = ErroneousSimpleBuilderMapper.class,
-            line = 34,
+            line = 21,
             messageRegExp = "Unmapped target property: \"name\"\\."))
     public void testSimpleImmutableBuilderMissingPropertyFailsToCompile() {
     }

@@ -68,7 +68,7 @@ public class ComplexInheritanceTest {
         diagnostics = @Diagnostic(
             kind = Kind.ERROR,
             type = ErroneousSourceCompositeTargetCompositeMapper.class,
-            line = 32,
+            line = 19,
             messageRegExp =
                 "Ambiguous mapping methods found for mapping property "
                     + "\"org.mapstruct.ap.test.inheritance.complex.SourceExt prop1\" to .*Reference: "
