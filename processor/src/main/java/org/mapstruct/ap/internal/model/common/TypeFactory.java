@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -121,7 +120,7 @@ public class TypeFactory {
     }
 
     public Type getTypeForLiteral(Class<?> type) {
-        return type.isPrimitive() ? getType( getPrimitiveType( type ), true )
+        return type.isPrimitive() ? getType( getPrimitiveType( type ), true, false )
             : getType( type.getCanonicalName(), true );
     }
 
@@ -166,20 +165,37 @@ public class TypeFactory {
     }
 
     public Type getType(TypeElement typeElement) {
-        return getType( typeElement.asType(), false );
+        return getType( typeElement.asType(), false, false );
     }
 
     private Type getType(TypeElement typeElement, boolean isLiteral) {
-        return getType( typeElement.asType(), isLiteral );
+        return getType( typeElement.asType(), isLiteral, false );
     }
 
     public Type getType(TypeMirror mirror) {
-        return getType( mirror, false );
+        return getType( mirror, false, false );
     }
 
-    private Type getType(TypeMirror mirror, boolean isLiteral) {
+    /**
+     * Get the type if it is known that this should be used as varargs of a method.
+     * <p>
+     * This information is not known on the {@link TypeMirror} itself, only on the {@link ExecutableElement}.
+     *
+     * @param mirror Type mirror that should be used as varargs of a method
+     * @return Type
+     */
+    public Type getVarArgsType(TypeMirror mirror) {
+        return getType( mirror, false, true );
+    }
+
+    private Type getType(TypeMirror mirror, boolean isLiteral, boolean isVarArgs) {
         if ( !canBeProcessed( mirror ) ) {
             throw new TypeHierarchyErroneousException( mirror );
+        }
+        if ( isVarArgs && mirror.getKind() != TypeKind.ARRAY ) {
+            // can't be vararg when it is not an array
+            throw new AnnotationProcessingException(
+                "Passed mirror should be used as varargs, but is a " + mirror.getKind() + " and not an ARRAY." );
         }
 
         ImplementationType implementationType = getImplementationType( mirror );
@@ -281,7 +297,8 @@ public class TypeFactory {
             isMapType,
             isStreamType,
             isImported,
-            isLiteral
+            isLiteral,
+            isVarArgs
         );
     }
 
@@ -377,7 +394,17 @@ public class TypeFactory {
             VariableElement parameter = varIt.next();
             TypeMirror parameterType = typesIt.next();
 
-            result.add( Parameter.forElementAndType( parameter, getType( parameterType ) ) );
+            // if the method has varargs and this is the last parameter
+            // we know that this parameter should be used as varargs
+            Type type;
+            if ( !varIt.hasNext() && method.isVarArgs() ) {
+                type = getVarArgsType( parameterType );
+            }
+            else {
+                type = getType( parameterType );
+            }
+
+            result.add( Parameter.forElementAndType( parameter, type ) );
         }
 
         return result;
@@ -495,7 +522,8 @@ public class TypeFactory {
                 implementationType.isMapType(),
                 implementationType.isStreamType(),
                 isImported( implementationType.getName(), implementationType.getFullyQualifiedName() ),
-                implementationType.isLiteral()
+                implementationType.isLiteral(),
+                implementationType.isVarArgs()
             );
             return implementation.createNew( replacement );
         }

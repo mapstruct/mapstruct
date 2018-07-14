@@ -11,6 +11,6 @@
     <#elseif wildCardSuperBound>
         ? super <@includeModel object=typeBound />
     <#else>
-        ${referenceName}</#if><#if (!ext.raw?? && typeParameters?size > 0) ><<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>>
+        <#if varArgs && (ext.allowVarArgs!false)>${referenceName?remove_ending("[]")}...<#else>${referenceName}</#if></#if><#if (!ext.raw?? && typeParameters?size > 0) ><<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>>
     </#if>
 </@compress>

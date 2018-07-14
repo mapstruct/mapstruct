@@ -123,7 +123,8 @@ public class DefaultConversionContextTest {
                         false,
                         false,
                         false,
-                        false );
+                        false,
+                        false);
     }
 
     private static class StatefulMessagerMock implements FormattingMessager {
