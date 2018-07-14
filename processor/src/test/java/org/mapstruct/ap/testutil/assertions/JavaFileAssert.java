@@ -1,20 +1,7 @@
-/**
- *  Copyright 2012-2017 Gunnar Morling (http://www.gunnarmorling.de/)
- *  and/or other contributors as indicated by the @authors tag. See the
- *  copyright.txt file in the distribution for a full listing of all
- *  contributors.
+/*
+ * Copyright MapStruct Authors.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.mapstruct.ap.testutil.assertions;
 
@@ -46,7 +33,7 @@ import com.google.common.io.Files;
  */
 public class JavaFileAssert extends FileAssert {
 
-    private static final String FIRST_LINE_LICENSE_REGEX = ".*Copyright 2012-\\d{4} Gunnar Morling.*";
+    private static final String FIRST_LINE_LICENSE_REGEX = ".*Copyright MapStruct Authors.*";
     private static final String GENERATED_DATE_REGEX = "\\s+date = " +
         "\"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{4}\",";
     private static final String GENERATED_COMMENTS_REGEX = "\\s+comments = \"version: , compiler: .*, environment: " +
