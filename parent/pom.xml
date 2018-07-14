@@ -603,6 +603,7 @@
                         <exclude>*.yml</exclude>
                         <exclude>**/*.asciidoc</exclude>
                         <exclude>**/binding.xjb</exclude>
+                        <exclude>*.proto</exclude>
                     </excludes>
                     <mapping>
                         <java>SLASHSTAR_STYLE</java>
