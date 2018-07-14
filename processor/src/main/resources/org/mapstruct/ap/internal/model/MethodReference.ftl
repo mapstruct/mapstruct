@@ -48,7 +48,7 @@
     <#list parameterBindings as param>
         <#if param.targetType>
             <#-- a class is passed on for casting, see @TargetType -->
-            <@includeModel object=ext.targetType raw=true/>.class<#t>
+            <@includeModel object=inferTypeWhenEnum( ext.targetType ) raw=true/>.class<#t>
         <#elseif param.mappingTarget>
             ${ext.targetBeanName}<#if ext.targetReadAccessorName??>.${ext.targetReadAccessorName}</#if><#t>
         <#elseif param.mappingContext>

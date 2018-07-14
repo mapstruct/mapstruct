@@ -263,14 +263,22 @@ public class MethodMatcher {
             // (type args are checked later).
             if ( p.getKind() == TypeKind.DECLARED ) {
                 DeclaredType t1 = (DeclaredType) p;
-                if ( assignabilityMatches( t, t1 )
-                    && t.getTypeArguments().size() == t1.getTypeArguments().size() ) {
-                    for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
-                        if ( !visit( t.getTypeArguments().get( i ), t1.getTypeArguments().get( i ) ) ) {
-                            return Boolean.FALSE;
+                if ( rawAssignabilityMatches( t, t1 ) ) {
+                    if ( t.getTypeArguments().size() == t1.getTypeArguments().size() ) {
+                        // compare type var side by side
+                        for ( int i = 0; i < t.getTypeArguments().size(); i++ ) {
+                            if ( !visit( t.getTypeArguments().get( i ), t1.getTypeArguments().get( i ) ) ) {
+                                return Boolean.FALSE;
+                            }
                         }
+                        return Boolean.TRUE;
                     }
-                    return Boolean.TRUE;
+                    else {
+                        // return true (e.g. matching Enumeration<E> with an enumeration E)
+                        // but do not try to line up raw type arguments with types that do have arguments.
+                        return assignability == Assignability.VISITED_ASSIGNABLE_TO ?
+                            !t1.getTypeArguments().isEmpty() : !t.getTypeArguments().isEmpty();
+                    }
                 }
                 else {
                     return Boolean.FALSE;
@@ -284,12 +292,12 @@ public class MethodMatcher {
             }
         }
 
-        private boolean assignabilityMatches(DeclaredType visited, DeclaredType param) {
+        private boolean rawAssignabilityMatches(DeclaredType t1, DeclaredType t2) {
             if ( assignability == Assignability.VISITED_ASSIGNABLE_TO ) {
-                return typeUtils.isAssignable( toRawType( visited ), toRawType( param ) );
+                return typeUtils.isAssignable( toRawType( t1 ), toRawType( t2 ) );
             }
             else {
-                return typeUtils.isAssignable( toRawType( param ), toRawType( visited ) );
+                return typeUtils.isAssignable( toRawType( t2 ), toRawType( t1 ) );
             }
         }
 
@@ -302,7 +310,7 @@ public class MethodMatcher {
             if ( genericTypesMap.containsKey( t ) ) {
                 // when already found, the same mapping should apply
                 TypeMirror p1 = genericTypesMap.get( t );
-                return typeUtils.isSameType( p, p1 );
+                return typeUtils.isSubtype( p, p1 );
             }
             else {
                 // check if types are in bound

@@ -276,6 +276,15 @@ public class MethodReference extends ModelElement implements Assignment {
         return parameterBindings;
     }
 
+    public Type inferTypeWhenEnum( Type type ) {
+        if ( "java.lang.Enum".equals( type.getFullyQualifiedName()  ) ) {
+            return type.getTypeParameters().get( 0 );
+        }
+        else {
+            return type;
+        }
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
