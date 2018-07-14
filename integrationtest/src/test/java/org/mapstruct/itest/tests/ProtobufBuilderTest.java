@@ -23,10 +23,20 @@ import org.mapstruct.itest.testutil.runner.ProcessorSuite;
 import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner;
 
 /**
+ * ECLIPSE_JDT_JAVA_8 is not working with Protobuf. Use all other available processor types.
+ *
  * @author Christian Bandowski
  */
-@RunWith( ProcessorSuiteRunner.class )
+@RunWith(ProcessorSuiteRunner.class)
 @ProcessorSuite(baseDir = "protobufBuilderTest",
-    processorTypes = ProcessorSuite.ProcessorType.ALL)
+    processorTypes = {
+        ProcessorSuite.ProcessorType.ORACLE_JAVA_6,
+        ProcessorSuite.ProcessorType.ORACLE_JAVA_7,
+        ProcessorSuite.ProcessorType.ORACLE_JAVA_8,
+        ProcessorSuite.ProcessorType.ORACLE_JAVA_9,
+        ProcessorSuite.ProcessorType.ECLIPSE_JDT_JAVA_6,
+        ProcessorSuite.ProcessorType.ECLIPSE_JDT_JAVA_7,
+        ProcessorSuite.ProcessorType.PROCESSOR_PLUGIN_JAVA_8
+    })
 public class ProtobufBuilderTest {
 }
