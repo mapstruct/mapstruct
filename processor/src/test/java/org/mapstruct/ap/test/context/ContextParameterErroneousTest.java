@@ -39,7 +39,7 @@ public class ContextParameterErroneousTest {
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = @Diagnostic(
             kind = Kind.ERROR,
-            line = 33,
+            line = 20,
             type = ErroneousNodeMapperWithNonUniqueContextTypes.class,
             messageRegExp = "The types of @Context parameters must be unique"))
     public void reportsNonUniqueContextParamType() {

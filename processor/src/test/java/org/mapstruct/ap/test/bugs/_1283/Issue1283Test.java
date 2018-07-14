@@ -32,7 +32,7 @@ public class Issue1283Test {
         diagnostics = {
             @Diagnostic(type = ErroneousInverseTargetHasNoSuitableConstructorMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35L,
+                line = 22L,
                 messageRegExp = ".*\\._1283\\.Source does not have an accessible parameterless constructor"
             )
         }
@@ -47,7 +47,7 @@ public class Issue1283Test {
         diagnostics = {
             @Diagnostic(type = ErroneousTargetHasNoSuitableConstructorMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 31L,
+                line = 18L,
                 messageRegExp = ".*\\._1283\\.Source does not have an accessible parameterless constructor"
             )
         }

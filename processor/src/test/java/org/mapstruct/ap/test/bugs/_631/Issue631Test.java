@@ -29,11 +29,11 @@ public class Issue631Test {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Can't generate mapping method for a generic type variable target."),
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "Can't generate mapping method for a generic type variable source.")
         }
     )

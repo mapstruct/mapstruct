@@ -57,7 +57,7 @@ public class Issue1242Test {
         diagnostics = {
             @Diagnostic(type = ErroneousIssue1242MapperMultipleSources.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 33,
+                line = 20,
                 messageRegExp = "Ambiguous factory methods found for creating .*TargetB:"
                     + " .*TargetB anotherTargetBCreator\\(.*SourceB source\\),"
                     + " .*TargetB .*TargetFactories\\.createTargetB\\(.*SourceB source,"
@@ -66,7 +66,7 @@ public class Issue1242Test {
                     + " .*TargetB .*TargetFactories\\.createTargetB\\(\\)."),
             @Diagnostic(type = ErroneousIssue1242MapperMultipleSources.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 33,
+                line = 20,
                 messageRegExp = ".*TargetB does not have an accessible parameterless constructor\\.")
         })
     public void ambiguousMethodErrorForTwoFactoryMethodsWithSourceParam() {

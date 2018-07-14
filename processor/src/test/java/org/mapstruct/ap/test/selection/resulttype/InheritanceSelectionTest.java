@@ -44,13 +44,13 @@ public class InheritanceSelectionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousFruitMapper.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 23,
                 messageRegExp = "Ambiguous factory methods found for creating .*Fruit: "
                     + ".*Apple .*ConflictingFruitFactory\\.createApple\\(\\), "
                     + ".*Banana .*ConflictingFruitFactory\\.createBanana\\(\\)\\."),
             @Diagnostic(type = ErroneousFruitMapper.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 23,
                 messageRegExp = ".*Fruit does not have an accessible parameterless constructor\\.")
         }
     )
@@ -65,7 +65,7 @@ public class InheritanceSelectionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousResultTypeNoEmptyConstructorMapper.class,
                 kind = Kind.ERROR,
-                line = 31,
+                line = 18,
                 messageRegExp = ".*\\.resulttype\\.Banana does not have an accessible parameterless constructor\\.")
         }
     )
@@ -111,7 +111,7 @@ public class InheritanceSelectionTest {
         diagnostics = {
             @Diagnostic(type = ResultTypeConstructingFruitInterfaceErroneousMapper.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 23,
                 messageRegExp = "The return type .*\\.IsFruit is an abstract class or interface. Provide a non " +
                     "abstract / non interface result type or a factory method."
             )
@@ -128,7 +128,7 @@ public class InheritanceSelectionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousFruitMapper2.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = ".*\\.Banana not assignable to: .*\\.Apple.")
         }
     )

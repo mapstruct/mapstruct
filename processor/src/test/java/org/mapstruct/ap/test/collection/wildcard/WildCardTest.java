@@ -86,7 +86,7 @@ public class WildCardTest {
             diagnostics = {
                 @Diagnostic( type = ErroneousIterableSuperBoundSourceMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 33,
+                        line = 20,
                         messageRegExp = "Can't generate mapping method for a wildcard super bound source." )
             }
     )
@@ -100,7 +100,7 @@ public class WildCardTest {
             diagnostics = {
                 @Diagnostic( type = ErroneousIterableExtendsBoundTargetMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 33,
+                        line = 20,
                         messageRegExp = "Can't generate mapping method for a wildcard extends bound result." )
             }
     )
@@ -114,7 +114,7 @@ public class WildCardTest {
             diagnostics = {
             @Diagnostic(type = ErroneousIterableTypeVarBoundMapperOnMethod.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 33,
+                        line = 20,
                         messageRegExp = "Can't generate mapping method for a generic type variable target." )
             }
     )
@@ -128,7 +128,7 @@ public class WildCardTest {
             diagnostics = {
                 @Diagnostic( type = ErroneousIterableTypeVarBoundMapperOnMapper.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 33,
+                        line = 20,
                         messageRegExp = "Can't generate mapping method for a generic type variable source." )
             }
     )

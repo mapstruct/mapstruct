@@ -41,11 +41,11 @@ public class ErroneousStreamMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousStreamToNonStreamMapper.class,
                 kind = Kind.ERROR,
-                line = 28,
+                line = 15,
                 messageRegExp = "Can't generate mapping method from iterable type to non-iterable type"),
             @Diagnostic(type = ErroneousStreamToNonStreamMapper.class,
                 kind = Kind.ERROR,
-                line = 30,
+                line = 17,
                 messageRegExp = "Can't generate mapping method from non-iterable type to iterable type")
         }
     )
@@ -59,7 +59,7 @@ public class ErroneousStreamMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousStreamToPrimitivePropertyMapper.class,
                 kind = Kind.ERROR,
-                line = 26,
+                line = 13,
                 messageRegExp =
                     "Can't map property \"java.util.stream.Stream<java.lang.String> strings\" to \"int strings\". "
                         +
@@ -78,17 +78,17 @@ public class ErroneousStreamMappingTest {
         diagnostics = {
             @Diagnostic(type = EmptyStreamMappingMapper.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 23,
                 messageRegExp = "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are "
                     + "undefined in @IterableMapping, define at least one of them."),
             @Diagnostic(type = EmptyStreamMappingMapper.class,
                 kind = Kind.ERROR,
-                line = 39,
+                line = 26,
                 messageRegExp = "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are "
                     + "undefined in @IterableMapping, define at least one of them."),
             @Diagnostic(type = EmptyStreamMappingMapper.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 29,
                 messageRegExp = "'nullValueMappingStrategy','dateformat', 'qualifiedBy' and 'elementTargetType' are "
                     + "undefined in @IterableMapping, define at least one of them.")
         }
@@ -103,7 +103,7 @@ public class ErroneousStreamMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousStreamToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "Can't map Stream element \".*WithProperties withProperties\" to \".*NoProperties " +
                     "noProperties\". Consider to declare/implement a mapping method: \".*NoProperties map\\(" +
                     ".*WithProperties value\\)")
@@ -120,7 +120,7 @@ public class ErroneousStreamMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousStreamToStreamNoElementMappingFoundDisabledAuto.class,
                 kind = Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp = "Can't map stream element \".*AttributedString\" to \".*String \". Consider to " +
                     "declare/implement a mapping method: \".*String map(.*AttributedString value)")
         }
@@ -135,7 +135,7 @@ public class ErroneousStreamMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousListToStreamNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 38,
+                line = 25,
                 messageRegExp =
                     "Can't map Stream element \".*WithProperties withProperties\" to \".*NoProperties noProperties\"." +
                         " Consider to declare/implement a mapping method: \".*NoProperties map\\(.*WithProperties " +
@@ -153,7 +153,7 @@ public class ErroneousStreamMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousListToStreamNoElementMappingFoundDisabledAuto.class,
                 kind = Kind.ERROR,
-                line = 33,
+                line = 20,
                 messageRegExp = "Can't map stream element \".*AttributedString\" to \".*String \". Consider to " +
                     "declare/implement a mapping method: \".*String map\\(.*AttributedString value\\)")
         }
@@ -168,7 +168,7 @@ public class ErroneousStreamMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousStreamToListNoElementMappingFound.class,
                 kind = Kind.ERROR,
-                line = 38,
+                line = 25,
                 messageRegExp =
                     "Can't map Stream element \".*WithProperties withProperties\" to .*NoProperties noProperties\"." +
                         " Consider to declare/implement a mapping method: \".*NoProperties map(.*WithProperties value)")
@@ -185,7 +185,7 @@ public class ErroneousStreamMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousStreamToListNoElementMappingFoundDisabledAuto.class,
                 kind = Kind.ERROR,
-                line = 33,
+                line = 20,
                 messageRegExp = "Can't map stream element \".*AttributedString\" to .*String \". Consider to " +
                     "declare/implement a mapping method: \".*String map(.*AttributedString value)")
         }

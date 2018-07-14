@@ -32,7 +32,7 @@ public class SuggestMostSimilarNameTest {
         diagnostics = {
             @Diagnostic(type = PersonAgeMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp = ".*Did you mean \"age\"\\?")
         }
     )
@@ -48,7 +48,7 @@ public class SuggestMostSimilarNameTest {
         diagnostics = {
             @Diagnostic(type = PersonNameMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp = ".*Did you mean \"fullName\"\\?")
         }
     )
@@ -64,11 +64,11 @@ public class SuggestMostSimilarNameTest {
         diagnostics = {
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp = "Unknown property \"garage\\.colour\\.rgb\".*Did you mean \"garage\\.color\"\\?"),
             @Diagnostic(type = PersonGarageWrongTargetMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Unknown property \"garage\\.colour\".*Did you mean \"garage\\.color\"\\?")
         }
     )
@@ -84,11 +84,11 @@ public class SuggestMostSimilarNameTest {
         diagnostics = {
             @Diagnostic(type = PersonGarageWrongSourceMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp = "No property named \"garage\\.colour\\.rgb\".*Did you mean \"garage\\.color\"\\?"),
             @Diagnostic(type = PersonGarageWrongSourceMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "No property named \"garage\\.colour\".*Did you mean \"garage\\.color\"\\?")
         }
     )

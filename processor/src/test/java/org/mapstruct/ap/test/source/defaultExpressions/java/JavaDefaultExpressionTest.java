@@ -55,13 +55,13 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionExpressionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Expression and default expression are both defined in @Mapping,"
                     + " either define an expression or a default expression."
             ),
             @Diagnostic(type = ErroneousDefaultExpressionExpressionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 39,
+                line = 26,
                 messageRegExp = "Unmapped target property: \"sourceId\""
             )
         }
@@ -76,13 +76,13 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Constant and default expression are both defined in @Mapping,"
                     + " either define a constant or a default expression."
             ),
             @Diagnostic(type = ErroneousDefaultExpressionConstantMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 38,
+                line = 25,
                 messageRegExp = "Unmapped target property: \"sourceId\""
             )
         }
@@ -97,13 +97,13 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionDefaultValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Default value and default expression are both defined in @Mapping,"
                     + " either define a default value or a default expression."
             ),
             @Diagnostic(type = ErroneousDefaultExpressionDefaultValueMapper.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 38,
+                line = 25,
                 messageRegExp = "Unmapped target property: \"sourceId\""
             )
         }
@@ -118,7 +118,7 @@ public class JavaDefaultExpressionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousDefaultExpressionMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Value for default expression must be given in the form \"java\\(<EXPRESSION>\\)\""
             )
         }

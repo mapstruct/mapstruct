@@ -154,7 +154,7 @@ public class UpdateMethodsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousOrganizationMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "No read accessor found for property \"company\" in target type.")
         }
    )
@@ -170,11 +170,11 @@ public class UpdateMethodsTest {
         diagnostics = {
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "No read accessor found for property \"type\" in target type."),
             @Diagnostic(type = ErroneousOrganizationMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 48,
+                line = 35,
                 messageRegExp = ".*\\.updatemethods\\.DepartmentEntity does not have an accessible parameterless " +
                     "constructor\\.")
 
@@ -194,7 +194,7 @@ public class UpdateMethodsTest {
         diagnostics = {
             @Diagnostic(type = CompanyMapper1.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 36,
+                line = 23,
                 messageRegExp = "Unmapped target property: \"employees\"\\. Mapping from property \"" +
                     ".*UnmappableDepartmentDto department\" to \".*DepartmentEntity department.")
         }

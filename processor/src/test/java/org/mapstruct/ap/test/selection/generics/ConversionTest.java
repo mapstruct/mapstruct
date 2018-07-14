@@ -84,7 +84,7 @@ public class ConversionTest {
     @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper1.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR, line = 29,
+                kind = javax.tools.Diagnostic.Kind.ERROR, line = 16,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.selection.generics.UpperBoundWrapper"
                     + "<org.mapstruct.ap.test.selection.generics.TypeA> fooUpperBoundFailure\" to "
                     + "\"org.mapstruct.ap.test.selection.generics.TypeA fooUpperBoundFailure\"")
@@ -98,7 +98,7 @@ public class ConversionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper2.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.selection.generics.WildCardExtendsWrapper"
                     + "<org.mapstruct.ap.test.selection.generics.TypeA> fooWildCardExtendsTypeAFailure\" to"
                     + " \"org.mapstruct.ap.test.selection.generics.TypeA fooWildCardExtendsTypeAFailure\"")
@@ -112,7 +112,7 @@ public class ConversionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper3.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.selection.generics."
                     + "WildCardExtendsMBWrapper<org.mapstruct.ap.test.selection.generics.TypeB> "
                     + "fooWildCardExtendsMBTypeBFailure\" to \"org.mapstruct.ap.test.selection.generics.TypeB "
@@ -127,7 +127,7 @@ public class ConversionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper4.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.selection.generics.WildCardSuperWrapper"
                     + "<org.mapstruct.ap.test.selection.generics.TypeA> fooWildCardSuperTypeAFailure\" to"
                     + " \"org.mapstruct.ap.test.selection.generics.TypeA fooWildCardSuperTypeAFailure\"")
@@ -141,7 +141,7 @@ public class ConversionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper5.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Can't map property \"org.mapstruct.ap.test.selection.generics.WildCardSuperWrapper"
                     + "<org.mapstruct.ap.test.selection.generics.TypeC> fooWildCardSuperTypeCFailure\" to"
                     + " \"org.mapstruct.ap.test.selection.generics.TypeC fooWildCardSuperTypeCFailure\"")
@@ -160,14 +160,14 @@ public class ConversionTest {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper6.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Can't map property \".*NoProperties "
                     + "foo\\.wrapped\" to"
                     + " \"org.mapstruct.ap.test.selection.generics.TypeA " +
                     "foo\\.wrapped\""),
             @Diagnostic(type = ErroneousSourceTargetMapper6.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = ".*\\.generics\\.WildCardSuperWrapper<.*\\.generics\\.TypeA> does not have an " +
                     "accessible parameterless constructor\\.")
 

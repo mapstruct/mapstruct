@@ -35,11 +35,11 @@ public class UnmappedProductTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.WARNING,
-                line = 29,
+                line = 16,
                 messageRegExp = "Unmapped target property: \"bar\""),
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.WARNING,
-                line = 31,
+                line = 18,
                 messageRegExp = "Unmapped target property: \"qux\"")
         }
     )
@@ -61,11 +61,11 @@ public class UnmappedProductTest {
         diagnostics = {
             @Diagnostic(type = ErroneousStrictSourceTargetMapper.class,
                 kind = Kind.ERROR,
-                line = 30,
+                line = 17,
                 messageRegExp = "Unmapped target property: \"bar\""),
             @Diagnostic(type = ErroneousStrictSourceTargetMapper.class,
                 kind = Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp = "Unmapped target property: \"qux\"")
         }
     )
@@ -80,11 +80,11 @@ public class UnmappedProductTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.ERROR,
-                line = 29,
+                line = 16,
                 messageRegExp = "Unmapped target property: \"bar\""),
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.ERROR,
-                line = 31,
+                line = 18,
                 messageRegExp = "Unmapped target property: \"qux\"")
         }
     )

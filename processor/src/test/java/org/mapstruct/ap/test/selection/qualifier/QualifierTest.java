@@ -100,7 +100,7 @@ public class QualifierTest {
             diagnostics = {
                 @Diagnostic( type = ErroneousMapper.class,
                         kind = Kind.ERROR,
-                        line = 42,
+                        line = 29,
                         messageRegExp = "Ambiguous mapping methods found for mapping property "
                                 + "\"java.lang.String title\" to java.lang.String.*" )
             }
@@ -173,12 +173,12 @@ public class QualifierTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMovieFactoryMapper.class,
                 kind = Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "'nullValueMappingStrategy', 'resultType' and 'qualifiedBy' are undefined in " +
                     "@BeanMapping, define at least one of them."),
             @Diagnostic(type = ErroneousMovieFactoryMapper.class,
                 kind = Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "The return type .*\\.AbstractEntry is an abstract class or interface. Provide a non " +
                     "abstract / non interface result type or a factory method.")
         }

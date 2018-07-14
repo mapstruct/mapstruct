@@ -170,7 +170,7 @@ public class NestedSourcePropertiesTest {
             diagnostics = {
                 @Diagnostic( type = ArtistToChartEntryErroneous.class,
                         kind = javax.tools.Diagnostic.Kind.ERROR,
-                        line = 47,
+                        line = 34,
                         messageRegExp = "java.lang.Integer does not have an accessible parameterless constructor." )
             }
     )

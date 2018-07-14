@@ -69,7 +69,7 @@ public class ForgedStreamMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousStreamNonMappableStreamMapper.class,
                 kind = Kind.ERROR,
-                line = 30,
+                line = 17,
                 messageRegExp = "Can't map Stream element \".* nonMappableStream\" to \".* nonMappableStream\". "
                     + "Consider to declare/implement a mapping method: .*."),
         }

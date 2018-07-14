@@ -121,12 +121,12 @@ public class InheritConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.ERROR,
-                line = 56,
+                line = 43,
                 messageRegExp = "Several matching methods exist: forwardCreate\\(\\), "
                     + "forwardCreate1\\(\\). Specify a name explicitly."),
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.WARNING,
-                line = 57,
+                line = 44,
                 messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
                     + "expressionProp, nestedResultProp\"")
         }
@@ -141,12 +141,12 @@ public class InheritConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.ERROR,
-                line = 56,
+                line = 43,
                 messageRegExp = "None of the candidates forwardCreate\\(\\), forwardCreate1\\(\\) matches given "
                     + "name: \"blah\"."),
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.WARNING,
-                line = 57,
+                line = 44,
                 messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
                     + "expressionProp, nestedResultProp\"")
         }
@@ -161,12 +161,12 @@ public class InheritConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.ERROR,
-                line = 56,
+                line = 43,
                 messageRegExp = "Given name \"forwardCreate\" matches several candidate methods: "
                     + ".*forwardCreate.*, .*forwardCreate.*"),
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.WARNING,
-                line = 57,
+                line = 44,
                 messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
                         + "expressionProp, nestedResultProp\"")        }
     )
@@ -180,12 +180,12 @@ public class InheritConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                 kind = Kind.ERROR,
-                line = 47,
+                line = 34,
                 messageRegExp = "Given name \"blah\" does not match the only candidate. Did you mean: "
                     + "\"forwardCreate\"."),
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                         kind = Kind.WARNING,
-                line = 48,
+                line = 35,
                 messageRegExp = "Unmapped target properties: \"stringPropY, integerPropY, constantProp, "
                     + "expressionProp, nestedResultProp\"")
         }

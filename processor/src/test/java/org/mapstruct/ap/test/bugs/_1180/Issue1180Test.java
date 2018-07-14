@@ -32,7 +32,7 @@ public class Issue1180Test {
         diagnostics = {
             @Diagnostic(type = SharedConfig.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 33,
+                line = 20,
                 messageRegExp = "No property named \"sourceProperty\\.nonExistant\" exists.*")
         })
     public void shouldCompileButNotGiveNullPointer() {

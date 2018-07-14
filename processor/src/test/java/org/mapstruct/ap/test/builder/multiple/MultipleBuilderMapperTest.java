@@ -39,7 +39,7 @@ public class MultipleBuilderMapperTest {
             @Diagnostic(
                 type = ErroneousMoreThanOneBuildMethodMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp = "No build method \"build\" found in \".*\\.multiple\\.build\\.Process\\.Builder\" " +
                     "for \".*\\.multiple\\.build\\.Process\"\\. " +
                     "Found methods: " +
@@ -50,7 +50,7 @@ public class MultipleBuilderMapperTest {
             @Diagnostic(
                 type = ErroneousMoreThanOneBuildMethodMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 34,
+                line = 21,
                 messageRegExp = "No build method \"missingBuild\" found " +
                     "in \".*\\.multiple\\.build\\.Process\\.Builder\" " +
                     "for \".*\\.multiple\\.build\\.Process\"\\. " +
@@ -71,7 +71,7 @@ public class MultipleBuilderMapperTest {
             @Diagnostic(
                 type = ErroneousMoreThanOneBuildMethodWithMapperDefinedMappingMapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 31,
+                line = 18,
                 messageRegExp =
                     "No build method \"mapperBuild\" found in \".*\\.multiple\\.build\\.Process\\.Builder\" " +
                     "for \".*\\.multiple\\.build\\.Process\"\\. " +
@@ -118,7 +118,7 @@ public class MultipleBuilderMapperTest {
             @Diagnostic(
                 type = Case.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 24,
+                line = 11,
                 messageRegExp = "More than one builder creation method for \".*\\.multiple\\.builder.Case\"\\. " +
                     "Found methods: " +
                     "\".*wrongBuilder\\(\\) ?, " +
@@ -128,7 +128,7 @@ public class MultipleBuilderMapperTest {
             @Diagnostic(
                 type = Case.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 24,
+                line = 11,
                 messageRegExp = "More than one builder creation method for \".*\\.multiple\\.builder.Case\"\\. " +
                     "Found methods: " +
                     "\".*wrongBuilder\\(\\) ?, " +

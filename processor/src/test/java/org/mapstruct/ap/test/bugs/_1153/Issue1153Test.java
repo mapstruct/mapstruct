@@ -26,17 +26,17 @@ public class Issue1153Test {
         diagnostics = {
             @Diagnostic(type = ErroneousIssue1153Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 32,
+                line = 19,
                 messageRegExp = "Property \"readOnly\" has no write accessor in " +
                     "org.mapstruct.ap.test.bugs._1153.ErroneousIssue1153Mapper.Target\\."),
             @Diagnostic(type = ErroneousIssue1153Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 33,
+                line = 20,
                 messageRegExp = "Property \"nestedTarget.readOnly\" has no write accessor in " +
                     "org.mapstruct.ap.test.bugs._1153.ErroneousIssue1153Mapper.Target\\."),
             @Diagnostic(type = ErroneousIssue1153Mapper.class,
                 kind = javax.tools.Diagnostic.Kind.ERROR,
-                line = 36,
+                line = 23,
                 messageRegExp = "Unknown property \"nestedTarget2.writable2\" in result type " +
                     "org.mapstruct.ap.test.bugs._1153.ErroneousIssue1153Mapper.Target\\. " +
                     "Did you mean \"nestedTarget2\\.writable\"")

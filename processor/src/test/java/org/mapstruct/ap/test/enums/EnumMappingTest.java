@@ -35,7 +35,7 @@ public class EnumMappingTest {
         diagnostics = {
             @Diagnostic(type = OrderMapper.class,
                 kind = Kind.WARNING,
-                line = 41,
+                line = 28,
                 messageRegExp = "Mapping of Enums via @Mapping is going to be removed in future versions of "
                     + "MapStruct\\. Please use @ValueMapping instead!")
         }
@@ -55,7 +55,7 @@ public class EnumMappingTest {
         diagnostics = {
             @Diagnostic(type = OrderMapper.class,
                 kind = Kind.WARNING,
-                line = 41,
+                line = 28,
                 messageRegExp = "Mapping of Enums via @Mapping is going to be removed in future versions of "
                     + "MapStruct\\. Please use @ValueMapping instead!")
         }
@@ -78,7 +78,7 @@ public class EnumMappingTest {
         diagnostics = {
             @Diagnostic(type = OrderMapper.class,
                 kind = Kind.WARNING,
-                line = 41,
+                line = 28,
                 messageRegExp = "Mapping of Enums via @Mapping is going to be removed in future versions of "
                     + "MapStruct\\. Please use @ValueMapping instead!")
         }
@@ -100,12 +100,12 @@ public class EnumMappingTest {
 
             @Diagnostic(type = ErroneousOrderMapperMappingSameConstantTwice.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 29,
                 messageRegExp = "One enum constant must not be mapped to more than one target constant, but " +
                     "constant EXTRA is mapped to SPECIAL, DEFAULT\\."),
             @Diagnostic(type = ErroneousOrderMapperMappingSameConstantTwice.class,
                 kind = Kind.WARNING,
-                line = 42,
+                line = 29,
                 messageRegExp = "Mapping of Enums via @Mapping is going to be removed in future versions of "
                     + "MapStruct\\. Please use @ValueMapping instead!")
         }
@@ -120,16 +120,16 @@ public class EnumMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
                 kind = Kind.WARNING,
-                line = 40,
+                line = 27,
                 messageRegExp = "Mapping of Enums via @Mapping is going to be removed in future versions of "
                     + "MapStruct\\. Please use @ValueMapping instead!"),
             @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
                 kind = Kind.ERROR,
-                line = 37,
+                line = 24,
                 messageRegExp = "Constant FOO doesn't exist in enum type org.mapstruct.ap.test.enums.OrderType\\."),
             @Diagnostic(type = ErroneousOrderMapperUsingUnknownEnumConstants.class,
                 kind = Kind.ERROR,
-                line = 38,
+                line = 25,
                 messageRegExp = "Constant BAR doesn't exist in enum type org.mapstruct.ap.test.enums." +
                     "ExternalOrderType\\.")
         }
@@ -144,7 +144,7 @@ public class EnumMappingTest {
         diagnostics = {
             @Diagnostic(type = ErroneousOrderMapperNotMappingConstantWithoutMatchInTargetType.class,
                 kind = Kind.ERROR,
-                line = 34,
+                line = 21,
                 messageRegExp = "The following constants from the source enum have no corresponding constant in the " +
                     "target enum and must be be mapped via adding additional mappings: EXTRA, STANDARD, NORMAL")
         }

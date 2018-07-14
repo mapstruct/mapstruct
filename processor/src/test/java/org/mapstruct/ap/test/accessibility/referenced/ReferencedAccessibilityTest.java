@@ -37,7 +37,7 @@ public class ReferencedAccessibilityTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperPrivate.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 35,
+                line = 22,
                 messageRegExp = "Unmapped target property: \"bar\"\\. Mapping from property \"org\\.mapstruct\\.ap\\" +
                     ".test\\.accessibility\\.referenced\\.ReferencedSource referencedSource\" to \"org\\.mapstruct\\" +
                     ".ap\\.test\\.accessibility\\.referenced\\.ReferencedTarget referencedTarget\"")
@@ -65,7 +65,7 @@ public class ReferencedAccessibilityTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperDefaultOther.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 37,
+                line = 24,
                 messageRegExp = "Unmapped target property: \"bar\"\\. Mapping from property \"org\\.mapstruct\\.ap\\" +
                     ".test\\.accessibility\\.referenced\\.ReferencedSource referencedSource\" to \"org\\.mapstruct\\" +
                     ".ap\\.test\\.accessibility\\.referenced\\.ReferencedTarget referencedTarget\"")
@@ -88,7 +88,7 @@ public class ReferencedAccessibilityTest {
         diagnostics = {
             @Diagnostic(type = AbstractSourceTargetMapperPrivate.class,
                 kind = javax.tools.Diagnostic.Kind.WARNING,
-                line = 36,
+                line = 23,
                 messageRegExp = "Unmapped target property: \"bar\"\\. Mapping from property \"org\\.mapstruct\\.ap\\" +
                     ".test\\.accessibility\\.referenced\\.ReferencedSource referencedSource\" to \"org\\.mapstruct\\" +
                     ".ap\\.test\\.accessibility\\.referenced\\.ReferencedTarget referencedTarget\"")

@@ -34,11 +34,11 @@ public class UnmappedSourceTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.WARNING,
-                line = 33,
+                line = 20,
                 messageRegExp = "Unmapped source property: \"qux\""),
             @Diagnostic(type = SourceTargetMapper.class,
                 kind = Kind.WARNING,
-                line = 35,
+                line = 22,
                 messageRegExp = "Unmapped source property: \"bar\"")
         }
     )
@@ -60,11 +60,11 @@ public class UnmappedSourceTest {
         diagnostics = {
             @Diagnostic(type = ErroneousStrictSourceTargetMapper.class,
                 kind = Kind.ERROR,
-                line = 33,
+                line = 20,
                 messageRegExp = "Unmapped source property: \"qux\""),
             @Diagnostic(type = ErroneousStrictSourceTargetMapper.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Unmapped source property: \"bar\"")
         }
     )

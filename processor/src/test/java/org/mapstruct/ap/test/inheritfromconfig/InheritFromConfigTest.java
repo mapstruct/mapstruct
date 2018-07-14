@@ -202,25 +202,25 @@ public class InheritFromConfigTest {
         diagnostics = {
             @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 23,
                 messageRegExp = "More than one configuration prototype method is applicable. Use @InheritConfiguration"
                     + " to select one of them explicitly:"
                     + " .*BaseVehicleEntity baseDtoToEntity\\(.*BaseVehicleDto dto\\),"
                     + " .*BaseVehicleEntity anythingToEntity\\(java.lang.Object anyting\\)\\."),
             @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.WARNING,
-                line = 36,
+                line = 23,
                 messageRegExp = "Unmapped target properties: \"primaryKey, auditTrail\"\\."),
             @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.ERROR,
-                line = 42,
+                line = 29,
                 messageRegExp = "More than one configuration prototype method is applicable. Use @InheritConfiguration"
                     + " to select one of them explicitly:"
                     + " .*BaseVehicleEntity baseDtoToEntity\\(.*BaseVehicleDto dto\\),"
                     + " .*BaseVehicleEntity anythingToEntity\\(java.lang.Object anyting\\)\\."),
             @Diagnostic(type = Erroneous1Mapper.class,
                 kind = Kind.WARNING,
-                line = 42,
+                line = 29,
                 messageRegExp = "Unmapped target property: \"primaryKey\"\\.")
         }
     )
@@ -235,7 +235,7 @@ public class InheritFromConfigTest {
         diagnostics = {
             @Diagnostic(type = Erroneous2Mapper.class,
                 kind = Kind.ERROR,
-                line = 38,
+                line = 25,
                 messageRegExp = "Cycle detected while evaluating inherited configurations. Inheritance path:"
                     + " .*CarEntity toCarEntity1\\(.*CarDto carDto\\)"
                     + " -> .*CarEntity toCarEntity2\\(.*CarDto carDto\\)"
@@ -255,7 +255,7 @@ public class InheritFromConfigTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapperAutoInheritance.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Unmapped target properties: \"primaryKey, auditTrail\"\\.")
         }
     )
@@ -269,7 +269,7 @@ public class InheritFromConfigTest {
         diagnostics = {
             @Diagnostic(type = ErroneousMapperReverseWithAutoInheritance.class,
                 kind = Kind.ERROR,
-                line = 36,
+                line = 23,
                 messageRegExp = "Unmapped target property: \"id\"\\.")
         }
     )
@@ -283,12 +283,12 @@ public class InheritFromConfigTest {
         diagnostics = {
             @Diagnostic(type = Erroneous3Mapper.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "More than one configuration prototype method is applicable. "
                     + "Use @InheritInverseConfiguration.*"),
             @Diagnostic(type = Erroneous3Mapper.class,
                 kind = Kind.ERROR,
-                line = 35,
+                line = 22,
                 messageRegExp = "Unmapped target property: \"id\"\\.")
         }
     )

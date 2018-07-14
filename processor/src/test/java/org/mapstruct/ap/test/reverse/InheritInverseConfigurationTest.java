@@ -60,12 +60,12 @@ public class InheritInverseConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.ERROR,
-                line = 51,
+                line = 38,
                 messageRegExp = "Several matching inverse methods exist: forward\\(\\), "
                     + "forwardNotToReverse\\(\\). Specify a name explicitly."),
             @Diagnostic(type = SourceTargetMapperAmbiguous1.class,
                 kind = Kind.WARNING,
-                line = 56,
+                line = 43,
                 messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
         }
     )
@@ -79,12 +79,12 @@ public class InheritInverseConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.ERROR,
-                line = 51,
+                line = 38,
                 messageRegExp = "None of the candidates forward\\(\\), forwardNotToReverse\\(\\) matches given "
                     + "name: \"blah\"."),
             @Diagnostic(type = SourceTargetMapperAmbiguous2.class,
                 kind = Kind.WARNING,
-                line = 56,
+                line = 43,
                 messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
         }
     )
@@ -98,12 +98,12 @@ public class InheritInverseConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.ERROR,
-                line = 52,
+                line = 39,
                 messageRegExp = "Given name \"forward\" matches several candidate methods: .*forward\\(.+\\), "
                     + ".*forward\\(.+\\)"),
             @Diagnostic(type = SourceTargetMapperAmbiguous3.class,
                 kind = Kind.WARNING,
-                line = 57,
+                line = 44,
                 messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
         }
     )
@@ -117,12 +117,12 @@ public class InheritInverseConfigurationTest {
         diagnostics = {
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                 kind = Kind.ERROR,
-                line = 44,
+                line = 31,
                 messageRegExp = "Given name \"blah\" does not match the only candidate. Did you mean: "
                     + "\"forward\"."),
             @Diagnostic(type = SourceTargetMapperNonMatchingName.class,
                 kind = Kind.WARNING,
-                line = 49,
+                line = 36,
                 messageRegExp = "Unmapped target properties: \"stringPropX, integerPropX\"")
         }
     )
