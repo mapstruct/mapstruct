@@ -197,6 +197,11 @@
                 <version>1.5</version>
             </dependency>
             <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>3.6.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.inferred</groupId>
                 <artifactId>freebuilder</artifactId>
                 <version>1.14.6</version>
@@ -576,7 +581,7 @@
                     <header>${basedir}/../etc/license.txt</header>
                     <strictCheck>true</strictCheck>
                     <excludes>
-                        <exclude>.idea/**</exclude>
+                        <exclude>**/.idea/**</exclude>
                         <exclude>**/build-config/checkstyle.xml</exclude>
                         <exclude>**/build-config/import-control.xml</exclude>
                         <exclude>copyright.txt</exclude>
@@ -601,6 +606,7 @@
                     </excludes>
                     <mapping>
                         <java>SLASHSTAR_STYLE</java>
+                        <proto>SLASHSTAR_STYLE</proto>
                     </mapping>
                 </configuration>
                 <executions>

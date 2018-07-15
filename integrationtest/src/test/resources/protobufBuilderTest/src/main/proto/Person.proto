@@ -1,0 +1,21 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
+syntax = "proto3";
+
+package itest.protobuf;
+
+option java_package = "org.mapstruct.itest.protobuf";
+option java_outer_classname = "PersonProtos";
+
+message Person {
+    string name = 1;
+    int32 age = 2;
+    Address address = 3;
+
+    message Address {
+        string addressLine = 1;
+    }
+}
