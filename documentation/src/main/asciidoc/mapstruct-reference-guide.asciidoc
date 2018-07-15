@@ -271,15 +271,21 @@ If a policy is given for a specific mapper via `@Mapper#unmappedTargetPolicy()`,
 
 === Using MapStruct on Java 9
 
-MapStruct can be used with Java 9, but as that Java version has not been finalized yet, support for it is experimental.
+MapStruct can be used with Java 9 (JPMS), support for it is experimental.
 
 A core theme of Java 9 is the modularization of the JDK. One effect of this is that a specific module needs	to be enabled for a project in order to use the `javax.annotation.Generated` annotation. `@Generated` is added by MapStruct to generated mapper classes to tag them as generated code, stating the date of generation, the generator version etc.
 
-To allow usage of the `@Generated` annotation the module _java.annotations.common_ must be enabled. When using Maven, this can be done like this:
+To allow usage of the `@Generated` annotation the module _java.xml.ws.annotation_ must be enabled. When using Maven, this can be done like this:
 
-    export MAVEN_OPTS="--add-modules java.annotations.common"
+    export MAVEN_OPTS="--add-modules java.xml.ws.annotation"
 
 If the `@Generated` annotation is not available, MapStruct will detect this situation and not add it to generated mappers.
+
+[NOTE]
+=====
+In Java 9 `java.annotation.processing.Generated` was added, which is considered as a general purpose annotation for any code generators
+and is part of the `java.compiler` module. Support for it is planned within https://github.com/mapstruct/mapstruct/issues/1551[#1551]
+=====
 
 [[defining-mapper]]
 == Defining a mapper
