@@ -29,17 +29,17 @@ public class Parameter extends ModelElement {
     private final boolean targetType;
     private final boolean mappingContext;
 
-    private final boolean isVarArgs;
+    private final boolean varArgs;
 
     private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext,
-                      boolean isVarArgs) {
+                      boolean varArgs) {
         this.name = name;
         this.originalName = name;
         this.type = type;
         this.mappingTarget = mappingTarget;
         this.targetType = targetType;
         this.mappingContext = mappingContext;
-        this.isVarArgs = isVarArgs;
+        this.varArgs = varArgs;
     }
 
     public Parameter(String name, Type type) {
@@ -84,7 +84,7 @@ public class Parameter extends ModelElement {
     }
 
     public boolean isVarArgs() {
-        return isVarArgs;
+        return varArgs;
     }
 
     @Override
@@ -110,10 +110,6 @@ public class Parameter extends ModelElement {
         }
         return type != null ? type.equals( parameter.type ) : parameter.type == null;
 
-    }
-
-    public static Parameter forElementAndType(VariableElement element, Type parameterType) {
-        return forElementAndType( element, parameterType, false );
     }
 
     public static Parameter forElementAndType(VariableElement element, Type parameterType, boolean isVarArgs) {
