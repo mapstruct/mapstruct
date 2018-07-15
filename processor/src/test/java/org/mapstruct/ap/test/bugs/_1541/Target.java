@@ -25,6 +25,8 @@ public class Target {
 
     private boolean afterMappingWithVarArgsCalled = false;
     private boolean afterMappingWithArrayCalled = false;
+    private boolean afterMappingContextWithVarArgsAsVarArgsCalled = false;
+    private boolean afterMappingContextWithVarArgsAsArrayCalled = false;
 
     public String getCode() {
         return code;
@@ -64,5 +66,21 @@ public class Target {
 
     public void setAfterMappingWithArrayCalled(boolean afterMappingWithArrayCalled) {
         this.afterMappingWithArrayCalled = afterMappingWithArrayCalled;
+    }
+
+    public boolean isAfterMappingContextWithVarArgsAsVarArgsCalled() {
+        return afterMappingContextWithVarArgsAsVarArgsCalled;
+    }
+
+    public void setAfterMappingContextWithVarArgsAsVarArgsCalled(boolean afterMappingContextWithVarArgsAsVarArgsCalled) {
+        this.afterMappingContextWithVarArgsAsVarArgsCalled = afterMappingContextWithVarArgsAsVarArgsCalled;
+    }
+
+    public boolean isAfterMappingContextWithVarArgsAsArrayCalled() {
+        return afterMappingContextWithVarArgsAsArrayCalled;
+    }
+
+    public void setAfterMappingContextWithVarArgsAsArrayCalled(boolean afterMappingContextWithVarArgsAsArrayCalled) {
+        this.afterMappingContextWithVarArgsAsArrayCalled = afterMappingContextWithVarArgsAsArrayCalled;
     }
 }

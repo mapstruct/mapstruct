@@ -79,7 +79,6 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final boolean isVoid;
     private final boolean isStream;
     private final boolean isLiteral;
-    private final boolean isVarArgs;
 
     private final List<String> enumConstants;
 
@@ -104,7 +103,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 String packageName, String name, String qualifiedName,
                 boolean isInterface, boolean isEnumType, boolean isIterableType,
                 boolean isCollectionType, boolean isMapType, boolean isStreamType, boolean isImported,
-                boolean isLiteral, boolean isVarArgs ) {
+                boolean isLiteral ) {
 
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
@@ -130,7 +129,6 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isImported = isImported;
         this.isVoid = typeMirror.getKind() == TypeKind.VOID;
         this.isLiteral = isLiteral;
-        this.isVarArgs = isVarArgs;
 
         if ( isEnumType ) {
             enumConstants = new ArrayList<String>();
@@ -391,8 +389,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             isMapType,
             isStream,
             isImported,
-            isLiteral,
-            isVarArgs
+            isLiteral
         );
     }
 
@@ -433,8 +430,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             isMapType,
             isStream,
             isImported,
-            isLiteral,
-            isVarArgs
+            isLiteral
         );
     }
 
@@ -977,10 +973,6 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isLiteral() {
         return isLiteral;
-    }
-
-    public boolean isVarArgs() {
-        return isVarArgs;
     }
 
 }

@@ -32,7 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @WithClasses({
     Issue1541Mapper.class,
-    Source.class,
     Target.class
 })
 @RunWith(AnnotationProcessorTestRunner.class)
@@ -48,6 +47,8 @@ public class Issue1541Test {
         assertThat( target.getParameters() ).contains( "1", "2" );
         assertThat( target.isAfterMappingWithArrayCalled() ).isFalse();
         assertThat( target.isAfterMappingWithVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
     @Test
@@ -60,6 +61,8 @@ public class Issue1541Test {
         assertThat( target.getParameters2() ).isNull();
         assertThat( target.isAfterMappingWithArrayCalled() ).isFalse();
         assertThat( target.isAfterMappingWithVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
     @Test
@@ -72,6 +75,8 @@ public class Issue1541Test {
         assertThat( target.getParameters2() ).contains( "1", "2" );
         assertThat( target.isAfterMappingWithArrayCalled() ).isFalse();
         assertThat( target.isAfterMappingWithVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
     @Test
@@ -84,6 +89,8 @@ public class Issue1541Test {
         assertThat( target.getParameters2() ).contains( "3", "4" );
         assertThat( target.isAfterMappingWithArrayCalled() ).isFalse();
         assertThat( target.isAfterMappingWithVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
     @Test
@@ -96,6 +103,8 @@ public class Issue1541Test {
         assertThat( target.getParameters2() ).isNull();
         assertThat( target.isAfterMappingWithArrayCalled() ).isTrue();
         assertThat( target.isAfterMappingWithVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
     }
 
     @Test
@@ -108,5 +117,35 @@ public class Issue1541Test {
         assertThat( target.getParameters2() ).isNull();
         assertThat( target.isAfterMappingWithArrayCalled() ).isFalse();
         assertThat( target.isAfterMappingWithVarArgsCalled() ).isTrue();
+        assertThat( target.isAfterMappingContextWithVarArgsAsVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
+    }
+
+    @Test
+    public void testVarArgsInContextWithVarArgsAfterMapping() {
+        Target target = Issue1541Mapper.INSTANCE.mapContextWithVarArgsInAfterMappingWithVarArgs( "code", new String[] {"1", "2"}, "3", "4" );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getCode() ).isEqualTo( "code" );
+        assertThat( target.getParameters() ).contains( "1", "2" );
+        assertThat( target.getParameters2() ).contains( "3", "4" );
+        assertThat( target.isAfterMappingWithArrayCalled() ).isFalse();
+        assertThat( target.isAfterMappingWithVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsVarArgsCalled() ).isTrue();
+        assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isFalse();
+    }
+
+    @Test
+    public void testVarArgsInContextWithArrayAfterMapping() {
+        Target target = Issue1541Mapper.INSTANCE.mapContextWithVarArgsInAfterMappingWithArray( "code", new String[] {"1", "2"}, "3", "4" );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getCode() ).isEqualTo( "code" );
+        assertThat( target.getParameters() ).contains( "1", "2" );
+        assertThat( target.getParameters2() ).contains( "3", "4" );
+        assertThat( target.isAfterMappingWithArrayCalled() ).isFalse();
+        assertThat( target.isAfterMappingWithVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsVarArgsCalled() ).isFalse();
+        assertThat( target.isAfterMappingContextWithVarArgsAsArrayCalled() ).isTrue();
     }
 }

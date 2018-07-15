@@ -5,4 +5,4 @@
     Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<@includeModel object=type allowVarArgs=ext.allowVarArgs!false/> ${name}
+<@includeModel object=type asVarArgs=varArgs/> ${name}
