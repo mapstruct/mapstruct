@@ -72,7 +72,8 @@ public class Target {
         return afterMappingContextWithVarArgsAsVarArgsCalled;
     }
 
-    public void setAfterMappingContextWithVarArgsAsVarArgsCalled(boolean afterMappingContextWithVarArgsAsVarArgsCalled) {
+    public void setAfterMappingContextWithVarArgsAsVarArgsCalled(
+        boolean afterMappingContextWithVarArgsAsVarArgsCalled) {
         this.afterMappingContextWithVarArgsAsVarArgsCalled = afterMappingContextWithVarArgsAsVarArgsCalled;
     }
 

@@ -81,7 +81,7 @@ public class Issue1541Test {
 
     @Test
     public void testMappingWithArrayAndVarArgs() {
-        Target target = Issue1541Mapper.INSTANCE.mapWithArrayAndVarArgs( "code", new String[] {"1", "2"}, "3", "4" );
+        Target target = Issue1541Mapper.INSTANCE.mapWithArrayAndVarArgs( "code", new String[] { "1", "2" }, "3", "4" );
 
         assertThat( target ).isNotNull();
         assertThat( target.getCode() ).isEqualTo( "code" );
@@ -123,7 +123,12 @@ public class Issue1541Test {
 
     @Test
     public void testVarArgsInContextWithVarArgsAfterMapping() {
-        Target target = Issue1541Mapper.INSTANCE.mapContextWithVarArgsInAfterMappingWithVarArgs( "code", new String[] {"1", "2"}, "3", "4" );
+        Target target = Issue1541Mapper.INSTANCE.mapContextWithVarArgsInAfterMappingWithVarArgs(
+            "code",
+            new String[] { "1", "2" },
+            "3",
+            "4"
+        );
 
         assertThat( target ).isNotNull();
         assertThat( target.getCode() ).isEqualTo( "code" );
@@ -137,7 +142,12 @@ public class Issue1541Test {
 
     @Test
     public void testVarArgsInContextWithArrayAfterMapping() {
-        Target target = Issue1541Mapper.INSTANCE.mapContextWithVarArgsInAfterMappingWithArray( "code", new String[] {"1", "2"}, "3", "4" );
+        Target target = Issue1541Mapper.INSTANCE.mapContextWithVarArgsInAfterMappingWithArray(
+            "code",
+            new String[] { "1", "2" },
+            "3",
+            "4"
+        );
 
         assertThat( target ).isNotNull();
         assertThat( target.getCode() ).isEqualTo( "code" );
