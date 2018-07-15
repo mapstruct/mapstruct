@@ -581,7 +581,7 @@
                     <header>${basedir}/../etc/license.txt</header>
                     <strictCheck>true</strictCheck>
                     <excludes>
-                        <exclude>.idea/**</exclude>
+                        <exclude>**/.idea/**</exclude>
                         <exclude>**/build-config/checkstyle.xml</exclude>
                         <exclude>**/build-config/import-control.xml</exclude>
                         <exclude>copyright.txt</exclude>
@@ -603,10 +603,10 @@
                         <exclude>*.yml</exclude>
                         <exclude>**/*.asciidoc</exclude>
                         <exclude>**/binding.xjb</exclude>
-                        <exclude>*.proto</exclude>
                     </excludes>
                     <mapping>
                         <java>SLASHSTAR_STYLE</java>
+                        <proto>SLASHSTAR_STYLE</proto>
                     </mapping>
                 </configuration>
                 <executions>
