@@ -35,8 +35,7 @@ import org.mapstruct.itest.testutil.runner.ProcessorSuiteRunner;
         ProcessorSuite.ProcessorType.ORACLE_JAVA_8,
         ProcessorSuite.ProcessorType.ORACLE_JAVA_9,
         ProcessorSuite.ProcessorType.ECLIPSE_JDT_JAVA_6,
-        ProcessorSuite.ProcessorType.ECLIPSE_JDT_JAVA_7,
-        ProcessorSuite.ProcessorType.PROCESSOR_PLUGIN_JAVA_8
+        ProcessorSuite.ProcessorType.ECLIPSE_JDT_JAVA_7
     })
 public class ProtobufBuilderTest {
 }
