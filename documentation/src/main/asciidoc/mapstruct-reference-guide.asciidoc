@@ -2757,7 +2757,7 @@ public class CustomAccessorNamingStrategy extends DefaultAccessorNamingStrategy 
     @Override
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         String methodName = getterOrSetterMethod.getSimpleName().toString();
-        return Introspector.decapitalize( methodName.startsWith( "with" ) ? methodName.substring(  4 ) : methodName );
+        return IntrospectorUtils.decapitalize( methodName.startsWith( "with" ) ? methodName.substring(  4 ) : methodName );
     }
 }
 ----

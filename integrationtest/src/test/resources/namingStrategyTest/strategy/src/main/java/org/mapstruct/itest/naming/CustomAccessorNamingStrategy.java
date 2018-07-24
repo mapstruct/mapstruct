@@ -5,13 +5,12 @@
  */
 package org.mapstruct.itest.naming;
 
-import java.beans.Introspector;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.spi.AccessorNamingStrategy;
 import org.mapstruct.ap.spi.DefaultAccessorNamingStrategy;
+import org.mapstruct.ap.spi.util.IntrospectorUtils;
 
 /**
  * A custom {@link AccessorNamingStrategy} recognizing getters in the form of {@code property()} and setters in the
@@ -42,13 +41,14 @@ public class CustomAccessorNamingStrategy  extends DefaultAccessorNamingStrategy
     @Override
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         String methodName = getterOrSetterMethod.getSimpleName().toString();
-        return Introspector.decapitalize( methodName.startsWith( "with" ) ? methodName.substring(  4 ) : methodName );
+        return IntrospectorUtils.decapitalize(
+            methodName.startsWith( "with" ) ? methodName.substring( 4 ) : methodName );
     }
 
     @Override
     public String getElementName(ExecutableElement adderMethod) {
         String methodName = adderMethod.getSimpleName().toString();
-        return Introspector.decapitalize( methodName.substring( 3 ) );
+        return IntrospectorUtils.decapitalize( methodName.substring( 3 ) );
     }
 
 }

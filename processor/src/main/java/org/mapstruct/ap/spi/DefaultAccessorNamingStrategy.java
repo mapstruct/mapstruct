@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.spi;
 
-import java.beans.Introspector;
 import java.util.regex.Pattern;
 
 import javax.lang.model.element.ExecutableElement;
@@ -16,6 +15,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
+import org.mapstruct.ap.spi.util.IntrospectorUtils;
 
 /**
  * The default JavaBeans-compliant implementation of the {@link AccessorNamingStrategy} service provider interface.
@@ -157,12 +157,12 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     public String getPropertyName(ExecutableElement getterOrSetterMethod) {
         String methodName = getterOrSetterMethod.getSimpleName().toString();
         if ( methodName.startsWith( "is" ) || methodName.startsWith( "get" ) || methodName.startsWith( "set" ) ) {
-            return Introspector.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
+            return IntrospectorUtils.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
         }
         else if ( isBuilderSetter( getterOrSetterMethod ) ) {
             return methodName;
         }
-        return Introspector.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
+        return IntrospectorUtils.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
     }
 
     /**
@@ -177,10 +177,10 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     @Override
     public String getElementName(ExecutableElement adderMethod) {
         String methodName = adderMethod.getSimpleName().toString();
-        return Introspector.decapitalize( methodName.substring( 3 ) );
+        return IntrospectorUtils.decapitalize( methodName.substring( 3 ) );
     }
 
-   /**
+    /**
      * Helper method, to obtain the fully qualified name of a type.
      *
      * @param type input type
