@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -377,7 +376,13 @@ public class TypeFactory {
             VariableElement parameter = varIt.next();
             TypeMirror parameterType = typesIt.next();
 
-            result.add( Parameter.forElementAndType( parameter, getType( parameterType ) ) );
+            Type type = getType( parameterType );
+
+            // if the method has varargs and this is the last parameter
+            // we know that this parameter should be used as varargs
+            boolean isVarArgs = !varIt.hasNext() && method.isVarArgs();
+
+            result.add( Parameter.forElementAndType( parameter, type, isVarArgs ) );
         }
 
         return result;

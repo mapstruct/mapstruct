@@ -8,7 +8,6 @@ package org.mapstruct.ap.internal.model.common;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import javax.lang.model.element.VariableElement;
 
 import org.mapstruct.ap.internal.prism.ContextPrism;
@@ -30,17 +29,21 @@ public class Parameter extends ModelElement {
     private final boolean targetType;
     private final boolean mappingContext;
 
-    private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext) {
+    private final boolean varArgs;
+
+    private Parameter(String name, Type type, boolean mappingTarget, boolean targetType, boolean mappingContext,
+                      boolean varArgs) {
         this.name = name;
         this.originalName = name;
         this.type = type;
         this.mappingTarget = mappingTarget;
         this.targetType = targetType;
         this.mappingContext = mappingContext;
+        this.varArgs = varArgs;
     }
 
     public Parameter(String name, Type type) {
-        this( name, type, false, false, false );
+        this( name, type, false, false, false, false );
     }
 
     public String getName() {
@@ -80,6 +83,10 @@ public class Parameter extends ModelElement {
         return mappingContext;
     }
 
+    public boolean isVarArgs() {
+        return varArgs;
+    }
+
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
@@ -105,13 +112,15 @@ public class Parameter extends ModelElement {
 
     }
 
-    public static Parameter forElementAndType(VariableElement element, Type parameterType) {
+    public static Parameter forElementAndType(VariableElement element, Type parameterType, boolean isVarArgs) {
         return new Parameter(
             element.getSimpleName().toString(),
             parameterType,
             MappingTargetPrism.getInstanceOn( element ) != null,
             TargetTypePrism.getInstanceOn( element ) != null,
-            ContextPrism.getInstanceOn( element ) != null );
+            ContextPrism.getInstanceOn( element ) != null,
+            isVarArgs
+        );
     }
 
     public static Parameter forForgedMappingTarget(Type parameterType) {
@@ -120,7 +129,9 @@ public class Parameter extends ModelElement {
             parameterType,
             true,
             false,
-            false);
+            false,
+            false
+        );
     }
 
     /**

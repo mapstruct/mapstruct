@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.lang.model.type.DeclaredType;
 import javax.tools.Diagnostic;
 
@@ -52,6 +49,8 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one bean type to another, optionally
@@ -116,7 +115,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             for ( Parameter sourceParameter : method.getSourceParameters() ) {
                 unprocessedSourceParameters.add( sourceParameter );
 
-                if ( sourceParameter.getType().isPrimitive() ) {
+                if ( sourceParameter.getType().isPrimitive() || sourceParameter.getType().isArrayType() ) {
                     continue;
                 }
                 Map<String, Accessor> readAccessors = sourceParameter.getType().getPropertyReadAccessors();
@@ -558,7 +557,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
                         Type sourceType = sourceParameter.getType();
 
-                        if ( sourceType.isPrimitive() ) {
+                        if ( sourceType.isPrimitive() || sourceType.isArrayType() ) {
                             continue;
                         }
 
