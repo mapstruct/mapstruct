@@ -12,6 +12,14 @@ package org.mapstruct.ap.test.references;
 public class Foo {
     private String prop1;
 
+    public Foo() {
+    }
+
+    public Foo(String prop1) {
+
+        this.prop1 = prop1;
+    }
+
     public String getProp1() {
         return prop1;
     }

@@ -7,8 +7,10 @@ package org.mapstruct.ap.internal.processor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.lang.model.element.ExecutableElement;
@@ -32,11 +34,12 @@ import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
+import org.mapstruct.ap.internal.model.PlainMapperReference;
 import org.mapstruct.ap.internal.model.StreamMappingMethod;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.source.MappingOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -122,12 +125,36 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     private List<MapperReference> initReferencedMappers(TypeElement element, MapperConfiguration mapperConfig) {
         List<MapperReference> result = new LinkedList<MapperReference>();
         List<String> variableNames = new LinkedList<String>();
+        Set<String> usedTypes = new HashSet<String>();
 
         for ( TypeMirror usedMapper : mapperConfig.uses() ) {
+            Type type = typeFactory.getType( usedMapper );
+
             DefaultMapperReference mapperReference = DefaultMapperReference.getInstance(
-                typeFactory.getType( usedMapper ),
+                type,
                 MapperPrism.getInstanceOn( typeUtils.asElement( usedMapper ) ) != null,
                 typeFactory,
+                variableNames
+            );
+
+            result.add( mapperReference );
+            variableNames.add( mapperReference.getVariableName() );
+            usedTypes.add( type.getFullyQualifiedName() );
+        }
+
+        for ( TypeMirror usedMapper : mapperConfig.usesPlain() ) {
+            Type type = typeFactory.getType( usedMapper );
+
+            if ( usedTypes.contains( type.getFullyQualifiedName() ) ) {
+                messager.printMessage(
+                    element,
+                    Message.GENERAL_MAPPER_IN_USES_AND_USESPLAIN,
+                    type.getFullyQualifiedName()
+                );
+            }
+
+            PlainMapperReference mapperReference = PlainMapperReference.getInstance(
+                type,
                 variableNames
             );
 

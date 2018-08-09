@@ -96,6 +96,24 @@ public class MapperConfiguration {
         return uses;
     }
 
+    public Set<DeclaredType> usesPlain() {
+        Set<DeclaredType> usesPlain = new LinkedHashSet<DeclaredType>();
+
+        for ( TypeMirror usedMapperType : mapperPrism.usesPlain() ) {
+            // TODO #737 Only declared type make sense here; Validate and raise graceful error;
+            usesPlain.add( (DeclaredType) usedMapperType );
+        }
+
+        if ( mapperConfigPrism != null ) {
+            for ( TypeMirror usedMapperType : mapperConfigPrism.usesPlain() ) {
+                // TODO #737 Only declared type make sense here; Validate and raise graceful error;
+                usesPlain.add( (DeclaredType) usedMapperType );
+            }
+        }
+
+        return usesPlain;
+    }
+
     public List<TypeMirror> imports() {
         return mapperPrism.imports();
     }

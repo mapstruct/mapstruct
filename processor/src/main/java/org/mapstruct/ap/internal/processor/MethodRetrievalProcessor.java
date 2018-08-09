@@ -161,6 +161,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                     mapperConfig,
                     prototypeMethods ) );
             }
+            for ( DeclaredType mapper : mapperConfig.usesPlain() ) {
+                methods.addAll( retrieveMethods(
+                    asTypeElement( mapper ),
+                    mapperToImplement,
+                    mapperConfig,
+                    prototypeMethods ) );
+            }
         }
 
         return methods;

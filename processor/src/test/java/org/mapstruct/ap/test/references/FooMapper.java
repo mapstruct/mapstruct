@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.references;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 /**
  * @author Andreas Gudian
@@ -13,5 +14,7 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 public interface FooMapper {
+    FooMapper INSTANCE = Mappers.getMapper( FooMapper.class );
+
     Bar fooToBar(Foo source);
 }
