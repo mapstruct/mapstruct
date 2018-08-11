@@ -31,6 +31,7 @@ Peter Larson - https://github.com/pjlarson
 Remko Plantenga - https://github.com/sonata82
 Remo Meier - https://github.com/remmeier
 Richard Lea - https://github.com/chigix
+Saheb Preet Singh - https://github.com/sahebpreet
 Samuel Wright - https://github.com/samwright
 Sebastian Hasait - https://github.com/shasait
 Sean Huang - https://github.com/seanjob
