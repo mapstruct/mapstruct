@@ -242,7 +242,7 @@ public class TypeFactory {
             else if (componentTypeMirror.getKind().isPrimitive()) {
                 // When the component type is primitive and is annotated with ElementType.TYPE_USE then
                 // the typeMirror#toString returns (@CustomAnnotation :: byte) for the javac compiler
-                name = componentTypeMirror.getKind().name().toLowerCase( Locale.ROOT) + builder.toString();
+                name = componentTypeMirror.getKind().name().toLowerCase( Locale.ROOT ) + builder.toString();
                 packageName = null;
                 qualifiedName = name;
                 isImported = false;

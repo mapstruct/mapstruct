@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface CarMapper {
 
-    public static final CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
+    CarMapper INSTANCE = Mappers.getMapper( CarMapper.class );
 
     Car toCar(Car2 car2);
 }
