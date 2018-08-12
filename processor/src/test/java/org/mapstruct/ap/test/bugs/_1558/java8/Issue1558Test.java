@@ -10,8 +10,6 @@ import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.AnnotationProcessorTestRunner;
-import org.mapstruct.ap.testutil.runner.Compiler;
-import org.mapstruct.ap.testutil.runner.WithSingleCompiler;
 
 /**
  * @author Sjaak Derksen
@@ -24,7 +22,6 @@ import org.mapstruct.ap.testutil.runner.WithSingleCompiler;
 })
 @RunWith(AnnotationProcessorTestRunner.class)
 @IssueKey("1558")
-@WithSingleCompiler( Compiler.JDK )
 public class Issue1558Test {
 
     @Test

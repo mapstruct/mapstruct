@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
@@ -237,6 +238,14 @@ public class TypeFactory {
                 packageName = elementUtils.getPackageOf( componentTypeElement ).getQualifiedName().toString();
                 qualifiedName = componentTypeElement.getQualifiedName().toString() + arraySuffix;
                 isImported = isImported( name, qualifiedName );
+            }
+            else if (componentTypeMirror.getKind().isPrimitive()) {
+                // When the component type is primitive and is annotated with ElementType.TYPE_USE then
+                // the typeMirror#toString returns (@CustomAnnotation :: byte) for the javac compiler
+                name = componentTypeMirror.getKind().name().toLowerCase( Locale.ROOT) + builder.toString();
+                packageName = null;
+                qualifiedName = name;
+                isImported = false;
             }
             else {
                 name = mirror.toString();
