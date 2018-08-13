@@ -16,7 +16,6 @@ import static org.mapstruct.ap.internal.conversion.ConversionUtils.date;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.localDateTime;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.zoneOffset;
 import static org.mapstruct.ap.internal.util.JavaTimeConstants.LOCAL_DATE_TIME_FQN;
-import static org.mapstruct.ap.internal.util.JavaTimeConstants.ZONE_ID_FQN;
 import static org.mapstruct.ap.internal.util.JavaTimeConstants.ZONE_OFFSET_FQN;
 
 /**
@@ -53,7 +52,7 @@ public class JavaLocalDateToDateConversion extends SimpleConversion {
     protected Set<Type> getFromConversionImportTypes(ConversionContext conversionContext) {
         return Collections.asSet(
             conversionContext.getTypeFactory().getType( LOCAL_DATE_TIME_FQN ),
-            conversionContext.getTypeFactory().getType( ZONE_ID_FQN )
+            conversionContext.getTypeFactory().getType( ZONE_OFFSET_FQN )
         );
     }
 }
