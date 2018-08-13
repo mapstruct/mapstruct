@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
@@ -46,6 +45,7 @@ import org.mapstruct.ap.internal.util.Extractor;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
@@ -242,8 +242,9 @@ public class TypeFactory {
             else if (componentTypeMirror.getKind().isPrimitive()) {
                 // When the component type is primitive and is annotated with ElementType.TYPE_USE then
                 // the typeMirror#toString returns (@CustomAnnotation :: byte) for the javac compiler
-                name = componentTypeMirror.getKind().name().toLowerCase( Locale.ROOT ) + builder.toString();
+                name = NativeTypes.getName( componentTypeMirror.getKind() ) + builder.toString();
                 packageName = null;
+                // for primitive types only name (e.g. byte, short..) required as qualified name
                 qualifiedName = name;
                 isImported = false;
             }
