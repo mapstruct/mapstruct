@@ -8,11 +8,13 @@ package org.mapstruct.ap.internal.util;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import javax.lang.model.type.TypeKind;
 
 /**
  * Provides functionality around the Java primitive data types and their wrapper types. They are considered native.
@@ -24,6 +26,7 @@ public class NativeTypes {
     private static final Map<Class<?>, Class<?>> WRAPPER_TO_PRIMITIVE_TYPES;
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER_TYPES;
     private static final Set<Class<?>> NUMBER_TYPES = new HashSet<Class<?>>();
+    private static final Map<TypeKind, String> TYPE_KIND_NAME = new EnumMap<TypeKind, String>( TypeKind.class );
     private static final Map<String, LiteralAnalyzer> ANALYZERS;
 
     private static final Pattern PTRN_HEX = Pattern.compile( "^0[x|X].*" );
@@ -446,6 +449,15 @@ public class NativeTypes {
 
         ANALYZERS = Collections.unmodifiableMap( tmp2 );
 
+        TYPE_KIND_NAME.put( TypeKind.BOOLEAN, "boolean" );
+        TYPE_KIND_NAME.put( TypeKind.BYTE, "byte" );
+        TYPE_KIND_NAME.put( TypeKind.SHORT, "short" );
+        TYPE_KIND_NAME.put( TypeKind.INT, "int" );
+        TYPE_KIND_NAME.put( TypeKind.LONG, "long" );
+        TYPE_KIND_NAME.put( TypeKind.CHAR, "char" );
+        TYPE_KIND_NAME.put( TypeKind.FLOAT, "float" );
+        TYPE_KIND_NAME.put( TypeKind.DOUBLE, "double" );
+
     }
 
     public static Class<?> getWrapperType(Class<?> clazz) {
@@ -492,5 +504,17 @@ public class NativeTypes {
             result = analyzer.getLiteral();
         }
         return result;
+    }
+
+    /**
+     * The name that should be used for the {@code typeKind}.
+     * Should be used in order to get the name of a primitive type
+     *
+     * @param typeKind the type kind
+     *
+     * @return the name that should be used for the {@code typeKind}
+     */
+    public static String getName(TypeKind typeKind) {
+        return TYPE_KIND_NAME.get( typeKind );
     }
 }
