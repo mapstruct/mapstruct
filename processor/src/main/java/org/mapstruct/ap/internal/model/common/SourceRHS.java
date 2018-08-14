@@ -69,7 +69,7 @@ public class SourceRHS extends ModelElement implements Assignment {
 
     @Override
     public String createLocalVarName(String desiredName) {
-        String result = Strings.getSaveVariableName( desiredName, existingVariableNames );
+        String result = Strings.getSafeVariableName( desiredName, existingVariableNames );
         existingVariableNames.add( result );
         return result;
     }

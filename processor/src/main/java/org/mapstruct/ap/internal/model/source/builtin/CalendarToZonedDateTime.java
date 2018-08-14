@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Set;
@@ -15,6 +13,8 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JavaTimeConstants;
+
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * {@link BuiltInMethod} for mapping between {@link Calendar} and {@link ZonedDateTime}.

@@ -5,13 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.util.Set;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -21,30 +15,20 @@ import org.mapstruct.ap.internal.util.JodaTimeConstants;
 /**
  * @author Sjaak Derksen
  */
-public class JodaDateTimeToXmlGregorianCalendar extends BuiltInMethod {
+public class JodaDateTimeToXmlGregorianCalendar extends AbstractToXmlGregorianCalendar {
 
     private final Parameter parameter;
-    private final Type returnType;
-    private final Set<Type> importTypes;
 
     public JodaDateTimeToXmlGregorianCalendar(TypeFactory typeFactory) {
-        this.parameter = new Parameter(
-            "dt",
-            typeFactory.getType( JodaTimeConstants.DATE_TIME_FQN )
-        );
-        this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
-
-        this.importTypes = asSet(
-            returnType,
-            parameter.getType(),
-            typeFactory.getType( DatatypeFactory.class ),
-            typeFactory.getType( DatatypeConfigurationException.class )
-        );
+        super( typeFactory );
+        this.parameter = new Parameter("dt", typeFactory.getType( JodaTimeConstants.DATE_TIME_FQN ) );
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        return importTypes;
+        Set<Type> result = super.getImportTypes();
+        result.add( parameter.getType() );
+        return result;
     }
 
     @Override
@@ -52,8 +36,4 @@ public class JodaDateTimeToXmlGregorianCalendar extends BuiltInMethod {
         return parameter;
     }
 
-    @Override
-    public Type getReturnType() {
-        return returnType;
-    }
 }

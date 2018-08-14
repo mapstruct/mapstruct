@@ -37,7 +37,7 @@ public class DefaultMapperReference extends MapperReference {
             importTypes.add( typeFactory.getType( "org.mapstruct.factory.Mappers" ) );
         }
 
-        String variableName = Strings.getSaveVariableName(
+        String variableName = Strings.getSafeVariableName(
             type.getName(),
             otherMapperReferences
         );

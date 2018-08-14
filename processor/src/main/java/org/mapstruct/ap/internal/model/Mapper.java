@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 import javax.lang.model.element.Element;
@@ -34,15 +35,14 @@ public class Mapper extends GeneratedType {
 
     private final boolean customPackage;
     private final boolean customImplName;
-    private final List<MapperReference> referencedMappers;
     private Decorator decorator;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     private Mapper(TypeFactory typeFactory, String packageName, String name, String superClassName,
                    String interfacePackage, String interfaceName, boolean customPackage, boolean customImplName,
                    List<MappingMethod> methods, Options options, VersionInformation versionInformation,
-                   Accessibility accessibility, List<MapperReference> referencedMappers, Decorator decorator,
-                   SortedSet<Type> extraImportedTypes) {
+                   Accessibility accessibility, List<Field> fields, Constructor constructor,
+                   Decorator decorator, SortedSet<Type> extraImportedTypes ) {
 
         super(
             typeFactory,
@@ -52,17 +52,16 @@ public class Mapper extends GeneratedType {
             interfacePackage,
             interfaceName,
             methods,
-            referencedMappers,
+            fields,
             options,
             versionInformation,
             accessibility,
             extraImportedTypes,
-            null
+            constructor
         );
         this.customPackage = customPackage;
         this.customImplName = customImplName;
 
-        this.referencedMappers = referencedMappers;
         this.decorator = decorator;
     }
 
@@ -71,7 +70,8 @@ public class Mapper extends GeneratedType {
         private TypeFactory typeFactory;
         private TypeElement element;
         private List<MappingMethod> mappingMethods;
-        private List<MapperReference> mapperReferences;
+        private List<Field> fields;
+        private Set<SupportingConstructorFragment> fragments;
         private SortedSet<Type> extraImportedTypes;
 
         private Elements elementUtils;
@@ -93,8 +93,13 @@ public class Mapper extends GeneratedType {
             return this;
         }
 
-        public Builder mapperReferences(List<MapperReference> mapperReferences) {
-            this.mapperReferences = mapperReferences;
+        public Builder fields(List<Field> fields) {
+            this.fields = fields;
+            return this;
+        }
+
+        public Builder constructorFragments(Set<SupportingConstructorFragment>  fragments) {
+            this.fragments = fragments;
             return this;
         }
 
@@ -146,7 +151,10 @@ public class Mapper extends GeneratedType {
 
             String elementPackage = elementUtils.getPackageOf( element ).getQualifiedName().toString();
             String packageName = implPackage.replace( PACKAGE_NAME_PLACEHOLDER, elementPackage );
-
+            Constructor constructor = null;
+            if ( !fragments.isEmpty() ) {
+                constructor = new NoArgumentConstructor( implementationName, fragments );
+            }
             return new Mapper(
                 typeFactory,
                 packageName,
@@ -160,15 +168,13 @@ public class Mapper extends GeneratedType {
                 options,
                 versionInformation,
                 Accessibility.fromModifiers( element.getModifiers() ),
-                mapperReferences,
+                fields,
+                constructor,
                 decorator,
                 extraImportedTypes
             );
         }
-    }
 
-    public List<MapperReference> getReferencedMappers() {
-        return referencedMappers;
     }
 
     public Decorator getDecorator() {

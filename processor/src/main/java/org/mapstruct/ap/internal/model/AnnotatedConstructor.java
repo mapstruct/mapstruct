@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,17 +20,52 @@ import org.mapstruct.ap.internal.model.common.Type;
  */
 public class AnnotatedConstructor extends ModelElement implements Constructor {
 
-    private final String name;
+    private String name;
     private final List<AnnotationMapperReference> mapperReferences;
     private final List<Annotation> annotations;
-    private final boolean publicEmptyConstructor;
+    private final NoArgumentConstructor noArgumentConstructor;
+    private final Set<SupportingConstructorFragment> fragments;
 
-    public AnnotatedConstructor(String name, List<AnnotationMapperReference> mapperReferences,
-                                List<Annotation> annotations, boolean publicEmptyConstructor) {
+    public static AnnotatedConstructor forComponentModels(String name,
+                                                          List<AnnotationMapperReference> mapperReferences,
+                                                          List<Annotation> annotations,
+                                                          Constructor constructor,
+                                                          boolean includeNoArgConstructor) {
+
+        NoArgumentConstructor noArgumentConstructor = null;
+        if ( constructor instanceof NoArgumentConstructor ) {
+            noArgumentConstructor = (NoArgumentConstructor) constructor;
+        }
+        NoArgumentConstructor noArgConstructorToInBecluded = null;
+        Set<SupportingConstructorFragment> fragmentsToBeIncluded = Collections.emptySet();
+        if ( includeNoArgConstructor ) {
+            if ( noArgumentConstructor != null ) {
+                noArgConstructorToInBecluded = noArgumentConstructor;
+            }
+            else {
+                noArgConstructorToInBecluded = new NoArgumentConstructor( name, fragmentsToBeIncluded );
+            }
+        }
+        else if ( noArgumentConstructor != null ) {
+            fragmentsToBeIncluded = noArgumentConstructor.getFragments();
+        }
+        return new AnnotatedConstructor(
+            name,
+            mapperReferences,
+            annotations,
+            noArgConstructorToInBecluded,
+            fragmentsToBeIncluded
+        );
+    }
+
+    private AnnotatedConstructor(String name, List<AnnotationMapperReference> mapperReferences,
+                                 List<Annotation> annotations, NoArgumentConstructor noArgumentConstructor,
+                                 Set<SupportingConstructorFragment> fragments) {
         this.name = name;
         this.mapperReferences = mapperReferences;
         this.annotations = annotations;
-        this.publicEmptyConstructor = publicEmptyConstructor;
+        this.noArgumentConstructor = noArgumentConstructor;
+        this.fragments = fragments;
     }
 
     @Override
@@ -60,7 +96,11 @@ public class AnnotatedConstructor extends ModelElement implements Constructor {
         return annotations;
     }
 
-    public boolean isPublicEmptyConstructor() {
-        return publicEmptyConstructor;
+    public NoArgumentConstructor getNoArgumentConstructor() {
+        return noArgumentConstructor;
+    }
+
+    public Set<SupportingConstructorFragment> getFragments() {
+        return fragments;
     }
 }

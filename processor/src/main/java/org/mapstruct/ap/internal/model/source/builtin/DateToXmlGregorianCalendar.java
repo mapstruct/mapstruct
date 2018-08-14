@@ -5,45 +5,38 @@
  */
 package org.mapstruct.ap.internal.model.source.builtin;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
-
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Set;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 
+import static org.mapstruct.ap.internal.util.Collections.asSet;
+
 /**
  * @author Sjaak Derksen
  */
-public class DateToXmlGregorianCalendar extends BuiltInMethod {
+public class DateToXmlGregorianCalendar extends AbstractToXmlGregorianCalendar {
 
     private final Parameter parameter;
-    private final Type returnType;
     private final Set<Type> importTypes;
 
     public DateToXmlGregorianCalendar(TypeFactory typeFactory) {
+        super( typeFactory );
         this.parameter = new Parameter( "date", typeFactory.getType( Date.class ) );
-        this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
-
         this.importTypes = asSet(
-            returnType,
             parameter.getType(),
-            typeFactory.getType( GregorianCalendar.class ),
-            typeFactory.getType( DatatypeFactory.class ),
-            typeFactory.getType( DatatypeConfigurationException.class )
+            typeFactory.getType( GregorianCalendar.class )
         );
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        return importTypes;
+        Set<Type> result = super.getImportTypes();
+        result.addAll( this.importTypes );
+        return result;
     }
 
     @Override
@@ -51,8 +44,4 @@ public class DateToXmlGregorianCalendar extends BuiltInMethod {
         return parameter;
     }
 
-    @Override
-    public Type getReturnType() {
-        return returnType;
-    }
 }

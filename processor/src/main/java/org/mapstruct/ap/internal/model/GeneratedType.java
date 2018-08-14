@@ -44,7 +44,7 @@ public abstract class GeneratedType extends ModelElement {
     private final boolean suppressGeneratorVersionComment;
     private final VersionInformation versionInformation;
     private final Accessibility accessibility;
-    private List<? extends Field> fields;
+    private List<Field> fields;
     private Constructor constructor;
 
     /**
@@ -56,7 +56,7 @@ public abstract class GeneratedType extends ModelElement {
     // CHECKSTYLE:OFF
     protected GeneratedType(TypeFactory typeFactory, String packageName, String name, String superClassName,
                             String interfacePackage, String interfaceName, List<MappingMethod> methods,
-                            List<? extends Field> fields, Options options, VersionInformation versionInformation,
+                            List<Field> fields, Options options, VersionInformation versionInformation,
                             Accessibility accessibility, SortedSet<Type> extraImportedTypes, Constructor constructor) {
         this.packageName = packageName;
         this.name = name;
@@ -123,11 +123,11 @@ public abstract class GeneratedType extends ModelElement {
         return methods;
     }
 
-    public List<? extends Field> getFields() {
+    public List<Field> getFields() {
         return fields;
     }
 
-    public void setFields(List<? extends Field> fields) {
+    public void setFields(List<Field> fields) {
         this.fields = fields;
     }
 

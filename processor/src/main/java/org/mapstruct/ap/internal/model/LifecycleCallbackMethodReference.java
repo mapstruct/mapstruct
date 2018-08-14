@@ -42,7 +42,7 @@ public class LifecycleCallbackMethodReference extends MethodReference {
         this.methodResultType = containingMethod.getResultType();
 
         if ( hasReturnType() ) {
-            this.targetVariableName = Strings.getSaveVariableName( "target", existingVariableNames );
+            this.targetVariableName = Strings.getSafeVariableName( "target", existingVariableNames );
             existingVariableNames.add( this.targetVariableName );
         }
         else {

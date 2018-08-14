@@ -511,7 +511,7 @@ public class PropertyMapping extends ModelElement {
 
                 // forge a method from the parameter type to the last entry type.
                 String forgedName = Strings.joinAndCamelize( sourceReference.getElementNames() );
-                forgedName = Strings.getSaveVariableName( forgedName, ctx.getNamesOfMappingsToGenerate() );
+                forgedName = Strings.getSafeVariableName( forgedName, ctx.getNamesOfMappingsToGenerate() );
                 ForgedMethod methodRef = new ForgedMethod(
                     forgedName,
                     sourceReference.getParameter().getType(),
@@ -601,7 +601,7 @@ public class PropertyMapping extends ModelElement {
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source,
                                                  ExecutableElement element, String suffix) {
             String name = getName( sourceType, targetType );
-            name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
+            name = Strings.getSafeVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
             // copy mapper configuration from the source method, its the same mapper
             MapperConfiguration config = method.getMapperConfiguration();
@@ -647,7 +647,7 @@ public class PropertyMapping extends ModelElement {
             }
 
             String name = getName( sourceType, targetType );
-            name = Strings.getSaveVariableName( name, ctx.getNamesOfMappingsToGenerate() );
+            name = Strings.getSafeVariableName( name, ctx.getNamesOfMappingsToGenerate() );
 
             List<Parameter> parameters = new ArrayList<Parameter>( method.getContextParameters() );
             Type returnType;

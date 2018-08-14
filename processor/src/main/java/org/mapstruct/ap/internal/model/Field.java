@@ -5,7 +5,9 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ModelElement;
@@ -113,6 +115,14 @@ public class Field extends ModelElement {
         final Field other = (Field) obj;
         return !( (this.variableName == null) ?
             (other.variableName != null) : !this.variableName.equals( other.variableName ) );
+    }
+
+    public static List<String> getFieldNames(Set<Field> fields) {
+        List<String> names = new ArrayList<String>( fields.size() );
+        for ( Field field : fields ) {
+            names.add( field.getVariableName() );
+        }
+        return names;
     }
 
 }

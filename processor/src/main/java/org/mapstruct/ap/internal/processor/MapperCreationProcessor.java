@@ -7,8 +7,10 @@ package org.mapstruct.ap.internal.processor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.lang.model.element.ExecutableElement;
@@ -26,6 +28,7 @@ import org.mapstruct.ap.internal.model.Decorator;
 import org.mapstruct.ap.internal.model.DefaultMapperReference;
 import org.mapstruct.ap.internal.model.DelegatingMethod;
 import org.mapstruct.ap.internal.model.EnumMappingMethod;
+import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.IterableMappingMethod;
 import org.mapstruct.ap.internal.model.MapMappingMethod;
 import org.mapstruct.ap.internal.model.Mapper;
@@ -33,6 +36,7 @@ import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext;
 import org.mapstruct.ap.internal.model.MappingMethod;
 import org.mapstruct.ap.internal.model.StreamMappingMethod;
+import org.mapstruct.ap.internal.model.SupportingConstructorFragment;
 import org.mapstruct.ap.internal.model.ValueMappingMethod;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -56,6 +60,8 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
+import static org.mapstruct.ap.internal.model.SupportingConstructorFragment.addAllFragmentsIn;
+import static org.mapstruct.ap.internal.model.SupportingField.addAllFieldsIn;
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.join;
 
@@ -139,15 +145,26 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
     }
 
     private Mapper getMapper(TypeElement element, MapperConfiguration mapperConfig, List<SourceMethod> methods) {
-        List<MapperReference> mapperReferences = mappingContext.getMapperReferences();
+
         List<MappingMethod> mappingMethods = getMappingMethods( mapperConfig, methods );
-        mappingMethods.addAll( mappingContext.getUsedVirtualMappings() );
+        mappingMethods.addAll( mappingContext.getUsedSupportedMappings() );
         mappingMethods.addAll( mappingContext.getMappingsToGenerate() );
+
+        // handle fields
+        List<Field> fields = new ArrayList<Field>( mappingContext.getMapperReferences() );
+        Set<Field> supportingFieldSet = new LinkedHashSet<Field>(  );
+        addAllFieldsIn( mappingContext.getUsedSupportedMappings(), supportingFieldSet );
+        fields.addAll( supportingFieldSet );
+
+        // handle constructorfragments
+        Set<SupportingConstructorFragment> constructorFragments = new LinkedHashSet<SupportingConstructorFragment>();
+        addAllFragmentsIn( mappingContext.getUsedSupportedMappings(), constructorFragments );
 
         Mapper mapper = new Mapper.Builder()
             .element( element )
             .mappingMethods( mappingMethods )
-            .mapperReferences( mapperReferences )
+            .fields( fields )
+            .constructorFragments(  constructorFragments )
             .options( options )
             .versionInformation( versionInformation )
             .decorator( getDecorator( element, methods, mapperConfig.implementationName(),

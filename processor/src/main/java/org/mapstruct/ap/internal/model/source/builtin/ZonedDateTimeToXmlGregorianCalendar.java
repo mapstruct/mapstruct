@@ -8,9 +8,6 @@ package org.mapstruct.ap.internal.model.source.builtin;
 import java.time.ZonedDateTime;
 import java.util.GregorianCalendar;
 import java.util.Set;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -21,28 +18,26 @@ import static org.mapstruct.ap.internal.util.Collections.asSet;
 /**
  * @author Christian Bandowski
  */
-public class ZonedDateTimeToXmlGregorianCalendar extends BuiltInMethod {
+public class ZonedDateTimeToXmlGregorianCalendar extends AbstractToXmlGregorianCalendar {
 
     private final Parameter parameter;
-    private final Type returnType;
     private final Set<Type> importTypes;
 
     public ZonedDateTimeToXmlGregorianCalendar(TypeFactory typeFactory) {
+        super( typeFactory );
         this.parameter = new Parameter( "zdt ", typeFactory.getType( ZonedDateTime.class ) );
-        this.returnType = typeFactory.getType( XMLGregorianCalendar.class );
 
         this.importTypes = asSet(
-            returnType,
             parameter.getType(),
-            typeFactory.getType( DatatypeFactory.class ),
-            typeFactory.getType( GregorianCalendar.class ),
-            typeFactory.getType( DatatypeConfigurationException.class )
+            typeFactory.getType( GregorianCalendar.class )
         );
     }
 
     @Override
     public Set<Type> getImportTypes() {
-        return importTypes;
+        Set<Type> result = super.getImportTypes();
+        result.addAll( importTypes );
+        return result;
     }
 
     @Override
@@ -50,8 +45,4 @@ public class ZonedDateTimeToXmlGregorianCalendar extends BuiltInMethod {
         return parameter;
     }
 
-    @Override
-    public Type getReturnType() {
-        return returnType;
-    }
 }

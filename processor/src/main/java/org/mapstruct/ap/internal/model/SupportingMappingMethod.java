@@ -8,29 +8,79 @@ package org.mapstruct.ap.internal.model;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.source.builtin.BuiltInFieldReference;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
+import org.mapstruct.ap.internal.model.source.builtin.NewDatatypeFactoryConstructorFragment;
+import org.mapstruct.ap.internal.util.Strings;
 
 /**
  * A mapping method which is not based on an actual method declared in the original mapper interface but is added as
  * private method to map a certain source/target type combination. Based on a {@link BuiltInMethod}.
  *
+ * Specific templates all point to this class, for instance:
+ * {@link org.mapstruct.ap.internal.model.source.builtin.XmlGregorianCalendarToCalendar},
+ * but also used fields and constructor elements, e.g.
+ * {@link org.mapstruct.ap.internal.model.source.builtin.FinalField} and
+ * {@link NewDatatypeFactoryConstructorFragment}
+ *
  * @author Gunnar Morling
  */
-public class VirtualMappingMethod extends MappingMethod {
+public class SupportingMappingMethod extends MappingMethod {
 
     private final String templateName;
     private final Set<Type> importTypes;
+    private final Field supportingField;
+    private final SupportingConstructorFragment supportingConstructorFragment;
 
-    public VirtualMappingMethod(BuiltInMethod method) {
+    public SupportingMappingMethod(BuiltInMethod method, Set<Field> existingFields) {
         super( method );
         this.importTypes = method.getImportTypes();
         this.templateName = getTemplateNameForClass( method.getClass() );
+        if ( method.getFieldReference() != null ) {
+            this.supportingField = getSafeField( method.getFieldReference(), existingFields );
+        }
+        else {
+            this.supportingField = null;
+        }
+        if ( method.getConstructorFragment() != null ) {
+            this.supportingConstructorFragment = new SupportingConstructorFragment(
+                this,
+                method.getConstructorFragment()
+            );
+        }
+        else {
+            this.supportingConstructorFragment = null;
+        }
     }
 
-    public VirtualMappingMethod(HelperMethod method) {
+    private Field getSafeField(BuiltInFieldReference ref, Set<Field> existingFields) {
+        Field result = null;
+        String name = ref.getVariableName();
+        for ( Field existingField : existingFields ) {
+            if ( existingField.getType().equals( ref.getType() ) ) {
+                // field type already exist, use that one
+                return existingField;
+            }
+        }
+        for ( Field existingField : existingFields ) {
+            if ( existingField.getVariableName().equals( ref.getVariableName() ) ) {
+                // field with name exist, however its a wrong type
+                name = Strings.getSafeVariableName( name, Field.getFieldNames( existingFields ) );
+            }
+        }
+        if ( result == null ) {
+            result = new SupportingField( this, ref, name );
+        }
+
+        return result;
+    }
+
+    public SupportingMappingMethod(HelperMethod method) {
         super( method );
         this.importTypes = method.getImportTypes();
         this.templateName = getTemplateNameForClass( method.getClass() );
+        this.supportingField = null;
+        this.supportingConstructorFragment = null;
     }
 
     @Override
@@ -66,6 +116,14 @@ public class VirtualMappingMethod extends MappingMethod {
         throw new IllegalArgumentException( "No type for given name '" + name + "' found in 'importTypes'." );
     }
 
+    public Field getSupportingField() {
+        return supportingField;
+    }
+
+    public SupportingConstructorFragment getSupportingConstructorFragment() {
+        return supportingConstructorFragment;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -85,7 +143,7 @@ public class VirtualMappingMethod extends MappingMethod {
         if ( getClass() != obj.getClass() ) {
             return false;
         }
-        VirtualMappingMethod other = (VirtualMappingMethod) obj;
+        SupportingMappingMethod other = (SupportingMappingMethod) obj;
         if ( templateName == null ) {
             if ( other.templateName != null ) {
                 return false;

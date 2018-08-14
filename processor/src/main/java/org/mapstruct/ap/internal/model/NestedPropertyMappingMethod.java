@@ -58,7 +58,7 @@ public class NestedPropertyMappingMethod extends MappingMethod {
             final List<Type> thrownTypes = new ArrayList<Type>();
             List<SafePropertyEntry> safePropertyEntries = new ArrayList<SafePropertyEntry>();
             for ( PropertyEntry propertyEntry : propertyEntries ) {
-                String safeName = Strings.getSaveVariableName( propertyEntry.getName(), existingVariableNames );
+                String safeName = Strings.getSafeVariableName( propertyEntry.getName(), existingVariableNames );
                 safePropertyEntries.add( new SafePropertyEntry( propertyEntry, safeName ) );
                 existingVariableNames.add( safeName );
                 thrownTypes.addAll( ctx.getTypeFactory().getThrownTypes(

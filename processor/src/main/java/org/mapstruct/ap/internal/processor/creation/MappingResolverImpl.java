@@ -25,11 +25,13 @@ import javax.lang.model.util.Types;
 
 import org.mapstruct.ap.internal.conversion.ConversionProvider;
 import org.mapstruct.ap.internal.conversion.Conversions;
+import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
-import org.mapstruct.ap.internal.model.VirtualMappingMethod;
+import org.mapstruct.ap.internal.model.SupportingField;
+import org.mapstruct.ap.internal.model.SupportingMappingMethod;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
@@ -73,7 +75,7 @@ public class MappingResolverImpl implements MappingResolver {
      * Private methods which are not present in the original mapper interface and are added to map certain property
      * types.
      */
-    private final Set<VirtualMappingMethod> usedVirtualMappings = new HashSet<VirtualMappingMethod>();
+    private final Set<SupportingMappingMethod> usedSupportedMappings = new HashSet<SupportingMappingMethod>();
 
     public MappingResolverImpl(FormattingMessager messager, Elements elementUtils, Types typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
@@ -110,8 +112,8 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
-    public Set<VirtualMappingMethod> getUsedVirtualMappings() {
-        return usedVirtualMappings;
+    public Set<SupportingMappingMethod> getUsedSupportedMappings() {
+        return usedSupportedMappings;
     }
 
     private MapperReference findMapperReference(Method method) {
@@ -134,10 +136,10 @@ public class MappingResolverImpl implements MappingResolver {
         private final boolean savedPreferUpdateMapping;
         private final FormattingParameters formattingParameters;
 
-        // resolving via 2 steps creates the possibillity of wrong matches, first builtin method matches,
-        // second doesn't. In that case, the first builtin method should not lead to a virtual method
+        // resolving via 2 steps creates the possibility of wrong matches, first builtin method matches,
+        // second doesn't. In that case, the first builtin method should not lead to a supported method
         // so this set must be cleared.
-        private final Set<VirtualMappingMethod> virtualMethodCandidates;
+        private final Set<SupportingMappingMethod> supportingMethodCandidates;
 
         private ResolvingAttempt(List<Method> sourceModel, Method mappingMethod,
             FormattingParameters formattingParameters, SourceRHS sourceRHS, SelectionCriteria criteria) {
@@ -147,7 +149,7 @@ public class MappingResolverImpl implements MappingResolver {
             this.formattingParameters =
                 formattingParameters == null ? FormattingParameters.EMPTY : formattingParameters;
             this.sourceRHS = sourceRHS;
-            this.virtualMethodCandidates = new HashSet<VirtualMappingMethod>();
+            this.supportingMethodCandidates = new HashSet<SupportingMappingMethod>();
             this.selectionCriteria = criteria;
             this.savedPreferUpdateMapping = criteria.isPreferUpdateMapping();
         }
@@ -204,21 +206,21 @@ public class MappingResolverImpl implements MappingResolver {
             Assignment builtInMethod = resolveViaBuiltInMethod( sourceType, targetType );
             if ( builtInMethod != null ) {
                 builtInMethod.setAssignment( sourceRHS );
-                usedVirtualMappings.addAll( virtualMethodCandidates );
+                usedSupportedMappings.addAll( supportingMethodCandidates );
                 return builtInMethod;
             }
 
             // 2 step method, first: method(method(source))
             referencedMethod = resolveViaMethodAndMethod( sourceType, targetType );
             if ( referencedMethod != null ) {
-                usedVirtualMappings.addAll( virtualMethodCandidates );
+                usedSupportedMappings.addAll( supportingMethodCandidates );
                 return referencedMethod;
             }
 
             // 2 step method, then: method(conversion(source))
             referencedMethod = resolveViaConversionAndMethod( sourceType, targetType );
             if ( referencedMethod != null ) {
-                usedVirtualMappings.addAll( virtualMethodCandidates );
+                usedSupportedMappings.addAll( supportingMethodCandidates );
                 return referencedMethod;
             }
 
@@ -228,7 +230,7 @@ public class MappingResolverImpl implements MappingResolver {
             // 2 step method, finally: conversion(method(source))
             conversion = resolveViaMethodAndConversion( sourceType, targetType );
             if ( conversion != null ) {
-                usedVirtualMappings.addAll( virtualMethodCandidates );
+                usedSupportedMappings.addAll( supportingMethodCandidates );
                 return conversion;
             }
 
@@ -252,7 +254,7 @@ public class MappingResolverImpl implements MappingResolver {
 
             // add helper methods required in conversion
             for ( HelperMethod helperMethod : conversionProvider.getRequiredHelperMethods( ctx ) ) {
-                usedVirtualMappings.add( new VirtualMappingMethod( helperMethod ) );
+                usedSupportedMappings.add( new SupportingMappingMethod( helperMethod ) );
             }
             return conversionProvider.to( ctx );
         }
@@ -282,7 +284,12 @@ public class MappingResolverImpl implements MappingResolver {
                 getBestMatch( builtInMethods.getBuiltInMethods(), sourceType, targetType );
 
             if ( matchingBuiltInMethod != null ) {
-                virtualMethodCandidates.add( new VirtualMappingMethod( matchingBuiltInMethod.getMethod() ) );
+
+                Set<Field> allUsedFields = new HashSet<Field>( mapperReferences );
+                SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
+                SupportingMappingMethod supportingMappingMethod =
+                    new SupportingMappingMethod( matchingBuiltInMethod.getMethod(), allUsedFields );
+                supportingMethodCandidates.add( supportingMappingMethod );
                 ConversionContext ctx = new DefaultConversionContext(
                     typeFactory,
                     messager,
@@ -337,7 +344,7 @@ public class MappingResolverImpl implements MappingResolver {
                     }
                     else {
                         // both should match;
-                        virtualMethodCandidates.clear();
+                        supportingMethodCandidates.clear();
                         methodRefY = null;
                     }
                 }
@@ -374,7 +381,7 @@ public class MappingResolverImpl implements MappingResolver {
                     }
                     else {
                         // both should match
-                        virtualMethodCandidates.clear();
+                        supportingMethodCandidates.clear();
                         methodRefY = null;
                     }
                 }
@@ -417,7 +424,7 @@ public class MappingResolverImpl implements MappingResolver {
                     }
                     else {
                         // both should match;
-                        virtualMethodCandidates.clear();
+                        supportingMethodCandidates.clear();
                         conversionYRef = null;
                     }
                 }
