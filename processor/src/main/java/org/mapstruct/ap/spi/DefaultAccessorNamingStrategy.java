@@ -83,10 +83,10 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
     public boolean isSetterMethod(ExecutableElement method) {
         String methodName = method.getSimpleName().toString();
 
-        return methodName.startsWith( "set" ) && methodName.length() > 3 || isBuilderSetter( method );
+        return methodName.startsWith( "set" ) && methodName.length() > 3 || isFluentSetter( method );
     }
 
-    protected boolean isBuilderSetter(ExecutableElement method) {
+    protected boolean isFluentSetter(ExecutableElement method) {
         return method.getParameters().size() == 1 &&
             !JAVA_JAVAX_PACKAGE.matcher( method.getEnclosingElement().asType().toString() ).matches() &&
             !isAdderWithUpperCase4thCharacter( method ) &&
@@ -159,7 +159,7 @@ public class DefaultAccessorNamingStrategy implements AccessorNamingStrategy {
         if ( methodName.startsWith( "is" ) || methodName.startsWith( "get" ) || methodName.startsWith( "set" ) ) {
             return IntrospectorUtils.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
         }
-        else if ( isBuilderSetter( getterOrSetterMethod ) ) {
+        else if ( isFluentSetter( getterOrSetterMethod ) ) {
             return methodName;
         }
         return IntrospectorUtils.decapitalize( methodName.substring( methodName.startsWith( "is" ) ? 2 : 3 ) );
