@@ -17,7 +17,7 @@ import javax.lang.model.element.ExecutableElement;
 public class ImmutablesAccessorNamingStrategy extends DefaultAccessorNamingStrategy {
 
     @Override
-    protected boolean isBuilderSetter(ExecutableElement method) {
-        return super.isBuilderSetter( method ) && !method.getSimpleName().toString().equals( "from" );
+    protected boolean isFluentSetter(ExecutableElement method) {
+        return super.isFluentSetter( method ) && !method.getSimpleName().toString().equals( "from" );
     }
 }
