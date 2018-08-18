@@ -318,6 +318,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         unprocessedSourceProperties.remove( propertyName );
                         iterator.remove();
                         propertyMappings.add( propertyMapping );
+                        // If we found a mapping for the unprocessed property then stop
+                        break;
                     }
                 }
             }
