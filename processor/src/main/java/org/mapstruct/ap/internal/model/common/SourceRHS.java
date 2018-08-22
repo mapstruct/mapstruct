@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.mapstruct.ap.internal.util.Strings;
 
@@ -33,12 +34,12 @@ public class SourceRHS extends ModelElement implements Assignment {
     private final String sourceParameterName;
 
     public SourceRHS(String sourceReference, Type sourceType, Set<String> existingVariableNames,
-        String sourceErrorMessagePart ) {
+                     String sourceErrorMessagePart) {
         this( sourceReference, sourceReference, null, sourceType, existingVariableNames, sourceErrorMessagePart );
     }
 
     public SourceRHS(String sourceParameterName, String sourceReference, String sourcePresenceCheckerReference,
-        Type sourceType, Set<String> existingVariableNames,  String sourceErrorMessagePart ) {
+                     Type sourceType, Set<String> existingVariableNames, String sourceErrorMessagePart) {
         this.sourceReference = sourceReference;
         this.sourceType = sourceType;
         this.existingVariableNames = existingVariableNames;
@@ -95,7 +96,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     }
 
     @Override
-    public void setAssignment( Assignment assignment ) {
+    public void setAssignment(Assignment assignment) {
         throw new UnsupportedOperationException( "Not supported." );
     }
 
@@ -124,8 +125,15 @@ public class SourceRHS extends ModelElement implements Assignment {
      * @return the source type to be used in the matching process.
      */
     public Type getSourceTypeForMatching() {
-        return useElementAsSourceTypeForMatching && sourceType.isCollectionType() ?
-            first( sourceType.determineTypeArguments( Collection.class ) ) : sourceType;
+        if ( useElementAsSourceTypeForMatching ) {
+            if ( sourceType.isCollectionType() ) {
+                return first( sourceType.determineTypeArguments( Collection.class ) );
+            }
+            else if ( sourceType.isStreamType() ) {
+                return first( sourceType.determineTypeArguments( Stream.class ) );
+            }
+        }
+        return sourceType;
     }
 
     /**

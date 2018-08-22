@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -625,44 +626,65 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     private Accessor getAdderForType(Type collectionProperty, String pluralPropertyName) {
 
-        List<Accessor> candidates = new ArrayList<Accessor>();
-        if ( collectionProperty.isCollectionType ) {
+        List<Accessor> candidates;
 
-            // this is a collection, so this can be done always
-            TypeMirror typeArg = first( collectionProperty.determineTypeArguments( Iterable.class ) ).getTypeBound()
-                .getTypeMirror();
-            // now, look for a method that
-            // 1) starts with add,
-            // 2) and has typeArg as one and only arg
-            List<Accessor> adderList = getAdders();
-            for ( Accessor adder : adderList ) {
-                ExecutableElement executable = adder.getExecutable();
-                if ( executable == null ) {
-                    // it should not be null, but to be safe
-                    continue;
-                }
-                VariableElement arg = executable.getParameters().get( 0 );
-                if ( typeUtils.isSameType( arg.asType(), typeArg ) ) {
-                    candidates.add( adder );
-                }
-            }
+        if ( collectionProperty.isCollectionType() ) {
+            candidates = getAccessorCandidates( collectionProperty, Iterable.class );
         }
+        else if ( collectionProperty.isStreamType() ) {
+            candidates = getAccessorCandidates( collectionProperty, Stream.class );
+        }
+        else {
+            return null;
+        }
+
         if ( candidates.isEmpty() ) {
             return null;
         }
-        else if ( candidates.size() == 1 ) {
+
+        if ( candidates.size() == 1 ) {
             return candidates.get( 0 );
         }
-        else {
-            for ( Accessor candidate : candidates ) {
-                String elementName = accessorNaming.getElementNameForAdder( candidate );
-                if ( elementName != null && elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
-                    return candidate;
-                }
+
+        for ( Accessor candidate : candidates ) {
+            String elementName = accessorNaming.getElementNameForAdder( candidate );
+            if ( elementName != null && elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
+                return candidate;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Returns all accessor candidates that start with "add" and have exactly one argument
+     * whose type matches the collection or stream property's type argument.
+     *
+     * @param property the collection or stream property
+     * @param superclass the superclass to use for type argument lookup
+     *
+     * @return accessor candidates
+     */
+    private List<Accessor> getAccessorCandidates(Type property, Class<?> superclass) {
+        TypeMirror typeArg = first( property.determineTypeArguments( superclass ) ).getTypeBound()
+            .getTypeMirror();
+        // now, look for a method that
+        // 1) starts with add,
+        // 2) and has typeArg as one and only arg
+        List<Accessor> adderList = getAdders();
+        List<Accessor> candidateList = new ArrayList<Accessor>();
+        for ( Accessor adder : adderList ) {
+            ExecutableElement executable = adder.getExecutable();
+            if ( executable == null ) {
+                // it should not be null, but to be safe
+                continue;
+            }
+            VariableElement arg = executable.getParameters().get( 0 );
+            if ( typeUtils.isSameType( arg.asType(), typeArg ) ) {
+                candidateList.add( adder );
+            }
+        }
+        return candidateList;
     }
 
     /**
@@ -716,7 +738,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             // an accessor could substitute the setter in that case and act as setter.
             // (assuming it is initialized)
             for ( Accessor readAccessor : readAccessors ) {
-                if ( isCollectionOrMap( readAccessor ) &&
+                if ( isCollectionOrMapOrStream( readAccessor ) &&
                     !correspondingSetterMethodExists( readAccessor, setterMethods ) ) {
                     result.add( readAccessor );
                 }
@@ -745,12 +767,17 @@ public class Type extends ModelElement implements Comparable<Type> {
         return false;
     }
 
-    private boolean isCollectionOrMap(Accessor getterMethod) {
-        return isCollection( getterMethod.getAccessedType() ) || isMap( getterMethod.getAccessedType() );
+    private boolean isCollectionOrMapOrStream(Accessor getterMethod) {
+        return isCollection( getterMethod.getAccessedType() ) || isMap( getterMethod.getAccessedType() ) ||
+            isStream( getterMethod.getAccessedType() );
     }
 
     private boolean isCollection(TypeMirror candidate) {
         return isSubType( candidate, Collection.class );
+    }
+
+    private boolean isStream(TypeMirror candidate) {
+        return isSubType( candidate, Stream.class );
     }
 
     private boolean isMap(TypeMirror candidate) {

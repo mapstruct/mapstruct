@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.model.assignment;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,8 +13,6 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.Nouns;
-
-import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Wraps the assignment in a target setter.
@@ -30,12 +27,13 @@ public class AdderWrapper extends AssignmentWrapper {
     public AdderWrapper( Assignment rhs,
                          List<Type> thrownTypesToExclude,
                          boolean fieldAssignment,
-                         String targetPropertyName ) {
+                         String targetPropertyName,
+                         Type adderType) {
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         String desiredName = Nouns.singularize( targetPropertyName );
         rhs.setSourceLocalVarName( rhs.createLocalVarName( desiredName ) );
-        adderType = first( getSourceType().determineTypeArguments( Collection.class ) );
+        this.adderType = adderType;
     }
 
     @Override
