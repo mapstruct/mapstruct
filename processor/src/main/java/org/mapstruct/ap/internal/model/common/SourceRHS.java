@@ -34,12 +34,12 @@ public class SourceRHS extends ModelElement implements Assignment {
     private final String sourceParameterName;
 
     public SourceRHS(String sourceReference, Type sourceType, Set<String> existingVariableNames,
-                     String sourceErrorMessagePart) {
+        String sourceErrorMessagePart ) {
         this( sourceReference, sourceReference, null, sourceType, existingVariableNames, sourceErrorMessagePart );
     }
 
     public SourceRHS(String sourceParameterName, String sourceReference, String sourcePresenceCheckerReference,
-                     Type sourceType, Set<String> existingVariableNames, String sourceErrorMessagePart) {
+        Type sourceType, Set<String> existingVariableNames,  String sourceErrorMessagePart ) {
         this.sourceReference = sourceReference;
         this.sourceType = sourceType;
         this.existingVariableNames = existingVariableNames;
@@ -96,7 +96,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     }
 
     @Override
-    public void setAssignment(Assignment assignment) {
+    public void setAssignment( Assignment assignment ) {
         throw new UnsupportedOperationException( "Not supported." );
     }
 
