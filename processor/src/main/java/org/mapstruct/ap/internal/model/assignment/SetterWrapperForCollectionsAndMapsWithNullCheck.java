@@ -63,6 +63,9 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
         if (isDirectAssignment() || getSourcePresenceCheckerReference() == null ) {
             imported.addAll( getNullCheckLocalVarType().getImportTypes() );
         }
+        if ( isMapNullToDefault() && ( targetType.getImplementationType() != null ) ) {
+            imported.add( targetType.getImplementationType() );
+        }
         return imported;
     }
 
