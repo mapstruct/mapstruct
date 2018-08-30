@@ -31,21 +31,12 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         if ( source.hasStringsInitialized() ) {
             domain.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
         }
-        else {
-            domain.setLongsInitialized( null );
-        }
         if ( source.hasStrings() ) {
             domain.setLongs( stringListToLongSet( source.getStrings() ) );
-        }
-        else {
-            domain.setLongs( null );
         }
         if ( source.hasStrings() ) {
             List<String> list = source.getStrings();
             domain.setStrings( new HashSet<String>( list ) );
-        }
-        else {
-            domain.setStrings( null );
         }
         if ( source.hasStringsWithDefault() ) {
             List<String> list1 = source.getStringsWithDefault();
@@ -57,9 +48,6 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         if ( source.hasStringsInitialized() ) {
             List<String> list2 = source.getStringsInitialized();
             domain.setStringsInitialized( new HashSet<String>( list2 ) );
-        }
-        else {
-            domain.setStringsInitialized( null );
         }
 
         return domain;

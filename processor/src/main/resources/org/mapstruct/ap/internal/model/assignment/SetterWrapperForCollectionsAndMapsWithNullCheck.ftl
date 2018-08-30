@@ -10,7 +10,7 @@
 <@lib.sourceLocalVarAssignment/>
 <@lib.handleExceptions>
   <@callTargetWriteAccessor/>
-  <#if !ext.defaultValueAssignment??>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleLocalVarNullCheck -->
+  <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference??>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleLocalVarNullCheck -->
     ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if mapNullToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
   }
   </#if>

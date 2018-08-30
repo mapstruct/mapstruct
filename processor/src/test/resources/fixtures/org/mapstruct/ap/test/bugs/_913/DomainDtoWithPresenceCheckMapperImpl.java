@@ -34,9 +34,6 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
             List<String> list = source.getStrings();
             domain.setStrings( new HashSet<String>( list ) );
         }
-        else {
-            domain.setStrings( null );
-        }
         if ( source.hasStringsWithDefault() ) {
             List<String> list1 = source.getStringsWithDefault();
             domain.setStringsWithDefault( new ArrayList<String>( list1 ) );
@@ -47,9 +44,6 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
         if ( source.hasStringsInitialized() ) {
             List<String> list2 = source.getStringsInitialized();
             domain.setStringsInitialized( new HashSet<String>( list2 ) );
-        }
-        else {
-            domain.setStringsInitialized( null );
         }
 
         return domain;
