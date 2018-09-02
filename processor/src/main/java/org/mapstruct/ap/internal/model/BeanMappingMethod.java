@@ -882,6 +882,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             types.addAll( getResultType().getEffectiveType().getImportTypes() );
         }
 
+        if ( getResultType().getBuilderType() != null ) {
+            types.add( getResultType().getBuilderType().getOwningType() );
+        }
 
         return types;
     }
