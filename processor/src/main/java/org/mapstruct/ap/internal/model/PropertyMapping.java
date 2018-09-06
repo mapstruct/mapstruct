@@ -12,11 +12,9 @@ import static org.mapstruct.ap.internal.util.Collections.last;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
@@ -27,6 +25,7 @@ import org.mapstruct.ap.internal.model.assignment.ArrayCopyWrapper;
 import org.mapstruct.ap.internal.model.assignment.EnumConstantWrapper;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
+import org.mapstruct.ap.internal.model.assignment.StreamAdderWrapper;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -438,14 +437,11 @@ public class PropertyMapping extends ModelElement {
             Assignment result = rightHandSide;
 
             if ( result.getSourceType().isCollectionType() ) {
-                Type adderType = first( result.getSourceType().determineTypeArguments( Collection.class ) );
-                result = new AdderWrapper( result, method.getThrownTypes(),
-                    isFieldAssignment(), targetPropertyName, adderType );
+                result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment(), targetPropertyName );
             }
             else if ( result.getSourceType().isStreamType() ) {
-                Type adderType = first( result.getSourceType().determineTypeArguments( Stream.class ) );
-                result = new AdderWrapper( result, method.getThrownTypes(),
-                    isFieldAssignment(), targetPropertyName, adderType );
+                result = new StreamAdderWrapper(
+                    result, method.getThrownTypes(), isFieldAssignment(), targetPropertyName );
             }
             else {
                 // Possibly adding null to a target collection. So should be surrounded by an null check.

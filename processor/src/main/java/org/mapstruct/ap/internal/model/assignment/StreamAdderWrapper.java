@@ -6,10 +6,10 @@
 package org.mapstruct.ap.internal.model.assignment;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -20,22 +20,22 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 /**
  * Wraps the assignment in a target setter.
  *
- * @author Sjaak Derksen
+ * @author Sebastian Haberey
  */
-public class AdderWrapper extends AssignmentWrapper {
+public class StreamAdderWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
     private final Type adderType;
 
-    public AdderWrapper( Assignment rhs,
-                         List<Type> thrownTypesToExclude,
-                         boolean fieldAssignment,
-                         String targetPropertyName ) {
+    public StreamAdderWrapper(Assignment rhs,
+                              List<Type> thrownTypesToExclude,
+                              boolean fieldAssignment,
+                              String targetPropertyName ) {
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         String desiredName = Nouns.singularize( targetPropertyName );
         rhs.setSourceLocalVarName( rhs.createLocalVarName( desiredName ) );
-        adderType = first( getSourceType().determineTypeArguments( Collection.class ) );
+        adderType = first( getSourceType().determineTypeArguments( Stream.class ) );
     }
 
     @Override

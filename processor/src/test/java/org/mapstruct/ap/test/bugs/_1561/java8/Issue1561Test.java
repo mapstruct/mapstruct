@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._1561.java8;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.ap.testutil.IssueKey;
@@ -26,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class Issue1561Test {
 
-    @Ignore("still not entirely working")
     @Test
     public void shouldCorrectlyUseAdder() {
 
