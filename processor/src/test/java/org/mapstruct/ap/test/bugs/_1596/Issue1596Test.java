@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     @WithServiceImplementation( provides = BuilderProvider.class, value = Issue1569BuilderProvider.class),
     @WithServiceImplementation( provides = AccessorNamingStrategy.class, value = ImmutablesAccessorNamingStrategy.class)
 })
-public class Issue1569Test {
+public class Issue1596Test {
 
     @Test
     public void shouldIncludeBuildeType() {

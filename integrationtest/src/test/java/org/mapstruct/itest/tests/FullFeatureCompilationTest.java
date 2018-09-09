@@ -69,6 +69,8 @@ public class FullFeatureCompilationTest {
                     break;
                 default:
             }
+            // SPI not working correctly here.. (not picked up)
+            additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1596/*.java" );
 
             Collection<String> result = new ArrayList<String>( additionalExcludes.size() );
             for ( int i = 0; i < additionalExcludes.size(); i++ ) {
