@@ -24,6 +24,7 @@
         <additionalExclude1>x</additionalExclude1>
         <additionalExclude2>x</additionalExclude2>
         <additionalExclude3>x</additionalExclude3>
+        <additionalExclude4>x</additionalExclude4>
     </properties>
 
     <build>
@@ -43,6 +44,7 @@
                         <exclude>${additionalExclude1}</exclude>
                         <exclude>${additionalExclude2}</exclude>
                         <exclude>${additionalExclude3}</exclude>
+                        <exclude>${additionalExclude4}</exclude>
                     </excludes>
                 </configuration>
             </plugin>

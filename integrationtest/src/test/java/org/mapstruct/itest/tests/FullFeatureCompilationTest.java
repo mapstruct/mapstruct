@@ -53,6 +53,9 @@ public class FullFeatureCompilationTest {
         public Collection<String> getAdditionalCommandLineArguments(ProcessorType processorType) {
             List<String> additionalExcludes = new ArrayList<>();
 
+            // SPI not working correctly here.. (not picked up)
+            additionalExcludes.add( "org/mapstruct/ap/test/bugs/_1596/*.java" );
+
             switch ( processorType ) {
                 case ORACLE_JAVA_6:
                     additionalExcludes.add( "org/mapstruct/ap/test/abstractclass/generics/*.java" );
