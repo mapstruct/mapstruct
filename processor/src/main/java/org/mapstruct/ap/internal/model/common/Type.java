@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -34,6 +33,7 @@ import org.mapstruct.ap.internal.prism.CollectionMappingStrategyPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Filters;
+import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
@@ -632,7 +632,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             candidates = getAccessorCandidates( collectionProperty, Iterable.class );
         }
         else if ( collectionProperty.isStreamType() ) {
-            candidates = getAccessorCandidates( collectionProperty, Stream.class );
+            candidates = getAccessorCandidates( collectionProperty, getClassForName( JavaStreamConstants.STREAM_FQN ) );
         }
         else {
             return null;
@@ -654,6 +654,24 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
 
         return null;
+    }
+
+    /**
+     * Retrieves a class for a given class name.
+     *
+     * @param className fully qualified class name
+     * @return the class
+     * @throws IllegalArgumentException if no class could be found for the class name
+     */
+    private Class<?> getClassForName(String className) throws IllegalArgumentException {
+        Class<?> theClass;
+        try {
+            theClass = Class.forName( className );
+        }
+        catch ( ClassNotFoundException e ) {
+            throw new IllegalArgumentException( "class not found: " + className );
+        }
+        return theClass;
     }
 
     /**
@@ -777,7 +795,9 @@ public class Type extends ModelElement implements Comparable<Type> {
     }
 
     private boolean isStream(TypeMirror candidate) {
-        return isSubType( candidate, Stream.class );
+        TypeElement streamTypeElement = elementUtils.getTypeElement( JavaStreamConstants.STREAM_FQN );
+        TypeMirror streamType = streamTypeElement == null ? null : typeUtils.erasure( streamTypeElement.asType() );
+        return streamType != null && typeUtils.isSubtype( candidate, streamType );
     }
 
     private boolean isMap(TypeMirror candidate) {
