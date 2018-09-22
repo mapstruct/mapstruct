@@ -7,6 +7,7 @@ Christian Bandowski - https://github.com/chris922
 Christian Schuster - https://github.com/chschu
 Christophe Labouisse - https://github.com/ggtools
 Ciaran Liedeman - https://github.com/cliedeman
+Cindy Wang - https://github.com/birdfriend
 Cornelius Dirmeier - https://github.com/cornzy
 David Feinblum - https://github.com/dvfeinblum
 Darren Rambaud - https://github.com/xyzst

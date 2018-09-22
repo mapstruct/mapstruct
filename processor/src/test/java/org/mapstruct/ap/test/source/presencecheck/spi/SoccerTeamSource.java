@@ -18,6 +18,9 @@ public class SoccerTeamSource {
     private GoalKeeper goalKeeper;
     private boolean hasGoalKeeper = true;
 
+    private String refereeName;
+    private boolean hasRefereeName;
+
     public boolean hasPlayers() {
         return hasPlayers;
     }
@@ -50,4 +53,19 @@ public class SoccerTeamSource {
         this.hasGoalKeeper = hasGoalKeeper;
     }
 
+    public String getRefereeName() {
+        return refereeName;
+    }
+
+    public void setRefereeName(String refereeName) {
+        this.refereeName = refereeName;
+    }
+
+    public boolean hasRefereeName() {
+        return hasRefereeName;
+    }
+
+    public void setHasRefereeName(boolean hasRefereeName) {
+        this.hasRefereeName = hasRefereeName;
+    }
 }

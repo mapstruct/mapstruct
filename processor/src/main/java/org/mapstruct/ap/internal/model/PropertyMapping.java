@@ -563,6 +563,20 @@ public class PropertyMapping extends ModelElement {
                 if ( propertyEntry.getPresenceChecker() != null ) {
                     sourcePresenceChecker = sourceParam.getName()
                         + "." + propertyEntry.getPresenceChecker().getSimpleName() + "()";
+
+                    String variableName = sourceParam.getName() + "."
+                        + propertyEntry.getReadAccessor().getSimpleName() + "()";
+                    for (int i = 1; i < sourceReference.getPropertyEntries().size(); i++) {
+                        PropertyEntry entry = sourceReference.getPropertyEntries().get( i );
+                        if (entry.getPresenceChecker() != null && entry.getReadAccessor() != null) {
+                            sourcePresenceChecker += " && " + variableName + " != null && "
+                                + variableName + "." + entry.getPresenceChecker().getSimpleName() + "()";
+                            variableName = variableName + "." + entry.getReadAccessor().getSimpleName() + "()";
+                        }
+                        else {
+                            break;
+                        }
+                    }
                 }
             }
             return sourcePresenceChecker;
