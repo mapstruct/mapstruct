@@ -26,6 +26,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.prism.MappingPrism;
 import org.mapstruct.ap.internal.prism.MappingsPrism;
+import org.mapstruct.ap.internal.prism.NullValueCheckStrategyPrism;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
@@ -56,6 +57,7 @@ public class Mapping {
     private final AnnotationValue sourceAnnotationValue;
     private final AnnotationValue targetAnnotationValue;
     private final AnnotationValue dependsOnAnnotationValue;
+    private final NullValueCheckStrategyPrism nullValueCheckStrategy;
 
     private SourceReference sourceReference;
     private TargetReference targetReference;
@@ -181,6 +183,11 @@ public class Mapping {
             typeUtils
         );
 
+        NullValueCheckStrategyPrism nullValueCheckStrategy =
+            null == mappingPrism.values.nullValueCheckStrategy()
+                ? null
+                : NullValueCheckStrategyPrism.valueOf( mappingPrism.nullValueCheckStrategy() );
+
         return new Mapping(
             source,
             constant,
@@ -195,7 +202,8 @@ public class Mapping {
             formattingParam,
             selectionParams,
             mappingPrism.values.dependsOn(),
-            dependsOn
+            dependsOn,
+            nullValueCheckStrategy
         );
     }
 
@@ -214,7 +222,8 @@ public class Mapping {
             null,
             null,
             null,
-            new ArrayList()
+            new ArrayList(),
+            null
         );
     }
 
@@ -223,7 +232,8 @@ public class Mapping {
                      String targetName, String defaultValue, boolean isIgnored, AnnotationMirror mirror,
                      AnnotationValue sourceAnnotationValue,  AnnotationValue targetAnnotationValue,
                      FormattingParameters formattingParameters, SelectionParameters selectionParameters,
-                     AnnotationValue dependsOnAnnotationValue, List<String> dependsOn ) {
+                     AnnotationValue dependsOnAnnotationValue, List<String> dependsOn,
+                     NullValueCheckStrategyPrism nullValueCheckStrategy ) {
         this.sourceName = sourceName;
         this.constant = constant;
         this.javaExpression = javaExpression;
@@ -238,6 +248,7 @@ public class Mapping {
         this.selectionParameters = selectionParameters;
         this.dependsOnAnnotationValue = dependsOnAnnotationValue;
         this.dependsOn = dependsOn;
+        this.nullValueCheckStrategy = nullValueCheckStrategy;
     }
 
     private Mapping( Mapping mapping, TargetReference targetReference ) {
@@ -257,6 +268,7 @@ public class Mapping {
         this.dependsOn = mapping.dependsOn;
         this.sourceReference = mapping.sourceReference;
         this.targetReference = targetReference;
+        this.nullValueCheckStrategy = mapping.nullValueCheckStrategy;
     }
 
     private Mapping( Mapping mapping, SourceReference sourceReference ) {
@@ -276,6 +288,7 @@ public class Mapping {
         this.dependsOn = mapping.dependsOn;
         this.sourceReference = sourceReference;
         this.targetReference = mapping.targetReference;
+        this.nullValueCheckStrategy = mapping.nullValueCheckStrategy;
     }
 
     private static String getExpression(MappingPrism mappingPrism, ExecutableElement element,
@@ -441,6 +454,10 @@ public class Mapping {
         return targetReference;
     }
 
+    public NullValueCheckStrategyPrism getNullValueCheckStrategy() {
+        return nullValueCheckStrategy;
+    }
+
     public Mapping popTargetReference() {
         if ( targetReference != null ) {
             TargetReference newTargetReference = targetReference.pop();
@@ -488,7 +505,8 @@ public class Mapping {
             formattingParameters,
             selectionParameters,
             dependsOnAnnotationValue,
-            Collections.<String>emptyList()
+            Collections.<String>emptyList(),
+            nullValueCheckStrategy
         );
 
         reverse.init(
@@ -529,7 +547,8 @@ public class Mapping {
             formattingParameters,
             selectionParameters,
             dependsOnAnnotationValue,
-            dependsOn
+            dependsOn,
+            nullValueCheckStrategy
         );
 
         if ( sourceReference != null ) {

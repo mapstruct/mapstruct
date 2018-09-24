@@ -153,7 +153,7 @@ public @interface Mapper {
     /**
      * Determines when to include a null check on the source property value of a bean mapping.
      *
-     * Can be overridden by the one on {@link MapperConfig} or {@link Mapping}.
+     * Can be overridden by the one on {@link MapperConfig}, {@link BeanMapping}  or {@link Mapping}.
      *
      * @return strategy how to do null checking
      */

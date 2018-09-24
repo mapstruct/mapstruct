@@ -15,6 +15,8 @@ import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
 import java.util.Date;
 
+import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
+
 /**
  * Configures the mapping of one bean attribute or enum constant.
  * <p>
@@ -255,4 +257,14 @@ public @interface Mapping {
      * @return Default value to set in case the source property is {@code null}.
      */
     String defaultValue() default "";
+
+    /**
+     * Determines when to include a null check on the source property value of a bean mapping.
+     *
+     * Can be overridden by the one on {@link MapperConfig}, {@link Mapper} or {@link BeanMapping}.
+     *
+     * @return strategy how to do null checking
+     */
+    NullValueCheckStrategy nullValueCheckStrategy() default ON_IMPLICIT_CONVERSION;
+
 }

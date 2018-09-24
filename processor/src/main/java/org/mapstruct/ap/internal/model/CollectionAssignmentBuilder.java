@@ -57,6 +57,7 @@ public class CollectionAssignmentBuilder {
     private PropertyMapping.TargetWriteAccessorType targetAccessorType;
     private Assignment assignment;
     private SourceRHS sourceRHS;
+    private NullValueCheckStrategyPrism nullValueCheckStrategy;
 
     public CollectionAssignmentBuilder mappingBuilderContext(MappingBuilderContext ctx) {
         this.ctx = ctx;
@@ -108,6 +109,11 @@ public class CollectionAssignmentBuilder {
         return this;
     }
 
+    public CollectionAssignmentBuilder nullValueCheckStrategy( NullValueCheckStrategyPrism nullValueCheckStrategy ) {
+        this.nullValueCheckStrategy = nullValueCheckStrategy;
+        return this;
+    }
+
     public Assignment build() {
         Assignment result = assignment;
 
@@ -146,14 +152,14 @@ public class CollectionAssignmentBuilder {
                     result,
                     method.getThrownTypes(),
                     targetType,
-                    method.getMapperConfiguration().getNullValueCheckStrategy(),
+                    nullValueCheckStrategy,
                     ctx.getTypeFactory(),
                     PropertyMapping.TargetWriteAccessorType.isFieldAssignment( targetAccessorType ),
                     mapNullToDefault()
                 );
             }
             else if ( result.getType() == Assignment.AssignmentType.DIRECT ||
-                method.getMapperConfiguration().getNullValueCheckStrategy() == NullValueCheckStrategyPrism.ALWAYS ) {
+                nullValueCheckStrategy == NullValueCheckStrategyPrism.ALWAYS ) {
 
                 result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
                     result,
@@ -199,4 +205,5 @@ public class CollectionAssignmentBuilder {
         return method.getMapperConfiguration().getNullValueMappingStrategy()
             == NullValueMappingStrategyPrism.RETURN_DEFAULT;
     }
+
 }
