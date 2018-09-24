@@ -34,6 +34,7 @@ Remo Meier - https://github.com/remmeier
 Richard Lea - https://github.com/chigix
 Saheb Preet Singh - https://github.com/sahebpreet
 Samuel Wright - https://github.com/samwright
+Sebastian Haberey - https://github.com/sebastianhaberey
 Sebastian Hasait - https://github.com/shasait
 Sean Huang - https://github.com/seanjob
 Sjaak Derksen - https://github.com/sjaakd
